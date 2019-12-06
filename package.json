@@ -1,0 +1,43 @@
+{
+  "name": "platform",
+  "version": "0.0.0",
+  "description": "Motech Development applications mono repo",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/motech-development/platform.git"
+  },
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/motech-development/platform/issues"
+  },
+  "homepage": "https://github.com/motech-development/platform#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
+    "commitizen": "^4.0.3",
+    "cz-lerna-changelog": "^2.0.2",
+    "husky": "^3.1.0",
+    "lerna": "^3.19.0",
+    "lerna-update-wizard": "^0.17.5",
+    "lint-staged": "^9.5.0",
+    "prettier": "1.19.1",
+    "pretty-quick": "^2.0.1"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook",
+      "pre-commit": "lerna run --concurrency 1 --stream precommit && pretty-quick --staged"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-lerna-changelog"
+    }
+  }
+}
