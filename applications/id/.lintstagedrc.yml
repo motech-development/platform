@@ -1,0 +1,3 @@
+src/*.ts:
+  - eslint -c .eslintrc.yml --fix
+  - git add

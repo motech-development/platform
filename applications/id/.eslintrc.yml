@@ -1,0 +1,42 @@
+extends:
+  - airbnb
+  - eslint:recommended
+  - react-app
+  - prettier
+  - prettier/react
+
+overrides:
+  - files:
+      - setupTests.ts
+      - '**/*.spec.tsx'
+      - '**/*.test.tsx'
+    rules:
+      import/no-extraneous-dependencies: off
+
+parser: '@typescript-eslint/parser'
+
+rules:
+  react/jsx-filename-extension:
+    - error
+    - extensions:
+        - .jsx
+        - .tsx
+  sort-keys:
+    - error
+    - asc
+    - caseSensitive: true
+      natural: false
+  spaced-comment:
+    - error
+    - always
+    - markers:
+        - /
+
+settings:
+  import/resolver:
+    node:
+      extensions:
+        - .js
+        - .jsx
+        - .ts
+        - .tsx
