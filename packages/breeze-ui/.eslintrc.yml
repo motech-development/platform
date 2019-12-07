@@ -20,11 +20,6 @@ overrides:
 parser: '@typescript-eslint/parser'
 
 rules:
-  import/no-extraneous-dependencies:
-    - error
-    - packageDir:
-        - './'
-        - '../../'
   react/jsx-filename-extension:
     - error
     - extensions:

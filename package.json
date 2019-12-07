@@ -4,7 +4,9 @@
   "description": "Motech Development applications mono repo",
   "private": true,
   "scripts": {
+    "add": "lerna add --scope=@motech-development/$APP",
     "bootstrap": "lerna bootstrap",
+    "build": "lerna run build  --stream --scope=@motech-development/$APP",
     "clean": "lerna clean",
     "lint": "lerna run lint --scope=@motech-development/$APP",
     "postinstall": "npm run bootstrap",
@@ -20,6 +22,10 @@
     "url": "https://github.com/motech-development/platform/issues"
   },
   "homepage": "https://github.com/motech-development/platform#readme",
+  "dependencies": {
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
@@ -30,6 +36,7 @@
     "@types/node": "^12.12.14",
     "@types/react": "^16.9.15",
     "@types/react-dom": "^16.9.4",
+    "@types/styled-components": "^4.4.0",
     "commitizen": "^4.0.3",
     "cz-lerna-changelog": "^2.0.2",
     "eslint": "^6.6.0",
@@ -46,6 +53,12 @@
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1",
     "react-scripts": "3.3.0",
+    "rollup": "^1.27.8",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-peer-deps-external": "^2.2.0",
+    "rollup-plugin-typescript2": "^0.25.3",
+    "styled-components": "^4.4.1",
     "typescript": "^3.7.3"
   },
   "husky": {
