@@ -8,15 +8,23 @@
   "scripts": {
     "build": "rollup -c",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
+    "prebuild": "rimraf ./build",
     "precommit": "lint-staged",
     "prepare": "npm run build",
-    "start": "rollup -c -w"
+    "start": "rollup -c -w",
+    "storybook": "start-storybook"
   },
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "peerDependencies": {
+    "polished": "^3.4.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "styled-components": "^4.4.1"
+    "styled-components": "^4.4.1",
+    "styled-reset": "^4.0.8"
+  },
+  "devDependencies": {
+    "@storybook/addon-knobs": "^5.2.8",
+    "@storybook/react": "^5.2.8"
   }
 }

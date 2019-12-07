@@ -13,8 +13,11 @@ export default [
     plugins: [
       external(),
       typescript({
-        rollupCommonJSResolveHack: true,
         clean: true,
+        rollupCommonJSResolveHack: true,
+        tsconfigOverride: {
+          exclude: ['**/*.stories.tsx'],
+        },
       }),
       resolve({
         extensions: ['.ts', '.tsx'],
