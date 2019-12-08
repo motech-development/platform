@@ -9,6 +9,7 @@ export default [
     input: 'src/index.ts',
     external: {
       ...pkg.peerDependencies,
+      ...pkg.dependencies,
     },
     plugins: [
       external(),
@@ -16,7 +17,7 @@ export default [
         clean: true,
         rollupCommonJSResolveHack: true,
         tsconfigOverride: {
-          exclude: ['**/*.stories.tsx'],
+          exclude: ['**/*.spec.tsx', '**/*.stories.tsx', 'src/setupTests.ts'],
         },
       }),
       resolve({

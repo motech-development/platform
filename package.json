@@ -13,7 +13,9 @@
     "lint": "lerna run lint --scope=@motech-development/$APP",
     "postinstall": "npm run bootstrap",
     "start": "lerna run start  --stream --scope=@motech-development/$APP",
-    "storybook": "lerna run storybook  --stream --scope=@motech-development/$APP"
+    "storybook": "lerna run storybook  --stream --scope=@motech-development/$APP",
+    "test": "lerna run test  --stream --scope=@motech-development/$APP",
+    "test:watch": "lerna run test:watch  --stream --scope=@motech-development/$APP"
   },
   "repository": {
     "type": "git",
@@ -25,13 +27,6 @@
     "url": "https://github.com/motech-development/platform/issues"
   },
   "homepage": "https://github.com/motech-development/platform#readme",
-  "dependencies": {
-    "polished": "^3.4.2",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "styled-components": "^4.4.1",
-    "styled-reset": "^4.0.8"
-  },
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",

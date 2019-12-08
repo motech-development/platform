@@ -7,7 +7,9 @@ extends:
 
 overrides:
   - files:
-      - '**/*.stories.tsx'
+      - setupTests.ts
+      - '**/*.spec.tsx'
+      - '**/*.test.tsx'
     rules:
       import/no-extraneous-dependencies: off
   - files:
@@ -18,6 +20,11 @@ overrides:
 parser: '@typescript-eslint/parser'
 
 rules:
+  import/no-extraneous-dependencies:
+    - error
+    - packageDir:
+        - './'
+        - '../../'
   react/jsx-filename-extension:
     - error
     - extensions:

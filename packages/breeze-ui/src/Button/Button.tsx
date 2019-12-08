@@ -20,7 +20,7 @@ export const buttonTheme: IButtonTheme = {
   },
   secondary: {
     background: '#f6f9fc',
-    colour: '#333333',
+    colour: '#333',
   },
   success: {
     background: 'rgb(0, 128, 93)',
@@ -52,19 +52,19 @@ export const BaseButton = styled.button<IBaseButton>`
           return `
             font-size: 16px;
             height: 32px;
-            padding: 1px 16px
+            padding: 1px 16px;
           `;
         case 'lg':
           return `
             font-size: 18px;
             height: 48px;
-            padding: 1px 32px
+            padding: 1px 32px;
           `;
         default:
           return `
             font-size: 16px;
             height: 40px;
-            padding: 1px 24px
+            padding: 1px 24px;
           `;
       }
     })()}
