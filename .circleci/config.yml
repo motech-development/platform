@@ -87,8 +87,8 @@ workflows:
           requires:
             - setup
       - deploy-storybook:
-          # filters:
-          #   branches:
-          #     only: master
+          filters:
+            branches:
+              only: master
           requires:
             - unit-test
