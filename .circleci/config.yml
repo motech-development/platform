@@ -18,6 +18,7 @@ restore_cache: &restore_cache
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
   codecov: codecov/codecov@1.0.2
+  sonarcloud: sonarsource/sonarcloud@1.0.1
 
 jobs:
   setup:
@@ -48,7 +49,7 @@ jobs:
 
   unit-test:
     docker:
-      - image: breezejs/sonar-scanner:latest
+      - image: circleci/node:12.13
     working_directory: ~/repo
     steps:
       - checkout
@@ -61,9 +62,7 @@ jobs:
           file: ./applications/id/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/breeze-ui/coverage/coverage-final.json
-      - run:
-          command: sonar-scanner -Dsonar.login=$SONAR_LOGIN -Dsonar.branch.name=$CIRCLE_BRANCH
-          name: Static code analysis
+      - sonarcloud/scan
 
   deploy-storybook:
     docker:
@@ -84,6 +83,7 @@ workflows:
     jobs:
       - setup
       - unit-test:
+          context: SonarCloud
           requires:
             - setup
       - deploy-storybook:
