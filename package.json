@@ -1,7 +1,7 @@
 {
   "name": "platform",
   "version": "0.0.0",
-  "description": "Motech Development applications mono repo",
+  "description": "Motech Development applications monorepo",
   "private": true,
   "scripts": {
     "add": "lerna add --scope=@motech-development/$APP",
@@ -10,6 +10,7 @@
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build  --stream --scope=@motech-development/$APP",
     "clean": "lerna clean",
+    "deploy": "lerna run deploy --stream --scope=@motech-development/$APP",
     "lint": "lerna run lint --scope=@motech-development/$APP",
     "postinstall": "npm run bootstrap",
     "start": "lerna run start  --stream --scope=@motech-development/$APP",

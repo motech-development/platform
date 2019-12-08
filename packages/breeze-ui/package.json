@@ -7,6 +7,7 @@
   "types": "build/index.d.ts",
   "scripts": {
     "build": "rollup -c",
+    "deploy": "storybook-to-ghpages",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "prebuild": "rimraf ./build",
     "precommit": "lint-staged",
@@ -27,7 +28,8 @@
   },
   "devDependencies": {
     "@storybook/addon-knobs": "^5.2.8",
-    "@storybook/react": "^5.2.8"
+    "@storybook/react": "^5.2.8",
+    "@storybook/storybook-deployer": "^2.8.1"
   },
   "peerDependencies": {
     "polished": "^3.4.2",
