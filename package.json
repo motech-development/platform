@@ -4,19 +4,18 @@
   "description": "Motech Development applications monorepo",
   "private": true,
   "scripts": {
-    "add": "lerna add --scope=@motech-development/$APP",
-    "add:dev": "npm run add -- --dev",
-    "add:peer": "npm run add -- --peer",
+    "add": "lerna add",
+    "add:dev": "lerna add --dev",
+    "add:peer": "lerna add --peer",
     "bootstrap": "lerna bootstrap",
-    "build": "lerna run build  --stream --scope=@motech-development/$APP",
+    "build": "lerna run build --stream",
     "clean": "lerna clean",
-    "deploy": "lerna run deploy --stream --scope=@motech-development/$APP",
-    "lint": "lerna run lint --scope=@motech-development/$APP",
+    "deploy": "lerna run deploy --stream",
+    "lint": "lerna run lint",
     "postinstall": "npm run bootstrap",
-    "start": "lerna run start  --stream --scope=@motech-development/$APP",
-    "storybook": "lerna run storybook  --stream --scope=@motech-development/$APP",
-    "test": "lerna run test  --stream --scope=@motech-development/$APP",
-    "test:watch": "lerna run test:watch  --stream --scope=@motech-development/$APP"
+    "start": "lerna run start --stream",
+    "test": "lerna run test --stream",
+    "test:ci": "lerna run test:ci --stream"
   },
   "repository": {
     "type": "git",
