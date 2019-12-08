@@ -7,7 +7,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "rollup -c",
-    "deploy": "storybook-to-ghpages",
+    "deploy": "storybook-to-ghpages --ci",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
