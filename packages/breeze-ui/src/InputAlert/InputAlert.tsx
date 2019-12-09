@@ -18,10 +18,10 @@ const Wrapper = styled.div`
   width: 22px;
 `;
 
-const InputAlertIcon: FC = () => (
+const InputAlert: FC = () => (
   <Wrapper>
     <FontAwesomeIcon icon={faExclamation} />
   </Wrapper>
 );
 
-export default memo(InputAlertIcon);
+export default memo(InputAlert);
