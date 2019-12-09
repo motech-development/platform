@@ -1,6 +1,7 @@
 import { Field, FieldProps } from 'formik';
 import React, { FC, memo, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import InputAlertIcon from '../InputAlertIcon/InputAlertIcon';
 import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
 
@@ -84,6 +85,8 @@ export const InternalTextBox: FC<IInternalTextBox> = ({
         {...rest} // eslint-disable-line react/jsx-props-no-spreading
         {...props} // eslint-disable-line react/jsx-props-no-spreading
       />
+
+      {error && <InputAlertIcon />}
     </InputWrapper>
   );
 };
