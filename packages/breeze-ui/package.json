@@ -19,6 +19,7 @@
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "dependencies": {
+    "formik": "^2.0.6",
     "polished": "^3.4.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
@@ -31,6 +32,7 @@
     "@storybook/storybook-deployer": "^2.8.1"
   },
   "peerDependencies": {
+    "formik": "^2.0.6",
     "polished": "^3.4.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",

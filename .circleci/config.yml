@@ -81,7 +81,11 @@ workflows:
 
   build-test-deploy:
     jobs:
-      - setup
+      - setup:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
       - unit-test:
           context: SonarCloud
           requires:
