@@ -6,7 +6,6 @@ import Label from '../Label/Label';
 
 export interface IBaseTextBox {
   active: boolean;
-  type?: 'email' | 'password' | 'text';
 }
 
 export const BaseTextBox = styled.input<IBaseTextBox>`
@@ -35,13 +34,16 @@ export const BaseTextBox = styled.input<IBaseTextBox>`
 
 export interface IInternalTextBox extends FieldProps {
   active: boolean;
+  label: string;
   setFocus(focus: boolean): void;
 }
 
 export const InternalTextBox: FC<IInternalTextBox> = ({
+  active,
   field,
   form,
   setFocus,
+  label,
   ...props
 }) => {
   useEffect(() => {
@@ -52,6 +54,8 @@ export const InternalTextBox: FC<IInternalTextBox> = ({
   }, []);
 
   const { onBlur, ...rest } = field;
+  const { errors, touched } = form;
+  const error = !!touched[field.name] && !!errors[field.name];
 
   function doBlur(e: unknown) {
     if (!field.value) {
@@ -68,15 +72,27 @@ export const InternalTextBox: FC<IInternalTextBox> = ({
   }
 
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <BaseTextBox onBlur={doBlur} onFocus={doFocus} {...rest} {...props} />
+    <InputWrapper error={error}>
+      <Label htmlFor={field.name} active={active} error={error}>
+        {label}
+      </Label>
+
+      <BaseTextBox
+        active={active}
+        onBlur={doBlur}
+        onFocus={doFocus}
+        {...rest} // eslint-disable-line react/jsx-props-no-spreading
+        {...props} // eslint-disable-line react/jsx-props-no-spreading
+      />
+    </InputWrapper>
   );
 };
 
-export interface IButtonProps extends IBaseTextBox {
+export interface IButtonProps {
   label: string;
   name: string;
   placeholder?: string;
+  type?: 'email' | 'password' | 'text';
 }
 
 const TextBox: FC<IButtonProps> = ({
@@ -88,21 +104,16 @@ const TextBox: FC<IButtonProps> = ({
   const [focus, setFocus] = useState();
 
   return (
-    <InputWrapper>
-      <Label htmlFor={name} active={focus}>
-        {label}
-      </Label>
-
-      <Field
-        id={name}
-        component={InternalTextBox}
-        type={type}
-        name={name}
-        placeholder={placeholder}
-        setFocus={setFocus}
-        active={focus}
-      />
-    </InputWrapper>
+    <Field
+      id={name}
+      component={InternalTextBox}
+      type={type}
+      name={name}
+      placeholder={placeholder}
+      setFocus={setFocus}
+      active={focus}
+      label={label}
+    />
   );
 };
 

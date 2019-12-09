@@ -29,7 +29,9 @@
   "devDependencies": {
     "@storybook/addon-knobs": "^5.2.8",
     "@storybook/react": "^5.2.8",
-    "@storybook/storybook-deployer": "^2.8.1"
+    "@storybook/storybook-deployer": "^2.8.1",
+    "@types/yup": "^0.26.26",
+    "yup": "^0.27.0"
   },
   "peerDependencies": {
     "formik": "^2.0.6",
