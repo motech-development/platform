@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import InputAlert from '../InputAlert/InputAlert';
 import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
+import Tooltip from '../Tooltip/Tooltip';
 
 export interface IBaseTextBox {
   active: boolean;
@@ -86,7 +87,11 @@ export const InternalTextBox: FC<IInternalTextBox> = ({
         {...props} // eslint-disable-line react/jsx-props-no-spreading
       />
 
-      {error && <InputAlert />}
+      {error && (
+        <Tooltip parent={() => <InputAlert />} placement="left">
+          {errors[field.name]}
+        </Tooltip>
+      )}
     </InputWrapper>
   );
 };
