@@ -181,7 +181,7 @@ const Tooltip: FC<ITooltip> = ({
                   ref={arrowProps.ref}
                   colour={colour}
                   style={arrowProps.style}
-                  placement={placement}
+                  placement={popperPlacement}
                 />
               </ToolTipContent>
             )
