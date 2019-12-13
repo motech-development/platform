@@ -1,6 +1,24 @@
 import React, { ElementType, FC, memo, ReactNode, useState } from 'react';
 import { Manager, Popper, Reference } from 'react-popper';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
+
+interface ITooltipTheme {
+  [name: string]: {
+    background: string;
+    colour: string;
+  };
+}
+
+const tooltipTheme: ITooltipTheme = {
+  danger: {
+    background: 'rgb(199, 56, 79)',
+    colour: '#fff',
+  },
+  primary: {
+    background: '#2e9dc8',
+    colour: '#fff',
+  },
+};
 
 type ToolTipPlacement =
   | 'auto-start'
@@ -20,67 +38,104 @@ type ToolTipPlacement =
   | 'left-start';
 
 interface IToolTipPlacement {
+  colour: keyof ITooltipTheme;
   placement: ToolTipPlacement;
 }
 
 const ToolTipArrow = styled.div<IToolTipPlacement>`
-  ${({ placement }) => `
-    border: 1px solid transparent;
-    height: 10px;
+  ${({ colour, placement, theme }) => `
+    height: 0;
     position: absolute;
-    transform: rotate(45deg) translate(-7px);
-    width: 10px;
+    width: 0;
 
     ${(() => {
       switch (placement) {
         case 'bottom':
           return `
-            background: linear-gradient(135deg, rgb(199, 56, 79) 50%, transparent 0%) no-repeat;
-            border-left-color: rgba(0, 0, 0, .1);
-            border-top-color: rgba(0, 0, 0, .1);
-            margin-left: 10px;
-            top: 0;
+            border-bottom: 5px solid ${theme[colour].background};
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            top: -5px;
           `;
         case 'left':
           return `
-            background: linear-gradient(45deg, transparent 50%, rgb(199, 56, 79) 0%) no-repeat;
-            border-right-color: rgba(0, 0, 0, .1);
-            border-top-color: rgba(0, 0, 0, .1);
-            margin-top: 10px;
-            right: -10px;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid ${theme[colour].background};
+            border-top: 5px solid transparent;
+            right: -5px;
+          `;
+        case 'right':
+          return `
+            border-bottom: 5px solid transparent;
+            border-right: 5px solid ${theme[colour].background};
+            border-top: 5px solid transparent;
+            left: -5px;
+          `;
+        case 'top':
+          return `
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid ${theme[colour].background};
+            bottom: -5px;
           `;
         default:
-          return ``;
+          return '';
       }
     })()}
   `}
 `;
 
 const ToolTipWrapper = styled.div`
-  margin-top: -11px;
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  z-index: 1;
+  display: inline-block;
+  position: relative;
 `;
 
 const ToolTipContent = styled.div<IToolTipPlacement>`
-  background-color: rgb(199, 56, 79);
-  border-radius: 5px;
-  color: #fff;
-  font-size: 14px;
-  line-height: 22px;
-  margin-right: 7px;
-  padding: 0 5px;
+  ${({ colour, placement, theme }) => `
+    background-color: ${theme[colour].background};
+    color: ${theme[colour].colour};
+    font-size: 14px;
+    line-height: 22px;
+    padding: 0 5px;
+
+    ${(() => {
+      switch (placement) {
+        case 'bottom':
+          return `
+            margin-top: 5px;
+          `;
+        case 'left':
+          return `
+            margin-right: 5px;
+          `;
+        case 'right':
+          return `
+            margin-left: 5px;
+          `;
+        case 'top':
+          return `
+            margin-bottom: 5px;
+          `;
+        default:
+          return '';
+      }
+    })()}
+  `}
 `;
 
 export interface ITooltip {
   children: ReactNode;
+  colour?: keyof ITooltipTheme;
   parent: ElementType;
   placement: ToolTipPlacement;
 }
 
-const Tooltip: FC<ITooltip> = ({ children, parent: Parent, placement }) => {
+const Tooltip: FC<ITooltip> = ({
+  children,
+  colour = 'primary',
+  parent: Parent,
+  placement,
+}) => {
   const [visible, setVisibility] = useState(false);
   let timer: number;
 
@@ -96,36 +151,44 @@ const Tooltip: FC<ITooltip> = ({ children, parent: Parent, placement }) => {
   }
 
   return (
-    <Manager>
-      <Reference>
-        {({ ref }) => (
-          <ToolTipWrapper
-            ref={ref}
-            onBlur={hideTooltip}
-            onFocus={showTooltip}
-            onMouseOver={showTooltip}
-            onMouseOut={hideTooltip}
-          >
-            <Parent />
-          </ToolTipWrapper>
-        )}
-      </Reference>
+    <ThemeProvider theme={tooltipTheme}>
+      <Manager>
+        <Reference>
+          {({ ref }) => (
+            <ToolTipWrapper
+              ref={ref}
+              onBlur={hideTooltip}
+              onFocus={showTooltip}
+              onMouseOver={showTooltip}
+              onMouseOut={hideTooltip}
+            >
+              <Parent />
+            </ToolTipWrapper>
+          )}
+        </Reference>
 
-      <Popper placement={placement} positionFixed>
-        {({ arrowProps, placement: popperPlacement, ref, style }) =>
-          visible && (
-            <ToolTipContent ref={ref} style={style} placement={popperPlacement}>
-              {children}
-              <ToolTipArrow
-                ref={arrowProps.ref}
-                style={arrowProps.style}
-                placement={placement}
-              />
-            </ToolTipContent>
-          )
-        }
-      </Popper>
-    </Manager>
+        <Popper placement={placement} positionFixed>
+          {({ arrowProps, placement: popperPlacement, ref, style }) =>
+            visible && (
+              <ToolTipContent
+                ref={ref}
+                colour={colour}
+                style={style}
+                placement={popperPlacement}
+              >
+                {children}
+                <ToolTipArrow
+                  ref={arrowProps.ref}
+                  colour={colour}
+                  style={arrowProps.style}
+                  placement={placement}
+                />
+              </ToolTipContent>
+            )
+          }
+        </Popper>
+      </Manager>
+    </ThemeProvider>
   );
 };
 

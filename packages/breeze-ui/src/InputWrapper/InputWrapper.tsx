@@ -1,11 +1,11 @@
-import { memo } from 'react';
+import React, { ElementType, FC, memo, ReactNode } from 'react';
 import styled from 'styled-components';
 
-export interface IInputWrapper {
+export interface IBaseInputWrapper {
   error: boolean;
 }
 
-export const InputWrapper = styled.div<IInputWrapper>`
+export const BaseInputWrapper = styled.div<IBaseInputWrapper>`
   ${({ error }) => `
     background: #fff;
     border-bottom: 2px solid ${error ? 'rgb(199, 56, 79)' : '#ccc'};
@@ -14,5 +14,35 @@ export const InputWrapper = styled.div<IInputWrapper>`
     position: relative;
   `}
 `;
+
+export const ValidatorWrapper = styled.div`
+  margin-top: -11px;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  z-index: 1;
+`;
+
+export interface IInputWrapper extends IBaseInputWrapper {
+  children?: ReactNode;
+  error: boolean;
+  tooltip: ElementType;
+}
+
+const InputWrapper: FC<IInputWrapper> = ({
+  children,
+  error,
+  tooltip: Tooltip,
+}) => (
+  <BaseInputWrapper error={error}>
+    {children}
+
+    {error && (
+      <ValidatorWrapper>
+        <Tooltip />
+      </ValidatorWrapper>
+    )}
+  </BaseInputWrapper>
+);
 
 export default memo(InputWrapper);

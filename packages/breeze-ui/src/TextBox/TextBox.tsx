@@ -1,3 +1,4 @@
+// TODO: Textbox size
 import { Field, FieldProps } from 'formik';
 import React, { FC, memo, useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -74,7 +75,14 @@ export const InternalTextBox: FC<IInternalTextBox> = ({
   }
 
   return (
-    <InputWrapper error={error}>
+    <InputWrapper
+      error={error}
+      tooltip={() => (
+        <Tooltip parent={() => <InputAlert />} colour="danger" placement="left">
+          {errors[field.name]}
+        </Tooltip>
+      )}
+    >
       <Label htmlFor={field.name} active={active} error={error}>
         {label}
       </Label>
@@ -86,12 +94,6 @@ export const InternalTextBox: FC<IInternalTextBox> = ({
         {...rest} // eslint-disable-line react/jsx-props-no-spreading
         {...props} // eslint-disable-line react/jsx-props-no-spreading
       />
-
-      {error && (
-        <Tooltip parent={() => <InputAlert />} placement="left">
-          {errors[field.name]}
-        </Tooltip>
-      )}
     </InputWrapper>
   );
 };
