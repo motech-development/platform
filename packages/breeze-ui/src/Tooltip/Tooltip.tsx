@@ -1,4 +1,4 @@
-import React, { ElementType, FC, memo, ReactNode } from 'react';
+import React, { ElementType, FC, memo, ReactNode, useState } from 'react';
 import { Manager, Popper, Reference } from 'react-popper';
 import styled from 'styled-components';
 
@@ -80,29 +80,53 @@ export interface ITooltip {
   placement: ToolTipPlacement;
 }
 
-const Tooltip: FC<ITooltip> = ({ children, parent: Parent, placement }) => (
-  <Manager>
-    <Reference>
-      {({ ref }) => (
-        <ToolTipWrapper ref={ref}>
-          <Parent />
-        </ToolTipWrapper>
-      )}
-    </Reference>
+const Tooltip: FC<ITooltip> = ({ children, parent: Parent, placement }) => {
+  const [visible, setVisibility] = useState(false);
+  let timer: number;
 
-    <Popper placement={placement} positionFixed>
-      {({ arrowProps, placement: popperPlacement, ref, style }) => (
-        <ToolTipContent ref={ref} style={style} placement={popperPlacement}>
-          {children}
-          <ToolTipArrow
-            ref={arrowProps.ref}
-            style={arrowProps.style}
-            placement={placement}
-          />
-        </ToolTipContent>
-      )}
-    </Popper>
-  </Manager>
-);
+  function hideTooltip() {
+    timer = setTimeout(() => {
+      setVisibility(false);
+    }, 1000);
+  }
+
+  function showTooltip() {
+    clearTimeout(timer);
+    setVisibility(true);
+  }
+
+  return (
+    <Manager>
+      <Reference>
+        {({ ref }) => (
+          <ToolTipWrapper
+            ref={ref}
+            onBlur={hideTooltip}
+            onFocus={showTooltip}
+            onMouseOver={showTooltip}
+            onMouseOut={hideTooltip}
+          >
+            <Parent />
+          </ToolTipWrapper>
+        )}
+      </Reference>
+
+      <Popper placement={placement} positionFixed>
+        {({ arrowProps, placement: popperPlacement, ref, style }) =>
+          visible && (
+            <ToolTipContent ref={ref} style={style} placement={popperPlacement}>
+              {children}
+              <ToolTipArrow
+                ref={arrowProps.ref}
+                style={arrowProps.style}
+                placement={placement}
+              />
+            </ToolTipContent>
+          )
+        }
+      </Popper>
+    </Manager>
+  );
+};
 
 export default memo(Tooltip);
