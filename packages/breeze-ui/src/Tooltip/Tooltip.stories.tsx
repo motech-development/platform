@@ -37,8 +37,7 @@ stories.add('Basic tooltip', () => (
           | 'top'
       }
       colour={select('Colour', colour, 'primary')}
-    >
-      {text('Text', 'This is a tooltip!')}
-    </Tooltip>
+      message={text('Text', 'This is a tooltip!')}
+    />
   </>
 ));

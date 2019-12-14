@@ -77,9 +77,12 @@ const InternalTextBox: FC<IInternalTextBox> = ({
     <InputWrapper
       error={error}
       tooltip={() => (
-        <Tooltip parent={() => <InputAlert />} colour="danger" placement="left">
-          {errors[field.name]}
-        </Tooltip>
+        <Tooltip
+          parent={() => <InputAlert />}
+          colour="danger"
+          placement="left"
+          message={errors[field.name]}
+        />
       )}
     >
       <Label htmlFor={field.name} active={active} error={error}>

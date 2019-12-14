@@ -124,15 +124,15 @@ const ToolTipContent = styled.div<IToolTipPlacement>`
 `;
 
 export interface ITooltip {
-  children: ReactNode;
   colour?: keyof ITooltipTheme;
+  message: ReactNode;
   parent: ElementType;
   placement: ToolTipPlacement;
 }
 
 const Tooltip: FC<ITooltip> = ({
-  children,
   colour = 'primary',
+  message,
   parent: Parent,
   placement,
 }) => {
@@ -176,7 +176,7 @@ const Tooltip: FC<ITooltip> = ({
                 style={style}
                 placement={popperPlacement}
               >
-                {children}
+                {message}
                 <ToolTipArrow
                   ref={arrowProps.ref}
                   colour={colour}
