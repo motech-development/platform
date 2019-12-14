@@ -1,4 +1,3 @@
-// TODO: Textbox size
 import { Field, FieldProps } from 'formik';
 import React, { FC, memo, useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -7,11 +6,11 @@ import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
 import Tooltip from '../Tooltip/Tooltip';
 
-export interface IBaseTextBox {
+interface IBaseTextBox {
   active: boolean;
 }
 
-export const BaseTextBox = styled.input<IBaseTextBox>`
+const BaseTextBox = styled.input<IBaseTextBox>`
   ${({ active }) => `
     background: #fff;
     border: none;
@@ -35,13 +34,13 @@ export const BaseTextBox = styled.input<IBaseTextBox>`
   `}
 `;
 
-export interface IInternalTextBox extends FieldProps {
+interface IInternalTextBox extends FieldProps {
   active: boolean;
   label: string;
   setFocus(focus: boolean): void;
 }
 
-export const InternalTextBox: FC<IInternalTextBox> = ({
+const InternalTextBox: FC<IInternalTextBox> = ({
   active,
   field,
   form,

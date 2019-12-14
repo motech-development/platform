@@ -2,14 +2,14 @@ import { darken } from 'polished';
 import React, { FC, memo, ReactChild } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
-export interface IButtonTheme {
+interface IButtonTheme {
   [name: string]: {
     background: string;
     colour: string;
   };
 }
 
-export const buttonTheme: IButtonTheme = {
+const buttonTheme: IButtonTheme = {
   danger: {
     background: 'rgb(199, 56, 79)',
     colour: '#fff',
@@ -28,12 +28,12 @@ export const buttonTheme: IButtonTheme = {
   },
 };
 
-export interface IBaseButton {
+interface IBaseButton {
   colour?: keyof IButtonTheme;
   size?: 'sm' | 'md' | 'lg';
 }
 
-export const BaseButton = styled.button<IBaseButton>`
+const BaseButton = styled.button<IBaseButton>`
   ${({ colour = 'primary', size = 'md', theme }) => `
     appearance: none;
     background-color: ${theme[colour].background};

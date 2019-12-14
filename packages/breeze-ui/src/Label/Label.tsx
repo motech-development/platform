@@ -6,7 +6,7 @@ export interface ILabelProps {
   error: boolean;
 }
 
-export const Label = styled.label<ILabelProps>`
+const Label = styled.label<ILabelProps>`
   ${({ active, error }) => `
     color: ${(() => {
       if (error) {

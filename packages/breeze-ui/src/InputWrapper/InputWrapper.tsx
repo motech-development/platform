@@ -1,11 +1,11 @@
 import React, { ElementType, FC, memo, ReactNode } from 'react';
 import styled from 'styled-components';
 
-export interface IBaseInputWrapper {
+interface IBaseInputWrapper {
   error: boolean;
 }
 
-export const BaseInputWrapper = styled.div<IBaseInputWrapper>`
+const BaseInputWrapper = styled.div<IBaseInputWrapper>`
   ${({ error }) => `
     background: #fff;
     border-bottom: 2px solid ${error ? 'rgb(199, 56, 79)' : '#ccc'};
@@ -15,7 +15,7 @@ export const BaseInputWrapper = styled.div<IBaseInputWrapper>`
   `}
 `;
 
-export const ValidatorWrapper = styled.div`
+const ValidatorWrapper = styled.div`
   margin-top: -11px;
   position: absolute;
   right: 8px;
