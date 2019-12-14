@@ -10,7 +10,7 @@ const Label = styled.label<ILabelProps>`
   ${({ active, error }) => `
     color: ${(() => {
       if (error) {
-        return 'rgb(199, 56, 79)';
+        return 'rgb(199,56,79)';
       }
 
       if (active) {

@@ -40,7 +40,7 @@ describe('Button', () => {
       const { container } = render(<Button colour="danger">Hello</Button>);
 
       expect(container.firstChild).toHaveStyle(`
-        background-color: rgb(199, 56, 79);
+        background-color: rgb(199,56,79);
         color: #fff;
       `);
     });
@@ -73,7 +73,7 @@ describe('Button', () => {
       const { container } = render(<Button colour="success">Hello</Button>);
 
       expect(container.firstChild).toHaveStyle(`
-        background-color: rgb(0, 128, 93);
+        background-color: rgb(0,128,93);
         color: #fff;
       `);
     });

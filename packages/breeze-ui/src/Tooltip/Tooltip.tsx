@@ -11,7 +11,7 @@ interface ITooltipTheme {
 
 const tooltipTheme: ITooltipTheme = {
   danger: {
-    background: 'rgb(199, 56, 79)',
+    background: 'rgb(199,56,79)',
     colour: '#fff',
   },
   primary: {

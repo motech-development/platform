@@ -11,7 +11,7 @@ interface IButtonTheme {
 
 const buttonTheme: IButtonTheme = {
   danger: {
-    background: 'rgb(199, 56, 79)',
+    background: 'rgb(199,56,79)',
     colour: '#fff',
   },
   primary: {
@@ -23,7 +23,7 @@ const buttonTheme: IButtonTheme = {
     colour: '#333',
   },
   success: {
-    background: 'rgb(0, 128, 93)',
+    background: 'rgb(0,128,93)',
     colour: '#fff',
   },
 };

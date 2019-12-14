@@ -13,7 +13,7 @@ describe('InputAlert', () => {
     const { container } = component;
 
     expect(container.firstChild).toHaveStyle(`
-      background-color: rgb(199, 56, 79);
+      background-color: rgb(199,56,79);
       color: #fff;
     `);
   });
