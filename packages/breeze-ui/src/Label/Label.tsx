@@ -26,18 +26,6 @@ const Label = styled.label<ILabelProps>`
     };
     transform-origin: top left;
     transition: all .1s ease-in-out;
-
-    ${
-      active
-        ? `
-          color: ;
-          transform: ;
-        `
-        : `
-          color: ;
-          transform: ;
-        `
-    }
   `}
 `;
 
