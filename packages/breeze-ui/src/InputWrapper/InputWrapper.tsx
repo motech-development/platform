@@ -24,7 +24,7 @@ const ValidatorWrapper = styled.div`
 `;
 
 export interface IInputWrapper extends IBaseInputWrapper {
-  children?: ReactNode;
+  children: ReactNode;
   error: boolean;
   tooltip: ElementType;
 }
