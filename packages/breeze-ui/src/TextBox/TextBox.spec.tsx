@@ -12,52 +12,86 @@ describe('TextBox', () => {
   let onSubmit: jest.Mock;
 
   beforeEach(() => {
-    initialValues = {
-      test: '',
-    };
     onSubmit = jest.fn();
   });
 
-  it('should render the textbox with the correct colour when not active', async () => {
-    const { findByPlaceholderText } = render(
-      <Formik initialValues={initialValues} onSubmit={onSubmit}>
-        {() => (
-          <Form>
-            <TextBox
-              data-testid="Textbox"
-              label="Test"
-              name="test"
-              placeholder="Test"
-            />
-          </Form>
-        )}
-      </Formik>,
-    );
+  describe('when there are no initial values', () => {
+    beforeEach(() => {
+      initialValues = {
+        test: '',
+      };
+    });
 
-    await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
-      'color: #fff',
-    );
+    it('should render the textbox with the correct colour when not active', async () => {
+      const { findByPlaceholderText } = render(
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          {() => (
+            <Form>
+              <TextBox
+                data-testid="Textbox"
+                label="Test"
+                name="test"
+                placeholder="Test"
+              />
+            </Form>
+          )}
+        </Formik>,
+      );
+
+      await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
+        'color: #fff',
+      );
+    });
+
+    it('should render the textbox with the correct colour when active', async () => {
+      const { findByPlaceholderText } = render(
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          {() => (
+            <Form>
+              <TextBox
+                data-testid="Textbox"
+                label="Test"
+                name="test"
+                placeholder="Test"
+              />
+            </Form>
+          )}
+        </Formik>,
+      );
+      const input = await findByPlaceholderText('Test');
+
+      input.focus();
+
+      expect(input).toHaveStyle('color: #333');
+    });
   });
 
-  it('should render the textbox with the correct colour when active', async () => {
-    const { findByPlaceholderText } = render(
-      <Formik initialValues={initialValues} onSubmit={onSubmit}>
-        {() => (
-          <Form>
-            <TextBox
-              data-testid="Textbox"
-              label="Test"
-              name="test"
-              placeholder="Test"
-            />
-          </Form>
-        )}
-      </Formik>,
-    );
-    const input = await findByPlaceholderText('Test');
+  describe('when there are initial values', () => {
+    beforeEach(() => {
+      initialValues = {
+        test: 'Test value',
+      };
+    });
 
-    input.focus();
+    it('should have the correct colour', async () => {
+      const { findByPlaceholderText } = render(
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          {() => (
+            <Form>
+              <TextBox
+                data-testid="Textbox"
+                label="Test"
+                name="test"
+                placeholder="Test"
+              />
+            </Form>
+          )}
+        </Formik>,
+      );
 
-    expect(input).toHaveStyle('color: #333');
+      await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
+        'color: #333',
+      );
+    });
   });
 });
