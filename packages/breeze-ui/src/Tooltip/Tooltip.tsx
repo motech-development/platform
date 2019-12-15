@@ -171,6 +171,7 @@ const Tooltip: FC<ITooltip> = ({
           {({ arrowProps, placement: popperPlacement, ref, style }) =>
             visible && (
               <ToolTipContent
+                role="tooltip"
                 ref={ref}
                 colour={colour}
                 style={style}

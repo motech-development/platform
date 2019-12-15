@@ -6,7 +6,7 @@ describe('InputAlert', () => {
   let component: RenderResult;
 
   beforeEach(() => {
-    component = render(<InputAlert />);
+    component = render(<InputAlert message="This is a message" />);
   });
 
   it('should render with the correct background and colour', () => {

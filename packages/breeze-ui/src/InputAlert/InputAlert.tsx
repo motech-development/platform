@@ -1,6 +1,6 @@
 import { faExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { FC, memo } from 'react';
+import React, { FC, memo, ReactNode } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -15,8 +15,12 @@ const Wrapper = styled.div`
   width: 22px;
 `;
 
-const InputAlert: FC = () => (
-  <Wrapper>
+export interface IInputAlert {
+  message: ReactNode;
+}
+
+const InputAlert: FC<IInputAlert> = () => (
+  <Wrapper role="alert">
     <FontAwesomeIcon icon={faExclamation} />
   </Wrapper>
 );

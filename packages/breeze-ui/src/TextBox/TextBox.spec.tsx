@@ -1,6 +1,7 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { Form, Formik } from 'formik';
 import React from 'react';
+import * as Yup from 'yup';
 import TextBox from './TextBox';
 
 interface IInitialValues {
@@ -9,6 +10,7 @@ interface IInitialValues {
 
 describe('TextBox', () => {
   let initialValues: IInitialValues;
+  let validationSchema: Yup.ObjectSchema<IInitialValues>;
   let onSubmit: jest.Mock;
 
   beforeEach(() => {
@@ -20,6 +22,10 @@ describe('TextBox', () => {
       initialValues = {
         test: '',
       };
+
+      validationSchema = Yup.object().shape({
+        test: Yup.string().required(),
+      });
     });
 
     it('should render the textbox with the correct colour when not active', async () => {
@@ -63,6 +69,34 @@ describe('TextBox', () => {
       input.focus();
 
       expect(input).toHaveStyle('color: #333');
+    });
+
+    it('should display an error if input is invalid', async () => {
+      const { findByPlaceholderText, findByRole } = render(
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
+        >
+          {() => (
+            <Form>
+              <TextBox
+                data-testid="Textbox"
+                label="Test"
+                name="test"
+                placeholder="Test"
+              />
+            </Form>
+          )}
+        </Formik>,
+      );
+      const input = await findByPlaceholderText('Test');
+
+      fireEvent.blur(input);
+
+      const alert = await findByRole('alert');
+
+      expect(alert).toBeDefined();
     });
   });
 

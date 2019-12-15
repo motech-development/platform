@@ -78,7 +78,7 @@ const InternalTextBox: FC<IInternalTextBox> = ({
       error={error}
       tooltip={() => (
         <Tooltip
-          parent={() => <InputAlert />}
+          parent={() => <InputAlert message={errors[field.name]} />}
           colour="danger"
           placement="left"
           message={errors[field.name]}
