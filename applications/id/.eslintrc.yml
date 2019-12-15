@@ -40,6 +40,8 @@ rules:
     - always
     - markers:
         - /
+  '@typescript-eslint/no-explicit-any':
+    - error
 
 settings:
   import/resolver:
