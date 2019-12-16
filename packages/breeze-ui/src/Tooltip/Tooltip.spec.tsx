@@ -1,4 +1,4 @@
-import { act, fireEvent, render, wait } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import Tooltip from './Tooltip';
 
@@ -19,8 +19,6 @@ describe('Tooltip', () => {
       />,
     );
   });
-
-  it.todo('should hide after 1000ms');
 
   describe('primary', () => {
     beforeEach(async () => {
@@ -58,6 +56,14 @@ describe('Tooltip', () => {
       const { textContent } = tooltip.firstChild as ChildNode;
 
       expect(textContent).toEqual('Hello');
+    });
+
+    it('should hide after 1000ms', () => {
+      jest.useFakeTimers();
+
+      fireEvent.blur(button);
+
+      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000);
     });
   });
 
