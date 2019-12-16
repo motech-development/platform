@@ -33,12 +33,7 @@ describe('TextBox', () => {
         <Formik initialValues={initialValues} onSubmit={onSubmit}>
           {() => (
             <Form>
-              <TextBox
-                data-testid="Textbox"
-                label="Test"
-                name="test"
-                placeholder="Test"
-              />
+              <TextBox label="Test" name="test" placeholder="Test" />
             </Form>
           )}
         </Formik>,
@@ -54,7 +49,7 @@ describe('TextBox', () => {
         <Formik initialValues={initialValues} onSubmit={onSubmit}>
           {() => (
             <Form>
-              <TextBox data-testid="Textbox" label="Test" name="test" />
+              <TextBox label="Test" name="test" placeholder="Test" />
             </Form>
           )}
         </Formik>,
@@ -75,12 +70,7 @@ describe('TextBox', () => {
         >
           {() => (
             <Form>
-              <TextBox
-                data-testid="Textbox"
-                label="Test"
-                name="test"
-                placeholder="Test"
-              />
+              <TextBox label="Test" name="test" placeholder="Test" />
             </Form>
           )}
         </Formik>,
@@ -103,24 +93,17 @@ describe('TextBox', () => {
     });
 
     it('should have the correct colour', async () => {
-      const { findByPlaceholderText } = render(
+      const { findByLabelText } = render(
         <Formik initialValues={initialValues} onSubmit={onSubmit}>
           {() => (
             <Form>
-              <TextBox
-                data-testid="Textbox"
-                label="Test"
-                name="test"
-                placeholder="Test"
-              />
+              <TextBox label="Test" name="test" />
             </Form>
           )}
         </Formik>,
       );
 
-      await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
-        'color: #333',
-      );
+      await expect(findByLabelText('Test')).resolves.toHaveStyle('color: #333');
     });
   });
 });
