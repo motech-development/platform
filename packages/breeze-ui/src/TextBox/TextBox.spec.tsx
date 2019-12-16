@@ -121,6 +121,30 @@ describe('TextBox', () => {
 
       expect(input.getAttribute('placeholder')).toEqual('Test');
     });
+
+    it('should have the correct styled label', async () => {
+      const { findByLabelText, findByText } = render(
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
+        >
+          {() => (
+            <Form>
+              <TextBox label="Test" name="test" />
+            </Form>
+          )}
+        </Formik>,
+      );
+      const input = await findByLabelText('Test');
+
+      fireEvent.blur(input);
+
+      await expect(findByText('Test')).resolves.toHaveStyle(`
+        color: rgb(199,56,79);
+        transform: translate(0,16px) scale(1);
+      `);
+    });
   });
 
   describe('when there are initial values', () => {
@@ -142,6 +166,43 @@ describe('TextBox', () => {
       );
 
       await expect(findByLabelText('Test')).resolves.toHaveStyle('color: #333');
+    });
+
+    it('should have the correct styled label', async () => {
+      const { findByLabelText, findByText } = render(
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          {() => (
+            <Form>
+              <TextBox label="Test" name="test" />
+            </Form>
+          )}
+        </Formik>,
+      );
+      const input = await findByLabelText('Test');
+
+      fireEvent.blur(input);
+
+      await expect(findByText('Test')).resolves.toHaveStyle(`
+        color: #2e9dc8;
+        transform: translate(0,4px) scale(.75);
+      `);
+    });
+
+    it('should render the textbox with the correct colour when active', async () => {
+      const { findByPlaceholderText } = render(
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          {() => (
+            <Form>
+              <TextBox label="Test" name="test" placeholder="Test" />
+            </Form>
+          )}
+        </Formik>,
+      );
+      const input = await findByPlaceholderText('Test');
+
+      input.focus();
+
+      expect(input).toHaveStyle('color: #333');
     });
   });
 });
