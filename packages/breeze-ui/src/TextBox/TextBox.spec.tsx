@@ -54,12 +54,7 @@ describe('TextBox', () => {
         <Formik initialValues={initialValues} onSubmit={onSubmit}>
           {() => (
             <Form>
-              <TextBox
-                data-testid="Textbox"
-                label="Test"
-                name="test"
-                placeholder="Test"
-              />
+              <TextBox data-testid="Textbox" label="Test" name="test" />
             </Form>
           )}
         </Formik>,
