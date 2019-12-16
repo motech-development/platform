@@ -1,9 +1,26 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, wait } from '@testing-library/react';
 import React from 'react';
 import Tooltip from './Tooltip';
 
 describe('Tooltip', () => {
+  let button: HTMLElement;
   let tooltip: HTMLElement;
+
+  it('should render when one of the less common placements is used', () => {
+    render(
+      <Tooltip
+        parent={() => (
+          <button type="button" data-testid="button">
+            Hello world
+          </button>
+        )}
+        placement="auto"
+        message="Hello"
+      />,
+    );
+  });
+
+  it.todo('should hide after 1000ms');
 
   describe('primary', () => {
     beforeEach(async () => {
@@ -19,7 +36,7 @@ describe('Tooltip', () => {
         />,
       );
 
-      const button = await findByTestId('button');
+      button = await findByTestId('button');
 
       fireEvent.focus(button);
 
@@ -38,7 +55,9 @@ describe('Tooltip', () => {
     });
 
     it('should display content', () => {
-      expect(tooltip.firstChild.textContent).toEqual('Hello');
+      const { textContent } = tooltip.firstChild as ChildNode;
+
+      expect(textContent).toEqual('Hello');
     });
   });
 
@@ -57,7 +76,7 @@ describe('Tooltip', () => {
         />,
       );
 
-      const button = await findByTestId('button');
+      button = await findByTestId('button');
 
       fireEvent.focus(button);
 
@@ -90,7 +109,7 @@ describe('Tooltip', () => {
         />,
       );
 
-      const button = await findByTestId('button');
+      button = await findByTestId('button');
 
       fireEvent.focus(button);
 
@@ -125,7 +144,7 @@ describe('Tooltip', () => {
         />,
       );
 
-      const button = await findByTestId('button');
+      button = await findByTestId('button');
 
       fireEvent.focus(button);
 
@@ -160,7 +179,7 @@ describe('Tooltip', () => {
         />,
       );
 
-      const button = await findByTestId('button');
+      button = await findByTestId('button');
 
       fireEvent.focus(button);
 
@@ -195,7 +214,7 @@ describe('Tooltip', () => {
         />,
       );
 
-      const button = await findByTestId('button');
+      button = await findByTestId('button');
 
       fireEvent.focus(button);
 
