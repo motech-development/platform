@@ -168,25 +168,30 @@ const Tooltip: FC<ITooltip> = ({
         </Reference>
 
         <Popper placement={placement} positionFixed>
-          {({ arrowProps, placement: popperPlacement, ref, style }) =>
-            visible && (
-              <ToolTipContent
-                role="tooltip"
-                ref={ref}
-                colour={colour}
-                style={style}
-                placement={popperPlacement}
-              >
-                {message}
-                <ToolTipArrow
-                  ref={arrowProps.ref}
+          {({ arrowProps, placement: popperPlacement, ref, style }) => {
+            const placementToUse =
+              process.env.NODE_ENV === 'test' ? placement : popperPlacement;
+
+            return (
+              visible && (
+                <ToolTipContent
+                  role="tooltip"
+                  ref={ref}
                   colour={colour}
-                  style={arrowProps.style}
-                  placement={popperPlacement}
-                />
-              </ToolTipContent>
-            )
-          }
+                  style={style}
+                  placement={placementToUse}
+                >
+                  {message}
+                  <ToolTipArrow
+                    ref={arrowProps.ref}
+                    colour={colour}
+                    style={arrowProps.style}
+                    placement={placementToUse}
+                  />
+                </ToolTipContent>
+              )
+            );
+          }}
         </Popper>
       </Manager>
     </ThemeProvider>
