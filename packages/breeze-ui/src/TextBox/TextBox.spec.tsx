@@ -83,6 +83,44 @@ describe('TextBox', () => {
 
       expect(alert).toBeDefined();
     });
+
+    it('should have no placeholder when one is not set', async () => {
+      const { findByLabelText } = render(
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
+        >
+          {() => (
+            <Form>
+              <TextBox label="Test" name="test" />
+            </Form>
+          )}
+        </Formik>,
+      );
+      const input = await findByLabelText('Test');
+
+      expect(input.getAttribute('placeholder')).toBeDefined();
+    });
+
+    it('should have a placeholder when one is set', async () => {
+      const { findByLabelText } = render(
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
+        >
+          {() => (
+            <Form>
+              <TextBox label="Test" name="test" placeholder="Test" />
+            </Form>
+          )}
+        </Formik>,
+      );
+      const input = await findByLabelText('Test');
+
+      expect(input.getAttribute('placeholder')).toEqual('Test');
+    });
   });
 
   describe('when there are initial values', () => {
