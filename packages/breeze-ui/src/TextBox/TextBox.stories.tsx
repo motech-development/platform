@@ -3,6 +3,8 @@ import { Form, Formik } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
 import BaseStyles from '../BaseStyles/BaseStyles';
+import Button from '../Button/Button';
+import Card from '../Card/Card';
 import TextBox from './TextBox';
 
 const stories = storiesOf('TextBox', module);
@@ -25,25 +27,34 @@ stories.add('Basic textbox', () => (
   <>
     <BaseStyles />
 
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={submit}
-    >
-      {() => (
-        <Form>
-          <TextBox name="name" type="text" label="Name" placeholder="Name" />
+    <Card padding="lg">
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={submit}
+      >
+        {() => (
+          <Form>
+            <TextBox name="name" type="text" label="Name" placeholder="Name" />
 
-          <TextBox
-            name="email"
-            type="email"
-            label="Email address"
-            placeholder="example@motechdevelopment.co.uk"
-          />
+            <TextBox
+              name="email"
+              type="email"
+              label="Email address"
+              placeholder="example@motechdevelopment.co.uk"
+            />
 
-          <TextBox name="password" type="password" label="Password" />
-        </Form>
-      )}
-    </Formik>
+            <TextBox
+              name="password"
+              type="password"
+              label="Password"
+              spacing="lg"
+            />
+
+            <Button type="submit">Submit</Button>
+          </Form>
+        )}
+      </Formik>
+    </Card>
   </>
 ));

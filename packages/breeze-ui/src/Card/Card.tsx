@@ -27,7 +27,7 @@ interface IBaseCard {
 
 const BaseCard = styled.div<IBaseCard>`
   ${({ theme, padding }) => `
-    background: #fff;
+    background: #f8f8f8;
     padding: ${theme[padding].padding}
   `}
 `;

@@ -6,6 +6,8 @@ import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
 import Tooltip from '../Tooltip/Tooltip';
 
+type InputSpacing = 'md' | 'lg';
+
 interface IBaseTextBox {
   active: boolean;
 }
@@ -38,14 +40,16 @@ interface IInternalTextBox extends FieldProps {
   active: boolean;
   label: string;
   setFocus(focus: boolean): void;
+  spacing: InputSpacing;
 }
 
 const InternalTextBox: FC<IInternalTextBox> = ({
   active,
   field,
   form,
-  setFocus,
   label,
+  setFocus,
+  spacing,
   ...props
 }) => {
   useEffect(() => {
@@ -76,6 +80,7 @@ const InternalTextBox: FC<IInternalTextBox> = ({
 
   return (
     <InputWrapper
+      spacing={spacing}
       error={error}
       tooltip={() => (
         <Tooltip
@@ -107,6 +112,7 @@ export interface ITextBoxProps {
   label: string;
   name: string;
   placeholder?: string;
+  spacing?: InputSpacing;
   type?: 'email' | 'password' | 'text';
 }
 
@@ -114,6 +120,7 @@ const TextBox: FC<ITextBoxProps> = ({
   label,
   name,
   placeholder = '',
+  spacing = 'md',
   type = 'text',
 }) => {
   const [focus, setFocus] = useState();
@@ -128,6 +135,7 @@ const TextBox: FC<ITextBoxProps> = ({
       setFocus={setFocus}
       active={focus}
       label={label}
+      spacing={spacing}
     />
   );
 };

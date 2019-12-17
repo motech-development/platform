@@ -10,9 +10,11 @@ describe('InputWrapper', () => {
     beforeEach(() => {
       component = render(
         <InputWrapper
+          spacing="lg"
           error={false}
           tooltip={() => (
             <Tooltip
+              id="test"
               parent={() => <div data-testid="alert" />}
               colour="danger"
               placement="left"
@@ -28,7 +30,7 @@ describe('InputWrapper', () => {
     it('should render with the correct styles', () => {
       const { container } = component;
 
-      expect(container.firstChild).toHaveStyle('border-bottom-color: #ccc;');
+      expect(container.firstChild).toHaveStyle('border-bottom-color: #eee;');
     });
 
     it('should render an input', () => {
@@ -42,9 +44,11 @@ describe('InputWrapper', () => {
     beforeEach(() => {
       component = render(
         <InputWrapper
+          spacing="md"
           error
           tooltip={() => (
             <Tooltip
+              id="test"
               parent={() => <div data-testid="alert" />}
               colour="danger"
               placement="left"
