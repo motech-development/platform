@@ -125,6 +125,7 @@ const ToolTipContent = styled.div<IToolTipPlacement>`
 
 export interface ITooltip {
   colour?: keyof ITooltipTheme;
+  id: string;
   message: ReactNode;
   parent: ElementType;
   placement: ToolTipPlacement;
@@ -133,6 +134,7 @@ export interface ITooltip {
 const Tooltip: FC<ITooltip> = ({
   colour = 'primary',
   message,
+  id,
   parent: Parent,
   placement,
 }) => {
@@ -175,6 +177,7 @@ const Tooltip: FC<ITooltip> = ({
             return (
               visible && (
                 <ToolTipContent
+                  id={id}
                   role="tooltip"
                   ref={ref}
                   colour={colour}

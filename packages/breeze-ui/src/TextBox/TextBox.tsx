@@ -58,6 +58,7 @@ const InternalTextBox: FC<IInternalTextBox> = ({
   const { onBlur, ...rest } = field;
   const { errors, touched } = form;
   const error = !!touched[field.name] && !!errors[field.name];
+  const describedBy = `${field.name}-error`;
 
   function doBlur(e: unknown) {
     if (!field.value) {
@@ -78,6 +79,7 @@ const InternalTextBox: FC<IInternalTextBox> = ({
       error={error}
       tooltip={() => (
         <Tooltip
+          id={describedBy}
           parent={() => <InputAlert message={errors[field.name]} />}
           colour="danger"
           placement="left"
@@ -91,6 +93,7 @@ const InternalTextBox: FC<IInternalTextBox> = ({
 
       <BaseTextBox
         active={active}
+        aria-describedby={errors[field.name] && describedBy}
         onBlur={doBlur}
         onFocus={doFocus}
         {...rest} // eslint-disable-line react/jsx-props-no-spreading

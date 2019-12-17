@@ -24,6 +24,7 @@ describe('Tooltip', () => {
     it('should render', () => {
       render(
         <Tooltip
+          id="test"
           parent={() => (
             <button type="button" data-testid="button">
               Hello world
@@ -40,6 +41,7 @@ describe('Tooltip', () => {
     it('should hide after 1000ms', async () => {
       const { findByTestId } = render(
         <Tooltip
+          id="test"
           parent={() => (
             <button type="button" data-testid="button">
               Hello world
@@ -64,6 +66,7 @@ describe('Tooltip', () => {
 
       const { findByTestId, queryByRole } = render(
         <Tooltip
+          id="test"
           parent={() => (
             <button type="button" data-testid="button">
               Hello world
@@ -94,6 +97,7 @@ describe('Tooltip', () => {
     beforeEach(async () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
+          id="test"
           parent={() => (
             <button type="button" data-testid="button">
               Hello world
@@ -133,6 +137,7 @@ describe('Tooltip', () => {
     beforeEach(async () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
+          id="test"
           parent={() => (
             <button type="button" data-testid="button">
               Hello world
@@ -167,6 +172,7 @@ describe('Tooltip', () => {
     beforeEach(async () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
+          id="test"
           parent={() => (
             <button type="button" data-testid="button">
               Hello world
@@ -202,6 +208,7 @@ describe('Tooltip', () => {
     beforeEach(async () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
+          id="test"
           parent={() => (
             <button type="button" data-testid="button">
               Hello world
@@ -237,6 +244,7 @@ describe('Tooltip', () => {
     beforeEach(async () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
+          id="test"
           parent={() => (
             <button type="button" data-testid="button">
               Hello world
@@ -272,6 +280,7 @@ describe('Tooltip', () => {
     beforeEach(async () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
+          id="test"
           parent={() => (
             <button type="button" data-testid="button">
               Hello world
@@ -307,6 +316,7 @@ describe('Tooltip', () => {
     beforeEach(async () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
+          id="test"
           parent={() => (
             <button type="button" data-testid="button">
               Hello world
