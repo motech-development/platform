@@ -6,9 +6,9 @@ import Card from './Card';
 
 const stories = storiesOf('Card', module);
 const padding = {
-  Small: 'sm',
-  Medium: 'md',
   Large: 'lg',
+  Medium: 'md',
+  Small: 'sm',
 };
 
 stories.addDecorator(withKnobs);

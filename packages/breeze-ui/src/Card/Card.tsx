@@ -10,14 +10,14 @@ interface ICardTheme {
 }
 
 const cardTheme: ICardTheme = {
-  sm: {
-    padding: '0',
+  lg: {
+    padding: '20px',
   },
   md: {
     padding: '10px',
   },
-  lg: {
-    padding: '20px',
+  sm: {
+    padding: '0',
   },
 };
 
