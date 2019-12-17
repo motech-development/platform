@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import Tooltip from './Tooltip';
 
@@ -6,18 +6,58 @@ describe('Tooltip', () => {
   let button: HTMLElement;
   let tooltip: HTMLElement;
 
-  it('should render when one of the less common placements is used', () => {
-    render(
-      <Tooltip
-        parent={() => (
-          <button type="button" data-testid="button">
-            Hello world
-          </button>
-        )}
-        placement="auto"
-        message="Hello"
-      />,
-    );
+  describe('visibility', () => {
+    it('should hide after 1000ms', async () => {
+      const { findByTestId } = render(
+        <Tooltip
+          parent={() => (
+            <button type="button" data-testid="button">
+              Hello world
+            </button>
+          )}
+          placement="top"
+          message="Hello"
+        />,
+      );
+
+      button = await findByTestId('button');
+
+      jest.useFakeTimers();
+
+      fireEvent.blur(button);
+
+      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000);
+    });
+
+    it('should hide the tooltip', async () => {
+      jest.useFakeTimers();
+
+      const { findByTestId, queryByRole } = render(
+        <Tooltip
+          parent={() => (
+            <button type="button" data-testid="button">
+              Hello world
+            </button>
+          )}
+          placement="top"
+          message="Hello"
+        />,
+      );
+
+      button = await findByTestId('button');
+
+      fireEvent.focus(button);
+
+      expect(queryByRole('tooltip')).toBeDefined();
+
+      fireEvent.blur(button);
+
+      act(() => {
+        jest.runAllTimers();
+      });
+
+      expect(queryByRole('tooltip')).toBeNull();
+    });
   });
 
   describe('primary', () => {
@@ -56,14 +96,6 @@ describe('Tooltip', () => {
       const { textContent } = tooltip.firstChild as ChildNode;
 
       expect(textContent).toEqual('Hello');
-    });
-
-    it('should hide after 1000ms', () => {
-      jest.useFakeTimers();
-
-      fireEvent.blur(button);
-
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000);
     });
   });
 
@@ -237,6 +269,44 @@ describe('Tooltip', () => {
         border-right: 5px solid #2e9dc8;
         border-top: 5px solid transparent;
         left: -5px;
+      `);
+    });
+  });
+
+  describe('auto', () => {
+    beforeEach(async () => {
+      const { findByRole, findByTestId } = render(
+        <Tooltip
+          parent={() => (
+            <button type="button" data-testid="button">
+              Hello world
+            </button>
+          )}
+          placement="auto"
+          message="Hello"
+        />,
+      );
+
+      button = await findByTestId('button');
+
+      fireEvent.focus(button);
+
+      tooltip = await findByRole('tooltip');
+    });
+
+    it('should have the correct styles', () => {
+      expect(tooltip).toHaveStyle(`
+        font-size: 14px;
+        line-height: 22px;
+        padding: 0 5px;
+      `);
+    });
+
+    it('should have an arrow pointing the correct way', () => {
+      expect(tooltip.firstElementChild).toHaveStyle(`
+        height: 0;
+        position: absolute;
+        width: 0;
       `);
     });
   });
