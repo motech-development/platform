@@ -15,11 +15,11 @@ const Wrapper = styled.div`
   width: 22px;
 `;
 
-export interface IInputAlert {
+export interface IInputAlertProps {
   message: ReactNode;
 }
 
-const InputAlert: FC<IInputAlert> = () => (
+const InputAlert: FC<IInputAlertProps> = () => (
   <Wrapper role="alert">
     <FontAwesomeIcon icon={faExclamation} />
   </Wrapper>

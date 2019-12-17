@@ -24,6 +24,7 @@ stories.add('Basic tooltip', () => (
     <BaseStyles />
 
     <Tooltip
+      id="test"
       parent={() => (
         <Button colour="primary" size="lg">
           Hover over me

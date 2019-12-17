@@ -123,7 +123,7 @@ const ToolTipContent = styled.div<IToolTipPlacement>`
   `}
 `;
 
-export interface ITooltip {
+export interface ITooltipProps {
   colour?: keyof ITooltipTheme;
   id: string;
   message: ReactNode;
@@ -131,7 +131,7 @@ export interface ITooltip {
   placement: ToolTipPlacement;
 }
 
-const Tooltip: FC<ITooltip> = ({
+const Tooltip: FC<ITooltipProps> = ({
   colour = 'primary',
   message,
   id,

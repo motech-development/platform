@@ -103,14 +103,14 @@ const InternalTextBox: FC<IInternalTextBox> = ({
   );
 };
 
-export interface IButtonProps {
+export interface ITextBoxProps {
   label: string;
   name: string;
   placeholder?: string;
   type?: 'email' | 'password' | 'text';
 }
 
-const TextBox: FC<IButtonProps> = ({
+const TextBox: FC<ITextBoxProps> = ({
   label,
   name,
   placeholder = '',

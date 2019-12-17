@@ -23,13 +23,13 @@ const ValidatorWrapper = styled.div`
   z-index: 1;
 `;
 
-export interface IInputWrapper extends IBaseInputWrapper {
+export interface IInputWrapperProps extends IBaseInputWrapper {
   children: ReactNode;
   error: boolean;
   tooltip: ElementType;
 }
 
-const InputWrapper: FC<IInputWrapper> = ({
+const InputWrapper: FC<IInputWrapperProps> = ({
   children,
   error,
   tooltip: Tooltip,
