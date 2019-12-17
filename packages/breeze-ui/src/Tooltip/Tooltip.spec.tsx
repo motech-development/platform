@@ -6,6 +6,36 @@ describe('Tooltip', () => {
   let button: HTMLElement;
   let tooltip: HTMLElement;
 
+  describe('in production', () => {
+    let env: NodeJS.ProcessEnv;
+
+    beforeEach(() => {
+      env = {
+        ...process.env,
+      };
+
+      process.env.NODE_ENV = 'production';
+    });
+
+    afterEach(() => {
+      process.env = env;
+    });
+
+    it('should render', () => {
+      render(
+        <Tooltip
+          parent={() => (
+            <button type="button" data-testid="button">
+              Hello world
+            </button>
+          )}
+          placement="top"
+          message="Hello"
+        />,
+      );
+    });
+  });
+
   describe('visibility', () => {
     it('should hide after 1000ms', async () => {
       const { findByTestId } = render(
