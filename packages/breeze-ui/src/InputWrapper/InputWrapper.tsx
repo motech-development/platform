@@ -1,7 +1,7 @@
 import React, { ElementType, FC, memo, ReactNode } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
-type InputSpacing = 'md' | 'lg';
+type InputSpacing = 'sm' | 'md' | 'lg';
 
 interface IInputWrapperTheme {
   [name: string]: {
@@ -15,6 +15,9 @@ const inputWrapperTheme: IInputWrapperTheme = {
   },
   md: {
     spacing: '10px',
+  },
+  sm: {
+    spacing: '5px',
   },
 };
 

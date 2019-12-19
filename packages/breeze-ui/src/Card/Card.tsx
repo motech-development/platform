@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC, memo, ReactNode } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 type CardPadding = 'sm' | 'md' | 'lg';
@@ -17,7 +17,7 @@ const cardTheme: ICardTheme = {
     padding: '10px',
   },
   sm: {
-    padding: '0',
+    padding: '5px',
   },
 };
 
@@ -37,7 +37,7 @@ export interface ICardProps {
   padding?: CardPadding;
 }
 
-const Card: FC<ICardProps> = ({ children, padding = 'sm' }) => {
+const Card: FC<ICardProps> = ({ children, padding = 'md' }) => {
   return (
     <ThemeProvider theme={cardTheme}>
       <BaseCard padding={padding}>{children}</BaseCard>
@@ -45,4 +45,4 @@ const Card: FC<ICardProps> = ({ children, padding = 'sm' }) => {
   );
 };
 
-export default Card;
+export default memo(Card);
