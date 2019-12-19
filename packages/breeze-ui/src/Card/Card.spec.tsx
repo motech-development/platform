@@ -35,7 +35,7 @@ describe('Card', () => {
 
   it('should output child', async () => {
     const { findByTestId } = render(
-      <Card padding="md">
+      <Card>
         <p data-testid="content">Hello world</p>
       </Card>,
     );
