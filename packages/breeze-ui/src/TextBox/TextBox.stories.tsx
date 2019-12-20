@@ -5,6 +5,8 @@ import * as Yup from 'yup';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
+import Col from '../Col/Col';
+import Row from '../Row/Row';
 import TextBox from './TextBox';
 
 const stories = storiesOf('TextBox', module);
@@ -27,34 +29,43 @@ stories.add('Basic textbox', () => (
   <>
     <BaseStyles />
 
-    <Card padding="lg">
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={submit}
-      >
-        {() => (
-          <Form>
-            <TextBox name="name" type="text" label="Name" placeholder="Name" />
+    <Row>
+      <Col md={6} mdOffset={4}>
+        <Card padding="lg">
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={submit}
+          >
+            {() => (
+              <Form>
+                <TextBox
+                  name="name"
+                  type="text"
+                  label="Name"
+                  placeholder="Name"
+                />
 
-            <TextBox
-              name="email"
-              type="email"
-              label="Email address"
-              placeholder="example@motechdevelopment.co.uk"
-            />
+                <TextBox
+                  name="email"
+                  type="email"
+                  label="Email address"
+                  placeholder="example@motechdevelopment.co.uk"
+                />
 
-            <TextBox
-              name="password"
-              type="password"
-              label="Password"
-              spacing="lg"
-            />
+                <TextBox
+                  name="password"
+                  type="password"
+                  label="Password"
+                  spacing="lg"
+                />
 
-            <Button type="submit">Submit</Button>
-          </Form>
-        )}
-      </Formik>
-    </Card>
+                <Button type="submit">Submit</Button>
+              </Form>
+            )}
+          </Formik>
+        </Card>
+      </Col>
+    </Row>
   </>
 ));
