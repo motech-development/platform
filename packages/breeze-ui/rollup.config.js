@@ -6,25 +6,11 @@ import pkg from './package.json';
 
 export default [
   {
-    input: 'src/index.ts',
     external: {
       ...pkg.peerDependencies,
       ...pkg.dependencies,
     },
-    plugins: [
-      external(),
-      typescript({
-        clean: true,
-        rollupCommonJSResolveHack: true,
-        tsconfigOverride: {
-          exclude: ['**/*.spec.tsx', '**/*.stories.tsx', 'src/setupTests.ts'],
-        },
-      }),
-      resolve({
-        extensions: ['.ts', '.tsx'],
-      }),
-      commonjs(),
-    ],
+    input: 'src/index.ts',
     output: [
       {
         file: pkg.main,
@@ -36,6 +22,24 @@ export default [
         format: 'es',
         sourcemap: true,
       },
+    ],
+    plugins: [
+      external(),
+      typescript({
+        clean: true,
+        rollupCommonJSResolveHack: true,
+        tsconfigOverride: {
+          exclude: [
+            '**/__tests__/*.tsx',
+            '**/*.stories.tsx',
+            'src/setupTests.ts',
+          ],
+        },
+      }),
+      resolve({
+        extensions: ['.ts', '.tsx'],
+      }),
+      commonjs(),
     ],
   },
 ];
