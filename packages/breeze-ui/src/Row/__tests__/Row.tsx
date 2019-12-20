@@ -30,4 +30,14 @@ describe('Row', () => {
       grid-template-columns: repeat(10,1fr);
     `);
   });
+
+  it('should render content', async () => {
+    const { findByTestId } = render(
+      <Row columns={10} gutter="12px">
+        <div data-testid="col" />
+      </Row>,
+    );
+
+    await expect(findByTestId('col')).resolves.toBeDefined();
+  });
 });

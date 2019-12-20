@@ -1,0 +1,115 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Col lg should have the correct styles when size is set 1`] = `
+.c0 {
+  grid-column: span 12;
+  position: relative;
+}
+
+@media (min-width:992px) {
+  .c0 {
+    grid-column: span 6;
+  }
+}
+
+<div
+  class="c0"
+>
+  Hello
+</div>
+`;
+
+exports[`Col lg should have the correct styles when size is set 2`] = `
+.c0 {
+  grid-column: span 12;
+  position: relative;
+}
+
+@media (min-width:992px) {
+  .c0 {
+    grid-column: 4 / span 6;
+  }
+}
+
+<div
+  class="c0"
+>
+  Hello
+</div>
+`;
+
+exports[`Col md should have the correct styles when size is set 1`] = `
+.c0 {
+  grid-column: span 12;
+  position: relative;
+}
+
+@media (min-width:768px) {
+  .c0 {
+    grid-column: span 6;
+  }
+}
+
+<div
+  class="c0"
+>
+  Hello
+</div>
+`;
+
+exports[`Col md should have the correct styles when size is set 2`] = `
+.c0 {
+  grid-column: span 12;
+  position: relative;
+}
+
+@media (min-width:768px) {
+  .c0 {
+    grid-column: 4 / span 6;
+  }
+}
+
+<div
+  class="c0"
+>
+  Hello
+</div>
+`;
+
+exports[`Col sm should have the correct styles when size is set 1`] = `
+.c0 {
+  grid-column: span 12;
+  position: relative;
+}
+
+@media (min-width:576px) {
+  .c0 {
+    grid-column: span 6;
+  }
+}
+
+<div
+  class="c0"
+>
+  Hello
+</div>
+`;
+
+exports[`Col sm should have the correct styles when size is set 2`] = `
+.c0 {
+  grid-column: span 12;
+  position: relative;
+}
+
+@media (min-width:576px) {
+  .c0 {
+    grid-column: 4 / span 6;
+  }
+}
+
+<div
+  class="c0"
+>
+  Hello
+</div>
+`;
