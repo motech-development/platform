@@ -20,7 +20,7 @@ const tooltipTheme: ITooltipTheme = {
   },
 };
 
-type ToolTipPlacement =
+type TooltipPlacement =
   | 'auto-start'
   | 'auto'
   | 'auto-end'
@@ -37,12 +37,12 @@ type ToolTipPlacement =
   | 'left'
   | 'left-start';
 
-interface IToolTipPlacement {
+interface ITooltipPlacement {
   colour: keyof ITooltipTheme;
-  placement: ToolTipPlacement;
+  placement: TooltipPlacement;
 }
 
-const ToolTipArrow = styled.div<IToolTipPlacement>`
+const TooltipArrow = styled.div<ITooltipPlacement>`
   ${({ colour, placement, theme }) => `
     height: 0;
     position: absolute;
@@ -85,18 +85,23 @@ const ToolTipArrow = styled.div<IToolTipPlacement>`
   `}
 `;
 
-const ToolTipWrapper = styled.div`
+const TooltipWrapper = styled.div`
   display: inline-block;
   position: relative;
 `;
 
-const ToolTipContent = styled.div<IToolTipPlacement>`
-  ${({ colour, placement, theme }) => `
+interface ITooltipContent extends ITooltipPlacement {
+  visible: boolean;
+}
+
+const TooltipContent = styled.div<ITooltipContent>`
+  ${({ colour, placement, theme, visible }) => `
     background-color: ${theme[colour].background};
     color: ${theme[colour].colour};
     font-size: 14px;
     line-height: 22px;
     padding: 0 5px;
+    visibility: ${visible ? 'visible' : 'hidden'};
 
     ${(() => {
       switch (placement) {
@@ -128,7 +133,7 @@ export interface ITooltipProps {
   id: string;
   message: ReactNode;
   parent: ElementType;
-  placement: ToolTipPlacement;
+  placement: TooltipPlacement;
 }
 
 const Tooltip: FC<ITooltipProps> = ({
@@ -157,7 +162,7 @@ const Tooltip: FC<ITooltipProps> = ({
       <Manager>
         <Reference>
           {({ ref }) => (
-            <ToolTipWrapper
+            <TooltipWrapper
               ref={ref}
               onBlur={hideTooltip}
               onFocus={showTooltip}
@@ -165,7 +170,7 @@ const Tooltip: FC<ITooltipProps> = ({
               onMouseOut={hideTooltip}
             >
               <Parent />
-            </ToolTipWrapper>
+            </TooltipWrapper>
           )}
         </Reference>
 
@@ -175,24 +180,23 @@ const Tooltip: FC<ITooltipProps> = ({
               process.env.NODE_ENV === 'test' ? placement : popperPlacement;
 
             return (
-              visible && (
-                <ToolTipContent
-                  id={id}
-                  role="tooltip"
-                  ref={ref}
+              <TooltipContent
+                id={id}
+                role="tooltip"
+                visible={visible}
+                ref={ref}
+                colour={colour}
+                style={style}
+                placement={placementToUse}
+              >
+                {message}
+                <TooltipArrow
+                  ref={arrowProps.ref}
                   colour={colour}
-                  style={style}
+                  style={arrowProps.style}
                   placement={placementToUse}
-                >
-                  {message}
-                  <ToolTipArrow
-                    ref={arrowProps.ref}
-                    colour={colour}
-                    style={arrowProps.style}
-                    placement={placementToUse}
-                  />
-                </ToolTipContent>
-              )
+                />
+              </TooltipContent>
             );
           }}
         </Popper>
