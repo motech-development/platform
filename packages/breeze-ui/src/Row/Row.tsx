@@ -9,8 +9,8 @@ interface IRowContainer {
 const RowContainer = styled.div<IRowContainer>`
   ${({ columns, gutter }) => `
     display: grid;
-    grid-template-columns: repeat(${columns}, 1fr);
-    grid-gap: ${gutter};
+    gap: ${gutter};
+    grid-template-columns: repeat(${columns},1fr);
   `}
 `;
 
