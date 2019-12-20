@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import Card from './Card';
+import Card from '../Card';
 
 describe('Card', () => {
   it('should have the correct padding when set to "sm"', () => {

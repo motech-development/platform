@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/react';
 import { Form, Formik } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
-import TextBox from './TextBox';
+import TextBox from '../TextBox';
 
 interface IInitialValues {
   test: string;

@@ -1,7 +1,7 @@
 import { render, RenderResult } from '@testing-library/react';
 import React from 'react';
-import InputWrapper from './InputWrapper';
-import Tooltip from '../Tooltip/Tooltip';
+import InputWrapper from '../InputWrapper';
+import Tooltip from '../../Tooltip/Tooltip';
 
 describe('InputWrapper', () => {
   let component: RenderResult;

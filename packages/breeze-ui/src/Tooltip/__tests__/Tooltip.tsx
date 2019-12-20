@@ -1,6 +1,6 @@
 import { act, fireEvent, render } from '@testing-library/react';
 import React from 'react';
-import Tooltip from './Tooltip';
+import Tooltip from '../Tooltip';
 
 describe('Tooltip', () => {
   let button: HTMLElement;

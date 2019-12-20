@@ -1,6 +1,6 @@
 import { render, RenderResult } from '@testing-library/react';
 import React from 'react';
-import InputAlert from './InputAlert';
+import InputAlert from '../InputAlert';
 
 describe('InputAlert', () => {
   let component: RenderResult;

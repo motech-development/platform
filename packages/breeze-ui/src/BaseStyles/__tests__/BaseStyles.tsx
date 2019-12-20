@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import BaseStyles from './BaseStyles';
+import BaseStyles from '../BaseStyles';
 
 describe('BaseStyles', () => {
   it('should render', () => {
