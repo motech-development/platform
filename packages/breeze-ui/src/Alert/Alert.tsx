@@ -114,7 +114,12 @@ const Alert: FC<IAlertProps> = ({
           {message}
 
           {dismissable && (
-            <AlertDismissButton type="button" colour={colour} onClick={dismiss}>
+            <AlertDismissButton
+              type="button"
+              aria-label="Dismiss"
+              colour={colour}
+              onClick={dismiss}
+            >
               <FontAwesomeIcon icon={faTimesCircle} />
             </AlertDismissButton>
           )}
