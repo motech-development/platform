@@ -1,12 +1,21 @@
+import { BaseStyles } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
-import { BaseStyles, Button } from '@motech-development/breeze-ui';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Window } from './components';
+import { Home } from './containers';
 
 const App: FC = () => (
-  <>
+  <Router>
     <BaseStyles />
 
-    <Button type="button">Test button</Button>
-  </>
+    <Window>
+      <Switch>
+        <Route exact path="/">
+          <Home />
+        </Route>
+      </Switch>
+    </Window>
+  </Router>
 );
 
 export default App;
