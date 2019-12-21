@@ -72,22 +72,29 @@ const BaseButton = styled.button<IBaseButton>`
     :hover {
       background-color: ${darken(0.1, theme[colour].background)};
     }
+
+    :disabled {
+      background-color: ${theme[colour].background};
+      opacity: .6;
+    }
   `}
 `;
 
 export interface IButtonProps extends IBaseButton {
   children: ReactChild;
+  disabled?: boolean;
   type?: 'submit' | 'reset' | 'button';
 }
 
 const Button: FC<IButtonProps> = ({
   children,
   colour,
+  disabled = false,
   size,
   type = 'button',
 }) => (
   <ThemeProvider theme={buttonTheme}>
-    <BaseButton colour={colour} type={type} size={size}>
+    <BaseButton colour={colour} type={type} size={size} disabled={disabled}>
       {children}
     </BaseButton>
   </ThemeProvider>
