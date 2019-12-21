@@ -1,6 +1,9 @@
-// TODO: Make dismissable and add similar bottom margin as text input
-import React, { ElementType, FC, memo } from 'react';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { ElementType, FC, memo, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
+
+type AlertSpacing = 'sm' | 'md' | 'lg';
 
 interface IAlertTheme {
   [name: string]: {
@@ -30,14 +33,24 @@ const alertTheme: IAlertTheme = {
 
 interface IBaseAlert {
   colour: keyof IAlertTheme;
+  spacing: AlertSpacing;
 }
 
 const BaseAlert = styled.div<IBaseAlert>`
-  ${({ colour, theme }) => `
+  ${({ colour, spacing, theme }) => `
     background-color: ${theme[colour].background};
     color: ${theme[colour].colour};
-    margin-bottom: 16px;
-    padding: 12px 20px;
+    margin-bottom: ${(() => {
+      switch (spacing) {
+        case 'lg':
+          return '20px';
+        case 'md':
+          return '10px';
+        default:
+          return '5px';
+      }
+    })()};
+    padding: 12px 56px 12px 20px;
     position: relative;
   `}
 `;
@@ -47,28 +60,68 @@ const AlertIconWrapper = styled.div`
   margin-right: 20px;
 `;
 
+interface IAlertDismissButton {
+  colour: keyof IAlertTheme;
+}
+
+const AlertDismissButton = styled.button<IAlertDismissButton>`
+  ${({ colour, theme }) => `
+    appearance: none;
+    background-color: ${theme[colour].background};
+    border: 0;
+    color: ${theme[colour].colour};
+    cursor: pointer;
+    font-size: inherit;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 20px;
+    top: 12px;
+  `}
+`;
+
 export interface IAlertProps {
   colour?: keyof IAlertTheme;
+  dismissable?: boolean;
   icon?: ElementType;
   message: string;
+  spacing?: AlertSpacing;
 }
 
 const Alert: FC<IAlertProps> = ({
   colour = 'primary',
+  dismissable = false,
   icon: Icon = null,
   message,
-}) => (
-  <ThemeProvider theme={alertTheme}>
-    <BaseAlert role="alert" colour={colour}>
-      {Icon && (
-        <AlertIconWrapper>
-          <Icon />
-        </AlertIconWrapper>
-      )}
+  spacing = 'md',
+}) => {
+  const [visible, setVisiblity] = useState(true);
 
-      {message}
-    </BaseAlert>
-  </ThemeProvider>
-);
+  function dismiss() {
+    setVisiblity(false);
+  }
+
+  return (
+    <ThemeProvider theme={alertTheme}>
+      {visible && (
+        <BaseAlert role="alert" colour={colour} spacing={spacing}>
+          {Icon && (
+            <AlertIconWrapper>
+              <Icon />
+            </AlertIconWrapper>
+          )}
+
+          {message}
+
+          {dismissable && (
+            <AlertDismissButton type="button" colour={colour} onClick={dismiss}>
+              <FontAwesomeIcon icon={faTimesCircle} />
+            </AlertDismissButton>
+          )}
+        </BaseAlert>
+      )}
+    </ThemeProvider>
+  );
+};
 
 export default memo(Alert);
