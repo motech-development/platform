@@ -1,3 +1,4 @@
+// TODO: Make dismissable and add similar bottom margin as text input
 import React, { ElementType, FC, memo } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
