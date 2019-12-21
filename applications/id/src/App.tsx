@@ -1,8 +1,8 @@
 import { BaseStyles } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Window } from './components';
-import { Home } from './containers';
+import { Home, Register } from './containers';
 
 const App: FC = () => (
   <Router>
@@ -13,9 +13,12 @@ const App: FC = () => (
         <Route exact path="/">
           <Home />
         </Route>
+        <Route exact path="/register">
+          <Register />
+        </Route>
       </Switch>
     </Window>
   </Router>
 );
 
-export default App;
+export default memo(App);
