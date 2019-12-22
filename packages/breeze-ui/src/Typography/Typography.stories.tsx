@@ -22,6 +22,11 @@ const variants = {
   ...components,
   Lead: 'lead',
 };
+const alignment = {
+  Centre: 'center',
+  Left: 'left',
+  Right: 'right',
+};
 
 stories.addDecorator(withKnobs);
 
@@ -31,6 +36,9 @@ stories.add('Basic typography', () => (
 
     <Card>
       <Typography
+        align={
+          select('Alignment', alignment, 'left') as 'left' | 'right' | 'center'
+        }
         variant={select('Variant', variants, 'h1') as Components | 'lead'}
         component={select('Component', components, 'h1') as Components}
       >

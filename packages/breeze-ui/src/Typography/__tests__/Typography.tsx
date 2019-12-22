@@ -176,4 +176,54 @@ describe('Typography', () => {
       `);
     });
   });
+
+  describe('alignment', () => {
+    it('should align to the left by default', async () => {
+      const { findByText } = render(
+        <Typography component="h1" variant="h1">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveStyle(
+        'text-align: left;',
+      );
+    });
+
+    it('should align to the left', async () => {
+      const { findByText } = render(
+        <Typography align="left" component="h1" variant="h1">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveStyle(
+        'text-align: left;',
+      );
+    });
+
+    it('should align to the right', async () => {
+      const { findByText } = render(
+        <Typography align="right" component="h1" variant="h1">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveStyle(
+        'text-align: right;',
+      );
+    });
+
+    it('should align to the centre', async () => {
+      const { findByText } = render(
+        <Typography align="center" component="h1" variant="h1">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveStyle(
+        'text-align: center;',
+      );
+    });
+  });
 });
