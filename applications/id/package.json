@@ -4,12 +4,12 @@
   "description": "Motech Development authentication application",
   "private": true,
   "scripts": {
-    "build": "react-scripts build",
-    "eject": "react-scripts eject",
+    "build": "react-app-rewired build",
+    "eject": "react-app-rewired eject",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "precommit": "lint-staged",
-    "start": "react-scripts start",
-    "test": "react-scripts test"
+    "start": "react-app-rewired start",
+    "test": "react-app-rewired test"
   },
   "eslintConfig": {
     "extends": "react-app"
