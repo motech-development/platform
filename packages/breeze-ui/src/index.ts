@@ -8,3 +8,4 @@ export { default as Link } from './Link/Link';
 export { default as Row } from './Row/Row';
 export { default as TextBox } from './TextBox/TextBox';
 export { default as Tooltip } from './Tooltip/Tooltip';
+export { default as Typography } from './Typography/Typography';
