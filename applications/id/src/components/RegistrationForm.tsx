@@ -2,20 +2,28 @@ import { Form, TextBox } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import { object, string } from 'yup';
 
-const initialValues = {
-  emailAddress: '',
+export interface IInitialValues {
+  email: string;
+  name: string;
+  password: string;
+}
+
+const initialValues: IInitialValues = {
+  email: '',
+  name: '',
   password: '',
 };
 
 const validationSchema = object().shape({
-  emailAddress: string()
+  email: string()
     .email('Please enter a valid email address')
     .required('Email address is required'),
+  name: string().required('Your name is required'),
   password: string().required('Password is required'),
 });
 
 export interface IRegistrationForm {
-  onSubmit(): void;
+  onSubmit(value: IInitialValues): void;
 }
 
 const RegistrationForm: FC<IRegistrationForm> = ({ onSubmit }) => (
@@ -25,9 +33,11 @@ const RegistrationForm: FC<IRegistrationForm> = ({ onSubmit }) => (
     validationSchema={validationSchema}
     onSubmit={onSubmit}
   >
-    <TextBox name="emailAddress" label="Email address" />
+    <TextBox name="name" label="Full name" />
 
-    <TextBox name="password" label="Password" />
+    <TextBox name="email" label="Email address" />
+
+    <TextBox name="password" label="Password" type="password" />
   </Form>
 );
 

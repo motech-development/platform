@@ -27,7 +27,7 @@ const LoginForm: FC<ILoginForm> = ({ onSubmit }) => (
   >
     <TextBox name="emailAddress" label="Email address" />
 
-    <TextBox name="password" label="Password" />
+    <TextBox name="password" label="Password" type="password" />
   </Form>
 );
 

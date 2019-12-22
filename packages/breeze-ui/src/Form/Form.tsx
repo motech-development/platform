@@ -5,7 +5,7 @@ import Button from '../Button/Button';
 export interface IFormProps<T extends FormikValues = FormikValues> {
   children: ReactNode;
   initialValues: T;
-  onSubmit(): void;
+  onSubmit(value: T): void;
   submitLabel: string;
   validationSchema: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }

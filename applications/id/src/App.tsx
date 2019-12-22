@@ -1,7 +1,7 @@
 import { BaseStyles } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { Window } from './components';
+import Window from './components/Window';
 import { Home, Register } from './containers';
 
 const App: FC = () => (

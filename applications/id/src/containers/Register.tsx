@@ -1,17 +1,17 @@
 import { Link, Typography } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
-import { RegistrationForm } from '../components';
+import RegistrationForm from '../components/RegistrationForm';
 
 const Register: FC = () => {
   function register() {}
 
   return (
     <>
-      <Typography component="h1" variant="h1">
+      <Typography align="center" component="h1" variant="h1">
         Register
       </Typography>
 
-      <Typography component="p" variant="p">
+      <Typography align="center" component="p" variant="p">
         Already registered? <Link to="/">Click here</Link> to log in
       </Typography>
 
