@@ -1,14 +1,13 @@
-import { Form as FormikForm, Formik } from 'formik';
+import { Form as FormikForm, Formik, FormikValues } from 'formik';
 import React, { FC, memo, ReactNode } from 'react';
-import { ObjectSchema } from 'yup';
 import Button from '../Button/Button';
 
-export interface IFormProps<T extends object = object> {
+export interface IFormProps<T extends FormikValues = FormikValues> {
   children: ReactNode;
   initialValues: T;
   onSubmit(): void;
   submitLabel: string;
-  validationSchema: ObjectSchema<T>;
+  validationSchema: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 const Form: FC<IFormProps> = ({

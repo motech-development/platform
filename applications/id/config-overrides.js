@@ -1,9 +1,24 @@
 const { resolve } = require('path');
+const pkg = require('./package.json');
 
 module.exports = function override(config) {
-  config.resolve.alias = {
-    'react-router-dom': resolve('node_modules/react-router-dom'),
+  const updated = {
+    ...config,
   };
+  const dependencies = Object.keys({
+    ...pkg.dependencies,
+    ...pkg.devDependencies,
+  }).reduce((current, item) => {
+    const object = {
+      ...current,
+    };
 
-  return config;
+    object[item] = resolve(`node_modules/${item}`);
+
+    return object;
+  }, {});
+
+  updated.resolve.alias = dependencies;
+
+  return updated;
 };

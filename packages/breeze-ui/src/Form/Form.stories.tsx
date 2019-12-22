@@ -1,6 +1,6 @@
 import { storiesOf } from '@storybook/react';
 import React from 'react';
-import * as Yup from 'yup';
+import { object, string } from 'yup';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Card from '../Card/Card';
 import Col from '../Col/Col';
@@ -14,12 +14,12 @@ const initialValues = {
   name: 'Mo Gusbi',
   password: '',
 };
-const validationSchema = Yup.object().shape({
-  email: Yup.string()
+const validationSchema = object().shape({
+  email: string()
     .email()
     .required(),
-  name: Yup.string().required(),
-  password: Yup.string().required(),
+  name: string().required(),
+  password: string().required(),
 });
 
 function submit() {}
