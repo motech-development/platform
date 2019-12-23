@@ -39,7 +39,7 @@ export const post: Handler = async event => {
 
     return {
       body: JSON.stringify(data),
-      statusCode: 200,
+      statusCode: 201,
     };
   } catch (e) {
     const { data } = e.response;
