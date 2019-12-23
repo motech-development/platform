@@ -21,6 +21,7 @@ export const post: Handler = async event => {
     const { data } = await axios.post(
       `https://${DOMAIN}/dbconnections/signup`,
       {
+        // eslint-disable-next-line @typescript-eslint/camelcase
         client_id: CLIENT_ID,
         connection: 'Username-Password-Authentication',
         ...body,

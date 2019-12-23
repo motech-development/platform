@@ -4,6 +4,8 @@
   "description": "Motech Development authentication API",
   "private": true,
   "scripts": {
+    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "precommit": "lint-staged",
     "start": "serverless offline start --location .webpack/service --region eu-west-2 --stage local"
   },
   "dependencies": {
