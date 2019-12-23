@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
     "precommit": "lint-staged",
+    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
     "start": "serverless offline start --location .webpack/service --region eu-west-2 --stage local",
     "test": "jest --watch",
     "test:ci": "jest --coverage"

@@ -13,6 +13,7 @@
     "deploy": "lerna run deploy --stream",
     "lint": "lerna run lint",
     "postinstall": "npm run bootstrap",
+    "prettier": "lerna run prettier --stream",
     "start": "lerna run start --stream",
     "test": "lerna run test --stream",
     "test:ci": "lerna run test:ci --stream"
@@ -45,6 +46,7 @@
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^1.7.0",
     "husky": "^3.1.0",

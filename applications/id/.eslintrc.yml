@@ -19,12 +19,17 @@ overrides:
 
 parser: '@typescript-eslint/parser'
 
+plugins:
+  - '@typescript-eslint'
+  - prettier
+
 rules:
   import/no-extraneous-dependencies:
     - error
     - packageDir:
         - './'
         - '../../'
+  prettier/prettier: error
   react/jsx-filename-extension:
     - error
     - extensions:

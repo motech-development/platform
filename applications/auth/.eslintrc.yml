@@ -1,17 +1,22 @@
 extends:
   - airbnb
   - eslint:recommended
-  - prettier
-  - prettier/@typescript-eslint
   - plugin:@typescript-eslint/eslint-recommended
   - plugin:@typescript-eslint/recommended
+  - prettier
+  - prettier/@typescript-eslint
 
 parser: '@typescript-eslint/parser'
+
+plugins:
+  - '@typescript-eslint'
+  - prettier
 
 rules:
   import/no-extraneous-dependencies: off
   import/no-unresolved: off
   import/prefer-default-export: off
+  prettier/prettier: error
   sort-keys:
     - error
     - asc
