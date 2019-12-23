@@ -39,6 +39,7 @@ jobs:
           key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           paths:
             - node_modules
+            - applications/auth/node_modules
             - applications/id/node_modules
             - packages/breeze-ui/node_modules
       - persist_to_workspace:
@@ -58,6 +59,8 @@ jobs:
       - run:
           command: npm run test:ci
           name: Unit test
+      - codecov/upload:
+          file: ./applications/auth/coverage/coverage-final.json
       - codecov/upload:
           file: ./applications/id/coverage/coverage-final.json
       - codecov/upload:

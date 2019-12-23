@@ -26,7 +26,11 @@
       "last 1 safari version"
     ]
   },
+  "proxy": "http://localhost:4000",
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.25",
+    "@fortawesome/free-solid-svg-icons": "^5.11.2",
+    "@fortawesome/react-fontawesome": "^0.1.8",
     "@motech-development/breeze-ui": "^0.0.0",
     "formik": "^2.0.8",
     "react": "^16.12.0",

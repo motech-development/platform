@@ -1,9 +1,27 @@
-import { Link, Typography } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
-import RegistrationForm from '../components/RegistrationForm';
+import { Alert, Link, Typography } from '@motech-development/breeze-ui';
+import React, { FC, memo, useState } from 'react';
+import RegistrationForm, {
+  IInitialValues,
+} from '../components/RegistrationForm';
 
 const Register: FC = () => {
-  function register() {}
+  const [alert, setAlert] = useState();
+  const [registered, setRegistration] = useState(false);
+
+  async function register(body: IInitialValues) {
+    const response = await fetch('/api/v1/register', {
+      body: JSON.stringify(body),
+      method: 'post',
+    });
+
+    if (response.status === 200) {
+      setRegistration(true);
+    } else {
+      setAlert(
+        'Unable to complete registration, please check your details and try again.',
+      );
+    }
+  }
 
   return (
     <>
@@ -11,11 +29,31 @@ const Register: FC = () => {
         Register
       </Typography>
 
-      <Typography align="center" component="p" variant="p">
-        Already registered? <Link to="/">Click here</Link> to log in
-      </Typography>
+      {registered ? (
+        <>
+          <Alert
+            message="Your registration is nearly complete!"
+            colour="success"
+          />
 
-      <RegistrationForm onSubmit={register} />
+          <Typography component="p" variant="p">
+            You will shortly recieve an email with instructions to verify your
+            account and complete your registration.
+          </Typography>
+
+          <Typography component="p" variant="p">
+            <Link to="/">Click here</Link> to go back to the log in page
+          </Typography>
+        </>
+      ) : (
+        <>
+          <Typography align="center" component="p" variant="p">
+            Already registered? <Link to="/">Click here</Link> to log in
+          </Typography>
+
+          <RegistrationForm alert={alert} onSubmit={register} />
+        </>
+      )}
     </>
   );
 };

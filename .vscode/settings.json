@@ -12,6 +12,10 @@
   "eslint.workingDirectories": [
     {
       "changeProcessCWD": true,
+      "directory": "./auth/id"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./applications/id"
     },
     {

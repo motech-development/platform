@@ -1,4 +1,6 @@
-import { Form, TextBox } from '@motech-development/breeze-ui';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Alert, Form, TextBox } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import { object, string } from 'yup';
 
@@ -23,16 +25,26 @@ const validationSchema = object().shape({
 });
 
 export interface IRegistrationForm {
+  alert: string;
   onSubmit(value: IInitialValues): void;
 }
 
-const RegistrationForm: FC<IRegistrationForm> = ({ onSubmit }) => (
+const RegistrationForm: FC<IRegistrationForm> = ({ alert, onSubmit }) => (
   <Form
     submitLabel="Register"
     initialValues={initialValues}
     validationSchema={validationSchema}
     onSubmit={onSubmit}
   >
+    {alert && (
+      <Alert
+        message={alert}
+        colour="danger"
+        spacing="lg"
+        icon={() => <FontAwesomeIcon icon={faExclamationTriangle} />}
+      />
+    )}
+
     <TextBox name="name" label="Full name" />
 
     <TextBox name="email" label="Email address" />
