@@ -17,9 +17,9 @@ const Register: FC = () => {
     if (response.status === 200) {
       setRegistration(true);
     } else {
-      setAlert(
-        'Unable to complete registration, please check your details and try again.',
-      );
+      const { message } = await response.json();
+
+      setAlert(message);
     }
   }
 

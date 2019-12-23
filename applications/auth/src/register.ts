@@ -10,16 +10,25 @@ const schema = object().shape({
   password: string().required('Password is required'),
 });
 
-const { CLIENT_ID, DOMAIN } = process.env;
+const { AUTH0_DOMAIN, CLIENT_ID } = process.env;
 
 export const post: Handler = async event => {
   const body = JSON.parse(event.body);
 
   try {
     await schema.validate(body);
+  } catch (e) {
+    return {
+      body: JSON.stringify({
+        message: e.message,
+      }),
+      statusCode: 400,
+    };
+  }
 
+  try {
     const { data } = await axios.post(
-      `https://${DOMAIN}/dbconnections/signup`,
+      `https://${AUTH0_DOMAIN}/dbconnections/signup`,
       {
         // eslint-disable-next-line @typescript-eslint/camelcase
         client_id: CLIENT_ID,
@@ -33,11 +42,13 @@ export const post: Handler = async event => {
       statusCode: 200,
     };
   } catch (e) {
+    const { data } = e.response;
+
     return {
       body: JSON.stringify({
-        message: e.message,
+        message: data.description,
       }),
-      statusCode: 400,
+      statusCode: data.statusCode,
     };
   }
 };
