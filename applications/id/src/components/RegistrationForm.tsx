@@ -30,12 +30,7 @@ export interface IRegistrationForm {
 }
 
 const RegistrationForm: FC<IRegistrationForm> = ({ alert, onSubmit }) => (
-  <Form
-    submitLabel="Register"
-    initialValues={initialValues}
-    validationSchema={validationSchema}
-    onSubmit={onSubmit}
-  >
+  <>
     {alert && (
       <Alert
         message={alert}
@@ -45,12 +40,19 @@ const RegistrationForm: FC<IRegistrationForm> = ({ alert, onSubmit }) => (
       />
     )}
 
-    <TextBox name="name" label="Full name" />
+    <Form
+      submitLabel="Register"
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
+    >
+      <TextBox name="name" label="Full name" />
 
-    <TextBox name="email" label="Email address" />
+      <TextBox name="email" label="Email address" />
 
-    <TextBox name="password" label="Password" type="password" />
-  </Form>
+      <TextBox name="password" label="Password" type="password" />
+    </Form>
+  </>
 );
 
 export default memo(RegistrationForm);
