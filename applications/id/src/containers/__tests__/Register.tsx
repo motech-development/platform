@@ -31,13 +31,19 @@ describe('Register', () => {
       </MemoryRouter>,
     );
 
-    const name = await findByLabelText('Full name');
+    const forename = await findByLabelText('Forename');
+    const surname = await findByLabelText('Surname');
     const email = await findByLabelText('Email address');
     const password = await findByLabelText('Password');
+    const confirmPassword = await findByLabelText('Confirm your password');
     const button = await findByRole('button');
 
     await wait(() => {
-      fireEvent.change(name, { target: { value: 'Mo Gusbi' } });
+      fireEvent.change(forename, { target: { value: 'Mo' } });
+    });
+
+    await wait(() => {
+      fireEvent.change(surname, { target: { value: 'Gusbi' } });
     });
 
     await wait(() => {
@@ -50,6 +56,14 @@ describe('Register', () => {
 
     await wait(() => {
       fireEvent.change(password, { target: { value: 'SecurePassword123' } });
+    });
+
+    await wait(() => {
+      fireEvent.change(confirmPassword, {
+        target: {
+          value: 'SecurePassword123',
+        },
+      });
     });
 
     await wait(() => {
@@ -75,13 +89,19 @@ describe('Register', () => {
       </MemoryRouter>,
     );
 
-    const name = await findByLabelText('Full name');
+    const forename = await findByLabelText('Forename');
+    const surname = await findByLabelText('Surname');
     const email = await findByLabelText('Email address');
     const password = await findByLabelText('Password');
+    const confirmPassword = await findByLabelText('Confirm your password');
     const button = await findByRole('button');
 
     await wait(() => {
-      fireEvent.change(name, { target: { value: 'Mo Gusbi' } });
+      fireEvent.change(forename, { target: { value: 'Mo' } });
+    });
+
+    await wait(() => {
+      fireEvent.change(surname, { target: { value: 'Gusbi' } });
     });
 
     await wait(() => {
@@ -94,6 +114,14 @@ describe('Register', () => {
 
     await wait(() => {
       fireEvent.change(password, { target: { value: 'SecurePassword123' } });
+    });
+
+    await wait(() => {
+      fireEvent.change(confirmPassword, {
+        target: {
+          value: 'SecurePassword123',
+        },
+      });
     });
 
     await wait(() => {
@@ -114,13 +142,19 @@ describe('Register', () => {
       </MemoryRouter>,
     );
 
-    const name = await findByLabelText('Full name');
+    const forename = await findByLabelText('Forename');
+    const surname = await findByLabelText('Surname');
     const email = await findByLabelText('Email address');
     const password = await findByLabelText('Password');
+    const confirmPassword = await findByLabelText('Confirm your password');
     const button = await findByRole('button');
 
     await wait(() => {
-      fireEvent.change(name, { target: { value: 'Mo Gusbi' } });
+      fireEvent.change(forename, { target: { value: 'Mo' } });
+    });
+
+    await wait(() => {
+      fireEvent.change(surname, { target: { value: 'Gusbi' } });
     });
 
     await wait(() => {
@@ -136,12 +170,22 @@ describe('Register', () => {
     });
 
     await wait(() => {
+      fireEvent.change(confirmPassword, {
+        target: {
+          value: 'SecurePassword123',
+        },
+      });
+    });
+
+    await wait(() => {
       fireEvent.click(button);
     });
 
     expect(httpClient.post).toHaveBeenCalledWith('api/v1/register', {
+      confirmPassword: 'SecurePassword123',
       email: 'info@motechdevelopment.co.uk',
-      name: 'Mo Gusbi',
+      family_name: 'Gusbi',
+      given_name: 'Mo',
       password: 'SecurePassword123',
     });
   });
