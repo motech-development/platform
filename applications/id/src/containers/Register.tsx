@@ -3,23 +3,19 @@ import React, { FC, memo, useState } from 'react';
 import RegistrationForm, {
   IInitialValues,
 } from '../components/RegistrationForm';
+import httpClient from '../services/httpClient';
 
 const Register: FC = () => {
   const [alert, setAlert] = useState();
   const [registered, setRegistration] = useState(false);
 
   async function register(body: IInitialValues) {
-    const response = await fetch('/api/v1/register', {
-      body: JSON.stringify(body),
-      method: 'post',
-    });
+    try {
+      await httpClient.post('api/v1/register', body);
 
-    if (response.status === 200) {
       setRegistration(true);
-    } else {
-      const { message } = await response.json();
-
-      setAlert(message);
+    } catch (e) {
+      setAlert(e.message);
     }
   }
 
