@@ -1,17 +1,8 @@
-import { Callback, Context } from 'aws-lambda';
-import mockContext from 'aws-lambda-mock-context';
 import axios from 'axios';
+import { callback, context } from '../../utils';
 import { post } from '../register';
 
 describe('register', () => {
-  let callback: Callback;
-  let context: Context;
-
-  beforeEach(() => {
-    callback = jest.fn();
-    context = mockContext();
-  });
-
   it('should throw if body is incorrect', async () => {
     const body = JSON.stringify({
       incorrect: true,

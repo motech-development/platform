@@ -108,7 +108,7 @@ describe('Register', () => {
   it('should call the API with the correct body', async () => {
     httpClient.post = jest.fn();
 
-    const { findByLabelText, findByRole, getByRole } = render(
+    const { findByLabelText, findByRole } = render(
       <MemoryRouter>
         <Register />
       </MemoryRouter>,
