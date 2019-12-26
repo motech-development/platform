@@ -11,7 +11,6 @@
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
-    "prepare": "npm run build",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
     "start": "start-storybook",
     "test": "jest --watch",
