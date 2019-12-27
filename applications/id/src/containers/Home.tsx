@@ -1,9 +1,36 @@
 import { Link, Typography } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
-import LoginForm from '../components/LoginForm';
+import React, { FC, memo, useState } from 'react';
+import { stringify } from 'query-string';
+import LoginForm, { IInitialValues } from '../components/LoginForm';
+import httpClient from '../services/httpClient';
 
-const Home: FC = () => {
-  function login() {}
+export interface IHomeProps {
+  redirectUri: string;
+}
+
+const Home: FC<IHomeProps> = ({ redirectUri }) => {
+  const [alert, setAlert] = useState();
+
+  async function login(body: IInitialValues) {
+    try {
+      const {
+        access_token: accessToken,
+        expires_in: expiresIn,
+        scope,
+        token_type: tokenType,
+      } = await httpClient.post('api/v1/auth', body);
+      const params = stringify({
+        access_token: accessToken,
+        expires_in: expiresIn,
+        scope,
+        token_type: tokenType,
+      });
+
+      window.location.assign(`${redirectUri}#${params}`);
+    } catch (e) {
+      setAlert(e.message);
+    }
+  }
 
   return (
     <>
@@ -15,7 +42,7 @@ const Home: FC = () => {
         Not registered? <Link to="/register">Click here</Link> to sign up
       </Typography>
 
-      <LoginForm onSubmit={login} />
+      <LoginForm alert={alert} onSubmit={login} />
     </>
   );
 };

@@ -1,24 +1,37 @@
-import { BaseStyles } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Alert } from '@motech-development/breeze-ui';
+import React, { FC, memo, useEffect, useState } from 'react';
+import { Route, Switch, useLocation } from 'react-router-dom';
+import { parse } from 'query-string';
 import Window from './components/Window';
 import { Home, Register } from './containers';
 
-const App: FC = () => (
-  <Router>
-    <BaseStyles />
+const App: FC = () => {
+  const { search } = useLocation();
+  const { redirect_uri: uriToUse } = parse(search);
+  const [redirectUri, setRedirectUri] = useState(uriToUse);
 
+  useEffect(() => {
+    if (uriToUse) {
+      setRedirectUri(uriToUse);
+    }
+  }, [uriToUse]);
+
+  return (
     <Window>
-      <Switch>
-        <Route exact path="/">
-          <Home />
-        </Route>
-        <Route exact path="/register">
-          <Register />
-        </Route>
-      </Switch>
+      {redirectUri ? (
+        <Switch>
+          <Route exact path="/">
+            <Home redirectUri={redirectUri as string} />
+          </Route>
+          <Route exact path="/register">
+            <Register />
+          </Route>
+        </Switch>
+      ) : (
+        <Alert message="Error: No redirect URI set." colour="danger" />
+      )}
     </Window>
-  </Router>
-);
+  );
+};
 
 export default memo(App);
