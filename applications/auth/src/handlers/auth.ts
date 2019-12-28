@@ -1,11 +1,6 @@
+import { logIn } from '@motech-development/schema';
 import { Handler } from 'aws-lambda';
 import axios from 'axios';
-import { object, string } from 'yup';
-
-const schema = object().shape({
-  password: string().required('Password is required'),
-  username: string().required('Email address is required'),
-});
 
 const { AUTH0_DOMAIN, CLIENT_ID } = process.env;
 
@@ -13,7 +8,7 @@ export const post: Handler = async event => {
   const body = JSON.parse(event.body);
 
   try {
-    await schema.validate(body);
+    await logIn.validate(body);
   } catch (e) {
     return {
       body: JSON.stringify({

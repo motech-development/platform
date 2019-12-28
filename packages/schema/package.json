@@ -1,0 +1,29 @@
+{
+  "name": "@motech-development/schema",
+  "version": "0.0.0",
+  "description": "Shared validation schemas",
+  "main": "lib/index.cjs.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "prebuild": "rimraf ./lib",
+    "precommit": "lint-staged",
+    "prepare": "npm run build",
+    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage"
+  },
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "license": "ISC",
+  "dependencies": {
+    "yup": "^0.27.0"
+  },
+  "devDependencies": {
+    "@types/yup": "^0.26.26"
+  },
+  "peerDependencies": {
+    "yup": "^0.27.0"
+  }
+}

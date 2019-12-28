@@ -12,6 +12,7 @@
     "test:ci": "jest --coverage"
   },
   "dependencies": {
+    "@motech-development/schema": "^0.0.0",
     "axios": "^0.19.0",
     "yup": "^0.28.0"
   },

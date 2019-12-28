@@ -1,8 +1,8 @@
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Alert, Form, TextBox } from '@motech-development/breeze-ui';
+import { logIn } from '@motech-development/schema';
 import React, { FC, memo } from 'react';
-import { object, string } from 'yup';
 
 export interface IInitialValues {
   password: string;
@@ -13,13 +13,6 @@ const initialValues = {
   password: '',
   username: '',
 };
-
-const validationSchema = object().shape({
-  password: string().required('Password is required'),
-  username: string()
-    .email('Please enter a valid email address')
-    .required('Email address is required'),
-});
 
 export interface ILoginForm {
   alert: string;
@@ -40,7 +33,7 @@ const LoginForm: FC<ILoginForm> = ({ alert, onSubmit }) => (
     <Form
       submitLabel="Log in"
       initialValues={initialValues}
-      validationSchema={validationSchema}
+      validationSchema={logIn}
       onSubmit={onSubmit}
     >
       <TextBox name="username" label="Email address" />
