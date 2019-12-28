@@ -5,7 +5,7 @@
 - [x] Registration form
 - [ ] Validate account redirect
 - [x] Log in form
-- [ ] Forgotten password form
+- [x] Forgotten password form
 - [ ] Reset password form
 
 ## Stage 2

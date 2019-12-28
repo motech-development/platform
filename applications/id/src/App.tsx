@@ -3,7 +3,7 @@ import React, { FC, memo, useEffect, useState } from 'react';
 import { Route, Switch, useLocation } from 'react-router-dom';
 import { parse } from 'query-string';
 import Window from './components/Window';
-import { Home, Register } from './containers';
+import { Home, Register, ResetPassword } from './containers';
 
 const App: FC = () => {
   const { search } = useLocation();
@@ -25,6 +25,9 @@ const App: FC = () => {
           </Route>
           <Route exact path="/register">
             <Register />
+          </Route>
+          <Route exact path="/reset-password">
+            <ResetPassword />
           </Route>
         </Switch>
       ) : (

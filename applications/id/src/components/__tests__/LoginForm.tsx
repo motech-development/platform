@@ -1,5 +1,6 @@
 import { render, waitForElement } from '@testing-library/react';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import LoginForm from '../LoginForm';
 
 describe('LoginForm', () => {
@@ -13,6 +14,20 @@ describe('LoginForm', () => {
     const { findByRole } = render(<LoginForm alert="" onSubmit={onSubmit} />);
 
     await expect(findByRole('button')).resolves.toHaveTextContent('Log in');
+  });
+
+  it('should have a reset password link if one is set', async () => {
+    const { findByRole } = render(
+      <MemoryRouter>
+        <LoginForm
+          alert=""
+          forgottenPasswordLink="/reset"
+          onSubmit={onSubmit}
+        />
+      </MemoryRouter>,
+    );
+
+    await expect(findByRole('link')).resolves.toHaveAttribute('href', '/reset');
   });
 
   it('should have the correct fields', async () => {

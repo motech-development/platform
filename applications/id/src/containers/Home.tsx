@@ -42,7 +42,11 @@ const Home: FC<IHomeProps> = ({ redirectUri }) => {
         Not registered? <Link to="/register">Click here</Link> to sign up
       </Typography>
 
-      <LoginForm alert={alert} onSubmit={login} />
+      <LoginForm
+        alert={alert}
+        forgottenPasswordLink="/reset-password"
+        onSubmit={login}
+      />
     </>
   );
 };
