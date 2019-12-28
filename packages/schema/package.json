@@ -12,8 +12,7 @@
     "precommit": "lint-staged",
     "prepare": "npm run build",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
-    "test": "jest --watch",
-    "test:ci": "jest --coverage"
+    "test": "jest --watch"
   },
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
