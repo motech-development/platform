@@ -1,3 +1,4 @@
+import { logIn } from '@motech-development/schema';
 import axios from 'axios';
 import { callback, context } from '../../utils';
 import { post } from '../auth';
@@ -27,7 +28,7 @@ describe('auth', () => {
     });
   });
 
-  it('should return a successful response auth is successful', async () => {
+  it('should return a successful response Auth0 request is successful', async () => {
     axios.post = jest.fn().mockResolvedValueOnce({
       data: {
         scope: 'openid',
@@ -47,31 +48,21 @@ describe('auth', () => {
     });
   });
 
-  describe('validation', () => {
-    it('should throw if username is not present', async () => {
-      const body = JSON.stringify({
-        password: 'SecurePassword123',
-      });
-
-      await expect(post({ body }, context, callback)).resolves.toEqual({
-        body: JSON.stringify({
-          message: 'Email address is required',
-        }),
-        statusCode: 400,
-      });
+  it('should throw an error if body is invalid', async () => {
+    logIn.validate = jest.fn().mockRejectedValueOnce({
+      message: 'Validation error',
     });
 
-    it('should throw if password is not present', async () => {
-      const body = JSON.stringify({
-        username: 'info@motechdevelopment.co.uk',
-      });
+    const body = JSON.stringify({
+      password: 'SecurePassword123',
+      username: 'info@motechdevelopment.co.uk',
+    });
 
-      await expect(post({ body }, context, callback)).resolves.toEqual({
-        body: JSON.stringify({
-          message: 'Password is required',
-        }),
-        statusCode: 400,
-      });
+    await expect(post({ body }, context, callback)).resolves.toEqual({
+      body: JSON.stringify({
+        message: 'Validation error',
+      }),
+      statusCode: 400,
     });
   });
 });
