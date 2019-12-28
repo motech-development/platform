@@ -66,6 +66,8 @@ jobs:
           file: ./applications/id/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/breeze-ui/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./packages/schema/coverage/coverage-final.json
       - sonarcloud/scan
 
   deploy-storybook:

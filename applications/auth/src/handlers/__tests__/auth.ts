@@ -47,7 +47,7 @@ describe('auth', () => {
     });
   });
 
-  describe('auth', () => {
+  describe('validation', () => {
     it('should throw if username is not present', async () => {
       const body = JSON.stringify({
         password: 'SecurePassword123',

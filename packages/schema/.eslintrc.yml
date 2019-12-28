@@ -29,6 +29,7 @@ rules:
     - always
     - markers:
         - /
+  '@typescript-eslint/interface-name-prefix': 0
   '@typescript-eslint/no-explicit-any':
     - error
 
