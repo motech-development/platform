@@ -70,6 +70,6 @@
     "outputName": "breeze-ui.xml"
   },
   "storybook-deployer": {
-    "commitMessage": "Deploy Storybook to GitHub Pages [ci-skip]"
+    "commitMessage": "Deploy Storybook to GitHub Pages [ci skip]"
   }
 }
