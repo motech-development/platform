@@ -1,0 +1,18 @@
+{
+  "eslint.validate": [
+    {
+      "language": "typescript",
+      "autoFix": false
+    },
+    {
+      "language": "typescriptreact",
+      "autoFix": false
+    }
+  ],
+  "eslint.workingDirectories": [
+    {
+      "changeProcessCWD": true,
+      "directory": "./packages/breeze-ui"
+    }
+  ]
+}
