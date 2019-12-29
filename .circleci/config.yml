@@ -39,6 +39,7 @@ jobs:
           key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           paths:
             - node_modules
+            - applications/id/node_modules
             - packages/breeze-ui/node_modules
       - persist_to_workspace:
           paths:

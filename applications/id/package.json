@@ -1,7 +1,7 @@
 {
   "name": "@motech-development/id",
   "version": "0.0.0",
-  "description": "Motech Development authentication application",
+  "description": "Motech Development universal login",
   "private": true,
   "scripts": {
     "deploy": "a0deploy import -c config.json -i tenant.yaml",
