@@ -63,6 +63,18 @@ jobs:
           file: ./packages/breeze-ui/coverage/coverage-final.json
       - sonarcloud/scan
 
+  deploy-auth0:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/id
+          name: Deploy to Auth0
+
   deploy-storybook:
     docker:
       - image: circleci/node:12.13
@@ -89,6 +101,9 @@ workflows:
           context: SonarCloud
           requires:
             - setup
+      - deploy-auth0:
+          requires:
+            - unit-test
       - deploy-storybook:
           filters:
             branches:
