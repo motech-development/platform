@@ -73,6 +73,9 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_cache
       - run:
+          command: npm run build -- --scope=@motech-development/id
+          name: Build application
+      - run:
           command: npm run deploy -- --scope=@motech-development/id
           name: Deploy to Auth0
 

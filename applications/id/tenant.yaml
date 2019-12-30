@@ -3,10 +3,13 @@ rulesConfigs: []
 pages:
   - name: guardian_multifactor
     enabled: false
-    html: ./pages/guardian_multifactor.html
+    html: ./auth0/guardian_multifactor.html
+  - name: login
+    enabled: false
+    html: ./public/login/index.html
   - name: password_reset
     enabled: false
-    html: ./pages/password_reset.html
+    html: ./auth0/password_reset.html
 resourceServers: []
 clients:
   - name: Default App

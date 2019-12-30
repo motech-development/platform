@@ -12,6 +12,10 @@
   "eslint.workingDirectories": [
     {
       "changeProcessCWD": true,
+      "directory": "./applications/id"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./packages/breeze-ui"
     }
   ]
