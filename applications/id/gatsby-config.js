@@ -10,6 +10,13 @@ module.exports = {
     //   },
     // },
     `gatsby-plugin-styled-components`,
+    {
+      options: {
+        display: 'swap',
+        fonts: [`Cabin:400,600`],
+      },
+      resolve: `gatsby-plugin-google-fonts`,
+    },
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     // {
