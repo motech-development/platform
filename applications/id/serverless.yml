@@ -41,6 +41,14 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.prefix}-bucket
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+              AllowedOrigins:
+                - ${env:AUTH0_DOMAIN}
 
     BucketPolicy:
       Type: AWS::S3::BucketPolicy

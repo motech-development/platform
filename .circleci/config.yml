@@ -79,9 +79,9 @@ jobs:
           command: npm run deploy:infrastructure -- --scope=@motech-development/id -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy AWS infrastructure
           no_output_timeout: 60m
-      - run:
-          command: npm run deploy -- --scope=@motech-development/id -- -- --stage production --domain-name $PROD_DOMAIN
-          name: Deploy to Auth0
+      # - run:
+      #     command: npm run deploy -- --scope=@motech-development/id -- -- --stage production --domain-name $PROD_DOMAIN
+      #     name: Deploy to Auth0
 
   deploy-infrastructure:
     docker:
