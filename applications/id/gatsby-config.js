@@ -1,4 +1,7 @@
+const { PROD_DOMAIN } = process.env;
+
 module.exports = {
+  assetPrefix: `https://id.${PROD_DOMAIN}`,
   plugins: [
     `gatsby-plugin-typescript`,
     // `gatsby-plugin-react-helmet`,

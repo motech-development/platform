@@ -4,7 +4,7 @@
   "description": "Motech Development universal login",
   "private": true,
   "scripts": {
-    "build": "gatsby build",
+    "build": "gatsby build --prefix-paths",
     "clean": "gatsby clean",
     "deploy:infrastructure": "serverless deploy --verbose",
     "deploy": "serverless client deploy --verbose --no-confirm",
