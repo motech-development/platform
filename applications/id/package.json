@@ -6,12 +6,14 @@
   "scripts": {
     "build": "gatsby build",
     "clean": "gatsby clean",
-    "deploy": "a0deploy import -c config.json -i tenant.yaml",
+    "deploy": "serverless deploy --verbose",
+    "postdeploy": "a0deploy import -c config.json -i tenant.yaml",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
     "serve": "gatsby serve",
-    "start": "gatsby develop"
+    "start": "gatsby develop",
+    "teardown": "serverless remove --verbose"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
