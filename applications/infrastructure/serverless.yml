@@ -29,3 +29,12 @@ resources:
         ResourceRecords:
           - 10 mx00.ionos.co.uk
           - 10 mx01.ionos.co.uk
+
+    Certificate:
+      Type: AWS::CertificateManager::Certificate
+      Properties:
+        DomainName: !Sub '*.${self:custom.domainName}'
+        SubjectAlternativeNames:
+          - ${self:custom.domainName}
+          - !Sub '*.${self:custom.domainName}'
+        ValidationMethod: DNS

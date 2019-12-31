@@ -114,14 +114,21 @@ workflows:
             branches:
               ignore:
                 - gh-pages
-      - unit-test:
-          context: SonarCloud
-          requires:
-            - setup
+      # - unit-test:
+      #     context: SonarCloud
+      #     requires:
+      #       - setup
       - deploy-infrastructure:
+          # filters:
+          #   branches:
+          #     only: master
           requires:
-            - unit-test
+            # - unit-test
+            - setup
       - deploy-auth0:
+          filters:
+            branches:
+              only: master
           requires:
             - deploy-infrastructure
       - deploy-storybook:
