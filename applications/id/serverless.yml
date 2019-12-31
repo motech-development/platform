@@ -19,9 +19,10 @@ custom:
     manageResources: false
     bucketName: ${self:custom.prefix}-bucket
     distributionFolder: public
-    uploadOrder:
-      - '**/*.js'
-      - '**/*.json'
+    # TODO: Look at limiting to just JSON and JS files being uploaded
+    # uploadOrder:
+    #   - '**/*.js'
+    #   - '**/*.json'
     objectHeaders:
       '**/*.js':
         - name: Cache-Control
