@@ -50,8 +50,7 @@ resources:
           Aliases:
             - ${self:custom.domainName}
           ViewerCertificate:
-            AcmCertificateArn:
-              Fn::ImportValue: Certificate
+            AcmCertificateArn: !ImportValue Certificate
             SslSupportMethod: sni-only
           CustomErrorResponses:
             - ErrorCode: 403
@@ -90,8 +89,7 @@ resources:
     Route53Record:
       Type: AWS::Route53::RecordSet
       Properties:
-        HostedZoneId:
-          Fn::ImportValue: HostedZoneId
+        HostedZoneId: !ImportValue HostedZoneId
         Name: ${self:custom.domainName}
         Type: A
         AliasTarget:

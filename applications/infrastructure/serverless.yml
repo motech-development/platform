@@ -41,9 +41,11 @@ resources:
 
   Outputs:
     Certificate:
+      Name: Certificate
       Description: Domain certificate ARN
       Value: !Ref Certificate
 
     HostedZoneId:
+      Name: HostedZoneId
       Description: Domain hosted zone ID
       Value: !Ref HostedZone
