@@ -48,7 +48,7 @@ resources:
               AllowedMethods:
                 - GET
               AllowedOrigins:
-                - ${env:AUTH0_DOMAIN}
+                - https://${env:AUTH0_DOMAIN}
 
     BucketPolicy:
       Type: AWS::S3::BucketPolicy
