@@ -78,6 +78,7 @@ jobs:
       - run:
           command: npm run deploy -- --scope=@motech-development/id -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy to Auth0
+          no_output_timeout: 60m
 
   deploy-infrastructure:
     docker:
