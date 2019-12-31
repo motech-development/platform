@@ -90,7 +90,6 @@ jobs:
       - run:
           command: npm run deploy -- --scope=@motech-development/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy infrastructure
-          no_output_timeout: 60m
 
   deploy-storybook:
     docker:
@@ -114,26 +113,29 @@ workflows:
             branches:
               ignore:
                 - gh-pages
-      # - unit-test:
-      #     context: SonarCloud
-      #     requires:
-      #       - setup
+
+      - unit-test:
+          context: SonarCloud
+          requires:
+            - setup
+
       - deploy-infrastructure:
           # filters:
           #   branches:
           #     only: master
           requires:
-            # - unit-test
-            - setup
+            - unit-test
+
       - deploy-auth0:
+          # filters:
+          #   branches:
+          #     only: master
+          requires:
+            - deploy-infrastructure
+
+      - deploy-storybook:
           filters:
             branches:
               only: master
           requires:
-            - deploy-infrastructure
-      # - deploy-storybook:
-      #     filters:
-      #       branches:
-      #         only: master
-      #     requires:
-      #       - unit-test
+            - unit-test
