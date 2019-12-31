@@ -18,3 +18,13 @@ resources:
       Type: AWS::Route53::HostedZone
       Properties:
         Name: ${self:custom.domainName}
+
+    MxRecords:
+      Type: AWS::Route53::RecordSet
+      Properties:
+        HostedZoneId: !Ref HostedZone
+        Type: MX
+        TTL: '3600'
+        ResourceRecords:
+          - 10 mx00.ionos.co.uk
+          - 10 mx01.ionos.co.uk
