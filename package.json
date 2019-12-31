@@ -67,6 +67,7 @@
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-typescript2": "^0.25.3",
     "serverless": "^1.60.1",
+    "serverless-finch": "^2.5.2",
     "ts-jest": "^24.2.0",
     "typescript": "^3.7.3",
     "webpack": "^4.41.2"
