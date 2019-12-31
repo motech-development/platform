@@ -7,14 +7,14 @@ interface IConfig {
   internalOptions: object;
 }
 
-declare const config: IConfig;
+declare const auth0Config: IConfig;
 
 const auth0 = new WebAuth({
-  clientID: config.clientID,
-  domain: config.auth0Domain,
-  redirectUri: config.callbackURL,
+  clientID: auth0Config.clientID,
+  domain: auth0Config.auth0Domain,
+  redirectUri: auth0Config.callbackURL,
   responseType: 'code',
-  ...config.internalOptions,
+  ...auth0Config.internalOptions,
 });
 
 export default auth0;
