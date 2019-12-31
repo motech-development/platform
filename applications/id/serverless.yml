@@ -8,10 +8,31 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-infrastructure
 
+plugins:
+  - serverless-finch
+
 custom:
   prefix: ${self:service}-${self:provider.stage}
   domainName: ${self:service}.${opt:domain-name}
   platform: platform-${self:provider.stage}-infrastructure
+  client:
+    manageResources: false
+    bucketName: ${self:custom.prefix}-bucket
+    distributionFolder: public
+    uploadOrder:
+      - '**/*.js'
+      - '**/*.json'
+    objectHeaders:
+      '**/*.js':
+        - name: Cache-Control
+          value: max-age=31536000
+        - name: Content-Type
+          value: text/js
+      '**/*.json':
+        - name: Cache-Control
+          value: max-age=31536000
+        - name: Content-Type
+          value: application/json
 
 resources:
   Resources:
