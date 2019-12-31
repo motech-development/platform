@@ -1,5 +1,4 @@
-/* eslint-disable react/no-danger */
-/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/no-danger, react/jsx-filename-extension */
 const React = require('react');
 
 exports.onRenderBody = ({ setPostBodyComponents }) => {

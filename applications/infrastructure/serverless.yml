@@ -1,0 +1,20 @@
+service:
+  name: ${opt:appName, 'platform'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-infrastructure
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+  domainName: ${opt:domain-name}
+
+resources:
+  Resources:
+    HostedZone:
+      Type: AWS::Route53::HostedZone
+      Properties:
+        Name: ${self:custom.domainName}

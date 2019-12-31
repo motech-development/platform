@@ -79,6 +79,19 @@ jobs:
           command: npm run deploy -- --scope=@motech-development/id
           name: Deploy to Auth0
 
+  deploy-infrastructure:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
+          name: Deploy infrastructure
+          no_output_timeout: 60m
+
   deploy-storybook:
     docker:
       - image: circleci/node:12.13
@@ -105,9 +118,12 @@ workflows:
           context: SonarCloud
           requires:
             - setup
-      - deploy-auth0:
+      - deploy-infrastructure:
           requires:
             - unit-test
+      - deploy-auth0:
+          requires:
+            - deploy-infrastructure
       - deploy-storybook:
           filters:
             branches:
