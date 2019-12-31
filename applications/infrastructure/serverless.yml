@@ -22,6 +22,7 @@ resources:
     MxRecords:
       Type: AWS::Route53::RecordSet
       Properties:
+        Name: ${self:custom.domainName}.
         HostedZoneId: !Ref HostedZone
         Type: MX
         TTL: '3600'
