@@ -38,3 +38,12 @@ resources:
           - ${self:custom.domainName}
           - !Sub '*.${self:custom.domainName}'
         ValidationMethod: DNS
+
+  Outputs:
+    Certificate:
+      Description: Domain certificate ARN
+      Value: !Ref Certificate
+
+    HostedZoneId:
+      Description: Domain hosted zone ID
+      Value: !Ref HostedZone
