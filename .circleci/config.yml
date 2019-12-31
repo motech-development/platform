@@ -76,9 +76,12 @@ jobs:
           command: npm run build -- --scope=@motech-development/id
           name: Build application
       - run:
+          command: npm run deploy:infrastructure -- --scope=@motech-development/id -- -- --stage production --domain-name $PROD_DOMAIN
+          name: Deploy AWS infrastructure
+          no_output_timeout: 60m
+      - run:
           command: npm run deploy -- --scope=@motech-development/id -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy to Auth0
-          no_output_timeout: 60m
 
   deploy-infrastructure:
     docker:
@@ -121,9 +124,9 @@ workflows:
             - setup
 
       - deploy-infrastructure:
-          # filters:
-          #   branches:
-          #     only: master
+          filters:
+            branches:
+              only: master
           requires:
             - unit-test
 
@@ -132,7 +135,8 @@ workflows:
           #   branches:
           #     only: master
           requires:
-            - deploy-infrastructure
+            - unit-test
+            # - deploy-infrastructure
 
       - deploy-storybook:
           filters:

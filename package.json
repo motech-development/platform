@@ -11,6 +11,7 @@
     "build": "lerna run build --stream",
     "clean": "lerna clean",
     "deploy": "lerna run deploy --stream",
+    "deploy:infrastructure": "lerna run deploy:infrastructure --stream",
     "lint": "lerna run lint",
     "postinstall": "npm run bootstrap",
     "prettier": "lerna run prettier --stream",
