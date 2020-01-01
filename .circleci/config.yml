@@ -39,6 +39,7 @@ jobs:
           key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           paths:
             - node_modules
+            - applications/accounts/node_modules
             - applications/id/node_modules
             - packages/breeze-ui/node_modules
       - persist_to_workspace:
@@ -61,8 +62,22 @@ jobs:
       - store_test_results:
           path: reports/junit
       - codecov/upload:
+          file: ./applications/accounts/coverage/coverage-final.json
+      - codecov/upload:
           file: ./packages/breeze-ui/coverage/coverage-final.json
       - sonarcloud/scan
+
+  build-accounts:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run build -- --scope=@motech-development/accounts
+          name: Build client
 
   deploy-auth0:
     docker:
@@ -115,6 +130,10 @@ workflows:
           context: SonarCloud
           requires:
             - setup
+
+      - build-accounts:
+          requires:
+            - unit-test
 
       - deploy-infrastructure:
           filters:
