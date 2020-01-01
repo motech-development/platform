@@ -1,16 +1,11 @@
 rules: []
+
 rulesConfigs: []
-pages:
-  - name: guardian_multifactor
-    enabled: false
-    html: ./auth0/guardian_multifactor.html
-  - name: login
-    enabled: true
-    html: ./public/login/index.html
-  - name: password_reset
-    enabled: false
-    html: ./auth0/password_reset.html
+
+pages: []
+
 resourceServers: []
+
 clients:
   - name: Default App
     callbacks: []
@@ -83,6 +78,7 @@ clients:
     oidc_conformant: true
     sso_disabled: false
     token_endpoint_auth_method: none
+
 databases:
   - name: Username-Password-Authentication
     strategy: auth0
@@ -100,6 +96,7 @@ databases:
       brute_force_protection: true
     realms:
       - Username-Password-Authentication
+
 connections:
   - name: google-oauth2
     strategy: google-oauth2
@@ -114,15 +111,20 @@ connections:
       scope:
         - email
         - profile
+
 tenant:
   enabled_locales:
     - en
   flags:
     disable_clickjack_protection_headers: false
     enable_mgmt_api_v1: true
+
 emailProvider: {}
+
 emailTemplates: []
+
 clientGrants: []
+
 guardianFactors:
   - name: duo
     enabled: false
@@ -134,8 +136,13 @@ guardianFactors:
     enabled: false
   - name: sms
     enabled: false
+
 guardianFactorProviders: []
+
 guardianFactorTemplates: []
+
 roles: []
+
 branding: {}
+
 prompts: {}
