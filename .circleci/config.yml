@@ -76,7 +76,7 @@ jobs:
           command: npm run build -- --scope=@motech-development/id
           name: Build application
       - run:
-          command: npm run deploy:infrastructure -- --scope=@motech-development/id -- -- --stage production --domain-name $PROD_DOMAIN
+          command: npm run teardown:infrastructure -- --scope=@motech-development/id -- -- --stage production --domain-name $PROD_DOMAIN
           name: Teardown AWS infrastructure
           no_output_timeout: 60m
 
