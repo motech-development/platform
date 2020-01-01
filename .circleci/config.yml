@@ -73,7 +73,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_cache
       - run:
-          command: npm run deploy
+          command: npm run deploy -- --scope=@motech-development/id
           name: Deploy to Auth0
 
   deploy-infrastructure:
