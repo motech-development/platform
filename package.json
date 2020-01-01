@@ -11,10 +11,14 @@
     "build": "lerna run build --stream",
     "clean": "lerna clean",
     "deploy": "lerna run deploy --stream",
+    "deploy:infrastructure": "lerna run deploy:infrastructure --stream",
+    "execute": "lerna run --stream",
     "lint": "lerna run lint",
     "postinstall": "npm run bootstrap",
     "prettier": "lerna run prettier --stream",
     "start": "lerna run start --stream",
+    "teardown": "lerna run teardown --stream",
+    "teardown:infrastructure": "lerna run teardown:infrastructure --stream",
     "test": "lerna run test --stream",
     "test:ci": "lerna run test:ci --stream"
   },
@@ -67,6 +71,7 @@
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-typescript2": "^0.25.3",
     "serverless": "^1.60.1",
+    "serverless-finch": "^2.5.2",
     "ts-jest": "^24.2.0",
     "typescript": "^3.7.3",
     "webpack": "^4.41.2"

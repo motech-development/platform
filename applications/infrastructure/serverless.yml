@@ -1,0 +1,53 @@
+service:
+  name: ${opt:appName, 'platform'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-infrastructure
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+  domainName: ${opt:domain-name}
+
+resources:
+  Resources:
+    HostedZone:
+      Type: AWS::Route53::HostedZone
+      Properties:
+        Name: ${self:custom.domainName}
+
+    MxRecords:
+      Type: AWS::Route53::RecordSet
+      Properties:
+        Name: ${self:custom.domainName}.
+        HostedZoneId: !Ref HostedZone
+        Type: MX
+        TTL: '3600'
+        ResourceRecords:
+          - 10 mx00.ionos.co.uk
+          - 10 mx01.ionos.co.uk
+
+    Certificate:
+      Type: AWS::CertificateManager::Certificate
+      Properties:
+        DomainName: !Sub '*.${self:custom.domainName}'
+        SubjectAlternativeNames:
+          - ${self:custom.domainName}
+          - !Sub '*.${self:custom.domainName}'
+        ValidationMethod: DNS
+
+  Outputs:
+    Certificate:
+      Description: Domain certificate ARN
+      Value: !Ref Certificate
+      Export:
+        Name: Certificate
+
+    HostedZoneId:
+      Description: Domain hosted zone ID
+      Value: !Ref HostedZone
+      Export:
+        Name: HostedZoneId

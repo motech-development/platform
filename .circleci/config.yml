@@ -39,6 +39,7 @@ jobs:
           key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           paths:
             - node_modules
+            - applications/id/node_modules
             - packages/breeze-ui/node_modules
       - persist_to_workspace:
           paths:
@@ -63,6 +64,30 @@ jobs:
           file: ./packages/breeze-ui/coverage/coverage-final.json
       - sonarcloud/scan
 
+  deploy-auth0:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/id
+          name: Deploy to Auth0
+
+  deploy-infrastructure:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
+          name: Deploy infrastructure
+
   deploy-storybook:
     docker:
       - image: circleci/node:12.13
@@ -85,10 +110,26 @@ workflows:
             branches:
               ignore:
                 - gh-pages
+
       - unit-test:
           context: SonarCloud
           requires:
             - setup
+
+      - deploy-infrastructure:
+          filters:
+            branches:
+              only: master
+          requires:
+            - unit-test
+
+      - deploy-auth0:
+          filters:
+            branches:
+              only: master
+          requires:
+            - unit-test
+
       - deploy-storybook:
           filters:
             branches:
