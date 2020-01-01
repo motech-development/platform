@@ -73,12 +73,8 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_cache
       - run:
-          command: npm run build -- --scope=@motech-development/id
-          name: Build application
-      - run:
-          command: npm run teardown:infrastructure -- --scope=@motech-development/id -- -- --stage production --domain-name $PROD_DOMAIN
-          name: Teardown AWS infrastructure
-          no_output_timeout: 60m
+          command: npm run deploy
+          name: Deploy to Auth0
 
   deploy-infrastructure:
     docker:
