@@ -124,12 +124,11 @@ workflows:
             - unit-test
 
       - deploy-auth0:
-          # filters:
-          #   branches:
-          #     only: master
+          filters:
+            branches:
+              only: master
           requires:
             - unit-test
-            # - deploy-infrastructure
 
       - deploy-storybook:
           filters:
