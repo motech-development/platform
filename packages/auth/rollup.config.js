@@ -10,7 +10,7 @@ export default [
       ...pkg.peerDependencies,
       ...pkg.dependencies,
     },
-    input: 'src/index.tsx',
+    input: 'src/auth.tsx',
     output: [
       {
         exports: 'named',

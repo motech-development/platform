@@ -2,9 +2,9 @@
   "name": "@motech-development/auth",
   "version": "0.0.0",
   "description": "Breeze UI authentication library",
-  "main": "lib/index.cjs.js",
-  "module": "lib/index.esm.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/auth.cjs.js",
+  "module": "lib/auth.esm.js",
+  "types": "lib/auth.d.ts",
   "scripts": {
     "build": "rollup -c",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
