@@ -52,7 +52,6 @@ const AuthProvider: FC<IAuthProviderProps> = ({ children }) => {
         setAuth0Client(client);
 
         if (window.location.search.includes('code=')) {
-          // return handleRedirectCallback();
           await client.handleRedirectCallback();
 
           window.history.replaceState(
