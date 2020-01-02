@@ -10,31 +10,31 @@ import createAuth0Client from '@auth0/auth0-spa-js';
 // eslint-disable-next-line import/no-unresolved
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
 
-export interface Auth0User extends Omit<IdToken, '__raw'> {}
+export interface AuthUser extends Omit<IdToken, '__raw'> {}
 
-export interface IAuth0Context {
+export interface IAuthContext {
   getIdTokenClaims(o?: getIdTokenClaimsOptions): Promise<IdToken>;
   getTokenSilently(o?: GetTokenSilentlyOptions): Promise<string | undefined>;
   isAuthenticated: boolean;
   isLoading: boolean;
   loginWithRedirect(o?: RedirectLoginOptions): Promise<void>;
   logout(o?: LogoutOptions): void;
-  user?: Auth0User;
+  user?: AuthUser;
 }
 
-export const Auth0Context = createContext<IAuth0Context | null>(null);
+export const AuthContext = createContext<IAuthContext | null>(null);
 
-export const useAuth0 = () => useContext(Auth0Context)!;
+export const useAuth = () => useContext(AuthContext)!;
 
-export interface IAuth0ProviderProps {
+export interface IAuthProviderProps {
   children: ReactNode;
 }
 
-const Auth0Provider: FC<IAuth0ProviderProps> = ({ children }) => {
+const AuthProvider: FC<IAuthProviderProps> = ({ children }) => {
   const [auth0Client, setAuth0Client] = useState<Auth0Client>();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<Auth0User>();
+  const [user, setUser] = useState<AuthUser>();
 
   useEffect(() => {
     (async function initializeAuth0() {
@@ -88,7 +88,7 @@ const Auth0Provider: FC<IAuth0ProviderProps> = ({ children }) => {
   const logout = (options?: LogoutOptions) => auth0Client!.logout(options);
 
   return (
-    <Auth0Context.Provider
+    <AuthContext.Provider
       value={{
         getIdTokenClaims,
         getTokenSilently,
@@ -100,8 +100,8 @@ const Auth0Provider: FC<IAuth0ProviderProps> = ({ children }) => {
       }}
     >
       {children}
-    </Auth0Context.Provider>
+    </AuthContext.Provider>
   );
 };
 
-export default Auth0Provider;
+export default AuthProvider;

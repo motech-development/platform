@@ -1,8 +1,8 @@
-import { useAuth0 } from '@motech-development/auth';
+import { useAuth } from '@motech-development/auth';
 import React, { FC, memo } from 'react';
 
 const App: FC = () => {
-  const { isLoading, loginWithRedirect, logout, user } = useAuth0();
+  const { isLoading, loginWithRedirect, logout, user } = useAuth();
   const logOut = () =>
     logout({
       returnTo: window.location.origin,
