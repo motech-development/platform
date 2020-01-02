@@ -41,6 +41,7 @@ jobs:
             - node_modules
             - applications/accounts/node_modules
             - applications/id/node_modules
+            - packages/auth/node_modules
             - packages/breeze-ui/node_modules
       - persist_to_workspace:
           paths:
@@ -63,6 +64,8 @@ jobs:
           path: reports/junit
       - codecov/upload:
           file: ./applications/accounts/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./packages/auth/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/breeze-ui/coverage/coverage-final.json
       - sonarcloud/scan

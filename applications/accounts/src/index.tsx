@@ -1,6 +1,6 @@
+import Auth0Provider from '@motech-development/auth';
 import React from 'react';
 import { render } from 'react-dom';
-import Auth0Provider from './contexts/auth0';
 import App from './App';
 
 render(

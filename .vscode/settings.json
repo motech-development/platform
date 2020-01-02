@@ -16,6 +16,10 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./packages/auth"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./packages/breeze-ui"
     }
   ]

@@ -1,5 +1,5 @@
+import { useAuth0 } from '@motech-development/auth';
 import React, { FC, memo } from 'react';
-import { useAuth0 } from './contexts/auth0';
 
 const App: FC = () => {
   const { isLoading, loginWithRedirect, logout, user } = useAuth0();
