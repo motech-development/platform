@@ -177,6 +177,22 @@ describe('AuthProvider', () => {
       expect(loginWithRedirect).toHaveBeenCalled();
     });
 
+    it("should show log in button when auth0 says you're not authorised", async () => {
+      process.env.REACT_APP_AUTH0_DOMAIN = 'FAKE_DOMAIN';
+
+      const { findByTestId } = render(
+        <MemoryRouter>
+          <AuthProvider>
+            <TestComponent />
+          </AuthProvider>
+        </MemoryRouter>,
+      );
+
+      const result = await waitForElement(() => findByTestId('log-in'));
+
+      expect(result).toBeInTheDocument();
+    });
+
     it('should handle redirect callback', async () => {
       window.history.replaceState = jest.fn();
       document.title = 'Hello world';
