@@ -1,5 +1,6 @@
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, waitForElement } from '@testing-library/react';
 import React, { FC } from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser, useAuth } from '../AuthProvider';
 
 const TestComponent: FC = () => {
@@ -49,15 +50,26 @@ const TestComponent: FC = () => {
 };
 
 describe('AuthProvider', () => {
+  let getIdTokenClaims: jest.Mock;
+  let getTokenSilently: jest.Mock;
+  let isAuthenticated: boolean;
+  let isLoading: boolean;
+  let loginWithRedirect: jest.Mock;
+  let logout: jest.Mock;
+  let user: AuthUser;
+
+  beforeEach(() => {
+    getIdTokenClaims = jest.fn();
+    getIdTokenClaims = jest.fn();
+    loginWithRedirect = jest.fn();
+    logout = jest.fn();
+    user = {
+      name: 'Mo Gusbi',
+    };
+  });
+
   describe('when Auth0 is configured', () => {
     let env: NodeJS.ProcessEnv;
-    let getIdTokenClaims: jest.Mock;
-    let getTokenSilently: jest.Mock;
-    let isAuthenticated: boolean;
-    let isLoading: boolean;
-    let loginWithRedirect: jest.Mock;
-    let logout: jest.Mock;
-    let user: AuthUser;
 
     beforeEach(() => {
       env = {
@@ -66,14 +78,6 @@ describe('AuthProvider', () => {
 
       process.env.REACT_APP_AUTH0_CLIENT_ID = 'AUTH0_CLIENT_ID';
       process.env.REACT_APP_AUTH0_DOMAIN = 'AUTH0_DOMAIN';
-
-      getIdTokenClaims = jest.fn();
-      getIdTokenClaims = jest.fn();
-      loginWithRedirect = jest.fn();
-      logout = jest.fn();
-      user = {
-        name: 'Mo Gusbi',
-      };
     });
 
     afterEach(() => {
@@ -85,21 +89,23 @@ describe('AuthProvider', () => {
       isAuthenticated = false;
 
       const { findByTestId } = render(
-        <AuthProvider>
-          <AuthContext.Provider
-            value={{
-              getIdTokenClaims,
-              getTokenSilently,
-              isAuthenticated,
-              isLoading,
-              loginWithRedirect,
-              logout,
-              user,
-            }}
-          >
-            <TestComponent />
-          </AuthContext.Provider>
-        </AuthProvider>,
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthContext.Provider
+              value={{
+                getIdTokenClaims,
+                getTokenSilently,
+                isAuthenticated,
+                isLoading,
+                loginWithRedirect,
+                logout,
+                user,
+              }}
+            >
+              <TestComponent />
+            </AuthContext.Provider>
+          </AuthProvider>
+        </MemoryRouter>,
       );
 
       await expect(findByTestId('loading')).resolves.toHaveTextContent(
@@ -112,21 +118,23 @@ describe('AuthProvider', () => {
       isAuthenticated = true;
 
       const { findByTestId } = render(
-        <AuthProvider>
-          <AuthContext.Provider
-            value={{
-              getIdTokenClaims,
-              getTokenSilently,
-              isAuthenticated,
-              isLoading,
-              loginWithRedirect,
-              logout,
-              user,
-            }}
-          >
-            <TestComponent />
-          </AuthContext.Provider>
-        </AuthProvider>,
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthContext.Provider
+              value={{
+                getIdTokenClaims,
+                getTokenSilently,
+                isAuthenticated,
+                isLoading,
+                loginWithRedirect,
+                logout,
+                user,
+              }}
+            >
+              <TestComponent />
+            </AuthContext.Provider>
+          </AuthProvider>
+        </MemoryRouter>,
       );
       const logOutButton = await findByTestId('log-out');
 
@@ -144,21 +152,23 @@ describe('AuthProvider', () => {
       isAuthenticated = false;
 
       const { findByTestId } = render(
-        <AuthProvider>
-          <AuthContext.Provider
-            value={{
-              getIdTokenClaims,
-              getTokenSilently,
-              isAuthenticated,
-              isLoading,
-              loginWithRedirect,
-              logout,
-              user,
-            }}
-          >
-            <TestComponent />
-          </AuthContext.Provider>
-        </AuthProvider>,
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthContext.Provider
+              value={{
+                getIdTokenClaims,
+                getTokenSilently,
+                isAuthenticated,
+                isLoading,
+                loginWithRedirect,
+                logout,
+                user,
+              }}
+            >
+              <TestComponent />
+            </AuthContext.Provider>
+          </AuthProvider>
+        </MemoryRouter>,
       );
       const logInButton = await findByTestId('log-in');
 
@@ -166,67 +176,61 @@ describe('AuthProvider', () => {
 
       expect(loginWithRedirect).toHaveBeenCalled();
     });
+
+    it('should handle redirect callback', async () => {
+      window.history.replaceState = jest.fn();
+      document.title = 'Hello world';
+
+      isLoading = false;
+      isAuthenticated = false;
+
+      const { findByTestId } = render(
+        <MemoryRouter initialEntries={['?code=test']}>
+          <AuthProvider>
+            <TestComponent />
+          </AuthProvider>
+        </MemoryRouter>,
+      );
+
+      const result = await waitForElement(() => findByTestId('user'));
+
+      expect(window.history.replaceState).toHaveBeenCalledWith(
+        {},
+        'Hello world',
+        '/',
+      );
+      expect(result).toHaveTextContent('Mo Gusbi');
+    });
   });
 
-  // it('should return values from Auth0', async () => {
-  //   const { findByTestId } = render(
-  //     <AuthProvider>
-  //       <AuthContext.Consumer>
-  //         {value => (
-  //           <>
-  //             <div data-testid="loaded">{!value?.isLoading && 'Loaded'}</div>
-  //             <div data-testid="authenticated">
-  //               {value?.isAuthenticated && 'Authenticated'}
-  //             </div>
-  //             <div data-testid="user">{value?.user?.name}</div>
-  //           </>
-  //         )}
-  //       </AuthContext.Consumer>
-  //     </AuthProvider>,
-  //   );
+  describe('when Auth0 is not configured', () => {
+    it('should show loading message', async () => {
+      isLoading = true;
+      isAuthenticated = false;
 
-  //   await expect(findByTestId('loaded')).resolves.toHaveTextContent('Loaded');
-  //   await expect(findByTestId('authenticated')).resolves.toHaveTextContent(
-  //     'Authenticated',
-  //   );
-  //   await expect(findByTestId('user')).resolves.toHaveTextContent('Mo Gusbi');
-  // });
+      const { findByTestId } = render(
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthContext.Provider
+              value={{
+                getIdTokenClaims,
+                getTokenSilently,
+                isAuthenticated,
+                isLoading,
+                loginWithRedirect,
+                logout,
+                user,
+              }}
+            >
+              <TestComponent />
+            </AuthContext.Provider>
+          </AuthProvider>
+        </MemoryRouter>,
+      );
 
-  // it('should call Auth0', async () => {
-  //   const getIdTokenClaims = jest.fn();
-  //   const getTokenSilently = jest.fn();
-  //   const isAuthenticated = true;
-  //   const isLoading = false;
-  //   const loginWithRedirect = jest.fn();
-  //   const logout = jest.fn();
-  //   const user = jest.fn();
-
-  //   const { findByTestId } = render(
-  //     <AuthProvider>
-  //       <AuthContext.Provider
-  //         value={{
-  //           getIdTokenClaims,
-  //           getTokenSilently,
-  //           isAuthenticated,
-  //           isLoading,
-  //           loginWithRedirect,
-  //           logout,
-  //           user,
-  //         }}
-  //       >
-  //         <TestComponent />
-  //       </AuthContext.Provider>
-  //     </AuthProvider>,
-  //   );
-  //   const logInButton = await findByTestId('log-in');
-  //   const logOutButton = await findByTestId('log-out');
-
-  //   fireEvent.click(logInButton);
-  //   fireEvent.click(logOutButton);
-
-  //   expect(loginWithRedirect).toHaveBeenCalled();
-  //   expect(logout).toHaveBeenCalledWith({
-  //     returnTo: 'somewhere',
-  //   });
-  // });
+      await expect(findByTestId('loading')).resolves.toHaveTextContent(
+        'Loading...',
+      );
+    });
+  });
 });

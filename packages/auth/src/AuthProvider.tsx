@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { useLocation } from 'react-router-dom';
 import createAuth0Client from '@auth0/auth0-spa-js';
 // eslint-disable-next-line import/no-unresolved
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
@@ -35,6 +36,7 @@ const AuthProvider: FC<IAuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<AuthUser>();
+  const { pathname, search } = useLocation();
 
   useEffect(() => {
     (async function initializeAuth0() {
@@ -51,14 +53,10 @@ const AuthProvider: FC<IAuthProviderProps> = ({ children }) => {
 
         setAuth0Client(client);
 
-        if (window.location.search.includes('code=')) {
+        if (search.includes('code=')) {
           await client.handleRedirectCallback();
 
-          window.history.replaceState(
-            {},
-            document.title,
-            window.location.pathname,
-          );
+          window.history.replaceState({}, document.title, pathname);
         }
 
         const authenticated = await client.isAuthenticated();
@@ -73,7 +71,7 @@ const AuthProvider: FC<IAuthProviderProps> = ({ children }) => {
         setIsLoading(false);
       }
     })();
-  }, []);
+  }, [pathname, search]);
 
   const getIdTokenClaims = (options?: getIdTokenClaimsOptions) =>
     auth0Client!.getIdTokenClaims(options);
