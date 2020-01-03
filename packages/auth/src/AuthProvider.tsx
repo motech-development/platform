@@ -27,11 +27,23 @@ export const AuthContext = createContext<IAuthContext | null>(null);
 
 export const useAuth = () => useContext(AuthContext)!;
 
-export interface IAuthProviderProps {
-  children: ReactNode;
+const defaultRedirectCallback = () => {
+  window.history.replaceState({}, document.title, window.location.pathname);
+};
+
+export interface IAppState {
+  targetUrl: string;
 }
 
-const AuthProvider: FC<IAuthProviderProps> = ({ children }) => {
+export interface IAuthProviderProps {
+  children: ReactNode;
+  onRedirectCallback?(appState: IAppState): void;
+}
+
+const AuthProvider: FC<IAuthProviderProps> = ({
+  children,
+  onRedirectCallback = defaultRedirectCallback,
+}) => {
   const [auth0Client, setAuth0Client] = useState<Auth0Client>();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +51,7 @@ const AuthProvider: FC<IAuthProviderProps> = ({ children }) => {
   const { pathname, search } = useLocation();
 
   useEffect(() => {
-    (async function initializeAuth0() {
+    (async () => {
       const { REACT_APP_AUTH0_CLIENT_ID, REACT_APP_AUTH0_DOMAIN } = process.env;
 
       if (REACT_APP_AUTH0_CLIENT_ID && REACT_APP_AUTH0_DOMAIN) {
@@ -54,9 +66,9 @@ const AuthProvider: FC<IAuthProviderProps> = ({ children }) => {
         setAuth0Client(client);
 
         if (search.includes('code=')) {
-          await client.handleRedirectCallback();
+          const { appState } = await client.handleRedirectCallback();
 
-          window.history.replaceState({}, document.title, pathname);
+          onRedirectCallback(appState);
         }
 
         const authenticated = await client.isAuthenticated();
@@ -71,7 +83,7 @@ const AuthProvider: FC<IAuthProviderProps> = ({ children }) => {
         setIsLoading(false);
       }
     })();
-  }, [pathname, search]);
+  }, [onRedirectCallback, pathname, search]);
 
   const getIdTokenClaims = (options?: getIdTokenClaimsOptions) =>
     auth0Client!.getIdTokenClaims(options);

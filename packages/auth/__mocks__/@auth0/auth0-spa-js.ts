@@ -15,7 +15,11 @@ const createAuth0Client = async ({ client_id, domain }: Auth0ClientOptions) =>
         getUser: jest.fn().mockResolvedValue({
           name: 'Mo Gusbi',
         }),
-        handleRedirectCallback: jest.fn(),
+        handleRedirectCallback: jest.fn().mockResolvedValue({
+          appState: {
+            targetUrl: '/test-path',
+          },
+        }),
         isAuthenticated: jest.fn().mockResolvedValue(domain === 'AUTH0_DOMAIN'),
         loginWithRedirect: jest.fn(),
         logout: jest.fn(),
