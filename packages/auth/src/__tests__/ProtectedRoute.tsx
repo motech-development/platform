@@ -1,4 +1,4 @@
-import { render, waitForDomChange } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import React, { FC } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';

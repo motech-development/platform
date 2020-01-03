@@ -1,5 +1,5 @@
 import { darken } from 'polished';
-import React, { FC, memo, ReactChild } from 'react';
+import React, { FC, HTMLAttributes, memo, ReactChild } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 interface IButtonTheme {
@@ -80,7 +80,9 @@ const BaseButton = styled.button<IBaseButton>`
   `}
 `;
 
-export interface IButtonProps extends IBaseButton {
+export interface IButtonProps
+  extends IBaseButton,
+    HTMLAttributes<HTMLButtonElement> {
   children: ReactChild;
   disabled?: boolean;
   type?: 'submit' | 'reset' | 'button';
@@ -92,9 +94,17 @@ const Button: FC<IButtonProps> = ({
   disabled = false,
   size,
   type = 'button',
+  ...rest
 }) => (
   <ThemeProvider theme={buttonTheme}>
-    <BaseButton colour={colour} type={type} size={size} disabled={disabled}>
+    <BaseButton
+      colour={colour}
+      type={type}
+      size={size}
+      disabled={disabled}
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...rest}
+    >
       {children}
     </BaseButton>
   </ThemeProvider>

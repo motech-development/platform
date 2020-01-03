@@ -1,5 +1,5 @@
 import { useAuth } from '@motech-development/auth';
-import { Card, Typography } from '@motech-development/breeze-ui';
+import { Button, Card, Typography } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 
 const ProtectedPage: FC = () => {
@@ -17,9 +17,9 @@ const ProtectedPage: FC = () => {
         </Typography>
       )}
 
-      <button type="button" onClick={logOut}>
+      <Button type="button" onClick={logOut}>
         Log out
-      </button>
+      </Button>
     </Card>
   );
 };
