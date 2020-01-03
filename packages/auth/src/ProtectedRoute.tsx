@@ -1,9 +1,9 @@
-import React, { ExoticComponent, FC, useEffect } from 'react';
+import React, { ComponentType, FC, useEffect } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 
 export interface IProtectedRouteProps extends RouteProps {
-  component: ExoticComponent;
+  component: ComponentType;
 }
 
 const ProtectedRoute: FC<IProtectedRouteProps> = ({

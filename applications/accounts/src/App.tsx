@@ -1,31 +1,27 @@
-import {
-  AuthProvider,
-  IAppState,
-  ProtectedRoute,
-} from '@motech-development/auth';
+import { ProtectedRoute, useAuth } from '@motech-development/auth';
+import { BaseStyles } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
-import { Route, Router, Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import ProtectedPage from './containers/ProtectedPage';
 import PublicPage from './containers/PublicPage';
-import history from './history';
 
-const onRedirectCallback = (appState: IAppState) => {
-  history.push(
-    appState && appState.targetUrl
-      ? appState.targetUrl
-      : window.location.pathname,
-  );
-};
+const App: FC = () => {
+  const { isLoading } = useAuth();
 
-const App: FC = () => (
-  <Router history={history}>
-    <AuthProvider onRedirectCallback={onRedirectCallback}>
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  return (
+    <>
+      <BaseStyles />
+
       <Switch>
         <Route exact path="/" component={PublicPage} />
         <ProtectedRoute exact path="/protected" component={ProtectedPage} />
       </Switch>
-    </AuthProvider>
-  </Router>
-);
+    </>
+  );
+};
 
 export default memo(App);
