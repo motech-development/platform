@@ -11,10 +11,12 @@ i18n
   .use(initReactI18next)
   .init({
     debug,
+    defaultNS: 'global',
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,
     },
+    ns: ['global'],
   });
 
 export default i18n;

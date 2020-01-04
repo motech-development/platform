@@ -16,7 +16,7 @@ const Wrapper = styled.div`
 
 const Index: FC = () => {
   const { loginWithRedirect } = useAuth();
-  const { t } = useTranslation(['home', 'translation']);
+  const { t } = useTranslation('index');
   const login = () =>
     loginWithRedirect({
       appState: {
@@ -29,7 +29,7 @@ const Index: FC = () => {
       <Row>
         <Col sm={8} smOffset={3} md={6} mdOffset={4} lg={4} lgOffset={5}>
           <Typography align="center" component="h1" variant="h1">
-            {t('translation:app-name')}
+            {t('global:app-name')}
           </Typography>
 
           <Card>

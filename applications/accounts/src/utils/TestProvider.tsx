@@ -27,7 +27,7 @@ export interface ITestProviderProps {
 const TestProvider: FC<ITestProviderProps> = ({
   children,
   isAuthenticated = true,
-  isLoading = true,
+  isLoading = false,
   translations = {},
 }) => {
   const testI18n = i18n;
@@ -46,7 +46,7 @@ const TestProvider: FC<ITestProviderProps> = ({
   });
 
   return (
-    <MemoryRouter>
+    <MemoryRouter initialEntries={['/']}>
       <AuthProvider>
         <AuthContext.Provider
           value={{
