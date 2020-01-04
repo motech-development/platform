@@ -29,12 +29,13 @@ const buttonTheme: IButtonTheme = {
 };
 
 interface IBaseButton {
+  block?: boolean;
   colour?: keyof IButtonTheme;
   size?: 'sm' | 'md' | 'lg';
 }
 
 const BaseButton = styled.button<IBaseButton>`
-  ${({ colour = 'primary', size = 'md', theme }) => `
+  ${({ block, colour = 'primary', size = 'md', theme }) => `
     appearance: none;
     background-color: ${theme[colour].background};
     border: 0;
@@ -45,6 +46,17 @@ const BaseButton = styled.button<IBaseButton>`
     vertical-align: middle;
     user-select: none;
     white-space: nowrap;
+
+    ${
+      block
+        ? `
+          display: block;
+          width: 100%;
+        `
+        : `
+          display: inline-block;
+        `
+    }
 
     ${(() => {
       switch (size) {
@@ -83,12 +95,14 @@ const BaseButton = styled.button<IBaseButton>`
 export interface IButtonProps
   extends IBaseButton,
     HTMLAttributes<HTMLButtonElement> {
+  block?: boolean;
   children: ReactChild;
   disabled?: boolean;
   type?: 'submit' | 'reset' | 'button';
 }
 
 const Button: FC<IButtonProps> = ({
+  block = false,
   children,
   colour,
   disabled = false,
@@ -98,6 +112,7 @@ const Button: FC<IButtonProps> = ({
 }) => (
   <ThemeProvider theme={buttonTheme}>
     <BaseButton
+      block={block}
       colour={colour}
       type={type}
       size={size}

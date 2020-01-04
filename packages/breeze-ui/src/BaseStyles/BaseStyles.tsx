@@ -8,6 +8,7 @@ const BaseStyles = createGlobalStyle`
   body,
   html {
     background: #161616;
+    color: #fff;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   }
 `;

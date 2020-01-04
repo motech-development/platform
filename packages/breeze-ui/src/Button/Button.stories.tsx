@@ -1,4 +1,4 @@
-import { select, text, withKnobs } from '@storybook/addon-knobs';
+import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
 import BaseStyles from '../BaseStyles/BaseStyles';
@@ -23,6 +23,7 @@ stories.add('Basic button', () => (
   <>
     <BaseStyles />
     <Button
+      block={boolean('Block display', false)}
       colour={select('Colour', colour, 'primary')}
       size={select('Size', size, 'md') as 'sm' | 'md' | 'lg'}
     >

@@ -2,7 +2,7 @@ import { useAuth } from '@motech-development/auth';
 import { Button, Card, Typography } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 
-const ProtectedPage: FC = () => {
+const Dashboard: FC = () => {
   const { logout, user } = useAuth();
   const logOut = () =>
     logout({
@@ -24,4 +24,4 @@ const ProtectedPage: FC = () => {
   );
 };
 
-export default memo(ProtectedPage);
+export default memo(Dashboard);
