@@ -7,6 +7,7 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -15,6 +16,7 @@ const Wrapper = styled.div`
 
 const Index: FC = () => {
   const { loginWithRedirect } = useAuth();
+  const { t } = useTranslation(['home', 'translation']);
   const login = () =>
     loginWithRedirect({
       appState: {
@@ -27,21 +29,21 @@ const Index: FC = () => {
       <Row>
         <Col sm={8} smOffset={3} md={6} mdOffset={4} lg={4} lgOffset={5}>
           <Typography align="center" component="h1" variant="h1">
-            Accounts
+            {t('translation:app-name')}
           </Typography>
 
           <Card>
             <Typography align="center" component="h2" variant="h2">
-              Welcome
+              {t('welcome')}
             </Typography>
 
             <Typography align="center" component="p" variant="p">
-              Click the button below to log in or register to get started
+              {t('intro')}
             </Typography>
           </Card>
 
           <Button block type="button" size="lg" onClick={login}>
-            Log in
+            {t('log-in')}
           </Button>
         </Col>
       </Row>

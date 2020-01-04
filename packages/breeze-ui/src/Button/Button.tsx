@@ -1,5 +1,5 @@
 import { darken } from 'polished';
-import React, { FC, HTMLAttributes, memo, ReactChild } from 'react';
+import React, { FC, HTMLAttributes, memo } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 interface IButtonTheme {
@@ -96,7 +96,6 @@ export interface IButtonProps
   extends IBaseButton,
     HTMLAttributes<HTMLButtonElement> {
   block?: boolean;
-  children: ReactChild;
   disabled?: boolean;
   type?: 'submit' | 'reset' | 'button';
 }
