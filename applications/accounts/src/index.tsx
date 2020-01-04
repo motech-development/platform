@@ -1,4 +1,5 @@
 import { AuthProvider, IAppState } from '@motech-development/auth';
+import { BaseStyles } from '@motech-development/breeze-ui';
 import React from 'react';
 import { render } from 'react-dom';
 import { Router } from 'react-router-dom';
@@ -16,6 +17,8 @@ const onRedirectCallback = (appState: IAppState) => {
 render(
   <Router history={history}>
     <AuthProvider onRedirectCallback={onRedirectCallback}>
+      <BaseStyles />
+
       <App />
     </AuthProvider>
   </Router>,
