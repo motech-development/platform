@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
-  margin: 50px 0;
+  margin: 100px 0;
 `;
 
 const Index: FC = () => {
@@ -35,10 +35,6 @@ const Index: FC = () => {
           <Card>
             <Typography align="center" component="h2" variant="h2">
               {t('welcome')}
-            </Typography>
-
-            <Typography align="center" component="p" variant="p">
-              {t('intro')}
             </Typography>
           </Card>
 
