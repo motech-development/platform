@@ -38,12 +38,10 @@ export interface ICardProps {
   padding?: CardPadding;
 }
 
-const Card: FC<ICardProps> = ({ children, padding = 'md' }) => {
-  return (
-    <ThemeProvider theme={cardTheme}>
-      <BaseCard padding={padding}>{children}</BaseCard>
-    </ThemeProvider>
-  );
-};
+const Card: FC<ICardProps> = ({ children, padding = 'md' }) => (
+  <ThemeProvider theme={cardTheme}>
+    <BaseCard padding={padding}>{children}</BaseCard>
+  </ThemeProvider>
+);
 
 export default memo(Card);
