@@ -16,7 +16,7 @@ describe('Index', () => {
 
     expect(loginWithRedirect).toHaveBeenCalledWith({
       appState: {
-        targetUrl: '/dashboard',
+        targetUrl: '/my-companies',
       },
     });
   });

@@ -20,7 +20,7 @@ const Index: FC = () => {
   const login = () =>
     loginWithRedirect({
       appState: {
-        targetUrl: '/dashboard',
+        targetUrl: '/my-companies',
       },
     });
 

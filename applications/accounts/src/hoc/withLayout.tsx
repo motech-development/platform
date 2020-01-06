@@ -4,7 +4,6 @@ import { useAuth } from '@motech-development/auth';
 import {
   AppBar,
   Button,
-  Card,
   Tooltip,
   Typography,
 } from '@motech-development/breeze-ui';
@@ -20,9 +19,14 @@ const AppName = styled(Typography)`
   }
 `;
 
+const Container = styled.main`
+  padding: 1rem;
+`;
+
 const Username = styled(Typography)`
   && {
     flex-grow: 1;
+    font-weight: 500;
     margin: 0 1rem 0 0.5rem;
     overflow: hidden;
     text-align: right;
@@ -68,9 +72,9 @@ const withLayout = (Component: ComponentType) =>
           )}
         </AppBar>
 
-        <Card>
+        <Container>
           <Component />
-        </Card>
+        </Container>
       </>
     );
   });

@@ -7,6 +7,7 @@ export { default as Col } from './Col/Col';
 export { default as Form } from './Form/Form';
 export { default as Link } from './Link/Link';
 export { default as Loader } from './Loader/Loader';
+export { default as PageTitle } from './PageTitle/PageTitle';
 export { default as Row } from './Row/Row';
 export { default as TextBox } from './TextBox/TextBox';
 export { default as Tooltip } from './Tooltip/Tooltip';

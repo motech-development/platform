@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 type TypographyVariants = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
 
-interface ITypographyProps {
+export interface ITypographyProps {
   align?: 'left' | 'right' | 'center';
   children: ReactNode;
   component: TypographyVariants;
