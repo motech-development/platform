@@ -1,6 +1,32 @@
 import React, { FC, memo, ReactNode } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
+const AppBarInner = styled.div`
+  align-items: center;
+  display: flex;
+  min-height: 64px;
+  padding: 0 1rem;
+  position: relative;
+`;
+
+interface IAppBarToolbarBase {
+  colour: keyof IAppBarTheme;
+}
+
+const AppBarToolbar = styled.header<IAppBarToolbarBase>`
+  ${({ colour, theme }) => `
+    background-color: ${theme[colour].background};
+    box-sizing: border-box;
+    color: ${theme[colour].colour};
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    user-select: none;
+    width: 100%;
+    z-index: 1100;
+  `}
+`;
+
 interface IAppBarTheme {
   [name: string]: {
     background: string;
@@ -19,22 +45,8 @@ const appBarTheme: IAppBarTheme = {
   },
 };
 
-interface IAppBarBase {
-  colour: keyof IAppBarTheme;
-}
-
-const AppBarBase = styled.header<IAppBarBase>`
-  ${({ colour, theme }) => `
-    align-items: center;
-    background-color: ${theme[colour].background};
-    color: ${theme[colour].colour};
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 0.5rem 1rem;
-    position: relative;
-    user-select: none;
-  `}
+const AppBarBase = styled.div`
+  flex-grow: 1;
 `;
 
 export interface IAppBarProps {
@@ -49,8 +61,10 @@ const AppBar: FC<IAppBarProps> = ({
   element = 'header',
 }) => (
   <ThemeProvider theme={appBarTheme}>
-    <AppBarBase as={element} colour={colour}>
-      {children}
+    <AppBarBase>
+      <AppBarToolbar as={element} colour={colour}>
+        <AppBarInner>{children}</AppBarInner>
+      </AppBarToolbar>
     </AppBarBase>
   </ThemeProvider>
 );

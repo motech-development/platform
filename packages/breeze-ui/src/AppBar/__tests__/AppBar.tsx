@@ -9,8 +9,9 @@ describe('AppBar', () => {
         <div data-testid="content">Hello</div>
       </AppBar>,
     );
+    const header = container.querySelector('header');
 
-    expect(container.firstChild).toHaveStyle(`
+    expect(header).toHaveStyle(`
       background-color: #161616;
       color: #fff;
     `);
@@ -22,8 +23,9 @@ describe('AppBar', () => {
         <div data-testid="content">Hello</div>
       </AppBar>,
     );
+    const header = container.querySelector('header');
 
-    expect(container.firstChild).toHaveStyle(`
+    expect(header).toHaveStyle(`
       background-color: #161616;
       color: #fff;
     `);
@@ -35,8 +37,9 @@ describe('AppBar', () => {
         <div data-testid="content">Hello</div>
       </AppBar>,
     );
+    const header = container.querySelector('header');
 
-    expect(container.firstChild).toHaveStyle(`
+    expect(header).toHaveStyle(`
       background-color: #f6f9fc;
       color: #333;
     `);
