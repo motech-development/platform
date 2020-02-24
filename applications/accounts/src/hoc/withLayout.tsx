@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAuth } from '@motech-development/auth';
 import {
   AppBar,
+  Avatar,
   Button,
   Tooltip,
   Typography,
@@ -23,11 +24,17 @@ const Container = styled.main`
   padding: 1rem;
 `;
 
+const UserBar = styled.div`
+  display: flex;
+  overflow: hidden;
+`;
+
 const Username = styled(Typography)`
   && {
     flex-grow: 1;
     font-weight: 500;
-    margin: 0 1rem 0 0.5rem;
+    line-height: 32px;
+    margin: 0 1rem;
     overflow: hidden;
     text-align: right;
     text-overflow: ellipsis;
@@ -52,7 +59,9 @@ const withLayout = (Component: ComponentType) =>
           </AppName>
 
           {user && (
-            <>
+            <UserBar>
+              {user.picture && <Avatar alt="" src={user.picture} width={32} />}
+
               <Username component="p" variant="p">
                 {user.name}
               </Username>
@@ -68,7 +77,7 @@ const withLayout = (Component: ComponentType) =>
                 colour="primary"
                 message={t('log-out')}
               />
-            </>
+            </UserBar>
           )}
         </AppBar>
 
