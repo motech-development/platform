@@ -5,7 +5,8 @@ import IdleTimer from 'react-idle-timer';
 import { Route, Switch } from 'react-router-dom';
 
 const Index = lazy(() => import('./pages/Index'));
-const MyCompanies = lazy(() => import('./pages/MyCompanies'));
+const MyCompanies = lazy(() => import('./pages/MyCompanies/Routes'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 const App: FC = () => {
   const { logout } = useAuth();
@@ -18,6 +19,7 @@ const App: FC = () => {
       <Switch>
         <Route exact path="/" component={Index} />
         <ProtectedRoute exact path="/my-companies" component={MyCompanies} />
+        <Route component={NotFound} />
       </Switch>
     </Suspense>
   );
