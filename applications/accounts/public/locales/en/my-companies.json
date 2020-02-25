@@ -1,5 +1,11 @@
 {
   "title": "My companies",
   "sub-title": "Select the company you wish to manage or add a new one",
-  "add-company": "Add a new company"
+  "add-company": "Add a new company",
+  "company-number": "Company number",
+  "vat-registration": "VAT registration",
+  "select-company": "Select company",
+  "update-details": "Update details",
+  "new-company": "New company",
+  "enroll-text": "You can quickly enroll your company to Accounts by clicking the button below. What are you waiting for?"
 }

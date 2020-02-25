@@ -28,13 +28,22 @@ const Index: FC = () => {
     <Wrapper>
       <Row>
         <Col sm={8} smOffset={3} md={6} mdOffset={4} lg={4} lgOffset={5}>
-          <Typography align="center" component="h1" variant="h1">
+          <Typography align="center" component="h1" variant="h1" margin="lg">
             {t('global:app-name')}
           </Typography>
 
-          <Card>
-            <Typography align="center" component="h2" variant="h2">
+          <Card padding="lg">
+            <Typography rule align="center" component="h2" variant="h2">
               {t('welcome')}
+            </Typography>
+
+            <Typography
+              align="center"
+              component="p"
+              variant="lead"
+              margin="none"
+            >
+              {t('intro')}
             </Typography>
           </Card>
 

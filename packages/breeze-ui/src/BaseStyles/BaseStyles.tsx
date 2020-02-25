@@ -8,9 +8,14 @@ const BaseStyles = createGlobalStyle`
   body,
   html {
     background: #161616;
-    box-sizing: border-box;
     color: #fff;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
   }
 `;
 

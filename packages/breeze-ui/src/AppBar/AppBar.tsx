@@ -10,7 +10,7 @@ const AppBarInner = styled.div`
 `;
 
 interface IAppBarToolbarBase {
-  colour: keyof IAppBarTheme;
+  colour: keyof typeof appBarTheme;
 }
 
 const AppBarToolbar = styled.header<IAppBarToolbarBase>`
@@ -51,7 +51,7 @@ const AppBarBase = styled.div`
 
 export interface IAppBarProps {
   children: ReactNode;
-  colour?: keyof IAppBarTheme;
+  colour?: keyof typeof appBarTheme;
   element?: 'header' | 'div';
 }
 

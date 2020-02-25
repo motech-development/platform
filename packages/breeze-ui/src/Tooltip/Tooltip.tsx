@@ -38,7 +38,7 @@ type TooltipPlacement =
   | 'left-start';
 
 interface ITooltipPlacement {
-  colour: keyof ITooltipTheme;
+  colour: keyof typeof tooltipTheme;
   placement: TooltipPlacement;
 }
 
@@ -129,7 +129,7 @@ const TooltipContent = styled.div<ITooltipContent>`
 `;
 
 export interface ITooltipProps {
-  colour?: keyof ITooltipTheme;
+  colour?: keyof typeof tooltipTheme;
   id: string;
   message: ReactNode;
   parent: ElementType;

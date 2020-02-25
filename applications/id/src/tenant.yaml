@@ -7,9 +7,11 @@ clients:
     allowed_clients: []
     allowed_logout_urls:
       - 'http://localhost:3000'
+      - 'http://192.168.1.153:3000'
     app_type: spa
     callbacks:
       - 'http://localhost:3000'
+      - 'http://192.168.1.153:3000'
     client_aliases: []
     cross_origin_auth: false
     custom_login_page_on: true
@@ -33,6 +35,7 @@ clients:
     token_endpoint_auth_method: none
     web_origins:
       - 'http://localhost:3000'
+      - 'http://192.168.1.153:3000'
   - name: Default App
     callbacks: []
     cross_origin_auth: false

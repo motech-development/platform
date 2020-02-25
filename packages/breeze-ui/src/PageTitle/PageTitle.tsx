@@ -43,7 +43,7 @@ const PageTitle: FC<IPageTitleProps> = ({ subTitle = null, title }) => (
 
     {subTitle && (
       <SubTitleWrapper>
-        <Typography component="p" variant="lead">
+        <Typography component="p" variant="lead" margin="none">
           {subTitle}
         </Typography>
       </SubTitleWrapper>

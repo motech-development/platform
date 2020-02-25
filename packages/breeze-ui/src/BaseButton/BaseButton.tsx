@@ -30,7 +30,7 @@ export const buttonTheme: IButtonTheme = {
 
 export interface IBaseButtonProps {
   block?: boolean;
-  colour?: keyof IButtonTheme;
+  colour?: keyof typeof buttonTheme;
   size?: 'sm' | 'md' | 'lg';
 }
 
