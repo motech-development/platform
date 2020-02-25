@@ -22,7 +22,10 @@ const MyCompanies: FC = () => {
 
   return (
     <>
-      <PageTitle title={t('title')} subTitle={t('sub-title')} />
+      <PageTitle
+        title={t('my-companies.title')}
+        subTitle={t('my-companies.sub-title')}
+      />
 
       <Row>
         <Col sm={12} md={4} lg={3}>
@@ -34,16 +37,21 @@ const MyCompanies: FC = () => {
               align="center"
               margin="lg"
             >
-              {t('new-company')}
+              {t('my-companies.new-company')}
             </Typography>
 
-            <Typography component="p" variant="p" align="center" margin="none">
-              {t('enroll-text')}
+            <Typography
+              component="p"
+              variant="lead"
+              align="center"
+              margin="none"
+            >
+              {t('my-companies.enroll-text')}
             </Typography>
           </Card>
 
           <LinkButton block to="my-companies/add-company" size="lg">
-            {t('add-company')}
+            {t('my-companies.add-company')}
           </LinkButton>
         </Col>
 
@@ -61,7 +69,7 @@ const MyCompanies: FC = () => {
               </Typography>
 
               <Typography component="h4" variant="h5" align="center">
-                {t('company-number')}
+                {t('my-companies.company-number')}
               </Typography>
 
               <Typography
@@ -76,7 +84,7 @@ const MyCompanies: FC = () => {
               {vatRegistration && (
                 <>
                   <Typography component="h4" variant="h5" align="center">
-                    {t('vat-registration')}
+                    {t('my-companies.vat-registration')}
                   </Typography>
                   <Typography
                     component="p"
@@ -96,11 +104,11 @@ const MyCompanies: FC = () => {
               colour="success"
               size="lg"
             >
-              {t('select-company')}
+              {t('my-companies.select-company')}
             </LinkButton>
 
             <LinkButton block to={`my-companies/update-details/${pk}`}>
-              {t('update-details')}
+              {t('my-companies.update-details')}
             </LinkButton>
           </Col>
         ))}

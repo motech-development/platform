@@ -18,7 +18,7 @@ const App: FC = () => {
 
       <Switch>
         <Route exact path="/" component={Index} />
-        <ProtectedRoute exact path="/my-companies" component={MyCompanies} />
+        <ProtectedRoute path="/my-companies" component={MyCompanies} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

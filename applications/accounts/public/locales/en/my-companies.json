@@ -1,11 +1,21 @@
 {
-  "title": "My companies",
-  "sub-title": "Select the company you wish to manage or add a new one",
-  "add-company": "Add a new company",
-  "company-number": "Company number",
-  "vat-registration": "VAT registration",
-  "select-company": "Select company",
-  "update-details": "Update details",
-  "new-company": "New company",
-  "enroll-text": "You can quickly enroll your company to Accounts by clicking the button below. What are you waiting for?"
+  "my-companies": {
+    "title": "My companies",
+    "sub-title": "Select the company you wish to manage or add a new one",
+    "add-company": "Add a new company",
+    "company-number": "Company number",
+    "vat-registration": "VAT registration",
+    "select-company": "Select company",
+    "update-details": "Update details",
+    "new-company": "New company",
+    "enroll-text": "You can quickly enroll your company by clicking the button below. What are you waiting for?"
+  },
+  "add-company": {
+    "title": "Add a new company",
+    "sub-title": "Onboard a new company to Accounts"
+  },
+  "update-details": {
+    "title": "Update company details",
+    "sub-title": "Modify your company information"
+  }
 }
