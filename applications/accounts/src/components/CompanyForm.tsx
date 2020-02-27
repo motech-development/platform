@@ -37,7 +37,6 @@ export type FormSchema = typeof formSchema;
 
 export interface ICompanyFormProps {
   backTo: string;
-  pk?: string;
   initialValues?: FormSchema;
   onSave(value: FormSchema): void;
 }
