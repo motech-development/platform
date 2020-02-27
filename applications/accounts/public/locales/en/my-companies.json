@@ -53,7 +53,6 @@
       },
       "sort-code": {
         "label": "Sort code*",
-        "helper-text": "Sort code in xx-xx-xx format",
         "required": "Sort code is required",
         "invalid": "Sort code is invalid"
       }

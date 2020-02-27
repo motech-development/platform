@@ -31,7 +31,7 @@ describe('Form', () => {
           submitLabel="Submit"
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={onSubmit}
+          onSubmit={value => onSubmit(value)}
         >
           <TextBox label="Test" name="test" />
         </Form>,
@@ -68,7 +68,9 @@ describe('Form', () => {
         fireEvent.click(button);
       });
 
-      expect(onSubmit).toHaveBeenCalled();
+      expect(onSubmit).toHaveBeenCalledWith({
+        test: 'Hello world',
+      });
     });
   });
 
@@ -84,7 +86,7 @@ describe('Form', () => {
           submitLabel="Submit"
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={onSubmit}
+          onSubmit={value => onSubmit(value)}
         >
           <TextBox label="Test" name="test" />
         </Form>,
@@ -95,6 +97,41 @@ describe('Form', () => {
       const { findByTestId } = component;
 
       await expect(findByTestId('cancel-button')).resolves.toBeInTheDocument();
+    });
+  });
+
+  describe('with formatting', () => {
+    beforeEach(() => {
+      component = render(
+        <Form
+          submitLabel="Submit"
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={value => onSubmit(value)}
+        >
+          <TextBox label="Test" name="test" format="##-##-##" />
+        </Form>,
+      );
+    });
+
+    it('should submit with the correct values', async () => {
+      const { findByLabelText, findByRole } = component;
+
+      await act(async () => {
+        const input = await findByLabelText('Test');
+
+        fireEvent.change(input, {
+          target: { focus: () => {}, value: '000000' },
+        });
+
+        const button = await findByRole('button');
+
+        fireEvent.click(button);
+      });
+
+      expect(onSubmit).toHaveBeenCalledWith({
+        test: '00-00-00',
+      });
     });
   });
 });
