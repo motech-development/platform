@@ -1,5 +1,6 @@
+import { ProtectedRoute } from '@motech-development/auth';
 import React, { FC, lazy, memo } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 
 const AddCompany = lazy(() => import('./AddCompany'));
 const MyCompanies = lazy(() => import('./MyCompanies'));
@@ -7,9 +8,13 @@ const UpdateDetails = lazy(() => import('./UpdateDetails'));
 
 const Routes: FC = () => (
   <Switch>
-    <Route exact component={MyCompanies} path="/my-companies" />
-    <Route exact component={AddCompany} path="/my-companies/add-company" />
-    <Route
+    <ProtectedRoute exact component={MyCompanies} path="/my-companies" />
+    <ProtectedRoute
+      exact
+      component={AddCompany}
+      path="/my-companies/add-company"
+    />
+    <ProtectedRoute
       exact
       component={UpdateDetails}
       path="/my-companies/update-details/:pk"

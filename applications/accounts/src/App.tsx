@@ -1,4 +1,4 @@
-import { ProtectedRoute, useAuth, withAuth } from '@motech-development/auth';
+import { useAuth, withAuth } from '@motech-development/auth';
 import { Loader } from '@motech-development/breeze-ui';
 import React, { FC, lazy, memo, Suspense } from 'react';
 import IdleTimer from 'react-idle-timer';
@@ -18,7 +18,7 @@ const App: FC = () => {
 
       <Switch>
         <Route exact path="/" component={Index} />
-        <ProtectedRoute path="/my-companies" component={MyCompanies} />
+        <Route path="/my-companies" component={MyCompanies} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
