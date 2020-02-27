@@ -45,7 +45,7 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "**/src/**/*.{ts,tsx}"
+      "src/**/*.{ts,tsx}"
     ],
     "moduleDirectories": [
       "../../node_modules",
