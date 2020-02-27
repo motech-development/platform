@@ -1,25 +1,22 @@
 import React, { FC, memo, ReactNode } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
-type CardPadding = 'sm' | 'md' | 'lg';
-
-interface ICardTheme {
-  [name: string]: {
-    padding: string;
-  };
-}
-
-const cardTheme: ICardTheme = {
+const cardTheme = {
   lg: {
     padding: '20px',
   },
   md: {
     padding: '10px',
   },
+  none: {
+    padding: '0',
+  },
   sm: {
     padding: '5px',
   },
 };
+
+type CardPadding = keyof typeof cardTheme;
 
 interface IBaseCard {
   padding: CardPadding;

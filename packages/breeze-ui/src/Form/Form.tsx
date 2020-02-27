@@ -1,9 +1,12 @@
 import { Form as FormikForm, Formik, FormikValues } from 'formik';
-import React, { FC, memo, ReactNode } from 'react';
+import React, { ElementType, FC, memo, ReactNode } from 'react';
 import Button from '../Button/Button';
+import Col from '../Col/Col';
+import Row from '../Row/Row';
 
 export interface IFormProps<T extends FormikValues = FormikValues> {
   children: ReactNode;
+  cancel?: ElementType;
   initialValues: T;
   onSubmit(value: T): void;
   submitLabel: string;
@@ -12,6 +15,7 @@ export interface IFormProps<T extends FormikValues = FormikValues> {
 
 const Form: FC<IFormProps> = ({
   children,
+  cancel: Cancel = undefined,
   initialValues,
   onSubmit,
   submitLabel,
@@ -25,11 +29,25 @@ const Form: FC<IFormProps> = ({
   >
     {({ isValid }) => (
       <FormikForm autoComplete="off">
-        {children}
+        <Row>
+          <Col>{children}</Col>
 
-        <Button type="submit" disabled={!isValid}>
-          {submitLabel}
-        </Button>
+          <Col>
+            <Row>
+              <Col xs={12} md={Cancel ? 3 : 6} mdOffset={7}>
+                <Button block type="submit" disabled={!isValid} size="lg">
+                  {submitLabel}
+                </Button>
+              </Col>
+
+              {Cancel && (
+                <Col xs={12} md={3}>
+                  <Cancel />
+                </Col>
+              )}
+            </Row>
+          </Col>
+        </Row>
       </FormikForm>
     )}
   </Formik>

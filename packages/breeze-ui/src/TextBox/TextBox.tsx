@@ -1,5 +1,13 @@
-import { Field, FieldProps } from 'formik';
-import React, { FC, memo, useEffect, useState } from 'react';
+import { Field, FieldProps, getIn } from 'formik';
+import React, {
+  FC,
+  FocusEvent,
+  HTMLAttributes,
+  memo,
+  useEffect,
+  useState,
+} from 'react';
+import NumberFormat, { NumberFormatValues } from 'react-number-format';
 import styled from 'styled-components';
 import InputAlert from '../InputAlert/InputAlert';
 import InputWrapper from '../InputWrapper/InputWrapper';
@@ -36,8 +44,25 @@ const BaseTextBox = styled.input<IBaseTextBox>`
   `}
 `;
 
+interface IInput extends HTMLAttributes<HTMLInputElement> {
+  active: boolean;
+  describedBy: string;
+  errors: boolean;
+}
+
+const Input: FC<IInput> = ({ active, describedBy, errors, ...rest }) => (
+  <BaseTextBox
+    active={active}
+    aria-describedby={errors ? describedBy : undefined}
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    {...rest}
+  />
+);
+
 interface IInternalTextBox extends FieldProps {
   active: boolean;
+  format: string;
+  helpText: string;
   label: string;
   setFocus(focus: boolean): void;
   spacing: InputSpacing;
@@ -46,7 +71,9 @@ interface IInternalTextBox extends FieldProps {
 const InternalTextBox: FC<IInternalTextBox> = ({
   active,
   field,
+  format,
   form,
+  helpText,
   label,
   setFocus,
   spacing,
@@ -60,11 +87,20 @@ const InternalTextBox: FC<IInternalTextBox> = ({
   }, []);
 
   const { onBlur, ...rest } = field;
-  const { errors, touched } = form;
-  const error = !!touched[field.name] && !!errors[field.name];
+  const { errors, handleBlur, setFieldValue, touched } = form;
   const describedBy = `${field.name}-error`;
+  const [error, setError] = useState(false);
 
-  function doBlur(e: unknown) {
+  useEffect(() => {
+    const touch = getIn(touched, field.name);
+    const err = getIn(errors, field.name);
+
+    setError(!!touch && !!err);
+  }, [errors, touched, field.name]);
+
+  function doBlur(e: FocusEvent<HTMLInputElement>) {
+    handleBlur(e);
+
     if (!field.value) {
       setFocus(false);
     }
@@ -78,17 +114,22 @@ const InternalTextBox: FC<IInternalTextBox> = ({
     }
   }
 
+  function doValueChange({ formattedValue }: NumberFormatValues) {
+    setFieldValue(field.name, formattedValue);
+  }
+
   return (
     <InputWrapper
       spacing={spacing}
+      helpText={helpText}
       error={error}
       tooltip={() => (
         <Tooltip
           id={describedBy}
-          parent={() => <InputAlert message={errors[field.name]} />}
+          parent={() => <InputAlert message={getIn(errors, field.name)} />}
           colour="danger"
           placement="left"
-          message={errors[field.name]}
+          message={getIn(errors, field.name)}
         />
       )}
     >
@@ -96,19 +137,39 @@ const InternalTextBox: FC<IInternalTextBox> = ({
         {label}
       </Label>
 
-      <BaseTextBox
-        active={active}
-        aria-describedby={errors[field.name] && describedBy}
-        onBlur={doBlur}
-        onFocus={doFocus}
-        {...rest} // eslint-disable-line react/jsx-props-no-spreading
-        {...props} // eslint-disable-line react/jsx-props-no-spreading
-      />
+      {/* eslint-disable react/jsx-props-no-spreading */}
+      {format ? (
+        <NumberFormat
+          {...props}
+          {...rest}
+          customInput={Input}
+          format={format}
+          active={active}
+          describedBy={describedBy}
+          errors={error}
+          onBlur={doBlur}
+          onFocus={doFocus}
+          onValueChange={doValueChange}
+        />
+      ) : (
+        <Input
+          {...props}
+          {...rest}
+          active={active}
+          describedBy={describedBy}
+          errors={error}
+          onBlur={doBlur}
+          onFocus={doFocus}
+        />
+      )}
+      {/* eslint-enable react/jsx-props-no-spreading */}
     </InputWrapper>
   );
 };
 
 export interface ITextBoxProps {
+  format?: string;
+  helpText?: string;
   label: string;
   name: string;
   placeholder?: string;
@@ -117,6 +178,8 @@ export interface ITextBoxProps {
 }
 
 const TextBox: FC<ITextBoxProps> = ({
+  format = null,
+  helpText = null,
   label,
   name,
   placeholder = '',
@@ -129,11 +192,13 @@ const TextBox: FC<ITextBoxProps> = ({
     <Field
       id={name}
       component={InternalTextBox}
+      active={focus}
+      format={format}
+      helpText={helpText}
       type={type}
       name={name}
       placeholder={placeholder}
       setFocus={setFocus}
-      active={focus}
       label={label}
       spacing={spacing}
     />

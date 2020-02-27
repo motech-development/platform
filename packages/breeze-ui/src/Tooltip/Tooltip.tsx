@@ -1,4 +1,12 @@
-import React, { ElementType, FC, memo, ReactNode, useState } from 'react';
+import React, {
+  ElementType,
+  FC,
+  memo,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Manager, Popper, Reference } from 'react-popper';
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -144,11 +152,22 @@ const Tooltip: FC<ITooltipProps> = ({
   placement,
 }) => {
   const [visible, setVisibility] = useState(false);
+  const mounted = useRef(false);
   let timer: number;
+
+  useEffect(() => {
+    mounted.current = true;
+
+    return () => {
+      mounted.current = false;
+    };
+  });
 
   function hideTooltip() {
     timer = setTimeout(() => {
-      setVisibility(false);
+      if (mounted.current) {
+        setVisibility(false);
+      }
     }, 1000);
   }
 

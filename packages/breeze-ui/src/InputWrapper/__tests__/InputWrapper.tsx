@@ -75,4 +75,35 @@ describe('InputWrapper', () => {
       expect(getByTestId('alert')).toBeDefined();
     });
   });
+
+  describe('with help text', () => {
+    beforeEach(() => {
+      component = render(
+        <InputWrapper
+          spacing="lg"
+          helpText="This is help text"
+          error={false}
+          tooltip={() => (
+            <Tooltip
+              id="test"
+              parent={() => <div data-testid="alert" />}
+              colour="danger"
+              placement="left"
+              message={null}
+            />
+          )}
+        >
+          <input type="test" data-testid="input" />
+        </InputWrapper>,
+      );
+    });
+
+    it('should render the help text', async () => {
+      const { findByText } = component;
+
+      await expect(
+        findByText('This is help text'),
+      ).resolves.toBeInTheDocument();
+    });
+  });
 });

@@ -33,6 +33,16 @@ describe('Card', () => {
     expect(container.firstChild).toHaveStyle('padding: 20px;');
   });
 
+  it('should have the correct padding when set to "none"', () => {
+    const { container } = render(
+      <Card padding="none">
+        <p data-testid="content">Hello world</p>
+      </Card>,
+    );
+
+    expect(container.firstChild).toHaveStyle('padding: 0;');
+  });
+
   it('should output child', async () => {
     const { findByTestId } = render(
       <Card>
