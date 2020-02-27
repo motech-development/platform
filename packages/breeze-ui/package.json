@@ -59,6 +59,9 @@
     "collectCoverageFrom": [
       "**/src/**/*.{ts,tsx}"
     ],
+    "coveragePathIgnorePatterns": [
+      "**/src/**/*.stories.{ts,tsx}"
+    ],
     "moduleDirectories": [
       "../../node_modules",
       "<rootDir>/node_modules"
