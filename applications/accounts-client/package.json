@@ -1,7 +1,7 @@
 {
-  "name": "@motech-development/accounts",
+  "name": "@motech-development/accounts-client",
   "version": "0.0.0",
-  "description": "Motech Development accounts application",
+  "description": "Motech Development accounts client application",
   "private": true,
   "scripts": {
     "build": "react-app-rewired build",
@@ -64,6 +64,6 @@
   },
   "jest-junit": {
     "outputDirectory": "../../reports/junit",
-    "outputName": "accounts.xml"
+    "outputName": "accounts-client.xml"
   }
 }
