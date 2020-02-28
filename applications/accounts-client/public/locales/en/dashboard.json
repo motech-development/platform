@@ -10,6 +10,11 @@
     "lead": "Manage your client details to easily invoice them",
     "button": "Manage clients"
   },
+  "settings": {
+    "title": "Settings",
+    "lead": "Update your company specific settings",
+    "button": "Manage settings"
+  },
   "my-companies": {
     "title": "My companies",
     "lead": "Select another of your companies to manage",

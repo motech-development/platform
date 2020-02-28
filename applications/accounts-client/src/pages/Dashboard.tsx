@@ -55,6 +55,22 @@ const Dashboard: FC = () => {
         <Col sm={12} md={4} lg={3}>
           <Card padding="lg">
             <Typography rule component="h3" variant="h3" margin="lg">
+              {t('settings.title')}
+            </Typography>
+
+            <Typography component="p" variant="lead" margin="none">
+              {t('settings.lead')}
+            </Typography>
+          </Card>
+
+          <LinkButton block to={`/settings/${companyId}`} size="lg">
+            {t('settings.button')}
+          </LinkButton>
+        </Col>
+
+        <Col sm={12} md={4} lg={3}>
+          <Card padding="lg">
+            <Typography rule component="h3" variant="h3" margin="lg">
               {t('my-companies.title')}
             </Typography>
 
@@ -63,7 +79,7 @@ const Dashboard: FC = () => {
             </Typography>
           </Card>
 
-          <LinkButton block to="/my-companies" size="lg">
+          <LinkButton block to="/my-companies" colour="danger" size="lg">
             {t('my-companies.button')}
           </LinkButton>
         </Col>
