@@ -40,7 +40,9 @@ jobs:
           paths:
             - node_modules
             - applications/accounts-client/node_modules
+            - applications/accounts-infrastructure/node_modules
             - applications/id/node_modules
+            - applications/infrastructure/node_modules
             - packages/auth/node_modules
             - packages/breeze-ui/node_modules
       - persist_to_workspace:
@@ -81,6 +83,10 @@ jobs:
       - run:
           command: npm run build -- --scope=@motech-development/accounts-client
           name: Build client
+      - persist_to_workspace:
+          paths:
+            - ./applications/accounts-client/build
+          root: .
 
   deploy-accounts-infrastructure:
     docker:
@@ -94,6 +100,18 @@ jobs:
           command: npm run deploy -- --scope=@motech-development/accounts-infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy accounts infrastructure
           no_output_timeout: 60m
+
+  deploy-accounts-client:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-client -- -- --stage production --domain-name $PROD_DOMAIN
+          name: Deploy accounts client
 
   deploy-auth0:
     docker:
@@ -167,6 +185,22 @@ workflows:
             # TODO: Change the requirements
             # - deploy-infrastructure
             - unit-test
+
+      - deploy-auth0:
+          filters:
+            branches:
+              only: master
+          requires:
+            - unit-test
+
+      - deploy-accounts-client:
+          # TODO: Enable once this all works
+          # filters:
+          #   branches:
+          #     only: master
+          requires:
+            - deploy-accounts-infrastructure
+            - build-accounts-client
 
       - deploy-auth0:
           filters:

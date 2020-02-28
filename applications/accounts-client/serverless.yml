@@ -1,0 +1,37 @@
+service:
+  name: ${opt:appName, 'accounts'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-app
+
+plugins:
+  - serverless-finch
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+  domainName: ${opt:domain-name}
+
+  client:
+    manageResources: false
+    bucketName: ${self:service}.${self:custom.domainName}
+    distributionFolder: build
+    objectHeaders:
+      '**/*.js':
+        - name: Cache-Control
+          value: max-age=31536000
+        - name: Content-Type
+          value: text/js
+      '**/*.css':
+        - name: Cache-Control
+          value: max-age=31536000
+        - name: Content-Type
+          value: text/css
+      '**/*.html':
+        - name: Cache-Control
+          value: max-age=10
+        - name: Content-Type
+          value: text/html
