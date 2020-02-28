@@ -17,7 +17,7 @@ resources:
     Bucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:custom.prefix}-app
+        BucketName: ${self:service}.${self:custom.domainName}
 
     BucketPolicy:
       Type: AWS::S3::BucketPolicy
