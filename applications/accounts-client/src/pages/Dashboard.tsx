@@ -14,75 +14,59 @@ import withLayout from '../hoc/withLayout';
 const Dashboard: FC = () => {
   const { companyId } = useParams();
   const { t } = useTranslation('dashboard');
+  const cards = [
+    {
+      button: t('accounts.button'),
+      colour: 'primary',
+      lead: t('accounts.lead'),
+      link: `/company-accounts/${companyId}`,
+      title: t('accounts.title'),
+    },
+    {
+      button: t('clients.button'),
+      colour: 'primary',
+      lead: t('clients.lead'),
+      link: `/company-clients/${companyId}`,
+      title: t('clients.title'),
+    },
+    {
+      button: t('settings.button'),
+      colour: 'primary',
+      lead: t('settings.lead'),
+      link: `/settings/${companyId}`,
+      title: t('settings.title'),
+    },
+    {
+      button: t('my-companies.button'),
+      colour: 'danger',
+      lead: t('my-companies.lead'),
+      link: '/my-companies',
+      title: t('my-companies.title'),
+    },
+  ];
 
   return (
     <>
       <PageTitle title="Company name" subTitle={t('sub-title')} />
 
       <Row>
-        <Col sm={12} md={4} lg={3}>
-          <Card padding="lg">
-            <Typography rule component="h3" variant="h3" margin="lg">
-              {t('accounts.title')}
-            </Typography>
+        {cards.map(({ button, colour, lead, link, title }) => (
+          <Col sm={12} md={4} lg={3}>
+            <Card padding="lg">
+              <Typography rule component="h3" variant="h3" margin="lg">
+                {title}
+              </Typography>
 
-            <Typography component="p" variant="lead" margin="none">
-              {t('accounts.lead')}
-            </Typography>
-          </Card>
+              <Typography component="p" variant="lead" margin="none">
+                {lead}
+              </Typography>
+            </Card>
 
-          <LinkButton block to={`/company-accounts/${companyId}`} size="lg">
-            {t('accounts.button')}
-          </LinkButton>
-        </Col>
-
-        <Col sm={12} md={4} lg={3}>
-          <Card padding="lg">
-            <Typography rule component="h3" variant="h3" margin="lg">
-              {t('clients.title')}
-            </Typography>
-
-            <Typography component="p" variant="lead" margin="none">
-              {t('clients.lead')}
-            </Typography>
-          </Card>
-
-          <LinkButton block to={`/company-clients/${companyId}`} size="lg">
-            {t('clients.button')}
-          </LinkButton>
-        </Col>
-
-        <Col sm={12} md={4} lg={3}>
-          <Card padding="lg">
-            <Typography rule component="h3" variant="h3" margin="lg">
-              {t('settings.title')}
-            </Typography>
-
-            <Typography component="p" variant="lead" margin="none">
-              {t('settings.lead')}
-            </Typography>
-          </Card>
-
-          <LinkButton block to={`/settings/${companyId}`} size="lg">
-            {t('settings.button')}
-          </LinkButton>
-        </Col>
-
-        <Col sm={12} md={4} lg={3}>
-          <Card padding="lg">
-            <Typography rule component="h3" variant="h3" margin="lg">
-              {t('my-companies.title')}
-            </Typography>
-
-            <Typography component="p" variant="lead" margin="none">
-              {t('my-companies.lead')}
-            </Typography>
-          </Card>
-
-          <LinkButton block to="/my-companies" colour="danger" size="lg">
-            {t('my-companies.button')}
-          </LinkButton>
-        </Col>
+            <LinkButton block size="lg" to={link} colour={colour}>
+              {button}
+            </LinkButton>
+          </Col>
+        ))}
       </Row>
     </>
   );
