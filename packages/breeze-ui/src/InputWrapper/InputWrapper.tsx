@@ -1,15 +1,7 @@
 import React, { ElementType, FC, memo, ReactNode } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
-type InputSpacing = 'sm' | 'md' | 'lg';
-
-interface IInputWrapperTheme {
-  [name: string]: {
-    spacing: string;
-  };
-}
-
-const inputWrapperTheme: IInputWrapperTheme = {
+const inputWrapperTheme = {
   lg: {
     spacing: '20px',
   },
@@ -23,8 +15,16 @@ const inputWrapperTheme: IInputWrapperTheme = {
 
 interface IBaseInputWrapper {
   error: boolean;
-  spacing: InputSpacing;
+  spacing: keyof typeof inputWrapperTheme;
 }
+
+const HelpText = styled.p<IBaseInputWrapper>`
+  ${({ error, theme, spacing }) => `
+    color: ${error ? 'rgb(199,56,79)' : '#999'};
+    font-size: 0.75rem;
+    margin-bottom: ${theme[spacing].spacing};
+  `}
+`;
 
 const BaseInputWrapper = styled.div<IBaseInputWrapper>`
   ${({ error, theme, spacing }) => `
@@ -46,12 +46,14 @@ const ValidatorWrapper = styled.div`
 
 export interface IInputWrapperProps extends IBaseInputWrapper {
   children: ReactNode;
+  helpText?: string;
   tooltip: ElementType;
 }
 
 const InputWrapper: FC<IInputWrapperProps> = ({
   children,
   error,
+  helpText = null,
   spacing,
   tooltip: Tooltip,
 }) => (
@@ -59,12 +61,14 @@ const InputWrapper: FC<IInputWrapperProps> = ({
     <BaseInputWrapper error={error} spacing={spacing}>
       {children}
 
-      {error && (
-        <ValidatorWrapper>
-          <Tooltip />
-        </ValidatorWrapper>
-      )}
+      <ValidatorWrapper>{error && <Tooltip />}</ValidatorWrapper>
     </BaseInputWrapper>
+
+    {helpText && (
+      <HelpText error={error} spacing={spacing}>
+        {helpText}
+      </HelpText>
+    )}
   </ThemeProvider>
 );
 

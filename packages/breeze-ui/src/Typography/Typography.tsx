@@ -1,20 +1,30 @@
-import { FC, memo, createElement, ReactNode } from 'react';
+import React, { FC, memo, createElement, ReactNode } from 'react';
 import styled from 'styled-components';
 
 type TypographyVariants = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
 
-interface ITypographyProps {
+const margins = {
+  lg: 1,
+  md: 0.5,
+  none: 0,
+  sm: 0.25,
+};
+
+export interface ITypographyProps {
   align?: 'left' | 'right' | 'center';
   children: ReactNode;
   component: TypographyVariants;
+  margin?: keyof typeof margins;
+  rule?: boolean;
   variant: TypographyVariants | 'lead';
 }
 
 function createBase(props: ITypographyProps) {
   const { component } = props;
   const Component = styled(component)<ITypographyProps>`
-    ${({ align = 'left', variant }) => `
+    ${({ align = 'left', margin = 'md', variant }) => `
       text-align: ${align};
+      margin: ${margins[margin] ? `0 0 ${margins[margin]}rem` : '0'};
 
       ${(() => {
         switch (variant) {
@@ -22,7 +32,6 @@ function createBase(props: ITypographyProps) {
             return `
               color: inherit;
               line-height: 1.5;
-              margin: 0 0 1rem;
             `;
           case 'lead':
             return `
@@ -52,7 +61,6 @@ function createBase(props: ITypographyProps) {
               })()};
               font-weight: 600;
               line-height: 1.2;
-              margin-bottom: .5rem;
           `;
         }
       })()}
@@ -62,6 +70,31 @@ function createBase(props: ITypographyProps) {
   return createElement(Component, props);
 }
 
-const Typography: FC<ITypographyProps> = props => createBase(props);
+interface ILineProps {
+  margin: keyof typeof margins;
+}
+
+const Line = styled.hr<ILineProps>`
+  ${({ margin }) => `
+    border: 0;
+    border-top: 2.5px solid #2e9dc8;
+    margin: ${margins[margin] ? `${margins[margin]}rem 0` : '0'};
+    padding: 0;
+
+  `}
+`;
+
+const Typography: FC<ITypographyProps> = props => {
+  const { rule = false, margin = 'md' } = props;
+  const Component = createBase(props);
+
+  return (
+    <>
+      {Component}
+
+      {rule && <Line margin={margin} />}
+    </>
+  );
+};
 
 export default memo(Typography);

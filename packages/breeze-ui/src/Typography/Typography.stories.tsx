@@ -1,4 +1,4 @@
-import { select, text, withKnobs } from '@storybook/addon-knobs';
+import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
 import BaseStyles from '../BaseStyles/BaseStyles';
@@ -27,6 +27,12 @@ const alignment = {
   Left: 'left',
   Right: 'right',
 };
+const margin = {
+  Large: 'lg',
+  Medium: 'md',
+  None: 'none',
+  Small: 'sm',
+};
 
 stories.addDecorator(withKnobs);
 
@@ -41,6 +47,8 @@ stories.add('Basic typography', () => (
         }
         variant={select('Variant', variants, 'h1') as Components | 'lead'}
         component={select('Component', components, 'h1') as Components}
+        margin={select('Margin', margin, 'md') as 'lg' | 'md' | 'sm' | 'none'}
+        rule={boolean('Horizontal rule', false)}
       >
         {text('Text', 'Hello world')}
       </Typography>

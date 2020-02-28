@@ -10,7 +10,7 @@ const stories = storiesOf('Link', module);
 
 stories.addDecorator(withKnobs);
 
-stories.add('Basisc link', () => (
+stories.add('Basic link', () => (
   <MemoryRouter>
     <BaseStyles />
 

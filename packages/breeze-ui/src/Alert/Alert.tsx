@@ -32,7 +32,7 @@ const alertTheme: IAlertTheme = {
 };
 
 interface IBaseAlert {
-  colour: keyof IAlertTheme;
+  colour: keyof typeof alertTheme;
   spacing: AlertSpacing;
 }
 
@@ -61,7 +61,7 @@ const AlertIconWrapper = styled.div`
 `;
 
 interface IAlertDismissButton {
-  colour: keyof IAlertTheme;
+  colour: keyof typeof alertTheme;
 }
 
 const AlertDismissButton = styled.button<IAlertDismissButton>`
@@ -81,7 +81,7 @@ const AlertDismissButton = styled.button<IAlertDismissButton>`
 `;
 
 export interface IAlertProps {
-  colour?: keyof IAlertTheme;
+  colour?: keyof typeof alertTheme;
   dismissable?: boolean;
   icon?: ElementType;
   message: string;

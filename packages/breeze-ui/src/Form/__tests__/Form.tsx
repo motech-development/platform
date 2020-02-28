@@ -22,47 +22,116 @@ describe('Form', () => {
     validationSchema = object().shape({
       test: string().required(),
     });
-
-    component = render(
-      <Form
-        submitLabel="Submit"
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-      >
-        <TextBox label="Test" name="test" />
-      </Form>,
-    );
   });
 
-  it('should disable save button if form is invalid', async () => {
-    const { findByRole } = component;
+  describe('without a cancel option', () => {
+    beforeEach(() => {
+      component = render(
+        <Form
+          submitLabel="Submit"
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={value => onSubmit(value)}
+        >
+          <TextBox label="Test" name="test" />
+        </Form>,
+      );
+    });
 
-    await expect(findByRole('button')).resolves.toHaveAttribute('disabled');
-  });
+    it('should disable save button if form is invalid', async () => {
+      const { findByRole } = component;
 
-  it('should enable save button if for is valid', async () => {
-    const { findByLabelText, findByRole } = component;
-    const input = await findByLabelText('Test');
+      await expect(findByRole('button')).resolves.toHaveAttribute('disabled');
+    });
 
-    fireEvent.change(input, { target: { value: 'Hello world' } });
-
-    await expect(findByRole('button')).resolves.not.toHaveAttribute('disabled');
-  });
-
-  it('should submit with the correct values', async () => {
-    const { findByLabelText, findByRole } = component;
-
-    await act(async () => {
+    it('should enable save button if for is valid', async () => {
+      const { findByLabelText, findByRole } = component;
       const input = await findByLabelText('Test');
 
       fireEvent.change(input, { target: { value: 'Hello world' } });
 
-      const button = await findByRole('button');
-
-      fireEvent.click(button);
+      await expect(findByRole('button')).resolves.not.toHaveAttribute(
+        'disabled',
+      );
     });
 
-    expect(onSubmit).toHaveBeenCalled();
+    it('should submit with the correct values', async () => {
+      const { findByLabelText, findByRole } = component;
+
+      await act(async () => {
+        const input = await findByLabelText('Test');
+
+        fireEvent.change(input, { target: { value: 'Hello world' } });
+
+        const button = await findByRole('button');
+
+        fireEvent.click(button);
+      });
+
+      expect(onSubmit).toHaveBeenCalledWith({
+        test: 'Hello world',
+      });
+    });
+  });
+
+  describe('with a cancel option', () => {
+    beforeEach(() => {
+      component = render(
+        <Form
+          cancel={() => (
+            <button type="button" data-testid="cancel-button">
+              Cancel
+            </button>
+          )}
+          submitLabel="Submit"
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={value => onSubmit(value)}
+        >
+          <TextBox label="Test" name="test" />
+        </Form>,
+      );
+    });
+
+    it('should render the cancel button', async () => {
+      const { findByTestId } = component;
+
+      await expect(findByTestId('cancel-button')).resolves.toBeInTheDocument();
+    });
+  });
+
+  describe('with formatting', () => {
+    beforeEach(() => {
+      component = render(
+        <Form
+          submitLabel="Submit"
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={value => onSubmit(value)}
+        >
+          <TextBox label="Test" name="test" format="##-##-##" />
+        </Form>,
+      );
+    });
+
+    it('should submit with the correct values', async () => {
+      const { findByLabelText, findByRole } = component;
+
+      await act(async () => {
+        const input = await findByLabelText('Test');
+
+        fireEvent.change(input, {
+          target: { focus: () => {}, value: '000000' },
+        });
+
+        const button = await findByRole('button');
+
+        fireEvent.click(button);
+      });
+
+      expect(onSubmit).toHaveBeenCalledWith({
+        test: '00-00-00',
+      });
+    });
   });
 });

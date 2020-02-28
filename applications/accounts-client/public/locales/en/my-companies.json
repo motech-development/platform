@@ -1,0 +1,90 @@
+{
+  "my-companies": {
+    "title": "My companies",
+    "sub-title": "Select the company you wish to manage or add a new one",
+    "add-company": "Add a new company",
+    "company-number": "Company number",
+    "vat-registration": "VAT registration",
+    "select-company": "Select company",
+    "update-details": "Update details",
+    "new-company": "New company",
+    "enroll-text": "You can quickly enroll your company by clicking the button below. What are you waiting for?"
+  },
+  "add-company": {
+    "title": "Add a new company",
+    "sub-title": "Onboard a new company to Accounts"
+  },
+  "update-details": {
+    "title": "Update company details",
+    "sub-title": "Modify your company information"
+  },
+  "company-form": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "saved": "Company has been saved",
+    "address": {
+      "heading": "Address",
+      "line1": {
+        "label": "Address line 1*",
+        "required": "Address line 1 is required"
+      },
+      "line2": {
+        "label": "Address line 2"
+      },
+      "line3": {
+        "label": "Town*",
+        "required": "Town is required"
+      },
+      "line4": {
+        "label": "County"
+      },
+      "line5": {
+        "label": "Postcode*",
+        "required": "Postcode is required",
+        "invalid": "Postcode is invalid"
+      }
+    },
+    "bank": {
+      "heading": "Bank details",
+      "account-number": {
+        "label": "Account number*",
+        "required": "Account number is required",
+        "invalid": "Account number is invalid"
+      },
+      "sort-code": {
+        "label": "Sort code*",
+        "required": "Sort code is required",
+        "invalid": "Sort code is invalid"
+      }
+    },
+    "company-details": {
+      "heading": "Company details",
+      "name": {
+        "label": "Name*",
+        "required": "Name is required"
+      },
+      "company-number": {
+        "label": "Company number*",
+        "required": "Company number is required",
+        "invalid": "Company number is invalid"
+      },
+      "vat-registration": {
+        "label": "VAT registration number",
+        "invalid": "VAT registration number is invalid"
+      }
+    },
+    "contact": {
+      "heading": "Contact details",
+      "email": {
+        "label": "Email address*",
+        "required": "Email address is required",
+        "invalid": "Email address is invalid"
+      },
+      "telephone": {
+        "label": "Telephone number*",
+        "required": "Telephone number is required",
+        "invalid": "Telephone number is invalid"
+      }
+    }
+  }
+}

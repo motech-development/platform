@@ -78,4 +78,27 @@ describe('Button', () => {
       `);
     });
   });
+
+  describe('block', () => {
+    it('should be displayed as an inline-block element by default', () => {
+      const { container } = render(<Button>Hello</Button>);
+
+      expect(container.firstChild).toHaveStyle('display: inline-block;');
+    });
+
+    it('should be displayed as an inline-block element', () => {
+      const { container } = render(<Button block={false}>Hello</Button>);
+
+      expect(container.firstChild).toHaveStyle('display: inline-block;');
+    });
+
+    it('should be displayed as an block element', () => {
+      const { container } = render(<Button block>Hello</Button>);
+
+      expect(container.firstChild).toHaveStyle(`
+        display: block;
+        width: 100%;
+      `);
+    });
+  });
 });

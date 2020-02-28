@@ -1,0 +1,23 @@
+{
+  "sub-title": "Dashboard",
+  "accounts": {
+    "title": "Accounts",
+    "lead": "Keep on top of you company accounts by managing your incomings and outgoings",
+    "button": "Manage accounts"
+  },
+  "clients": {
+    "title": "Clients",
+    "lead": "Manage your client details to easily invoice them",
+    "button": "Manage clients"
+  },
+  "settings": {
+    "title": "Settings",
+    "lead": "Update your company specific settings",
+    "button": "Manage settings"
+  },
+  "my-companies": {
+    "title": "My companies",
+    "lead": "Select another of your companies to manage",
+    "button": "Back to my companies"
+  }
+}

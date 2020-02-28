@@ -158,7 +158,6 @@ describe('Typography', () => {
       await expect(findByText('Hello world')).resolves.toHaveStyle(`
         color: inherit;
         line-height: 1.5;
-        margin: 0 0 1rem;
       `);
     });
 
@@ -224,6 +223,170 @@ describe('Typography', () => {
       await expect(findByText('Hello world')).resolves.toHaveStyle(
         'text-align: center;',
       );
+    });
+  });
+
+  describe('margin', () => {
+    it('should have the correct margin by default', async () => {
+      const { findByText } = render(
+        <Typography component="h1" variant="h1">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveStyleRule(
+        'margin',
+        '0 0 0.5rem',
+      );
+    });
+
+    it('should have the correct margin when set to none', async () => {
+      const { findByText } = render(
+        <Typography component="h1" variant="h1" margin="none">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveStyleRule(
+        'margin',
+        '0',
+      );
+    });
+
+    it('should have the correct margin when set to sm', async () => {
+      const { findByText } = render(
+        <Typography component="h1" variant="h1" margin="sm">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveStyleRule(
+        'margin',
+        '0 0 0.25rem',
+      );
+    });
+
+    it('should have the correct margin when set to md', async () => {
+      const { findByText } = render(
+        <Typography component="h1" variant="h1" margin="md">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveStyleRule(
+        'margin',
+        '0 0 0.5rem',
+      );
+    });
+
+    it('should have the correct margin when set to lg', async () => {
+      const { findByText } = render(
+        <Typography component="h1" variant="h1" margin="lg">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveStyleRule(
+        'margin',
+        '0 0 1rem',
+      );
+    });
+  });
+
+  describe('rule', () => {
+    it('should display a horizontal rule', async () => {
+      const { findByRole } = render(
+        <Typography rule component="h1" variant="h1" margin="lg">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByRole('separator')).resolves.toBeInTheDocument();
+    });
+
+    it('should have the correct margin by default', async () => {
+      const { findByRole } = render(
+        <Typography rule component="h1" variant="h1">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByRole('separator')).resolves.toHaveStyleRule(
+        'margin',
+        '0.5rem 0',
+      );
+    });
+
+    it('should have the correct margin when set to none', async () => {
+      const { findByRole } = render(
+        <Typography rule component="h1" variant="h1" margin="none">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByRole('separator')).resolves.toHaveStyleRule(
+        'margin',
+        '0',
+      );
+    });
+
+    it('should have the correct margin when set to sm', async () => {
+      const { findByRole } = render(
+        <Typography rule component="h1" variant="h1" margin="sm">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByRole('separator')).resolves.toHaveStyleRule(
+        'margin',
+        '0.25rem 0',
+      );
+    });
+
+    it('should have the correct margin when set to md', async () => {
+      const { findByRole } = render(
+        <Typography rule component="h1" variant="h1" margin="md">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByRole('separator')).resolves.toHaveStyleRule(
+        'margin',
+        '0.5rem 0',
+      );
+    });
+
+    it('should have the correct margin when set to lg', async () => {
+      const { findByRole } = render(
+        <Typography rule component="h1" variant="h1" margin="lg">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByRole('separator')).resolves.toHaveStyleRule(
+        'margin',
+        '1rem 0',
+      );
+    });
+
+    it('should not display a horizontal rule', () => {
+      const { queryByRole } = render(
+        <Typography rule={false} component="h1" variant="h1" margin="lg">
+          Hello world
+        </Typography>,
+      );
+
+      expect(queryByRole('separator')).not.toBeInTheDocument();
+    });
+
+    it('should not display a horizontal rule by default', () => {
+      const { queryByRole } = render(
+        <Typography component="h1" variant="h1" margin="lg">
+          Hello world
+        </Typography>,
+      );
+
+      expect(queryByRole('separator')).not.toBeInTheDocument();
     });
   });
 });

@@ -1,0 +1,62 @@
+{
+  "name": "@motech-development/auth",
+  "version": "0.0.0",
+  "description": "Breeze UI authentication library",
+  "main": "lib/index.cjs.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
+    "prebuild": "rimraf ./lib",
+    "precommit": "lint-staged",
+    "prepare": "npm run build",
+    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage --runInBand --reporters=default --reporters=jest-junit"
+  },
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "license": "ISC",
+  "dependencies": {
+    "@auth0/auth0-spa-js": "^1.6.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.25",
+    "@fortawesome/free-solid-svg-icons": "^5.11.2",
+    "@fortawesome/react-fontawesome": "^0.1.8",
+    "@motech-development/breeze-ui": "^0.0.0",
+    "formik": "^2.0.6",
+    "polished": "^3.4.2",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-number-format": "^4.4.1",
+    "react-popper": "^1.3.7",
+    "react-router-dom": "^5.1.2",
+    "styled-components": "^4.4.1",
+    "styled-reset": "^4.0.8"
+  },
+  "devDependencies": {
+    "@types/react-router-dom": "^5.1.3"
+  },
+  "peerDependencies": {
+    "@auth0/auth0-spa-js": "^1.6.0",
+    "@motech-development/breeze-ui": "^0.0.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-router-dom": "^5.1.2"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}"
+    ],
+    "moduleDirectories": [
+      "../../node_modules",
+      "<rootDir>/node_modules"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
+    ]
+  },
+  "jest-junit": {
+    "outputDirectory": "../../reports/junit",
+    "outputName": "auth.xml"
+  }
+}
