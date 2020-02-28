@@ -30,22 +30,11 @@ const MyCompanies: FC = () => {
       <Row>
         <Col sm={12} md={4} lg={3}>
           <Card padding="lg">
-            <Typography
-              rule
-              component="h3"
-              variant="h3"
-              align="center"
-              margin="lg"
-            >
+            <Typography rule component="h3" variant="h3" margin="lg">
               {t('my-companies.new-company')}
             </Typography>
 
-            <Typography
-              component="p"
-              variant="lead"
-              align="center"
-              margin="none"
-            >
+            <Typography component="p" variant="lead" margin="none">
               {t('my-companies.enroll-text')}
             </Typography>
           </Card>
