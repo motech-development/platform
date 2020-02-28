@@ -1,0 +1,101 @@
+service:
+  name: ${opt:appName, 'accounts'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-infrastructure
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+  domainName: ${opt:domain-name}
+
+resources:
+  Resources:
+    Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.prefix}-app
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref Bucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Principal:
+                CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+              Resource:
+                - !Join
+                  - ''
+                  - - !GetAtt Bucket.Arn
+                    - '/*'
+
+    CloudFrontOriginAccessIdentity:
+      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: !Ref Bucket
+
+    CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Aliases:
+            - ${self:custom.domainName}
+          ViewerCertificate:
+            AcmCertificateArn: !ImportValue Certificate
+            SslSupportMethod: sni-only
+          CustomErrorResponses:
+            - ErrorCode: 403
+              ResponseCode: 404
+              ResponsePagePath: /index.html
+          DefaultRootObject: /index.html
+          Enabled: true
+          HttpVersion: http2
+          Origins:
+            - DomainName: !GetAtt Bucket.DomainName
+              Id: ${self:custom.prefix}-app
+              S3OriginConfig:
+                OriginAccessIdentity:
+                  Fn::Join:
+                    - ''
+                    - - origin-access-identity/cloudfront/
+                      - Ref: CloudFrontOriginAccessIdentity
+          PriceClass: PriceClass_100
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            TargetOriginId: ${self:custom.prefix}-app
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
+          # TODO: Logging
+          # Logging:
+          #   IncludeCookies: 'false'
+          #   Bucket: ''
+          #   Prefix: ''
+
+    DnsRecord:
+      Type: AWS::Route53::RecordSet
+      Properties:
+        HostedZoneId: !ImportValue HostedZoneId
+        Name: ${self:service}.${self:custom.domainName}
+        Type: A
+        AliasTarget:
+          HostedZoneId: Z2FDTNDATAQYW2
+          DNSName: !GetAtt CloudFrontDistribution.DomainName
+
+  Outputs:
+    AppBucket:
+      Description: Application S3 bucket
+      Value: !Ref Bucket
