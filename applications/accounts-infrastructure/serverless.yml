@@ -11,13 +11,14 @@ provider:
 custom:
   prefix: ${self:service}-${self:provider.stage}
   domainName: ${opt:domain-name}
+  subDomain: ${self:service}.${self:custom.domainName}
 
 resources:
   Resources:
     Bucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:service}.${self:custom.domainName}
+        BucketName: ${self:custom.subDomains}
 
     BucketPolicy:
       Type: AWS::S3::BucketPolicy
@@ -47,7 +48,7 @@ resources:
       Properties:
         DistributionConfig:
           Aliases:
-            - ${self:custom.domainName}
+            - ${self:custom.subDomain}
           ViewerCertificate:
             AcmCertificateArn: !ImportValue Certificate
             SslSupportMethod: sni-only
@@ -89,7 +90,7 @@ resources:
       Type: AWS::Route53::RecordSet
       Properties:
         HostedZoneId: !ImportValue HostedZoneId
-        Name: ${self:service}.${self:custom.domainName}
+        Name: ${self:custom.subDomain}
         Type: A
         AliasTarget:
           HostedZoneId: Z2FDTNDATAQYW2

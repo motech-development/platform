@@ -52,9 +52,17 @@ const AuthProvider: FC<IAuthProviderProps> = ({
 
   useEffect(() => {
     (async () => {
-      const { REACT_APP_AUTH0_CLIENT_ID, REACT_APP_AUTH0_DOMAIN } = process.env;
+      const {
+        NODE_ENV,
+        REACT_APP_AUTH0_CLIENT_ID,
+        REACT_APP_AUTH0_DOMAIN,
+      } = process.env;
 
-      if (REACT_APP_AUTH0_CLIENT_ID && REACT_APP_AUTH0_DOMAIN) {
+      if (
+        NODE_ENV !== 'test' &&
+        REACT_APP_AUTH0_CLIENT_ID &&
+        REACT_APP_AUTH0_DOMAIN
+      ) {
         const config = {
           client_id: REACT_APP_AUTH0_CLIENT_ID,
           domain: REACT_APP_AUTH0_DOMAIN,
