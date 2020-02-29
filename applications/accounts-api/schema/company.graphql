@@ -10,6 +10,7 @@ type Company {
   contact: Contact
   name: String
   pk: ID
+  vatRegistration: String
 }
 
 input CompanyInput {
@@ -18,4 +19,5 @@ input CompanyInput {
   companyNumber: String!
   contact: ContactInput!
   name: String!
+  vatRegistration: String
 }
