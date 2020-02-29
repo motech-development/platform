@@ -125,6 +125,18 @@ jobs:
           command: npm run deploy -- --scope=@motech-development/accounts-data -- -- --stage production
           name: Deploy accounts data infrastructure
 
+  deploy-accounts-api:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage production
+          name: Deploy accounts API
+
   deploy-auth0:
     docker:
       - image: circleci/node:12.13
@@ -204,6 +216,10 @@ workflows:
           #       only: master
           # requires:
           #   - deploy-infrastructure
+
+      - deploy-accounts-api:
+          requires:
+            - deploy-accounts-data
 
       - deploy-auth0:
           filters:

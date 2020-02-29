@@ -1,0 +1,30 @@
+{
+  "version": "2017-02-28",
+  "operation": "Query",
+  "index": "sk-data-index",
+  "query": {
+    "expression": "sk = :sk AND begins_with(#data, :data)",
+    "expressionNames": {
+      "#data": "data"
+    },
+    "expressionValues": {
+      ":sk": $util.dynamodb.toDynamoDBJson("COMPANY"),
+      ":data": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+    }
+  },
+  "filter": {
+    "expression": "#owner = :owner",
+    "expressionNames": {
+      "#owner": "owner"
+    },
+    "expressionValues": {
+      ":owner": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+    }
+  }
+  #if($ctx.args.count)
+    ,"limit": $ctx.args.count
+  #end
+  #if($ctx.args.nextToken)
+    ,"nextToken": "$ctx.args.nextToken"
+  #end
+}

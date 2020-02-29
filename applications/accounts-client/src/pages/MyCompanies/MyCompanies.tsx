@@ -87,17 +87,8 @@ const MyCompanies: FC = () => {
               )}
             </Card>
 
-            <LinkButton
-              block
-              to={`/dashboard/${pk}`}
-              colour="success"
-              size="lg"
-            >
+            <LinkButton block to={`/dashboard/${pk}`} size="lg">
               {t('my-companies.select-company')}
-            </LinkButton>
-
-            <LinkButton block to={`my-companies/update-details/${pk}`}>
-              {t('my-companies.update-details')}
             </LinkButton>
           </Col>
         ))}

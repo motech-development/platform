@@ -30,6 +30,13 @@ const Dashboard: FC = () => {
       title: t('clients.title'),
     },
     {
+      button: t('company-details.button'),
+      colour: 'primary',
+      lead: t('company-details.lead'),
+      link: `/my-companies/update-details/${companyId}`,
+      title: t('company-details.title'),
+    },
+    {
       button: t('settings.button'),
       colour: 'primary',
       lead: t('settings.lead'),

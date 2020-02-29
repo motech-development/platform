@@ -1,0 +1,21 @@
+type Companies {
+  items: [Company]
+  nextToken: String
+}
+
+type Company {
+  address: Address
+  bank: Bank
+  companyNumber: String
+  contact: Contact
+  name: String
+  pk: ID
+}
+
+input CompanyInput {
+  address: AddressInput!
+  bank: BankInput!
+  companyNumber: String!
+  contact: ContactInput!
+  name: String!
+}

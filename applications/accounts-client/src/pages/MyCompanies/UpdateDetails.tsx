@@ -1,6 +1,7 @@
 import { PageTitle } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import withLayout from '../../hoc/withLayout';
 import CompanyForm from '../../components/CompanyForm';
 
@@ -26,6 +27,7 @@ const initialValues = {
 };
 
 const UpdateDetails: FC = () => {
+  const { companyId } = useParams();
   const { t } = useTranslation('my-companies');
 
   function save() {}
@@ -39,7 +41,7 @@ const UpdateDetails: FC = () => {
 
       <CompanyForm
         initialValues={initialValues}
-        backTo="/my-companies"
+        backTo={`/dashboard/${companyId}`}
         onSave={save}
       />
     </>

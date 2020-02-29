@@ -1,0 +1,9 @@
+type Contact {
+  email: AWSEmail
+  telephone: String
+}
+
+input ContactInput {
+  email: AWSEmail!
+  telephone: String!
+}

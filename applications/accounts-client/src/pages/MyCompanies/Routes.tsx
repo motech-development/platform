@@ -17,7 +17,7 @@ const Routes: FC = () => (
     <ProtectedRoute
       exact
       component={UpdateDetails}
-      path="/my-companies/update-details/:pk"
+      path="/my-companies/update-details/:companyId"
     />
   </Switch>
 );

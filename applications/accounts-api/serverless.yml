@@ -1,0 +1,124 @@
+service:
+  name: ${opt:appName, 'accounts'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-backend
+
+plugins:
+  - serverless-appsync-plugin
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+  oidc: https://${env:REACT_APP_AUTH0_DOMAIN}
+
+  appSync:
+    - name: ${self:custom.prefix}
+      authenticationType: OPENID_CONNECT
+      openIdConnectConfig:
+        issuer: ${self:custom.oidc}
+      logConfig:
+        loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
+        level: ERROR
+      mappingTemplates:
+        - dataSource: Data
+          type: Mutation
+          field: createCompany
+          request: company/Mutation.createCompany.req.vtl
+          response: company/Mutation.createCompany.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: deleteCompany
+          request: company/Mutation.deleteCompany.req.vtl
+          response: company/Mutation.deleteCompany.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: updateCompany
+          request: company/Mutation.updateCompany.req.vtl
+          response: company/Mutation.updateCompany.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getCompanies
+          request: company/Query.getCompanies.req.vtl
+          response: company/Query.getCompanies.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getCompany
+          request: company/Query.getCompany.req.vtl
+          response: company/Query.getCompany.res.vtl
+      schema:
+        - schema/address.graphql
+        - schema/bank.graphql
+        - schema/company.graphql
+        - schema/contact.graphql
+        - schema/schema.graphql
+      dataSources:
+        - type: AMAZON_DYNAMODB
+          name: Data
+          description: Application table
+          config:
+            tableName: !ImportValue ApplicationTable
+            serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
+
+resources:
+  Resources:
+    AppSyncLoggingServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-logging-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-logging-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource: '*'
+
+    AppSyncDynamoDbServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-dynamodb-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-dynamodb-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:DeleteItem
+                    - dynamodb:GetItem
+                    - dynamodb:PutItem
+                    - dynamodb:Query
+                    - dynamodb:Scan
+                    - dynamodb:UpdateItem
+                  Resource:
+                    - !ImportValue ApplicationTableArn
+                    - !Join
+                      - ''
+                      - - !ImportValue ApplicationTableArn
+                        - '/index/sk-data-index'
