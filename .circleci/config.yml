@@ -177,14 +177,11 @@ workflows:
             - unit-test
 
       - deploy-accounts-infrastructure:
-          # TODO: Enable once this all works
-          # filters:
-          #   branches:
-          #     only: master
+          filters:
+            branches:
+              only: master
           requires:
-            # TODO: Change the requirements
-            # - deploy-infrastructure
-            - unit-test
+            - deploy-infrastructure
 
       - deploy-auth0:
           filters:
@@ -194,10 +191,9 @@ workflows:
             - unit-test
 
       - deploy-accounts-client:
-          # TODO: Enable once this all works
-          # filters:
-          #   branches:
-          #     only: master
+          filters:
+            branches:
+              only: master
           requires:
             - deploy-accounts-infrastructure
             - build-accounts-client
