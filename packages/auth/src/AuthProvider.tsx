@@ -54,16 +54,19 @@ const AuthProvider: FC<IAuthProviderProps> = ({
     (async () => {
       const {
         NODE_ENV,
+        REACT_APP_AUTH0_AUDIENCE,
         REACT_APP_AUTH0_CLIENT_ID,
         REACT_APP_AUTH0_DOMAIN,
       } = process.env;
 
       if (
         NODE_ENV !== 'test' &&
+        REACT_APP_AUTH0_AUDIENCE &&
         REACT_APP_AUTH0_CLIENT_ID &&
         REACT_APP_AUTH0_DOMAIN
       ) {
         const config = {
+          audience: REACT_APP_AUTH0_AUDIENCE,
           client_id: REACT_APP_AUTH0_CLIENT_ID,
           domain: REACT_APP_AUTH0_DOMAIN,
           redirect_uri: window.location.origin,

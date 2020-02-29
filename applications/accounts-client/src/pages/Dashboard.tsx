@@ -58,7 +58,7 @@ const Dashboard: FC = () => {
 
       <Row>
         {cards.map(({ button, colour, lead, link, title }) => (
-          <Col sm={12} md={4} lg={3}>
+          <Col key={title} sm={12} md={4} lg={3}>
             <Card padding="lg">
               <Typography rule component="h3" variant="h3" margin="lg">
                 {title}

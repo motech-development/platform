@@ -1,18 +1,23 @@
 rules: []
 rulesConfigs: []
 pages: []
-resourceServers: []
+resourceServers:
+  - name: Accounts API
+    identifier: accounts-api
+    allow_offline_access: false
+    signing_alg: RS256
+    skip_consent_for_verifiable_first_party_clients: true
+    token_lifetime: 86400
+    token_lifetime_for_web: 7200
 clients:
   - name: Accounts
     allowed_clients: []
     allowed_logout_urls:
-      - 'https://accounts.motechdevelopment.co.uk'
       - 'http://localhost:3000'
       - 'http://192.168.1.153:3000'
       - 'http://192.168.1.66:3000'
     app_type: spa
     callbacks:
-      - 'https://accounts.motechdevelopment.co.uk'
       - 'http://localhost:3000'
       - 'http://192.168.1.153:3000'
       - 'http://192.168.1.66:3000'
@@ -38,7 +43,6 @@ clients:
     sso_disabled: false
     token_endpoint_auth_method: none
     web_origins:
-      - 'https://accounts.motechdevelopment.co.uk'
       - 'http://localhost:3000'
       - 'http://192.168.1.153:3000'
       - 'http://192.168.1.66:3000'

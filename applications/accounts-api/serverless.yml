@@ -13,7 +13,7 @@ plugins:
 
 custom:
   prefix: ${self:service}-${self:provider.stage}
-  oidc: https://${env:REACT_APP_AUTH0_DOMAIN}
+  oidc: https://${env:REACT_APP_AUTH0_AUDIENCE}
 
   appSync:
     - name: ${self:custom.prefix}
