@@ -97,7 +97,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_cache
       - run:
-          command: npm run teardown -- --scope=@motech-development/accounts-infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
+          command: npm run deploy -- --scope=@motech-development/accounts-infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy accounts infrastructure
           no_output_timeout: 60m
 
@@ -193,14 +193,14 @@ workflows:
           requires:
             - unit-test
 
-      # - deploy-accounts-client:
-      #     # TODO: Enable once this all works
-      #     # filters:
-      #     #   branches:
-      #     #     only: master
-      #     requires:
-      #       - deploy-accounts-infrastructure
-      #       - build-accounts-client
+      - deploy-accounts-client:
+          # TODO: Enable once this all works
+          # filters:
+          #   branches:
+          #     only: master
+          requires:
+            - deploy-accounts-infrastructure
+            - build-accounts-client
 
       - deploy-auth0:
           filters:
