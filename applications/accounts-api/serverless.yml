@@ -14,7 +14,7 @@ plugins:
 custom:
   prefix: ${self:service}-${self:provider.stage}
   oidc:
-    issuer: https://${env:REACT_APP_AUTH0_DOMAIN}
+    issuer: https://${env:REACT_APP_AUTH0_DOMAIN}/
     audience: ${env:REACT_APP_AUTH0_AUDIENCE}
 
   appSync:
