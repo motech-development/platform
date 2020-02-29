@@ -17,7 +17,7 @@ custom:
 
   client:
     manageResources: false
-    bucketName: ${self:service}.${self:custom.domainName}
+    bucketName: !ImportValue AccountsAppBucket
     distributionFolder: build
     objectHeaders:
       '**/*.js':

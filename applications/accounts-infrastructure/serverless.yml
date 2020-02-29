@@ -97,6 +97,7 @@ resources:
           DNSName: !GetAtt CloudFrontDistribution.DomainName
 
   Outputs:
-    AppBucket:
+    AccountsAppBucket:
       Description: Application S3 bucket
       Value: !Ref Bucket
+      Name: AccountsAppBucket

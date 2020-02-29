@@ -60,7 +60,7 @@ custom:
           name: Data
           description: Application table
           config:
-            tableName: !ImportValue ApplicationTable
+            tableName: !ImportValue AccountsApplicationTable
             serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
 
 resources:
@@ -117,8 +117,8 @@ resources:
                     - dynamodb:Scan
                     - dynamodb:UpdateItem
                   Resource:
-                    - !ImportValue ApplicationTableArn
+                    - !ImportValue AccountsApplicationTableArn
                     - !Join
                       - ''
-                      - - !ImportValue ApplicationTableArn
+                      - - !ImportValue AccountsApplicationTableArn
                         - '/index/sk-data-index'

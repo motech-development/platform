@@ -41,10 +41,14 @@ resources:
               ProjectionType: ALL
 
   Outputs:
-    ApplicationTable:
-      Description: Application DynamoDB table
+    AccountsApplicationTable:
+      Description: Accounts application DynamoDB table
       Value: !Ref ApplicationTable
+      Export:
+        Name: AccountsApplicationTable
 
-    ApplicationTableArn:
-      Description: Application DynamoDB table ARN
+    AccountsApplicationTableArn:
+      Description: Accounts application DynamoDB table ARN
       Value: !GetAtt ApplicationTable.Arn
+      Export:
+        Name: AccountsApplicationTableArn
