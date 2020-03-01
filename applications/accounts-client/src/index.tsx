@@ -1,9 +1,10 @@
 import { AuthProvider, IAppState } from '@motech-development/auth';
-import { BaseStyles } from '@motech-development/breeze-ui';
+import { BaseStyles, ScrollToTop } from '@motech-development/breeze-ui';
 import React from 'react';
 import { render } from 'react-dom';
 import { Router } from 'react-router-dom';
 import App from './App';
+import Apollo from './components/Apollo';
 import history from './history';
 import './i18n';
 
@@ -20,7 +21,11 @@ render(
     <AuthProvider onRedirectCallback={onRedirectCallback}>
       <BaseStyles />
 
-      <App />
+      <ScrollToTop />
+
+      <Apollo>
+        <App />
+      </Apollo>
     </AuthProvider>
   </Router>,
   document.getElementById('root'),

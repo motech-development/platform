@@ -7,10 +7,11 @@ import {
 } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import history from '../history';
+import { useHistory } from 'react-router-dom';
 import withLayout from '../hoc/withLayout';
 
 const NotFound: FC = () => {
+  const history = useHistory();
   const { t } = useTranslation('not-found');
 
   function goBack() {

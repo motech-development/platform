@@ -25,6 +25,7 @@ describe('CompanyForm', () => {
         email: 'info@contact.com',
         telephone: '07712345678',
       },
+      id: 'company-uuid',
       name: 'New company',
       vatRegistration: 'GB123456789',
     };
@@ -35,7 +36,11 @@ describe('CompanyForm', () => {
     it('should render the form', async () => {
       const { findByRole } = render(
         <TestProvider>
-          <CompanyForm backTo="/test" onSave={value => onSave(value)} />
+          <CompanyForm
+            backTo="/test"
+            loading={false}
+            onSave={value => onSave(value)}
+          />
         </TestProvider>,
       );
 
@@ -51,6 +56,7 @@ describe('CompanyForm', () => {
         <TestProvider>
           <CompanyForm
             initialValues={initialValues}
+            loading={false}
             backTo="/test"
             onSave={value => onSave(value)}
           />
@@ -67,6 +73,7 @@ describe('CompanyForm', () => {
         <TestProvider>
           <CompanyForm
             initialValues={initialValues}
+            loading={false}
             backTo="/test"
             onSave={value => onSave(value)}
           />
