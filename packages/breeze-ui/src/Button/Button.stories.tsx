@@ -26,6 +26,7 @@ stories.add('Basic button', () => (
       block={boolean('Block display', false)}
       colour={select('Colour', colour, 'primary')}
       size={select('Size', size, 'md') as 'sm' | 'md' | 'lg'}
+      loading={boolean('Loading', false)}
     >
       {text('Title', 'Button')}
     </Button>
