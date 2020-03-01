@@ -20,20 +20,20 @@ resources:
         AttributeDefinitions:
           - AttributeName: data
             AttributeType: S
-          - AttributeName: pk
+          - AttributeName: id
             AttributeType: S
-          - AttributeName: sk
+          - AttributeName: __typename
             AttributeType: S
         KeySchema:
-          - AttributeName: pk
+          - AttributeName: id
             KeyType: HASH
-          - AttributeName: sk
+          - AttributeName: __typename
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         GlobalSecondaryIndexes:
-          - IndexName: sk-data-index
+          - IndexName: __typename-data-index
             KeySchema:
-              - AttributeName: sk
+              - AttributeName: __typename
                 KeyType: HASH
               - AttributeName: data
                 KeyType: RANGE
