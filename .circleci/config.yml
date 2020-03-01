@@ -39,7 +39,9 @@ jobs:
           key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           paths:
             - node_modules
+            - applications/accounts-api/node_modules
             - applications/accounts-client/node_modules
+            - applications/accounts-data/node_modules
             - applications/accounts-infrastructure/node_modules
             - applications/id/node_modules
             - applications/infrastructure/node_modules
