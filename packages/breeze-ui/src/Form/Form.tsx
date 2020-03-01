@@ -4,6 +4,38 @@ import Button from '../Button/Button';
 import Col from '../Col/Col';
 import Row from '../Row/Row';
 
+function isObject(value: unknown) {
+  return typeof value === 'object' && !Array.isArray(value) && value !== null;
+}
+
+function encodeNullValues<T>(values: T) {
+  const initialValues = {
+    ...values,
+  };
+
+  Object.keys(initialValues).forEach(key => {
+    const value = initialValues[key];
+
+    if (value === null) {
+      initialValues[key] = '';
+    } else if (isObject(value)) {
+      initialValues[key] = encodeNullValues(value);
+    }
+  });
+
+  return initialValues;
+}
+
+function formNormaliser<T>(values: T) {
+  let initialValues = {
+    ...values,
+  };
+
+  initialValues = encodeNullValues(initialValues);
+
+  return initialValues;
+}
+
 export interface IFormProps<T extends FormikValues = FormikValues> {
   children: ReactNode;
   cancel?: ElementType;
@@ -23,7 +55,7 @@ const Form: FC<IFormProps> = ({
 }) => (
   <Formik
     validateOnMount
-    initialValues={initialValues}
+    initialValues={formNormaliser(initialValues)}
     validationSchema={validationSchema}
     onSubmit={onSubmit}
   >
