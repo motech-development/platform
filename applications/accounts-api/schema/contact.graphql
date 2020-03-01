@@ -4,6 +4,7 @@ type Contact {
 }
 
 input ContactInput {
+  __typename: String
   email: AWSEmail!
   telephone: String!
 }

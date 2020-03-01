@@ -122,4 +122,4 @@ resources:
                     - !Join
                       - ''
                       - - !ImportValue AccountsApplicationTableArn
-                        - '/index/sk-data-index'
+                        - '/index/__typename-data-index'

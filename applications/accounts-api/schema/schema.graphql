@@ -1,21 +1,15 @@
 type Mutation {
   createCompany(input: CompanyInput!): Company!
-  deleteCompany(pk: ID!): Company!
-  updateCompany(pk: ID!, input: CompanyInput!): Company!
+  deleteCompany(id: ID!): Company!
+  updateCompany(input: CompanyInput!): Company!
 }
 
 type Query {
   getCompanies(count: Int, nextToken: String): Companies!
-  getCompany(pk: ID!): Company!
-}
-
-# TODO: Look at updating on create and update
-type Subscription {
-  deletedCompany: Company @aws_subscribe(mutations: ["deleteCompany"])
+  getCompany(id: ID!): Company!
 }
 
 schema {
   mutation: Mutation
   query: Query
-  subscription: Subscription
 }
