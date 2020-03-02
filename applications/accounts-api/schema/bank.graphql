@@ -4,6 +4,7 @@ type Bank {
 }
 
 input BankInput {
+  __typename: String
   accountNumber: String!
   sortCode: String!
 }

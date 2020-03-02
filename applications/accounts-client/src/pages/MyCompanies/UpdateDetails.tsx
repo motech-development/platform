@@ -1,50 +1,73 @@
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { PageTitle } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import withLayout from '../../hoc/withLayout';
-import CompanyForm from '../../components/CompanyForm';
+import CompanyForm, { FormSchema } from '../../components/CompanyForm';
+import Connected from '../../components/Connected';
+import GET_COMPANY, {
+  IGetCompanyInput,
+  IGetCompanyOutput,
+} from '../../graphql/GET_COMPANY';
+import UPDATE_COMPANY, {
+  IUpdateCompanyInput,
+  IUpdateCompanyOutput,
+} from '../../graphql/UPDATE_COMPANY';
 
-const initialValues = {
-  address: {
-    line1: '1 Street',
-    line2: '',
-    line3: 'Town',
-    line4: 'County',
-    line5: 'KT1 1NE',
-  },
-  bank: {
-    accountNumber: '12345678',
-    sortCode: '12-34-56',
-  },
-  companyNumber: '12345678',
-  contact: {
-    email: 'info@contact.com',
-    telephone: '07712345678',
-  },
-  name: 'New company',
-  vatRegistration: 'GB123456789',
-};
+interface IUpdateDetailsParams {
+  companyId: string;
+}
 
 const UpdateDetails: FC = () => {
-  const { companyId } = useParams();
+  const history = useHistory();
+  const { companyId } = useParams<IUpdateDetailsParams>();
+  const [
+    updateCompany,
+    { error: updateError, loading: updateLoading },
+  ] = useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY, {
+    onCompleted: ({ updateCompany: { id } }) => {
+      history.push(`/dashboard/${id}`);
+    },
+  });
+  const { data, error, loading } = useQuery<
+    IGetCompanyOutput,
+    IGetCompanyInput
+  >(GET_COMPANY, {
+    variables: {
+      id: companyId,
+    },
+  });
   const { t } = useTranslation('my-companies');
 
-  function save() {}
+  function save(input: FormSchema) {
+    (async () => {
+      await updateCompany({
+        variables: {
+          input,
+        },
+      });
+    })();
+  }
 
   return (
-    <>
-      <PageTitle
-        title={t('update-details.title')}
-        subTitle={t('update-details.sub-title')}
-      />
+    <Connected error={error || updateError} loading={loading}>
+      {data && (
+        <>
+          <PageTitle
+            title={data.getCompany.name}
+            subTitle={t('update-details.sub-title')}
+          />
 
-      <CompanyForm
-        initialValues={initialValues}
-        backTo={`/dashboard/${companyId}`}
-        onSave={save}
-      />
-    </>
+          <CompanyForm
+            backTo={`/dashboard/${companyId}`}
+            initialValues={data.getCompany}
+            loading={updateLoading}
+            onSave={save}
+          />
+        </>
+      )}
+    </Connected>
   );
 };
 

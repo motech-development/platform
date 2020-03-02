@@ -12,6 +12,7 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
   margin: 100px 0;
+  padding: 1rem;
 `;
 
 const Index: FC = () => {

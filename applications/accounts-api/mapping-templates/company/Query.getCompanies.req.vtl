@@ -1,14 +1,15 @@
 {
   "version": "2017-02-28",
   "operation": "Query",
-  "index": "sk-data-index",
+  "index": "__typename-data-index",
   "query": {
-    "expression": "sk = :sk AND begins_with(#data, :data)",
+    "expression": "#typename = :typename AND begins_with(#data, :data)",
     "expressionNames": {
-      "#data": "data"
+      "#data": "data",
+      "#typename": "__typename"
     },
     "expressionValues": {
-      ":sk": $util.dynamodb.toDynamoDBJson("COMPANY"),
+      ":typename": $util.dynamodb.toDynamoDBJson("Company"),
       ":data": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
     }
   },

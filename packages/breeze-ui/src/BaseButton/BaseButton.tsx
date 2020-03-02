@@ -43,6 +43,7 @@ const BaseButton = styled.button<IBaseButtonProps>`
     cursor: pointer;
     font-family: 'Cabin', sans-serif;
     font-weight: 600;
+    position: relative;
     vertical-align: middle;
     text-align: center;
     text-decoration: none;

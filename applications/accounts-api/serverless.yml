@@ -14,15 +14,13 @@ plugins:
 custom:
   prefix: ${self:service}-${self:provider.stage}
   oidc:
-    issuer: https://${env:REACT_APP_AUTH0_DOMAIN}
-    audience: ${env:REACT_APP_AUTH0_AUDIENCE}
+    issuer: https://${env:REACT_APP_AUTH0_DOMAIN}/
 
   appSync:
     - name: ${self:custom.prefix}
       authenticationType: OPENID_CONNECT
       openIdConnectConfig:
         issuer: ${self:custom.oidc.issuer}
-        clientId: ${self:custom.oidc.audience}
       logConfig:
         loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
         level: ERROR
@@ -124,4 +122,4 @@ resources:
                     - !Join
                       - ''
                       - - !ImportValue AccountsApplicationTableArn
-                        - '/index/sk-data-index'
+                        - '/index/__typename-data-index'

@@ -46,6 +46,20 @@ clients:
       - 'http://localhost:3000'
       - 'http://192.168.1.153:3000'
       - 'http://192.168.1.66:3000'
+  - name: Accounts API (Test Application)
+    app_type: non_interactive
+    cross_origin_auth: false
+    custom_login_page_on: true
+    grant_types:
+      - client_credentials
+    is_first_party: true
+    is_token_endpoint_ip_header_trusted: false
+    jwt_configuration:
+      alg: RS256
+      lifetime_in_seconds: 36000
+      secret_encoded: false
+    oidc_conformant: true
+    sso_disabled: false
   - name: Default App
     callbacks: []
     cross_origin_auth: false
@@ -95,6 +109,7 @@ databases:
     enabled_clients:
       - Default App
       - auth0-deploy-cli-extension
+      - Accounts API (Test Application)
       - Accounts
     is_domain_connection: false
     options:
@@ -112,6 +127,7 @@ connections:
     enabled_clients:
       - Default App
       - auth0-deploy-cli-extension
+      - Accounts API (Test Application)
       - Accounts
     is_domain_connection: false
     options:
@@ -128,7 +144,10 @@ tenant:
     enable_mgmt_api_v1: true
 emailProvider: {}
 emailTemplates: []
-clientGrants: []
+clientGrants:
+  - client_id: Accounts API (Test Application)
+    audience: accounts-api
+    scope: []
 guardianFactors:
   - name: duo
     enabled: false
