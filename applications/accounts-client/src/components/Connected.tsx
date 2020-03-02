@@ -6,11 +6,15 @@ import ErrorCard from './ErrorCard';
 
 export interface IConnectProps {
   children: ReactNode;
-  error: ApolloError | undefined;
+  error?: ApolloError;
   loading: boolean;
 }
 
-const Connect: FC<IConnectProps> = ({ children, error, loading }) => {
+const Connect: FC<IConnectProps> = ({
+  children,
+  error = undefined,
+  loading,
+}) => {
   const { t } = useTranslation('connected');
 
   if (loading) {

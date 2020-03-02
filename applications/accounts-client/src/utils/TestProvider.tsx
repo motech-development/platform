@@ -2,7 +2,8 @@ import { AuthContext, AuthProvider } from '@motech-development/auth';
 import i18n from 'i18next';
 import React, { FC, ReactElement } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
-import { MemoryRouter } from 'react-router-dom';
+import { Router } from 'react-router-dom';
+import history from '../history';
 
 const user = {
   name: 'Mo Gusbi',
@@ -46,7 +47,7 @@ const TestProvider: FC<ITestProviderProps> = ({
   });
 
   return (
-    <MemoryRouter initialEntries={['/']}>
+    <Router history={history}>
       <AuthProvider>
         <AuthContext.Provider
           value={{
@@ -62,7 +63,7 @@ const TestProvider: FC<ITestProviderProps> = ({
           <I18nextProvider i18n={testI18n}>{children}</I18nextProvider>
         </AuthContext.Provider>
       </AuthProvider>
-    </MemoryRouter>
+    </Router>
   );
 };
 
