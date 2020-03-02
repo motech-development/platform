@@ -1,4 +1,3 @@
-## TODO: Why is the VAT registration not removed?
 #set($id = $ctx.args.input.id)
 #set($typename = $ctx.args.input["__typename"])
 #set($owner = $ctx.identity.sub)
@@ -54,15 +53,24 @@
 #set($input = $ctx.args.input.put("address", $address))
 #set($input = $ctx.args.input.remove("__typename"))
 #set($input = $ctx.args.input.remove("id"))
-#set($expression = "SET")
+
+#set($set = "SET")
+
+#set($remove = "REMOVE")
 
 #foreach ($key in $ctx.args.input.keySet())
-  #if($ctx.args.input.get($key) != "")
-    #set($expression = "$expression #${key} = :${key},")
+  #if($ctx.args.input.get($key) == "")
+    #set($remove = "$remove #${key},")
+  #else
+    #set($set = "$set #${key} = :${key},")
   #end
 #end
 
-#set($expression = "$expression #data = :data, #updatedAt = :updatedAt")
+#set($set = "$set #data = :data, #updatedAt = :updatedAt")
+
+#set($remove = $remove.substring(0, $remove.lastIndexOf(",")))
+
+#set($expression = "$remove $set")
 
 {
   "version": "2017-02-28",
@@ -77,9 +85,7 @@
       "#data": "data",
       "#updatedAt": "updatedAt"
       #foreach ($key in $ctx.args.input.keySet())
-        #if($ctx.args.input.get($key) != "")
-          , "#${key}": "${key}"
-        #end
+        , "#${key}": "${key}"
       #end
     },
     "expressionValues": {
