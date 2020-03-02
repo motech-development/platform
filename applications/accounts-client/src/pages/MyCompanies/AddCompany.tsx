@@ -18,18 +18,20 @@ const AddCompany: FC = () => {
   const [addCompany, { error, loading }] = useMutation<
     IAddCompanyOutput,
     IAddCompanyInput
-  >(ADD_COMPANY);
+  >(ADD_COMPANY, {
+    onCompleted: ({ createCompany }) => {
+      history.push(`/dashboard/${createCompany.id}`);
+    },
+  });
 
   function save(input: FormSchema) {
     (async () => {
-      const { data } = await addCompany({
+      await addCompany({
         update: updateCache,
         variables: {
           input,
         },
       });
-
-      history.push(`/dashboard/${data?.createCompany.id}`);
     })();
   }
 

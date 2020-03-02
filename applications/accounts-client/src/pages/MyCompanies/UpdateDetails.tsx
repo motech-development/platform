@@ -25,7 +25,11 @@ const UpdateDetails: FC = () => {
   const [
     updateCompany,
     { error: updateError, loading: updateLoading },
-  ] = useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY);
+  ] = useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY, {
+    onCompleted: ({ updateCompany: { id } }) => {
+      history.push(`/dashboard/${id}`);
+    },
+  });
   const { data, error, loading } = useQuery<
     IGetCompanyOutput,
     IGetCompanyInput
@@ -43,8 +47,6 @@ const UpdateDetails: FC = () => {
           input,
         },
       });
-
-      history.push(`/dashboard/${companyId}`);
     })();
   }
 
