@@ -23,8 +23,7 @@ const AddCompany: FC = () => {
       history.push(`/dashboard/${createCompany.id}`);
     },
   });
-
-  function save(input: FormSchema) {
+  const save = (input: FormSchema) => {
     (async () => {
       await addCompany({
         update: updateCache,
@@ -33,7 +32,7 @@ const AddCompany: FC = () => {
         },
       });
     })();
-  }
+  };
 
   return (
     <Connected error={error} loading={loading}>

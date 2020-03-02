@@ -39,8 +39,7 @@ const UpdateDetails: FC = () => {
     },
   });
   const { t } = useTranslation('my-companies');
-
-  function save(input: FormSchema) {
+  const save = (input: FormSchema) => {
     (async () => {
       await updateCompany({
         variables: {
@@ -48,7 +47,7 @@ const UpdateDetails: FC = () => {
         },
       });
     })();
-  }
+  };
 
   return (
     <Connected error={error || updateError} loading={loading}>

@@ -30,8 +30,7 @@ const validationSchema = object().shape({
   name: string().required(),
   password: string().required(),
 });
-
-function submit() {}
+const submit = () => {};
 
 stories.add('Basic form', () => (
   <>

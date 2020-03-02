@@ -151,9 +151,20 @@ const Tooltip: FC<ITooltipProps> = ({
   parent: Parent,
   placement,
 }) => {
+  let timer: number;
   const [visible, setVisibility] = useState(false);
   const mounted = useRef(false);
-  let timer: number;
+  const hideTooltip = () => {
+    timer = setTimeout(() => {
+      if (mounted.current) {
+        setVisibility(false);
+      }
+    }, 1000);
+  };
+  const showTooltip = () => {
+    clearTimeout(timer);
+    setVisibility(true);
+  };
 
   useEffect(() => {
     mounted.current = true;
@@ -162,19 +173,6 @@ const Tooltip: FC<ITooltipProps> = ({
       mounted.current = false;
     };
   });
-
-  function hideTooltip() {
-    timer = setTimeout(() => {
-      if (mounted.current) {
-        setVisibility(false);
-      }
-    }, 1000);
-  }
-
-  function showTooltip() {
-    clearTimeout(timer);
-    setVisibility(true);
-  }
 
   return (
     <ThemeProvider theme={tooltipTheme}>
