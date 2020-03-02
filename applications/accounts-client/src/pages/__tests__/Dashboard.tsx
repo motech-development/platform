@@ -3,7 +3,6 @@ import { render, RenderResult } from '@testing-library/react';
 import React from 'react';
 import { Route } from 'react-router-dom';
 import GET_COMPANY from '../../graphql/GET_COMPANY';
-import history from '../../history';
 import TestProvider from '../../utils/TestProvider';
 import Dashboard from '../Dashboard';
 
@@ -12,8 +11,6 @@ describe('Dashboard', () => {
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    history.push('/dashboard/Test');
-
     mocks = [
       {
         request: {
@@ -50,7 +47,7 @@ describe('Dashboard', () => {
       },
     ];
     component = render(
-      <TestProvider>
+      <TestProvider path="/dashboard/Test">
         <MockedProvider mocks={mocks} addTypename={false}>
           <Route exact path="/dashboard/:companyId" component={Dashboard} />
         </MockedProvider>

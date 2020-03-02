@@ -5,6 +5,8 @@ import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { Router } from 'react-router-dom';
 import history from '../history';
 
+history.goBack = jest.fn();
+
 const user = {
   name: 'Mo Gusbi',
 };
@@ -21,15 +23,14 @@ export interface ITestProviderProps {
   children: ReactElement;
   isAuthenticated?: boolean;
   isLoading?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  translations?: any;
+  path?: string;
 }
 
 const TestProvider: FC<ITestProviderProps> = ({
   children,
   isAuthenticated = true,
   isLoading = false,
-  translations = {},
+  path = null,
 }) => {
   const testI18n = i18n;
 
@@ -40,11 +41,13 @@ const TestProvider: FC<ITestProviderProps> = ({
     },
     lng: 'en',
     resources: {
-      en: {
-        ...translations,
-      },
+      en: {},
     },
   });
+
+  if (path) {
+    history.push(path);
+  }
 
   return (
     <Router history={history}>

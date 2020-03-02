@@ -5,10 +5,6 @@ import TestProvider from '../../utils/TestProvider';
 import ErrorCard from '../ErrorCard';
 
 describe('ErrorCard', () => {
-  beforeEach(() => {
-    history.goBack = jest.fn();
-  });
-
   it('should display title', async () => {
     const { findByText } = render(
       <TestProvider>
