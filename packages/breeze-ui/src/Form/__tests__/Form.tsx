@@ -5,6 +5,11 @@ import TextBox from '../../TextBox/TextBox';
 import Form from '../Form';
 
 interface IInitialValues {
+  empty: string | null;
+  obj: {
+    empty: string | null;
+    test: string;
+  };
   test: string;
 }
 
@@ -17,9 +22,19 @@ describe('Form', () => {
   beforeEach(() => {
     onSubmit = jest.fn();
     initialValues = {
+      empty: null,
+      obj: {
+        empty: null,
+        test: '',
+      },
       test: '',
     };
     validationSchema = object().shape({
+      empty: string(),
+      obj: object().shape({
+        empty: string(),
+        test: string(),
+      }),
       test: string().required(),
     });
   });
@@ -33,6 +48,9 @@ describe('Form', () => {
           validationSchema={validationSchema}
           onSubmit={value => onSubmit(value)}
         >
+          <TextBox label="Empty" name="empty" />
+          <TextBox label="Object empty" name="obj.empty" />
+          <TextBox label="Object test" name="obj.test" />
           <TextBox label="Test" name="test" />
         </Form>,
       );
@@ -69,6 +87,11 @@ describe('Form', () => {
       });
 
       expect(onSubmit).toHaveBeenCalledWith({
+        empty: '',
+        obj: {
+          empty: '',
+          test: '',
+        },
         test: 'Hello world',
       });
     });
@@ -130,8 +153,35 @@ describe('Form', () => {
       });
 
       expect(onSubmit).toHaveBeenCalledWith({
+        empty: '',
+        obj: {
+          empty: '',
+          test: '',
+        },
         test: '00-00-00',
       });
+    });
+  });
+
+  describe('when loading', () => {
+    beforeEach(() => {
+      component = render(
+        <Form
+          loading
+          submitLabel="Submit"
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={value => onSubmit(value)}
+        >
+          <TextBox label="Test" name="test" format="##-##-##" />
+        </Form>,
+      );
+    });
+
+    it('should have a disabled submit button', async () => {
+      const { findByRole } = component;
+
+      await expect(findByRole('button')).resolves.toHaveAttribute('disabled');
     });
   });
 });
