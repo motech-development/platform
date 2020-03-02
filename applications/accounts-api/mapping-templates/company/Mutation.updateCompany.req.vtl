@@ -68,9 +68,13 @@
 
 #set($set = "$set #data = :data, #updatedAt = :updatedAt")
 
-#set($remove = $remove.substring(0, $remove.lastIndexOf(",")))
+#if($remove == "REMOVE")
+  #set($expression = "$set")
+#else
+  #set($remove = $remove.substring(0, $remove.lastIndexOf(",")))
 
-#set($expression = "$remove $set")
+  #set($expression = "$remove $set")
+#end
 
 {
   "version": "2017-02-28",
