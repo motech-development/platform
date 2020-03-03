@@ -148,6 +148,6 @@ describe('AddCompany', () => {
 
     await act(async () => wait(100));
 
-    expect(history.push).toHaveBeenCalled();
+    expect(history.push).toHaveBeenCalledWith('/dashboard/company-uuid');
   });
 });
