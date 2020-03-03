@@ -57,7 +57,7 @@ describe('TextBox', () => {
         );
         const input = await findByPlaceholderText('Test');
 
-        input.focus();
+        fireEvent.focus(input);
 
         expect(input).toHaveStyle('color: #333');
       });
@@ -203,7 +203,7 @@ describe('TextBox', () => {
         );
         const input = await findByPlaceholderText('Test');
 
-        input.focus();
+        fireEvent.focus(input);
 
         expect(input).toHaveStyle('color: #333');
       });
@@ -261,7 +261,7 @@ describe('TextBox', () => {
         );
         const input = await findByPlaceholderText('Test');
 
-        input.focus();
+        fireEvent.focus(input);
 
         expect(input).toHaveStyle('color: #333');
       });
@@ -422,7 +422,7 @@ describe('TextBox', () => {
         );
         const input = await findByPlaceholderText('Test');
 
-        input.focus();
+        fireEvent.focus(input);
 
         expect(input).toHaveStyle('color: #333');
       });

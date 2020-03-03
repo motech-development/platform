@@ -16,11 +16,11 @@ export interface IApolloProps {
 }
 
 const Apollo: FC<IApolloProps> = ({ children }) => {
-  const { getTokenSilently, isLoading } = useAuth();
+  const { getTokenSilently, isAuthenticated, isLoading } = useAuth();
   const [apolloClient, setApolloClient] = useState();
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && isAuthenticated) {
       const auth: AuthOptions = {
         jwtToken: async () => {
           const token = await getTokenSilently();
@@ -49,11 +49,15 @@ const Apollo: FC<IApolloProps> = ({ children }) => {
       setApolloClient(client);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
+  }, [isLoading, isAuthenticated]);
 
-  return apolloClient ? (
-    <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
-  ) : null;
+  if (isAuthenticated) {
+    return apolloClient ? (
+      <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
+    ) : null;
+  }
+
+  return children;
 };
 
 export default memo(Apollo);

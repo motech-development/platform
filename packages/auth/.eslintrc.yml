@@ -24,6 +24,14 @@ plugins:
   - prettier
 
 rules:
+  import/extensions:
+    - error
+    - ignorePackages
+    - js: never
+      mjs: never
+      jsx: never
+      ts: never
+      tsx: never
   import/no-extraneous-dependencies:
     - error
     - packageDir:
@@ -50,5 +58,9 @@ rules:
 
 settings:
   import/resolver:
-    typescript:
-      alwaysTryTypes: true
+    node:
+      extensions:
+        - .js
+        - .jsx
+        - .ts
+        - .tsx
