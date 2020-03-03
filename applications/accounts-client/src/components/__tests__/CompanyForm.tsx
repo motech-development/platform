@@ -1,4 +1,9 @@
-import { act, fireEvent, render, waitForElement } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  wait,
+  waitForElement,
+} from '@testing-library/react';
 import React from 'react';
 import TestProvider from '../../utils/TestProvider';
 import CompanyForm, { FormSchema } from '../CompanyForm';
@@ -80,7 +85,7 @@ describe('CompanyForm', () => {
         </TestProvider>,
       );
 
-      await act(async () => {
+      await wait(async () => {
         const button = await findByRole('button');
 
         fireEvent.click(button);

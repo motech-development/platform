@@ -5,7 +5,8 @@ import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { Router } from 'react-router-dom';
 import history from '../history';
 
-history.goBack = jest.fn();
+jest.spyOn(history, 'goBack');
+jest.spyOn(history, 'push');
 
 const user = {
   name: 'Mo Gusbi',

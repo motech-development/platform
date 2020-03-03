@@ -10,7 +10,7 @@ export interface IConnectProps {
   loading: boolean;
 }
 
-const Connect: FC<IConnectProps> = ({
+const Connected: FC<IConnectProps> = ({
   children,
   error = undefined,
   loading,
@@ -22,7 +22,8 @@ const Connect: FC<IConnectProps> = ({
   }
 
   if (error) {
-    const messages = error.graphQLErrors.map(({ message }) => message);
+    const messages =
+      error.graphQLErrors && error.graphQLErrors.map(({ message }) => message);
 
     return (
       <ErrorCard
@@ -36,4 +37,4 @@ const Connect: FC<IConnectProps> = ({
   return <>{children}</>;
 };
 
-export default memo(Connect);
+export default memo(Connected);

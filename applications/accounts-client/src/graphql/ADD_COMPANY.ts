@@ -57,10 +57,10 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
     query: GET_COMPANIES,
   });
 
-  if (cache) {
+  if (cache && data) {
     cache.getCompanies.items = [
       ...cache.getCompanies.items,
-      data!.createCompany,
+      data.createCompany,
     ];
 
     client.writeQuery<IGetCompaniesOutput>({
