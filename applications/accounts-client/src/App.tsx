@@ -6,7 +6,7 @@ import { Route, Switch } from 'react-router-dom';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Index = lazy(() => import('./pages/Index'));
-const MyCompanies = lazy(() => import('./pages/MyCompanies/Routes'));
+const MyCompanies = lazy(() => import('./pages/MyCompanies'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const App: FC = () => {
