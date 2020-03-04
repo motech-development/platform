@@ -115,7 +115,19 @@ jobs:
           command: npm run deploy -- --scope=@motech-development/accounts-client -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy accounts client
 
-  deploy-accounts-data:
+  deploy-accounts-data-develop:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-data -- -- --stage develop
+          name: Deploy accounts data infrastructure
+
+  deploy-accounts-data-production:
     docker:
       - image: circleci/node:12.13
     working_directory: ~/repo
@@ -127,7 +139,19 @@ jobs:
           command: npm run deploy -- --scope=@motech-development/accounts-data -- -- --stage production
           name: Deploy accounts data infrastructure
 
-  deploy-accounts-api:
+  deploy-accounts-api-develop:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage develop
+          name: Deploy accounts API
+
+  deploy-accounts-api-production:
     docker:
       - image: circleci/node:12.13
     working_directory: ~/repo
@@ -209,19 +233,16 @@ workflows:
           requires:
             - deploy-infrastructure
 
-      - deploy-accounts-data:
+      - deploy-accounts-data-production:
+          filters:
+            branches:
+              only: master
           requires:
-            - unit-test
-          # TODO: Re-enable when sorted
-          # filters:
-          #     branches:
-          #       only: master
-          # requires:
-          #   - deploy-infrastructure
+            - deploy-infrastructure
 
-      - deploy-accounts-api:
+      - deploy-accounts-api-data:
           requires:
-            - deploy-accounts-data
+            - deploy-accounts-data-production
 
       - deploy-auth0:
           filters:
