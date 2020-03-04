@@ -1,0 +1,45 @@
+{
+  "name": "@motech-development/serverless-outputs-env",
+  "version": "0.0.0",
+  "description": "A Serverless plugin to get Serverless outputs as environment variables",
+  "private": true,
+  "main": "lib/outputs-env-plugin.cjs.js",
+  "module": "lib/outputs-env-pluginx.esm.js",
+  "types": "lib/outputs-env-plugin.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "prebuild": "rimraf ./lib",
+    "precommit": "lint-staged",
+    "prepare": "npm run build",
+    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage"
+  },
+  "dependencies": {
+    "assert": "^2.0.0",
+    "tomlify-j0.4": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/assert": "^1.4.6",
+    "@types/serverless": "^1.18.6"
+  },
+  "peerDependencies": {
+    "assert": "^2.0.0",
+    "tomlify-j0.4": "^3.0.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}"
+    ],
+    "moduleDirectories": [
+      "../../node_modules",
+      "<rootDir>/node_modules"
+    ],
+    "testEnvironment": "node"
+  },
+  "jest-junit": {
+    "outputDirectory": "../../reports/junit",
+    "outputName": "serverless-outputs-env.xml"
+  }
+}

@@ -10,11 +10,19 @@ provider:
 
 plugins:
   - serverless-appsync-plugin
+  - '@motech-development/serverless-outputs-env'
 
 custom:
   prefix: ${self:service}-${self:provider.stage}
   oidc:
     issuer: https://${env:REACT_APP_AUTH0_DOMAIN}/
+
+  outputs:
+    files:
+      - ../accounts-client/.env.production
+    env:
+      AccountsproductionGraphQlApiUrl: REACT_APP_APPSYNC_URL
+      AWS_REGION: REACT_APP_AWS_REGION
 
   appSync:
     - name: ${self:custom.prefix}
