@@ -12,6 +12,7 @@
     "clean": "lerna clean",
     "deploy": "lerna run deploy --stream",
     "deploy:infrastructure": "lerna run deploy:infrastructure --stream",
+    "exec": "lerna exec",
     "execute": "lerna run --stream",
     "lint": "lerna run lint",
     "postinstall": "npm run bootstrap",

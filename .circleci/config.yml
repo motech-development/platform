@@ -47,6 +47,7 @@ jobs:
             - applications/infrastructure/node_modules
             - packages/auth/node_modules
             - packages/breeze-ui/node_modules
+            - packages/serverless-outputs-env/node_modules
       - persist_to_workspace:
           paths:
             - ./checksum.txt
@@ -150,6 +151,10 @@ jobs:
       - run:
           command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage develop
           name: Deploy accounts API
+      - persist_to_workspace:
+          paths:
+            - ./applications/accounts-client/.env.production
+          root: .
 
   deploy-accounts-api-production:
     docker:
@@ -162,6 +167,10 @@ jobs:
       - run:
           command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage production
           name: Deploy accounts API
+      - persist_to_workspace:
+          paths:
+            - ./applications/accounts-client/.env.production
+          root: .
 
   deploy-auth0:
     docker:
