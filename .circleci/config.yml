@@ -73,6 +73,8 @@ jobs:
           file: ./packages/auth/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/breeze-ui/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./packages/serverless-outputs-env/coverage/coverage-final.json
       - sonarcloud/scan
 
   build-accounts-client:
