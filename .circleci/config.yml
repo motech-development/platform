@@ -33,6 +33,12 @@ jobs:
           command: npm i
           name: Install dependencies
       - run:
+          command: npm run build -- --scope=@motech-development/auth
+          name: Build Auth package
+      - run:
+          command: npm run build -- --scope=@motech-development/breeze-ui
+          name: Build Breeze UI package
+      - run:
           command: npm run lint
           name: Lint code
       - save_cache:
