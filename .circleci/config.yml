@@ -240,7 +240,7 @@ workflows:
           requires:
             - deploy-infrastructure
 
-      - deploy-accounts-api-data:
+      - deploy-accounts-api-production:
           requires:
             - deploy-accounts-data-production
 
