@@ -13,13 +13,11 @@ export default [
     input: 'src/outputs-env-plugin.ts',
     output: [
       {
-        exports: 'named',
         file: pkg.main,
         format: 'cjs',
         sourcemap: true,
       },
       {
-        exports: 'named',
         file: pkg.module,
         format: 'es',
         sourcemap: true,
@@ -27,7 +25,6 @@ export default [
     ],
     plugins: [
       external(),
-      // ignore(['fs', 'util']),
       typescript({
         clean: true,
         rollupCommonJSResolveHack: true,

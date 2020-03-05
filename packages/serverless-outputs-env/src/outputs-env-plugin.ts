@@ -135,4 +135,4 @@ class OutputsEnvPlugin {
   }
 }
 
-module.exports = OutputsEnvPlugin;
+export default OutputsEnvPlugin;
