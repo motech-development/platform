@@ -130,7 +130,7 @@ describe('UpdateDetails', () => {
 
       fireEvent.click(button);
 
-      wait(100);
+      wait(200);
     });
 
     expect(history.push).toHaveBeenCalledWith('/dashboard/company-uuid');
