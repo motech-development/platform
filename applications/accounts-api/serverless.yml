@@ -6,7 +6,7 @@ provider:
   name: aws
   region: ${opt:region, 'eu-west-1'}
   stage: ${opt:stage, 'local'}
-  stackName: ${self:custom.prefix}-backend
+  stackName: ${self:custom.prefix}-api
 
 plugins:
   - serverless-appsync-plugin
@@ -15,7 +15,7 @@ plugins:
 custom:
   prefix: ${self:service}-${self:provider.stage}
   oidc:
-    issuer: https://${env:REACT_APP_AUTH0_DOMAIN}/
+    issuer: https://${env:REACT_APP_AUTH0_DOMAIN, ''}/
 
   outputs:
     files:
@@ -126,7 +126,7 @@ resources:
                     - dynamodb:Scan
                     - dynamodb:UpdateItem
                   Resource:
-                    - !ImportValue AccountsApplicationTableArn
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                     - !Join
                       - ''
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
