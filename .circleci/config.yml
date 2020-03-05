@@ -227,7 +227,7 @@ workflows:
             - setup
 
       - build-accounts-client:
-          name: Deploy accounts client production
+          name: DeployAccountsClientProduction
           filters:
             branches:
               only: master
@@ -235,7 +235,7 @@ workflows:
             - deploy-accounts-api-production
 
       - build-accounts-client:
-          name: Deploy accounts client develop
+          name: DeployAccountsClientDevelop
           filters:
             branches:
               only: /feature\/.*/
@@ -291,7 +291,7 @@ workflows:
               only: master
           requires:
             - deploy-accounts-infrastructure
-            - build-accounts-client
+            - DeployAccountsClientProduction
 
       - deploy-auth0:
           filters:
