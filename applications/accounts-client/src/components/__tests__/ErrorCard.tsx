@@ -1,11 +1,17 @@
 import { fireEvent, render } from '@testing-library/react';
+import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import history from '../../history';
 import TestProvider from '../../utils/TestProvider';
 import ErrorCard from '../ErrorCard';
 
 describe('ErrorCard', () => {
+  let history: MemoryHistory;
+
   beforeEach(() => {
+    history = createMemoryHistory({
+      initialEntries: ['/'],
+    });
+
     history.goBack = jest.fn();
   });
 
@@ -48,7 +54,7 @@ describe('ErrorCard', () => {
 
   it('should go back to previous page', async () => {
     const { findByRole } = render(
-      <TestProvider>
+      <TestProvider history={history}>
         <ErrorCard title="Ooops" description="Something has gone Pete Tong" />
       </TestProvider>,
     );

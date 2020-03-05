@@ -1,15 +1,16 @@
 import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import ADD_COMPANY from '../../../graphql/ADD_COMPANY';
-import history from '../../../history';
 import TestProvider from '../../../utils/TestProvider';
 import AddCompany from '../AddCompany';
 
 describe('AddCompany', () => {
   let cache: InMemoryCache;
   let component: RenderResult;
+  let history: MemoryHistory;
   let mocks: MockedResponse[];
 
   beforeEach(() => {
@@ -23,6 +24,12 @@ describe('AddCompany', () => {
         },
       },
     });
+
+    history = createMemoryHistory({
+      initialEntries: ['/'],
+    });
+
+    history.push = jest.fn();
 
     mocks = [
       {
@@ -84,7 +91,7 @@ describe('AddCompany', () => {
       },
     ];
     component = render(
-      <TestProvider>
+      <TestProvider path="/" history={history}>
         <MockedProvider mocks={mocks} cache={cache}>
           <AddCompany />
         </MockedProvider>

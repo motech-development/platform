@@ -6,19 +6,25 @@ import {
   RenderResult,
   waitForElement,
 } from '@testing-library/react';
+import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import { Route } from 'react-router-dom';
 import GET_COMPANY from '../../../graphql/GET_COMPANY';
 import UPDATE_COMPANY from '../../../graphql/UPDATE_COMPANY';
-import history from '../../../history';
 import TestProvider from '../../../utils/TestProvider';
 import UpdateDetails from '../UpdateDetails';
 
 describe('UpdateDetails', () => {
   let component: RenderResult;
+  let history: MemoryHistory;
   let mocks: MockedResponse[];
 
   beforeEach(() => {
+    history = createMemoryHistory({
+      initialEntries: ['/update-company/company-uuid'],
+    });
+
+    history.push = jest.fn();
+
     mocks = [
       {
         request: {
@@ -108,20 +114,15 @@ describe('UpdateDetails', () => {
       },
     ];
     component = render(
-      <TestProvider path="/update-company/company-uuid">
+      <TestProvider path="/update-company/:companyId" history={history}>
         <MockedProvider mocks={mocks} addTypename={false}>
-          <Route
-            exact
-            path="/update-company/:companyId"
-            component={UpdateDetails}
-          />
+          <UpdateDetails />
         </MockedProvider>
       </TestProvider>,
     );
   });
 
-  // TODO: Work out why this is failing on CircleCI
-  it.skip('should redirect you to the dashboard on complete', async () => {
+  it('should redirect you to the dashboard on complete', async () => {
     const { findByText, findAllByRole } = component;
 
     await act(async () => {
