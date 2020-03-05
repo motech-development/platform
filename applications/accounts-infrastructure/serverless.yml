@@ -95,10 +95,3 @@ resources:
         AliasTarget:
           HostedZoneId: Z2FDTNDATAQYW2
           DNSName: !GetAtt CloudFrontDistribution.DomainName
-
-  Outputs:
-    AccountsAppBucket:
-      Description: Application S3 bucket
-      Value: !Ref Bucket
-      Export:
-        Name: ${self:provider.stage}-AccountsAppBucket

@@ -14,10 +14,11 @@ plugins:
 custom:
   prefix: ${self:service}-${self:provider.stage}
   domainName: ${opt:domain-name}
+  subDomain: ${self:service}.${self:custom.domainName}
 
   client:
     manageResources: false
-    bucketName: !ImportValue ${self:provider.stage}-AccountsAppBucket
+    bucketName: ${self:custom.subDomain}
     distributionFolder: build
     objectHeaders:
       '**/*.js':
