@@ -227,8 +227,20 @@ workflows:
             - setup
 
       - build-accounts-client:
+          name: build-accounts-client-production
+          filters:
+            branches:
+              only: master
           requires:
-            - unit-test
+            - deploy-accounts-api-production
+
+      - build-accounts-client:
+          name: build-accounts-client-develop
+          filters:
+            branches:
+              only: /feature\/.*/
+          requires:
+            - deploy-accounts-api-develop
 
       - deploy-infrastructure:
           filters:
@@ -249,11 +261,22 @@ workflows:
             branches:
               only: master
           requires:
-            - deploy-infrastructure
+            - unit-test
+
+      - deploy-accounts-data-develop:
+          filters:
+            branches:
+              only: /feature\/.*/
+          requires:
+            - unit-test
 
       - deploy-accounts-api-production:
           requires:
             - deploy-accounts-data-production
+
+      - deploy-accounts-api-develop:
+          requires:
+            - deploy-accounts-data-develop
 
       - deploy-auth0:
           filters:
@@ -268,7 +291,7 @@ workflows:
               only: master
           requires:
             - deploy-accounts-infrastructure
-            - build-accounts-client
+            - build-accounts-client-production
 
       - deploy-auth0:
           filters:

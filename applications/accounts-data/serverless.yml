@@ -45,10 +45,10 @@ resources:
       Description: Accounts application DynamoDB table
       Value: !Ref ApplicationTable
       Export:
-        Name: AccountsApplicationTable
+        Name: ${self:provider.stage}-AccountsApplicationTable
 
     AccountsApplicationTableArn:
       Description: Accounts application DynamoDB table ARN
       Value: !GetAtt ApplicationTable.Arn
       Export:
-        Name: AccountsApplicationTableArn
+        Name: ${self:provider.stage}-AccountsApplicationTableArn
