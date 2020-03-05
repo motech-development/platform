@@ -100,4 +100,5 @@ resources:
     AccountsAppBucket:
       Description: Application S3 bucket
       Value: !Ref Bucket
-      Name: AccountsAppBucket
+      Export:
+        Name: AccountsAppBucket

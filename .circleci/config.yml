@@ -227,8 +227,18 @@ workflows:
             - setup
 
       - build-accounts-client:
+          filters:
+            branches:
+              only: master
           requires:
-            - unit-test
+            - deploy-accounts-api-production
+
+      - build-accounts-client:
+          filters:
+            branches:
+              only: /feature\/.*/
+          requires:
+            - deploy-accounts-api-develop
 
       - deploy-infrastructure:
           filters:

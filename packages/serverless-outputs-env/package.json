@@ -30,7 +30,8 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "src/**/*.{ts,tsx}"
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts"
     ],
     "moduleDirectories": [
       "../../node_modules",
