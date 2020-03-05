@@ -69,7 +69,7 @@ custom:
           name: Data
           description: Application table
           config:
-            tableName: !ImportValue AccountsApplicationTable
+            tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
             serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
 
 resources:
@@ -129,5 +129,5 @@ resources:
                     - !ImportValue AccountsApplicationTableArn
                     - !Join
                       - ''
-                      - - !ImportValue AccountsApplicationTableArn
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                         - '/index/__typename-data-index'

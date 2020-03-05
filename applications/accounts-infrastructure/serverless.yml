@@ -101,4 +101,4 @@ resources:
       Description: Application S3 bucket
       Value: !Ref Bucket
       Export:
-        Name: AccountsAppBucket
+        Name: ${self:provider.stage}-AccountsAppBucket
