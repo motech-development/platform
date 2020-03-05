@@ -227,6 +227,7 @@ workflows:
             - setup
 
       - build-accounts-client:
+          name: Deploy accounts client production
           filters:
             branches:
               only: master
@@ -234,6 +235,7 @@ workflows:
             - deploy-accounts-api-production
 
       - build-accounts-client:
+          name: Deploy accounts client develop
           filters:
             branches:
               only: /feature\/.*/
