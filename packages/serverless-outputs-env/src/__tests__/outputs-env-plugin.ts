@@ -1,4 +1,6 @@
+import { writeFile } from 'fs';
 import { Options } from 'serverless';
+import tomlify from 'tomlify-j0.4';
 import OutputsEnvPlugin, { IServerlessInstance } from '../outputs-env-plugin';
 
 describe('OutputsEnvPlugin', () => {
@@ -7,6 +9,8 @@ describe('OutputsEnvPlugin', () => {
   let serverless: IServerlessInstance;
 
   beforeEach(() => {
+    jest.clearAllMocks();
+
     options = {
       region: 'eu-west-1',
       stage: 'test',
@@ -15,16 +19,35 @@ describe('OutputsEnvPlugin', () => {
       cli: {
         log: jest.fn(),
       },
-      getProvider: jest.fn(),
+      getProvider: jest.fn().mockReturnValue({
+        getRegion: jest.fn().mockReturnValue(options.region),
+        getStage: jest.fn().mockReturnValue(options.stage),
+        request: jest.fn(() => ({
+          Stacks: [
+            {
+              Outputs: [
+                {
+                  OutputKey: 'CUSTOM_INPUT',
+                  OutputValue: 'CUSTOM_INPUT',
+                },
+                {
+                  OutputKey: 'STAGE',
+                  OutputValue: options.stage,
+                },
+              ],
+            },
+          ],
+        })),
+      }),
       service: {
         custom: {
           outputs: {
             env: {
-              AWS_REGION: options.region as string,
-              CUSTOM_INPUT: 'CUSTOM_INPUT',
-              STAGE: options.region as string,
+              AWS_REGION: 'ENV_AWS_REGION',
+              CUSTOM_INPUT: 'ENV_CUSTOM_INPUT',
+              STAGE: 'ENV_STAGE',
             },
-            files: [],
+            files: ['.env', '.env.production'],
           },
         },
         provider: {
@@ -83,9 +106,25 @@ describe('OutputsEnvPlugin', () => {
       );
     });
 
-    it.todo('should write the correct file');
+    it('should output the correct data', async () => {
+      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
 
-    it.todo('should write the file the correct number of times');
+      await outputsEnvPlugin.hooks['after:deploy:deploy']();
+
+      expect(tomlify.toToml).toHaveBeenCalledWith({
+        ENV_AWS_REGION: 'eu-west-1',
+        ENV_CUSTOM_INPUT: 'CUSTOM_INPUT',
+        ENV_STAGE: 'test',
+      });
+    });
+
+    it('should write the file the correct number of times', async () => {
+      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+
+      await outputsEnvPlugin.hooks['after:deploy:deploy']();
+
+      expect(writeFile).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('with a stack name defined', () => {
@@ -141,8 +180,24 @@ describe('OutputsEnvPlugin', () => {
       );
     });
 
-    it.todo('should write the correct file');
+    it('should output the correct data', async () => {
+      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
 
-    it.todo('should write the file the correct number of times');
+      await outputsEnvPlugin.hooks['after:deploy:deploy']();
+
+      expect(tomlify.toToml).toHaveBeenCalledWith({
+        ENV_AWS_REGION: 'eu-west-1',
+        ENV_CUSTOM_INPUT: 'CUSTOM_INPUT',
+        ENV_STAGE: 'test',
+      });
+    });
+
+    it('should write the file the correct number of times', async () => {
+      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+
+      await outputsEnvPlugin.hooks['after:deploy:deploy']();
+
+      expect(writeFile).toHaveBeenCalledTimes(2);
+    });
   });
 });
