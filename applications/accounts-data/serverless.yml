@@ -1,0 +1,54 @@
+service:
+  name: ${opt:appName, 'accounts'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-data
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+
+resources:
+  Resources:
+    ApplicationTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.prefix}-application
+        AttributeDefinitions:
+          - AttributeName: data
+            AttributeType: S
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: __typename
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: __typename
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: __typename-data-index
+            KeySchema:
+              - AttributeName: __typename
+                KeyType: HASH
+              - AttributeName: data
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+  Outputs:
+    AccountsApplicationTable:
+      Description: Accounts application DynamoDB table
+      Value: !Ref ApplicationTable
+      Export:
+        Name: AccountsApplicationTable
+
+    AccountsApplicationTableArn:
+      Description: Accounts application DynamoDB table ARN
+      Value: !GetAtt ApplicationTable.Arn
+      Export:
+        Name: AccountsApplicationTableArn

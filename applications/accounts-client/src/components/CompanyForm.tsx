@@ -29,6 +29,7 @@ const formSchema = {
     email: '',
     telephone: '',
   },
+  id: '',
   name: '',
   vatRegistration: '',
 };
@@ -38,12 +39,14 @@ export type FormSchema = typeof formSchema;
 export interface ICompanyFormProps {
   backTo: string;
   initialValues?: FormSchema;
+  loading: boolean;
   onSave(value: FormSchema): void;
 }
 
 const CompanyForm: FC<ICompanyFormProps> = ({
   backTo,
   initialValues = formSchema,
+  loading,
   onSave,
 }) => {
   const { t } = useTranslation('my-companies');
@@ -95,10 +98,10 @@ const CompanyForm: FC<ICompanyFormProps> = ({
     ),
   });
 
-  // TODO: Use translations for save and cancel
   return (
     <Form
       initialValues={initialValues}
+      loading={loading}
       validationSchema={validationSchema}
       submitLabel={t('company-form.save')}
       onSubmit={onSave}

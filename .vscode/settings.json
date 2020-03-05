@@ -21,6 +21,10 @@
     {
       "changeProcessCWD": true,
       "directory": "./packages/breeze-ui"
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./packages/serverless-outputs-env"
     }
   ]
 }

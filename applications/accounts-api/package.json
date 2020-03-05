@@ -1,0 +1,15 @@
+{
+  "name": "@motech-development/accounts-api",
+  "version": "0.0.0",
+  "description": "Motech Development accounts API",
+  "private": true,
+  "scripts": {
+    "deploy": "serverless deploy --verbose",
+    "teardown": "serverless remove --verbose"
+  },
+  "dependencies": {
+    "@motech-development/serverless-outputs-env": "^0.0.0",
+    "assert": "^2.0.0",
+    "tomlify-j0.4": "^3.0.0"
+  }
+}

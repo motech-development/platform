@@ -19,7 +19,7 @@ export interface ITypographyProps {
   variant: TypographyVariants | 'lead';
 }
 
-function createBase(props: ITypographyProps) {
+const createBase = (props: ITypographyProps) => {
   const { component } = props;
   const Component = styled(component)<ITypographyProps>`
     ${({ align = 'left', margin = 'md', variant }) => `
@@ -68,7 +68,7 @@ function createBase(props: ITypographyProps) {
   `;
 
   return createElement(Component, props);
-}
+};
 
 interface ILineProps {
   margin: keyof typeof margins;

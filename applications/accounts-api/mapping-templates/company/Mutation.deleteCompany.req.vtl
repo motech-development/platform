@@ -1,0 +1,17 @@
+{
+  "version": "2017-02-28",
+  "operation": "DeleteItem",
+  "key" : {
+    "id": $util.dynamodb.toDynamoDBJson($ctx.args.id),
+    "__typename": $util.dynamodb.toDynamoDBJson("Company")
+  },
+  "condition": {
+    "expression": "#owner = :owner",
+    "expressionNames": {
+      "#owner": "owner"
+    },
+    "expressionValues": {
+      ":owner": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+    }
+  }
+}

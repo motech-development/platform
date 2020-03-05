@@ -90,15 +90,7 @@ const InternalTextBox: FC<IInternalTextBox> = ({
   const { errors, handleBlur, setFieldValue, touched } = form;
   const describedBy = `${field.name}-error`;
   const [error, setError] = useState(false);
-
-  useEffect(() => {
-    const touch = getIn(touched, field.name);
-    const err = getIn(errors, field.name);
-
-    setError(!!touch && !!err);
-  }, [errors, touched, field.name]);
-
-  function doBlur(e: FocusEvent<HTMLInputElement>) {
+  const doBlur = (e: FocusEvent<HTMLInputElement>) => {
     handleBlur(e);
 
     if (!field.value) {
@@ -106,17 +98,22 @@ const InternalTextBox: FC<IInternalTextBox> = ({
     }
 
     onBlur(e);
-  }
-
-  function doFocus() {
+  };
+  const doFocus = () => {
     if (!field.value) {
       setFocus(true);
     }
-  }
-
-  function doValueChange({ formattedValue }: NumberFormatValues) {
+  };
+  const doValueChange = ({ formattedValue }: NumberFormatValues) => {
     setFieldValue(field.name, formattedValue);
-  }
+  };
+
+  useEffect(() => {
+    const touch = getIn(touched, field.name);
+    const err = getIn(errors, field.name);
+
+    setError(!!touch && !!err);
+  }, [errors, touched, field.name]);
 
   return (
     <InputWrapper

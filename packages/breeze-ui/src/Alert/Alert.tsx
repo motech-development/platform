@@ -96,10 +96,9 @@ const Alert: FC<IAlertProps> = ({
   spacing = 'md',
 }) => {
   const [visible, setVisiblity] = useState(true);
-
-  function dismiss() {
+  const dismiss = () => {
     setVisiblity(false);
-  }
+  };
 
   return (
     <ThemeProvider theme={alertTheme}>

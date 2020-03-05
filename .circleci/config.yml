@@ -39,10 +39,15 @@ jobs:
           key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           paths:
             - node_modules
+            - applications/accounts-api/node_modules
             - applications/accounts-client/node_modules
+            - applications/accounts-data/node_modules
+            - applications/accounts-infrastructure/node_modules
             - applications/id/node_modules
+            - applications/infrastructure/node_modules
             - packages/auth/node_modules
             - packages/breeze-ui/node_modules
+            - packages/serverless-outputs-env/node_modules
       - persist_to_workspace:
           paths:
             - ./checksum.txt
@@ -68,6 +73,8 @@ jobs:
           file: ./packages/auth/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/breeze-ui/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./packages/serverless-outputs-env/coverage/coverage-final.json
       - sonarcloud/scan
 
   build-accounts-client:
@@ -81,6 +88,91 @@ jobs:
       - run:
           command: npm run build -- --scope=@motech-development/accounts-client
           name: Build client
+      - persist_to_workspace:
+          paths:
+            - ./applications/accounts-client/build
+          root: .
+
+  deploy-accounts-infrastructure:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
+          name: Deploy accounts infrastructure
+          no_output_timeout: 60m
+
+  deploy-accounts-client:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-client -- -- --stage production --domain-name $PROD_DOMAIN
+          name: Deploy accounts client
+
+  deploy-accounts-data-develop:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-data -- -- --stage develop
+          name: Deploy accounts data infrastructure
+
+  deploy-accounts-data-production:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-data -- -- --stage production
+          name: Deploy accounts data infrastructure
+
+  deploy-accounts-api-develop:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage develop
+          name: Deploy accounts API
+      - persist_to_workspace:
+          paths:
+            - ./applications/accounts-client/.env.production
+          root: .
+
+  deploy-accounts-api-production:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage production
+          name: Deploy accounts API
+      - persist_to_workspace:
+          paths:
+            - ./applications/accounts-client/.env.production
+          root: .
 
   deploy-auth0:
     docker:
@@ -144,6 +236,39 @@ workflows:
               only: master
           requires:
             - unit-test
+
+      - deploy-accounts-infrastructure:
+          filters:
+            branches:
+              only: master
+          requires:
+            - deploy-infrastructure
+
+      - deploy-accounts-data-production:
+          filters:
+            branches:
+              only: master
+          requires:
+            - deploy-infrastructure
+
+      - deploy-accounts-api-production:
+          requires:
+            - deploy-accounts-data-production
+
+      - deploy-auth0:
+          filters:
+            branches:
+              only: master
+          requires:
+            - unit-test
+
+      - deploy-accounts-client:
+          filters:
+            branches:
+              only: master
+          requires:
+            - deploy-accounts-infrastructure
+            - build-accounts-client
 
       - deploy-auth0:
           filters:

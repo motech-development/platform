@@ -1,4 +1,9 @@
-import { act, fireEvent, render, waitForElement } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  wait,
+  waitForElement,
+} from '@testing-library/react';
 import React from 'react';
 import TestProvider from '../../utils/TestProvider';
 import CompanyForm, { FormSchema } from '../CompanyForm';
@@ -25,6 +30,7 @@ describe('CompanyForm', () => {
         email: 'info@contact.com',
         telephone: '07712345678',
       },
+      id: 'company-uuid',
       name: 'New company',
       vatRegistration: 'GB123456789',
     };
@@ -35,7 +41,11 @@ describe('CompanyForm', () => {
     it('should render the form', async () => {
       const { findByRole } = render(
         <TestProvider>
-          <CompanyForm backTo="/test" onSave={value => onSave(value)} />
+          <CompanyForm
+            backTo="/test"
+            loading={false}
+            onSave={value => onSave(value)}
+          />
         </TestProvider>,
       );
 
@@ -51,6 +61,7 @@ describe('CompanyForm', () => {
         <TestProvider>
           <CompanyForm
             initialValues={initialValues}
+            loading={false}
             backTo="/test"
             onSave={value => onSave(value)}
           />
@@ -67,13 +78,14 @@ describe('CompanyForm', () => {
         <TestProvider>
           <CompanyForm
             initialValues={initialValues}
+            loading={false}
             backTo="/test"
             onSave={value => onSave(value)}
           />
         </TestProvider>,
       );
 
-      await act(async () => {
+      await wait(async () => {
         const button = await findByRole('button');
 
         fireEvent.click(button);

@@ -1,5 +1,10 @@
 {
   "sub-title": "Dashboard",
+  "company-details": {
+    "title": "Company details",
+    "lead": "View your company details and update them",
+    "button": "Manage company details"
+  },
   "accounts": {
     "title": "Accounts",
     "lead": "Keep on top of you company accounts by managing your incomings and outgoings",

@@ -1,0 +1,10 @@
+type Bank {
+  accountNumber: String
+  sortCode: String
+}
+
+input BankInput {
+  __typename: String
+  accountNumber: String!
+  sortCode: String!
+}

@@ -45,11 +45,12 @@ const BaseLoader = styled.svg`
 `;
 
 export interface ILoaderProps {
+  className?: string;
   colour?: 'default' | 'secondary';
 }
 
-const Loader: FC<ILoaderProps> = ({ colour = 'default' }) => (
-  <BaseLoader viewBox="0 0 50 50">
+const Loader: FC<ILoaderProps> = ({ colour = 'default', className = '' }) => (
+  <BaseLoader className={className} viewBox="0 0 50 50">
     <Circle
       colour={colour}
       cx="25"

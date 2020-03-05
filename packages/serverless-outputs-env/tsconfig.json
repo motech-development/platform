@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "lib": ["es2017"],
+    "module": "ESNEXT",
+    "target": "es5"
+  },
+  "extends": "../../tsconfig.json",
+  "include": ["src"]
+}

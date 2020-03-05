@@ -6,16 +6,16 @@ import { Route, Switch } from 'react-router-dom';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Index = lazy(() => import('./pages/Index'));
-const MyCompanies = lazy(() => import('./pages/MyCompanies/Routes'));
+const MyCompanies = lazy(() => import('./pages/MyCompanies'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const App: FC = () => {
-  const { logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const timeout = process.env.NODE_ENV === 'production' ? 600000 : 3600000;
 
   return (
     <Suspense fallback={<Loader />}>
-      <IdleTimer onIdle={logout} timeout={timeout} />
+      {isAuthenticated && <IdleTimer onIdle={logout} timeout={timeout} />}
 
       <Switch>
         <Route exact path="/" component={Index} />

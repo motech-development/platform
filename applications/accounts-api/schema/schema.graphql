@@ -1,0 +1,15 @@
+type Mutation {
+  createCompany(input: CompanyInput!): Company!
+  deleteCompany(id: ID!): Company!
+  updateCompany(input: CompanyInput!): Company!
+}
+
+type Query {
+  getCompanies(count: Int, nextToken: String): Companies!
+  getCompany(id: ID!): Company!
+}
+
+schema {
+  mutation: Mutation
+  query: Query
+}

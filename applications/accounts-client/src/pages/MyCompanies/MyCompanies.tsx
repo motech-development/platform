@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/react-hooks';
 import {
   Card,
   Col,
@@ -8,20 +9,18 @@ import {
 } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import Connected from '../../components/Connected';
+import GET_COMPANIES, {
+  IGetCompaniesOutput,
+} from '../../graphql/GET_COMPANIES';
 import withLayout from '../../hoc/withLayout';
-
-const data = [...Array(6)].map((_, i) => ({
-  companyNumber: `0000000${i}`,
-  name: `New company ${i}`,
-  pk: `uuid-${i}`,
-  vatRegistration: i === 4 ? undefined : `GB00000000${i}`,
-}));
 
 const MyCompanies: FC = () => {
   const { t } = useTranslation('my-companies');
+  const { data, error, loading } = useQuery<IGetCompaniesOutput>(GET_COMPANIES);
 
   return (
-    <>
+    <Connected error={error} loading={loading}>
       <PageTitle
         title={t('my-companies.title')}
         subTitle={t('my-companies.sub-title')}
@@ -44,65 +43,59 @@ const MyCompanies: FC = () => {
           </LinkButton>
         </Col>
 
-        {data.map(({ companyNumber, name, pk, vatRegistration }) => (
-          <Col sm={12} md={4} lg={3} key={pk}>
-            <Card padding="lg">
-              <Typography
-                rule
-                component="h3"
-                variant="h3"
-                align="center"
-                margin="lg"
-              >
-                {name}
-              </Typography>
-
-              <Typography component="h4" variant="h5" align="center">
-                {t('my-companies.company-number')}
-              </Typography>
-
-              <Typography
-                component="p"
-                variant="p"
-                align="center"
-                margin={vatRegistration ? 'lg' : 'none'}
-              >
-                {companyNumber}
-              </Typography>
-
-              {vatRegistration && (
-                <>
-                  <Typography component="h4" variant="h5" align="center">
-                    {t('my-companies.vat-registration')}
+        {data &&
+          data.getCompanies.items.map(
+            ({ companyNumber, id, name, vatRegistration }) => (
+              <Col sm={12} md={4} lg={3} key={id}>
+                <Card padding="lg">
+                  <Typography
+                    rule
+                    component="h3"
+                    variant="h3"
+                    align="center"
+                    margin="lg"
+                  >
+                    {name}
                   </Typography>
+
+                  <Typography component="h4" variant="h5" align="center">
+                    {t('my-companies.company-number')}
+                  </Typography>
+
                   <Typography
                     component="p"
                     variant="p"
                     align="center"
-                    margin="none"
+                    margin={vatRegistration ? 'lg' : 'none'}
                   >
-                    {vatRegistration}
+                    {companyNumber}
                   </Typography>
-                </>
-              )}
-            </Card>
 
-            <LinkButton
-              block
-              to={`/dashboard/${pk}`}
-              colour="success"
-              size="lg"
-            >
-              {t('my-companies.select-company')}
-            </LinkButton>
+                  {vatRegistration && (
+                    <>
+                      <Typography component="h4" variant="h5" align="center">
+                        {t('my-companies.vat-registration')}
+                      </Typography>
+                      <Typography
+                        component="p"
+                        variant="p"
+                        align="center"
+                        margin="none"
+                      >
+                        {vatRegistration}
+                      </Typography>
+                    </>
+                  )}
+                </Card>
 
-            <LinkButton block to={`my-companies/update-details/${pk}`}>
-              {t('my-companies.update-details')}
-            </LinkButton>
-          </Col>
-        ))}
+                <LinkButton block to={`/dashboard/${id}`} size="lg">
+                  {t('my-companies.select-company')}
+                </LinkButton>
+              </Col>
+            ),
+          )}
       </Row>
-    </>
+    </Connected>
   );
 };
 
