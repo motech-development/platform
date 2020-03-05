@@ -15,10 +15,23 @@ interface IConfig {
   };
 }
 
+export interface IServerlessInstance
+  extends Pick<Serverless, 'cli' | 'getProvider'> {
+  service: {
+    custom: {
+      outputs: IConfig;
+    };
+    provider: {
+      name: string;
+      stackName?: string;
+    };
+  };
+}
+
 const writeFileAsync = promisify(writeFile);
 
 class OutputsEnvPlugin {
-  private serverless: Serverless;
+  private serverless: IServerlessInstance;
 
   private options: Serverless.Options;
 
@@ -32,7 +45,7 @@ class OutputsEnvPlugin {
     return this.serverless.service.custom.outputs;
   }
 
-  constructor(serverless: Serverless, options: Serverless.Options) {
+  constructor(serverless: IServerlessInstance, options: Serverless.Options) {
     this.serverless = serverless;
     this.options = options;
   }
@@ -55,8 +68,6 @@ class OutputsEnvPlugin {
   }
 
   private stackName(name: string, stage: string) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
     const { stackName } = this.serverless.service.provider;
 
     if (stackName) {
