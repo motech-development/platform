@@ -91,11 +91,8 @@ class OutputsEnvPlugin {
         region,
       },
     );
-
-    const stack = Stacks.pop() || {
-      Outputs: [],
-    };
-    const output = stack.Outputs || [];
+    const stack = Stacks.pop();
+    const output = stack.Outputs;
 
     return output.reduce(
       (obj: object, item: IOutput) => ({

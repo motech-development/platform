@@ -45,6 +45,7 @@ describe('OutputsEnvPlugin', () => {
             env: {
               AWS_REGION: 'ENV_AWS_REGION',
               CUSTOM_INPUT: 'ENV_CUSTOM_INPUT',
+              MADE_UP: 'ENV_MADE_UP',
               STAGE: 'ENV_STAGE',
             },
             files: ['.env', '.env.production'],
