@@ -54,7 +54,7 @@ resources:
             SslSupportMethod: sni-only
           CustomErrorResponses:
             - ErrorCode: 403
-              ResponseCode: 404
+              ResponseCode: 200
               ResponsePagePath: /index.html
           DefaultRootObject: /index.html
           Enabled: true
