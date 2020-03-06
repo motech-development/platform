@@ -6,7 +6,7 @@
   "operation": "Query",
   "index": "__typename-data-index",
   "query": {
-    "expression": "sk = :sk AND begins_with(#data, :data)",
+    "expression": "#typename = :typename AND begins_with(#data, :data)",
     "expressionNames": {
       "#data": "data",
       "#typename": "__typename"

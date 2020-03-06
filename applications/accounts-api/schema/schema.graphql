@@ -1,5 +1,5 @@
 type Mutation {
-  createClient(companyId: ID!, input: ClientInput!): Client!
+  createClient(input: ClientInput!): Client!
   deleteClient(id: ID!): Client!
   updateClient(input: ClientInput!): Client!
   createCompany(input: CompanyInput!): Company!
