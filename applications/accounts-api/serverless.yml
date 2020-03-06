@@ -35,7 +35,7 @@ custom:
       mappingTemplates:
         - dataSource: Data
           type: Query
-          field: getCompany
+          field: getClient
           request: client/Query.getClient.req.vtl
           response: client/Query.getClient.res.vtl
         - dataSource: Data
