@@ -19,7 +19,7 @@ input CompanyInput {
   bank: BankInput!
   companyNumber: String!
   contact: ContactInput!
-  id: ID!
+  id: ID
   name: String!
   vatRegistration: String
 }
