@@ -5,6 +5,7 @@ type Clients {
 
 type Client {
   address: Address
+  companyId: String
   contact: Contact
   id: ID
   name: String
@@ -13,6 +14,7 @@ type Client {
 input ClientInput {
   __typename: String!
   address: AddressInput!
+  companyId: String!
   contact: ContactInput!
   id: ID!
   name: String!

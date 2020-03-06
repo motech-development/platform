@@ -34,6 +34,11 @@ custom:
         level: ERROR
       mappingTemplates:
         - dataSource: Data
+          type: Mutation
+          field: createClient
+          request: client/Mutation.createClient.req.vtl
+          response: client/Mutation.createClient.res.vtl
+        - dataSource: Data
           type: Query
           field: getClient
           request: client/Query.getClient.req.vtl
