@@ -123,7 +123,7 @@ describe('UpdateDetails', () => {
   });
 
   it('should redirect you to the dashboard on complete', async () => {
-    const { findByText, findAllByRole } = component;
+    const { findAllByRole, findByTestId, findByText } = component;
 
     await act(async () => {
       await waitForElement(() => findByText('New company'));
@@ -132,7 +132,9 @@ describe('UpdateDetails', () => {
 
       fireEvent.click(button);
 
-      wait(100);
+      wait(0);
+
+      await waitForElement(() => findByTestId('next-page'));
     });
 
     expect(history.push).toHaveBeenCalledWith('/dashboard/company-uuid');

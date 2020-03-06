@@ -1,5 +1,11 @@
 import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitForElement,
+} from '@testing-library/react';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
@@ -100,7 +106,7 @@ describe('AddCompany', () => {
   });
 
   it('should redirect you to the dashboard on complete', async () => {
-    const { findByLabelText, findAllByRole } = component;
+    const { findAllByRole, findByLabelText, findByTestId } = component;
     const line1 = await findByLabelText('company-form.address.line1.label');
     const line3 = await findByLabelText('company-form.address.line3.label');
     const line4 = await findByLabelText('company-form.address.line4.label');
@@ -153,7 +159,11 @@ describe('AddCompany', () => {
 
     fireEvent.click(button);
 
-    await act(async () => wait(100));
+    await act(async () => {
+      await wait(0);
+
+      await waitForElement(() => findByTestId('next-page'));
+    });
 
     expect(history.push).toHaveBeenCalledWith('/dashboard/company-uuid');
   });

@@ -63,7 +63,10 @@ const TestProvider: FC<ITestProviderProps> = ({
         >
           <I18nextProvider i18n={testI18n}>
             <Route exact path={path} component={() => children} />
-            <Route path="*" component={() => null} />
+            <Route
+              path="*"
+              component={() => <div data-testid="next-page">The next page</div>}
+            />
           </I18nextProvider>
         </AuthContext.Provider>
       </AuthProvider>
