@@ -35,7 +35,7 @@ const AddCompany: FC = () => {
   };
 
   return (
-    <Connected error={error} loading={loading}>
+    <Connected error={error} loading={false}>
       <PageTitle
         title={t('add-company.title')}
         subTitle={t('add-company.sub-title')}

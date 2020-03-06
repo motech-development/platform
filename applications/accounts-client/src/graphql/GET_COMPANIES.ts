@@ -1,5 +1,10 @@
 import { gql } from 'apollo-boost';
 
+export interface IGetCompaniesInput {
+  count?: number;
+  nextToken?: string;
+}
+
 export interface IGetCompaniesOutput {
   getCompanies: {
     items: {

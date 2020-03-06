@@ -11,13 +11,17 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import Connected from '../../components/Connected';
 import GET_COMPANIES, {
+  IGetCompaniesInput,
   IGetCompaniesOutput,
 } from '../../graphql/GET_COMPANIES';
 import withLayout from '../../hoc/withLayout';
 
 const MyCompanies: FC = () => {
   const { t } = useTranslation('my-companies');
-  const { data, error, loading } = useQuery<IGetCompaniesOutput>(GET_COMPANIES);
+  const { data, error, loading } = useQuery<
+    IGetCompaniesOutput,
+    IGetCompaniesInput
+  >(GET_COMPANIES);
 
   return (
     <Connected error={error} loading={loading}>

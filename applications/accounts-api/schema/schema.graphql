@@ -1,10 +1,15 @@
 type Mutation {
+  createClient(input: ClientInput!): Client!
+  deleteClient(id: ID!): Client!
+  updateClient(input: ClientInput!): Client!
   createCompany(input: CompanyInput!): Company!
   deleteCompany(id: ID!): Company!
   updateCompany(input: CompanyInput!): Company!
 }
 
 type Query {
+  getClients(count: Int, nextToken: String): Clients!
+  getClient(id: ID!): Client!
   getCompanies(count: Int, nextToken: String): Companies!
   getCompany(id: ID!): Company!
 }

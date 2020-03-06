@@ -1,0 +1,19 @@
+type Clients {
+  items: [Client]
+  nextToken: String
+}
+
+type Client {
+  address: Address
+  contact: Contact
+  id: ID
+  name: String
+}
+
+input ClientInput {
+  __typename: String!
+  address: AddressInput!
+  contact: ContactInput!
+  id: ID!
+  name: String!
+}
