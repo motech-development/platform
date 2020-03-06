@@ -8,7 +8,7 @@ type Mutation {
 }
 
 type Query {
-  getClients(count: Int, nextToken: String): Clients!
+  getClients(companyId: ID!, count: Int, nextToken: String): Clients!
   getClient(id: ID!): Client!
   getCompanies(count: Int, nextToken: String): Companies!
   getCompany(id: ID!): Company!

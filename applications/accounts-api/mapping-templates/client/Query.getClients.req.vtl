@@ -1,18 +1,19 @@
 #set($owner = $ctx.identity.sub)
+#set($data = "$owner:$ctx.args.companyId")
 
 {
   "version": "2017-02-28",
   "operation": "Query",
   "index": "__typename-data-index",
   "query": {
-    "expression": "#typename = :typename AND begins_with(#data, :data)",
+    "expression": "sk = :sk AND begins_with(#data, :data)",
     "expressionNames": {
       "#data": "data",
       "#typename": "__typename"
     },
     "expressionValues": {
-      ":data": $util.dynamodb.toDynamoDBJson($owner),
-      ":typename": $util.dynamodb.toDynamoDBJson("Company")
+      ":data": $util.dynamodb.toDynamoDBJson($data),
+      ":typename": $util.dynamodb.toDynamoDBJson("Client")
     }
   },
   "filter": {
