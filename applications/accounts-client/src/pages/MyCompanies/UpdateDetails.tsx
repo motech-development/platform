@@ -27,7 +27,7 @@ const UpdateDetails: FC = () => {
     { error: updateError, loading: updateLoading },
   ] = useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY, {
     onCompleted: ({ updateCompany: { id } }) => {
-      history.push(`/dashboard/${id}`);
+      history.push(`/my-companies/dashboard/${id}`);
     },
   });
   const { data, error, loading } = useQuery<
@@ -59,7 +59,7 @@ const UpdateDetails: FC = () => {
           />
 
           <CompanyForm
-            backTo={`/dashboard/${companyId}`}
+            backTo={`/my-companies/dashboard/${companyId}`}
             initialValues={data.getCompany}
             loading={updateLoading}
             onSave={save}

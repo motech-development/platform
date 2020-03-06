@@ -20,7 +20,7 @@ const AddCompany: FC = () => {
     IAddCompanyInput
   >(ADD_COMPANY, {
     onCompleted: ({ createCompany }) => {
-      history.push(`/dashboard/${createCompany.id}`);
+      history.push(`/my-companies/dashboard/${createCompany.id}`);
     },
   });
   const save = (input: FormSchema) => {

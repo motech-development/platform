@@ -10,12 +10,12 @@ import {
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import Connected from '../components/Connected';
+import Connected from '../../components/Connected';
 import GET_COMPANY, {
   IGetCompanyInput,
   IGetCompanyOutput,
-} from '../graphql/GET_COMPANY';
-import withLayout from '../hoc/withLayout';
+} from '../../graphql/GET_COMPANY';
+import withLayout from '../../hoc/withLayout';
 
 interface IDashboardParams {
   companyId: string;
@@ -37,14 +37,14 @@ const Dashboard: FC = () => {
       button: t('accounts.button'),
       colour: 'primary',
       lead: t('accounts.lead'),
-      link: `/company-accounts/${companyId}`,
+      link: `/my-companies/accounts/${companyId}`,
       title: t('accounts.title'),
     },
     {
       button: t('clients.button'),
       colour: 'primary',
       lead: t('clients.lead'),
-      link: `/company-clients/${companyId}`,
+      link: `/my-companies/clients/${companyId}`,
       title: t('clients.title'),
     },
     {
@@ -58,7 +58,7 @@ const Dashboard: FC = () => {
       button: t('settings.button'),
       colour: 'primary',
       lead: t('settings.lead'),
-      link: `/settings/${companyId}`,
+      link: `/my-companies/settings/${companyId}`,
       title: t('settings.title'),
     },
     {

@@ -42,7 +42,7 @@ const MyCompanies: FC = () => {
             </Typography>
           </Card>
 
-          <LinkButton block to="my-companies/add-company" size="lg">
+          <LinkButton block to="/my-companies/add-company" size="lg">
             {t('my-companies.add-company')}
           </LinkButton>
         </Col>
@@ -92,7 +92,11 @@ const MyCompanies: FC = () => {
                   )}
                 </Card>
 
-                <LinkButton block to={`/dashboard/${id}`} size="lg">
+                <LinkButton
+                  block
+                  to={`/my-companies/dashboard/${id}`}
+                  size="lg"
+                >
                   {t('my-companies.select-company')}
                 </LinkButton>
               </Col>

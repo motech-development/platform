@@ -107,6 +107,6 @@ describe('MyCompanies', () => {
 
     const link = await findAllByText('my-companies.select-company');
 
-    expect(link[0]).toHaveAttribute('href', '/dashboard/1');
+    expect(link[0]).toHaveAttribute('href', '/my-companies/dashboard/1');
   });
 });

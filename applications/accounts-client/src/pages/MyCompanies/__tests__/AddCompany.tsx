@@ -165,6 +165,8 @@ describe('AddCompany', () => {
       await waitForElement(() => findByTestId('next-page'));
     });
 
-    expect(history.push).toHaveBeenCalledWith('/dashboard/company-uuid');
+    expect(history.push).toHaveBeenCalledWith(
+      '/my-companies/dashboard/company-uuid',
+    );
   });
 });

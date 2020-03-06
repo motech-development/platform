@@ -1,13 +1,13 @@
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import TestProvider, { loginWithRedirect } from '../../utils/TestProvider';
-import Index from '../Index';
+import LogIn from '../LogIn';
 
-describe('Index', () => {
+describe('LogIn', () => {
   it('should call loginWithRedirect with the correct params', async () => {
     const { findByRole } = render(
       <TestProvider>
-        <Index />
+        <LogIn />
       </TestProvider>,
     );
     const button = await findByRole('button');
