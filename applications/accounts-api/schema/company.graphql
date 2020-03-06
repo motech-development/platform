@@ -14,7 +14,7 @@ type Company {
 }
 
 input CompanyInput {
-  __typename: String!
+  __typename: String
   address: AddressInput!
   bank: BankInput!
   companyNumber: String!
