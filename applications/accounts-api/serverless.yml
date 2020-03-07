@@ -50,6 +50,11 @@ custom:
           response: client/Query.getClients.res.vtl
         - dataSource: Data
           type: Mutation
+          field: updateClient
+          request: client/Mutation.updateClient.req.vtl
+          response: client/Mutation.updateClient.res.vtl
+        - dataSource: Data
+          type: Mutation
           field: createCompany
           request: company/Mutation.createCompany.req.vtl
           response: company/Mutation.createCompany.res.vtl
