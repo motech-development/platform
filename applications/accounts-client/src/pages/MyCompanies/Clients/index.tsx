@@ -4,6 +4,7 @@ import { Switch } from 'react-router-dom';
 
 const AddClient = lazy(() => import('./AddClient'));
 const Clients = lazy(() => import('./Clients'));
+const UpdateDetails = lazy(() => import('./UpdateDetails'));
 
 const Routes: FC = () => (
   <Switch>
@@ -16,6 +17,11 @@ const Routes: FC = () => (
       exact
       component={AddClient}
       path="/my-companies/clients/:companyId/add-client"
+    />
+    <ProtectedRoute
+      exact
+      component={UpdateDetails}
+      path="/my-companies/clients/:companyId/update-details/:clientId"
     />
   </Switch>
 );

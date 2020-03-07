@@ -35,7 +35,7 @@ export type FormSchema = typeof formSchema;
 
 export interface IClientFormProps {
   backTo: string;
-  companyId: string;
+  companyId?: string;
   initialValues?: FormSchema;
   loading: boolean;
   onSave(value: FormSchema): void;
@@ -43,8 +43,11 @@ export interface IClientFormProps {
 
 const ClientForm: FC<IClientFormProps> = ({
   backTo,
-  companyId,
-  initialValues = formSchema,
+  companyId = null,
+  initialValues = {
+    ...formSchema,
+    companyId,
+  },
   loading,
   onSave,
 }) => {
@@ -76,10 +79,7 @@ const ClientForm: FC<IClientFormProps> = ({
 
   return (
     <Form
-      initialValues={{
-        ...initialValues,
-        companyId,
-      }}
+      initialValues={initialValues}
       loading={loading}
       validationSchema={validationSchema}
       submitLabel={t('client-form.save')}
