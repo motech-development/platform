@@ -29,10 +29,10 @@ describe('App', () => {
     expect(loader).toBeInTheDocument();
   });
 
-  it('should log out when idle', async () => {
+  it('should log out when idle when not in production mode', async () => {
     jest.useFakeTimers();
 
-    const { container } = render(
+    render(
       <TestProvider>
         <App />
       </TestProvider>,
@@ -44,6 +44,41 @@ describe('App', () => {
 
     expect(logout).toHaveBeenCalledWith({
       returnTo: window.location.origin,
+    });
+  });
+
+  describe('in production mode', () => {
+    let env: NodeJS.ProcessEnv;
+
+    beforeEach(() => {
+      env = {
+        ...process.env,
+      };
+
+      // @ts-ignore
+      process.env.NODE_ENV = 'production';
+    });
+
+    afterEach(() => {
+      process.env = env;
+    });
+
+    it('should log out when idle', async () => {
+      jest.useFakeTimers();
+
+      render(
+        <TestProvider>
+          <App />
+        </TestProvider>,
+      );
+
+      await wait();
+
+      jest.runAllTimers();
+
+      expect(logout).toHaveBeenCalledWith({
+        returnTo: window.location.origin,
+      });
     });
   });
 });
