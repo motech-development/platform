@@ -22,21 +22,12 @@
     "address": {
       "heading": "Address",
       "line1": {
-        "label": "Address line 1*",
         "required": "Address line 1 is required"
       },
-      "line2": {
-        "label": "Address line 2"
-      },
       "line3": {
-        "label": "Town*",
         "required": "Town is required"
       },
-      "line4": {
-        "label": "County"
-      },
       "line5": {
-        "label": "Postcode*",
         "required": "Postcode is required",
         "invalid": "Postcode is invalid"
       }
@@ -73,12 +64,10 @@
     "contact": {
       "heading": "Contact details",
       "email": {
-        "label": "Email address*",
         "required": "Email address is required",
         "invalid": "Email address is invalid"
       },
       "telephone": {
-        "label": "Telephone number*",
         "required": "Telephone number is required",
         "invalid": "Telephone number is invalid"
       }

@@ -11,6 +11,8 @@ import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 import regex from '../regex';
+import AddressFields from './AddressFields';
+import ContactDetailsFields from './ContactDetailsFields';
 
 const formSchema = {
   address: {
@@ -171,30 +173,7 @@ const CompanyForm: FC<ICompanyFormProps> = ({
                   {t('company-form.address.heading')}
                 </Typography>
 
-                <TextBox
-                  name="address.line1"
-                  label={t('company-form.address.line1.label')}
-                />
-
-                <TextBox
-                  name="address.line2"
-                  label={t('company-form.address.line2.label')}
-                />
-
-                <TextBox
-                  name="address.line3"
-                  label={t('company-form.address.line3.label')}
-                />
-
-                <TextBox
-                  name="address.line4"
-                  label={t('company-form.address.line4.label')}
-                />
-
-                <TextBox
-                  name="address.line5"
-                  label={t('company-form.address.line5.label')}
-                />
+                <AddressFields />
               </Card>
             </Col>
 
@@ -204,15 +183,7 @@ const CompanyForm: FC<ICompanyFormProps> = ({
                   {t('company-form.contact.heading')}
                 </Typography>
 
-                <TextBox
-                  name="contact.email"
-                  label={t('company-form.contact.email.label')}
-                />
-
-                <TextBox
-                  name="contact.telephone"
-                  label={t('company-form.contact.telephone.label')}
-                />
+                <ContactDetailsFields />
               </Card>
             </Col>
           </Row>

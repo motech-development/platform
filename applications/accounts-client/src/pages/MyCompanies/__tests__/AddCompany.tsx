@@ -107,10 +107,10 @@ describe('AddCompany', () => {
 
   it('should redirect you to the dashboard on complete', async () => {
     const { findAllByRole, findByLabelText, findByTestId } = component;
-    const line1 = await findByLabelText('company-form.address.line1.label');
-    const line3 = await findByLabelText('company-form.address.line3.label');
-    const line4 = await findByLabelText('company-form.address.line4.label');
-    const line5 = await findByLabelText('company-form.address.line5.label');
+    const line1 = await findByLabelText('line1');
+    const line3 = await findByLabelText('line3');
+    const line4 = await findByLabelText('line4');
+    const line5 = await findByLabelText('line5');
     const accountNumber = await findByLabelText(
       'company-form.bank.account-number.label',
     );
@@ -118,10 +118,8 @@ describe('AddCompany', () => {
     const companyNumber = await findByLabelText(
       'company-form.company-details.company-number.label',
     );
-    const email = await findByLabelText('company-form.contact.email.label');
-    const telephone = await findByLabelText(
-      'company-form.contact.telephone.label',
-    );
+    const email = await findByLabelText('email');
+    const telephone = await findByLabelText('telephone');
     const name = await findByLabelText(
       'company-form.company-details.name.label',
     );

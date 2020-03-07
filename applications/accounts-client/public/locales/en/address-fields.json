@@ -1,0 +1,7 @@
+{
+  "line1": "Address line 1*",
+  "line2": "Address line 2",
+  "line3": "Town*",
+  "line4": "County",
+  "line5": "Postcode*"
+}

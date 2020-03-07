@@ -107,14 +107,12 @@ describe('AddClient', () => {
 
   it('should redirect you back to clients page on complete', async () => {
     const { findAllByRole, findByLabelText, findByTestId } = component;
-    const line1 = await findByLabelText('client-form.address.line1.label');
-    const line3 = await findByLabelText('client-form.address.line3.label');
-    const line4 = await findByLabelText('client-form.address.line4.label');
-    const line5 = await findByLabelText('client-form.address.line5.label');
-    const email = await findByLabelText('client-form.contact.email.label');
-    const telephone = await findByLabelText(
-      'client-form.contact.telephone.label',
-    );
+    const line1 = await findByLabelText('line1');
+    const line3 = await findByLabelText('line3');
+    const line4 = await findByLabelText('line4');
+    const line5 = await findByLabelText('line5');
+    const email = await findByLabelText('email');
+    const telephone = await findByLabelText('telephone');
     const name = await findByLabelText('client-form.client-details.name.label');
 
     fireEvent.change(line1, { target: { focus: () => {}, value: '1 Street' } });
