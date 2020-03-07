@@ -9,7 +9,7 @@ import ADD_COMPANY, {
   IAddCompanyInput,
   IAddCompanyOutput,
   updateCache,
-} from '../../graphql/ADD_COMPANY';
+} from '../../graphql/company/ADD_COMPANY';
 import withLayout from '../../hoc/withLayout';
 
 const AddCompany: FC = () => {

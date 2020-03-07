@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/react-testing';
 import { render, RenderResult } from '@testing-library/react';
 import React from 'react';
-import GET_COMPANIES from '../../../graphql/GET_COMPANIES';
+import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
 import TestProvider from '../../../utils/TestProvider';
 import MyCompanies from '../MyCompanies';
 

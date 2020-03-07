@@ -9,11 +9,11 @@ import Connected from '../../components/Connected';
 import GET_COMPANY, {
   IGetCompanyInput,
   IGetCompanyOutput,
-} from '../../graphql/GET_COMPANY';
+} from '../../graphql/company/GET_COMPANY';
 import UPDATE_COMPANY, {
   IUpdateCompanyInput,
   IUpdateCompanyOutput,
-} from '../../graphql/UPDATE_COMPANY';
+} from '../../graphql/company/UPDATE_COMPANY';
 
 interface IUpdateDetailsParams {
   companyId: string;

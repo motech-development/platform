@@ -16,6 +16,7 @@ export interface IGetClientsOutput {
         line4: string;
         line5: string;
       };
+      companyId: string;
       contact: {
         email: string;
         telephone: string;

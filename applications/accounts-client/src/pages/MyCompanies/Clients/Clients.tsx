@@ -14,7 +14,7 @@ import Connected from '../../../components/Connected';
 import GET_CLIENTS, {
   IGetClientsInput,
   IGetClientsOutput,
-} from '../../../graphql/GET_CLIENTS';
+} from '../../../graphql/client/GET_CLIENTS';
 import withLayout from '../../../hoc/withLayout';
 
 interface IClientsParams {

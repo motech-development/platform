@@ -2,7 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/react-testing';
 import { render, RenderResult } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import GET_CLIENTS from '../../../../graphql/GET_CLIENTS';
+import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import TestProvider from '../../../../utils/TestProvider';
 import Clients from '../Clients';
 
@@ -36,6 +36,7 @@ describe('Clients', () => {
                     line4: '',
                     line5: '',
                   },
+                  companyId: 'company-id',
                   contact: {
                     email: 'test-1@example.com',
                     telephone: '01911234567',

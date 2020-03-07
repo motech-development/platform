@@ -14,7 +14,7 @@ import Connected from '../../components/Connected';
 import GET_COMPANY, {
   IGetCompanyInput,
   IGetCompanyOutput,
-} from '../../graphql/GET_COMPANY';
+} from '../../graphql/company/GET_COMPANY';
 import withLayout from '../../hoc/withLayout';
 
 interface IDashboardParams {

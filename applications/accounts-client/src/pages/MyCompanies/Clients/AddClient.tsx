@@ -9,7 +9,7 @@ import ADD_CLIENT, {
   IAddClientInput,
   IAddClientOutput,
   updateCache,
-} from '../../../graphql/ADD_CLIENT';
+} from '../../../graphql/client/ADD_CLIENT';
 import withLayout from '../../../hoc/withLayout';
 
 interface IAddClientParams {

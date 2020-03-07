@@ -9,7 +9,7 @@ import {
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import ADD_COMPANY from '../../../graphql/ADD_COMPANY';
+import ADD_COMPANY from '../../../graphql/company/ADD_COMPANY';
 import TestProvider from '../../../utils/TestProvider';
 import AddCompany from '../AddCompany';
 

@@ -9,8 +9,8 @@ import {
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import ADD_CLIENT from '../../../../graphql/ADD_CLIENT';
-import GET_CLIENTS from '../../../../graphql/GET_CLIENTS';
+import ADD_CLIENT from '../../../../graphql/client/ADD_CLIENT';
+import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import TestProvider from '../../../../utils/TestProvider';
 import AddClient from '../AddClient';
 

@@ -13,7 +13,7 @@ import Connected from '../../components/Connected';
 import GET_COMPANIES, {
   IGetCompaniesInput,
   IGetCompaniesOutput,
-} from '../../graphql/GET_COMPANIES';
+} from '../../graphql/company/GET_COMPANIES';
 import withLayout from '../../hoc/withLayout';
 
 const MyCompanies: FC = () => {

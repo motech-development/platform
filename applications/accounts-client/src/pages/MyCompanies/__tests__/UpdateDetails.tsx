@@ -8,8 +8,8 @@ import {
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import GET_COMPANY from '../../../graphql/GET_COMPANY';
-import UPDATE_COMPANY from '../../../graphql/UPDATE_COMPANY';
+import GET_COMPANY from '../../../graphql/company/GET_COMPANY';
+import UPDATE_COMPANY from '../../../graphql/company/UPDATE_COMPANY';
 import TestProvider from '../../../utils/TestProvider';
 import UpdateDetails from '../UpdateDetails';
 
