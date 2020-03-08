@@ -1,13 +1,12 @@
 import { useQuery } from '@apollo/react-hooks';
 import {
   Card,
-  Col,
   LinkButton,
+  Masonry,
   PageTitle,
-  Row,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import Connected from '../../components/Connected';
 import GET_COMPANIES, {
@@ -30,8 +29,8 @@ const MyCompanies: FC = () => {
         subTitle={t('my-companies.sub-title')}
       />
 
-      <Row>
-        <Col sm={12} md={4} lg={3}>
+      <Masonry xs={1} sm={2} md={3} lg={4}>
+        <>
           <Card padding="lg">
             <Typography rule component="h3" variant="h3" margin="lg">
               {t('my-companies.new-company')}
@@ -45,12 +44,12 @@ const MyCompanies: FC = () => {
           <LinkButton block to="/my-companies/add-company" size="lg">
             {t('my-companies.add-company')}
           </LinkButton>
-        </Col>
+        </>
 
         {data &&
           data.getCompanies.items.map(
             ({ companyNumber, id, name, vatRegistration }) => (
-              <Col sm={12} md={4} lg={3} key={id}>
+              <Fragment key={id}>
                 <Card padding="lg">
                   <Typography
                     rule
@@ -99,10 +98,10 @@ const MyCompanies: FC = () => {
                 >
                   {t('my-companies.select-company')}
                 </LinkButton>
-              </Col>
+              </Fragment>
             ),
           )}
-      </Row>
+      </Masonry>
     </Connected>
   );
 };

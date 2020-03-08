@@ -1,13 +1,12 @@
 import { useQuery } from '@apollo/react-hooks';
 import {
   Card,
-  Col,
   LinkButton,
+  Masonry,
   PageTitle,
-  Row,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../components/Connected';
@@ -34,6 +33,13 @@ const Dashboard: FC = () => {
   const { t } = useTranslation('dashboard');
   const cards = [
     {
+      button: t('settings.button'),
+      colour: 'primary',
+      lead: t('settings.lead'),
+      link: `/my-companies/settings/${companyId}`,
+      title: t('settings.title'),
+    },
+    {
       button: t('accounts.button'),
       colour: 'primary',
       lead: t('accounts.lead'),
@@ -55,13 +61,6 @@ const Dashboard: FC = () => {
       title: t('company-details.title'),
     },
     {
-      button: t('settings.button'),
-      colour: 'primary',
-      lead: t('settings.lead'),
-      link: `/my-companies/settings/${companyId}`,
-      title: t('settings.title'),
-    },
-    {
       button: t('my-companies.button'),
       colour: 'danger',
       lead: t('my-companies.lead'),
@@ -76,9 +75,9 @@ const Dashboard: FC = () => {
         <>
           <PageTitle title={data.getCompany.name} subTitle={t('sub-title')} />
 
-          <Row>
+          <Masonry xs={1} sm={2} md={3} lg={4}>
             {cards.map(({ button, colour, lead, link, title }) => (
-              <Col key={title} sm={12} md={4} lg={3}>
+              <Fragment key={title}>
                 <Card padding="lg">
                   <Typography rule component="h3" variant="h3" margin="lg">
                     {title}
@@ -92,9 +91,9 @@ const Dashboard: FC = () => {
                 <LinkButton block size="lg" to={link} colour={colour}>
                   {button}
                 </LinkButton>
-              </Col>
+              </Fragment>
             ))}
-          </Row>
+          </Masonry>
         </>
       )}
     </Connected>

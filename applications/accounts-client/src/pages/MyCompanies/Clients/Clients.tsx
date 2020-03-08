@@ -1,13 +1,12 @@
 import { useQuery } from '@apollo/react-hooks';
 import {
   Card,
-  Col,
   LinkButton,
+  Masonry,
   PageTitle,
-  Row,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -42,8 +41,8 @@ const Clients: FC = () => {
             subTitle={data.getCompany.name}
           />
 
-          <Row>
-            <Col sm={12} md={4} lg={3}>
+          <Masonry xs={1} sm={2} md={3} lg={4}>
+            <>
               <Card padding="lg">
                 <Typography rule component="h3" variant="h3" margin="lg">
                   {t('clients.new-client')}
@@ -61,10 +60,10 @@ const Clients: FC = () => {
               >
                 {t('clients.add-client')}
               </LinkButton>
-            </Col>
+            </>
 
             {data.getClients.items.map(({ id, name, contact }) => (
-              <Col key={id} sm={12} md={4} lg={3}>
+              <Fragment key={id}>
                 <Card padding="lg">
                   <Typography
                     rule
@@ -110,10 +109,10 @@ const Clients: FC = () => {
                 >
                   {t('clients.update-details')}
                 </LinkButton>
-              </Col>
+              </Fragment>
             ))}
 
-            <Col sm={12} md={4} lg={3}>
+            <>
               <Card padding="lg">
                 <Typography rule component="h3" variant="h3" margin="lg">
                   {t('go-back.title')}
@@ -132,8 +131,8 @@ const Clients: FC = () => {
               >
                 {t('go-back.button')}
               </LinkButton>
-            </Col>
-          </Row>
+            </>
+          </Masonry>
         </>
       )}
     </Connected>
