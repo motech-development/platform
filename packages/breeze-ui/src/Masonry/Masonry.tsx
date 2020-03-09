@@ -37,7 +37,7 @@ const getBreakpoint = () => {
 const calculateCols = (cols: number) => 12 / cols;
 
 export interface IMasonryProps {
-  children: ReactNode[];
+  children: ReactNode | ReactNode[];
   gutter?: string;
   lg: number;
   md: number;
@@ -83,8 +83,8 @@ const Masonry: FC<IMasonryProps> = ({
   return (
     <Row gutter={gutter}>
       {cols.map((_, i) => (
-        // eslint-disable-next-line react/no-array-index-key
         <Col
+          // eslint-disable-next-line react/no-array-index-key
           key={i}
           xs={calculateCols(xs)}
           sm={calculateCols(sm)}
