@@ -1,0 +1,7 @@
+{
+  "does-not-match": "The value input does not match {{name}}",
+  "required": "The name is required",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "confirm-delete": "Please type {{name}} to confirm"
+}

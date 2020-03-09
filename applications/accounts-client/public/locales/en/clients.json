@@ -5,8 +5,15 @@
     "enroll-text": "Add you clients so that you always have them to hand",
     "new-client": "New client",
     "update-details": "Manage client details",
+    "delete-client": "Delete client",
     "email-address": "Email address",
     "telephone-number": "Telephone number"
+  },
+  "delete-modal": {
+    "title": "Are you sure you want to delete {{name}}?",
+    "warning": "This action cannot be undone.",
+    "delete": "Delete",
+    "cancel": "Cancel"
   },
   "add-client": {
     "title": "Add a new client",

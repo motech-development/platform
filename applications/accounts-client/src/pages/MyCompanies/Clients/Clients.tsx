@@ -1,20 +1,28 @@
 import { useQuery } from '@apollo/react-hooks';
 import {
+  Button,
   Card,
   LinkButton,
   Masonry,
+  Modal,
   PageTitle,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, Fragment } from 'react';
+import React, { FC, Fragment, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+import ConfirmDelete from '../../../components/ConfirmDelete';
 import Connected from '../../../components/Connected';
 import GET_CLIENTS, {
   IGetClientsInput,
   IGetClientsOutput,
 } from '../../../graphql/client/GET_CLIENTS';
 import withLayout from '../../../hoc/withLayout';
+
+interface IDeleteModal {
+  id: string | null;
+  name: string | null;
+}
 
 interface IClientsParams {
   companyId: string;
@@ -23,6 +31,11 @@ interface IClientsParams {
 const Clients: FC = () => {
   const { companyId } = useParams<IClientsParams>();
   const { t } = useTranslation(['clients', 'global']);
+  const [modal, setModal] = useState(false);
+  const [client, setClient] = useState<IDeleteModal>({
+    id: null,
+    name: null,
+  });
   const { data, error, loading } = useQuery<
     IGetClientsOutput,
     IGetClientsInput
@@ -31,6 +44,24 @@ const Clients: FC = () => {
       id: companyId,
     },
   });
+  const launchDelete = (id: string, name: string) => {
+    setClient({
+      id,
+      name,
+    });
+  };
+  const onDismiss = () => {
+    setClient({
+      id: null,
+      name: null,
+    });
+  };
+
+  useEffect(() => {
+    const showModal = Boolean(client.id && client.name);
+
+    setModal(showModal);
+  }, [client]);
 
   return (
     <Connected error={error} loading={loading}>
@@ -109,6 +140,13 @@ const Clients: FC = () => {
                 >
                   {t('clients.update-details')}
                 </LinkButton>
+                <Button
+                  block
+                  colour="danger"
+                  onClick={() => launchDelete(id, name)}
+                >
+                  {t('clients.delete-client')}
+                </Button>
               </Fragment>
             ))}
 
@@ -135,6 +173,29 @@ const Clients: FC = () => {
           </Masonry>
         </>
       )}
+
+      <Modal isOpen={modal} onDismiss={onDismiss}>
+        {client.id && client.name && (
+          <>
+            <Typography rule component="h3" variant="h3" margin="lg">
+              {t('delete-modal.title', {
+                name: client.name,
+              })}
+            </Typography>
+
+            <Typography component="p" variant="p">
+              {t('delete-modal.warning')}
+            </Typography>
+
+            <ConfirmDelete
+              loading={false}
+              name={client.name}
+              onCancel={onDismiss}
+              onDelete={onDismiss}
+            />
+          </>
+        )}
+      </Modal>
     </Connected>
   );
 };
