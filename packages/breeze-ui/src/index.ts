@@ -10,6 +10,7 @@ export { default as Form } from './Form/Form';
 export { default as Link } from './Link/Link';
 export { default as LinkButton } from './LinkButton/LinkButton';
 export { default as Loader } from './Loader/Loader';
+export { default as Masonry } from './Masonry/Masonry';
 export { default as PageTitle } from './PageTitle/PageTitle';
 export { default as Row } from './Row/Row';
 export { default as ScrollToTop } from './ScrollToTop/ScrollToTop';

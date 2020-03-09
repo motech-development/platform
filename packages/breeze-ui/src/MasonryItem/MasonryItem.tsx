@@ -7,7 +7,9 @@ interface IMasonryItemContainerProps {
 
 const MasonryItemContainer = styled.div<IMasonryItemContainerProps>`
   ${({ gutter }) => `
+    -webkit-column-break-inside: avoid;
     break-inside: avoid;
+    display: inline-block;
     margin-bottom: ${gutter};
     page-break-inside: avoid;
     width: 100%;

@@ -11,7 +11,8 @@ interface IMasonryContainerProps {
 const MasonryContainer = styled.div<IMasonryContainerProps>`
   ${({ columns, gutter }) => `
     column-count: ${columns};
-    gap: ${gutter};
+    column-fill: balance;
+    column-gap: ${gutter};
   `}
 `;
 
@@ -62,12 +63,10 @@ const Masonry: FC<IMasonryProps> = ({
   const columns = breakpoints[breakpoint];
   const { width } = useWindowSize();
   const cols: ReactNode[][] = Array.from(new Array(columns), () => []);
-  const flat = children.flat();
+  const flat = Array.isArray(children) ? children.flat() : [children];
 
   useEffect(() => {
-    const updatedBreakpoint = getBreakpoint();
-
-    setBreakpoint(updatedBreakpoint);
+    setBreakpoint(getBreakpoint);
   }, [width]);
 
   flat.forEach((child, i) => {
