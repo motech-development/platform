@@ -113,14 +113,14 @@ describe('UpdateDetails', () => {
   it('should redirect you back to clients page on complete', async () => {
     const { findAllByRole, findByTestId, findByText } = component;
 
+    await waitForElement(() => findByText('New client'));
+
+    const [, button] = await findAllByRole('button');
+
+    fireEvent.click(button);
+
     await act(async () => {
-      await waitForElement(() => findByText('New client'));
-
-      const [, button] = await findAllByRole('button');
-
-      fireEvent.click(button);
-
-      wait(0);
+      await wait(0);
 
       await waitForElement(() => findByTestId('next-page'));
     });
