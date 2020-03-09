@@ -42,7 +42,7 @@ const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss }) => {
   const doNotDismiss = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
   };
-  const output = (
+  const modal = (
     <>
       <ModalOuter aria-modal role="dialog" tabIndex={-1} onClick={onDismiss}>
         <ModalDialog role="document">
@@ -57,21 +57,26 @@ const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss }) => {
   );
 
   useEffect(() => {
+    const output = document.createElement('div');
     const keyboardEvent = (e: KeyboardEvent) => {
       if (e.keyCode === 27) {
         onDismiss();
       }
     };
 
+    document.body.appendChild(output);
+
     document.addEventListener('keydown', keyboardEvent, false);
 
     return () => {
+      document.body.removeChild(output);
+
       document.removeEventListener('keydown', keyboardEvent, false);
     };
   }, [onDismiss]);
 
   if (isOpen) {
-    return createPortal(output, document.body);
+    return createPortal(modal, document.body);
   }
 
   return null;
