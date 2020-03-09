@@ -1,18 +1,16 @@
 import React, { FC, memo, ReactNode, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useWindowSize from '../hooks/useWindowSize';
-import MasonryItem from '../MasonryItem/MasonryItem';
+import Col from '../Col/Col';
+import Row from '../Row/Row';
 
-interface IMasonryContainerProps {
-  columns: number;
+interface IMasonryItemContainerProps {
   gutter: string;
 }
 
-const MasonryContainer = styled.div<IMasonryContainerProps>`
-  ${({ columns, gutter }) => `
-    column-count: ${columns};
-    column-fill: balance;
-    column-gap: ${gutter};
+const MasonryItem = styled.div<IMasonryItemContainerProps>`
+  ${({ gutter }) => `
+    margin-bottom: ${gutter};
   `}
 `;
 
@@ -35,6 +33,8 @@ const getBreakpoint = () => {
 
   return 'xs';
 };
+
+const calculateCols = (cols: number) => 12 / cols;
 
 export interface IMasonryProps {
   children: ReactNode[];
@@ -81,9 +81,20 @@ const Masonry: FC<IMasonryProps> = ({
   });
 
   return (
-    <MasonryContainer columns={columns} gutter={gutter}>
-      {cols.map((_, i) => cols[i])}
-    </MasonryContainer>
+    <Row gutter={gutter}>
+      {cols.map((_, i) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <Col
+          key={i}
+          xs={calculateCols(xs)}
+          sm={calculateCols(sm)}
+          md={calculateCols(md)}
+          lg={calculateCols(lg)}
+        >
+          {cols[i]}
+        </Col>
+      ))}
+    </Row>
   );
 };
 
