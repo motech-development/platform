@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react-hooks';
 import useWindowSize from '../useWindowSize';
 
 describe('useWindowSize', () => {
@@ -12,14 +12,18 @@ describe('useWindowSize', () => {
   });
 
   it('should return the window width and height after window resize', () => {
-    Object.assign(window, {
-      innerHeight: 1000,
-    });
-    Object.assign(window, {
-      innerWidth: 1000,
-    });
-
     const { result } = renderHook(() => useWindowSize());
+
+    act(() => {
+      Object.assign(window, {
+        innerHeight: 1000,
+      });
+      Object.assign(window, {
+        innerWidth: 1000,
+      });
+
+      window.dispatchEvent(new Event('resize'));
+    });
 
     expect(result.current).toEqual({
       height: 1000,
