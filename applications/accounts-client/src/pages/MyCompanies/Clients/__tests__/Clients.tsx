@@ -1,7 +1,18 @@
-import { MockedProvider, MockedResponse } from '@apollo/react-testing';
-import { render, RenderResult } from '@testing-library/react';
+import {
+  MockedProvider,
+  MockedResponse,
+  wait as apolloWait,
+} from '@apollo/react-testing';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  wait,
+} from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
+import DELETE_CLIENT from '../../../../graphql/client/DELETE_CLIENT';
 import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import TestProvider from '../../../../utils/TestProvider';
 import Clients from '../Clients';
@@ -17,6 +28,23 @@ describe('Clients', () => {
     });
 
     mocks = [
+      {
+        request: {
+          query: DELETE_CLIENT,
+          variables: {
+            id: 'client-id-1',
+          },
+        },
+        result: {
+          data: {
+            deleteClient: {
+              companyId: 'company-id',
+              id: 'client-id-2',
+              name: 'Test client 2',
+            },
+          },
+        },
+      },
       {
         request: {
           query: GET_CLIENTS,
@@ -120,5 +148,57 @@ describe('Clients', () => {
       'href',
       '/my-companies/clients/company-id/update-details/client-id-2',
     );
+  });
+
+  it('should display delete confirmation modal', async () => {
+    const { findAllByText, findByRole } = component;
+    const [button] = await findAllByText('clients.delete-client');
+
+    fireEvent.click(button);
+
+    await expect(findByRole('dialog')).resolves.toBeInTheDocument();
+  });
+
+  it('should delete a client', async () => {
+    const {
+      findAllByRole,
+      findAllByText,
+      findByLabelText,
+      findByText,
+    } = component;
+
+    await act(async () => {
+      await findByText('Test client 1');
+
+      const [, button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
+      const input = await findByLabelText('confirm-delete');
+
+      fireEvent.change(input, {
+        target: { focus: () => {}, value: 'Test client 1' },
+      });
+
+      await wait();
+
+      const [, , , , deleteButton] = await findAllByRole('button');
+
+      fireEvent.click(deleteButton);
+
+      await apolloWait(0);
+
+      await wait();
+    });
+
+    const modal = document.querySelector(
+      'div[role="document"] > div',
+    ) as Element;
+
+    const clients = await findAllByText('clients.email-address');
+
+    expect(clients.length).toEqual(1);
+
+    expect(modal).not.toBeInTheDocument();
   });
 });
