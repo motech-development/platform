@@ -35,6 +35,32 @@ custom:
       mappingTemplates:
         - dataSource: Data
           type: Mutation
+          field: createClient
+          request: client/Mutation.createClient.req.vtl
+          response: client/Mutation.createClient.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: deleteClient
+          request: client/Mutation.deleteClient.req.vtl
+          response: client/Mutation.deleteClient.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: updateClient
+          request: client/Mutation.updateClient.req.vtl
+          response: client/Mutation.updateClient.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getClient
+          request: client/Query.getClient.req.vtl
+          response: client/Query.getClient.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getClients
+          request: client/Query.getClients.req.vtl
+          response: client/Query.getClients.res.vtl
+
+        - dataSource: Data
+          type: Mutation
           field: createCompany
           request: company/Mutation.createCompany.req.vtl
           response: company/Mutation.createCompany.res.vtl
@@ -61,6 +87,7 @@ custom:
       schema:
         - schema/address.graphql
         - schema/bank.graphql
+        - schema/client.graphql
         - schema/company.graphql
         - schema/contact.graphql
         - schema/schema.graphql

@@ -2,8 +2,8 @@ import { MockedProvider, MockedResponse } from '@apollo/react-testing';
 import { render, RenderResult } from '@testing-library/react';
 import React from 'react';
 import { Route } from 'react-router-dom';
-import GET_COMPANY from '../../graphql/GET_COMPANY';
-import TestProvider from '../../utils/TestProvider';
+import GET_COMPANY from '../../../graphql/company/GET_COMPANY';
+import TestProvider from '../../../utils/TestProvider';
 import Dashboard from '../Dashboard';
 
 describe('Dashboard', () => {

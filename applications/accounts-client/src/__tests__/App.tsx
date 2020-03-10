@@ -1,6 +1,6 @@
 import { render, wait } from '@testing-library/react';
 import React from 'react';
-import TestProvider from '../utils/TestProvider';
+import TestProvider, { logout } from '../utils/TestProvider';
 import App from '../App';
 
 describe('App', () => {
@@ -27,5 +27,59 @@ describe('App', () => {
     const loader = container.querySelector('circle');
 
     expect(loader).toBeInTheDocument();
+  });
+
+  it('should log out when idle when not in production mode', async () => {
+    jest.useFakeTimers();
+
+    render(
+      <TestProvider>
+        <App />
+      </TestProvider>,
+    );
+
+    await wait();
+
+    jest.runAllTimers();
+
+    expect(logout).toHaveBeenCalledWith({
+      returnTo: window.location.origin,
+    });
+  });
+
+  // TODO find out why it's throwing the following error: Caught error after test environment was torn down
+  describe.skip('in production mode', () => {
+    let env: NodeJS.ProcessEnv;
+
+    beforeEach(() => {
+      env = {
+        ...process.env,
+      };
+
+      // @ts-ignore
+      process.env.NODE_ENV = 'production';
+    });
+
+    afterEach(() => {
+      process.env = env;
+    });
+
+    it('should log out when idle', async () => {
+      jest.useFakeTimers();
+
+      render(
+        <TestProvider>
+          <App />
+        </TestProvider>,
+      );
+
+      await wait();
+
+      jest.runAllTimers();
+
+      expect(logout).toHaveBeenCalledWith({
+        returnTo: window.location.origin,
+      });
+    });
   });
 });

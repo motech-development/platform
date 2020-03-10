@@ -58,7 +58,10 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
   }) as IGetCompaniesOutput;
   const { createCompany } = data as IAddCompanyOutput;
 
-  cache.getCompanies.items = [...cache.getCompanies.items, createCompany];
+  cache.getCompanies.items = [
+    ...cache.getCompanies.items,
+    createCompany,
+  ].sort((a, b) => a.name.localeCompare(b.name));
 
   client.writeQuery<IGetCompaniesOutput>({
     data: cache,

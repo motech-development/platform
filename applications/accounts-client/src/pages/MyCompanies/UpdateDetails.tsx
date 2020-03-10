@@ -3,17 +3,17 @@ import { PageTitle } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
-import withLayout from '../../hoc/withLayout';
 import CompanyForm, { FormSchema } from '../../components/CompanyForm';
 import Connected from '../../components/Connected';
 import GET_COMPANY, {
   IGetCompanyInput,
   IGetCompanyOutput,
-} from '../../graphql/GET_COMPANY';
+} from '../../graphql/company/GET_COMPANY';
 import UPDATE_COMPANY, {
   IUpdateCompanyInput,
   IUpdateCompanyOutput,
-} from '../../graphql/UPDATE_COMPANY';
+} from '../../graphql/company/UPDATE_COMPANY';
+import withLayout from '../../hoc/withLayout';
 
 interface IUpdateDetailsParams {
   companyId: string;
@@ -23,11 +23,11 @@ const UpdateDetails: FC = () => {
   const history = useHistory();
   const { companyId } = useParams<IUpdateDetailsParams>();
   const [
-    updateCompany,
+    mutation,
     { error: updateError, loading: updateLoading },
   ] = useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY, {
-    onCompleted: ({ updateCompany: { id } }) => {
-      history.push(`/dashboard/${id}`);
+    onCompleted: ({ updateCompany }) => {
+      history.push(`/my-companies/dashboard/${updateCompany.id}`);
     },
   });
   const { data, error, loading } = useQuery<
@@ -41,7 +41,7 @@ const UpdateDetails: FC = () => {
   const { t } = useTranslation('my-companies');
   const save = (input: FormSchema) => {
     (async () => {
-      await updateCompany({
+      await mutation({
         variables: {
           input,
         },
@@ -59,7 +59,7 @@ const UpdateDetails: FC = () => {
           />
 
           <CompanyForm
-            backTo={`/dashboard/${companyId}`}
+            backTo={`/my-companies/dashboard/${companyId}`}
             initialValues={data.getCompany}
             loading={updateLoading}
             onSave={save}

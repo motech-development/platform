@@ -1,0 +1,65 @@
+{
+  "clients": {
+    "title": "Clients",
+    "add-client": "Add a new client",
+    "enroll-text": "Add you clients so that you always have them to hand",
+    "new-client": "New client",
+    "update-details": "Manage client details",
+    "delete-client": "Delete client",
+    "email-address": "Email address",
+    "telephone-number": "Telephone number"
+  },
+  "delete-modal": {
+    "title": "Are you sure you want to delete {{name}}?",
+    "warning": "This action cannot be undone.",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  },
+  "add-client": {
+    "title": "Add a new client",
+    "sub-title": "Add your client details to Accounts"
+  },
+  "update-details": {
+    "sub-title": "Update your client details"
+  },
+  "client-form": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "address": {
+      "heading": "Address",
+      "line1": {
+        "required": "Address line 1 is required"
+      },
+      "line3": {
+        "required": "Town is required"
+      },
+      "line5": {
+        "required": "Postcode is required",
+        "invalid": "Postcode is invalid"
+      }
+    },
+    "client-details": {
+      "heading": "Company details",
+      "name": {
+        "label": "Name*",
+        "required": "Name is required"
+      }
+    },
+    "contact": {
+      "heading": "Contact details",
+      "email": {
+        "required": "Email address is required",
+        "invalid": "Email address is invalid"
+      },
+      "telephone": {
+        "required": "Telephone number is required",
+        "invalid": "Telephone number is invalid"
+      }
+    }
+  },
+  "go-back": {
+    "title": "Dashboard",
+    "lead": "Head back to your company dashboard to manage more aspects of your business",
+    "button": "Back to my dashboard"
+  }
+}

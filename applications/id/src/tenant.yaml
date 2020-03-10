@@ -13,13 +13,13 @@ clients:
   - name: Accounts
     allowed_clients: []
     allowed_logout_urls:
-      - 'https://https://accounts.motechdevelopment.co.uk'
+      - 'https://accounts.motechdevelopment.co.uk'
       - 'http://localhost:3000'
       - 'http://192.168.1.153:3000'
       - 'http://192.168.1.66:3000'
     app_type: spa
     callbacks:
-      - 'https://https://accounts.motechdevelopment.co.uk'
+      - 'https://accounts.motechdevelopment.co.uk'
       - 'http://localhost:3000'
       - 'http://192.168.1.153:3000'
       - 'http://192.168.1.66:3000'
@@ -45,7 +45,7 @@ clients:
     sso_disabled: false
     token_endpoint_auth_method: none
     web_origins:
-      - 'https://https://accounts.motechdevelopment.co.uk'
+      - 'https://accounts.motechdevelopment.co.uk'
       - 'http://localhost:3000'
       - 'http://192.168.1.153:3000'
       - 'http://192.168.1.66:3000'

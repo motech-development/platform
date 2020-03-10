@@ -30,6 +30,7 @@ export default [
         rollupCommonJSResolveHack: true,
         tsconfigOverride: {
           exclude: [
+            '**/__tests__/*.ts',
             '**/__tests__/*.tsx',
             '**/*.stories.tsx',
             'src/setupTests.ts',

@@ -9,7 +9,7 @@ import ADD_COMPANY, {
   IAddCompanyInput,
   IAddCompanyOutput,
   updateCache,
-} from '../../graphql/ADD_COMPANY';
+} from '../../graphql/company/ADD_COMPANY';
 import withLayout from '../../hoc/withLayout';
 
 const AddCompany: FC = () => {
@@ -20,7 +20,7 @@ const AddCompany: FC = () => {
     IAddCompanyInput
   >(ADD_COMPANY, {
     onCompleted: ({ createCompany }) => {
-      history.push(`/dashboard/${createCompany.id}`);
+      history.push(`/my-companies/dashboard/${createCompany.id}`);
     },
   });
   const save = (input: FormSchema) => {
@@ -35,7 +35,7 @@ const AddCompany: FC = () => {
   };
 
   return (
-    <Connected error={error} loading={loading}>
+    <Connected error={error} loading={false}>
       <PageTitle
         title={t('add-company.title')}
         subTitle={t('add-company.sub-title')}

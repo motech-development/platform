@@ -15,9 +15,9 @@ const Wrapper = styled.div`
   padding: 1rem;
 `;
 
-const Index: FC = () => {
+const LogIn: FC = () => {
   const { loginWithRedirect } = useAuth();
-  const { t } = useTranslation('index');
+  const { t } = useTranslation('log-in');
   const login = () =>
     loginWithRedirect({
       appState: {
@@ -57,4 +57,4 @@ const Index: FC = () => {
   );
 };
 
-export default memo(Index);
+export default memo(LogIn);

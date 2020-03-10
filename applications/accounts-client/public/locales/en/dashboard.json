@@ -12,12 +12,12 @@
   },
   "clients": {
     "title": "Clients",
-    "lead": "Manage your client details to easily invoice them",
+    "lead": "Add your client details so that you always have them to hand",
     "button": "Manage clients"
   },
   "settings": {
     "title": "Settings",
-    "lead": "Update your company specific settings",
+    "lead": "Update your company settings",
     "button": "Manage settings"
   },
   "my-companies": {

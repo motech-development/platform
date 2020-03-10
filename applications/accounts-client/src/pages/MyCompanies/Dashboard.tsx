@@ -1,21 +1,20 @@
 import { useQuery } from '@apollo/react-hooks';
 import {
   Card,
-  Col,
   LinkButton,
+  Masonry,
   PageTitle,
-  Row,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import Connected from '../components/Connected';
+import Connected from '../../components/Connected';
 import GET_COMPANY, {
   IGetCompanyInput,
   IGetCompanyOutput,
-} from '../graphql/GET_COMPANY';
-import withLayout from '../hoc/withLayout';
+} from '../../graphql/company/GET_COMPANY';
+import withLayout from '../../hoc/withLayout';
 
 interface IDashboardParams {
   companyId: string;
@@ -33,33 +32,19 @@ const Dashboard: FC = () => {
   });
   const { t } = useTranslation('dashboard');
   const cards = [
-    {
-      button: t('accounts.button'),
+    ...['accounts', 'clients', 'settings'].map(name => ({
+      button: t(`${name}.button`),
       colour: 'primary',
-      lead: t('accounts.lead'),
-      link: `/company-accounts/${companyId}`,
-      title: t('accounts.title'),
-    },
-    {
-      button: t('clients.button'),
-      colour: 'primary',
-      lead: t('clients.lead'),
-      link: `/company-clients/${companyId}`,
-      title: t('clients.title'),
-    },
+      lead: t(`${name}.lead`),
+      link: `/my-companies/${name}/${companyId}`,
+      title: t(`${name}.title`),
+    })),
     {
       button: t('company-details.button'),
       colour: 'primary',
       lead: t('company-details.lead'),
       link: `/my-companies/update-details/${companyId}`,
       title: t('company-details.title'),
-    },
-    {
-      button: t('settings.button'),
-      colour: 'primary',
-      lead: t('settings.lead'),
-      link: `/settings/${companyId}`,
-      title: t('settings.title'),
     },
     {
       button: t('my-companies.button'),
@@ -76,9 +61,9 @@ const Dashboard: FC = () => {
         <>
           <PageTitle title={data.getCompany.name} subTitle={t('sub-title')} />
 
-          <Row>
+          <Masonry xs={1} sm={2} md={3} lg={4}>
             {cards.map(({ button, colour, lead, link, title }) => (
-              <Col key={title} sm={12} md={4} lg={3}>
+              <Fragment key={title}>
                 <Card padding="lg">
                   <Typography rule component="h3" variant="h3" margin="lg">
                     {title}
@@ -92,9 +77,9 @@ const Dashboard: FC = () => {
                 <LinkButton block size="lg" to={link} colour={colour}>
                   {button}
                 </LinkButton>
-              </Col>
+              </Fragment>
             ))}
-          </Row>
+          </Masonry>
         </>
       )}
     </Connected>

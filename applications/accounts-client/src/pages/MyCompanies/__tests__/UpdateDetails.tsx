@@ -1,15 +1,9 @@
 import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  waitForElement,
-} from '@testing-library/react';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import GET_COMPANY from '../../../graphql/GET_COMPANY';
-import UPDATE_COMPANY from '../../../graphql/UPDATE_COMPANY';
+import GET_COMPANY from '../../../graphql/company/GET_COMPANY';
+import UPDATE_COMPANY from '../../../graphql/company/UPDATE_COMPANY';
 import TestProvider from '../../../utils/TestProvider';
 import UpdateDetails from '../UpdateDetails';
 
@@ -23,7 +17,7 @@ describe('UpdateDetails', () => {
       initialEntries: ['/update-company/company-uuid'],
     });
 
-    history.push = jest.fn();
+    jest.spyOn(history, 'push');
 
     mocks = [
       {
@@ -123,18 +117,22 @@ describe('UpdateDetails', () => {
   });
 
   it('should redirect you to the dashboard on complete', async () => {
-    const { findByText, findAllByRole } = component;
+    const { findAllByRole, findByTestId, findByText } = component;
 
     await act(async () => {
-      await waitForElement(() => findByText('New company'));
+      await findByText('New company');
 
       const [, button] = await findAllByRole('button');
 
       fireEvent.click(button);
 
-      wait(100);
+      await wait(0);
+
+      await findByTestId('next-page');
     });
 
-    expect(history.push).toHaveBeenCalledWith('/dashboard/company-uuid');
+    expect(history.push).toHaveBeenCalledWith(
+      '/my-companies/dashboard/company-uuid',
+    );
   });
 });

@@ -1,3 +1,5 @@
+#set($owner = $ctx.identity.sub)
+
 {
   "version": "2017-02-28",
   "operation": "Query",
@@ -9,8 +11,8 @@
       "#typename": "__typename"
     },
     "expressionValues": {
-      ":typename": $util.dynamodb.toDynamoDBJson("Company"),
-      ":data": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+      ":data": $util.dynamodb.toDynamoDBJson($owner),
+      ":typename": $util.dynamodb.toDynamoDBJson("Company")
     }
   },
   "filter": {
@@ -19,7 +21,7 @@
       "#owner": "owner"
     },
     "expressionValues": {
-      ":owner": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+      ":owner": $util.dynamodb.toDynamoDBJson($owner)
     }
   }
   #if($ctx.args.count)
