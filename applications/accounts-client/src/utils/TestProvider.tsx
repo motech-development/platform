@@ -2,7 +2,7 @@ import { AuthContext, AuthProvider } from '@motech-development/auth';
 import i18n from 'i18next';
 import React, { FC, ReactElement } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
-import { Route, Router } from 'react-router-dom';
+import { Route, Router, Switch } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
 
 const user = {
@@ -62,11 +62,15 @@ const TestProvider: FC<ITestProviderProps> = ({
           }}
         >
           <I18nextProvider i18n={testI18n}>
-            <Route exact path={path} component={() => children} />
-            <Route
-              path="*"
-              component={() => <div data-testid="next-page">The next page</div>}
-            />
+            <Switch>
+              <Route exact path={path} component={() => children} />
+              <Route
+                path="*"
+                component={() => (
+                  <div data-testid="next-page">The next page</div>
+                )}
+              />
+            </Switch>
           </I18nextProvider>
         </AuthContext.Provider>
       </AuthProvider>

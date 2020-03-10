@@ -1,10 +1,14 @@
-import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
+import {
+  MockedProvider,
+  MockedResponse,
+  wait as apolloWait,
+} from '@apollo/react-testing';
 import {
   act,
   fireEvent,
   render,
   RenderResult,
-  waitForElement,
+  wait,
 } from '@testing-library/react';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createMemoryHistory, MemoryHistory } from 'history';
@@ -32,10 +36,10 @@ describe('AddCompany', () => {
     });
 
     history = createMemoryHistory({
-      initialEntries: ['/'],
+      initialEntries: ['/add-company'],
     });
 
-    history.push = jest.fn();
+    jest.spyOn(history, 'push');
 
     mocks = [
       {
@@ -97,7 +101,7 @@ describe('AddCompany', () => {
       },
     ];
     component = render(
-      <TestProvider path="/" history={history}>
+      <TestProvider path="/add-company" history={history}>
         <MockedProvider mocks={mocks} cache={cache}>
           <AddCompany />
         </MockedProvider>
@@ -106,61 +110,75 @@ describe('AddCompany', () => {
   });
 
   it('should redirect you to the dashboard on complete', async () => {
-    const { findAllByRole, findByLabelText, findByTestId } = component;
-    const line1 = await findByLabelText('line1');
-    const line3 = await findByLabelText('line3');
-    const line4 = await findByLabelText('line4');
-    const line5 = await findByLabelText('line5');
-    const accountNumber = await findByLabelText(
-      'company-form.bank.account-number.label',
-    );
-    const sortCode = await findByLabelText('company-form.bank.sort-code.label');
-    const companyNumber = await findByLabelText(
-      'company-form.company-details.company-number.label',
-    );
-    const email = await findByLabelText('email');
-    const telephone = await findByLabelText('telephone');
-    const name = await findByLabelText(
-      'company-form.company-details.name.label',
-    );
-    const vatRegistration = await findByLabelText(
-      'company-form.company-details.vat-registration.label',
-    );
-
-    fireEvent.change(line1, { target: { focus: () => {}, value: '1 Street' } });
-    fireEvent.change(line3, { target: { focus: () => {}, value: 'Town' } });
-    fireEvent.change(line4, { target: { focus: () => {}, value: 'County' } });
-    fireEvent.change(line5, { target: { focus: () => {}, value: 'KT1 1NE' } });
-    fireEvent.change(accountNumber, {
-      target: { focus: () => {}, value: '12345678' },
-    });
-    fireEvent.change(sortCode, {
-      target: { focus: () => {}, value: '12-34-56' },
-    });
-    fireEvent.change(companyNumber, {
-      target: { focus: () => {}, value: '12345678' },
-    });
-    fireEvent.change(email, {
-      target: { focus: () => {}, value: 'info@contact.com' },
-    });
-    fireEvent.change(telephone, {
-      target: { focus: () => {}, value: '07712345678' },
-    });
-    fireEvent.change(name, {
-      target: { focus: () => {}, value: 'New company' },
-    });
-    fireEvent.change(vatRegistration, {
-      target: { focus: () => {}, value: 'GB123456789' },
-    });
-
-    const [, button] = await findAllByRole('button');
-
-    fireEvent.click(button);
+    const {
+      container,
+      findAllByRole,
+      findByLabelText,
+      findByTestId,
+    } = component;
 
     await act(async () => {
-      await wait(0);
+      const line1 = await findByLabelText('line1');
+      const line3 = await findByLabelText('line3');
+      const line4 = await findByLabelText('line4');
+      const line5 = await findByLabelText('line5');
+      const accountNumber = await findByLabelText(
+        'company-form.bank.account-number.label',
+      );
+      const sortCode = await findByLabelText(
+        'company-form.bank.sort-code.label',
+      );
+      const companyNumber = await findByLabelText(
+        'company-form.company-details.company-number.label',
+      );
+      const email = await findByLabelText('email');
+      const telephone = await findByLabelText('telephone');
+      const name = await findByLabelText(
+        'company-form.company-details.name.label',
+      );
+      const vatRegistration = await findByLabelText(
+        'company-form.company-details.vat-registration.label',
+      );
 
-      await waitForElement(() => findByTestId('next-page'));
+      fireEvent.change(line1, {
+        target: { focus: () => {}, value: '1 Street' },
+      });
+      fireEvent.change(line3, { target: { focus: () => {}, value: 'Town' } });
+      fireEvent.change(line4, { target: { focus: () => {}, value: 'County' } });
+      fireEvent.change(line5, {
+        target: { focus: () => {}, value: 'KT1 1NE' },
+      });
+      fireEvent.change(accountNumber, {
+        target: { focus: () => {}, value: '12345678' },
+      });
+      fireEvent.change(sortCode, {
+        target: { focus: () => {}, value: '12-34-56' },
+      });
+      fireEvent.change(companyNumber, {
+        target: { focus: () => {}, value: '12345678' },
+      });
+      fireEvent.change(email, {
+        target: { focus: () => {}, value: 'info@contact.com' },
+      });
+      fireEvent.change(telephone, {
+        target: { focus: () => {}, value: '07712345678' },
+      });
+      fireEvent.change(name, {
+        target: { focus: () => {}, value: 'New company' },
+      });
+      fireEvent.change(vatRegistration, {
+        target: { focus: () => {}, value: 'GB123456789' },
+      });
+
+      await wait();
+
+      const [, button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
+      await apolloWait(0);
+
+      await findByTestId('next-page');
     });
 
     expect(history.push).toHaveBeenCalledWith(

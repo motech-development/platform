@@ -1,11 +1,5 @@
 import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  waitForElement,
-} from '@testing-library/react';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import GET_COMPANY from '../../../graphql/company/GET_COMPANY';
@@ -23,7 +17,7 @@ describe('UpdateDetails', () => {
       initialEntries: ['/update-company/company-uuid'],
     });
 
-    history.push = jest.fn();
+    jest.spyOn(history, 'push');
 
     mocks = [
       {
@@ -125,16 +119,16 @@ describe('UpdateDetails', () => {
   it('should redirect you to the dashboard on complete', async () => {
     const { findAllByRole, findByTestId, findByText } = component;
 
-    await waitForElement(() => findByText('New company'));
-
-    const [, button] = await findAllByRole('button');
-
-    fireEvent.click(button);
-
     await act(async () => {
+      await findByText('New company');
+
+      const [, button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
       await wait(0);
 
-      await waitForElement(() => findByTestId('next-page'));
+      await findByTestId('next-page');
     });
 
     expect(history.push).toHaveBeenCalledWith(

@@ -1,11 +1,5 @@
 import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  waitForElement,
-} from '@testing-library/react';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
@@ -45,7 +39,7 @@ describe('AddClient', () => {
       initialEntries: ['/clients/company-id/add-client'],
     });
 
-    history.push = jest.fn();
+    jest.spyOn(history, 'push');
 
     mocks = [
       {
@@ -107,36 +101,43 @@ describe('AddClient', () => {
 
   it('should redirect you back to clients page on complete', async () => {
     const { findAllByRole, findByLabelText, findByTestId } = component;
-    const line1 = await findByLabelText('line1');
-    const line3 = await findByLabelText('line3');
-    const line4 = await findByLabelText('line4');
-    const line5 = await findByLabelText('line5');
-    const email = await findByLabelText('email');
-    const telephone = await findByLabelText('telephone');
-    const name = await findByLabelText('client-form.client-details.name.label');
-
-    fireEvent.change(line1, { target: { focus: () => {}, value: '1 Street' } });
-    fireEvent.change(line3, { target: { focus: () => {}, value: 'Town' } });
-    fireEvent.change(line4, { target: { focus: () => {}, value: 'County' } });
-    fireEvent.change(line5, { target: { focus: () => {}, value: 'KT1 1NE' } });
-    fireEvent.change(email, {
-      target: { focus: () => {}, value: 'info@contact.com' },
-    });
-    fireEvent.change(telephone, {
-      target: { focus: () => {}, value: '07712345678' },
-    });
-    fireEvent.change(name, {
-      target: { focus: () => {}, value: 'New company' },
-    });
-
-    const [, button] = await findAllByRole('button');
-
-    fireEvent.click(button);
 
     await act(async () => {
+      const line1 = await findByLabelText('line1');
+      const line3 = await findByLabelText('line3');
+      const line4 = await findByLabelText('line4');
+      const line5 = await findByLabelText('line5');
+      const email = await findByLabelText('email');
+      const telephone = await findByLabelText('telephone');
+      const name = await findByLabelText(
+        'client-form.client-details.name.label',
+      );
+
+      fireEvent.change(line1, {
+        target: { focus: () => {}, value: '1 Street' },
+      });
+      fireEvent.change(line3, { target: { focus: () => {}, value: 'Town' } });
+      fireEvent.change(line4, { target: { focus: () => {}, value: 'County' } });
+      fireEvent.change(line5, {
+        target: { focus: () => {}, value: 'KT1 1NE' },
+      });
+      fireEvent.change(email, {
+        target: { focus: () => {}, value: 'info@contact.com' },
+      });
+      fireEvent.change(telephone, {
+        target: { focus: () => {}, value: '07712345678' },
+      });
+      fireEvent.change(name, {
+        target: { focus: () => {}, value: 'New company' },
+      });
+
+      const [, button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
       await wait(0);
 
-      await waitForElement(() => findByTestId('next-page'));
+      await findByTestId('next-page');
     });
 
     expect(history.push).toHaveBeenCalledWith(
