@@ -1,7 +1,15 @@
-import React, { FC, memo, MouseEvent, ReactNode, useEffect } from 'react';
+import React, {
+  FC,
+  memo,
+  MouseEvent,
+  ReactNode,
+  Suspense,
+  useEffect,
+} from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import Card from '../Card/Card';
+import Loader from '../Loader/Loader';
 import Overlay from '../Overlay/Overlay';
 
 const ModalOuter = styled.div`
@@ -39,11 +47,12 @@ export interface IModalProps {
 }
 
 const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss }) => {
+  const output = document.createElement('div');
   const doNotDismiss = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
   };
   const modal = (
-    <>
+    <Suspense fallback={<Loader />}>
       <ModalOuter aria-modal role="dialog" tabIndex={-1} onClick={onDismiss}>
         <ModalDialog role="document">
           <ModalContent onClick={doNotDismiss}>
@@ -53,11 +62,10 @@ const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss }) => {
       </ModalOuter>
 
       <Overlay />
-    </>
+    </Suspense>
   );
 
   useEffect(() => {
-    const output = document.createElement('div');
     const keyboardEvent = (e: KeyboardEvent) => {
       if (e.keyCode === 27) {
         onDismiss();
@@ -73,10 +81,18 @@ const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss }) => {
 
       document.removeEventListener('keydown', keyboardEvent, false);
     };
-  }, [onDismiss]);
+  }, [output, onDismiss]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.removeProperty('overflow');
+    }
+  }, [isOpen]);
 
   if (isOpen) {
-    return createPortal(modal, document.body);
+    return createPortal(modal, output);
   }
 
   return null;

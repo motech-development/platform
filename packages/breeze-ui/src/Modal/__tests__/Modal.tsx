@@ -76,5 +76,11 @@ describe('Modal', () => {
 
       expect(onDismiss).not.toHaveBeenCalled();
     });
+
+    it('should add inline style to body', () => {
+      const body = document.querySelector('body') as Element;
+
+      expect(body).toHaveAttribute('style', 'overflow: hidden;');
+    });
   });
 });
