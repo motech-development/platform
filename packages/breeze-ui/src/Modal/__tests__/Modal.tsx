@@ -47,6 +47,17 @@ describe('Modal', () => {
       expect(onDismiss).toHaveBeenCalled();
     });
 
+    it('should not dismiss when pressing any other key', () => {
+      fireEvent.keyDown(document, {
+        code: 13,
+        key: 'Enter',
+        keyCode: 13,
+        which: 13,
+      });
+
+      expect(onDismiss).not.toHaveBeenCalled();
+    });
+
     it('should dismiss when clicking outside the modal', async () => {
       const { findByRole } = component;
       const outside = await findByRole('dialog');
