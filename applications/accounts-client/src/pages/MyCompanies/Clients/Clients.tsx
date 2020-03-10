@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   Button,
   Card,
@@ -13,6 +13,11 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import ConfirmDelete from '../../../components/ConfirmDelete';
 import Connected from '../../../components/Connected';
+import DELETE_CLIENT, {
+  IDeleteClientInput,
+  IDeleteClientOutput,
+  updateCache,
+} from '../../../graphql/client/DELETE_CLIENT';
 import GET_CLIENTS, {
   IGetClientsInput,
   IGetClientsOutput,
@@ -56,6 +61,26 @@ const Clients: FC = () => {
       name: null,
     });
   };
+  const [
+    mutation,
+    { error: deleteError, loading: deleteLoading },
+  ] = useMutation<IDeleteClientOutput, IDeleteClientInput>(DELETE_CLIENT, {
+    onCompleted: () => {
+      onDismiss();
+    },
+  });
+  const onDelete = () => {
+    (async () => {
+      const { id } = client;
+
+      await mutation({
+        update: updateCache,
+        variables: {
+          id: id as string,
+        },
+      });
+    })();
+  };
 
   useEffect(() => {
     const showModal = Boolean(client.id && client.name);
@@ -64,7 +89,7 @@ const Clients: FC = () => {
   }, [client]);
 
   return (
-    <Connected error={error} loading={loading}>
+    <Connected error={error || deleteError} loading={loading}>
       {data && (
         <>
           <PageTitle
@@ -188,10 +213,10 @@ const Clients: FC = () => {
             </Typography>
 
             <ConfirmDelete
-              loading={false}
+              loading={deleteLoading}
               name={client.name}
               onCancel={onDismiss}
-              onDelete={onDismiss}
+              onDelete={onDelete}
             />
           </>
         )}
