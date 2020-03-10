@@ -39,6 +39,16 @@ custom:
           request: client/Mutation.createClient.req.vtl
           response: client/Mutation.createClient.res.vtl
         - dataSource: Data
+          type: Mutation
+          field: deleteClient
+          request: client/Mutation.deleteClient.req.vtl
+          response: client/Mutation.deleteClient.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: updateClient
+          request: client/Mutation.updateClient.req.vtl
+          response: client/Mutation.updateClient.res.vtl
+        - dataSource: Data
           type: Query
           field: getClient
           request: client/Query.getClient.req.vtl
@@ -48,11 +58,7 @@ custom:
           field: getClients
           request: client/Query.getClients.req.vtl
           response: client/Query.getClients.res.vtl
-        - dataSource: Data
-          type: Mutation
-          field: updateClient
-          request: client/Mutation.updateClient.req.vtl
-          response: client/Mutation.updateClient.res.vtl
+
         - dataSource: Data
           type: Mutation
           field: createCompany
