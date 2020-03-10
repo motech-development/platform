@@ -38,13 +38,15 @@ export const ToastContext = createContext<IToastContext | null>(null);
 
 export const useToast = () => useContext(ToastContext)!;
 
-const generateId = () =>
-  Math.random()
-    .toString(36)
-    .substring(2, 15) +
-  Math.random()
-    .toString(36)
-    .substring(2, 15);
+const generateId = () => {
+  const array = new Uint32Array(2);
+  const output = crypto.getRandomValues(array);
+
+  return (
+    output[0].toString(36).substring(2, 15) +
+    output[1].toString(36).substring(2, 15)
+  );
+};
 
 export interface IToastProviderProps {
   children: ReactNode;

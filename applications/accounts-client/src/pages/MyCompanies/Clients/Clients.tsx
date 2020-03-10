@@ -76,7 +76,7 @@ const Clients: FC = () => {
       await mutation({
         update: updateCache,
         variables: {
-          id: id as string,
+          id,
         },
       });
     })();
