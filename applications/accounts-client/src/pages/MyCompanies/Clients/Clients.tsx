@@ -7,6 +7,7 @@ import {
   Modal,
   PageTitle,
   Typography,
+  useToast,
 } from '@motech-development/breeze-ui';
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,6 +37,7 @@ interface IClientsParams {
 const Clients: FC = () => {
   const { companyId } = useParams<IClientsParams>();
   const { t } = useTranslation(['clients', 'global']);
+  const { add } = useToast();
   const [modal, setModal] = useState(false);
   const [client, setClient] = useState<IDeleteModal>({
     id: '',
@@ -65,8 +67,23 @@ const Clients: FC = () => {
     mutation,
     { error: deleteError, loading: deleteLoading },
   ] = useMutation<IDeleteClientOutput, IDeleteClientInput>(DELETE_CLIENT, {
-    onCompleted: () => {
+    onCompleted: ({ deleteClient }) => {
+      const { name } = deleteClient;
+
+      add({
+        colour: 'success',
+        message: t('delete-client.success', {
+          name,
+        }),
+      });
+
       onDismiss();
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('delete-client.error'),
+      });
     },
   });
   const onDelete = () => {
@@ -203,13 +220,13 @@ const Clients: FC = () => {
 
       <Modal isOpen={modal} onDismiss={onDismiss}>
         <Typography rule component="h3" variant="h3" margin="lg">
-          {t('delete-modal.title', {
+          {t('delete-client.title', {
             name: client.name,
           })}
         </Typography>
 
         <Typography component="p" variant="p">
-          {t('delete-modal.warning')}
+          {t('delete-client.warning')}
         </Typography>
 
         <ConfirmDelete

@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { PageTitle } from '@motech-development/breeze-ui';
+import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
@@ -21,13 +21,30 @@ interface IUpdateDetailsParams {
 
 const UpdateDetails: FC = () => {
   const history = useHistory();
+  const { add } = useToast();
+  const { t } = useTranslation('my-companies');
   const { companyId } = useParams<IUpdateDetailsParams>();
   const [
     mutation,
     { error: updateError, loading: updateLoading },
   ] = useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY, {
     onCompleted: ({ updateCompany }) => {
-      history.push(`/my-companies/dashboard/${updateCompany.id}`);
+      const { id, name } = updateCompany;
+
+      add({
+        colour: 'success',
+        message: t('update-details.success', {
+          name,
+        }),
+      });
+
+      history.push(`/my-companies/dashboard/${id}`);
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('update-details.error'),
+      });
     },
   });
   const { data, error, loading } = useQuery<
@@ -38,7 +55,6 @@ const UpdateDetails: FC = () => {
       id: companyId,
     },
   });
-  const { t } = useTranslation('my-companies');
   const save = (input: FormSchema) => {
     (async () => {
       await mutation({

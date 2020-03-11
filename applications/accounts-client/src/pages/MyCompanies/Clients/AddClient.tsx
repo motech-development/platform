@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks';
-import { PageTitle } from '@motech-development/breeze-ui';
+import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
@@ -20,13 +20,29 @@ const AddClient: FC = () => {
   const history = useHistory();
   const { companyId } = useParams<IAddClientParams>();
   const { t } = useTranslation('clients');
+  const { add } = useToast();
   const backTo = (id: string) => `/my-companies/clients/${id}`;
   const [mutation, { error, loading }] = useMutation<
     IAddClientOutput,
     IAddClientInput
   >(ADD_CLIENT, {
     onCompleted: ({ createClient }) => {
-      history.push(backTo(createClient.companyId));
+      const { companyId: id, name } = createClient;
+
+      add({
+        colour: 'success',
+        message: t('add-client.success', {
+          name,
+        }),
+      });
+
+      history.push(backTo(id));
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('add-client.error'),
+      });
     },
   });
   const save = (input: FormSchema) => {

@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks';
-import { PageTitle } from '@motech-development/breeze-ui';
+import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -15,12 +15,28 @@ import withLayout from '../../hoc/withLayout';
 const AddCompany: FC = () => {
   const history = useHistory();
   const { t } = useTranslation('my-companies');
+  const { add } = useToast();
   const [addCompany, { error, loading }] = useMutation<
     IAddCompanyOutput,
     IAddCompanyInput
   >(ADD_COMPANY, {
     onCompleted: ({ createCompany }) => {
-      history.push(`/my-companies/dashboard/${createCompany.id}`);
+      const { id, name } = createCompany;
+
+      add({
+        colour: 'success',
+        message: t('add-company.success', {
+          name,
+        }),
+      });
+
+      history.push(`/my-companies/dashboard/${id}`);
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('add-company.error'),
+      });
     },
   });
   const save = (input: FormSchema) => {

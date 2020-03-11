@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { PageTitle } from '@motech-development/breeze-ui';
+import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
@@ -23,6 +23,8 @@ interface IUpdateDetailsParams {
 const UpdateDetails: FC = () => {
   const backTo = (id: string) => `/my-companies/clients/${id}`;
   const history = useHistory();
+  const { t } = useTranslation('clients');
+  const { add } = useToast();
   const { clientId } = useParams<IUpdateDetailsParams>();
   const { data, error, loading } = useQuery<IGetClientOutput, IGetClientInput>(
     GET_CLIENT,
@@ -37,10 +39,24 @@ const UpdateDetails: FC = () => {
     { error: updateError, loading: updateLoading },
   ] = useMutation<IUpdateClientOutput, IUpdateClientInput>(UPDATE_CLIENT, {
     onCompleted: ({ updateClient }) => {
-      history.push(backTo(updateClient.companyId));
+      const { companyId, name } = updateClient;
+
+      add({
+        colour: 'success',
+        message: t('update-details.success', {
+          name,
+        }),
+      });
+
+      history.push(backTo(companyId));
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('update-details.error'),
+      });
     },
   });
-  const { t } = useTranslation('clients');
   const save = (input: FormSchema) => {
     (async () => {
       await mutation({
