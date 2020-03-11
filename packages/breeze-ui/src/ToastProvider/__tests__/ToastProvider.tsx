@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import React, { FC } from 'react';
 import { AlertTheme } from '../../Alert/Alert';
 import ToastProvider, { useToast } from '../ToastProvider';
@@ -109,5 +109,27 @@ describe('ToastProvider', () => {
     const alert = await findByRole('alert');
 
     expect(alert).toHaveTextContent('success');
+  });
+
+  it('should dismiss toast', async () => {
+    jest.useFakeTimers();
+
+    const { findByTestId, queryByRole } = render(
+      <ToastProvider>
+        <TestComponent />
+      </ToastProvider>,
+    );
+
+    const button = await findByTestId('success');
+
+    fireEvent.click(button);
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    const alert = queryByRole('alert');
+
+    expect(alert).not.toBeInTheDocument();
   });
 });
