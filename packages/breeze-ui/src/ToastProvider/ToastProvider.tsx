@@ -1,5 +1,9 @@
-// TODO: Auto dismiss
-// TODO: Alert callback
+import {
+  faExclamationCircle,
+  faExclamationTriangle,
+  faCheckCircle,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, {
   createContext,
   FC,
@@ -13,7 +17,7 @@ import styled from 'styled-components';
 import Alert, { AlertTheme } from '../Alert/Alert';
 
 const ToastContainer = styled.div`
-  bottom: 1rem;
+  bottom: 0;
   left: 1rem;
   position: fixed;
   right: 1rem;
@@ -48,6 +52,19 @@ const generateId = () => {
   );
 };
 
+const selectIcon = (alertType: AlertTheme) => {
+  switch (alertType) {
+    case 'danger':
+      return faExclamationTriangle;
+    case 'success':
+      return faCheckCircle;
+    case 'primary':
+    case 'secondary':
+    default:
+      return faExclamationCircle;
+  }
+};
+
 export interface IToastProviderProps {
   children: ReactNode;
 }
@@ -71,7 +88,15 @@ const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
   const alerts = toasts.length > 0 && (
     <ToastContainer>
       {toasts.map(({ colour, id, message }) => (
-        <Alert dismissable key={id} colour={colour} message={message} />
+        <Alert
+          spacing="lg"
+          key={id}
+          dismissable={5000}
+          icon={() => <FontAwesomeIcon icon={selectIcon(colour)} />}
+          colour={colour}
+          message={message}
+          onDismiss={() => remove(id)}
+        />
       ))}
     </ToastContainer>
   );

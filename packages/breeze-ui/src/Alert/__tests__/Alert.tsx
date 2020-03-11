@@ -1,8 +1,14 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import Alert from '../Alert';
 
 describe('Alert', () => {
+  let onDismiss: jest.Mock;
+
+  beforeEach(() => {
+    onDismiss = jest.fn();
+  });
+
   describe('spacing', () => {
     it('should have the correct spacing by default', () => {
       const { container } = render(<Alert message="Hello world" />);
@@ -110,6 +116,31 @@ describe('Alert', () => {
     );
 
     await expect(findByLabelText('Dismiss')).resolves.toBeDefined();
+  });
+
+  it('should call onDismiss when one is set', async () => {
+    const { findByLabelText } = render(
+      <Alert dismissable message="Hello world" onDismiss={onDismiss} />,
+    );
+    const dismiss = await findByLabelText('Dismiss');
+
+    fireEvent.click(dismiss);
+
+    expect(onDismiss).toHaveBeenCalled();
+  });
+
+  it('should auto dismiss if a time is set', async () => {
+    jest.useFakeTimers();
+
+    const { queryByRole } = render(
+      <Alert dismissable={5000} message="Hello world" />,
+    );
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(queryByRole('alert')).toBeNull();
   });
 
   it('should not be displayed when dismissed', async () => {
