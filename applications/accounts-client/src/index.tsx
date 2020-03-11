@@ -1,5 +1,9 @@
 import { AuthProvider, IAppState } from '@motech-development/auth';
-import { BaseStyles, ScrollToTop } from '@motech-development/breeze-ui';
+import {
+  BaseStyles,
+  ScrollToTop,
+  ToastProvider,
+} from '@motech-development/breeze-ui';
 import React from 'react';
 import { render } from 'react-dom';
 import { Router } from 'react-router-dom';
@@ -24,7 +28,9 @@ render(
       <ScrollToTop />
 
       <Apollo>
-        <App />
+        <ToastProvider>
+          <App />
+        </ToastProvider>
       </Apollo>
     </AuthProvider>
   </Router>,

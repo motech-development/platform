@@ -4,7 +4,7 @@ import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
 import BaseStyles from '../BaseStyles/BaseStyles';
-import Alert from './Alert';
+import Alert, { AlertTheme } from './Alert';
 
 const stories = storiesOf('Alert', module);
 const colours = {
@@ -19,7 +19,7 @@ const margins = {
   Small: 'sm',
 };
 const message = () => text('Message', 'Hello world');
-const colour = () => select('Colour', colours, 'primary');
+const colour = () => select('Colour', colours, 'primary') as AlertTheme;
 const spacing = () => select('Spacing', margins, 'md') as 'sm' | 'md' | 'lg';
 const dismissable = () => boolean('Dismissable', false);
 

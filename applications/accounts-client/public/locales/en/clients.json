@@ -9,18 +9,24 @@
     "email-address": "Email address",
     "telephone-number": "Telephone number"
   },
-  "delete-modal": {
+  "delete-client": {
     "title": "Are you sure you want to delete {{name}}?",
     "warning": "This action cannot be undone.",
     "delete": "Delete",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "success": "{{name}} has been deleted",
+    "error": "Unable to delete client"
   },
   "add-client": {
     "title": "Add a new client",
-    "sub-title": "Add your client details to Accounts"
+    "sub-title": "Add your client details to Accounts",
+    "success": "{{name}} has been added as a client",
+    "error": "Unable to create client"
   },
   "update-details": {
-    "sub-title": "Update your client details"
+    "sub-title": "Update your client details",
+    "success": "{{name}} has been updated",
+    "error": "Unable to update client"
   },
   "client-form": {
     "cancel": "Cancel",

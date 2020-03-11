@@ -1,18 +1,11 @@
-import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { ElementType, FC, memo, useState } from 'react';
+import React, { ElementType, FC, memo, useEffect, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 type AlertSpacing = 'sm' | 'md' | 'lg';
 
-interface IAlertTheme {
-  [name: string]: {
-    background: string;
-    colour: string;
-  };
-}
-
-const alertTheme: IAlertTheme = {
+const alertTheme = {
   danger: {
     background: 'rgb(199,56,79)',
     colour: '#fff',
@@ -31,8 +24,10 @@ const alertTheme: IAlertTheme = {
   },
 };
 
+export type AlertTheme = keyof typeof alertTheme;
+
 interface IBaseAlert {
-  colour: keyof typeof alertTheme;
+  colour: AlertTheme;
   spacing: AlertSpacing;
 }
 
@@ -61,7 +56,7 @@ const AlertIconWrapper = styled.div`
 `;
 
 interface IAlertDismissButton {
-  colour: keyof typeof alertTheme;
+  colour: AlertTheme;
 }
 
 const AlertDismissButton = styled.button<IAlertDismissButton>`
@@ -81,11 +76,12 @@ const AlertDismissButton = styled.button<IAlertDismissButton>`
 `;
 
 export interface IAlertProps {
-  colour?: keyof typeof alertTheme;
-  dismissable?: boolean;
+  colour?: AlertTheme;
+  dismissable?: boolean | number;
   icon?: ElementType;
   message: string;
   spacing?: AlertSpacing;
+  onDismiss?(): void;
 }
 
 const Alert: FC<IAlertProps> = ({
@@ -94,15 +90,42 @@ const Alert: FC<IAlertProps> = ({
   icon: Icon = null,
   message,
   spacing = 'md',
+  onDismiss = null,
 }) => {
   const [visible, setVisiblity] = useState(true);
   const dismiss = () => {
     setVisiblity(false);
+
+    if (onDismiss) {
+      onDismiss();
+    }
   };
 
-  return (
-    <ThemeProvider theme={alertTheme}>
-      {visible && (
+  useEffect(
+    () => () => {
+      setVisiblity(false);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    let timeout: number;
+
+    if (typeof dismissable === 'number') {
+      timeout = setTimeout(dismiss, dismissable);
+    }
+
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (visible) {
+    return (
+      <ThemeProvider theme={alertTheme}>
         <BaseAlert role="alert" colour={colour} spacing={spacing}>
           {Icon && (
             <AlertIconWrapper>
@@ -119,13 +142,15 @@ const Alert: FC<IAlertProps> = ({
               colour={colour}
               onClick={dismiss}
             >
-              <FontAwesomeIcon icon={faTimesCircle} />
+              <FontAwesomeIcon icon={faTimes} />
             </AlertDismissButton>
           )}
         </BaseAlert>
-      )}
-    </ThemeProvider>
-  );
+      </ThemeProvider>
+    );
+  }
+
+  return null;
 };
 
 export default memo(Alert);
