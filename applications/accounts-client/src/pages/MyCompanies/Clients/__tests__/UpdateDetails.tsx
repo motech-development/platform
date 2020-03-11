@@ -1,5 +1,15 @@
-import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import {
+  MockedProvider,
+  MockedResponse,
+  wait as apolloWait,
+} from '@apollo/react-testing';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  wait,
+} from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import GET_CLIENT from '../../../../graphql/client/GET_CLIENT';
@@ -117,7 +127,7 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(button);
 
-        await wait(0);
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -137,7 +147,7 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(button);
 
-        await wait(0);
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -227,7 +237,9 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(button);
 
-        await wait(0);
+        await apolloWait(0);
+
+        await wait();
       });
 
       expect(add).toHaveBeenCalledWith({
