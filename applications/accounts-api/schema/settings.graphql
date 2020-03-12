@@ -1,0 +1,10 @@
+type Settings {
+  categories: [String]
+  vatRate: Float
+}
+
+input SettingsInput {
+  __typename: String
+  categories: [String]!
+  vatRate: Float!
+}

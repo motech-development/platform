@@ -59,11 +59,14 @@ custom:
           request: client/Query.getClients.req.vtl
           response: client/Query.getClients.res.vtl
 
-        - dataSource: Data
+        - kind: PIPELINE
           type: Mutation
           field: createCompany
-          request: company/Mutation.createCompany.req.vtl
-          response: company/Mutation.createCompany.res.vtl
+          functions:
+            - createCompany
+            - createSettings
+          request: pipelines/before.vtl
+          response: pipelines/after.vtl
         - dataSource: Data
           type: Mutation
           field: deleteCompany
@@ -91,6 +94,16 @@ custom:
         - schema/company.graphql
         - schema/contact.graphql
         - schema/schema.graphql
+        - schema/settings.graphql
+      functionConfigurations:
+        - dataSource: Data
+          name: createCompany
+          request: company/Mutation.createCompany.req.vtl
+          response: company/Mutation.createCompany.res.vtl
+        - dataSource: Data
+          name: createSettings
+          request: settings/Mutation.createSettings.req.vtl
+          response: settings/Mutation.createSettings.res.vtl
       dataSources:
         - type: AMAZON_DYNAMODB
           name: Data
