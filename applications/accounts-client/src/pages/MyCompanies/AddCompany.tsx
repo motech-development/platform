@@ -32,12 +32,6 @@ const AddCompany: FC = () => {
 
       history.push(`/my-companies/dashboard/${id}`);
     },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('add-company.error'),
-      });
-    },
   });
   const save = (input: FormSchema) => {
     (async () => {

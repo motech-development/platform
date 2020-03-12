@@ -1,15 +1,5 @@
-import {
-  MockedProvider,
-  MockedResponse,
-  wait as apolloWait,
-} from '@apollo/react-testing';
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  wait,
-} from '@testing-library/react';
+import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
@@ -50,251 +40,159 @@ describe('AddClient', () => {
     });
 
     jest.spyOn(history, 'push');
-  });
 
-  describe('success', () => {
-    beforeEach(() => {
-      mocks = [
-        {
-          request: {
-            query: ADD_CLIENT,
-            variables: {
-              input: {
-                address: {
-                  line1: '1 Street',
-                  line2: '',
-                  line3: 'Town',
-                  line4: 'County',
-                  line5: 'KT1 1NE',
-                },
-                companyId: 'company-id',
-                contact: {
-                  email: 'info@contact.com',
-                  telephone: '07712345678',
-                },
-                id: '',
-                name: 'New company',
+    mocks = [
+      {
+        request: {
+          query: ADD_CLIENT,
+          variables: {
+            input: {
+              address: {
+                line1: '1 Street',
+                line2: '',
+                line3: 'Town',
+                line4: 'County',
+                line5: 'KT1 1NE',
               },
-            },
-          },
-          result: {
-            data: {
-              createClient: {
-                __typename: 'Client',
-                address: {
-                  __typename: 'Address',
-                  line1: '1 Street',
-                  line2: '',
-                  line3: 'Town',
-                  line4: 'County',
-                  line5: 'KT1 1NE',
-                },
-                companyId: 'company-id',
-                contact: {
-                  __typename: 'Contact',
-                  email: 'info@contact.com',
-                  telephone: '07712345678',
-                },
-                id: 'client-id',
-                name: 'New company',
+              companyId: 'company-id',
+              contact: {
+                email: 'info@contact.com',
+                telephone: '07712345678',
               },
+              id: '',
+              name: 'New company',
             },
           },
         },
-      ];
-
-      component = render(
-        <TestProvider path="/clients/:companyId/add-client" history={history}>
-          <MockedProvider mocks={mocks} cache={cache}>
-            <AddClient />
-          </MockedProvider>
-        </TestProvider>,
-      );
-    });
-
-    it('should redirect you back to clients page on complete', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
-
-      await act(async () => {
-        const line1 = await findByLabelText('line1');
-        const line3 = await findByLabelText('line3');
-        const line4 = await findByLabelText('line4');
-        const line5 = await findByLabelText('line5');
-        const email = await findByLabelText('email');
-        const telephone = await findByLabelText('telephone');
-        const name = await findByLabelText(
-          'client-form.client-details.name.label',
-        );
-
-        fireEvent.change(line1, {
-          target: { focus: () => {}, value: '1 Street' },
-        });
-        fireEvent.change(line3, { target: { focus: () => {}, value: 'Town' } });
-        fireEvent.change(line4, {
-          target: { focus: () => {}, value: 'County' },
-        });
-        fireEvent.change(line5, {
-          target: { focus: () => {}, value: 'KT1 1NE' },
-        });
-        fireEvent.change(email, {
-          target: { focus: () => {}, value: 'info@contact.com' },
-        });
-        fireEvent.change(telephone, {
-          target: { focus: () => {}, value: '07712345678' },
-        });
-        fireEvent.change(name, {
-          target: { focus: () => {}, value: 'New company' },
-        });
-
-        const [, button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        await apolloWait(0);
-
-        await findByTestId('next-page');
-      });
-
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/clients/company-id',
-      );
-    });
-
-    it('should display a success toast', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
-
-      await act(async () => {
-        const line1 = await findByLabelText('line1');
-        const line3 = await findByLabelText('line3');
-        const line4 = await findByLabelText('line4');
-        const line5 = await findByLabelText('line5');
-        const email = await findByLabelText('email');
-        const telephone = await findByLabelText('telephone');
-        const name = await findByLabelText(
-          'client-form.client-details.name.label',
-        );
-
-        fireEvent.change(line1, {
-          target: { focus: () => {}, value: '1 Street' },
-        });
-        fireEvent.change(line3, { target: { focus: () => {}, value: 'Town' } });
-        fireEvent.change(line4, {
-          target: { focus: () => {}, value: 'County' },
-        });
-        fireEvent.change(line5, {
-          target: { focus: () => {}, value: 'KT1 1NE' },
-        });
-        fireEvent.change(email, {
-          target: { focus: () => {}, value: 'info@contact.com' },
-        });
-        fireEvent.change(telephone, {
-          target: { focus: () => {}, value: '07712345678' },
-        });
-        fireEvent.change(name, {
-          target: { focus: () => {}, value: 'New company' },
-        });
-
-        const [, button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        await apolloWait(0);
-
-        await findByTestId('next-page');
-      });
-
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'add-client.success',
-      });
-    });
-  });
-
-  describe('failure', () => {
-    beforeEach(() => {
-      mocks = [
-        {
-          error: new Error(),
-          request: {
-            query: ADD_CLIENT,
-            variables: {
-              input: {
-                address: {
-                  line1: '1 Street',
-                  line2: '',
-                  line3: 'Town',
-                  line4: 'County',
-                  line5: 'KT1 1NE',
-                },
-                companyId: 'company-id',
-                contact: {
-                  email: 'info@contact.com',
-                  telephone: '07712345678',
-                },
-                id: '',
-                name: 'New company',
+        result: {
+          data: {
+            createClient: {
+              __typename: 'Client',
+              address: {
+                __typename: 'Address',
+                line1: '1 Street',
+                line2: '',
+                line3: 'Town',
+                line4: 'County',
+                line5: 'KT1 1NE',
               },
+              companyId: 'company-id',
+              contact: {
+                __typename: 'Contact',
+                email: 'info@contact.com',
+                telephone: '07712345678',
+              },
+              id: 'client-id',
+              name: 'New company',
             },
           },
         },
-      ];
+      },
+    ];
 
-      component = render(
-        <TestProvider path="/clients/:companyId/add-client" history={history}>
-          <MockedProvider mocks={mocks} cache={cache}>
-            <AddClient />
-          </MockedProvider>
-        </TestProvider>,
+    component = render(
+      <TestProvider path="/clients/:companyId/add-client" history={history}>
+        <MockedProvider mocks={mocks} cache={cache}>
+          <AddClient />
+        </MockedProvider>
+      </TestProvider>,
+    );
+  });
+
+  it('should redirect you back to clients page on complete', async () => {
+    const { findAllByRole, findByLabelText, findByTestId } = component;
+
+    await act(async () => {
+      const line1 = await findByLabelText('line1');
+      const line3 = await findByLabelText('line3');
+      const line4 = await findByLabelText('line4');
+      const line5 = await findByLabelText('line5');
+      const email = await findByLabelText('email');
+      const telephone = await findByLabelText('telephone');
+      const name = await findByLabelText(
+        'client-form.client-details.name.label',
       );
+
+      fireEvent.change(line1, {
+        target: { focus: () => {}, value: '1 Street' },
+      });
+      fireEvent.change(line3, { target: { focus: () => {}, value: 'Town' } });
+      fireEvent.change(line4, {
+        target: { focus: () => {}, value: 'County' },
+      });
+      fireEvent.change(line5, {
+        target: { focus: () => {}, value: 'KT1 1NE' },
+      });
+      fireEvent.change(email, {
+        target: { focus: () => {}, value: 'info@contact.com' },
+      });
+      fireEvent.change(telephone, {
+        target: { focus: () => {}, value: '07712345678' },
+      });
+      fireEvent.change(name, {
+        target: { focus: () => {}, value: 'New company' },
+      });
+
+      const [, button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
+      await wait(0);
+
+      await findByTestId('next-page');
     });
 
-    it('should display an error toast', async () => {
-      const { findAllByRole, findByLabelText } = component;
+    expect(history.push).toHaveBeenCalledWith(
+      '/my-companies/clients/company-id',
+    );
+  });
 
-      await act(async () => {
-        const line1 = await findByLabelText('line1');
-        const line3 = await findByLabelText('line3');
-        const line4 = await findByLabelText('line4');
-        const line5 = await findByLabelText('line5');
-        const email = await findByLabelText('email');
-        const telephone = await findByLabelText('telephone');
-        const name = await findByLabelText(
-          'client-form.client-details.name.label',
-        );
+  it('should display a success toast', async () => {
+    const { findAllByRole, findByLabelText, findByTestId } = component;
 
-        fireEvent.change(line1, {
-          target: { focus: () => {}, value: '1 Street' },
-        });
-        fireEvent.change(line3, { target: { focus: () => {}, value: 'Town' } });
-        fireEvent.change(line4, {
-          target: { focus: () => {}, value: 'County' },
-        });
-        fireEvent.change(line5, {
-          target: { focus: () => {}, value: 'KT1 1NE' },
-        });
-        fireEvent.change(email, {
-          target: { focus: () => {}, value: 'info@contact.com' },
-        });
-        fireEvent.change(telephone, {
-          target: { focus: () => {}, value: '07712345678' },
-        });
-        fireEvent.change(name, {
-          target: { focus: () => {}, value: 'New company' },
-        });
+    await act(async () => {
+      const line1 = await findByLabelText('line1');
+      const line3 = await findByLabelText('line3');
+      const line4 = await findByLabelText('line4');
+      const line5 = await findByLabelText('line5');
+      const email = await findByLabelText('email');
+      const telephone = await findByLabelText('telephone');
+      const name = await findByLabelText(
+        'client-form.client-details.name.label',
+      );
 
-        await wait();
-
-        const [, button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        await apolloWait(0);
+      fireEvent.change(line1, {
+        target: { focus: () => {}, value: '1 Street' },
+      });
+      fireEvent.change(line3, { target: { focus: () => {}, value: 'Town' } });
+      fireEvent.change(line4, {
+        target: { focus: () => {}, value: 'County' },
+      });
+      fireEvent.change(line5, {
+        target: { focus: () => {}, value: 'KT1 1NE' },
+      });
+      fireEvent.change(email, {
+        target: { focus: () => {}, value: 'info@contact.com' },
+      });
+      fireEvent.change(telephone, {
+        target: { focus: () => {}, value: '07712345678' },
+      });
+      fireEvent.change(name, {
+        target: { focus: () => {}, value: 'New company' },
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'add-client.error',
-      });
+      const [, button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
+      await wait(0);
+
+      await findByTestId('next-page');
+    });
+
+    expect(add).toHaveBeenCalledWith({
+      colour: 'success',
+      message: 'add-client.success',
     });
   });
 });

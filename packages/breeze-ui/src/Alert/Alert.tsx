@@ -28,11 +28,12 @@ export type AlertTheme = keyof typeof alertTheme;
 
 interface IBaseAlert {
   colour: AlertTheme;
+  icon: boolean;
   spacing: AlertSpacing;
 }
 
 const BaseAlert = styled.div<IBaseAlert>`
-  ${({ colour, spacing, theme }) => `
+  ${({ colour, icon, spacing, theme }) => `
     background-color: ${theme[colour].background};
     color: ${theme[colour].colour};
     margin-bottom: ${(() => {
@@ -45,14 +46,15 @@ const BaseAlert = styled.div<IBaseAlert>`
           return '5px';
       }
     })()};
-    padding: 12px 56px 12px 20px;
+    padding: 12px 56px 12px ${icon ? '56px' : '20px'};
     position: relative;
   `}
 `;
 
 const AlertIconWrapper = styled.div`
-  display: inline-block;
-  margin-right: 20px;
+  left: 20px;
+  position: absolute;
+  top: 12px;
 `;
 
 interface IAlertDismissButton {
@@ -126,7 +128,7 @@ const Alert: FC<IAlertProps> = ({
   if (visible) {
     return (
       <ThemeProvider theme={alertTheme}>
-        <BaseAlert role="alert" colour={colour} spacing={spacing}>
+        <BaseAlert role="alert" colour={colour} icon={!!Icon} spacing={spacing}>
           {Icon && (
             <AlertIconWrapper>
               <Icon />
