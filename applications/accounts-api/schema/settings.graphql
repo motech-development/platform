@@ -1,10 +1,12 @@
 type Settings {
   categories: [String]
+  id: ID
   vatRate: Float
 }
 
 input SettingsInput {
   __typename: String
   categories: [String]!
+  id: ID!
   vatRate: Float!
 }
