@@ -87,6 +87,12 @@ custom:
           field: getCompany
           request: company/Query.getCompany.req.vtl
           response: company/Query.getCompany.res.vtl
+
+        - dataSource: Data
+          type: Query
+          field: getSettings
+          request: settings/Query.getSettings.req.vtl
+          response: settings/Query.getSettings.res.vtl
       schema:
         - schema/address.graphql
         - schema/bank.graphql
