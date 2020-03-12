@@ -12,13 +12,11 @@
   "add-company": {
     "title": "Add a new company",
     "sub-title": "Onboard a new company to Accounts",
-    "success": "{{name}} has been added to your companies",
-    "error": "Unable to add company"
+    "success": "{{name}} has been added to your companies"
   },
   "update-details": {
     "sub-title": "Update your company details",
-    "success": "{{name}} has been updated",
-    "error": "Unable to update company"
+    "success": "{{name}} has been updated"
   },
   "company-form": {
     "cancel": "Cancel",

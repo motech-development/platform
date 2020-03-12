@@ -38,12 +38,6 @@ const AddClient: FC = () => {
 
       history.push(backTo(id));
     },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('add-client.error'),
-      });
-    },
   });
   const save = (input: FormSchema) => {
     (async () => {

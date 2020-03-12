@@ -40,12 +40,6 @@ const UpdateDetails: FC = () => {
 
       history.push(`/my-companies/dashboard/${id}`);
     },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('update-details.error'),
-      });
-    },
   });
   const { data, error, loading } = useQuery<
     IGetCompanyOutput,

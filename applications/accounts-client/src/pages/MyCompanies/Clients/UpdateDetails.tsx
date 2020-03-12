@@ -50,12 +50,6 @@ const UpdateDetails: FC = () => {
 
       history.push(backTo(companyId));
     },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('update-details.error'),
-      });
-    },
   });
   const save = (input: FormSchema) => {
     (async () => {

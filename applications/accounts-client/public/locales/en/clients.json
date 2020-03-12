@@ -20,13 +20,11 @@
   "add-client": {
     "title": "Add a new client",
     "sub-title": "Add your client details to Accounts",
-    "success": "{{name}} has been added as a client",
-    "error": "Unable to create client"
+    "success": "{{name}} has been added as a client"
   },
   "update-details": {
     "sub-title": "Update your client details",
-    "success": "{{name}} has been updated",
-    "error": "Unable to update client"
+    "success": "{{name}} has been updated"
   },
   "client-form": {
     "cancel": "Cancel",
