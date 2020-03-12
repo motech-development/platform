@@ -2,7 +2,7 @@
 #set($typename = "Settings")
 #set($owner = $ctx.identity.sub)
 #set($defaultGroups = ["Admin"])
-#set($data = "$owner:$typename")
+#set($data = "$owner:$id:$typename")
 #set($categories = [])
 #set($vatRate = 20)
 
