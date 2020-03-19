@@ -108,7 +108,7 @@ const CompanyForm: FC<ICompanyFormProps> = ({
       submitLabel={t('company-form.save')}
       onSubmit={onSave}
       cancel={() => (
-        <LinkButton block to={backTo} colour="danger" size="lg">
+        <LinkButton block to={backTo} colour="secondary" size="lg">
           {t('company-form.cancel')}
         </LinkButton>
       )}

@@ -79,6 +79,8 @@ const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss }) => {
     return () => {
       document.body.removeChild(output);
 
+      document.body.style.removeProperty('overflow');
+
       document.removeEventListener('keydown', keyboardEvent, false);
     };
   }, [output, onDismiss]);
@@ -86,8 +88,6 @@ const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss }) => {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.removeProperty('overflow');
     }
   }, [isOpen]);
 

@@ -1,0 +1,21 @@
+#set($id = $ctx.args.id)
+#set($typename = "Settings")
+#set($owner = $ctx.identity.sub)
+
+{
+  "version": "2017-02-28",
+  "operation": "DeleteItem",
+  "key" : {
+    "id": $util.dynamodb.toDynamoDBJson($id),
+    "__typename": $util.dynamodb.toDynamoDBJson($typename)
+  },
+  "condition": {
+    "expression": "#owner = :owner",
+    "expressionNames": {
+      "#owner": "owner"
+    },
+    "expressionValues": {
+      ":owner": $util.dynamodb.toDynamoDBJson($owner)
+    }
+  }
+}

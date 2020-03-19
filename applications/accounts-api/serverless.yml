@@ -85,9 +85,12 @@ custom:
             - createSettings
           request: company/createCompany/Mutation.createCompany.req.vtl
           response: company/createCompany/Mutation.createCompany.res.vtl
-        - dataSource: Data
+        - kind: PIPELINE
           type: Mutation
           field: deleteCompany
+          functions:
+            - deleteSettings
+            - deleteCompany
           request: company/deleteCompany/Mutation.deleteCompany.req.vtl
           response: company/deleteCompany/Mutation.deleteCompany.res.vtl
         - kind: PIPELINE
@@ -184,6 +187,14 @@ custom:
           name: createSettings
           request: company/createCompany/Pipeline.createSettings.req.vtl
           response: company/createCompany/Pipeline.createSettings.res.vtl
+        - dataSource: Data
+          name: deleteCompany
+          request: company/deleteCompany/Pipeline.deleteCompany.req.vtl
+          response: company/deleteCompany/Pipeline.deleteCompany.res.vtl
+        - dataSource: Data
+          name: deleteSettings
+          request: company/deleteCompany/Pipeline.deleteSettings.req.vtl
+          response: company/deleteCompany/Pipeline.deleteSettings.res.vtl
         - dataSource: Data
           name: updateCompany
           request: company/updateCompany/Pipeline.updateCompany.req.vtl

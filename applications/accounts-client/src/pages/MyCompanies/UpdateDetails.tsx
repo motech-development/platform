@@ -1,10 +1,24 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import {
+  Button,
+  Col,
+  Modal,
+  PageTitle,
+  Row,
+  Typography,
+  useToast,
+} from '@motech-development/breeze-ui';
+import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import CompanyForm, { FormSchema } from '../../components/CompanyForm';
+import ConfirmDelete from '../../components/ConfirmDelete';
 import Connected from '../../components/Connected';
+import DELETE_COMPANY, {
+  IDeleteCompanyInput,
+  IDeleteCompanyOutput,
+  updateCache,
+} from '../../graphql/company/DELETE_COMPANY';
 import GET_COMPANY, {
   IGetCompanyInput,
   IGetCompanyOutput,
@@ -20,10 +34,12 @@ interface IUpdateDetailsParams {
 }
 
 const UpdateDetails: FC = () => {
+  const backTo = (id: string) => `/my-companies/dashboard/${id}`;
   const history = useHistory();
   const { add } = useToast();
   const { t } = useTranslation('my-companies');
   const { companyId } = useParams<IUpdateDetailsParams>();
+  const [modal, setModal] = useState(false);
   const [
     mutation,
     { error: updateError, loading: updateLoading },
@@ -38,7 +54,30 @@ const UpdateDetails: FC = () => {
         }),
       });
 
-      history.push(`/my-companies/dashboard/${id}`);
+      history.push(backTo(id));
+    },
+  });
+  const [
+    deleteMutation,
+    { error: deleteError, loading: deleteLoading },
+  ] = useMutation<IDeleteCompanyOutput, IDeleteCompanyInput>(DELETE_COMPANY, {
+    onCompleted: ({ deleteCompany }) => {
+      const { name } = deleteCompany;
+
+      add({
+        colour: 'success',
+        message: t('delete-company.success', {
+          name,
+        }),
+      });
+
+      history.push('/my-companies');
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('delete-company.error'),
+      });
     },
   });
   const { data, error, loading } = useQuery<
@@ -49,6 +88,22 @@ const UpdateDetails: FC = () => {
       id: companyId,
     },
   });
+  const launchDeleteModal = () => {
+    setModal(true);
+  };
+  const onDismiss = () => {
+    setModal(false);
+  };
+  const onDelete = () => {
+    (async () => {
+      await deleteMutation({
+        update: updateCache,
+        variables: {
+          id: companyId,
+        },
+      });
+    })();
+  };
   const save = (input: FormSchema) => {
     (async () => {
       await mutation({
@@ -60,7 +115,7 @@ const UpdateDetails: FC = () => {
   };
 
   return (
-    <Connected error={error || updateError} loading={loading}>
+    <Connected error={error || deleteError || updateError} loading={loading}>
       {data && (
         <>
           <PageTitle
@@ -68,12 +123,48 @@ const UpdateDetails: FC = () => {
             subTitle={t('update-details.sub-title')}
           />
 
-          <CompanyForm
-            backTo={`/my-companies/dashboard/${companyId}`}
-            initialValues={data.getCompany}
-            loading={updateLoading}
-            onSave={save}
-          />
+          <Row>
+            <Col>
+              <CompanyForm
+                backTo={backTo(companyId)}
+                initialValues={data.getCompany}
+                loading={updateLoading}
+                onSave={save}
+              />
+            </Col>
+
+            <Col xs={12} md={6} mdOffset={7}>
+              <Button
+                block
+                colour="danger"
+                size="lg"
+                onClick={launchDeleteModal}
+              >
+                {t('update-details.delete-company', {
+                  name: data.getCompany.name,
+                })}
+              </Button>
+            </Col>
+          </Row>
+
+          <Modal isOpen={modal} onDismiss={onDismiss}>
+            <Typography rule component="h3" variant="h3" margin="lg">
+              {t('delete-company.title', {
+                name: data.getCompany.name,
+              })}
+            </Typography>
+
+            <Typography component="p" variant="p">
+              {t('delete-company.warning')}
+            </Typography>
+
+            <ConfirmDelete
+              loading={deleteLoading}
+              name={data.getCompany.name}
+              onCancel={onDismiss}
+              onDelete={onDelete}
+            />
+          </Modal>
         </>
       )}
     </Connected>

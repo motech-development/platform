@@ -8,6 +8,7 @@ export interface IDeleteCompanyInput {
 export interface IDeleteCompanyOutput {
   deleteCompany: {
     id: string;
+    name: string;
   };
 }
 
@@ -34,6 +35,7 @@ const DELETE_COMPANY = gql`
   mutation DeleteCompany($id: ID!) {
     deleteCompany(id: $id) {
       id
+      name
     }
   }
 `;
