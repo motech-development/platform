@@ -85,7 +85,7 @@ const ClientForm: FC<IClientFormProps> = ({
       submitLabel={t('client-form.save')}
       onSubmit={onSave}
       cancel={() => (
-        <LinkButton block to={backTo} colour="danger" size="lg">
+        <LinkButton block to={backTo} colour="secondary" size="lg">
           {t('client-form.cancel')}
         </LinkButton>
       )}
