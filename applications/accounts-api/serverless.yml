@@ -38,67 +38,81 @@ custom:
           field: createClient
           functions:
             - address
+            - addressFiltering
             - telephone
             - getClientCompanyId
-            - addressFiltering
             - createClient
           request: client/createClient/Mutation.createClient.before.vtl
           response: client/createClient/Mutation.createClient.after.vtl
         - dataSource: Data
           type: Mutation
           field: deleteClient
-          request: client/Mutation.deleteClient.req.vtl
-          response: client/Mutation.deleteClient.res.vtl
+          request: client/deleteClient/Mutation.deleteClient.req.vtl
+          response: client/deleteClient/Mutation.deleteClient.res.vtl
         - kind: PIPELINE
           type: Mutation
           field: updateClient
           functions:
             - address
+            - addressFiltering
             - telephone
             - getClientCompanyId
-            - addressFiltering
             - updateClient
           request: client/updateClient/Mutation.updateClient.before.vtl
           response: client/updateClient/Mutation.updateClient.after.vtl
         - dataSource: Data
           type: Query
           field: getClient
-          request: client/Query.getClient.req.vtl
-          response: client/Query.getClient.res.vtl
+          request: client/getClient/Query.getClient.req.vtl
+          response: client/getClient/Query.getClient.res.vtl
         - dataSource: Data
           type: Query
           field: getClients
-          request: client/Query.getClients.req.vtl
-          response: client/Query.getClients.res.vtl
+          request: client/getClients/Query.getClients.req.vtl
+          response: client/getClients/Query.getClients.res.vtl
 
         - kind: PIPELINE
           type: Mutation
           field: createCompany
           functions:
+            - address
+            - addressFiltering
+            - bank
+            - companyNumber
+            - telephone
+            - vatRegistration
             - createCompany
             - createSettings
-          request: pipelines/before.vtl
-          response: pipelines/after.vtl
+          request: company/createCompany/Mutation.createCompany.before.vtl
+          response: company/createCompany/Mutation.createCompany.after.vtl
         - dataSource: Data
           type: Mutation
           field: deleteCompany
-          request: company/Mutation.deleteCompany.req.vtl
-          response: company/Mutation.deleteCompany.res.vtl
-        - dataSource: Data
+          request: company/deleteCompany/Mutation.deleteCompany.req.vtl
+          response: company/deleteCompany/Mutation.deleteCompany.res.vtl
+        - kind: PIPELINE
           type: Mutation
           field: updateCompany
-          request: company/Mutation.updateCompany.req.vtl
-          response: company/Mutation.updateCompany.res.vtl
+          functions:
+            - address
+            - addressFiltering
+            - bank
+            - companyNumber
+            - telephone
+            - vatRegistration
+            - updateCompany
+          request: company/updateCompany/Mutation.updateCompany.before.vtl
+          response: company/updateCompany/Mutation.updateCompany.after.vtl
         - dataSource: Data
           type: Query
           field: getCompanies
-          request: company/Query.getCompanies.req.vtl
-          response: company/Query.getCompanies.res.vtl
+          request: company/getCompanies/Query.getCompanies.req.vtl
+          response: company/getCompanies/Query.getCompanies.res.vtl
         - dataSource: Data
           type: Query
           field: getCompany
-          request: company/Query.getCompany.req.vtl
-          response: company/Query.getCompany.res.vtl
+          request: company/getCompany/Query.getCompany.req.vtl
+          response: company/getCompany/Query.getCompany.res.vtl
 
         - dataSource: Data
           type: Mutation
@@ -161,14 +175,19 @@ custom:
           request: client/updateClient/updateClient.req.vtl
           response: client/updateClient/updateClient.res.vtl
 
+        # Companies
         - dataSource: Data
           name: createCompany
-          request: company/Mutation.createCompany.req.vtl
-          response: company/Mutation.createCompany.res.vtl
+          request: company/createCompany/createCompany.req.vtl
+          response: company/createCompany/createCompany.res.vtl
         - dataSource: Data
           name: createSettings
-          request: settings/Mutation.createSettings.req.vtl
-          response: settings/Mutation.createSettings.res.vtl
+          request: company/createCompany/createSettings.req.vtl
+          response: company/createCompany/createSettings.res.vtl
+        - dataSource: Data
+          name: updateCompany
+          request: company/updateCompany/updateCompany.req.vtl
+          response: company/updateCompany/updateCompany.res.vtl
       dataSources:
         - type: NONE
           name: Resolver

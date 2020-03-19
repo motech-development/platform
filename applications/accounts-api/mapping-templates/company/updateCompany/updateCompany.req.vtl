@@ -1,0 +1,66 @@
+#set($id = $ctx.args.input.id)
+#set($typename = $ctx.args.input["__typename"])
+#set($owner = $ctx.identity.sub)
+#set($data = "$owner:$ctx.args.input.name")
+
+#set($input = $ctx.args.input.remove("__typename"))
+#set($input = $ctx.args.input.remove("id"))
+
+#set($set = "SET")
+
+#set($remove = "REMOVE")
+
+#foreach ($key in $ctx.args.input.keySet())
+  #if($ctx.args.input.get($key) == "")
+    #set($remove = "$remove #${key},")
+  #else
+    #set($set = "$set #${key} = :${key},")
+  #end
+#end
+
+#set($set = "$set #data = :data, #updatedAt = :updatedAt")
+
+#if($remove == "REMOVE")
+  #set($expression = "$set")
+#else
+  #set($remove = $remove.substring(0, $remove.lastIndexOf(",")))
+
+  #set($expression = "$remove $set")
+#end
+
+{
+  "version": "2017-02-28",
+  "operation": "UpdateItem",
+  "key" : {
+    "id": $util.dynamodb.toDynamoDBJson($id),
+    "__typename": $util.dynamodb.toDynamoDBJson($typename)
+  },
+  "update": {
+    "expression": "$expression",
+    "expressionNames": {
+      "#data": "data",
+      "#updatedAt": "updatedAt"
+      #foreach ($key in $ctx.args.input.keySet())
+        , "#${key}": "${key}"
+      #end
+    },
+    "expressionValues": {
+      ":data": $util.dynamodb.toDynamoDBJson($data),
+      ":updatedAt": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601())
+      #foreach ($key in $ctx.args.input.keySet())
+        #if($ctx.args.input.get($key) != "")
+          , ":${key}": $util.dynamodb.toDynamoDBJson($ctx.args.input.get($key))
+        #end
+      #end
+    }
+  },
+  "condition": {
+    "expression": "#owner = :owner",
+    "expressionNames": {
+      "#owner": "owner"
+    },
+    "expressionValues": {
+      ":owner": $util.dynamodb.toDynamoDBJson($owner)
+    }
+  }
+}
