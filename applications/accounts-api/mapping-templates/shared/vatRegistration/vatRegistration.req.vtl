@@ -1,0 +1,9 @@
+#set($validVatRegistration = $util.matches("^([GB])*(([1-9]\d{8})|([1-9]\d{11}))$", $ctx.args.input.vatRegistration))
+
+#if ($ctx.args.input.vatRegistration != "")
+  #if (!$validVatRegistration)
+    $utils.error("VAT registration number is invalid")
+  #end
+#end
+
+{}

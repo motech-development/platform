@@ -1,0 +1,15 @@
+#set($validPostcode = $util.matches("^([A-PR-UWYZ0-9][A-HK-Y0-9][AEHMNPRTVXY0-9]?[ABEHMNPRVWXY0-9]? {1,2}[0-9][ABD-HJLN-UW-Z]{2}|GIR 0AA)$", $ctx.args.input.address.line5))
+
+#if (!$ctx.args.input.address.line1 || $ctx.args.input.address.line1 == "")
+  $utils.error("Address line 1 is required")
+#end
+
+#if (!$ctx.args.input.address.line3 || $ctx.args.input.address.line3 == "")
+  $utils.error("Address line 3 is required")
+#end
+
+#if (!$validPostcode)
+  $utils.error("Postcode is invalid")
+#end
+
+{}

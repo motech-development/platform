@@ -1,0 +1,28 @@
+#set($id = $util.autoId())
+#set($typename = "Client")
+#set($owner = $ctx.identity.sub)
+#set($defaultGroups = ["Admin"])
+#set($data = "$owner:$ctx.stash.companyId:$ctx.args.input.name")
+
+{
+  "version": "2017-02-28",
+  "operation": "PutItem",
+  "key" : {
+    "id": $util.dynamodb.toDynamoDBJson($id),
+    "__typename": $util.dynamodb.toDynamoDBJson($typename)
+  },
+  "attributeValues": {
+    "createdAt": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601()),
+    "data": $util.dynamodb.toDynamoDBJson($data),
+    "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
+    "owner": $util.dynamodb.toDynamoDBJson($owner)
+    #foreach ($key in $ctx.args.input.keySet())
+      #if($ctx.args.input.get($key) != "")
+        , "${key}": $util.dynamodb.toDynamoDBJson($ctx.args.input.get($key))
+      #end
+    #end
+  },
+  "condition": {
+    "expression": "attribute_not_exists(id)"
+  }
+}
