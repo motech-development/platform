@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 
 const formSchema = {
-  name: '',
+  confirmation: '',
 };
 
 export type FormSchema = typeof formSchema;
@@ -25,7 +25,7 @@ const ConfirmDelete: FC<IConfirmDeleteProps> = ({
 }) => {
   const { t } = useTranslation('confirm-delete');
   const validationSchema = object().shape({
-    name: string()
+    confirmation: string()
       .oneOf(
         [name],
         t('does-not-match', {
@@ -45,7 +45,7 @@ const ConfirmDelete: FC<IConfirmDeleteProps> = ({
       {({ isValid }) => (
         <Form autoComplete="off">
           <TextBox
-            name="name"
+            name="confirmation"
             label={t('confirm-delete', {
               name,
             })}
