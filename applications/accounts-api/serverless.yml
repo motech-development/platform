@@ -42,8 +42,8 @@ custom:
             - telephone
             - getClientCompanyId
             - createClient
-          request: client/createClient/Mutation.createClient.before.vtl
-          response: client/createClient/Mutation.createClient.after.vtl
+          request: client/createClient/Mutation.createClient.req.vtl
+          response: client/createClient/Mutation.createClient.res.vtl
         - dataSource: Data
           type: Mutation
           field: deleteClient
@@ -58,8 +58,8 @@ custom:
             - telephone
             - getClientCompanyId
             - updateClient
-          request: client/updateClient/Mutation.updateClient.before.vtl
-          response: client/updateClient/Mutation.updateClient.after.vtl
+          request: client/updateClient/Mutation.updateClient.req.vtl
+          response: client/updateClient/Mutation.updateClient.res.vtl
         - dataSource: Data
           type: Query
           field: getClient
@@ -83,8 +83,8 @@ custom:
             - vatRegistration
             - createCompany
             - createSettings
-          request: company/createCompany/Mutation.createCompany.before.vtl
-          response: company/createCompany/Mutation.createCompany.after.vtl
+          request: company/createCompany/Mutation.createCompany.req.vtl
+          response: company/createCompany/Mutation.createCompany.res.vtl
         - dataSource: Data
           type: Mutation
           field: deleteCompany
@@ -101,8 +101,8 @@ custom:
             - telephone
             - vatRegistration
             - updateCompany
-          request: company/updateCompany/Mutation.updateCompany.before.vtl
-          response: company/updateCompany/Mutation.updateCompany.after.vtl
+          request: company/updateCompany/Mutation.updateCompany.req.vtl
+          response: company/updateCompany/Mutation.updateCompany.res.vtl
         - dataSource: Data
           type: Query
           field: getCompanies
@@ -136,58 +136,58 @@ custom:
         # Validation
         - dataSource: Resolver
           name: address
-          request: shared/address/address.req.vtl
-          response: shared/address/address.res.vtl
+          request: shared/address/Pipeline.address.req.vtl
+          response: shared/address/Pipeline.address.res.vtl
         - dataSource: Resolver
           name: bank
-          request: shared/bank/bank.req.vtl
-          response: shared/bank/bank.res.vtl
+          request: shared/bank/Pipeline.bank.req.vtl
+          response: shared/bank/Pipeline.bank.res.vtl
         - dataSource: Resolver
           name: companyNumber
-          request: shared/companyNumber/companyNumber.req.vtl
-          response: shared/companyNumber/companyNumber.res.vtl
+          request: shared/companyNumber/Pipeline.companyNumber.req.vtl
+          response: shared/companyNumber/Pipeline.companyNumber.res.vtl
         - dataSource: Resolver
           name: telephone
-          request: shared/telephone/telephone.req.vtl
-          response: shared/telephone/telephone.res.vtl
+          request: shared/telephone/Pipeline.telephone.req.vtl
+          response: shared/telephone/Pipeline.telephone.res.vtl
         - dataSource: Resolver
           name: vatRegistration
-          request: shared/vatRegistration/vatRegistration.req.vtl
-          response: shared/vatRegistration/vatRegistration.res.vtl
+          request: shared/vatRegistration/Pipeline.vatRegistration.req.vtl
+          response: shared/vatRegistration/Pipeline.vatRegistration.res.vtl
 
         # Utilities
         - dataSource: Resolver
           name: addressFiltering
-          request: shared/addressFiltering/addressFiltering.req.vtl
-          response: shared/addressFiltering/addressFiltering.res.vtl
+          request: shared/addressFiltering/Pipeline.addressFiltering.req.vtl
+          response: shared/addressFiltering/Pipeline.addressFiltering.res.vtl
 
         # Clients
         - dataSource: Data
           name: createClient
-          request: client/createClient/createClient.req.vtl
-          response: client/createClient/createClient.res.vtl
+          request: client/createClient/Pipeline.createClient.req.vtl
+          response: client/createClient/Pipeline.createClient.res.vtl
         - dataSource: Data
           name: getClientCompanyId
-          request: client/shared/getClientCompanyId/getClientCompanyId.req.vtl
-          response: client/shared/getClientCompanyId/getClientCompanyId.res.vtl
+          request: client/shared/getClientCompanyId/Pipeline.getClientCompanyId.req.vtl
+          response: client/shared/getClientCompanyId/Pipeline.getClientCompanyId.res.vtl
         - dataSource: Data
           name: updateClient
-          request: client/updateClient/updateClient.req.vtl
-          response: client/updateClient/updateClient.res.vtl
+          request: client/updateClient/Pipeline.updateClient.req.vtl
+          response: client/updateClient/Pipeline.updateClient.res.vtl
 
         # Companies
         - dataSource: Data
           name: createCompany
-          request: company/createCompany/createCompany.req.vtl
-          response: company/createCompany/createCompany.res.vtl
+          request: company/createCompany/Pipeline.createCompany.req.vtl
+          response: company/createCompany/Pipeline.createCompany.res.vtl
         - dataSource: Data
           name: createSettings
-          request: company/createCompany/createSettings.req.vtl
-          response: company/createCompany/createSettings.res.vtl
+          request: company/createCompany/Pipeline.createSettings.req.vtl
+          response: company/createCompany/Pipeline.createSettings.res.vtl
         - dataSource: Data
           name: updateCompany
-          request: company/updateCompany/updateCompany.req.vtl
-          response: company/updateCompany/updateCompany.res.vtl
+          request: company/updateCompany/Pipeline.updateCompany.req.vtl
+          response: company/updateCompany/Pipeline.updateCompany.res.vtl
       dataSources:
         - type: NONE
           name: Resolver
