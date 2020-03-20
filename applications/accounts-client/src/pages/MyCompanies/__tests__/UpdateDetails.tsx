@@ -250,6 +250,26 @@ describe('UpdateDetails', () => {
       await expect(findByRole('dialog')).resolves.toBeInTheDocument();
     });
 
+    it('should hide the delete confirmation modal', async () => {
+      const { findAllByRole, findByRole, findByText, queryByRole } = component;
+
+      await act(async () => {
+        await findByText('New company');
+
+        const [, , button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        await findByRole('dialog');
+
+        const [, , , cancelButton] = await findAllByRole('button');
+
+        fireEvent.click(cancelButton);
+      });
+
+      expect(queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
     it('should delete a client', async () => {
       const {
         findAllByRole,
