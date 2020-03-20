@@ -8,8 +8,12 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-api
 
+package:
+  individually: true
+
 plugins:
   - serverless-appsync-plugin
+  - serverless-webpack
   - '@motech-development/serverless-outputs-env'
 
 custom:
@@ -89,8 +93,9 @@ custom:
           type: Mutation
           field: deleteCompany
           functions:
-            - deleteSettings
             - deleteCompany
+            - deleteSettings
+            - deleteClients
           request: company/deleteCompany/Mutation.deleteCompany.req.vtl
           response: company/deleteCompany/Mutation.deleteCompany.res.vtl
         - kind: PIPELINE
@@ -187,6 +192,10 @@ custom:
           name: createSettings
           request: company/createCompany/Pipeline.createSettings.req.vtl
           response: company/createCompany/Pipeline.createSettings.res.vtl
+        - dataSource: DeleteClientsLambda
+          name: deleteClients
+          request: company/deleteCompany/Pipeline.deleteClients.req.vtl
+          response: company/deleteCompany/Pipeline.deleteClients.res.vtl
         - dataSource: Data
           name: deleteCompany
           request: company/deleteCompany/Pipeline.deleteCompany.req.vtl
@@ -208,6 +217,21 @@ custom:
           config:
             tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
             serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
+        - type: AWS_LAMBDA
+          name: DeleteClientsLambda
+          config:
+            lambdaFunctionArn: !GetAtt DeleteClientsLambdaFunction.Arn
+            serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
+
+  webpack:
+    includeModules: true
+
+functions:
+  DeleteClients:
+    handler: src/handlers/delete-clients.handler
+    role: DeleteClientsRole
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
 resources:
   Resources:
@@ -268,3 +292,68 @@ resources:
                       - ''
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                         - '/index/__typename-data-index'
+
+    AppSyncLambdaServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-lambda-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-lambda-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:invokeFunction
+                  Resource:
+                    - !GetAtt DeleteClientsLambdaFunction.Arn
+                    - !Join
+                      - ''
+                      - - !GetAtt DeleteClientsLambdaFunction.Arn
+                        - ':*'
+
+    DeleteClientsRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-delete-clients-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-delete-clients-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:BatchWriteItem
+                    - dynamodb:Query
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
