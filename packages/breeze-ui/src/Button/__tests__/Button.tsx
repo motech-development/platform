@@ -101,5 +101,47 @@ describe('Button', () => {
         width: 100%;
       `);
     });
+
+    it('should have the correct padding when sm', () => {
+      const { container } = render(
+        <Button block size="sm">
+          Hello
+        </Button>,
+      );
+
+      expect(container.firstChild).toHaveStyle(`
+        display: block;
+        padding: 0;
+        width: 100%;
+      `);
+    });
+
+    it('should have the correct padding when md', () => {
+      const { container } = render(
+        <Button block size="md">
+          Hello
+        </Button>,
+      );
+
+      expect(container.firstChild).toHaveStyle(`
+        display: block;
+        padding: 0;
+        width: 100%;
+      `);
+    });
+
+    it('should have the correct padding when lg', () => {
+      const { container } = render(
+        <Button block size="lg">
+          Hello
+        </Button>,
+      );
+
+      expect(container.firstChild).toHaveStyle(`
+        display: block;
+        padding: 0;
+        width: 100%;
+      `);
+    });
   });
 });

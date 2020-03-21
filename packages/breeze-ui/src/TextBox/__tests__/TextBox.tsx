@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { Form, Formik } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
@@ -210,7 +210,7 @@ describe('TextBox', () => {
     });
   });
 
-  describe('with a format is set', () => {
+  describe('with a format set', () => {
     describe('when there are no initial values', () => {
       beforeEach(() => {
         initialValues = {
@@ -243,8 +243,7 @@ describe('TextBox', () => {
         );
       });
 
-      // TODO: Why is this failing?
-      it.skip('should render the textbox with the correct colour when active', async () => {
+      it('should render the textbox with the correct colour when active', async () => {
         const { findByPlaceholderText } = render(
           <Formik initialValues={initialValues} onSubmit={onSubmit}>
             {() => (
@@ -259,9 +258,14 @@ describe('TextBox', () => {
             )}
           </Formik>,
         );
-        const input = await findByPlaceholderText('Test');
 
-        fireEvent.focus(input);
+        await act(async () => {
+          const input = await findByPlaceholderText('Test');
+
+          fireEvent.focus(input);
+        });
+
+        const input = await findByPlaceholderText('Test');
 
         expect(input).toHaveStyle('color: #333');
       });
