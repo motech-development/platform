@@ -145,7 +145,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
                           onClick={() =>
                             arrayHelpers.push({
                               name: '',
-                              vatRate: 0,
+                              vatRate: 20,
                             })
                           }
                         >

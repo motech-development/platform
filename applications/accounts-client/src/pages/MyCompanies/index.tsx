@@ -6,6 +6,7 @@ const AddCompany = lazy(() => import('./AddCompany'));
 const Clients = lazy(() => import('./Clients'));
 const Dashboard = lazy(() => import('./Dashboard'));
 const MyCompanies = lazy(() => import('./MyCompanies'));
+const Settings = lazy(() => import('./Settings'));
 const UpdateDetails = lazy(() => import('./UpdateDetails'));
 
 const Routes: FC = () => (
@@ -22,6 +23,11 @@ const Routes: FC = () => (
       path="/my-companies/dashboard/:companyId"
     />
     <Route component={Clients} path="/my-companies/clients/:companyId" />
+    <ProtectedRoute
+      exact
+      component={Settings}
+      path="/my-companies/settings/:companyId"
+    />
     <ProtectedRoute
       exact
       component={UpdateDetails}
