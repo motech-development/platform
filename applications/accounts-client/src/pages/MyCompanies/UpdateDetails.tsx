@@ -57,10 +57,10 @@ const UpdateDetails: FC = () => {
       history.push(backTo(id));
     },
   });
-  const [
-    deleteMutation,
-    { error: deleteError, loading: deleteLoading },
-  ] = useMutation<IDeleteCompanyOutput, IDeleteCompanyInput>(DELETE_COMPANY, {
+  const [deleteMutation, { loading: deleteLoading }] = useMutation<
+    IDeleteCompanyOutput,
+    IDeleteCompanyInput
+  >(DELETE_COMPANY, {
     onCompleted: ({ deleteCompany }) => {
       const { name } = deleteCompany;
 
@@ -115,7 +115,7 @@ const UpdateDetails: FC = () => {
   };
 
   return (
-    <Connected error={error || deleteError || updateError} loading={loading}>
+    <Connected error={error || updateError} loading={loading}>
       {data && (
         <>
           <PageTitle
