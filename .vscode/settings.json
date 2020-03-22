@@ -20,6 +20,10 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./applications/accounts-queue"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./packages/auth"
     },
     {

@@ -1,0 +1,16 @@
+{
+  "name": "@motech-development/accounts-queue",
+  "version": "0.0.0",
+  "description": "Motech Development accounts queues",
+  "private": true,
+  "scripts": {
+    "deploy": "serverless deploy --verbose",
+    "teardown": "serverless remove --verbose"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "**/src/**/*.ts"
+    ],
+    "testEnvironment": "node"
+  }
+}

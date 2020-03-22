@@ -1,0 +1,22 @@
+service:
+  name: ${opt:appName, 'accounts'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-queue
+
+package:
+  individually: true
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+
+resources:
+  Resources:
+    AccountsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.prefix}-queue

@@ -174,6 +174,30 @@ jobs:
             - ./applications/accounts-client/.env.production
           root: .
 
+  deploy-accounts-queue-develop:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-queue -- -- --stage develop
+          name: Deploy accounts queue infrastructure
+
+  deploy-accounts-queue-production:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-queue -- -- --stage production
+          name: Deploy accounts queue infrastructure
+
   deploy-auth0:
     docker:
       - image: circleci/node:12.13
@@ -270,13 +294,29 @@ workflows:
           requires:
             - unit-test
 
+      - deploy-accounts-queue-production:
+          filters:
+            branches:
+              only: master
+          requires:
+            - unit-test
+
+      - deploy-accounts-queue-develop:
+          filters:
+            branches:
+              only: /feature\/.*/
+          requires:
+            - unit-test
+
       - deploy-accounts-api-production:
           requires:
             - deploy-accounts-data-production
+            - deploy-accounts-queue-production
 
       - deploy-accounts-api-develop:
           requires:
             - deploy-accounts-data-develop
+            - deploy-accounts-queue-develop
 
       - deploy-auth0:
           filters:
