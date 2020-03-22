@@ -144,6 +144,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
                           size="lg"
                           onClick={() =>
                             arrayHelpers.push({
+                              __typename: 'ExpenseCategory',
                               name: '',
                               vatRate: 20,
                             })

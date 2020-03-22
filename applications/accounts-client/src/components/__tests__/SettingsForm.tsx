@@ -93,8 +93,7 @@ describe('SettingsForm', () => {
     await expect(findByRole('form')).resolves.toBeInTheDocument();
   });
 
-  // TODO: Why is this setting the wrong value?
-  it.skip('should submit the form with the correct data', async () => {
+  it('should submit the form with the correct data', async () => {
     const { findAllByRole, findAllByLabelText } = component;
 
     await act(async () => {
@@ -112,7 +111,7 @@ describe('SettingsForm', () => {
       fireEvent.change(vatRate, {
         target: {
           focus: () => {},
-          value: 5,
+          value: '5%',
         },
       });
 
@@ -133,8 +132,9 @@ describe('SettingsForm', () => {
       categories: [
         ...initialValues.categories,
         {
+          __typename: 'ExpenseCategory',
           name: 'Utilities',
-          vatRate: 5,
+          vatRate: '5%',
         },
       ],
     });
