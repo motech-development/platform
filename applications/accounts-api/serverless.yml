@@ -94,8 +94,7 @@ custom:
           field: deleteCompany
           functions:
             - deleteCompany
-            - deleteSettings
-            - deleteClients
+            - queueCompanyDelete
           request: company/deleteCompany/Mutation.deleteCompany.req.vtl
           response: company/deleteCompany/Mutation.deleteCompany.res.vtl
         - kind: PIPELINE
@@ -194,18 +193,14 @@ custom:
           name: createSettings
           request: company/createCompany/Pipeline.createSettings.req.vtl
           response: company/createCompany/Pipeline.createSettings.res.vtl
-        - dataSource: DeleteClientsLambda
-          name: deleteClients
-          request: company/deleteCompany/Pipeline.deleteClients.req.vtl
-          response: company/deleteCompany/Pipeline.deleteClients.res.vtl
         - dataSource: Data
           name: deleteCompany
           request: company/deleteCompany/Pipeline.deleteCompany.req.vtl
           response: company/deleteCompany/Pipeline.deleteCompany.res.vtl
-        - dataSource: Data
-          name: deleteSettings
-          request: company/deleteCompany/Pipeline.deleteSettings.req.vtl
-          response: company/deleteCompany/Pipeline.deleteSettings.res.vtl
+        - dataSource: Lambda
+          name: queueCompanyDelete
+          request: company/deleteCompany/Pipeline.queueCompanyDelete.req.vtl
+          response: company/deleteCompany/Pipeline.queueCompanyDelete.res.vtl
         - dataSource: Data
           name: updateCompany
           request: company/updateCompany/Pipeline.updateCompany.req.vtl
@@ -220,20 +215,20 @@ custom:
             tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
             serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
         - type: AWS_LAMBDA
-          name: DeleteClientsLambda
+          name: Lambda
           config:
-            lambdaFunctionArn: !GetAtt DeleteClientsLambdaFunction.Arn
+            lambdaFunctionArn: !GetAtt LambdaDataSourceLambdaFunction.Arn
             serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
 
   webpack:
     includeModules: true
 
 functions:
-  DeleteClients:
-    handler: src/handlers/delete-clients.handler
-    role: DeleteClientsRole
+  LambdaDataSource:
+    handler: src/lambda.handler
+    role: LambdaDataSourceRole
     environment:
-      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+      QUEUE_URL: !ImportValue ${self:provider.stage}-AccountsQueueUrl
 
 resources:
   Resources:
@@ -317,16 +312,16 @@ resources:
                   Action:
                     - lambda:invokeFunction
                   Resource:
-                    - !GetAtt DeleteClientsLambdaFunction.Arn
+                    - !GetAtt LambdaDataSourceLambdaFunction.Arn
                     - !Join
                       - ''
-                      - - !GetAtt DeleteClientsLambdaFunction.Arn
+                      - - !GetAtt LambdaDataSourceLambdaFunction.Arn
                         - ':*'
 
-    DeleteClientsRole:
+    LambdaDataSourceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-delete-clients-role
+        RoleName: ${self:custom.prefix}-lambda-data-source-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -337,20 +332,15 @@ resources:
               Action:
                 - sts:AssumeRole
         Policies:
-          - PolicyName: ${self:custom.prefix}-delete-clients-role-policy
+          - PolicyName: ${self:custom.prefix}-lambda-data-source-role-policy
             PolicyDocument:
               Version: '2012-10-17'
               Statement:
                 - Effect: Allow
                   Action:
-                    - dynamodb:BatchWriteItem
-                    - dynamodb:Query
+                    - sqs:SendMessage
                   Resource:
-                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
-                    - !Join
-                      - ''
-                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
-                        - '/index/__typename-data-index'
+                    - !ImportValue ${self:provider.stage}-AccountsQueueArn
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup

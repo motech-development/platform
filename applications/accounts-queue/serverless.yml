@@ -20,3 +20,15 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:custom.prefix}-queue
+
+  Outputs:
+    AccountsQueueArn:
+      Description: Accounts application queue ARN
+      Value: !GetAtt AccountsQueue.Arn
+      Export:
+        Name: ${self:provider.stage}-AccountsQueueArn
+    AccountsQueueUrl:
+      Description: Accounts application queue URL
+      Value: !Ref AccountsQueue
+      Export:
+        Name: ${self:provider.stage}-AccountsQueueUrl

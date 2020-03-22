@@ -1,0 +1,12 @@
+#set($arguments = {})
+#set($input = $arguments.put("id", $ctx.arguments.id))
+#set($input = $arguments.put("owner", $ctx.identity.sub))
+
+{
+  "version": "2017-02-28",
+  "operation": "Invoke",
+  "payload": {
+    "field": "queueCompanyDelete",
+    "arguments":  $utils.toJson($arguments)
+  }
+}
