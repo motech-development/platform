@@ -1,10 +1,20 @@
 #set($id = $ctx.prev.result.id)
+#set($vatRegistration = $ctx.prev.result.vatRegistration)
 #set($typename = "Settings")
 #set($owner = $ctx.identity.sub)
 #set($defaultGroups = ["Admin"])
 #set($data = "$owner:$id:$typename")
 #set($categories = [])
-#set($vatRate = 20)
+#set($vat = {})
+
+#if ($vatRegistration)
+  #set($vatRate = 20)
+#else
+  #set($vatRate = 0)
+#end
+
+#set($input = $vat.put("charge", $vatRate))
+#set($input = $vat.put("pay", $vatRate))
 
 {
   "version": "2017-02-28",
@@ -19,7 +29,7 @@
     "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
     "owner": $util.dynamodb.toDynamoDBJson($owner),
     "categories": $util.dynamodb.toDynamoDBJson($categories),
-    "vatRate": $util.dynamodb.toDynamoDBJson($vatRate),
+    "vat": $util.dynamodb.toDynamoDBJson($vat),
   },
   "condition": {
     "expression": "attribute_not_exists(id)"

@@ -1,0 +1,10 @@
+type VatSettings {
+  charge: Float
+  pay: Float
+}
+
+input VatSettingsInput {
+  __typename: String
+  charge: Float!
+  pay: Float!
+}

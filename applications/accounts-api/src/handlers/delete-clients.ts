@@ -48,20 +48,22 @@ export const handler: Handler<IEvent> = async event => {
     .promise();
 
   // TODO: Chunk operation
-  await documentClient
-    .batchWrite({
-      RequestItems: {
-        [TABLE]: [
-          ...clients.Items?.map(item => ({
-            DeleteRequest: {
-              Key: {
-                __typename: 'Client',
-                id: item.id,
+  if (clients.Items && clients.Items.length > 0) {
+    await documentClient
+      .batchWrite({
+        RequestItems: {
+          [TABLE]: [
+            ...clients.Items.map(item => ({
+              DeleteRequest: {
+                Key: {
+                  __typename: 'Client',
+                  id: item.id,
+                },
               },
-            },
-          })),
-        ],
-      },
-    })
-    .promise();
+            })),
+          ],
+        },
+      })
+      .promise();
+  }
 };

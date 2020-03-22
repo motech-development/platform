@@ -203,6 +203,46 @@ describe('Form', () => {
     });
   });
 
+  describe('with a prefix', () => {
+    beforeEach(() => {
+      component = render(
+        <Form
+          submitLabel="Submit"
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={value => onSubmit(value)}
+        >
+          <TextBox label="Test" name="test" prefix="£" />
+        </Form>,
+      );
+    });
+
+    it('should submit with the correct values', async () => {
+      const { findByLabelText, findByRole } = component;
+
+      await act(async () => {
+        const input = await findByLabelText('Test');
+
+        fireEvent.change(input, {
+          target: { focus: () => {}, value: '20' },
+        });
+
+        const button = await findByRole('button');
+
+        fireEvent.click(button);
+      });
+
+      expect(onSubmit).toHaveBeenCalledWith({
+        empty: '',
+        obj: {
+          empty: '',
+          test: '',
+        },
+        test: '£20',
+      });
+    });
+  });
+
   describe('when loading', () => {
     beforeEach(() => {
       component = render(
