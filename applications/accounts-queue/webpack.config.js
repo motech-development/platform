@@ -25,10 +25,7 @@ module.exports = {
         test: /\.ts(x?)$/,
         use: [
           {
-            loader: 'ts-loader',
-            options: {
-              happyPackMode: true,
-            },
+            loader: 'babel-loader',
           },
         ],
       },

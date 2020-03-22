@@ -11,8 +11,21 @@ provider:
 package:
   individually: true
 
+plugins:
+  - serverless-webpack
+
 custom:
   prefix: ${self:service}-${self:provider.stage}
+
+  webpack:
+    includeModules: true
+
+functions:
+  DeleteTrigger:
+    handler: src/triggers/delete.handler
+    events:
+      - sqs:
+          arn: !GetAtt AccountsQueue.Arn
 
 resources:
   Resources:
