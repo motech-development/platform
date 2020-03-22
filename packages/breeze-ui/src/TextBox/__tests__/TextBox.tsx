@@ -1,4 +1,4 @@
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, wait } from '@testing-library/react';
 import { Form, Formik } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
@@ -60,6 +60,8 @@ describe('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.focus(input);
+
+          await wait();
         });
 
         const input = await findByPlaceholderText('Test');
@@ -86,6 +88,8 @@ describe('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.blur(input);
+
+          await wait();
         });
 
         const alert = await findByRole('alert');
@@ -150,6 +154,8 @@ describe('TextBox', () => {
           const input = await findByLabelText('Test');
 
           fireEvent.blur(input);
+
+          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
@@ -197,6 +203,8 @@ describe('TextBox', () => {
           const input = await findByLabelText('Test');
 
           fireEvent.blur(input);
+
+          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
@@ -220,6 +228,8 @@ describe('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.focus(input);
+
+          await wait();
         });
 
         const input = await findByPlaceholderText('Test');
@@ -282,6 +292,8 @@ describe('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.focus(input);
+
+          await wait();
         });
 
         const input = await findByPlaceholderText('Test');
@@ -313,6 +325,8 @@ describe('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.blur(input);
+
+          await wait();
         });
 
         const alert = await findByRole('alert');
@@ -382,6 +396,8 @@ describe('TextBox', () => {
           const input = await findByLabelText('Test');
 
           fireEvent.blur(input);
+
+          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
@@ -429,6 +445,8 @@ describe('TextBox', () => {
           const input = await findByLabelText('Test');
 
           fireEvent.blur(input);
+
+          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
@@ -457,6 +475,8 @@ describe('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.focus(input);
+
+          await wait();
         });
 
         const input = await findByPlaceholderText('Test');
