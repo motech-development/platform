@@ -10,7 +10,7 @@ describe('Button', () => {
       expect(container.firstChild).toHaveStyle(`
         font-size: 16px;
         height: 32px;
-        padding: 1px 16px;
+        padding: 0 16px;
       `);
     });
 
@@ -20,7 +20,7 @@ describe('Button', () => {
       expect(container.firstChild).toHaveStyle(`
         font-size: 16px;
         height: 40px;
-        padding: 1px 24px;
+        padding: 0 24px;
       `);
     });
 
@@ -29,8 +29,8 @@ describe('Button', () => {
 
       expect(container.firstChild).toHaveStyle(`
         font-size: 18px;
-        height: 48px;
-        padding: 1px 32px;
+        height: 46px;
+        padding: 0 32px;
       `);
     });
   });
@@ -97,6 +97,49 @@ describe('Button', () => {
 
       expect(container.firstChild).toHaveStyle(`
         display: block;
+        padding: 0;
+        width: 100%;
+      `);
+    });
+
+    it('should have the correct padding when sm', () => {
+      const { container } = render(
+        <Button block size="sm">
+          Hello
+        </Button>,
+      );
+
+      expect(container.firstChild).toHaveStyle(`
+        display: block;
+        padding: 0;
+        width: 100%;
+      `);
+    });
+
+    it('should have the correct padding when md', () => {
+      const { container } = render(
+        <Button block size="md">
+          Hello
+        </Button>,
+      );
+
+      expect(container.firstChild).toHaveStyle(`
+        display: block;
+        padding: 0;
+        width: 100%;
+      `);
+    });
+
+    it('should have the correct padding when lg', () => {
+      const { container } = render(
+        <Button block size="lg">
+          Hello
+        </Button>,
+      );
+
+      expect(container.firstChild).toHaveStyle(`
+        display: block;
+        padding: 0;
         width: 100%;
       `);
     });

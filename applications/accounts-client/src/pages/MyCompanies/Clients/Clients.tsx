@@ -1,34 +1,20 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import {
-  Button,
   Card,
   LinkButton,
   Masonry,
-  Modal,
   PageTitle,
   Typography,
-  useToast,
 } from '@motech-development/breeze-ui';
-import React, { FC, Fragment, useEffect, useState } from 'react';
+import React, { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import ConfirmDelete from '../../../components/ConfirmDelete';
 import Connected from '../../../components/Connected';
-import DELETE_CLIENT, {
-  IDeleteClientInput,
-  IDeleteClientOutput,
-  updateCache,
-} from '../../../graphql/client/DELETE_CLIENT';
 import GET_CLIENTS, {
   IGetClientsInput,
   IGetClientsOutput,
 } from '../../../graphql/client/GET_CLIENTS';
 import withLayout from '../../../hoc/withLayout';
-
-interface IDeleteModal {
-  id: string;
-  name: string;
-}
 
 interface IClientsParams {
   companyId: string;
@@ -37,12 +23,6 @@ interface IClientsParams {
 const Clients: FC = () => {
   const { companyId } = useParams<IClientsParams>();
   const { t } = useTranslation(['clients', 'global']);
-  const { add } = useToast();
-  const [modal, setModal] = useState(false);
-  const [client, setClient] = useState<IDeleteModal>({
-    id: '',
-    name: '',
-  });
   const { data, error, loading } = useQuery<
     IGetClientsOutput,
     IGetClientsInput
@@ -51,192 +31,111 @@ const Clients: FC = () => {
       id: companyId,
     },
   });
-  const launchDelete = (id: string, name: string) => {
-    setClient({
-      id,
-      name,
-    });
-  };
-  const onDismiss = () => {
-    setClient({
-      id: '',
-      name: '',
-    });
-  };
-  const [
-    mutation,
-    { error: deleteError, loading: deleteLoading },
-  ] = useMutation<IDeleteClientOutput, IDeleteClientInput>(DELETE_CLIENT, {
-    onCompleted: ({ deleteClient }) => {
-      const { name } = deleteClient;
-
-      add({
-        colour: 'success',
-        message: t('delete-client.success', {
-          name,
-        }),
-      });
-
-      onDismiss();
-    },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('delete-client.error'),
-      });
-    },
-  });
-  const onDelete = () => {
-    (async () => {
-      const { id } = client;
-
-      await mutation({
-        update: updateCache,
-        variables: {
-          id,
-        },
-      });
-    })();
-  };
-
-  useEffect(() => {
-    const showModal = Boolean(client.id && client.name);
-
-    setModal(showModal);
-  }, [client]);
 
   return (
-    <>
-      <Connected error={error || deleteError} loading={loading}>
-        {data && (
-          <>
-            <PageTitle
-              title={t('clients.title')}
-              subTitle={data.getCompany.name}
-            />
+    <Connected error={error} loading={loading}>
+      {data && (
+        <>
+          <PageTitle
+            title={t('clients.title')}
+            subTitle={data.getCompany.name}
+          />
 
-            <Masonry xs={1} sm={2} md={3} lg={4}>
-              <>
+          <Masonry xs={1} sm={2} md={3} lg={4}>
+            <>
+              <Card padding="lg">
+                <Typography rule component="h3" variant="h3" margin="lg">
+                  {t('clients.new-client')}
+                </Typography>
+
+                <Typography component="p" variant="lead" margin="none">
+                  {t('clients.enroll-text')}
+                </Typography>
+              </Card>
+
+              <LinkButton
+                block
+                to={`/my-companies/clients/${companyId}/add-client`}
+                size="lg"
+              >
+                {t('clients.add-client')}
+              </LinkButton>
+            </>
+
+            {data.getClients.items.map(({ id, name, contact }) => (
+              <Fragment key={id}>
                 <Card padding="lg">
-                  <Typography rule component="h3" variant="h3" margin="lg">
-                    {t('clients.new-client')}
+                  <Typography
+                    rule
+                    component="h3"
+                    variant="h3"
+                    align="center"
+                    margin="lg"
+                  >
+                    {name}
                   </Typography>
 
-                  <Typography component="p" variant="lead" margin="none">
-                    {t('clients.enroll-text')}
+                  <Typography component="h4" variant="h5" align="center">
+                    {t('clients.email-address')}
+                  </Typography>
+
+                  <Typography
+                    component="p"
+                    variant="p"
+                    align="center"
+                    margin="lg"
+                  >
+                    {contact.email}
+                  </Typography>
+
+                  <Typography component="h4" variant="h5" align="center">
+                    {t('clients.telephone-number')}
+                  </Typography>
+
+                  <Typography
+                    component="p"
+                    variant="p"
+                    align="center"
+                    margin="none"
+                  >
+                    {contact.telephone}
                   </Typography>
                 </Card>
 
                 <LinkButton
                   block
-                  to={`/my-companies/clients/${companyId}/add-client`}
+                  to={`/my-companies/clients/${companyId}/update-details/${id}`}
                   size="lg"
                 >
-                  {t('clients.add-client')}
+                  {t('clients.update-details')}
                 </LinkButton>
-              </>
+              </Fragment>
+            ))}
 
-              {data.getClients.items.map(({ id, name, contact }) => (
-                <Fragment key={id}>
-                  <Card padding="lg">
-                    <Typography
-                      rule
-                      component="h3"
-                      variant="h3"
-                      align="center"
-                      margin="lg"
-                    >
-                      {name}
-                    </Typography>
+            <>
+              <Card padding="lg">
+                <Typography rule component="h3" variant="h3" margin="lg">
+                  {t('go-back.title')}
+                </Typography>
 
-                    <Typography component="h4" variant="h5" align="center">
-                      {t('clients.email-address')}
-                    </Typography>
+                <Typography component="p" variant="lead" margin="none">
+                  {t('go-back.lead')}
+                </Typography>
+              </Card>
 
-                    <Typography
-                      component="p"
-                      variant="p"
-                      align="center"
-                      margin="lg"
-                    >
-                      {contact.email}
-                    </Typography>
-
-                    <Typography component="h4" variant="h5" align="center">
-                      {t('clients.telephone-number')}
-                    </Typography>
-
-                    <Typography
-                      component="p"
-                      variant="p"
-                      align="center"
-                      margin="none"
-                    >
-                      {contact.telephone}
-                    </Typography>
-                  </Card>
-
-                  <LinkButton
-                    block
-                    to={`/my-companies/clients/${companyId}/update-details/${id}`}
-                    size="lg"
-                  >
-                    {t('clients.update-details')}
-                  </LinkButton>
-                  <Button
-                    block
-                    colour="danger"
-                    onClick={() => launchDelete(id, name)}
-                  >
-                    {t('clients.delete-client')}
-                  </Button>
-                </Fragment>
-              ))}
-
-              <>
-                <Card padding="lg">
-                  <Typography rule component="h3" variant="h3" margin="lg">
-                    {t('go-back.title')}
-                  </Typography>
-
-                  <Typography component="p" variant="lead" margin="none">
-                    {t('go-back.lead')}
-                  </Typography>
-                </Card>
-
-                <LinkButton
-                  block
-                  size="lg"
-                  colour="danger"
-                  to={`/my-companies/dashboard/${companyId}`}
-                >
-                  {t('go-back.button')}
-                </LinkButton>
-              </>
-            </Masonry>
-          </>
-        )}
-      </Connected>
-
-      <Modal isOpen={modal} onDismiss={onDismiss}>
-        <Typography rule component="h3" variant="h3" margin="lg">
-          {t('delete-client.title', {
-            name: client.name,
-          })}
-        </Typography>
-
-        <Typography component="p" variant="p">
-          {t('delete-client.warning')}
-        </Typography>
-
-        <ConfirmDelete
-          loading={deleteLoading}
-          name={client.name}
-          onCancel={onDismiss}
-          onDelete={onDelete}
-        />
-      </Modal>
-    </>
+              <LinkButton
+                block
+                size="lg"
+                colour="danger"
+                to={`/my-companies/dashboard/${companyId}`}
+              >
+                {t('go-back.button')}
+              </LinkButton>
+            </>
+          </Masonry>
+        </>
+      )}
+    </Connected>
   );
 };
 

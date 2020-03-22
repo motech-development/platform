@@ -2,14 +2,7 @@ import { darken } from 'polished';
 import { memo } from 'react';
 import styled from 'styled-components';
 
-interface IButtonTheme {
-  [name: string]: {
-    background: string;
-    colour: string;
-  };
-}
-
-export const buttonTheme: IButtonTheme = {
+export const buttonTheme = {
   danger: {
     background: 'rgb(199,56,79)',
     colour: '#fff',
@@ -68,21 +61,21 @@ const BaseButton = styled.button<IBaseButtonProps>`
             font-size: 16px;
             height: 32px;
             line-height: 32px;
-            padding: 1px 16px;
+            padding: ${block ? '0' : '0 16px'};
           `;
         case 'lg':
           return `
             font-size: 18px;
-            height: 48px;
-            line-height: 48px;
-            padding: 1px 32px;
+            height: 46px;
+            line-height: 46px;
+            padding: ${block ? '0' : '0 32px'};
           `;
         default:
           return `
             font-size: 16px;
             height: 40px;
             line-height: 40px;
-            padding: 1px 24px;
+            padding: ${block ? '0' : '0 24px'};
           `;
       }
     })()}

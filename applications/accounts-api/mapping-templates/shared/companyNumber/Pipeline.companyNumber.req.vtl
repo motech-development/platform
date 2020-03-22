@@ -1,0 +1,7 @@
+#set($validCompanyNumber = $util.matches("^[0-9]{8}$", $ctx.args.input.companyNumber))
+
+#if (!$validCompanyNumber)
+  $utils.error("Company number is invalid")
+#end
+
+{}

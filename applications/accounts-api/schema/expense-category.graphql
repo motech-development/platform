@@ -1,0 +1,10 @@
+type ExpenseCategory {
+  name: String
+  vatRate: Float
+}
+
+input ExpenseCategoryInput {
+  __typename: String
+  name: String!
+  vatRate: Float!
+}

@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, wait } from '@testing-library/react';
 import { Form, Formik } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
@@ -55,9 +55,16 @@ describe('TextBox', () => {
             )}
           </Formik>,
         );
-        const input = await findByPlaceholderText('Test');
 
-        fireEvent.focus(input);
+        await act(async () => {
+          const input = await findByPlaceholderText('Test');
+
+          fireEvent.focus(input);
+
+          await wait();
+        });
+
+        const input = await findByPlaceholderText('Test');
 
         expect(input).toHaveStyle('color: #333');
       });
@@ -76,9 +83,14 @@ describe('TextBox', () => {
             )}
           </Formik>,
         );
-        const input = await findByPlaceholderText('Test');
 
-        fireEvent.blur(input);
+        await act(async () => {
+          const input = await findByPlaceholderText('Test');
+
+          fireEvent.blur(input);
+
+          await wait();
+        });
 
         const alert = await findByRole('alert');
 
@@ -137,9 +149,14 @@ describe('TextBox', () => {
             )}
           </Formik>,
         );
-        const input = await findByLabelText('Test');
 
-        fireEvent.blur(input);
+        await act(async () => {
+          const input = await findByLabelText('Test');
+
+          fireEvent.blur(input);
+
+          await wait();
+        });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
           color: rgb(199,56,79);
@@ -181,9 +198,14 @@ describe('TextBox', () => {
             )}
           </Formik>,
         );
-        const input = await findByLabelText('Test');
 
-        fireEvent.blur(input);
+        await act(async () => {
+          const input = await findByLabelText('Test');
+
+          fireEvent.blur(input);
+
+          await wait();
+        });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
           color: #2e9dc8;
@@ -201,16 +223,23 @@ describe('TextBox', () => {
             )}
           </Formik>,
         );
-        const input = await findByPlaceholderText('Test');
 
-        fireEvent.focus(input);
+        await act(async () => {
+          const input = await findByPlaceholderText('Test');
+
+          fireEvent.focus(input);
+
+          await wait();
+        });
+
+        const input = await findByPlaceholderText('Test');
 
         expect(input).toHaveStyle('color: #333');
       });
     });
   });
 
-  describe('with a format is set', () => {
+  describe('with a format set', () => {
     describe('when there are no initial values', () => {
       beforeEach(() => {
         initialValues = {
@@ -243,8 +272,7 @@ describe('TextBox', () => {
         );
       });
 
-      // TODO: Why is this failing?
-      it.skip('should render the textbox with the correct colour when active', async () => {
+      it('should render the textbox with the correct colour when active', async () => {
         const { findByPlaceholderText } = render(
           <Formik initialValues={initialValues} onSubmit={onSubmit}>
             {() => (
@@ -259,9 +287,16 @@ describe('TextBox', () => {
             )}
           </Formik>,
         );
-        const input = await findByPlaceholderText('Test');
 
-        fireEvent.focus(input);
+        await act(async () => {
+          const input = await findByPlaceholderText('Test');
+
+          fireEvent.focus(input);
+
+          await wait();
+        });
+
+        const input = await findByPlaceholderText('Test');
 
         expect(input).toHaveStyle('color: #333');
       });
@@ -285,9 +320,14 @@ describe('TextBox', () => {
             )}
           </Formik>,
         );
-        const input = await findByPlaceholderText('Test');
 
-        fireEvent.blur(input);
+        await act(async () => {
+          const input = await findByPlaceholderText('Test');
+
+          fireEvent.blur(input);
+
+          await wait();
+        });
 
         const alert = await findByRole('alert');
 
@@ -351,9 +391,14 @@ describe('TextBox', () => {
             )}
           </Formik>,
         );
-        const input = await findByLabelText('Test');
 
-        fireEvent.blur(input);
+        await act(async () => {
+          const input = await findByLabelText('Test');
+
+          fireEvent.blur(input);
+
+          await wait();
+        });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
           color: rgb(199,56,79);
@@ -395,9 +440,14 @@ describe('TextBox', () => {
             )}
           </Formik>,
         );
-        const input = await findByLabelText('Test');
 
-        fireEvent.blur(input);
+        await act(async () => {
+          const input = await findByLabelText('Test');
+
+          fireEvent.blur(input);
+
+          await wait();
+        });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
           color: #2e9dc8;
@@ -420,9 +470,16 @@ describe('TextBox', () => {
             )}
           </Formik>,
         );
-        const input = await findByPlaceholderText('Test');
 
-        fireEvent.focus(input);
+        await act(async () => {
+          const input = await findByPlaceholderText('Test');
+
+          fireEvent.focus(input);
+
+          await wait();
+        });
+
+        const input = await findByPlaceholderText('Test');
 
         expect(input).toHaveStyle('color: #333');
       });

@@ -16,7 +16,16 @@
   },
   "update-details": {
     "sub-title": "Update your company details",
-    "success": "{{name}} has been updated"
+    "success": "{{name}} has been updated",
+    "delete-company": "Delete {{name}}"
+  },
+  "delete-company": {
+    "title": "Are you sure you want to delete {{name}}?",
+    "warning": "This action cannot be undone.",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "success": "{{name}} has been deleted",
+    "error": "Unable to delete company"
   },
   "company-form": {
     "cancel": "Cancel",

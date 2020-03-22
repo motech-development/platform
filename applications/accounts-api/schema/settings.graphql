@@ -1,0 +1,12 @@
+type Settings {
+  categories: [ExpenseCategory]
+  id: ID
+  vat: VatSettings
+}
+
+input SettingsInput {
+  __typename: String
+  categories: [ExpenseCategoryInput]!
+  id: ID!
+  vat: VatSettingsInput!
+}

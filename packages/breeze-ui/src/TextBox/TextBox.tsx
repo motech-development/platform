@@ -14,7 +14,7 @@ import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
 import Tooltip from '../Tooltip/Tooltip';
 
-type InputSpacing = 'md' | 'lg';
+type InputSpacing = 'sm' | 'md' | 'lg';
 
 interface IBaseTextBox {
   active: boolean;
@@ -41,6 +41,16 @@ const BaseTextBox = styled.input<IBaseTextBox>`
     ::-ms-input-placeholder {
       color: ${active ? '#aaa' : '#fff'};
     }
+
+    ::-webkit-outer-spin-button,
+    ::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    [type="number"] {
+      -moz-appearance: textfield;
+    }
   `}
 `;
 
@@ -64,8 +74,10 @@ interface IInternalTextBox extends FieldProps {
   format: string;
   helpText: string;
   label: string;
+  prefix: string;
   setFocus(focus: boolean): void;
   spacing: InputSpacing;
+  suffix: string;
 }
 
 const InternalTextBox: FC<IInternalTextBox> = ({
@@ -75,12 +87,14 @@ const InternalTextBox: FC<IInternalTextBox> = ({
   form,
   helpText,
   label,
+  prefix,
   setFocus,
   spacing,
+  suffix,
   ...props
 }) => {
   useEffect(() => {
-    const focus = !!field.value;
+    const focus = !!field.value || field.value === 0;
 
     setFocus(focus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,23 +103,31 @@ const InternalTextBox: FC<IInternalTextBox> = ({
   const { onBlur, ...rest } = field;
   const { errors, handleBlur, setFieldValue, touched } = form;
   const describedBy = `${field.name}-error`;
+  const useNumberFormat = Boolean(format || prefix || suffix);
   const [error, setError] = useState(false);
   const doBlur = (e: FocusEvent<HTMLInputElement>) => {
     handleBlur(e);
 
-    if (!field.value) {
+    if (!field.value && field.value !== 0) {
       setFocus(false);
     }
 
     onBlur(e);
   };
   const doFocus = () => {
-    if (!field.value) {
+    if (!field.value && field.value !== 0) {
       setFocus(true);
     }
   };
-  const doValueChange = ({ formattedValue }: NumberFormatValues) => {
-    setFieldValue(field.name, formattedValue);
+  const doValueChange = ({
+    floatValue,
+    formattedValue,
+  }: NumberFormatValues) => {
+    if (format) {
+      setFieldValue(field.name, formattedValue);
+    } else {
+      setFieldValue(field.name, floatValue);
+    }
   };
 
   useEffect(() => {
@@ -135,12 +157,15 @@ const InternalTextBox: FC<IInternalTextBox> = ({
       </Label>
 
       {/* eslint-disable react/jsx-props-no-spreading */}
-      {format ? (
+      {useNumberFormat ? (
         <NumberFormat
           {...props}
           {...rest}
+          isNumericString={Boolean(prefix || suffix)}
           customInput={Input}
           format={format}
+          prefix={prefix}
+          suffix={suffix}
           active={active}
           describedBy={describedBy}
           errors={error}
@@ -170,17 +195,21 @@ export interface ITextBoxProps {
   label: string;
   name: string;
   placeholder?: string;
+  prefix?: string;
   spacing?: InputSpacing;
-  type?: 'email' | 'password' | 'text';
+  suffix?: string;
+  type?: 'email' | 'number' | 'password' | 'text';
 }
 
 const TextBox: FC<ITextBoxProps> = ({
-  format = null,
+  format = undefined,
   helpText = null,
   label,
   name,
   placeholder = '',
+  prefix = undefined,
   spacing = 'md',
+  suffix = undefined,
   type = 'text',
 }) => {
   const [focus, setFocus] = useState();
@@ -195,7 +224,9 @@ const TextBox: FC<ITextBoxProps> = ({
       type={type}
       name={name}
       placeholder={placeholder}
+      prefix={prefix}
       setFocus={setFocus}
+      suffix={suffix}
       label={label}
       spacing={spacing}
     />

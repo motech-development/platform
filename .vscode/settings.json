@@ -12,6 +12,10 @@
   "eslint.workingDirectories": [
     {
       "changeProcessCWD": true,
+      "directory": "./applications/accounts-api"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./applications/accounts-client"
     },
     {

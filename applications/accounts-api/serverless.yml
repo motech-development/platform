@@ -8,8 +8,12 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-api
 
+package:
+  individually: true
+
 plugins:
   - serverless-appsync-plugin
+  - serverless-webpack
   - '@motech-development/serverless-outputs-env'
 
 custom:
@@ -33,71 +37,203 @@ custom:
         loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
         level: ERROR
       mappingTemplates:
-        - dataSource: Data
+        - kind: PIPELINE
           type: Mutation
           field: createClient
-          request: client/Mutation.createClient.req.vtl
-          response: client/Mutation.createClient.res.vtl
+          functions:
+            - address
+            - addressFiltering
+            - telephone
+            - getClientCompanyId
+            - createClient
+          request: client/createClient/Mutation.createClient.req.vtl
+          response: client/createClient/Mutation.createClient.res.vtl
         - dataSource: Data
           type: Mutation
           field: deleteClient
-          request: client/Mutation.deleteClient.req.vtl
-          response: client/Mutation.deleteClient.res.vtl
-        - dataSource: Data
+          request: client/deleteClient/Mutation.deleteClient.req.vtl
+          response: client/deleteClient/Mutation.deleteClient.res.vtl
+        - kind: PIPELINE
           type: Mutation
           field: updateClient
-          request: client/Mutation.updateClient.req.vtl
-          response: client/Mutation.updateClient.res.vtl
+          functions:
+            - address
+            - addressFiltering
+            - telephone
+            - getClientCompanyId
+            - updateClient
+          request: client/updateClient/Mutation.updateClient.req.vtl
+          response: client/updateClient/Mutation.updateClient.res.vtl
         - dataSource: Data
           type: Query
           field: getClient
-          request: client/Query.getClient.req.vtl
-          response: client/Query.getClient.res.vtl
+          request: client/getClient/Query.getClient.req.vtl
+          response: client/getClient/Query.getClient.res.vtl
         - dataSource: Data
           type: Query
           field: getClients
-          request: client/Query.getClients.req.vtl
-          response: client/Query.getClients.res.vtl
+          request: client/getClients/Query.getClients.req.vtl
+          response: client/getClients/Query.getClients.res.vtl
 
-        - dataSource: Data
+        - kind: PIPELINE
           type: Mutation
           field: createCompany
-          request: company/Mutation.createCompany.req.vtl
-          response: company/Mutation.createCompany.res.vtl
-        - dataSource: Data
+          functions:
+            - address
+            - addressFiltering
+            - bank
+            - companyNumber
+            - telephone
+            - vatRegistration
+            - createCompany
+            - createSettings
+          request: company/createCompany/Mutation.createCompany.req.vtl
+          response: company/createCompany/Mutation.createCompany.res.vtl
+        - kind: PIPELINE
           type: Mutation
           field: deleteCompany
-          request: company/Mutation.deleteCompany.req.vtl
-          response: company/Mutation.deleteCompany.res.vtl
-        - dataSource: Data
+          functions:
+            - deleteCompany
+            - deleteSettings
+            - deleteClients
+          request: company/deleteCompany/Mutation.deleteCompany.req.vtl
+          response: company/deleteCompany/Mutation.deleteCompany.res.vtl
+        - kind: PIPELINE
           type: Mutation
           field: updateCompany
-          request: company/Mutation.updateCompany.req.vtl
-          response: company/Mutation.updateCompany.res.vtl
+          functions:
+            - address
+            - addressFiltering
+            - bank
+            - companyNumber
+            - telephone
+            - vatRegistration
+            - updateCompany
+          request: company/updateCompany/Mutation.updateCompany.req.vtl
+          response: company/updateCompany/Mutation.updateCompany.res.vtl
         - dataSource: Data
           type: Query
           field: getCompanies
-          request: company/Query.getCompanies.req.vtl
-          response: company/Query.getCompanies.res.vtl
+          request: company/getCompanies/Query.getCompanies.req.vtl
+          response: company/getCompanies/Query.getCompanies.res.vtl
         - dataSource: Data
           type: Query
           field: getCompany
-          request: company/Query.getCompany.req.vtl
-          response: company/Query.getCompany.res.vtl
+          request: company/getCompany/Query.getCompany.req.vtl
+          response: company/getCompany/Query.getCompany.res.vtl
+
+        - dataSource: Data
+          type: Mutation
+          field: updateSettings
+          request: settings/Mutation.updateSettings.req.vtl
+          response: settings/Mutation.updateSettings.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getSettings
+          request: settings/Query.getSettings.req.vtl
+          response: settings/Query.getSettings.res.vtl
       schema:
         - schema/address.graphql
         - schema/bank.graphql
         - schema/client.graphql
         - schema/company.graphql
         - schema/contact.graphql
+        - schema/expense-category.graphql
         - schema/schema.graphql
+        - schema/settings.graphql
+        - schema/vat-settings.graphql
+      functionConfigurations:
+        # Validation
+        - dataSource: Resolver
+          name: address
+          request: shared/address/Pipeline.address.req.vtl
+          response: shared/address/Pipeline.address.res.vtl
+        - dataSource: Resolver
+          name: bank
+          request: shared/bank/Pipeline.bank.req.vtl
+          response: shared/bank/Pipeline.bank.res.vtl
+        - dataSource: Resolver
+          name: companyNumber
+          request: shared/companyNumber/Pipeline.companyNumber.req.vtl
+          response: shared/companyNumber/Pipeline.companyNumber.res.vtl
+        - dataSource: Resolver
+          name: telephone
+          request: shared/telephone/Pipeline.telephone.req.vtl
+          response: shared/telephone/Pipeline.telephone.res.vtl
+        - dataSource: Resolver
+          name: vatRegistration
+          request: shared/vatRegistration/Pipeline.vatRegistration.req.vtl
+          response: shared/vatRegistration/Pipeline.vatRegistration.res.vtl
+
+        # Utilities
+        - dataSource: Resolver
+          name: addressFiltering
+          request: shared/addressFiltering/Pipeline.addressFiltering.req.vtl
+          response: shared/addressFiltering/Pipeline.addressFiltering.res.vtl
+
+        # Clients
+        - dataSource: Data
+          name: createClient
+          request: client/createClient/Pipeline.createClient.req.vtl
+          response: client/createClient/Pipeline.createClient.res.vtl
+        - dataSource: Data
+          name: getClientCompanyId
+          request: client/shared/getClientCompanyId/Pipeline.getClientCompanyId.req.vtl
+          response: client/shared/getClientCompanyId/Pipeline.getClientCompanyId.res.vtl
+        - dataSource: Data
+          name: updateClient
+          request: client/updateClient/Pipeline.updateClient.req.vtl
+          response: client/updateClient/Pipeline.updateClient.res.vtl
+
+        # Companies
+        - dataSource: Data
+          name: createCompany
+          request: company/createCompany/Pipeline.createCompany.req.vtl
+          response: company/createCompany/Pipeline.createCompany.res.vtl
+        - dataSource: Data
+          name: createSettings
+          request: company/createCompany/Pipeline.createSettings.req.vtl
+          response: company/createCompany/Pipeline.createSettings.res.vtl
+        - dataSource: DeleteClientsLambda
+          name: deleteClients
+          request: company/deleteCompany/Pipeline.deleteClients.req.vtl
+          response: company/deleteCompany/Pipeline.deleteClients.res.vtl
+        - dataSource: Data
+          name: deleteCompany
+          request: company/deleteCompany/Pipeline.deleteCompany.req.vtl
+          response: company/deleteCompany/Pipeline.deleteCompany.res.vtl
+        - dataSource: Data
+          name: deleteSettings
+          request: company/deleteCompany/Pipeline.deleteSettings.req.vtl
+          response: company/deleteCompany/Pipeline.deleteSettings.res.vtl
+        - dataSource: Data
+          name: updateCompany
+          request: company/updateCompany/Pipeline.updateCompany.req.vtl
+          response: company/updateCompany/Pipeline.updateCompany.res.vtl
       dataSources:
+        - type: NONE
+          name: Resolver
         - type: AMAZON_DYNAMODB
           name: Data
           description: Application table
           config:
             tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
             serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
+        - type: AWS_LAMBDA
+          name: DeleteClientsLambda
+          config:
+            lambdaFunctionArn: !GetAtt DeleteClientsLambdaFunction.Arn
+            serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
+
+  webpack:
+    includeModules: true
+
+functions:
+  DeleteClients:
+    handler: src/handlers/delete-clients.handler
+    role: DeleteClientsRole
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
 resources:
   Resources:
@@ -158,3 +294,68 @@ resources:
                       - ''
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                         - '/index/__typename-data-index'
+
+    AppSyncLambdaServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-lambda-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-lambda-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:invokeFunction
+                  Resource:
+                    - !GetAtt DeleteClientsLambdaFunction.Arn
+                    - !Join
+                      - ''
+                      - - !GetAtt DeleteClientsLambdaFunction.Arn
+                        - ':*'
+
+    DeleteClientsRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-delete-clients-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-delete-clients-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:BatchWriteItem
+                    - dynamodb:Query
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'

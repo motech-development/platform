@@ -5,6 +5,7 @@ type Mutation {
   createCompany(input: CompanyInput!): Company!
   deleteCompany(id: ID!): Company!
   updateCompany(input: CompanyInput!): Company!
+  updateSettings(input: SettingsInput!): Settings!
 }
 
 type Query {
@@ -12,6 +13,7 @@ type Query {
   getClient(id: ID!): Client!
   getCompanies(count: Int, nextToken: String): Companies!
   getCompany(id: ID!): Company!
+  getSettings(id: ID!): Settings!
 }
 
 schema {

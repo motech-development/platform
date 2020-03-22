@@ -34,21 +34,21 @@ const Dashboard: FC = () => {
   const cards = [
     ...['accounts', 'clients', 'settings'].map(name => ({
       button: t(`${name}.button`),
-      colour: 'primary',
+      colour: 'primary' as const,
       lead: t(`${name}.lead`),
       link: `/my-companies/${name}/${companyId}`,
       title: t(`${name}.title`),
     })),
     {
       button: t('company-details.button'),
-      colour: 'primary',
+      colour: 'primary' as const,
       lead: t('company-details.lead'),
       link: `/my-companies/update-details/${companyId}`,
       title: t('company-details.title'),
     },
     {
       button: t('my-companies.button'),
-      colour: 'danger',
+      colour: 'danger' as const,
       lead: t('my-companies.lead'),
       link: '/my-companies',
       title: t('my-companies.title'),

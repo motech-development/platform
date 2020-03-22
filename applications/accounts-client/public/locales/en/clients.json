@@ -5,7 +5,6 @@
     "enroll-text": "Add you clients so that you always have them to hand",
     "new-client": "New client",
     "update-details": "Manage client details",
-    "delete-client": "Delete client",
     "email-address": "Email address",
     "telephone-number": "Telephone number"
   },
@@ -24,7 +23,8 @@
   },
   "update-details": {
     "sub-title": "Update your client details",
-    "success": "{{name}} has been updated"
+    "success": "{{name}} has been updated",
+    "delete-client": "Delete {{name}}"
   },
   "client-form": {
     "cancel": "Cancel",

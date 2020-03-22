@@ -1,0 +1,11 @@
+#if($ctx.error)
+  $utils.error($ctx.error.message, $ctx.error.type)
+#end
+
+#if($context.result.owner == $ctx.identity.sub)
+  $util.qr($ctx.stash.put("companyId", $context.result.id))
+
+  $utils.toJson($context.prev.result)
+#else
+  $utils.unauthorized()
+#end
