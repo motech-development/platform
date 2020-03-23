@@ -31,7 +31,7 @@ functions:
       - sqs:
           arn: !GetAtt AccountsQueue.Arn
     environment:
-      STATE_MACHINE_ARN: !Ref DeleteCompanyStateMachine
+      STATE_MACHINE_ARN: !Ref DeleteCompanyDataStateMachine
 
   DeleteSettings:
     handler: src/handlers/delete-settings.handler
@@ -48,9 +48,9 @@ functions:
 stepFunctions:
   validate: true
   stateMachines:
-    deleteCompany:
-      name: ${self:custom.prefix}-delete-company
-      id: DeleteCompanyStateMachine
+    deleteCompanyData:
+      name: ${self:custom.prefix}-delete-company-data
+      id: DeleteCompanyDataStateMachine
       definition:
         Comment: Delete company orphaned data
         StartAt: Parallel
@@ -161,10 +161,10 @@ resources:
                   Action:
                     - states:StartExecution
                   Resource:
-                    - !Ref DeleteCompanyStateMachine
+                    - !Ref DeleteCompanyDataStateMachine
                     - !Join
                       - ''
-                      - - !Ref DeleteCompanyStateMachine
+                      - - !Ref DeleteCompanyDataStateMachine
                         - '*'
                 - Effect: Allow
                   Action:
