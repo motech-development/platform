@@ -33,6 +33,10 @@ functions:
     handler: src/handlers/delete-settings.handler
     role: LambdaFunctionRole
 
+  DeleteClients:
+    handler: src/handlers/delete-clients.handler
+    role: LambdaFunctionRole
+
   GetClients:
     handler: src/handlers/get-clients.handler
     role: LambdaFunctionRole

@@ -1,5 +1,6 @@
 import { Handler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import chunk from '../shared/chunk';
 
 const { TABLE } = process.env;
 const documentClient = new DocumentClient();
@@ -38,10 +39,16 @@ export const handler: Handler<IEvent> = async event => {
     .promise();
 
   if (Items && Items.length > 0) {
+    const items = chunk(
+      Items.map(item => item.id),
+      25,
+    );
+
     return {
       continue: true,
-      count: Items.length,
-      items: Items,
+      count: items.length,
+      current: 0,
+      items,
     };
   }
 
