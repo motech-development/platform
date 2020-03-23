@@ -5,9 +5,8 @@ const { TABLE } = process.env;
 const documentClient = new DocumentClient();
 
 interface IEvent {
-  continue: boolean;
   count: number;
-  current: 0;
+  current: number;
   items: string[][];
 }
 
@@ -37,7 +36,7 @@ export const handler: Handler<IEvent> = async event => {
 
   return {
     ...event,
-    continue: current === count,
+    complete: current === count - 1,
     current: current + 1,
   };
 };

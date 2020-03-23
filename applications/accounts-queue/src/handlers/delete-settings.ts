@@ -34,6 +34,6 @@ export const handler: Handler<IEvent> = async event => {
     .promise();
 
   return {
-    continue: true,
+    complete: true,
   };
 };

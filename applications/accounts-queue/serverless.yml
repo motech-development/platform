@@ -14,6 +14,7 @@ package:
   individually: true
 
 plugins:
+  - serverless-step-functions
   - serverless-webpack
 
 custom:
@@ -25,9 +26,12 @@ custom:
 functions:
   DeleteTrigger:
     handler: src/triggers/delete.handler
+    role: TriggerLambdaFunctionRole
     events:
       - sqs:
           arn: !GetAtt AccountsQueue.Arn
+    environment:
+      STATE_MACHINE_ARN: !Ref DeleteCompanyStateMachine
 
   DeleteSettings:
     handler: src/handlers/delete-settings.handler
@@ -40,6 +44,55 @@ functions:
   GetClients:
     handler: src/handlers/get-clients.handler
     role: LambdaFunctionRole
+
+stepFunctions:
+  validate: true
+  stateMachines:
+    deleteCompany:
+      name: ${self:custom.prefix}-delete-company
+      id: DeleteCompanyStateMachine
+      definition:
+        Comment: Delete company orphaned data
+        StartAt: Parallel
+        States:
+          Parallel:
+            Type: Parallel
+            Next: Final state
+            Branches:
+              - StartAt: DeleteSettings
+                States:
+                  DeleteSettings:
+                    Type: Task
+                    Resource: !GetAtt DeleteSettingsLambdaFunction.Arn
+                    End: true
+
+              - StartAt: GetClients
+                States:
+                  GetClients:
+                    Type: Task
+                    Resource: !GetAtt GetClientsLambdaFunction.Arn
+                    Next: IsDeleteComplete
+
+                  DeleteClients:
+                    Type: Task
+                    Resource: !GetAtt DeleteClientsLambdaFunction.Arn
+                    Next: IsDeleteComplete
+
+                  IsDeleteComplete:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.complete
+                        BooleanEquals: false
+                        Next: DeleteClients
+                    Default: Complete
+
+                  Complete:
+                    Type: Pass
+                    End: true
+
+          Final state:
+            Type: Pass
+            End: true
 
 resources:
   Resources:
@@ -69,7 +122,7 @@ resources:
                 - Effect: Allow
                   Action:
                     - dynamodb:BatchWriteItem
-                    - dynamodb:Delete
+                    - dynamodb:DeleteItem
                     - dynamodb:Query
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
@@ -85,6 +138,49 @@ resources:
                     - logs:DescribeLogStreams
                   Resource:
                     - 'arn:aws:logs:*:*:*'
+
+    TriggerLambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-trigger-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-trigger-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - states:StartExecution
+                  Resource:
+                    - !Ref DeleteCompanyStateMachine
+                    - !Join
+                      - ''
+                      - - !Ref DeleteCompanyStateMachine
+                        - '*'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+                - Effect: Allow
+                  Action:
+                    - sqs:DeleteMessage
+                    - sqs:GetQueueAttributes
+                    - sqs:ReceiveMessage
+                  Resource:
+                    - !GetAtt AccountsQueue.Arn
 
   Outputs:
     AccountsQueueArn:

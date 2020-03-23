@@ -1,12 +1,27 @@
 import { Handler, SQSEvent } from 'aws-lambda';
+import { StepFunctions } from 'aws-sdk';
 
-export const handler: Handler<SQSEvent> = (event, _, callback) => {
-  // TODO: Trigger step function
-  event.Records.forEach(record => {
-    const { messageAttributes } = record;
+const { STATE_MACHINE_ARN } = process.env;
+const stepFunctions = new StepFunctions();
 
-    console.log('OUTPUT', messageAttributes);
-  });
+export const handler: Handler<SQSEvent> = async event => {
+  if (!STATE_MACHINE_ARN) {
+    throw new Error('No state machine set');
+  }
 
-  callback(null, 'OK');
+  await Promise.all(
+    event.Records.map(record => {
+      const { messageAttributes } = record;
+
+      return stepFunctions
+        .startExecution({
+          input: JSON.stringify({
+            id: messageAttributes.id.stringValue,
+            owner: messageAttributes.owner.stringValue,
+          }),
+          stateMachineArn: STATE_MACHINE_ARN,
+        })
+        .promise();
+    }),
+  );
 };

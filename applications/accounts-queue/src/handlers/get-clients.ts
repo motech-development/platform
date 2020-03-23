@@ -45,7 +45,7 @@ export const handler: Handler<IEvent> = async event => {
     );
 
     return {
-      continue: true,
+      complete: false,
       count: items.length,
       current: 0,
       items,
@@ -53,6 +53,6 @@ export const handler: Handler<IEvent> = async event => {
   }
 
   return {
-    continue: false,
+    complete: true,
   };
 };
