@@ -7,6 +7,8 @@ provider:
   region: ${opt:region, 'eu-west-1'}
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-queue
+  environment:
+    TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
 package:
   individually: true
@@ -27,12 +29,58 @@ functions:
       - sqs:
           arn: !GetAtt AccountsQueue.Arn
 
+  DeleteSettings:
+    handler: src/handlers/delete-settings.handler
+    role: LambdaFunctionRole
+
+  GetClients:
+    handler: src/handlers/get-clients.handler
+    role: LambdaFunctionRole
+
 resources:
   Resources:
     AccountsQueue:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:custom.prefix}-queue
+
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:BatchWriteItem
+                    - dynamodb:Delete
+                    - dynamodb:Query
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
 
   Outputs:
     AccountsQueueArn:
