@@ -43,6 +43,7 @@ jobs:
             - applications/accounts-client/node_modules
             - applications/accounts-data/node_modules
             - applications/accounts-infrastructure/node_modules
+            - applications/accounts-queue/node_modules
             - applications/id/node_modules
             - applications/infrastructure/node_modules
             - packages/auth/node_modules
