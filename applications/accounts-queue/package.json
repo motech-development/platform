@@ -1,7 +1,7 @@
 {
   "name": "@motech-development/accounts-queue",
   "version": "0.0.0",
-  "description": "Motech Development accounts queues",
+  "description": "Motech Development accounts queue infrastructure",
   "private": true,
   "scripts": {
     "deploy": "serverless deploy --verbose",
