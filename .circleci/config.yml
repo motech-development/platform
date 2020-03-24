@@ -69,7 +69,11 @@ jobs:
       - store_test_results:
           path: reports/junit
       - codecov/upload:
+          file: ./applications/accounts-api/coverage/coverage-final.json
+      - codecov/upload:
           file: ./applications/accounts-client/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./applications/accounts-queue/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/auth/coverage/coverage-final.json
       - codecov/upload:

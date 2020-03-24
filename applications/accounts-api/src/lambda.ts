@@ -1,7 +1,7 @@
 import { Handler } from 'aws-lambda';
 import queueCompanyDelete from './handlers/queue-company-delete';
 
-interface IEvent {
+export interface IEvent {
   arguments: {
     id: string;
     owner: string;

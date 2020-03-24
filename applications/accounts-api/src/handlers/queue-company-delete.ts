@@ -1,14 +1,15 @@
 import { SQS } from 'aws-sdk';
 
-const { QUEUE_URL } = process.env;
 const sqs = new SQS();
 
-interface IDeleteCompany {
+export interface IEvent {
   id: string;
   owner: string;
 }
 
-const queueCompanyDelete = async (event: IDeleteCompany) => {
+const queueCompanyDelete = async (event: IEvent) => {
+  const { QUEUE_URL } = process.env;
+
   if (!QUEUE_URL) {
     throw new Error('No queue set');
   }
