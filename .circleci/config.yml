@@ -46,6 +46,7 @@ jobs:
             - applications/accounts-queue/node_modules
             - applications/id/node_modules
             - applications/infrastructure/node_modules
+            - applications/open-banking/node_modules
             - packages/auth/node_modules
             - packages/breeze-ui/node_modules
             - packages/serverless-outputs-env/node_modules

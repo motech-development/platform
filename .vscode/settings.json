@@ -24,6 +24,10 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./applications/open-banking"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./packages/auth"
     },
     {
