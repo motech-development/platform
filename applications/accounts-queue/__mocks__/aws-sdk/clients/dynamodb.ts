@@ -6,4 +6,6 @@ const mock = jest.fn().mockReturnValue({
 
 DocumentClient.prototype.batchWrite = mock;
 
+DocumentClient.prototype.delete = mock;
+
 export { DocumentClient };
