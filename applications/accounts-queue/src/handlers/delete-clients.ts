@@ -1,16 +1,17 @@
 import { Handler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
-const { TABLE } = process.env;
 const documentClient = new DocumentClient();
 
-interface IEvent {
+export interface IEvent {
   count: number;
   current: number;
   items: string[][];
 }
 
 export const handler: Handler<IEvent> = async event => {
+  const { TABLE } = process.env;
+
   if (!TABLE) {
     throw new Error('No table set');
   }

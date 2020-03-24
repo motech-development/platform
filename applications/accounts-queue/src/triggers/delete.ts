@@ -14,15 +14,22 @@ export const handler: Handler<SQSEvent> = async event => {
     event.Records.map(record => {
       const { messageAttributes } = record;
 
-      return stepFunctions
-        .startExecution({
-          input: JSON.stringify({
-            id: messageAttributes.id.stringValue,
-            owner: messageAttributes.owner.stringValue,
-          }),
-          stateMachineArn: STATE_MACHINE_ARN,
-        })
-        .promise();
+      if (
+        messageAttributes.id?.stringValue &&
+        messageAttributes.owner?.stringValue
+      ) {
+        return stepFunctions
+          .startExecution({
+            input: JSON.stringify({
+              id: messageAttributes.id.stringValue,
+              owner: messageAttributes.owner.stringValue,
+            }),
+            stateMachineArn: STATE_MACHINE_ARN,
+          })
+          .promise();
+      }
+
+      return null;
     }),
   );
 };

@@ -48,6 +48,61 @@ describe('delete', () => {
           messageId: '',
           receiptHandle: '',
         },
+        {
+          attributes: {
+            ApproximateFirstReceiveTimestamp: '',
+            ApproximateReceiveCount: '',
+            SenderId: '',
+            SentTimestamp: '',
+          },
+          awsRegion: '',
+          body: '',
+          eventSource: '',
+          eventSourceARN: '',
+          md5OfBody: '',
+          messageAttributes: {
+            id: {
+              binaryListValues: [],
+              binaryValue: '',
+              dataType: 'string',
+              stringListValues: [],
+              stringValue: 'company-2-id',
+            },
+            owner: {
+              binaryListValues: [],
+              binaryValue: '',
+              dataType: 'string',
+              stringListValues: [],
+              stringValue: 'owner-id',
+            },
+          },
+          messageId: '',
+          receiptHandle: '',
+        },
+        {
+          attributes: {
+            ApproximateFirstReceiveTimestamp: '',
+            ApproximateReceiveCount: '',
+            SenderId: '',
+            SentTimestamp: '',
+          },
+          awsRegion: '',
+          body: '',
+          eventSource: '',
+          eventSourceARN: '',
+          md5OfBody: '',
+          messageAttributes: {
+            id: {
+              binaryListValues: [],
+              binaryValue: '',
+              dataType: 'string',
+              stringListValues: [],
+              stringValue: 'company-2-id',
+            },
+          },
+          messageId: '',
+          receiptHandle: '',
+        },
       ],
     };
   });
@@ -71,6 +126,12 @@ describe('delete', () => {
 
     afterEach(() => {
       process.env = env;
+    });
+
+    it('should call call start state machine execution the correct number of times', async () => {
+      await handler(event, context, callback);
+
+      expect(StepFunctions.prototype.startExecution).toHaveBeenCalledTimes(2);
     });
 
     it('should call start state machine execution with the correct params', async () => {
