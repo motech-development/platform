@@ -1,0 +1,79 @@
+service:
+  name: ${opt:appName, 'open-banking'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}
+
+package:
+  individually: true
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-webpack
+  - serverless-dynamodb-local
+  - serverless-offline
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+
+  serverless-offline:
+    httpPort: 4000
+    useChildProcesses: true
+
+  dynamodb:
+    start:
+      migrate: true
+      seed: true
+
+    seed:
+      banks:
+        sources:
+          # TODO: Should use Ref
+          - table: ${self:custom.prefix}
+            sources: [./seed/banks.json]
+    stages:
+      - local
+
+functions:
+  auth:
+    handler: src/handlers/banks.get
+    events:
+      - http:
+          method: get
+          path: api/v1/banks
+    environment:
+      # TODO: Should use Ref
+      TABLE: ${self:custom.prefix}
+
+resources:
+  Resources:
+    ApplicationTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.prefix}
+        AttributeDefinitions:
+          - AttributeName: data
+            AttributeType: S
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: sk-data-index
+            KeySchema:
+              - AttributeName: sk
+                KeyType: HASH
+              - AttributeName: data
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
