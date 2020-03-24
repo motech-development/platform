@@ -30,9 +30,6 @@ jobs:
       - <<: *generate_cache_key
       - <<: *restore_cache
       - run:
-          command: npm run clean -- --yes
-          name: Force clean
-      - run:
           command: npm i
           name: Install dependencies
       - run:
