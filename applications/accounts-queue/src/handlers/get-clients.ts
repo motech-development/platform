@@ -1,32 +1,24 @@
-// TODO: Publish to queue instead
 import { Handler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import chunk from '../shared/chunk';
 
-const { TABLE } = process.env;
 const documentClient = new DocumentClient();
 
-interface IEvent {
-  arguments: {
-    id: string;
-  };
-  field: string;
+export interface IEvent {
+  id: string;
   owner: string;
 }
 
 export const handler: Handler<IEvent> = async event => {
+  const { TABLE } = process.env;
+
   if (!TABLE) {
     throw new Error('No table set');
   }
 
-  const { field, owner } = event;
+  const { id, owner } = event;
 
-  if (field !== 'deleteClients') {
-    throw new Error('Incorrect field');
-  }
-
-  const { id } = event.arguments;
-
-  const clients = await documentClient
+  const { Items } = await documentClient
     .query({
       ExpressionAttributeNames: {
         '#data': 'data',
@@ -47,23 +39,21 @@ export const handler: Handler<IEvent> = async event => {
     })
     .promise();
 
-  // TODO: Chunk operation
-  if (clients.Items && clients.Items.length > 0) {
-    await documentClient
-      .batchWrite({
-        RequestItems: {
-          [TABLE]: [
-            ...clients.Items.map(item => ({
-              DeleteRequest: {
-                Key: {
-                  __typename: 'Client',
-                  id: item.id,
-                },
-              },
-            })),
-          ],
-        },
-      })
-      .promise();
+  if (Items && Items.length > 0) {
+    const items = chunk(
+      Items.map(item => item.id),
+      25,
+    );
+
+    return {
+      complete: false,
+      count: items.length,
+      current: 0,
+      items,
+    };
   }
+
+  return {
+    complete: true,
+  };
 };

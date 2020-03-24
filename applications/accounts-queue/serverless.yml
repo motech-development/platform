@@ -1,0 +1,195 @@
+service:
+  name: ${opt:appName, 'accounts'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-queue
+  environment:
+    TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+
+package:
+  individually: true
+
+plugins:
+  - serverless-step-functions
+  - serverless-webpack
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+
+  webpack:
+    includeModules: true
+
+functions:
+  DeleteTrigger:
+    handler: src/triggers/delete.handler
+    role: TriggerLambdaFunctionRole
+    events:
+      - sqs:
+          arn: !GetAtt AccountsQueue.Arn
+    environment:
+      STATE_MACHINE_ARN: !Ref DeleteCompanyDataStateMachine
+
+  DeleteSettings:
+    handler: src/handlers/delete-settings.handler
+    role: LambdaFunctionRole
+
+  DeleteClients:
+    handler: src/handlers/delete-clients.handler
+    role: LambdaFunctionRole
+
+  GetClients:
+    handler: src/handlers/get-clients.handler
+    role: LambdaFunctionRole
+
+stepFunctions:
+  validate: true
+  stateMachines:
+    deleteCompanyData:
+      name: ${self:custom.prefix}-delete-company-data
+      id: DeleteCompanyDataStateMachine
+      definition:
+        Comment: Delete company orphaned data
+        StartAt: Parallel
+        States:
+          Parallel:
+            Type: Parallel
+            Next: Final state
+            Branches:
+              - StartAt: DeleteSettings
+                States:
+                  DeleteSettings:
+                    Type: Task
+                    Resource: !GetAtt DeleteSettingsLambdaFunction.Arn
+                    End: true
+
+              - StartAt: GetClients
+                States:
+                  GetClients:
+                    Type: Task
+                    Resource: !GetAtt GetClientsLambdaFunction.Arn
+                    Next: IsDeleteComplete
+
+                  DeleteClients:
+                    Type: Task
+                    Resource: !GetAtt DeleteClientsLambdaFunction.Arn
+                    Next: IsDeleteComplete
+
+                  IsDeleteComplete:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.complete
+                        BooleanEquals: false
+                        Next: DeleteClients
+                    Default: Complete
+
+                  Complete:
+                    Type: Pass
+                    End: true
+
+          Final state:
+            Type: Pass
+            End: true
+
+resources:
+  Resources:
+    AccountsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.prefix}-queue
+
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:BatchWriteItem
+                    - dynamodb:DeleteItem
+                    - dynamodb:Query
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+
+    TriggerLambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-trigger-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-trigger-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - states:StartExecution
+                  Resource:
+                    - !Ref DeleteCompanyDataStateMachine
+                    - !Join
+                      - ''
+                      - - !Ref DeleteCompanyDataStateMachine
+                        - '*'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+                - Effect: Allow
+                  Action:
+                    - sqs:DeleteMessage
+                    - sqs:GetQueueAttributes
+                    - sqs:ReceiveMessage
+                  Resource:
+                    - !GetAtt AccountsQueue.Arn
+
+  Outputs:
+    AccountsQueueArn:
+      Description: Accounts application queue ARN
+      Value: !GetAtt AccountsQueue.Arn
+      Export:
+        Name: ${self:provider.stage}-AccountsQueueArn
+    AccountsQueueUrl:
+      Description: Accounts application queue URL
+      Value: !Ref AccountsQueue
+      Export:
+        Name: ${self:provider.stage}-AccountsQueueUrl
