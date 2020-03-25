@@ -339,11 +339,11 @@ workflows:
             - unit-test
 
       - deploy-open-banking-production:
-        filters:
-          branches:
-            only: master
-        requires:
-          - unit-test
+          filters:
+            branches:
+              only: master
+          requires:
+            - unit-test
 
       - deploy-open-banking-develop:
           filters:
