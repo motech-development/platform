@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const authHeader = () => {
+  // TODO: Use param store
   const { YAPILY_APPLICATION_ID, YAPILY_APPLICATION_SECRET } = process.env;
 
   if (!YAPILY_APPLICATION_ID || !YAPILY_APPLICATION_SECRET) {

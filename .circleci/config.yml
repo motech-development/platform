@@ -204,6 +204,30 @@ jobs:
           command: npm run deploy -- --scope=@motech-development/accounts-queue -- -- --stage production
           name: Deploy accounts queue infrastructure
 
+  deploy-open-banking-develop:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage develop
+          name: Deploy open banking API
+
+  deploy-open-banking-production:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage production
+          name: Deploy open banking API
+
   deploy-auth0:
     docker:
       - image: circleci/node:12.13
@@ -314,15 +338,31 @@ workflows:
           requires:
             - unit-test
 
+      - deploy-open-banking-production:
+        filters:
+          branches:
+            only: master
+        requires:
+          - unit-test
+
+      - deploy-open-banking-develop:
+          filters:
+            branches:
+              only: /feature\/.*/
+          requires:
+            - unit-test
+
       - deploy-accounts-api-production:
           requires:
             - deploy-accounts-data-production
             - deploy-accounts-queue-production
+            - deploy-open-banking-production
 
       - deploy-accounts-api-develop:
           requires:
             - deploy-accounts-data-develop
             - deploy-accounts-queue-develop
+            - deploy-open-banking-develop
 
       - deploy-auth0:
           filters:
