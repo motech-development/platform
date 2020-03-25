@@ -57,6 +57,7 @@ functions:
     environment:
       # TODO: Should use Ref
       TABLE: ${self:custom.prefix}
+    role: LambdaFunctionRole
 
   userPost:
     handler: src/handlers/users.post
@@ -94,3 +95,50 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:Query
+                  Resource:
+                    - !GetAtt ApplicationTable.Arn
+                    - !Join
+                      - ''
+                      - - !GetAtt ApplicationTable.Arn
+                        - '/index/sk-data-index'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+
+  Outputs:
+    OpenBankingApiEndpoint:
+      Description: Open banking API endpoint
+      Value: !Join
+        - ''
+        - - 'https://'
+          - !Ref ApiGatewayRestApi
+          - '.execute-api.${self:provider.region}.amazonaws.com'
+      Export:
+        Name: ${self:provider.stage}-OpenBankingApiEndpoint

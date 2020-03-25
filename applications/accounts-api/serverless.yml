@@ -37,6 +37,12 @@ custom:
         loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
         level: ERROR
       mappingTemplates:
+        - dataSource: OpenBanking
+          type: Query
+          field: getBanks
+          request: bank/getBanks/Query.getBanks.req.vtl
+          response: bank/getBanks/Query.getBanks.res.vtl
+
         - kind: PIPELINE
           type: Mutation
           field: createClient
@@ -133,6 +139,7 @@ custom:
           response: settings/Query.getSettings.res.vtl
       schema:
         - schema/address.graphql
+        - schema/bank.graphql
         - schema/bank-details.graphql
         - schema/client.graphql
         - schema/company.graphql
@@ -219,6 +226,18 @@ custom:
           config:
             lambdaFunctionArn: !GetAtt LambdaDataSourceLambdaFunction.Arn
             serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
+        - type: HTTP
+          name: OpenBanking
+          config:
+            endpoint: !ImportValue ${self:provider.stage}-OpenBankingApiEndpoint
+            authorizationConfig:
+              authorizationType: AWS_IAM
+              awsIamConfig:
+                signingRegion: ${self:provider.region}
+                signingServiceName: execute-api
+            serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
+      substitutions:
+        stage: ${self:provider.stage}
 
   webpack:
     includeModules: true
@@ -232,6 +251,30 @@ functions:
 
 resources:
   Resources:
+    AppSyncOpenBankingServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-open-banking-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-open-banking-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - execute-api:Invoke
+                  # TODO: Get API ARN
+                  Resource: '*'
+
     AppSyncLoggingServiceRole:
       Type: AWS::IAM::Role
       Properties:

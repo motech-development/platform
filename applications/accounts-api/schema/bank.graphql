@@ -1,0 +1,8 @@
+type Bank {
+  id: ID
+  name: String
+}
+
+type Banks {
+  items: [Bank]
+}
