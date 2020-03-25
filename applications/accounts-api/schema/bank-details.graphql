@@ -1,9 +1,9 @@
-type Bank {
+type BankDetails {
   accountNumber: String
   sortCode: String
 }
 
-input BankInput {
+input BankDetailsInput {
   __typename: String
   accountNumber: String!
   sortCode: String!

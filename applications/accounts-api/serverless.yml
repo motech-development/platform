@@ -133,7 +133,7 @@ custom:
           response: settings/Query.getSettings.res.vtl
       schema:
         - schema/address.graphql
-        - schema/bank.graphql
+        - schema/bank-details.graphql
         - schema/client.graphql
         - schema/company.graphql
         - schema/contact.graphql

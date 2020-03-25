@@ -5,7 +5,7 @@ type Companies {
 
 type Company {
   address: Address
-  bank: Bank
+  bank: BankDetails
   companyNumber: String
   contact: Contact
   id: ID
@@ -16,7 +16,7 @@ type Company {
 input CompanyInput {
   __typename: String
   address: AddressInput!
-  bank: BankInput!
+  bank: BankDetailsInput!
   companyNumber: String!
   contact: ContactInput!
   id: ID!
