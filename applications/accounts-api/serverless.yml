@@ -234,7 +234,7 @@ custom:
             authorizationConfig:
               authorizationType: AWS_IAM
               awsIamConfig:
-                signingRegion: ${self:provider.region}
+                signingRegion: !Ref AWS::Region
                 signingServiceName: execute-api
             serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
       substitutions:
@@ -273,8 +273,7 @@ resources:
                 - Effect: Allow
                   Action:
                     - execute-api:Invoke
-                  # TODO: Get API ARN
-                  Resource: '*'
+                  Resource: !ImportValue ${self:provider.stage}-OpenBankingApiArn
 
     AppSyncLoggingServiceRole:
       Type: AWS::IAM::Role

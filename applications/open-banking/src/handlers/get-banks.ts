@@ -3,11 +3,18 @@ import documentClient from '../shared/document-client';
 import proxyHandler from '../shared/proxy-handler';
 
 export const handler: Handler = proxyHandler(async () => {
-  // TODO: Use proper error handling
   const { TABLE } = process.env;
 
   if (!TABLE) {
-    throw new Error('No table set');
+    const response = {
+      body: JSON.stringify({
+        message: 'No table set',
+        statusCode: 500,
+      }),
+      statusCode: 500,
+    };
+
+    throw response;
   }
 
   const { Items } = await documentClient
