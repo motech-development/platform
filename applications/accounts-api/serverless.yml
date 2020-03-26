@@ -141,6 +141,7 @@ custom:
         - schema/address.graphql
         - schema/bank.graphql
         - schema/bank-details.graphql
+        - schema/bank-settings.graphql
         - schema/client.graphql
         - schema/company.graphql
         - schema/contact.graphql

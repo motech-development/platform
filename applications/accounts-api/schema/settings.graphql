@@ -1,4 +1,5 @@
 type Settings {
+  bank: BankSettings
   categories: [ExpenseCategory]
   id: ID
   vat: VatSettings
@@ -6,6 +7,7 @@ type Settings {
 
 input SettingsInput {
   __typename: String
+  bank: BankSettingsInput
   categories: [ExpenseCategoryInput]!
   id: ID!
   vat: VatSettingsInput!
