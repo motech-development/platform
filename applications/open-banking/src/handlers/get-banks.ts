@@ -2,7 +2,7 @@ import { Handler } from 'aws-lambda';
 import documentClient from '../shared/document-client';
 import proxyHandler from '../shared/proxy-handler';
 
-export const get: Handler = proxyHandler(async () => {
+export const handler: Handler = proxyHandler(async () => {
   // TODO: Use proper error handling
   const { TABLE } = process.env;
 

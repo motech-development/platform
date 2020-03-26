@@ -1,8 +1,29 @@
+import { SSM } from 'aws-sdk';
 import axios from 'axios';
 
-const authHeader = () => {
-  // TODO: Use param store
-  const { YAPILY_APPLICATION_ID, YAPILY_APPLICATION_SECRET } = process.env;
+const ssm = new SSM();
+
+const authHeader = async () => {
+  const { YapilyCredentials } = process.env;
+
+  if (!YapilyCredentials) {
+    throw new Error('No secrets ID passed');
+  }
+
+  const { Parameter } = await ssm
+    .getParameter({
+      Name: YapilyCredentials,
+    })
+    .promise();
+
+  if (!Parameter?.Value) {
+    throw new Error('No credentials found');
+  }
+
+  const [
+    YAPILY_APPLICATION_ID,
+    YAPILY_APPLICATION_SECRET,
+  ] = Parameter.Value.split(',');
 
   if (!YAPILY_APPLICATION_ID || !YAPILY_APPLICATION_SECRET) {
     throw new Error('No credentials set');
@@ -20,12 +41,12 @@ const httpClient = axios;
 httpClient.defaults.baseURL = 'https://api.yapily.com';
 
 httpClient.interceptors.request.use(
-  config => {
+  async config => {
     const output = {
       ...config,
     };
 
-    output.headers.Authorization = authHeader();
+    output.headers.Authorization = await authHeader();
 
     return output;
   },
