@@ -213,7 +213,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_cache
       - run:
-          command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage develop
+          command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage develop --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
           name: Deploy open banking API
 
   deploy-open-banking-production:
@@ -225,7 +225,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_cache
       - run:
-          command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage production
+          command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage production --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
           name: Deploy open banking API
 
   deploy-auth0:
