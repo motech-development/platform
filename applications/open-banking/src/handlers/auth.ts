@@ -1,6 +1,8 @@
 import { APIGatewayEvent, Handler } from 'aws-lambda';
 import { object, string } from 'yup';
 import httpClient from '../shared/http-client';
+import proxyHandler from '../shared/proxy-handler';
+import validateBody from '../shared/validate-body';
 
 const schema = object().shape({
   bank: string().required(),
@@ -8,27 +10,8 @@ const schema = object().shape({
   user: string().required(),
 });
 
-export const post: Handler<APIGatewayEvent> = async event => {
-  if (!event.body) {
-    throw new Error('No body set');
-  }
-
-  const body = JSON.parse(event.body);
-
-  try {
-    await schema.validate(body, {
-      stripUnknown: true,
-    });
-  } catch (e) {
-    return {
-      body: JSON.stringify({
-        message: e.message,
-        statusCode: 400,
-      }),
-      statusCode: 400,
-    };
-  }
-
+export const post: Handler<APIGatewayEvent> = proxyHandler(async event => {
+  const body = await validateBody(schema, event.body);
   const endpoint = '/account-auth-requests';
 
   try {
@@ -55,4 +38,4 @@ export const post: Handler<APIGatewayEvent> = async event => {
       statusCode: status,
     };
   }
-};
+});
