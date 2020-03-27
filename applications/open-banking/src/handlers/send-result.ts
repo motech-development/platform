@@ -8,9 +8,9 @@ export interface IEvent {
   url: string;
 }
 
-const SendBackCallbackMutation = `
-  mutation SendBackCallback($input: BankCallbackInput!) {
-    sendBackCallback(input: $input) {
+const SendBankCallbackMutation = `
+  mutation SendBankCallback($input: BankCallbackInput!) {
+    sendBankCallback(input: $input) {
       authorisationUrl
     }
   }
@@ -19,8 +19,8 @@ const SendBackCallbackMutation = `
 export const handler: Handler<IEvent> = async event => {
   const { authorisationUrl, id, token, url } = event;
   const mutation = {
-    operationName: 'SendBackCallback',
-    query: SendBackCallbackMutation,
+    operationName: 'SendBankCallback',
+    query: SendBankCallbackMutation,
     variables: {
       input: {
         authorisationUrl,

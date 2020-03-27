@@ -19,7 +19,12 @@ type Query {
   getSettings(id: ID!): Settings!
 }
 
+type Subscription {
+  onConnectToBank: BankConnect @aws_subscribe(mutations: ["sendBankCallback"])
+}
+
 schema {
   mutation: Mutation
   query: Query
+  subscription: Subscription
 }
