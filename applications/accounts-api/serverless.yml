@@ -38,10 +38,10 @@ custom:
         level: ERROR
       mappingTemplates:
         - dataSource: OpenBanking
-          type: Query
+          type: Mutation
           field: connectToBank
-          request: bank/connectToBank/Query.connectToBank.req.vtl
-          response: bank/connectToBank/Query.connectToBank.res.vtl
+          request: bank/connectToBank/Mutation.connectToBank.req.vtl
+          response: bank/connectToBank/Mutation.connectToBank.res.vtl
         - dataSource: OpenBanking
           type: Query
           field: getBanks

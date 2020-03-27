@@ -1,5 +1,6 @@
 #set($endpoint = "/${stage}/api/v1/connect/start")
 #set($owner = $ctx.identity.sub)
+#set($user = $util.toJson($util.defaultIfNullOrEmpty($ctx.args.input.user, null)))
 
 {
   "version": "2018-05-29",
@@ -13,7 +14,7 @@
       "bank": "$ctx.args.input.bank",
       "callback": "$ctx.args.input.callback",
       "id": "$owner",
-      "user": "$ctx.args.input.user"
+      "user": $user
     }
   }
 }
