@@ -47,6 +47,11 @@ custom:
           field: getBanks
           request: bank/getBanks/Query.getBanks.req.vtl
           response: bank/getBanks/Query.getBanks.res.vtl
+        - dataSource: Resolver
+          type: Mutation
+          field: sendBankCallback
+          request: bank/sendBankCallback/Mutation.sendBankCallback.req.vtl
+          response: bank/sendBankCallback/Mutation.sendBankCallback.res.vtl
 
         - kind: PIPELINE
           type: Mutation

@@ -17,3 +17,8 @@ input BankConnectInput {
   callback: String!
   user: String
 }
+
+input BankCallbackInput {
+  id: ID!
+  authorisationUrl: String!
+}
