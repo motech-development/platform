@@ -9,6 +9,7 @@ type Mutation {
 }
 
 type Query {
+  connectToBank(input: BankConnectInput!): BankConnect!
   getBanks: Banks!
   getClients(companyId: ID!, count: Int, nextToken: String): Clients!
   getClient(id: ID!): Client!

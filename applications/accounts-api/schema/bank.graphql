@@ -6,3 +6,14 @@ type Bank {
 type Banks {
   items: [Bank]
 }
+
+type BankConnect {
+  status: String
+  authorisationUrl: String
+}
+
+input BankConnectInput {
+  bank: String!
+  callback: String!
+  user: String
+}

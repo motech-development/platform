@@ -39,6 +39,11 @@ custom:
       mappingTemplates:
         - dataSource: OpenBanking
           type: Query
+          field: connectToBank
+          request: bank/connectToBank/Query.connectToBank.req.vtl
+          response: bank/connectToBank/Query.connectToBank.res.vtl
+        - dataSource: OpenBanking
+          type: Query
           field: getBanks
           request: bank/getBanks/Query.getBanks.req.vtl
           response: bank/getBanks/Query.getBanks.res.vtl
