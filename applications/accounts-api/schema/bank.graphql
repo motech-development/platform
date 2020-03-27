@@ -15,6 +15,7 @@ type BankConnect {
 input BankConnectInput {
   bank: String!
   callback: String!
+  companyId: ID!
   user: String
 }
 
