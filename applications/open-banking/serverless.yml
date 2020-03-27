@@ -71,6 +71,10 @@ functions:
     handler: src/handlers/register-user.handler
     role: LambdaFunctionRole
 
+  SendResult:
+    handler: src/handlers/send-result.handler
+    role: LambdaFunctionRole
+
 stepFunctions:
   validate: true
   stateMachines:
@@ -115,6 +119,11 @@ stepFunctions:
           GetCallback:
             Type: Task
             Resource: !GetAtt GetCallbackLambdaFunction.Arn
+            Next: SendResult
+
+          SendResult:
+            Type: Task
+            Resource: !GetAtt SendResultLambdaFunction.Arn
             End: true
 
 resources:

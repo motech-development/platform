@@ -19,6 +19,7 @@ export const handler: Handler<IEvent> = async event => {
     });
 
     return {
+      ...event,
       authorisationUrl: data.data.authorisationUrl,
     };
   } catch (e) {
