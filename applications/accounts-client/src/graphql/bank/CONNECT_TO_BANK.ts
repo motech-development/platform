@@ -4,6 +4,7 @@ export interface IConnectToBankInput {
   input: {
     bank: string;
     callback: string;
+    companyId: string;
     user: string;
   };
 }
