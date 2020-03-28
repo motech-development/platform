@@ -35,5 +35,11 @@
         "required": "VAT rate is required"
       }
     }
+  },
+  "select-bank": {
+    "title": "Select bank",
+    "sub-title": "Pick your bank form the list below",
+    "connect": "Connect",
+    "cancel": "Cancel"
   }
 }
