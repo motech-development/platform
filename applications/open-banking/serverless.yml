@@ -55,10 +55,6 @@ functions:
       TABLE: !Ref ApplicationTable
     role: LambdaFunctionRole
 
-  CheckUser:
-    handler: src/handlers/check-user.handler
-    role: LambdaFunctionRole
-
   GetCallback:
     handler: src/handlers/get-callback.handler
     role: LambdaFunctionRole
@@ -96,20 +92,7 @@ stepFunctions:
           GetParams:
             Type: Task
             Resource: !GetAtt GetParamsLambdaFunction.Arn
-            Next: CheckUser
-
-          CheckUser:
-            Type: Task
-            Resource: !GetAtt CheckUserLambdaFunction.Arn
-            Next: IsRegistered
-
-          IsRegistered:
-            Type: Choice
-            Choices:
-              - Variable: $.register
-                BooleanEquals: true
-                Next: RegisterUser
-            Default: GetCallback
+            Next: RegisterUser
 
           RegisterUser:
             Type: Task

@@ -3,15 +3,17 @@ import httpClient from '../shared/http-client';
 
 export interface IEvent {
   id: string;
+  companyId: string;
 }
 
 export const handler: Handler<IEvent> = async event => {
-  const { id } = event;
+  const { id, companyId } = event;
+  const applicationUserId = `${id}:${companyId}`;
   const endpoint = '/users';
 
   try {
     const { data } = await httpClient.post(endpoint, {
-      applicationUserId: id,
+      applicationUserId,
     });
 
     return {
