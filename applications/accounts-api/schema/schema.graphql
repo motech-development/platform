@@ -1,5 +1,6 @@
 type Mutation {
   connectToBank(input: BankConnectInput!): BankConnect!
+  saveBankConsent(input: BankSaveConsentInput!): Settings!
   sendBankCallback(input: BankCallbackInput!): BankConnect
   createClient(input: ClientInput!): Client!
   deleteClient(id: ID!): Client!

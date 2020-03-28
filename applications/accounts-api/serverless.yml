@@ -47,6 +47,11 @@ custom:
           field: getBanks
           request: bank/getBanks/Query.getBanks.req.vtl
           response: bank/getBanks/Query.getBanks.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: saveBankConsent
+          request: bank/saveBankConsent/Mutation.saveBankConsent.req.vtl
+          response: bank/saveBankConsent/Mutation.saveBankConsent.res.vtl
         - dataSource: Resolver
           type: Mutation
           field: sendBankCallback

@@ -1,10 +1,8 @@
-import { APIGatewayEvent, Callback, Context, Handler } from 'aws-lambda';
+import { APIGatewayEvent, Handler } from 'aws-lambda';
 
-const proxyHandler = (handler: Handler<APIGatewayEvent>) => async (
-  event: APIGatewayEvent,
-  context: Context,
-  callback: Callback,
-) => {
+const proxyHandler = (
+  handler: Handler<APIGatewayEvent>,
+): Handler<APIGatewayEvent> => async (event, context, callback) => {
   try {
     const result = await handler(event, context, callback);
 

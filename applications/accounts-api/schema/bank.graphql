@@ -22,3 +22,15 @@ input BankCallbackInput {
   id: ID!
   authorisationUrl: String!
 }
+
+input BankSaveConsentInputValues {
+  bank: String!
+  consent: String!
+
+  user: String!
+}
+
+input BankSaveConsentInput {
+  bank: BankSaveConsentInputValues!
+  id: ID!
+}
