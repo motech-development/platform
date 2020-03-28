@@ -8,15 +8,14 @@ type Banks {
 }
 
 type BankConnect {
-  status: String
   authorisationUrl: String
+  status: String
 }
 
 input BankConnectInput {
   bank: String!
   callback: String!
   companyId: ID!
-  user: String
 }
 
 input BankCallbackInput {
