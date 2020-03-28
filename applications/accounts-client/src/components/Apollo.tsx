@@ -1,5 +1,5 @@
 import { useAuth } from '@motech-development/auth';
-import { InMemoryCache } from 'apollo-cache-inmemory';
+import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
 import ApolloClient from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
 import { AuthOptions, createAuthLink } from 'aws-appsync-auth-link';
@@ -17,7 +17,9 @@ export interface IApolloProps {
 
 const Apollo: FC<IApolloProps> = ({ children }) => {
   const { getTokenSilently, isAuthenticated, isLoading } = useAuth();
-  const [apolloClient, setApolloClient] = useState();
+  const [apolloClient, setApolloClient] = useState<
+    ApolloClient<NormalizedCacheObject>
+  >();
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
