@@ -3,17 +3,17 @@ import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
-import Connected from '../../components/Connected';
-import SettingsForm, { FormSchema } from '../../components/SettingsForm';
+import Connected from '../../../components/Connected';
+import SettingsForm, { FormSchema } from '../../../components/SettingsForm';
 import GET_SETTINGS, {
   IGetSettingsInput,
   IGetSettingsOutput,
-} from '../../graphql/settings/GET_SETTINGS';
+} from '../../../graphql/settings/GET_SETTINGS';
 import UPDATE_SETTINGS, {
   IUpdateSettingsInput,
   IUpdateSettingsOutput,
-} from '../../graphql/settings/UPDATE_SETTINGS';
-import withLayout from '../../hoc/withLayout';
+} from '../../../graphql/settings/UPDATE_SETTINGS';
+import withLayout from '../../../hoc/withLayout';
 
 interface ISettingsParams {
   companyId: string;

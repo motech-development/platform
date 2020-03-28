@@ -23,11 +23,7 @@ const Routes: FC = () => (
       path="/my-companies/dashboard/:companyId"
     />
     <Route component={Clients} path="/my-companies/clients/:companyId" />
-    <ProtectedRoute
-      exact
-      component={Settings}
-      path="/my-companies/settings/:companyId"
-    />
+    <Route component={Settings} path="/my-companies/settings/:companyId" />
     <ProtectedRoute
       exact
       component={UpdateDetails}

@@ -2,9 +2,9 @@ import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
-import GET_SETTINGS from '../../../graphql/settings/GET_SETTINGS';
-import UPDATE_SETTINGS from '../../../graphql/settings/UPDATE_SETTINGS';
-import TestProvider, { add } from '../../../utils/TestProvider';
+import GET_SETTINGS from '../../../../graphql/settings/GET_SETTINGS';
+import UPDATE_SETTINGS from '../../../../graphql/settings/UPDATE_SETTINGS';
+import TestProvider, { add } from '../../../../utils/TestProvider';
 import Settings from '../Settings';
 
 describe('Settings', () => {
