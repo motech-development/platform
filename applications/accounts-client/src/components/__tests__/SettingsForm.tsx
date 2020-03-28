@@ -39,6 +39,7 @@ describe('SettingsForm', () => {
       <TestProvider>
         <SettingsForm
           backTo="/test"
+          bankConnect="/connect-to-bank"
           loading={false}
           initialValues={initialValues}
           onSave={value => onSave(value)}
@@ -138,5 +139,13 @@ describe('SettingsForm', () => {
         },
       ],
     });
+  });
+
+  it('should contain a link to connect to a bank', async () => {
+    const { findByText } = component;
+
+    await expect(
+      findByText('settings-form.bank.connect'),
+    ).resolves.toHaveAttribute('href', '/connect-to-bank');
   });
 });

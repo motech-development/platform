@@ -17,6 +17,11 @@
         "required": "Please enter a value. Set to 0 if not needed"
       }
     },
+    "bank": {
+      "title": "Banking settings",
+      "lead": "Speed up book keeping by connecting to your bank to import your transactions",
+      "connect": "Connect"
+    },
     "expense-categories": {
       "title": "Expense categories",
       "add-category": "Add a new category",

@@ -72,6 +72,7 @@ const Settings: FC = () => {
 
           <SettingsForm
             backTo={backTo(companyId)}
+            bankConnect={`/my-companies/settings/${companyId}/select-bank`}
             initialValues={data.getSettings}
             loading={updateLoading}
             onSave={save}
