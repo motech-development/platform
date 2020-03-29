@@ -44,6 +44,15 @@ custom:
       - local
 
 functions:
+  GetAccounts:
+    handler: src/handlers/get-accounts.handler
+    events:
+      - http:
+          authorizer: aws_iam
+          method: get
+          path: api/v1/accounts
+    role: LambdaFunctionRole
+
   GetBanks:
     handler: src/handlers/get-banks.handler
     events:
