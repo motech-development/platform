@@ -1,5 +1,5 @@
 #set($id = $ctx.args.input.id)
-#set($typename = "Settings")
+#set($typename = $ctx.args.input["__typename"])
 #set($owner = $ctx.identity.sub)
 #set($data = "$owner:$id:$typename")
 

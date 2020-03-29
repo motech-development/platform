@@ -1,0 +1,15 @@
+type BankSettings {
+  account: String
+  bank: String
+  consent: String
+  id: ID
+  user: String
+}
+
+input BankSettingsInput {
+  account: String
+  bank: String
+  consent: String
+  id: ID!
+  user: String
+}

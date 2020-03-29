@@ -37,6 +37,7 @@ custom:
         loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
         level: ERROR
       mappingTemplates:
+        # Banking
         - dataSource: OpenBanking
           type: Query
           field: getBanks
@@ -54,6 +55,13 @@ custom:
           field: createBankConnection
           request: bank-connection/createBankConnection/Mutation.createBankConnection.req.vtl
           response: bank-connection/createBankConnection/Mutation.createBankConnection.res.vtl
+
+        - dataSource: Data
+          type: Mutation
+          field: updateBankSettings
+          request: bank-settings/updateBankSettings/Mutation.updateBankSettings.req.vtl
+          response: bank-settings/updateBankSettings/Mutation.updateBankSettings.res.vtl
+        # Banking
 
         - kind: PIPELINE
           type: Mutation
@@ -155,6 +163,7 @@ custom:
         - schema/bank-connection.graphql
         - schema/bank-callback.graphql
         - schema/bank-details.graphql
+        - schema/bank-settings.graphql
         - schema/bank.graphql
         - schema/client.graphql
         - schema/company.graphql

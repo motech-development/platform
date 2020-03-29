@@ -1,7 +1,0 @@
-#if($ctx.result.statusCode == 200)
-  {
-    "status": "PENDING"
-  }
-#else
-  $utils.error($ctx.result.body, "$ctx.result.statusCode")
-#end
