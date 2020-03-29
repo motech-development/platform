@@ -41,5 +41,12 @@
     "sub-title": "Pick your bank form the list below",
     "connect": "Connect",
     "cancel": "Cancel"
+  },
+  "select-account": {
+    "title": "Select account",
+    "sub-title": "Choose an account to link",
+    "balance": "Balance",
+    "link-account": "Link account",
+    "success": "Bank account linked"
   }
 }

@@ -11,33 +11,35 @@ import {
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import Connected from '../../../components/Connected';
-import GET_BANKS, { IGetBanksOutput } from '../../../graphql/bank/GET_BANKS';
-import CONNECT_TO_BANK, {
-  IConnectToBankInput,
-  IConnectToBankOutput,
-} from '../../../graphql/bank/CONNECT_TO_BANK';
-import ON_CONNECT_TO_BANK, {
-  IOnConnectToBankOutput,
-} from '../../../graphql/bank/ON_CONNECT_TO_BANK';
-import withLayout from '../../../hoc/withLayout';
+import Connected from '../../../../components/Connected';
+import CREATE_BANK_CONNECTION, {
+  ICreateBankConnectionInput,
+  ICreateBankConnectionOutput,
+} from '../../../../graphql/bank/CREATE_BANK_CONNECTION';
+import GET_BANKS, { IGetBanksOutput } from '../../../../graphql/bank/GET_BANKS';
+import ON_BANK_CALLBACK, {
+  IOnBankCallbackOutput,
+} from '../../../../graphql/bank/ON_BANK_CALLBACK';
+import withLayout from '../../../../hoc/withLayout';
 
 interface ISelectBankParams {
   companyId: string;
 }
 
 // TODO: Do not allow access if already connected
-const SelectBank: FC = () => {
+// TODO: Get to the bottom of the subscription error
+const Bank: FC = () => {
   const { companyId } = useParams<ISelectBankParams>();
   const { t } = useTranslation('settings');
   const [selected, setSelected] = useState('');
   const { data, error, loading } = useQuery<IGetBanksOutput>(GET_BANKS);
-  const [mutation] = useMutation<IConnectToBankOutput, IConnectToBankInput>(
-    CONNECT_TO_BANK,
-  );
+  const [mutation] = useMutation<
+    ICreateBankConnectionOutput,
+    ICreateBankConnectionInput
+  >(CREATE_BANK_CONNECTION);
   const { data: subscription, loading: subscriptionLoading } = useSubscription<
-    IOnConnectToBankOutput
-  >(ON_CONNECT_TO_BANK);
+    IOnBankCallbackOutput
+  >(ON_BANK_CALLBACK);
   const connect = (bank: string) => {
     (async () => {
       setSelected(bank);
@@ -46,7 +48,7 @@ const SelectBank: FC = () => {
         variables: {
           input: {
             bank,
-            callback: `${window.location.origin}/my-companies/settings/${companyId}/select-account`,
+            callback: `${window.location.origin}/my-companies/settings/${companyId}/bank/callback`,
             companyId,
           },
         },
@@ -56,7 +58,7 @@ const SelectBank: FC = () => {
 
   useEffect(() => {
     if (subscription) {
-      const { authorisationUrl } = subscription.onConnectToBank;
+      const { authorisationUrl } = subscription.onBankCallback;
 
       window.location.href = authorisationUrl;
     }
@@ -116,4 +118,4 @@ const SelectBank: FC = () => {
   );
 };
 
-export default withLayout(SelectBank);
+export default withLayout(Bank);

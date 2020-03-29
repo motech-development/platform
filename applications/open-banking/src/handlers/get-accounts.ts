@@ -5,8 +5,8 @@ import proxyHandler from '../shared/proxy-handler';
 interface IAccounts {
   data: {
     accountIdentifications: {
-      type: string;
       identification: string;
+      type: string;
     }[];
     balance: string;
     currency: string;
