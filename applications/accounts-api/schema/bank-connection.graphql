@@ -1,0 +1,9 @@
+type BankConnection {
+  status: String
+}
+
+input BankConnectionInput {
+  bank: String!
+  callback: String!
+  companyId: String!
+}

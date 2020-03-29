@@ -1,5 +1,6 @@
 type Mutation {
   bankCallback(input: BankCallbackInput!): BankCallback!
+  createBankConnection(input: BankConnectionInput!): BankConnection!
   createClient(input: ClientInput!): Client!
   deleteClient(id: ID!): Client!
   updateClient(input: ClientInput!): Client!

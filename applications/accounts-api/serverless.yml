@@ -49,6 +49,12 @@ custom:
           request: bank-callback/bankCallback/Mutation.bankCallback.req.vtl
           response: bank-callback/bankCallback/Mutation.bankCallback.res.vtl
 
+        - dataSource: OpenBanking
+          type: Mutation
+          field: createBankConnection
+          request: bank-connection/createBankConnection/Mutation.createBankConnection.req.vtl
+          response: bank-connection/createBankConnection/Mutation.createBankConnection.res.vtl
+
         - kind: PIPELINE
           type: Mutation
           field: createClient
@@ -146,6 +152,7 @@ custom:
           response: settings/Query.getSettings.res.vtl
       schema:
         - schema/address.graphql
+        - schema/bank-connection.graphql
         - schema/bank-callback.graphql
         - schema/bank-details.graphql
         - schema/bank.graphql
