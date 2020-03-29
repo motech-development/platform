@@ -44,6 +44,15 @@ custom:
           request: bank/getBanks/Query.getBanks.req.vtl
           response: bank/getBanks/Query.getBanks.res.vtl
 
+        - kind: PIPELINE
+          type: Query
+          field: getBankAccounts
+          functions:
+            - consent
+            - getBankAccounts
+          request: bank-account/getBankAccounts/Query.getBankAccounts.req.vtl
+          response: bank-account/getBankAccounts/Query.getBankAccounts.res.vtl
+
         - dataSource: Resolver
           type: Mutation
           field: bankCallback
@@ -160,6 +169,7 @@ custom:
           response: settings/Query.getSettings.res.vtl
       schema:
         - schema/address.graphql
+        - schema/bank-account.graphql
         - schema/bank-connection.graphql
         - schema/bank-callback.graphql
         - schema/bank-details.graphql
@@ -200,6 +210,16 @@ custom:
           name: addressFiltering
           request: shared/addressFiltering/Pipeline.addressFiltering.req.vtl
           response: shared/addressFiltering/Pipeline.addressFiltering.res.vtl
+        - dataSource: Data
+          name: consent
+          request: shared/consent/Pipeline.consent.req.vtl
+          response: shared/consent/Pipeline.consent.res.vtl
+
+        # Bank
+        - dataSource: OpenBanking
+          name: getBankAccounts
+          request: bank-account/getBankAccounts/Pipeline.getBankAccounts.req.vtl
+          response: bank-account/getBankAccounts/Pipeline.getBankAccounts.res.vtl
 
         # Clients
         - dataSource: Data
