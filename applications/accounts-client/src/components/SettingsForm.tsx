@@ -67,43 +67,6 @@ const SettingsForm: FC<ISettingsFormProps> = ({
       {({ isValid, values }) => (
         <Form autoComplete="off">
           <Row>
-            {/* TODO: Handle disconnect */}
-            <Col xs={12} md={6}>
-              <Card padding="lg">
-                <Typography rule component="h3" variant="h3">
-                  {t('settings-form.bank.title')}
-                </Typography>
-
-                <Typography component="p" variant="lead" margin="none">
-                  {t('settings-form.bank.lead')}
-                </Typography>
-              </Card>
-
-              <LinkButton block size="lg" to={bankConnect}>
-                {t('settings-form.bank.connect')}
-              </LinkButton>
-            </Col>
-
-            <Col xs={12} md={6}>
-              <Card padding="lg">
-                <Typography rule component="h3" variant="h3">
-                  {t('settings-form.vat.title')}
-                </Typography>
-
-                <TextBox
-                  suffix="%"
-                  name="vat.charge"
-                  label={t('settings-form.vat.charge.label')}
-                />
-
-                <TextBox
-                  suffix="%"
-                  name="vat.pay"
-                  label={t('settings-form.vat.pay.label')}
-                />
-              </Card>
-            </Col>
-
             <Col>
               <Card padding="lg">
                 <Typography rule component="h3" variant="h3">
@@ -174,6 +137,43 @@ const SettingsForm: FC<ISettingsFormProps> = ({
                       </Col>
                     </Row>
                   )}
+                />
+              </Card>
+            </Col>
+
+            {/* TODO: Handle disconnect */}
+            <Col xs={12} md={6}>
+              <Card padding="lg">
+                <Typography rule component="h3" variant="h3">
+                  {t('settings-form.bank.title')}
+                </Typography>
+
+                <Typography component="p" variant="lead" margin="none">
+                  {t('settings-form.bank.lead')}
+                </Typography>
+              </Card>
+
+              <LinkButton block size="lg" to={bankConnect}>
+                {t('settings-form.bank.connect')}
+              </LinkButton>
+            </Col>
+
+            <Col xs={12} md={6}>
+              <Card padding="lg">
+                <Typography rule component="h3" variant="h3">
+                  {t('settings-form.vat.title')}
+                </Typography>
+
+                <TextBox
+                  suffix="%"
+                  name="vat.charge"
+                  label={t('settings-form.vat.charge.label')}
+                />
+
+                <TextBox
+                  suffix="%"
+                  name="vat.pay"
+                  label={t('settings-form.vat.pay.label')}
                 />
               </Card>
             </Col>

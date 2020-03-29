@@ -44,6 +44,15 @@ custom:
       - local
 
 functions:
+  DeleteUser:
+    handler: src/handlers/delete-user.handler
+    events:
+      - http:
+          authorizer: aws_iam
+          method: delete
+          path: api/v1/users/{userId}
+    role: LambdaFunctionRole
+
   GetAccounts:
     handler: src/handlers/get-accounts.handler
     events:
