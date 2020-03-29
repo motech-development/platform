@@ -1,9 +1,9 @@
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { handler, IEvent } from '../delete-settings';
+import { handler, IEvent } from '../delete-record';
 
-describe('delete-settings', () => {
+describe('delete-record', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: IEvent;
@@ -36,6 +36,29 @@ describe('delete-settings', () => {
       };
 
       process.env.TABLE = 'app-table';
+    });
+
+    afterEach(() => {
+      process.env = env;
+    });
+
+    it('should throw if no typename set is set', async () => {
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'No typename set',
+      );
+    });
+  });
+
+  describe('with a table and typename set', () => {
+    let env: NodeJS.ProcessEnv;
+
+    beforeEach(() => {
+      env = {
+        ...process.env,
+      };
+
+      process.env.TABLE = 'app-table';
+      process.env.TYPENAME = 'Settings';
     });
 
     afterEach(() => {

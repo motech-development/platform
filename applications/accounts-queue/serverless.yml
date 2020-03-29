@@ -24,6 +24,12 @@ custom:
     includeModules: true
 
 functions:
+  DeleteBankSettings:
+    handler: src/handlers/delete-record.handler
+    role: LambdaFunctionRole
+    environment:
+      TYPENAME: BankSettings
+
   DeleteTrigger:
     handler: src/triggers/delete.handler
     role: TriggerLambdaFunctionRole
@@ -34,8 +40,10 @@ functions:
       STATE_MACHINE_ARN: !Ref DeleteCompanyDataStateMachine
 
   DeleteSettings:
-    handler: src/handlers/delete-settings.handler
+    handler: src/handlers/delete-record.handler
     role: LambdaFunctionRole
+    environment:
+      TYPENAME: Settings
 
   DeleteClients:
     handler: src/handlers/delete-clients.handler
@@ -64,6 +72,13 @@ stepFunctions:
                   DeleteSettings:
                     Type: Task
                     Resource: !GetAtt DeleteSettingsLambdaFunction.Arn
+                    End: true
+
+              - StartAt: DeleteBankSettings
+                States:
+                  DeleteBankSettings:
+                    Type: Task
+                    Resource: !GetAtt DeleteBankSettingsLambdaFunction.Arn
                     End: true
 
               - StartAt: GetClients

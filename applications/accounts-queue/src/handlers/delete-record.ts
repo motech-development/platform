@@ -9,10 +9,14 @@ export interface IEvent {
 }
 
 export const handler: Handler<IEvent> = async event => {
-  const { TABLE } = process.env;
+  const { TABLE, TYPENAME } = process.env;
 
   if (!TABLE) {
     throw new Error('No table set');
+  }
+
+  if (!TYPENAME) {
+    throw new Error('No typename set');
   }
 
   const { id, owner } = event;
@@ -27,7 +31,7 @@ export const handler: Handler<IEvent> = async event => {
         ':owner': owner,
       },
       Key: {
-        __typename: 'Settings',
+        __typename: TYPENAME,
         id,
       },
       TableName: TABLE,
