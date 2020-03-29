@@ -93,6 +93,7 @@ custom:
             - vatRegistration
             - createCompany
             - createSettings
+            - createBankSettings
           request: company/createCompany/Mutation.createCompany.req.vtl
           response: company/createCompany/Mutation.createCompany.res.vtl
         - kind: PIPELINE
@@ -192,6 +193,10 @@ custom:
           response: client/updateClient/Pipeline.updateClient.res.vtl
 
         # Companies
+        - dataSource: Data
+          name: createBankSettings
+          request: company/createCompany/Pipeline.createBankSettings.req.vtl
+          response: company/createCompany/Pipeline.createBankSettings.res.vtl
         - dataSource: Data
           name: createCompany
           request: company/createCompany/Pipeline.createCompany.req.vtl
