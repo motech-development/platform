@@ -21,7 +21,7 @@ type Query {
 }
 
 type Subscription {
-  onBankCallback: BankCallback! @aws_subscribe(mutations: ["bankCallback"])
+  onBankCallback: BankCallback @aws_subscribe(mutations: ["bankCallback"])
 }
 
 schema {

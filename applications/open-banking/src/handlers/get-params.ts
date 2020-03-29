@@ -4,21 +4,18 @@ import { object, string } from 'yup';
 const schema = object().shape({
   bank: string().required(),
   callback: string().required(),
+  companyId: string().required(),
   id: string().required(),
+  token: string().required(),
+  url: string().required(),
 });
 
-export interface IEvent {
-  bank: string;
-  callback: string;
-  id: string;
-}
-
-export const handler: Handler<IEvent> = async event => {
-  await schema.validate(event, {
+export const handler: Handler = async event => {
+  const result = await schema.validate(event, {
     stripUnknown: true,
   });
 
   return {
-    ...event,
+    ...result,
   };
 };

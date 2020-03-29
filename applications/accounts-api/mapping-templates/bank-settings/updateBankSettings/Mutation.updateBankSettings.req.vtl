@@ -1,9 +1,8 @@
 #set($id = $ctx.args.input.id)
-#set($typename = $ctx.args.input["__typename"])
+#set($typename = "BankSettings")
 #set($owner = $ctx.identity.sub)
 #set($data = "$owner:$id:$typename")
 
-#set($input = $ctx.args.input.remove("__typename"))
 #set($input = $ctx.args.input.remove("id"))
 
 #set($set = "SET")
