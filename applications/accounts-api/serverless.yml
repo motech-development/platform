@@ -43,6 +43,12 @@ custom:
           request: bank/getBanks/Query.getBanks.req.vtl
           response: bank/getBanks/Query.getBanks.res.vtl
 
+        - dataSource: Resolver
+          type: Mutation
+          field: bankCallback
+          request: bank-callback/bankCallback/Mutation.bankCallback.req.vtl
+          response: bank-callback/bankCallback/Mutation.bankCallback.res.vtl
+
         - kind: PIPELINE
           type: Mutation
           field: createClient
@@ -140,6 +146,7 @@ custom:
           response: settings/Query.getSettings.res.vtl
       schema:
         - schema/address.graphql
+        - schema/bank-callback.graphql
         - schema/bank-details.graphql
         - schema/bank.graphql
         - schema/client.graphql

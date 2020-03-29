@@ -1,4 +1,5 @@
 type Mutation {
+  bankCallback(input: BankCallbackInput!): BankCallback!
   createClient(input: ClientInput!): Client!
   deleteClient(id: ID!): Client!
   updateClient(input: ClientInput!): Client!
@@ -17,7 +18,12 @@ type Query {
   getSettings(id: ID!): Settings!
 }
 
+type Subscription {
+  onBankCallback: BankCallback! @aws_subscribe(mutations: ["bankCallback"])
+}
+
 schema {
   mutation: Mutation
   query: Query
+  subscription: Subscription
 }
