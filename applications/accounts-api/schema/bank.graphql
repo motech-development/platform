@@ -6,31 +6,3 @@ type Bank {
 type Banks {
   items: [Bank]
 }
-
-type BankConnect {
-  authorisationUrl: String
-  status: String
-}
-
-input BankConnectInput {
-  bank: String!
-  callback: String!
-  companyId: ID!
-}
-
-input BankCallbackInput {
-  id: ID!
-  authorisationUrl: String!
-}
-
-input BankSaveConsentInputValues {
-  bank: String!
-  consent: String!
-
-  user: String!
-}
-
-input BankSaveConsentInput {
-  bank: BankSaveConsentInputValues!
-  id: ID!
-}

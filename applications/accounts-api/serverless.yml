@@ -38,25 +38,10 @@ custom:
         level: ERROR
       mappingTemplates:
         - dataSource: OpenBanking
-          type: Mutation
-          field: connectToBank
-          request: bank/connectToBank/Mutation.connectToBank.req.vtl
-          response: bank/connectToBank/Mutation.connectToBank.res.vtl
-        - dataSource: OpenBanking
           type: Query
           field: getBanks
           request: bank/getBanks/Query.getBanks.req.vtl
           response: bank/getBanks/Query.getBanks.res.vtl
-        - dataSource: Data
-          type: Mutation
-          field: saveBankConsent
-          request: bank/saveBankConsent/Mutation.saveBankConsent.req.vtl
-          response: bank/saveBankConsent/Mutation.saveBankConsent.res.vtl
-        - dataSource: Resolver
-          type: Mutation
-          field: sendBankCallback
-          request: bank/sendBankCallback/Mutation.sendBankCallback.req.vtl
-          response: bank/sendBankCallback/Mutation.sendBankCallback.res.vtl
 
         - kind: PIPELINE
           type: Mutation
@@ -154,9 +139,8 @@ custom:
           response: settings/Query.getSettings.res.vtl
       schema:
         - schema/address.graphql
-        - schema/bank.graphql
         - schema/bank-details.graphql
-        - schema/bank-settings.graphql
+        - schema/bank.graphql
         - schema/client.graphql
         - schema/company.graphql
         - schema/contact.graphql
