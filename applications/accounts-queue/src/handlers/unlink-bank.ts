@@ -29,11 +29,14 @@ export const handler: Handler<IEvent> = async event => {
 
   const { Item } = await documentClient
     .get({
+      ExpressionAttributeNames: {
+        '#user': 'user',
+      },
       Key: {
         __typename: 'BankSettings',
         id,
       },
-      ProjectionExpression: 'user',
+      ProjectionExpression: '#user',
       TableName: TABLE,
     })
     .promise();
