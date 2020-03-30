@@ -14,6 +14,7 @@ type Mutation {
 type Query {
   getBanks: Banks!
   getBankAccounts(id: ID!): BankAccounts!
+  getBankSettings(id: ID!): BankSettings!
   getClients(companyId: ID!, count: Int, nextToken: String): Clients!
   getClient(id: ID!): Client!
   getCompanies(count: Int, nextToken: String): Companies!

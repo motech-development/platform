@@ -1,5 +1,9 @@
 import { gql } from 'apollo-boost';
 
+export interface IGetBanksInput {
+  id: string;
+}
+
 export interface IGetBanksOutput {
   getBanks: {
     items: {
@@ -7,15 +11,23 @@ export interface IGetBanksOutput {
       name: string;
     }[];
   };
+  getBankSettings: {
+    id: string;
+    user: string;
+  };
 }
 
 const GET_BANKS = gql`
-  query GetBanks {
+  query GetBanks($id: ID!) {
     getBanks {
       items {
         id
         name
       }
+    }
+    getBankSettings(id: $id) {
+      id
+      user
     }
   }
 `;

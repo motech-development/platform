@@ -16,7 +16,10 @@ import CREATE_BANK_CONNECTION, {
   ICreateBankConnectionInput,
   ICreateBankConnectionOutput,
 } from '../../../../graphql/bank/CREATE_BANK_CONNECTION';
-import GET_BANKS, { IGetBanksOutput } from '../../../../graphql/bank/GET_BANKS';
+import GET_BANKS, {
+  IGetBanksInput,
+  IGetBanksOutput,
+} from '../../../../graphql/bank/GET_BANKS';
 import ON_BANK_CALLBACK, {
   IOnBankCallbackOutput,
 } from '../../../../graphql/bank/ON_BANK_CALLBACK';
@@ -32,7 +35,14 @@ const Bank: FC = () => {
   const { companyId } = useParams<ISelectBankParams>();
   const { t } = useTranslation('settings');
   const [selected, setSelected] = useState('');
-  const { data, error, loading } = useQuery<IGetBanksOutput>(GET_BANKS);
+  const { data, error, loading } = useQuery<IGetBanksOutput, IGetBanksInput>(
+    GET_BANKS,
+    {
+      variables: {
+        id: companyId,
+      },
+    },
+  );
   const [mutation] = useMutation<
     ICreateBankConnectionOutput,
     ICreateBankConnectionInput
@@ -40,7 +50,7 @@ const Bank: FC = () => {
   const { data: subscription, loading: subscriptionLoading } = useSubscription<
     IOnBankCallbackOutput
   >(ON_BANK_CALLBACK);
-  const connect = (bank: string) => {
+  const connect = (bank: string, user: string) => {
     (async () => {
       setSelected(bank);
 
@@ -50,6 +60,7 @@ const Bank: FC = () => {
             bank,
             callback: `${window.location.origin}/my-companies/settings/${companyId}/bank/callback`,
             companyId,
+            user,
           },
         },
       });
@@ -87,7 +98,7 @@ const Bank: FC = () => {
                       <Button
                         loading={selected === id}
                         disabled={selected !== ''}
-                        onClick={() => connect(id)}
+                        onClick={() => connect(id, data.getBankSettings.user)}
                       >
                         {t('select-bank.connect')}
                       </Button>

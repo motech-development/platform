@@ -4,6 +4,7 @@
 #set($host = $context.request.headers.get("host"))
 #set($url = "https://${host}/graphql")
 #set($token = $context.request.headers.get("authorization"))
+#set($user = $util.toJson($util.defaultIfNullOrEmpty($ctx.args.input.user, null)))
 
 {
   "version": "2018-05-29",
@@ -19,7 +20,8 @@
       "companyId": "$companyId",
       "id": "$owner",
       "token": "$token",
-      "url": "$url"
+      "url": "$url",
+      "user": $user
     }
   }
 }

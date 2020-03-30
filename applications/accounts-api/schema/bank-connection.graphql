@@ -6,4 +6,5 @@ input BankConnectionInput {
   bank: String!
   callback: String!
   companyId: String!
+  user: String
 }

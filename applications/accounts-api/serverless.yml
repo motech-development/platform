@@ -48,7 +48,7 @@ custom:
           type: Query
           field: getBankAccounts
           functions:
-            - consent
+            - bankSettings
             - getBankAccounts
           request: bank-account/getBankAccounts/Query.getBankAccounts.req.vtl
           response: bank-account/getBankAccounts/Query.getBankAccounts.res.vtl
@@ -64,6 +64,14 @@ custom:
           field: createBankConnection
           request: bank-connection/createBankConnection/Mutation.createBankConnection.req.vtl
           response: bank-connection/createBankConnection/Mutation.createBankConnection.res.vtl
+
+        - kind: PIPELINE
+          type: Query
+          field: getBankSettings
+          functions:
+            - bankSettings
+          request: bank-settings/getBankSettings/Query.getBankSettings.req.vtl
+          response: bank-settings/getBankSettings/Query.getBankSettings.res.vtl
 
         - dataSource: Data
           type: Mutation
@@ -211,9 +219,9 @@ custom:
           request: shared/addressFiltering/Pipeline.addressFiltering.req.vtl
           response: shared/addressFiltering/Pipeline.addressFiltering.res.vtl
         - dataSource: Data
-          name: consent
-          request: shared/consent/Pipeline.consent.req.vtl
-          response: shared/consent/Pipeline.consent.res.vtl
+          name: bankSettings
+          request: shared/bankSettings/Pipeline.bankSettings.req.vtl
+          response: shared/bankSettings/Pipeline.bankSettings.res.vtl
 
         # Bank
         - dataSource: OpenBanking

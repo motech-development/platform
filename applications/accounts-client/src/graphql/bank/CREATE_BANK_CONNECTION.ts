@@ -5,6 +5,7 @@ export interface ICreateBankConnectionInput {
     bank: string;
     callback: string;
     companyId: string;
+    user?: string;
   };
 }
 
