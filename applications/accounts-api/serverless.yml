@@ -66,6 +66,16 @@ custom:
           response: bank-connection/createBankConnection/Mutation.createBankConnection.res.vtl
 
         - kind: PIPELINE
+          type: Mutation
+          field: deleteBankConnection
+          functions:
+            - bankSettings
+            - unlinkBank
+            - resetBankSettings
+          request: bank-connection/deleteBankConnection/Mutation.deleteBankConnection.req.vtl
+          response: bank-connection/deleteBankConnection/Mutation.deleteBankConnection.res.vtl
+
+        - kind: PIPELINE
           type: Query
           field: getBankSettings
           functions:
@@ -228,6 +238,14 @@ custom:
           name: getBankAccounts
           request: bank-account/getBankAccounts/Pipeline.getBankAccounts.req.vtl
           response: bank-account/getBankAccounts/Pipeline.getBankAccounts.res.vtl
+        - dataSource: Data
+          name: resetBankSettings
+          request: bank-connection/deleteBankConnection/Pipeline.resetBankSettings.req.vtl
+          response: bank-connection/deleteBankConnection/Pipeline.resetBankSettings.res.vtl
+        - dataSource: OpenBanking
+          name: unlinkBank
+          request: bank-connection/deleteBankConnection/Pipeline.unlinkBank.req.vtl
+          response: bank-connection/deleteBankConnection/Pipeline.unlinkBank.res.vtl
 
         # Clients
         - dataSource: Data

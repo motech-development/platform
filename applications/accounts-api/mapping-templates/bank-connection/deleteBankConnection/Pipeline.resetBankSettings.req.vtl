@@ -1,0 +1,38 @@
+#set($id = $ctx.args.id)
+#set($typename = "BankSettings")
+#set($owner = $ctx.identity.sub)
+
+{
+  "version": "2017-02-28",
+  "operation": "UpdateItem",
+  "key" : {
+    "id": $util.dynamodb.toDynamoDBJson($id),
+    "__typename": $util.dynamodb.toDynamoDBJson($typename)
+  },
+  "update": {
+    "expression": "SET #updatedAt = :updatedAt, #account = :account, #bank = :bank, #consent = :consent, #user = :user",
+    "expressionNames": {
+      "#updatedAt": "updatedAt",
+      "#account": "account",
+      "#bank": "bank",
+      "#consent": "consent",
+      "#user": "user"
+    },
+    "expressionValues": {
+      ":updatedAt": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601()),
+      ":account": $util.dynamodb.toDynamoDBJson(null),
+      ":bank": $util.dynamodb.toDynamoDBJson(null),
+      ":consent": $util.dynamodb.toDynamoDBJson(null),
+      ":user": $util.dynamodb.toDynamoDBJson(null)
+    }
+  },
+  "condition": {
+    "expression": "#owner = :owner",
+    "expressionNames": {
+      "#owner": "owner"
+    },
+    "expressionValues": {
+      ":owner": $util.dynamodb.toDynamoDBJson($owner)
+    }
+  }
+}

@@ -1,0 +1,5 @@
+#if($ctx.result.statusCode == 204)
+  null
+#else
+  $utils.error($ctx.result.body, "$ctx.result.statusCode")
+#end
