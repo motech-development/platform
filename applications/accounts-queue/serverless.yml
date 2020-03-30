@@ -150,6 +150,7 @@ resources:
                   Action:
                     - dynamodb:BatchWriteItem
                     - dynamodb:DeleteItem
+                    - dynamodb:GetItem
                     - dynamodb:Query
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
