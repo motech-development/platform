@@ -26,7 +26,11 @@ export type FormSchema = {
 
 export interface ISettingsFormProps {
   backTo: string;
-  bankConnect: string;
+  bank: {
+    connected: boolean;
+    link: string;
+    name: string;
+  };
   initialValues: FormSchema;
   loading: boolean;
   onSave(value: FormSchema): void;
@@ -34,12 +38,13 @@ export interface ISettingsFormProps {
 
 const SettingsForm: FC<ISettingsFormProps> = ({
   backTo,
-  bankConnect,
+  bank,
   initialValues,
   loading,
   onSave,
 }) => {
   const { t } = useTranslation('settings');
+  const { connected, link, name } = bank;
   const validationSchema = object().shape({
     categories: array().of(
       object().shape({
@@ -148,14 +153,28 @@ const SettingsForm: FC<ISettingsFormProps> = ({
                   {t('settings-form.bank.title')}
                 </Typography>
 
-                <Typography component="p" variant="lead" margin="none">
-                  {t('settings-form.bank.lead')}
-                </Typography>
+                {connected ? (
+                  <Typography component="p" variant="lead" margin="none">
+                    {t('settings-form.bank.lead-connected', {
+                      name,
+                    })}
+                  </Typography>
+                ) : (
+                  <Typography component="p" variant="lead" margin="none">
+                    {t('settings-form.bank.lead-connect')}
+                  </Typography>
+                )}
               </Card>
 
-              <LinkButton block size="lg" to={bankConnect}>
-                {t('settings-form.bank.connect')}
-              </LinkButton>
+              {connected ? (
+                <Button block size="lg" colour="danger">
+                  {t('settings-form.bank.disconnect')}
+                </Button>
+              ) : (
+                <LinkButton block size="lg" to={link}>
+                  {t('settings-form.bank.connect')}
+                </LinkButton>
+              )}
             </Col>
 
             <Col xs={12} md={6}>

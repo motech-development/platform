@@ -29,6 +29,11 @@ describe('Settings', () => {
         },
         result: {
           data: {
+            getBankSettings: {
+              bank: 'My bank',
+              id: 'company-uuid',
+              user: 'bank-uuid',
+            },
             getCompany: {
               id: 'company-uuid',
               name: 'Company name',
@@ -88,7 +93,7 @@ describe('Settings', () => {
     await act(async () => {
       await findByText('Company name');
 
-      const [, , button] = await findAllByRole('button');
+      const [, , , button] = await findAllByRole('button');
 
       fireEvent.click(button);
 
@@ -108,7 +113,7 @@ describe('Settings', () => {
     await act(async () => {
       await findByText('Company name');
 
-      const [, , button] = await findAllByRole('button');
+      const [, , , button] = await findAllByRole('button');
 
       fireEvent.click(button);
 

@@ -19,8 +19,10 @@
     },
     "bank": {
       "title": "Banking settings",
-      "lead": "Speed up book keeping by connecting to your bank to import your transactions",
-      "connect": "Connect"
+      "lead-connect": "Speed up book keeping by connecting to your bank to import your transactions",
+      "lead-connected": "You are connected to {{name}}",
+      "connect": "Connect",
+      "disconnect": "Disconnect from bank"
     },
     "expense-categories": {
       "title": "Expense categories",

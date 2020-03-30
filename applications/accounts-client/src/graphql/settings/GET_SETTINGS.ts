@@ -5,6 +5,11 @@ export interface IGetSettingsInput {
 }
 
 export interface IGetSettingsOutput {
+  getBankSettings: {
+    bank: string;
+    id: string;
+    user: string;
+  };
   getCompany: {
     id: string;
     name: string;
@@ -24,6 +29,11 @@ export interface IGetSettingsOutput {
 
 const GET_SETTINGS = gql`
   query GetSettings($id: ID!) {
+    getBankSettings(id: $id) {
+      bank
+      id
+      user
+    }
     getCompany(id: $id) {
       id
       name
