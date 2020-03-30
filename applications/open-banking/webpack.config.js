@@ -6,24 +6,25 @@ const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
-  devtool: 'source-map',
   entry: slsw.lib.entries,
   externals: [nodeExternals()],
-  mode: 'none',
+  mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
   module: {
     rules: [
       {
-        loader: 'cache-loader',
-      },
-      {
-        loader: 'thread-loader',
-        options: {
-          workers: cpus().length - 1,
-        },
-      },
-      {
         test: /\.ts(x?)$/,
         use: [
+          {
+            loader: 'cache-loader',
+          },
+          {
+            loader: 'thread-loader',
+            options: {
+              poolRespawn: true,
+              workerNodeArgs: ['--max-old-space-size=4096'],
+              workers: cpus().length - 1,
+            },
+          },
           {
             loader: 'babel-loader',
           },
