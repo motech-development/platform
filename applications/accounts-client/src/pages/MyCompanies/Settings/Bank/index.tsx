@@ -6,7 +6,6 @@ const Callback = lazy(() => import('./Callback'));
 const Bank = lazy(() => import('./Bank'));
 const SelectAccount = lazy(() => import('./SelectAccount'));
 
-// TODO: Close down routes when bank is connected
 const Routes: FC = () => (
   <Switch>
     <ProtectedRoute

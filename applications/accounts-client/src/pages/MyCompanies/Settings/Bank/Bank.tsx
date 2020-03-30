@@ -29,7 +29,6 @@ interface ISelectBankParams {
   companyId: string;
 }
 
-// TODO: Do not allow access if already connected
 // TODO: Get to the bottom of the subscription error
 const Bank: FC = () => {
   const { companyId } = useParams<ISelectBankParams>();
