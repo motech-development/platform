@@ -114,7 +114,15 @@ stepFunctions:
           GetParams:
             Type: Task
             Resource: !GetAtt GetParamsLambdaFunction.Arn
-            Next: CheckUser
+            Next: ShouldCheck
+
+          ShouldCheck:
+            Type: Choice
+            Choices:
+              - Variable: $.check
+                BooleanEquals: true
+                Next: CheckUser
+            Default: RegisterUser
 
           CheckUser:
             Type: Task

@@ -8,6 +8,7 @@ const schema = object().shape({
   id: string().required(),
   token: string().required(),
   url: string().required(),
+  user: string().nullable(),
 });
 
 export const handler: Handler = async event => {
@@ -15,7 +16,10 @@ export const handler: Handler = async event => {
     stripUnknown: true,
   });
 
+  const { user } = result;
+
   return {
     ...result,
+    check: !!user,
   };
 };
