@@ -44,6 +44,10 @@ custom:
       - local
 
 functions:
+  CheckUser:
+    handler: src/handlers/check-user.handler
+    role: LambdaFunctionRole
+
   DeleteUser:
     handler: src/handlers/delete-user.handler
     events:
@@ -110,7 +114,20 @@ stepFunctions:
           GetParams:
             Type: Task
             Resource: !GetAtt GetParamsLambdaFunction.Arn
-            Next: RegisterUser
+            Next: CheckUser
+
+          CheckUser:
+            Type: Task
+            Resource: !GetAtt CheckUserLambdaFunction.Arn
+            Next: IsRegistered
+
+          IsRegistered:
+            Type: Choice
+            Choices:
+              - Variable: $.register
+                BooleanEquals: true
+                Next: RegisterUser
+            Default: GetCallback
 
           RegisterUser:
             Type: Task
