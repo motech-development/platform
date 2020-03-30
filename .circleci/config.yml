@@ -332,14 +332,14 @@ workflows:
             branches:
               only: master
           requires:
-            - unit-test
+            - deploy-open-banking-production
 
       - deploy-accounts-queue-develop:
           filters:
             branches:
               only: /feature\/.*/
           requires:
-            - unit-test
+            - deploy-open-banking-develop
 
       - deploy-open-banking-production:
           filters:
