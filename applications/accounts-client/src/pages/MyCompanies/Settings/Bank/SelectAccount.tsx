@@ -27,6 +27,7 @@ interface ISelectAccountParams {
   companyId: string;
 }
 
+// TODO: Error handling
 const SelectAccount: FC = () => {
   const history = useHistory();
   const { add } = useToast();

@@ -51,5 +51,9 @@
     "balance": "Balance",
     "link-account": "Link account",
     "success": "Bank account linked"
+  },
+  "callback": {
+    "error": "Error",
+    "error-lead": "Unable to connect to your bank. Please try again."
   }
 }

@@ -88,7 +88,7 @@ const Settings: FC = () => {
 
   useEffect(() => {
     if (data) {
-      setConnected(!!data.getBankSettings.user);
+      setConnected(!!data.getBankSettings.account);
     }
   }, [data]);
 

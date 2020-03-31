@@ -12,6 +12,7 @@ export interface IUpdateBankSettingsInput {
 
 export interface IUpdateBankSettingsOutput {
   updateBankSettings: {
+    account: string;
     id: string;
     user: string;
   };
@@ -20,6 +21,7 @@ export interface IUpdateBankSettingsOutput {
 const UPDATE_BANK_SETTINGS = gql`
   mutation UpdateBankSettings($input: BankSettingsInput!) {
     updateBankSettings(input: $input) {
+      account
       id
       user
     }
