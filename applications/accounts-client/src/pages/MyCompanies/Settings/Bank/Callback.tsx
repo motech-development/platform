@@ -18,34 +18,36 @@ const Callback: FC = () => {
   const history = useHistory();
   const { companyId } = useParams<ICallbackParams>();
   const query = useQuery();
+  const bank = query.get('institution');
+  const consent = query.get('consent');
+  const user = query.get('user-uuid');
   const [mutation] = useMutation<
     IUpdateBankSettingsOutput,
     IUpdateBankSettingsInput
   >(UPDATE_BANK_SETTINGS, {
     onCompleted: ({ updateBankSettings }) => {
-      const { id } = updateBankSettings;
+      const { id, user: userResult } = updateBankSettings;
 
-      history.push(`/my-companies/settings/${id}/bank/select-account`);
+      if (userResult) {
+        history.push(`/my-companies/settings/${id}/bank/select-account`);
+      } else {
+        // TODO: Show error message
+      }
     },
   });
-  const bank = query.get('institution');
-  const consent = query.get('consent');
-  const user = query.get('user-uuid');
 
   useEffect(() => {
     (async () => {
-      if (bank && consent && user) {
-        await mutation({
-          variables: {
-            input: {
-              bank,
-              consent,
-              id: companyId,
-              user,
-            },
+      await mutation({
+        variables: {
+          input: {
+            bank,
+            consent,
+            id: companyId,
+            user,
           },
-        });
-      }
+        },
+      });
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -30,7 +30,7 @@ const Routes: FC = () => {
     <Connected error={error} loading={loading}>
       {data && (
         <Switch>
-          {!data.getBankSettings.user && (
+          {!data.getBankSettings.account && (
             <Route
               component={Bank}
               path="/my-companies/settings/:companyId/bank"

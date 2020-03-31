@@ -2,17 +2,18 @@ import { gql } from 'apollo-boost';
 
 export interface IUpdateBankSettingsInput {
   input: {
-    account?: string;
-    bank?: string;
-    consent?: string;
+    account?: string | null;
+    bank?: string | null;
+    consent?: string | null;
     id: string;
-    user?: string;
+    user?: string | null;
   };
 }
 
 export interface IUpdateBankSettingsOutput {
   updateBankSettings: {
     id: string;
+    user: string;
   };
 }
 
@@ -20,6 +21,7 @@ const UPDATE_BANK_SETTINGS = gql`
   mutation UpdateBankSettings($input: BankSettingsInput!) {
     updateBankSettings(input: $input) {
       id
+      user
     }
   }
 `;

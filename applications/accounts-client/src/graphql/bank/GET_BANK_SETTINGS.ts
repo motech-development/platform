@@ -6,6 +6,7 @@ export interface IGetBankSettingsInput {
 
 export interface IGetBankSettingsOutput {
   getBankSettings: {
+    account: string;
     id: string;
     user: string;
   };
@@ -14,6 +15,7 @@ export interface IGetBankSettingsOutput {
 const GET_BANK_SETTINGS = gql`
   query GetBankSettings($id: ID!) {
     getBankSettings(id: $id) {
+      account
       id
       user
     }
