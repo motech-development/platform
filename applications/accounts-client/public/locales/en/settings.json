@@ -50,7 +50,9 @@
     "sub-title": "Choose an account to link",
     "balance": "Balance",
     "link-account": "Link account",
-    "success": "Bank account linked"
+    "success": "Bank account linked",
+    "error": "Error",
+    "error-lead": "Unable to connect to retrieve accounts. Please try again."
   },
   "callback": {
     "error": "Error",

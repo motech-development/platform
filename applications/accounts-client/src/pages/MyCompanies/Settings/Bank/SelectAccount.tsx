@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
 import Currency from '../../../../components/Currency';
+import ErrorCard from '../../../../components/ErrorCard';
 import GET_BANK_ACCOUNTS, {
   IGetBankAccountsInput,
   IGetBankAccountsOutput,
@@ -27,22 +28,25 @@ interface ISelectAccountParams {
   companyId: string;
 }
 
-// TODO: Error handling
 const SelectAccount: FC = () => {
   const history = useHistory();
   const { add } = useToast();
   const { t } = useTranslation('settings');
   const [selected, setSelected] = useState('');
+  const [bankError, setBankError] = useState(false);
   const { companyId } = useParams<ISelectAccountParams>();
-  const { data, error, loading } = useQuery<
+  const { data, loading } = useQuery<
     IGetBankAccountsOutput,
     IGetBankAccountsInput
   >(GET_BANK_ACCOUNTS, {
+    onError: () => {
+      setBankError(true);
+    },
     variables: {
       id: companyId,
     },
   });
-  const [mutation, { error: updateError }] = useMutation<
+  const [mutation, { error }] = useMutation<
     IUpdateBankSettingsOutput,
     IUpdateBankSettingsInput
   >(UPDATE_BANK_SETTINGS, {
@@ -72,8 +76,18 @@ const SelectAccount: FC = () => {
     })();
   };
 
+  if (bankError) {
+    return (
+      <ErrorCard
+        backTo={`/my-companies/settings/${companyId}`}
+        title={t('select-account.error')}
+        description={t('select-account.error-lead')}
+      />
+    );
+  }
+
   return (
-    <Connected error={error || updateError} loading={loading}>
+    <Connected error={error} loading={loading}>
       {data && (
         <>
           <PageTitle
