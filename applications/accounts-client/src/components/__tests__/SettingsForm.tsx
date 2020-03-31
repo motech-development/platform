@@ -11,6 +11,7 @@ import SettingsForm, { FormSchema } from '../SettingsForm';
 
 describe('SettingsForm', () => {
   let initialValues: FormSchema;
+  let onDisconnect: jest.Mock;
   let onSave: jest.Mock;
   let component: RenderResult;
 
@@ -33,6 +34,8 @@ describe('SettingsForm', () => {
       },
     };
 
+    onDisconnect = jest.fn();
+
     onSave = jest.fn();
   });
 
@@ -44,8 +47,10 @@ describe('SettingsForm', () => {
             backTo="/test"
             bank={{
               connected: true,
+              disconnectLoading: false,
               link: '/connect-to-bank',
               name: 'Bank',
+              onDisconnect,
             }}
             loading={false}
             initialValues={initialValues}
@@ -157,8 +162,10 @@ describe('SettingsForm', () => {
             backTo="/test"
             bank={{
               connected: false,
+              disconnectLoading: false,
               link: '/connect-to-bank',
               name: 'Bank',
+              onDisconnect,
             }}
             loading={false}
             initialValues={initialValues}

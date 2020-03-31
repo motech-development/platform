@@ -6,6 +6,7 @@ export interface IDeleteBankConnectionInput {
 
 export interface IDeleteBankConnectionOutput {
   deleteBankConnection: {
+    bank: string;
     id: string;
     user: string;
   };
@@ -14,6 +15,7 @@ export interface IDeleteBankConnectionOutput {
 const DELETE_BANK_CONNECTION = gql`
   mutation DeleteBankConnection($id: ID!) {
     deleteBankConnection(id: $id) {
+      bank
       id
       user
     }

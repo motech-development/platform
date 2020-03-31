@@ -1,7 +1,8 @@
 {
   "settings": {
     "title": "Settings",
-    "success": "Company settings have been updated"
+    "success": "Company settings have been updated",
+    "bank-disconnected": "Disconnected from bank"
   },
   "settings-form": {
     "cancel": "Cancel",

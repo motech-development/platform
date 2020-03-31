@@ -28,6 +28,7 @@ export interface ISettingsFormProps {
   backTo: string;
   bank: {
     connected: boolean;
+    disconnectLoading: boolean;
     link: string;
     name: string;
     onDisconnect(): void;
@@ -45,7 +46,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
   onSave,
 }) => {
   const { t } = useTranslation('settings');
-  const { connected, link, name, onDisconnect } = bank;
+  const { connected, disconnectLoading, link, name, onDisconnect } = bank;
   const validationSchema = object().shape({
     categories: array().of(
       object().shape({
@@ -147,7 +148,6 @@ const SettingsForm: FC<ISettingsFormProps> = ({
               </Card>
             </Col>
 
-            {/* TODO: Handle disconnect */}
             <Col xs={12} md={6}>
               <Card padding="lg">
                 <Typography rule component="h3" variant="h3">
@@ -168,7 +168,13 @@ const SettingsForm: FC<ISettingsFormProps> = ({
               </Card>
 
               {connected ? (
-                <Button block size="lg" colour="danger" onClick={onDisconnect}>
+                <Button
+                  block
+                  size="lg"
+                  colour="danger"
+                  loading={disconnectLoading}
+                  onClick={onDisconnect}
+                >
                   {t('settings-form.bank.disconnect')}
                 </Button>
               ) : (

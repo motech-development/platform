@@ -13,6 +13,7 @@ interface ICallbackParams {
 }
 
 // TODO: Error handling
+// TODO: Save user and bank in pipeline
 const Callback: FC = () => {
   const history = useHistory();
   const { companyId } = useParams<ICallbackParams>();

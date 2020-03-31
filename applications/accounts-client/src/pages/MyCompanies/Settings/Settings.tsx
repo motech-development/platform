@@ -56,22 +56,15 @@ const Settings: FC = () => {
       },
     },
   );
-  const [disconnect] = useMutation<
+  const [disconnect, { loading: disconnectLoading }] = useMutation<
     IDeleteBankConnectionOutput,
     IDeleteBankConnectionInput
   >(DELETE_BANK_CONNECTION, {
-    onCompleted: ({ deleteBankConnection }) => {
-      const { user } = deleteBankConnection;
-      const result = !!user;
-
-      if (!result) {
-        setConnected(result);
-
-        add({
-          colour: 'success',
-          message: 'Disconnected from bank',
-        });
-      }
+    onCompleted: () => {
+      add({
+        colour: 'success',
+        message: t('settings.bank-disconnected'),
+      });
     },
   });
   const save = (input: FormSchema) => {
@@ -112,6 +105,7 @@ const Settings: FC = () => {
             backTo={backTo(companyId)}
             bank={{
               connected,
+              disconnectLoading,
               link: `/my-companies/settings/${companyId}/bank`,
               name: data.getBankSettings.bank,
               onDisconnect: () => onDisconnect(companyId),
