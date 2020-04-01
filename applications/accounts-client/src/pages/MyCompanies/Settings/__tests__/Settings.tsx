@@ -30,6 +30,7 @@ describe('Settings', () => {
         result: {
           data: {
             getBankSettings: {
+              account: 'account-name',
               bank: 'My bank',
               id: 'company-uuid',
               user: 'bank-uuid',
