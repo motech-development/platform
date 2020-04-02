@@ -52,7 +52,7 @@ describe('delete-user', () => {
     });
   });
 
-  it('should call the error endpoint', async () => {
+  it('should call the correct endpoint', async () => {
     await handler(event as APIGatewayEvent, context, callback);
 
     expect(httpClient.delete).toHaveBeenCalledWith('/users/user-id');

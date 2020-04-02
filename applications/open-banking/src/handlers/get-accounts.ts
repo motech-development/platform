@@ -22,9 +22,9 @@ export const handler: Handler<APIGatewayEvent> = proxyHandler(async event => {
     const response = {
       body: JSON.stringify({
         message: 'No consent',
-        statusCode: 400,
+        statusCode: 401,
       }),
-      statusCode: 400,
+      statusCode: 401,
     };
 
     throw response;
