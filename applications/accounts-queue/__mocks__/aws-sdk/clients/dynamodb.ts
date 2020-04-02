@@ -8,4 +8,6 @@ DocumentClient.prototype.batchWrite = mock;
 
 DocumentClient.prototype.delete = mock;
 
+DocumentClient.prototype.get = mock;
+
 export { DocumentClient };
