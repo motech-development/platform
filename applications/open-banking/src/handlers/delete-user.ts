@@ -8,7 +8,7 @@ export const handler: Handler<APIGatewayEvent> = proxyHandler(async event => {
   if (!pathParameters) {
     const response = {
       body: JSON.stringify({
-        message: 'No params ser',
+        message: 'No params set',
         statusCode: 400,
       }),
       statusCode: 400,

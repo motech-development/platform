@@ -75,9 +75,8 @@ jobs:
           file: ./applications/accounts-client/coverage/coverage-final.json
       - codecov/upload:
           file: ./applications/accounts-queue/coverage/coverage-final.json
-      # TODO: Send coverage to codecov
-      # - codecov/upload:
-      #     file: ./applications/open-banking/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./applications/open-banking/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/auth/coverage/coverage-final.json
       - codecov/upload:
