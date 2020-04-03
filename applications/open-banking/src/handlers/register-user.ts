@@ -2,8 +2,8 @@ import { Handler } from 'aws-lambda';
 import httpClient from '../shared/http-client';
 
 export interface IEvent {
-  id: string;
   companyId: string;
+  id: string;
 }
 
 export const handler: Handler<IEvent> = async event => {
