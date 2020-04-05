@@ -20,7 +20,7 @@ export interface ICurrencyProps {
 
 const Currency: FC<ICurrencyProps> = ({ currency, value }) => {
   const prefix = output(currency);
-  const balance = parseInt(value, 10).toFixed(2);
+  const balance = parseFloat(value).toFixed(2);
 
   return <>{`${prefix}${balance}`}</>;
 };

@@ -64,4 +64,21 @@ describe('ErrorCard', () => {
 
     expect(history.goBack).toHaveBeenCalled();
   });
+
+  it('should go back to the set page', async () => {
+    const { findByRole, findByTestId } = render(
+      <TestProvider history={history}>
+        <ErrorCard
+          title="Ooops"
+          description="Something has gone Pete Tong"
+          backTo="/test"
+        />
+      </TestProvider>,
+    );
+    const button = await findByRole('link');
+
+    fireEvent.click(button);
+
+    await expect(findByTestId('next-page')).resolves.toBeInTheDocument();
+  });
 });
