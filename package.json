@@ -72,7 +72,6 @@
     "lint-staged": "^9.5.0",
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1",
-    "react-app-rewire-styled-components": "^3.0.2",
     "react-app-rewired": "^2.1.5",
     "react-scripts": "3.4.0",
     "react-test-renderer": "^16.13.0",
