@@ -1,14 +1,15 @@
 import { SSM } from 'aws-sdk';
 import axios from 'axios';
 
-const ssm = new SSM();
-
 const authHeader = async () => {
   const { YapilyCredentials } = process.env;
 
   if (!YapilyCredentials) {
-    throw new Error('No secrets ID passed');
+    throw new Error('No params passed');
   }
+
+  // TODO: Cache SSM result
+  const ssm = new SSM();
 
   const { Parameter } = await ssm
     .getParameter({
@@ -16,7 +17,7 @@ const authHeader = async () => {
     })
     .promise();
 
-  if (!Parameter?.Value) {
+  if (!Parameter || !Parameter.Value) {
     throw new Error('No credentials found');
   }
 
@@ -36,7 +37,7 @@ const authHeader = async () => {
   return `Basic ${token}`;
 };
 
-const httpClient = axios;
+const httpClient = axios.create();
 
 httpClient.defaults.baseURL = 'https://api.yapily.com';
 

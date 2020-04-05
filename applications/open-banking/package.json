@@ -33,6 +33,7 @@
     "yup": "^0.28.3"
   },
   "devDependencies": {
-    "@types/yup": "^0.26.33"
+    "@types/yup": "^0.26.33",
+    "axios-mock-adapter": "^1.18.1"
   }
 }

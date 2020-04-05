@@ -1,6 +1,6 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
-const { STAGE } = process.env;
+const { STAGE = '' } = process.env;
 
 const documentClient =
   STAGE === 'local'
