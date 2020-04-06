@@ -66,6 +66,12 @@ const Settings: FC = () => {
         message: t('settings.bank-disconnected'),
       });
     },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('settings.bank-disconnected-error'),
+      });
+    },
   });
   const save = (input: FormSchema) => {
     (async () => {

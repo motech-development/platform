@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
+import DELETE_BANK_CONNECTION from '../../../../graphql/bank/DELETE_BANK_CONNECTION';
 import GET_SETTINGS from '../../../../graphql/settings/GET_SETTINGS';
 import UPDATE_SETTINGS from '../../../../graphql/settings/UPDATE_SETTINGS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
@@ -18,114 +19,255 @@ describe('Settings', () => {
     });
 
     jest.spyOn(history, 'push');
-
-    mocks = [
-      {
-        request: {
-          query: GET_SETTINGS,
-          variables: {
-            id: 'company-uuid',
-          },
-        },
-        result: {
-          data: {
-            getBankSettings: {
-              account: 'account-name',
-              bank: 'My bank',
-              id: 'company-uuid',
-              user: 'bank-uuid',
-            },
-            getCompany: {
-              id: 'company-uuid',
-              name: 'Company name',
-            },
-            getSettings: {
-              categories: [],
-              id: 'company-uuid',
-              vat: {
-                charge: 20,
-                pay: 20,
-              },
-            },
-          },
-        },
-      },
-      {
-        request: {
-          query: UPDATE_SETTINGS,
-          variables: {
-            input: {
-              categories: [],
-              id: 'company-uuid',
-              vat: {
-                charge: 20,
-                pay: 20,
-              },
-            },
-          },
-        },
-        result: {
-          data: {
-            updateSettings: {
-              categories: [],
-              id: 'company-uuid',
-              vat: {
-                charge: 20,
-                pay: 20,
-              },
-            },
-          },
-        },
-      },
-    ];
-
-    component = render(
-      <TestProvider path="/settings/:companyId" history={history}>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <Settings />
-        </MockedProvider>
-      </TestProvider>,
-    );
   });
 
-  it('should redirect you to the dashboard on complete', async () => {
-    const { findAllByRole, findByTestId, findByText } = component;
+  describe('when unlinking is successful', () => {
+    beforeEach(() => {
+      mocks = [
+        {
+          request: {
+            query: DELETE_BANK_CONNECTION,
+            variables: {
+              id: 'company-uuid',
+            },
+          },
+          result: {
+            data: {
+              deleteBankConnection: {
+                account: 'account-name',
+                bank: 'My bank',
+                id: 'company-uuid',
+                user: 'bank-uuid',
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: GET_SETTINGS,
+            variables: {
+              id: 'company-uuid',
+            },
+          },
+          result: {
+            data: {
+              getBankSettings: {
+                account: 'account-name',
+                bank: 'My bank',
+                id: 'company-uuid',
+                user: 'bank-uuid',
+              },
+              getCompany: {
+                id: 'company-uuid',
+                name: 'Company name',
+              },
+              getSettings: {
+                categories: [],
+                id: 'company-uuid',
+                vat: {
+                  charge: 20,
+                  pay: 20,
+                },
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: UPDATE_SETTINGS,
+            variables: {
+              input: {
+                categories: [],
+                id: 'company-uuid',
+                vat: {
+                  charge: 20,
+                  pay: 20,
+                },
+              },
+            },
+          },
+          result: {
+            data: {
+              updateSettings: {
+                categories: [],
+                id: 'company-uuid',
+                vat: {
+                  charge: 20,
+                  pay: 20,
+                },
+              },
+            },
+          },
+        },
+      ];
 
-    await act(async () => {
-      await findByText('Company name');
-
-      const [, , , button] = await findAllByRole('button');
-
-      fireEvent.click(button);
-
-      await wait(0);
-
-      await findByTestId('next-page');
+      component = render(
+        <TestProvider path="/settings/:companyId" history={history}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <Settings />
+          </MockedProvider>
+        </TestProvider>,
+      );
     });
 
-    expect(history.push).toHaveBeenCalledWith(
-      '/my-companies/dashboard/company-uuid',
-    );
+    it('should redirect you to the dashboard on complete', async () => {
+      const { findAllByRole, findByTestId, findByText } = component;
+
+      await act(async () => {
+        await findByText('Company name');
+
+        const [, , , button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        await wait(0);
+
+        await findByTestId('next-page');
+      });
+
+      expect(history.push).toHaveBeenCalledWith(
+        '/my-companies/dashboard/company-uuid',
+      );
+    });
+
+    it('should display a success toast', async () => {
+      const { findAllByRole, findByTestId, findByText } = component;
+
+      await act(async () => {
+        await findByText('Company name');
+
+        const [, , , button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        await wait(0);
+
+        await findByTestId('next-page');
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'success',
+        message: 'settings.success',
+      });
+    });
+
+    it('should display success toast when bank account is unlinked', async () => {
+      const { findAllByRole, findByText } = component;
+
+      await act(async () => {
+        await findByText('Company name');
+
+        const [, , button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        await wait(0);
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'success',
+        message: 'settings.bank-disconnected',
+      });
+    });
   });
 
-  it('should display a success toast', async () => {
-    const { findAllByRole, findByTestId, findByText } = component;
+  describe('when unlinking is unsuccessful', () => {
+    beforeEach(() => {
+      mocks = [
+        {
+          error: new Error(),
+          request: {
+            query: DELETE_BANK_CONNECTION,
+            variables: {
+              id: 'company-uuid',
+            },
+          },
+        },
+        {
+          request: {
+            query: GET_SETTINGS,
+            variables: {
+              id: 'company-uuid',
+            },
+          },
+          result: {
+            data: {
+              getBankSettings: {
+                account: 'account-name',
+                bank: 'My bank',
+                id: 'company-uuid',
+                user: 'bank-uuid',
+              },
+              getCompany: {
+                id: 'company-uuid',
+                name: 'Company name',
+              },
+              getSettings: {
+                categories: [],
+                id: 'company-uuid',
+                vat: {
+                  charge: 20,
+                  pay: 20,
+                },
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: UPDATE_SETTINGS,
+            variables: {
+              input: {
+                categories: [],
+                id: 'company-uuid',
+                vat: {
+                  charge: 20,
+                  pay: 20,
+                },
+              },
+            },
+          },
+          result: {
+            data: {
+              updateSettings: {
+                categories: [],
+                id: 'company-uuid',
+                vat: {
+                  charge: 20,
+                  pay: 20,
+                },
+              },
+            },
+          },
+        },
+      ];
 
-    await act(async () => {
-      await findByText('Company name');
-
-      const [, , , button] = await findAllByRole('button');
-
-      fireEvent.click(button);
-
-      await wait(0);
-
-      await findByTestId('next-page');
+      component = render(
+        <TestProvider path="/settings/:companyId" history={history}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <Settings />
+          </MockedProvider>
+        </TestProvider>,
+      );
     });
 
-    expect(add).toHaveBeenCalledWith({
-      colour: 'success',
-      message: 'settings.success',
+    it('should display the correct toast when unable to unlink bank', async () => {
+      const { findAllByRole, findByText } = component;
+
+      await act(async () => {
+        await findByText('Company name');
+
+        const [, , button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        await wait(0);
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'danger',
+        message: 'settings.bank-disconnected-error',
+      });
     });
   });
 });
