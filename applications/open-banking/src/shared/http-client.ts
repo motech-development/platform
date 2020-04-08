@@ -41,17 +41,14 @@ const httpClient = axios.create();
 
 httpClient.defaults.baseURL = 'https://api.yapily.com';
 
-httpClient.interceptors.request.use(
-  async config => {
-    const output = {
-      ...config,
-    };
+httpClient.interceptors.request.use(async config => {
+  const output = {
+    ...config,
+  };
 
-    output.headers.Authorization = await authHeader();
+  output.headers.Authorization = await authHeader();
 
-    return output;
-  },
-  error => Promise.reject(error),
-);
+  return output;
+});
 
 export default httpClient;
