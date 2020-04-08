@@ -1,6 +1,6 @@
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import documentClient from '../../shared/document-client';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { handler } from '../get-banks';
 
 describe('get-banks', () => {
@@ -43,7 +43,7 @@ describe('get-banks', () => {
     });
 
     it('should return a list of banks', async () => {
-      documentClient.query = jest.fn().mockReturnValueOnce({
+      DocumentClient.prototype.query = jest.fn().mockReturnValueOnce({
         promise: jest.fn().mockResolvedValueOnce({
           Items: [
             {
@@ -86,7 +86,7 @@ describe('get-banks', () => {
     });
 
     it('should return an empty array if no banks are available', async () => {
-      documentClient.query = jest.fn().mockReturnValueOnce({
+      DocumentClient.prototype.query = jest.fn().mockReturnValueOnce({
         promise: jest.fn().mockResolvedValueOnce({}),
       });
 

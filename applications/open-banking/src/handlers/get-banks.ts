@@ -1,6 +1,8 @@
 import { Handler } from 'aws-lambda';
-import documentClient from '../shared/document-client';
+import client from '../shared/document-client';
 import proxyHandler from '../shared/proxy-handler';
+
+const documentClient = client();
 
 export const handler: Handler = proxyHandler(async () => {
   const { TABLE } = process.env;

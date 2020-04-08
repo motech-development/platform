@@ -11,4 +11,4 @@ const documentClient = () => {
     : new DocumentClient();
 };
 
-export default documentClient();
+export default documentClient;

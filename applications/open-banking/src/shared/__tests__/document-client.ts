@@ -3,7 +3,9 @@ import documentClient from '../document-client';
 
 describe('document-client', () => {
   it('should return an instance of DocumentClient', () => {
-    expect(documentClient).toBeInstanceOf(DocumentClient);
+    const result = documentClient();
+
+    expect(result).toBeInstanceOf(DocumentClient);
   });
 
   describe('when stage is local', () => {
@@ -22,7 +24,9 @@ describe('document-client', () => {
     });
 
     it('should return an instance of DocumentClient', () => {
-      expect(documentClient).toBeInstanceOf(DocumentClient);
+      const result = documentClient();
+
+      expect(result).toBeInstanceOf(DocumentClient);
     });
   });
 });
