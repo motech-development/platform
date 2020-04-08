@@ -67,10 +67,10 @@ const Bank: FC = () => {
   };
 
   useEffect(() => {
-    if (subscription) {
+    if (subscription && subscription.onBankCallback) {
       const { authorisationUrl } = subscription.onBankCallback;
 
-      window.location.href = authorisationUrl;
+      window.location.assign(authorisationUrl);
     }
   }, [subscription, subscriptionLoading]);
 

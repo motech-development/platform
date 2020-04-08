@@ -5,29 +5,29 @@ export interface IGetBanksInput {
 }
 
 export interface IGetBanksOutput {
+  getBankSettings: {
+    id: string;
+    user: string;
+  };
   getBanks: {
     items: {
       id: string;
       name: string;
     }[];
   };
-  getBankSettings: {
-    id: string;
-    user: string;
-  };
 }
 
 const GET_BANKS = gql`
   query GetBanks($id: ID!) {
+    getBankSettings(id: $id) {
+      id
+      user
+    }
     getBanks {
       items {
         id
         name
       }
-    }
-    getBankSettings(id: $id) {
-      id
-      user
     }
   }
 `;
