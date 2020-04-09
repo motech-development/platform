@@ -37,34 +37,29 @@ custom:
         loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
         level: ERROR
       mappingTemplates:
-        # Banking
         - dataSource: OpenBanking
           type: Query
           field: getBanks
           request: bank/getBanks/Query.getBanks.req.vtl
           response: bank/getBanks/Query.getBanks.res.vtl
-
         - kind: PIPELINE
           type: Query
           field: getBankAccounts
           functions:
             - bankSettings
             - getBankAccounts
-          request: bank-account/getBankAccounts/Query.getBankAccounts.req.vtl
-          response: bank-account/getBankAccounts/Query.getBankAccounts.res.vtl
-
+          request: bank/getBankAccounts/Query.getBankAccounts.req.vtl
+          response: bank/getBankAccounts/Query.getBankAccounts.res.vtl
         - dataSource: Resolver
           type: Mutation
           field: bankCallback
-          request: bank-callback/bankCallback/Mutation.bankCallback.req.vtl
-          response: bank-callback/bankCallback/Mutation.bankCallback.res.vtl
-
+          request: bank/bankCallback/Mutation.bankCallback.req.vtl
+          response: bank/bankCallback/Mutation.bankCallback.res.vtl
         - dataSource: OpenBanking
           type: Mutation
           field: createBankConnection
-          request: bank-connection/createBankConnection/Mutation.createBankConnection.req.vtl
-          response: bank-connection/createBankConnection/Mutation.createBankConnection.res.vtl
-
+          request: bank/createBankConnection/Mutation.createBankConnection.req.vtl
+          response: bank/createBankConnection/Mutation.createBankConnection.res.vtl
         - kind: PIPELINE
           type: Mutation
           field: deleteBankConnection
@@ -72,23 +67,20 @@ custom:
             - bankSettings
             - unlinkBank
             - resetBankSettings
-          request: bank-connection/deleteBankConnection/Mutation.deleteBankConnection.req.vtl
-          response: bank-connection/deleteBankConnection/Mutation.deleteBankConnection.res.vtl
-
+          request: bank/deleteBankConnection/Mutation.deleteBankConnection.req.vtl
+          response: bank/deleteBankConnection/Mutation.deleteBankConnection.res.vtl
         - kind: PIPELINE
           type: Query
           field: getBankSettings
           functions:
             - bankSettings
-          request: bank-settings/getBankSettings/Query.getBankSettings.req.vtl
-          response: bank-settings/getBankSettings/Query.getBankSettings.res.vtl
-
+          request: bank/getBankSettings/Query.getBankSettings.req.vtl
+          response: bank/getBankSettings/Query.getBankSettings.res.vtl
         - dataSource: Data
           type: Mutation
           field: updateBankSettings
-          request: bank-settings/updateBankSettings/Mutation.updateBankSettings.req.vtl
-          response: bank-settings/updateBankSettings/Mutation.updateBankSettings.res.vtl
-        # Banking
+          request: bank/updateBankSettings/Mutation.updateBankSettings.req.vtl
+          response: bank/updateBankSettings/Mutation.updateBankSettings.res.vtl
 
         - kind: PIPELINE
           type: Mutation
@@ -236,16 +228,16 @@ custom:
         # Bank
         - dataSource: OpenBanking
           name: getBankAccounts
-          request: bank-account/getBankAccounts/Pipeline.getBankAccounts.req.vtl
-          response: bank-account/getBankAccounts/Pipeline.getBankAccounts.res.vtl
+          request: bank/getBankAccounts/Pipeline.getBankAccounts.req.vtl
+          response: bank/getBankAccounts/Pipeline.getBankAccounts.res.vtl
         - dataSource: Data
           name: resetBankSettings
-          request: bank-connection/deleteBankConnection/Pipeline.resetBankSettings.req.vtl
-          response: bank-connection/deleteBankConnection/Pipeline.resetBankSettings.res.vtl
+          request: bank/deleteBankConnection/Pipeline.resetBankSettings.req.vtl
+          response: bank/deleteBankConnection/Pipeline.resetBankSettings.res.vtl
         - dataSource: OpenBanking
           name: unlinkBank
-          request: bank-connection/deleteBankConnection/Pipeline.unlinkBank.req.vtl
-          response: bank-connection/deleteBankConnection/Pipeline.unlinkBank.res.vtl
+          request: bank/deleteBankConnection/Pipeline.unlinkBank.req.vtl
+          response: bank/deleteBankConnection/Pipeline.unlinkBank.res.vtl
 
         # Clients
         - dataSource: Data
