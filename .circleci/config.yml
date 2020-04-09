@@ -294,7 +294,10 @@ workflows:
           name: build-accounts-client-develop
           filters:
             branches:
-              only: /feature\/.*/
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
           requires:
             - deploy-accounts-api-develop
 
@@ -322,7 +325,10 @@ workflows:
       - deploy-accounts-data-develop:
           filters:
             branches:
-              only: /feature\/.*/
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
           requires:
             - unit-test
 
@@ -336,7 +342,10 @@ workflows:
       - deploy-accounts-queue-develop:
           filters:
             branches:
-              only: /feature\/.*/
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
           requires:
             - deploy-open-banking-develop
 
@@ -350,7 +359,10 @@ workflows:
       - deploy-open-banking-develop:
           filters:
             branches:
-              only: /feature\/.*/
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
           requires:
             - unit-test
 
