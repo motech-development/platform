@@ -170,13 +170,13 @@ custom:
         - dataSource: Data
           type: Mutation
           field: updateSettings
-          request: settings/Mutation.updateSettings.req.vtl
-          response: settings/Mutation.updateSettings.res.vtl
+          request: settings/updateSettings/Mutation.updateSettings.req.vtl
+          response: settings/updateSettings/Mutation.updateSettings.res.vtl
         - dataSource: Data
           type: Query
           field: getSettings
-          request: settings/Query.getSettings.req.vtl
-          response: settings/Query.getSettings.res.vtl
+          request: settings/getSettings/Query.getSettings.req.vtl
+          response: settings/getSettings/Query.getSettings.res.vtl
       schema:
         - schema/address.graphql
         - schema/bank-account.graphql
