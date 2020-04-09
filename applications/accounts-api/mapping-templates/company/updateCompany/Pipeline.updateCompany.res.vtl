@@ -2,4 +2,8 @@
   $utils.error($ctx.error.message, $ctx.error.type)
 #end
 
-$utils.toJson($context.result)
+#if($context.result)
+  $utils.toJson($context.result)
+#else
+  $utils.unauthorized()
+#end
