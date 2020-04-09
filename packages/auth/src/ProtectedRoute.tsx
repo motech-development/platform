@@ -21,11 +21,11 @@ const ProtectedRoute: FC<IProtectedRouteProps> = ({
     (async () => {
       await loginWithRedirect({
         appState: {
-          targetUrl: path,
+          targetUrl: window.location.pathname,
         },
       });
     })();
-  }, [isAuthenticated, isLoading, loginWithRedirect, path]);
+  }, [isAuthenticated, isLoading, loginWithRedirect]);
 
   const render = (props: {}) =>
     // eslint-disable-next-line react/jsx-props-no-spreading
