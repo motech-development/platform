@@ -43,7 +43,7 @@ describe('SelectAccount', () => {
                   },
                   {
                     accountIdentifications: [],
-                    balance: '1000.00',
+                    balance: null,
                     currency: 'GBP',
                     id: 'account-id-2',
                     type: 'Account 2',

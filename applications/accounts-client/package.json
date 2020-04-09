@@ -70,6 +70,11 @@
     "@types/yup": "^0.26.32"
   },
   "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/{history,index,i18n}.{ts,tsx}",
+      "!src/**/*/index.{ts,tsx}"
+    ],
     "moduleDirectories": [
       "../../node_modules",
       "<rootDir>/node_modules"

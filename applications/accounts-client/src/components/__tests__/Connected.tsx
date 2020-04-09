@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { GraphQLError } from 'graphql';
 import React from 'react';
 import TestProvider from '../../utils/TestProvider';
 import Connected from '../Connected';
@@ -46,5 +47,28 @@ describe('Connected', () => {
     );
 
     await expect(findByTestId('content')).resolves.toBeInTheDocument();
+  });
+
+  it('should show extended errors', async () => {
+    const error = {
+      extraInfo: null,
+      graphQLErrors: [
+        new GraphQLError('This is a more meaningful error message'),
+      ],
+      message: 'There is an error',
+      name: 'Test error',
+      networkError: null,
+    };
+    const { findByText } = render(
+      <TestProvider>
+        <Connected loading={false} error={error}>
+          <div data-testid="content">Hello world</div>
+        </Connected>
+      </TestProvider>,
+    );
+
+    await expect(
+      findByText(error.graphQLErrors[0].message),
+    ).resolves.toBeInTheDocument();
   });
 });
