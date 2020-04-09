@@ -46,6 +46,7 @@ jobs:
             - applications/accounts-queue/node_modules
             - applications/id/node_modules
             - applications/infrastructure/node_modules
+            - applications/open-banking/node_modules
             - packages/auth/node_modules
             - packages/breeze-ui/node_modules
             - packages/serverless-outputs-env/node_modules
@@ -74,6 +75,8 @@ jobs:
           file: ./applications/accounts-client/coverage/coverage-final.json
       - codecov/upload:
           file: ./applications/accounts-queue/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./applications/open-banking/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/auth/coverage/coverage-final.json
       - codecov/upload:
@@ -203,6 +206,30 @@ jobs:
           command: npm run deploy -- --scope=@motech-development/accounts-queue -- -- --stage production
           name: Deploy accounts queue infrastructure
 
+  deploy-open-banking-develop:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage develop --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
+          name: Deploy open banking API
+
+  deploy-open-banking-production:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage production --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
+          name: Deploy open banking API
+
   deploy-auth0:
     docker:
       - image: circleci/node:12.13
@@ -304,9 +331,23 @@ workflows:
             branches:
               only: master
           requires:
-            - unit-test
+            - deploy-open-banking-production
 
       - deploy-accounts-queue-develop:
+          filters:
+            branches:
+              only: /feature\/.*/
+          requires:
+            - deploy-open-banking-develop
+
+      - deploy-open-banking-production:
+          filters:
+            branches:
+              only: master
+          requires:
+            - unit-test
+
+      - deploy-open-banking-develop:
           filters:
             branches:
               only: /feature\/.*/
@@ -317,11 +358,13 @@ workflows:
           requires:
             - deploy-accounts-data-production
             - deploy-accounts-queue-production
+            - deploy-open-banking-production
 
       - deploy-accounts-api-develop:
           requires:
             - deploy-accounts-data-develop
             - deploy-accounts-queue-develop
+            - deploy-open-banking-develop
 
       - deploy-auth0:
           filters:

@@ -1,10 +1,8 @@
 type Bank {
-  accountNumber: String
-  sortCode: String
+  id: ID
+  name: String
 }
 
-input BankInput {
-  __typename: String
-  accountNumber: String!
-  sortCode: String!
+type Banks {
+  items: [Bank]
 }

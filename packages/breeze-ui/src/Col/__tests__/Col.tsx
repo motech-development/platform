@@ -93,4 +93,30 @@ describe('Col', () => {
       expect(container.firstChild).toMatchSnapshot();
     });
   });
+
+  describe('alignment', () => {
+    it('should have the correct styles when alignment set to left', () => {
+      const { container } = render(<Col align="left">Hello</Col>);
+
+      expect(container.firstChild).toMatchSnapshot();
+    });
+
+    it('should have the correct styles when alignment set to right', () => {
+      const { container } = render(<Col align="right">Hello</Col>);
+
+      expect(container.firstChild).toMatchSnapshot();
+    });
+
+    it('should have the correct styles when alignment set to centre', () => {
+      const { container } = render(<Col align="centre">Hello</Col>);
+
+      expect(container.firstChild).toMatchSnapshot();
+    });
+
+    it('should have the correct styles when vertical alignment set to middle', () => {
+      const { container } = render(<Col verticalAlign="middle">Hello</Col>);
+
+      expect(container.firstChild).toMatchSnapshot();
+    });
+  });
 });

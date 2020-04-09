@@ -3,7 +3,7 @@
 #end
 
 #if($context.result.owner == $ctx.identity.sub)
-  $utils.toJson($context.result);
+  $utils.toJson($context.result)
 #else
   $utils.unauthorized()
 #end

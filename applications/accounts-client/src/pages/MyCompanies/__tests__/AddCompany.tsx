@@ -82,7 +82,7 @@ describe('AddCompany', () => {
                 line5: 'KT1 1NE',
               },
               bank: {
-                __typename: 'Bank',
+                __typename: 'BankDetails',
                 accountNumber: '12345678',
                 sortCode: '12-34-56',
               },

@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Col,
+  LinkButton,
   Row,
   Typography,
 } from '@motech-development/breeze-ui';
@@ -10,12 +11,14 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
 export interface IErrorCardProps {
+  backTo?: string;
   description: string;
   errors?: string[];
   title: string;
 }
 
 const ErrorCard: FC<IErrorCardProps> = ({
+  backTo = null,
   description,
   errors = null,
   title,
@@ -57,9 +60,15 @@ const ErrorCard: FC<IErrorCardProps> = ({
             ))}
         </Card>
 
-        <Button block type="button" size="lg" onClick={goBack}>
-          {t('go-back')}
-        </Button>
+        {backTo ? (
+          <LinkButton block size="lg" to={backTo}>
+            {t('go-back')}
+          </LinkButton>
+        ) : (
+          <Button block type="button" size="lg" onClick={goBack}>
+            {t('go-back')}
+          </Button>
+        )}
       </Col>
     </Row>
   );

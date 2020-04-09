@@ -1,5 +1,6 @@
 rules: []
 rulesConfigs: []
+hooks: []
 pages: []
 resourceServers:
   - name: Accounts API
@@ -110,9 +111,9 @@ databases:
   - name: Username-Password-Authentication
     strategy: auth0
     enabled_clients:
-      - Default App
-      - auth0-deploy-cli-extension
       - Accounts API (Test Application)
+      - auth0-deploy-cli-extension
+      - Default App
       - Accounts
     is_domain_connection: false
     options:
@@ -128,23 +129,29 @@ connections:
   - name: google-oauth2
     strategy: google-oauth2
     enabled_clients:
-      - Default App
-      - auth0-deploy-cli-extension
       - Accounts API (Test Application)
+      - auth0-deploy-cli-extension
+      - Default App
       - Accounts
     is_domain_connection: false
     options:
       email: true
-      profile: true
       scope:
         - email
         - profile
+      profile: true
 tenant:
   enabled_locales:
     - en
   flags:
+    new_universal_login_experience_enabled: false
+    universal_login: false
     disable_clickjack_protection_headers: false
     enable_mgmt_api_v1: true
+  universal_login:
+    colors:
+      page_background: '#161616'
+      primary: '#2e9dc8'
 emailProvider: {}
 emailTemplates: []
 clientGrants:
@@ -165,5 +172,8 @@ guardianFactors:
 guardianFactorProviders: []
 guardianFactorTemplates: []
 roles: []
-branding: {}
+branding:
+  colors:
+    page_background: '#161616'
+    primary: '#2e9dc8'
 prompts: {}

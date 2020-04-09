@@ -6,5 +6,5 @@
     "AUTH0_TENANT_NAME": "##AUTH0_TENANT_NAME##"
   },
   "AUTH0_ALLOW_DELETE": false,
-  "AUTH0_EXCLUDED_RULES": ["rule-1-name"]
+  "AUTH0_EXCLUDED_RULES": []
 }

@@ -24,6 +24,12 @@ custom:
     includeModules: true
 
 functions:
+  DeleteBankSettings:
+    handler: src/handlers/delete-record.handler
+    role: LambdaFunctionRole
+    environment:
+      TYPENAME: BankSettings
+
   DeleteTrigger:
     handler: src/triggers/delete.handler
     role: TriggerLambdaFunctionRole
@@ -34,8 +40,10 @@ functions:
       STATE_MACHINE_ARN: !Ref DeleteCompanyDataStateMachine
 
   DeleteSettings:
-    handler: src/handlers/delete-settings.handler
+    handler: src/handlers/delete-record.handler
     role: LambdaFunctionRole
+    environment:
+      TYPENAME: Settings
 
   DeleteClients:
     handler: src/handlers/delete-clients.handler
@@ -44,6 +52,13 @@ functions:
   GetClients:
     handler: src/handlers/get-clients.handler
     role: LambdaFunctionRole
+
+  UnlinkBank:
+    handler: src/handlers/unlink-bank.handler
+    role: LambdaFunctionRole
+    environment:
+      ENDPOINT: !ImportValue ${self:provider.stage}-OpenBankingApiEndpoint
+      STAGE: ${self:provider.stage}
 
 stepFunctions:
   validate: true
@@ -64,6 +79,18 @@ stepFunctions:
                   DeleteSettings:
                     Type: Task
                     Resource: !GetAtt DeleteSettingsLambdaFunction.Arn
+                    End: true
+
+              - StartAt: UnlinkBank
+                States:
+                  UnlinkBank:
+                    Type: Task
+                    Resource: !GetAtt UnlinkBankLambdaFunction.Arn
+                    Next: DeleteBankSettings
+
+                  DeleteBankSettings:
+                    Type: Task
+                    Resource: !GetAtt DeleteBankSettingsLambdaFunction.Arn
                     End: true
 
               - StartAt: GetClients
@@ -123,6 +150,7 @@ resources:
                   Action:
                     - dynamodb:BatchWriteItem
                     - dynamodb:DeleteItem
+                    - dynamodb:GetItem
                     - dynamodb:Query
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
@@ -130,6 +158,10 @@ resources:
                       - ''
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                         - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - execute-api:Invoke
+                  Resource: !ImportValue ${self:provider.stage}-OpenBankingApiArn
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup

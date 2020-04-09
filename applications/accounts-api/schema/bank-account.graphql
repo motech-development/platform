@@ -1,0 +1,16 @@
+type BankAccountIdentification {
+  identification: String
+  type: String
+}
+
+type BankAccount {
+  accountIdentifications: [BankAccountIdentification]
+  balance: String
+  currency: String
+  id: ID
+  type: String
+}
+
+type BankAccounts {
+  items: [BankAccount]
+}

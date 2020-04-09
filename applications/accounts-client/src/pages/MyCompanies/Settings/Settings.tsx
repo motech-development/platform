@@ -1,19 +1,23 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
-import Connected from '../../components/Connected';
-import SettingsForm, { FormSchema } from '../../components/SettingsForm';
+import Connected from '../../../components/Connected';
+import DELETE_BANK_CONNECTION, {
+  IDeleteBankConnectionInput,
+  IDeleteBankConnectionOutput,
+} from '../../../graphql/bank/DELETE_BANK_CONNECTION';
+import SettingsForm, { FormSchema } from '../../../components/SettingsForm';
 import GET_SETTINGS, {
   IGetSettingsInput,
   IGetSettingsOutput,
-} from '../../graphql/settings/GET_SETTINGS';
+} from '../../../graphql/settings/GET_SETTINGS';
 import UPDATE_SETTINGS, {
   IUpdateSettingsInput,
   IUpdateSettingsOutput,
-} from '../../graphql/settings/UPDATE_SETTINGS';
-import withLayout from '../../hoc/withLayout';
+} from '../../../graphql/settings/UPDATE_SETTINGS';
+import withLayout from '../../../hoc/withLayout';
 
 interface ISettingsParams {
   companyId: string;
@@ -21,6 +25,7 @@ interface ISettingsParams {
 
 const Settings: FC = () => {
   const backTo = (id: string) => `/my-companies/dashboard/${id}`;
+  const [connected, setConnected] = useState(false);
   const { companyId } = useParams<ISettingsParams>();
   const history = useHistory();
   const { t } = useTranslation('settings');
@@ -51,6 +56,23 @@ const Settings: FC = () => {
       },
     },
   );
+  const [disconnect, { loading: disconnectLoading }] = useMutation<
+    IDeleteBankConnectionOutput,
+    IDeleteBankConnectionInput
+  >(DELETE_BANK_CONNECTION, {
+    onCompleted: () => {
+      add({
+        colour: 'success',
+        message: t('settings.bank-disconnected'),
+      });
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('settings.bank-disconnected-error'),
+      });
+    },
+  });
   const save = (input: FormSchema) => {
     (async () => {
       await mutation({
@@ -60,6 +82,21 @@ const Settings: FC = () => {
       });
     })();
   };
+  const onDisconnect = (id: string) => {
+    (async () => {
+      await disconnect({
+        variables: {
+          id,
+        },
+      });
+    })();
+  };
+
+  useEffect(() => {
+    if (data) {
+      setConnected(!!data.getBankSettings.account);
+    }
+  }, [data]);
 
   return (
     <Connected error={error || updateError} loading={loading}>
@@ -72,6 +109,13 @@ const Settings: FC = () => {
 
           <SettingsForm
             backTo={backTo(companyId)}
+            bank={{
+              connected,
+              disconnectLoading,
+              link: `/my-companies/settings/${companyId}/bank`,
+              name: data.getBankSettings.bank,
+              onDisconnect: () => onDisconnect(companyId),
+            }}
             initialValues={data.getSettings}
             loading={updateLoading}
             onSave={save}

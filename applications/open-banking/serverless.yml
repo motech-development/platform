@@ -1,0 +1,266 @@
+service:
+  name: ${opt:appName, 'open-banking'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}
+  environment:
+    YapilyCredentials: !Ref YapilyCredentials
+
+package:
+  individually: true
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-step-functions
+  - serverless-webpack
+  - serverless-dynamodb-local
+  - serverless-offline
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+
+  webpack:
+    includeModules: true
+
+  serverless-offline:
+    httpPort: 4000
+    useChildProcesses: true
+
+  dynamodb:
+    start:
+      migrate: true
+      seed: true
+
+    seed:
+      banks:
+        sources:
+          - table: ${self:custom.prefix}
+            sources: [./seed/banks.json]
+    stages:
+      - local
+
+functions:
+  CheckUser:
+    handler: src/handlers/check-user.handler
+    role: LambdaFunctionRole
+
+  DeleteUser:
+    handler: src/handlers/delete-user.handler
+    events:
+      - http:
+          authorizer: aws_iam
+          method: delete
+          path: api/v1/users/{userId}
+    role: LambdaFunctionRole
+
+  GetAccounts:
+    handler: src/handlers/get-accounts.handler
+    events:
+      - http:
+          authorizer: aws_iam
+          method: get
+          path: api/v1/accounts
+    role: LambdaFunctionRole
+
+  GetBanks:
+    handler: src/handlers/get-banks.handler
+    events:
+      - http:
+          authorizer: aws_iam
+          method: get
+          path: api/v1/banks
+    environment:
+      TABLE: !Ref ApplicationTable
+    role: LambdaFunctionRole
+
+  GetCallback:
+    handler: src/handlers/get-callback.handler
+    role: LambdaFunctionRole
+
+  GetParams:
+    handler: src/handlers/get-params.handler
+    role: LambdaFunctionRole
+
+  RegisterUser:
+    handler: src/handlers/register-user.handler
+    role: LambdaFunctionRole
+
+  SendResult:
+    handler: src/handlers/send-result.handler
+    role: LambdaFunctionRole
+
+stepFunctions:
+  validate: true
+  stateMachines:
+    connectToBank:
+      events:
+        - http:
+            authorizer: aws_iam
+            path: api/v1/connect/start
+            method: post
+        - http:
+            action: DescribeExecution
+            authorizer: aws_iam
+            path: api/v1/connect/status
+            method: post
+      definition:
+        Comment: Connect to a banking provider
+        StartAt: GetParams
+        States:
+          GetParams:
+            Type: Task
+            Resource: !GetAtt GetParamsLambdaFunction.Arn
+            Next: ShouldCheck
+
+          ShouldCheck:
+            Type: Choice
+            Choices:
+              - Variable: $.check
+                BooleanEquals: true
+                Next: CheckUser
+            Default: RegisterUser
+
+          CheckUser:
+            Type: Task
+            Resource: !GetAtt CheckUserLambdaFunction.Arn
+            Next: IsRegistered
+
+          IsRegistered:
+            Type: Choice
+            Choices:
+              - Variable: $.register
+                BooleanEquals: true
+                Next: RegisterUser
+            Default: GetCallback
+
+          RegisterUser:
+            Type: Task
+            Resource: !GetAtt RegisterUserLambdaFunction.Arn
+            Next: GetCallback
+
+          GetCallback:
+            Type: Task
+            Resource: !GetAtt GetCallbackLambdaFunction.Arn
+            Next: SendResult
+
+          SendResult:
+            Type: Task
+            Resource: !GetAtt SendResultLambdaFunction.Arn
+            End: true
+
+resources:
+  Resources:
+    ApplicationTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.prefix}
+        AttributeDefinitions:
+          - AttributeName: data
+            AttributeType: S
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: sk-data-index
+            KeySchema:
+              - AttributeName: sk
+                KeyType: HASH
+              - AttributeName: data
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:Query
+                  Resource:
+                    - !GetAtt ApplicationTable.Arn
+                    - !Join
+                      - ''
+                      - - !GetAtt ApplicationTable.Arn
+                        - '/index/sk-data-index'
+                - Effect: Allow
+                  Action:
+                    - ssm:GetParameter
+                  Resource:
+                    - !Join
+                      - ''
+                      - - 'arn:aws:ssm:'
+                        - !Ref AWS::Region
+                        - ':'
+                        - !Ref AWS::AccountId
+                        - ':parameter/'
+                        - !Ref YapilyCredentials
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+
+    # TODO: A more secure way of doing this
+    YapilyCredentials:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Description: Yapily app credentials
+        Name: ${self:provider.stage}-YapilyCredentials
+        Value: ${opt:appId},${opt:appSecret}
+        Type: StringList
+
+  Outputs:
+    OpenBankingApiEndpoint:
+      Description: Open banking API endpoint
+      Value: !Join
+        - ''
+        - - 'https://'
+          - !Ref ApiGatewayRestApi
+          - '.execute-api.'
+          - !Ref AWS::Region
+          - '.amazonaws.com'
+      Export:
+        Name: ${self:provider.stage}-OpenBankingApiEndpoint
+
+    OpenBankingApiArn:
+      Description: Open banking API ARN
+      Value: !Join
+        - ''
+        - - 'arn:aws:execute-api:'
+          - !Ref AWS::Region
+          - ':'
+          - !Ref AWS::AccountId
+          - ':'
+          - !Ref ApiGatewayRestApi
+          - '/*'
+      Export:
+        Name: ${self:provider.stage}-OpenBankingApiArn

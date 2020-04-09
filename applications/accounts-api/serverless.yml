@@ -37,6 +37,59 @@ custom:
         loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
         level: ERROR
       mappingTemplates:
+        # Banking
+        - dataSource: OpenBanking
+          type: Query
+          field: getBanks
+          request: bank/getBanks/Query.getBanks.req.vtl
+          response: bank/getBanks/Query.getBanks.res.vtl
+
+        - kind: PIPELINE
+          type: Query
+          field: getBankAccounts
+          functions:
+            - bankSettings
+            - getBankAccounts
+          request: bank-account/getBankAccounts/Query.getBankAccounts.req.vtl
+          response: bank-account/getBankAccounts/Query.getBankAccounts.res.vtl
+
+        - dataSource: Resolver
+          type: Mutation
+          field: bankCallback
+          request: bank-callback/bankCallback/Mutation.bankCallback.req.vtl
+          response: bank-callback/bankCallback/Mutation.bankCallback.res.vtl
+
+        - dataSource: OpenBanking
+          type: Mutation
+          field: createBankConnection
+          request: bank-connection/createBankConnection/Mutation.createBankConnection.req.vtl
+          response: bank-connection/createBankConnection/Mutation.createBankConnection.res.vtl
+
+        - kind: PIPELINE
+          type: Mutation
+          field: deleteBankConnection
+          functions:
+            - bankSettings
+            - unlinkBank
+            - resetBankSettings
+          request: bank-connection/deleteBankConnection/Mutation.deleteBankConnection.req.vtl
+          response: bank-connection/deleteBankConnection/Mutation.deleteBankConnection.res.vtl
+
+        - kind: PIPELINE
+          type: Query
+          field: getBankSettings
+          functions:
+            - bankSettings
+          request: bank-settings/getBankSettings/Query.getBankSettings.req.vtl
+          response: bank-settings/getBankSettings/Query.getBankSettings.res.vtl
+
+        - dataSource: Data
+          type: Mutation
+          field: updateBankSettings
+          request: bank-settings/updateBankSettings/Mutation.updateBankSettings.req.vtl
+          response: bank-settings/updateBankSettings/Mutation.updateBankSettings.res.vtl
+        # Banking
+
         - kind: PIPELINE
           type: Mutation
           field: createClient
@@ -87,6 +140,7 @@ custom:
             - vatRegistration
             - createCompany
             - createSettings
+            - createBankSettings
           request: company/createCompany/Mutation.createCompany.req.vtl
           response: company/createCompany/Mutation.createCompany.res.vtl
         - kind: PIPELINE
@@ -133,6 +187,11 @@ custom:
           response: settings/Query.getSettings.res.vtl
       schema:
         - schema/address.graphql
+        - schema/bank-account.graphql
+        - schema/bank-connection.graphql
+        - schema/bank-callback.graphql
+        - schema/bank-details.graphql
+        - schema/bank-settings.graphql
         - schema/bank.graphql
         - schema/client.graphql
         - schema/company.graphql
@@ -169,6 +228,24 @@ custom:
           name: addressFiltering
           request: shared/addressFiltering/Pipeline.addressFiltering.req.vtl
           response: shared/addressFiltering/Pipeline.addressFiltering.res.vtl
+        - dataSource: Data
+          name: bankSettings
+          request: shared/bankSettings/Pipeline.bankSettings.req.vtl
+          response: shared/bankSettings/Pipeline.bankSettings.res.vtl
+
+        # Bank
+        - dataSource: OpenBanking
+          name: getBankAccounts
+          request: bank-account/getBankAccounts/Pipeline.getBankAccounts.req.vtl
+          response: bank-account/getBankAccounts/Pipeline.getBankAccounts.res.vtl
+        - dataSource: Data
+          name: resetBankSettings
+          request: bank-connection/deleteBankConnection/Pipeline.resetBankSettings.req.vtl
+          response: bank-connection/deleteBankConnection/Pipeline.resetBankSettings.res.vtl
+        - dataSource: OpenBanking
+          name: unlinkBank
+          request: bank-connection/deleteBankConnection/Pipeline.unlinkBank.req.vtl
+          response: bank-connection/deleteBankConnection/Pipeline.unlinkBank.res.vtl
 
         # Clients
         - dataSource: Data
@@ -185,6 +262,10 @@ custom:
           response: client/updateClient/Pipeline.updateClient.res.vtl
 
         # Companies
+        - dataSource: Data
+          name: createBankSettings
+          request: company/createCompany/Pipeline.createBankSettings.req.vtl
+          response: company/createCompany/Pipeline.createBankSettings.res.vtl
         - dataSource: Data
           name: createCompany
           request: company/createCompany/Pipeline.createCompany.req.vtl
@@ -219,6 +300,18 @@ custom:
           config:
             lambdaFunctionArn: !GetAtt LambdaDataSourceLambdaFunction.Arn
             serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
+        - type: HTTP
+          name: OpenBanking
+          config:
+            endpoint: !ImportValue ${self:provider.stage}-OpenBankingApiEndpoint
+            authorizationConfig:
+              authorizationType: AWS_IAM
+              awsIamConfig:
+                signingRegion: !Ref AWS::Region
+                signingServiceName: execute-api
+            serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
+      substitutions:
+        stage: ${self:provider.stage}
 
   webpack:
     includeModules: true
@@ -232,6 +325,29 @@ functions:
 
 resources:
   Resources:
+    AppSyncOpenBankingServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-open-banking-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-open-banking-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - execute-api:Invoke
+                  Resource: !ImportValue ${self:provider.stage}-OpenBankingApiArn
+
     AppSyncLoggingServiceRole:
       Type: AWS::IAM::Role
       Properties:
