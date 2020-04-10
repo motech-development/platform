@@ -103,36 +103,13 @@ interface ITooltipContent extends ITooltipPlacement {
 }
 
 const TooltipContent = styled.div<ITooltipContent>`
-  ${({ colour, placement, theme, visible }) => `
+  ${({ colour, theme, visible }) => `
     background-color: ${theme[colour].background};
     color: ${theme[colour].colour};
     font-size: 14px;
     line-height: 22px;
     padding: 0 5px;
     visibility: ${visible ? 'visible' : 'hidden'};
-
-    ${(() => {
-      switch (placement) {
-        case 'bottom':
-          return `
-            margin-top: 5px;
-          `;
-        case 'left':
-          return `
-            margin-right: 5px;
-          `;
-        case 'right':
-          return `
-            margin-left: 5px;
-          `;
-        case 'top':
-          return `
-            margin-bottom: 5px;
-          `;
-        default:
-          return '';
-      }
-    })()}
   `}
 `;
 
@@ -191,7 +168,18 @@ const Tooltip: FC<ITooltipProps> = ({
           )}
         </Reference>
 
-        <Popper placement={placement}>
+        <Popper
+          placement={placement}
+          strategy="fixed"
+          modifiers={[
+            {
+              name: 'offset',
+              options: {
+                offset: [0, 5],
+              },
+            },
+          ]}
+        >
           {({ arrowProps, placement: popperPlacement, ref, style }) => {
             const placementToUse =
               process.env.NODE_ENV === 'test' ? placement : popperPlacement;
