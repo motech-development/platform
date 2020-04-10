@@ -191,7 +191,7 @@ const Tooltip: FC<ITooltipProps> = ({
           )}
         </Reference>
 
-        <Popper placement={placement} positionFixed>
+        <Popper placement={placement}>
           {({ arrowProps, placement: popperPlacement, ref, style }) => {
             const placementToUse =
               process.env.NODE_ENV === 'test' ? placement : popperPlacement;
