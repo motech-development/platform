@@ -5,7 +5,7 @@ import {
   AppBar,
   Avatar,
   Button,
-  // Tooltip,
+  Tooltip,
   Typography,
 } from '@motech-development/breeze-ui';
 import React, { ComponentType, memo } from 'react';
@@ -66,20 +66,17 @@ const withLayout = (Component: ComponentType) =>
                 {user.name}
               </Username>
 
-              <Button type="button" size="sm" onClick={logOut}>
-                <FontAwesomeIcon icon={faSignOutAlt} />
-              </Button>
-
-              {/* TODO: Re-instate tooltip once we can get tests to pass */}
-              {/* <Tooltip
+              <Tooltip
                 id="sign-out"
                 parent={() => (
-
+                  <Button type="button" size="sm" onClick={logOut}>
+                    <FontAwesomeIcon icon={faSignOutAlt} />
+                  </Button>
                 )}
                 placement="bottom"
                 colour="primary"
                 message={t('log-out')}
-              /> */}
+              />
             </UserBar>
           )}
         </AppBar>
