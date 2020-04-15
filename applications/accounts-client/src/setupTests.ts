@@ -3,6 +3,7 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
+import { randomFillSync } from 'crypto';
 import 'jest-styled-components';
 
 Object.defineProperty(window, 'matchMedia', {
@@ -16,5 +17,13 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: jest.fn(),
     removeListener: jest.fn(),
   })),
+  writable: true,
+});
+
+Object.defineProperty(window, 'crypto', {
+  value: {
+    getRandomValues: (buffer: NodeJS.ArrayBufferView) => randomFillSync(buffer),
+    subtle: {},
+  },
   writable: true,
 });

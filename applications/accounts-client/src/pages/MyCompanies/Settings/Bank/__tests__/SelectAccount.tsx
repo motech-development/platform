@@ -21,7 +21,7 @@ describe('SelectAccount', () => {
   });
 
   describe('when accounts are loaded', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           request: {
@@ -75,16 +75,18 @@ describe('SelectAccount', () => {
         },
       ];
 
-      component = render(
-        <TestProvider
-          path="/settings/:companyId/bank/select-account"
-          history={history}
-        >
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <SelectAccount />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider
+            path="/settings/:companyId/bank/select-account"
+            history={history}
+          >
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <SelectAccount />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
     });
 
     it('should display accounts', async () => {
@@ -140,7 +142,7 @@ describe('SelectAccount', () => {
   });
 
   describe('when accounts are not loaded', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           error: new Error(),
@@ -153,24 +155,24 @@ describe('SelectAccount', () => {
         },
       ];
 
-      component = render(
-        <TestProvider
-          path="/settings/:companyId/bank/select-account"
-          history={history}
-        >
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <SelectAccount />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider
+            path="/settings/:companyId/bank/select-account"
+            history={history}
+          >
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <SelectAccount />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
     });
 
     it('should display an error card', async () => {
       const { findByText } = component;
 
-      await act(async () => {
-        await wait(0);
-      });
+      await wait(0);
 
       await expect(
         findByText('select-account.error'),
@@ -180,9 +182,7 @@ describe('SelectAccount', () => {
     it('should have the correct back link', async () => {
       const { findByText } = component;
 
-      await act(async () => {
-        await wait(0);
-      });
+      await wait(0);
 
       await expect(findByText('go-back')).resolves.toHaveAttribute(
         'href',

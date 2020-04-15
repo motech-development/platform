@@ -47,8 +47,7 @@ describe('App', () => {
     });
   });
 
-  // TODO find out why it's throwing the following error: Caught error after test environment was torn down
-  describe.skip('in production mode', () => {
+  describe('in production mode', () => {
     let env: NodeJS.ProcessEnv;
 
     beforeEach(() => {

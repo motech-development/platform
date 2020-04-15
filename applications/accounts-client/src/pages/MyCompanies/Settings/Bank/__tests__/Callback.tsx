@@ -12,7 +12,7 @@ describe('Callback', () => {
   let mocks: MockedResponse[];
 
   describe('with a successful response', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       history = createMemoryHistory({
         initialEntries: [
           '/settings/company-id/bank/callback?institution=bank-name&consent=consent-token&user-uuid=user-id',
@@ -46,16 +46,18 @@ describe('Callback', () => {
         },
       ];
 
-      component = render(
-        <TestProvider
-          path="/settings/:companyId/bank/callback"
-          history={history}
-        >
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <Callback />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider
+            path="/settings/:companyId/bank/callback"
+            history={history}
+          >
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <Callback />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
     });
 
     it('should redirect to the account selection', async () => {
@@ -74,7 +76,7 @@ describe('Callback', () => {
   });
 
   describe('with an unsuccessful response', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       history = createMemoryHistory({
         initialEntries: [
           '/settings/company-id/bank/callback?institution=bank-name&consent=consent-token',
@@ -108,16 +110,18 @@ describe('Callback', () => {
         },
       ];
 
-      component = render(
-        <TestProvider
-          path="/settings/:companyId/bank/callback"
-          history={history}
-        >
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <Callback />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider
+            path="/settings/:companyId/bank/callback"
+            history={history}
+          >
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <Callback />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
     });
 
     it('should show the error card', async () => {

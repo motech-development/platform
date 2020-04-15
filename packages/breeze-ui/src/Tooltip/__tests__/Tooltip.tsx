@@ -21,8 +21,8 @@ describe('Tooltip', () => {
       process.env = env;
     });
 
-    it('should render', () => {
-      render(
+    it('should render', async () => {
+      const { findByTestId } = render(
         <Tooltip
           id="test"
           parent={() => (
@@ -34,6 +34,8 @@ describe('Tooltip', () => {
           message="Hello"
         />,
       );
+
+      await expect(findByTestId('button')).resolves.toBeInTheDocument();
     });
   });
 
@@ -190,10 +192,6 @@ describe('Tooltip', () => {
       tooltip = await findByRole('tooltip');
     });
 
-    it('should have the correct styles', () => {
-      expect(tooltip).toHaveStyle('margin-bottom: 5px;');
-    });
-
     it('should have an arrow pointing the correct way', () => {
       expect(tooltip.firstElementChild).toHaveStyle(`
         border-left: 5px solid transparent;
@@ -224,10 +222,6 @@ describe('Tooltip', () => {
       fireEvent.focus(button);
 
       tooltip = await findByRole('tooltip');
-    });
-
-    it('should have the correct styles', () => {
-      expect(tooltip).toHaveStyle('margin-top: 5px;');
     });
 
     it('should have an arrow pointing the correct way', () => {
@@ -262,10 +256,6 @@ describe('Tooltip', () => {
       tooltip = await findByRole('tooltip');
     });
 
-    it('should have the correct styles', () => {
-      expect(tooltip).toHaveStyle('margin-right: 5px;');
-    });
-
     it('should have an arrow pointing the correct way', () => {
       expect(tooltip.firstElementChild).toHaveStyle(`
         border-bottom: 5px solid transparent;
@@ -296,10 +286,6 @@ describe('Tooltip', () => {
       fireEvent.focus(button);
 
       tooltip = await findByRole('tooltip');
-    });
-
-    it('should have the correct styles', () => {
-      expect(tooltip).toHaveStyle('margin-left: 5px;');
     });
 
     it('should have an arrow pointing the correct way', () => {

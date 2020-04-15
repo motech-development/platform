@@ -20,10 +20,6 @@
     "assert": "^2.0.0",
     "tomlify-j0.4": "^3.0.0"
   },
-  "devDependencies": {
-    "@types/assert": "^1.4.6",
-    "@types/serverless": "^1.18.6"
-  },
   "peerDependencies": {
     "assert": "^2.0.0",
     "tomlify-j0.4": "^3.0.0"

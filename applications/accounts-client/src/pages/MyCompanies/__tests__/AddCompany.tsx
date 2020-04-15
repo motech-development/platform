@@ -23,7 +23,7 @@ describe('AddCompany', () => {
   let history: MemoryHistory;
   let mocks: MockedResponse[];
 
-  beforeEach(() => {
+  beforeEach(async () => {
     cache = new InMemoryCache();
 
     cache.writeData({
@@ -100,13 +100,16 @@ describe('AddCompany', () => {
         },
       },
     ];
-    component = render(
-      <TestProvider path="/add-company" history={history}>
-        <MockedProvider mocks={mocks} cache={cache}>
-          <AddCompany />
-        </MockedProvider>
-      </TestProvider>,
-    );
+
+    await act(async () => {
+      component = render(
+        <TestProvider path="/add-company" history={history}>
+          <MockedProvider mocks={mocks} cache={cache}>
+            <AddCompany />
+          </MockedProvider>
+        </TestProvider>,
+      );
+    });
   });
 
   it('should redirect you to the dashboard on complete', async () => {

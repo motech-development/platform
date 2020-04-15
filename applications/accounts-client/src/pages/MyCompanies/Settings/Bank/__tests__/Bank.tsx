@@ -20,7 +20,7 @@ describe('Bank', () => {
   });
 
   describe('before connecting to a bank', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           request: {
@@ -81,13 +81,15 @@ describe('Bank', () => {
         },
       ];
 
-      component = render(
-        <TestProvider path="/settings/:companyId/banks" history={history}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <Bank />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider path="/settings/:companyId/banks" history={history}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <Bank />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
     });
 
     it('should display the banks', async () => {
@@ -134,7 +136,7 @@ describe('Bank', () => {
   });
 
   describe('after connecting to a bank', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           request: {
@@ -180,13 +182,15 @@ describe('Bank', () => {
 
       window.location.assign = jest.fn();
 
-      component = render(
-        <TestProvider path="/settings/:companyId/banks" history={history}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <Bank />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider path="/settings/:companyId/banks" history={history}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <Bank />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
     });
 
     it('should redirect to the auth URL', async () => {

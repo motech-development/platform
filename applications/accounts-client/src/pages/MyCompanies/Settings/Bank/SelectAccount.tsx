@@ -33,19 +33,16 @@ const SelectAccount: FC = () => {
   const { add } = useToast();
   const { t } = useTranslation('settings');
   const [selected, setSelected] = useState('');
-  const [bankError, setBankError] = useState(false);
   const { companyId } = useParams<ISelectAccountParams>();
-  const { data, loading } = useQuery<
+  const { data, error: bankError, loading } = useQuery<
     IGetBankAccountsOutput,
     IGetBankAccountsInput
   >(GET_BANK_ACCOUNTS, {
-    onError: () => {
-      setBankError(true);
-    },
     variables: {
       id: companyId,
     },
   });
+
   const [mutation, { error }] = useMutation<
     IUpdateBankSettingsOutput,
     IUpdateBankSettingsInput

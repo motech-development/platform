@@ -22,7 +22,7 @@ describe('Settings', () => {
   });
 
   describe('when unlinking is successful', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           request: {
@@ -101,13 +101,15 @@ describe('Settings', () => {
         },
       ];
 
-      component = render(
-        <TestProvider path="/settings/:companyId" history={history}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <Settings />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider path="/settings/:companyId" history={history}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <Settings />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
     });
 
     it('should redirect you to the dashboard on complete', async () => {
@@ -172,7 +174,7 @@ describe('Settings', () => {
   });
 
   describe('when unlinking is unsuccessful', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           error: new Error(),
@@ -242,13 +244,15 @@ describe('Settings', () => {
         },
       ];
 
-      component = render(
-        <TestProvider path="/settings/:companyId" history={history}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <Settings />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider path="/settings/:companyId" history={history}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <Settings />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
     });
 
     it('should display the correct toast when unable to unlink bank', async () => {
