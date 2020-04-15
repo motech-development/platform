@@ -1,4 +1,9 @@
-import { render, RenderResult, waitForElement } from '@testing-library/react';
+import {
+  act,
+  render,
+  RenderResult,
+  waitForElement,
+} from '@testing-library/react';
 import React from 'react';
 import InputWrapper from '../InputWrapper';
 import Tooltip from '../../Tooltip/Tooltip';
@@ -41,24 +46,26 @@ describe('InputWrapper', () => {
   });
 
   describe('with an error', () => {
-    beforeEach(() => {
-      component = render(
-        <InputWrapper
-          spacing="md"
-          error
-          tooltip={() => (
-            <Tooltip
-              id="test"
-              parent={() => <div data-testid="alert" />}
-              colour="danger"
-              placement="left"
-              message="This is a test error"
-            />
-          )}
-        >
-          <input type="test" data-testid="input" />
-        </InputWrapper>,
-      );
+    beforeEach(async () => {
+      await act(async () => {
+        component = render(
+          <InputWrapper
+            spacing="md"
+            error
+            tooltip={() => (
+              <Tooltip
+                id="test"
+                parent={() => <div data-testid="alert" />}
+                colour="danger"
+                placement="left"
+                message="This is a test error"
+              />
+            )}
+          >
+            <input type="test" data-testid="input" />
+          </InputWrapper>,
+        );
+      });
     });
 
     it('should render when the correct styles when there is an error', async () => {

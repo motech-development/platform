@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/react-testing';
-import { render, RenderResult } from '@testing-library/react';
+import { render, RenderResult, act } from '@testing-library/react';
 import React from 'react';
 import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
 import TestProvider from '../../../utils/TestProvider';
@@ -9,7 +9,7 @@ describe('MyCompanies', () => {
   let component: RenderResult;
   let mocks: MockedResponse[];
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mocks = [
       {
         request: {
@@ -67,13 +67,16 @@ describe('MyCompanies', () => {
         },
       },
     ];
-    component = render(
-      <TestProvider>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <MyCompanies />
-        </MockedProvider>
-      </TestProvider>,
-    );
+
+    await act(async () => {
+      component = render(
+        <TestProvider>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <MyCompanies />
+          </MockedProvider>
+        </TestProvider>,
+      );
+    });
   });
 
   it('should show the company name', async () => {

@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/react-testing';
-import { render, RenderResult } from '@testing-library/react';
+import { render, RenderResult, act } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
@@ -11,7 +11,7 @@ describe('Clients', () => {
   let history: MemoryHistory;
   let mocks: MockedResponse[];
 
-  beforeEach(() => {
+  beforeEach(async () => {
     history = createMemoryHistory({
       initialEntries: ['/clients/company-id'],
     });
@@ -70,13 +70,15 @@ describe('Clients', () => {
       },
     ];
 
-    component = render(
-      <TestProvider path="/clients/:companyId" history={history}>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <Clients />
-        </MockedProvider>
-      </TestProvider>,
-    );
+    await act(async () => {
+      component = render(
+        <TestProvider path="/clients/:companyId" history={history}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <Clients />
+          </MockedProvider>
+        </TestProvider>,
+      );
+    });
   });
 
   it('should show company name', async () => {

@@ -35,7 +35,7 @@ describe('UpdateDetails', () => {
   });
 
   describe('success', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       cache = new InMemoryCache();
 
       cache.writeQuery({
@@ -195,16 +195,19 @@ describe('UpdateDetails', () => {
           },
         },
       ];
-      component = render(
-        <TestProvider
-          path="/clients/:companyId/update-details/:clientId"
-          history={history}
-        >
-          <MockedProvider mocks={mocks} cache={cache}>
-            <UpdateDetails />
-          </MockedProvider>
-        </TestProvider>,
-      );
+
+      await act(async () => {
+        component = render(
+          <TestProvider
+            path="/clients/:companyId/update-details/:clientId"
+            history={history}
+          >
+            <MockedProvider mocks={mocks} cache={cache}>
+              <UpdateDetails />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
     });
 
     it('should redirect you back to clients page on complete', async () => {
@@ -351,7 +354,7 @@ describe('UpdateDetails', () => {
   });
 
   describe('failure', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           error: new Error(),
@@ -392,16 +395,18 @@ describe('UpdateDetails', () => {
         },
       ];
 
-      component = render(
-        <TestProvider
-          path="/clients/:companyId/update-details/:clientId"
-          history={history}
-        >
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <UpdateDetails />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider
+            path="/clients/:companyId/update-details/:clientId"
+            history={history}
+          >
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <UpdateDetails />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
     });
 
     it('should display an error toast when deleting a client', async () => {
