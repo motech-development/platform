@@ -48,7 +48,7 @@
     "react-router-dom": "^5.1.2",
     "styled-components": "^5.1.0",
     "styled-reset": "^4.1.2",
-    "yup": "^0.28.1"
+    "yup": "^0.28.3"
   },
   "eslintConfig": {
     "extends": "react-app"
