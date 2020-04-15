@@ -1,20 +1,20 @@
-import React, { FC, memo, ReactNode } from 'react';
+import React, { memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import ErrorCard from './ErrorCard';
 
-export interface IDataListProps<T = unknown> {
-  children: ReactNode;
+export interface IDataListProps<T> {
   items: T[];
+  render: (items: T[]) => ReactNode;
 }
 
-const DataList: FC<IDataListProps> = ({ children, items }) => {
+function DataList<T>({ items, render }: IDataListProps<T>) {
   const { t } = useTranslation('data-list');
 
   if (items.length === 0) {
     return <ErrorCard title={t('title')} description={t('description')} />;
   }
 
-  return <>{children}</>;
-};
+  return <>{render(items)}</>;
+}
 
-export default memo(DataList);
+export default memo(DataList) as typeof DataList;

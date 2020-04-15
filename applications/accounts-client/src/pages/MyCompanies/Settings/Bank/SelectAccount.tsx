@@ -93,10 +93,11 @@ const SelectAccount: FC = () => {
             subTitle={t('select-account.sub-title')}
           />
 
-          <DataList items={data.getBankAccounts.items}>
-            <Row>
-              {data.getBankAccounts.items.map(
-                ({ balance, currency, id, type }) => (
+          <DataList
+            items={data.getBankAccounts.items}
+            render={items => (
+              <Row>
+                {items.map(({ balance, currency, id, type }) => (
                   <Col key={id}>
                     <Card>
                       <Row>
@@ -132,10 +133,10 @@ const SelectAccount: FC = () => {
                       </Row>
                     </Card>
                   </Col>
-                ),
-              )}
-            </Row>
-          </DataList>
+                ))}
+              </Row>
+            )}
+          />
         </>
       )}
     </Connected>

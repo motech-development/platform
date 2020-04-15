@@ -84,47 +84,52 @@ const Bank: FC = () => {
             subTitle={t('select-bank.sub-title')}
           />
 
-          <DataList items={data.getBanks.items}>
-            <Row>
-              {data.getBanks.items.map(({ id, name }) => (
-                <Col key={id}>
-                  <Card>
-                    <Row>
-                      <Col xs={6} verticalAlign="middle">
-                        <Typography component="h3" variant="h4" margin="none">
-                          {name}
-                        </Typography>
-                      </Col>
-                      <Col xs={6} align="right">
-                        <Button
-                          loading={selected === id}
-                          disabled={selected !== ''}
-                          onClick={() => connect(id, data.getBankSettings.user)}
-                        >
-                          {t('select-bank.connect')}
-                        </Button>
-                      </Col>
-                    </Row>
-                  </Card>
-                </Col>
-              ))}
-
-              <Col>
-                <Row>
-                  <Col xs={12} md={3} mdOffset={10}>
-                    <LinkButton
-                      block
-                      to={`/my-companies/settings/${companyId}`}
-                      colour="secondary"
-                      size="lg"
-                    >
-                      {t('select-bank.cancel')}
-                    </LinkButton>
+          <DataList
+            items={data.getBanks.items}
+            render={items => (
+              <Row>
+                {items.map(({ id, name }) => (
+                  <Col key={id}>
+                    <Card>
+                      <Row>
+                        <Col xs={6} verticalAlign="middle">
+                          <Typography component="h3" variant="h4" margin="none">
+                            {name}
+                          </Typography>
+                        </Col>
+                        <Col xs={6} align="right">
+                          <Button
+                            loading={selected === id}
+                            disabled={selected !== ''}
+                            onClick={() =>
+                              connect(id, data.getBankSettings.user)
+                            }
+                          >
+                            {t('select-bank.connect')}
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Card>
                   </Col>
-                </Row>
-              </Col>
-            </Row>
-          </DataList>
+                ))}
+
+                <Col>
+                  <Row>
+                    <Col xs={12} md={3} mdOffset={10}>
+                      <LinkButton
+                        block
+                        to={`/my-companies/settings/${companyId}`}
+                        colour="secondary"
+                        size="lg"
+                      >
+                        {t('select-bank.cancel')}
+                      </LinkButton>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            )}
+          />
         </>
       )}
     </Connected>
