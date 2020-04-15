@@ -23,6 +23,7 @@ Object.defineProperty(window, 'matchMedia', {
 Object.defineProperty(window, 'crypto', {
   value: {
     getRandomValues: (buffer: NodeJS.ArrayBufferView) => randomFillSync(buffer),
+    subtle: {},
   },
   writable: true,
 });
