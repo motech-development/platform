@@ -1,3 +1,4 @@
+import { ApolloProvider } from '@apollo/react-hooks';
 import { useAuth } from '@motech-development/auth';
 import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
 import ApolloClient from 'apollo-client';
@@ -5,7 +6,6 @@ import { ApolloLink } from 'apollo-link';
 import { AuthOptions, createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
 import React, { FC, memo, ReactElement, useEffect, useState } from 'react';
-import { ApolloProvider } from 'react-apollo';
 
 const { REACT_APP_APPSYNC_URL = '', REACT_APP_AWS_REGION = '' } = process.env;
 const url = REACT_APP_APPSYNC_URL;
