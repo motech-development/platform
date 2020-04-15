@@ -172,22 +172,17 @@ describe('SelectAccount', () => {
     it('should display an error card', async () => {
       const { findByText } = component;
 
-      await act(async () => {
-        await wait(0);
-      });
+      await wait(0);
 
       await expect(
         findByText('select-account.error'),
       ).resolves.toBeInTheDocument();
     });
 
-    // TODO: Why is the new popper library causing this to fail?
-    it.skip('should have the correct back link', async () => {
+    it('should have the correct back link', async () => {
       const { findByText } = component;
 
-      await act(async () => {
-        await wait(0);
-      });
+      await wait(0);
 
       await expect(findByText('go-back')).resolves.toHaveAttribute(
         'href',

@@ -1,5 +1,15 @@
-import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import {
+  MockedProvider,
+  MockedResponse,
+  wait as apolloWait,
+} from '@apollo/react-testing';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  wait,
+} from '@testing-library/react';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
@@ -8,8 +18,7 @@ import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import AddClient from '../AddClient';
 
-// TODO: Investigate why this is now failing
-describe.skip('AddClient', () => {
+describe('AddClient', () => {
   let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
@@ -117,30 +126,61 @@ describe.skip('AddClient', () => {
       );
 
       fireEvent.change(line1, {
-        target: { focus: () => {}, value: '1 Street' },
+        target: {
+          focus: () => {},
+          value: '1 Street',
+        },
       });
-      fireEvent.change(line3, { target: { focus: () => {}, value: 'Town' } });
+
+      fireEvent.change(line3, {
+        target: {
+          focus: () => {},
+          value: 'Town',
+        },
+      });
+
       fireEvent.change(line4, {
-        target: { focus: () => {}, value: 'County' },
+        target: {
+          focus: () => {},
+          value: 'County',
+        },
       });
+
       fireEvent.change(line5, {
-        target: { focus: () => {}, value: 'KT1 1NE' },
+        target: {
+          focus: () => {},
+          value: 'KT1 1NE',
+        },
       });
+
       fireEvent.change(email, {
-        target: { focus: () => {}, value: 'info@contact.com' },
+        target: {
+          focus: () => {},
+          value: 'info@contact.com',
+        },
       });
+
       fireEvent.change(telephone, {
-        target: { focus: () => {}, value: '07712345678' },
+        target: {
+          focus: () => {},
+          value: '07712345678',
+        },
       });
+
       fireEvent.change(name, {
-        target: { focus: () => {}, value: 'New company' },
+        target: {
+          focus: () => {},
+          value: 'New company',
+        },
       });
+
+      await wait();
 
       const [, button] = await findAllByRole('button');
 
       fireEvent.click(button);
 
-      await wait(0);
+      await apolloWait(0);
 
       await findByTestId('next-page');
     });
@@ -165,30 +205,61 @@ describe.skip('AddClient', () => {
       );
 
       fireEvent.change(line1, {
-        target: { focus: () => {}, value: '1 Street' },
+        target: {
+          focus: () => {},
+          value: '1 Street',
+        },
       });
-      fireEvent.change(line3, { target: { focus: () => {}, value: 'Town' } });
+
+      fireEvent.change(line3, {
+        target: {
+          focus: () => {},
+          value: 'Town',
+        },
+      });
+
       fireEvent.change(line4, {
-        target: { focus: () => {}, value: 'County' },
+        target: {
+          focus: () => {},
+          value: 'County',
+        },
       });
+
       fireEvent.change(line5, {
-        target: { focus: () => {}, value: 'KT1 1NE' },
+        target: {
+          focus: () => {},
+          value: 'KT1 1NE',
+        },
       });
+
       fireEvent.change(email, {
-        target: { focus: () => {}, value: 'info@contact.com' },
+        target: {
+          focus: () => {},
+          value: 'info@contact.com',
+        },
       });
+
       fireEvent.change(telephone, {
-        target: { focus: () => {}, value: '07712345678' },
+        target: {
+          focus: () => {},
+          value: '07712345678',
+        },
       });
+
       fireEvent.change(name, {
-        target: { focus: () => {}, value: 'New company' },
+        target: {
+          focus: () => {},
+          value: 'New company',
+        },
       });
+
+      await wait();
 
       const [, button] = await findAllByRole('button');
 
       fireEvent.click(button);
 
-      await wait(0);
+      await apolloWait(0);
 
       await findByTestId('next-page');
     });
