@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
 import Currency from '../../../../components/Currency';
+import DataList from '../../../../components/DataList';
 import ErrorCard from '../../../../components/ErrorCard';
 import GET_BANK_ACCOUNTS, {
   IGetBankAccountsInput,
@@ -92,47 +93,49 @@ const SelectAccount: FC = () => {
             subTitle={t('select-account.sub-title')}
           />
 
-          <Row>
-            {data.getBankAccounts.items.map(
-              ({ balance, currency, id, type }) => (
-                <Col key={id}>
-                  <Card>
-                    <Row>
-                      <Col sm={6} verticalAlign="middle">
-                        <Typography
-                          component="h3"
-                          variant="h4"
-                          margin={balance ? 'md' : 'none'}
-                        >
-                          {type}
-                        </Typography>
-
-                        {balance && (
+          <DataList items={data.getBankAccounts.items}>
+            <Row>
+              {data.getBankAccounts.items.map(
+                ({ balance, currency, id, type }) => (
+                  <Col key={id}>
+                    <Card>
+                      <Row>
+                        <Col sm={6} verticalAlign="middle">
                           <Typography
-                            component="p"
-                            variant="lead"
-                            margin="none"
+                            component="h3"
+                            variant="h4"
+                            margin={balance ? 'md' : 'none'}
                           >
-                            {t('select-account.balance')}:{' '}
-                            <Currency currency={currency} value={balance} />
+                            {type}
                           </Typography>
-                        )}
-                      </Col>
-                      <Col sm={6} align="right" verticalAlign="middle">
-                        <Button
-                          loading={selected === id}
-                          disabled={selected !== ''}
-                          onClick={() => selectAccount(id)}
-                        >
-                          {t('select-account.link-account')}
-                        </Button>
-                      </Col>
-                    </Row>
-                  </Card>
-                </Col>
-              ),
-            )}
-          </Row>
+
+                          {balance && (
+                            <Typography
+                              component="p"
+                              variant="lead"
+                              margin="none"
+                            >
+                              {t('select-account.balance')}:{' '}
+                              <Currency currency={currency} value={balance} />
+                            </Typography>
+                          )}
+                        </Col>
+                        <Col sm={6} align="right" verticalAlign="middle">
+                          <Button
+                            loading={selected === id}
+                            disabled={selected !== ''}
+                            onClick={() => selectAccount(id)}
+                          >
+                            {t('select-account.link-account')}
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Card>
+                  </Col>
+                ),
+              )}
+            </Row>
+          </DataList>
         </>
       )}
     </Connected>
