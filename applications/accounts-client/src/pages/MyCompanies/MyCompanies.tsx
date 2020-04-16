@@ -41,12 +41,7 @@ const MyCompanies: FC = () => {
             </Typography>
           </Card>
 
-          <LinkButton
-            block
-            id="add-company"
-            to="/my-companies/add-company"
-            size="lg"
-          >
+          <LinkButton block to="/my-companies/add-company" size="lg">
             {t('my-companies.add-company')}
           </LinkButton>
         </>
