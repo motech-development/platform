@@ -86,14 +86,6 @@ jobs:
           file: ./packages/serverless-outputs-env/coverage/coverage-final.json
       - sonarcloud/scan
 
-  smoke-test-accounts-client:
-    working_directory: ~/repo
-    steps:
-      - cypress/run:
-          start: npm start -- --scope=@motech-development/accounts-client
-          wait-on: http://localhost:3000
-          command: npm run e2e:ci -- --scope=@motech-development/accounts-client
-
   build-accounts-client:
     docker:
       - image: circleci/node:12.13
@@ -291,13 +283,17 @@ workflows:
           requires:
             - setup
 
-      - smoke-test-accounts-client:
+      - cypress/run:
+          name: smoke-test-accounts-client
+          command: npm run e2e:ci -- --scope=@motech-development/accounts-client
           filters:
             branches:
               only:
                 - /bugfix\/.*/
                 - /feature\/.*/
                 - /hotfix\/.*/
+          start: npm start -- --scope=@motech-development/accounts-client
+          wait-on: http://localhost:3000
           requires:
             - deploy-accounts-api-develop
 
