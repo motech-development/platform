@@ -35,5 +35,17 @@
       "telephone": "07726478934"
     },
     "name": "NoVAT co. Ltd"
+  },
+  {
+    "address": {
+      "line1": "Motech Towers"
+    },
+    "bank": {
+      "accountNumber": "74782147",
+      "sortCode": "347924"
+    },
+    "contact": {
+      "email": "update@motechdevelopment.co.uk"
+    }
   }
 ]

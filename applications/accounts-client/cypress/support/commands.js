@@ -65,15 +65,16 @@ Cypress.Commands.add(
     });
   },
 );
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('format', (type, value) => {
+  switch (type) {
+    case 'percentage':
+      return `${value}%`;
+    case 'sort code':
+      return value.replace(/(\d{2})(\d{2})(\d{2})/, '$1-$2-$3');
+    case 'VAT registration':
+      return `GB${value}`;
+    default:
+      throw new Error('Format unknown');
+  }
+});
