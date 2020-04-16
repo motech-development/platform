@@ -329,8 +329,8 @@ workflows:
                 - /bugfix\/.*/
                 - /feature\/.*/
                 - /hotfix\/.*/
-            requires:
-              - build-accounts-client-develop
+          requires:
+            - build-accounts-client-develop
 
       - cypress/run:
           name: smoke-test-accounts-client
