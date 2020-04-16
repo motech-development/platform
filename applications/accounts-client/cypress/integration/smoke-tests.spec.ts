@@ -275,6 +275,160 @@ describe('Smoke tests', () => {
     });
   });
 
+  describe('Clients', () => {
+    beforeEach(() => {
+      cy.get('a:contains("Select company")')
+        .eq(0)
+        .click();
+
+      cy.wait(1000);
+
+      cy.get('a:contains("Manage clients")').click();
+
+      cy.wait(1000);
+
+      cy.url().should('include', 'http://localhost:3000/my-companies/clients/');
+
+      cy.wait(1000);
+    });
+
+    afterEach(() => {
+      cy.url().should('include', 'http://localhost:3000/my-companies/clients/');
+    });
+
+    it('should add client 1', () => {
+      cy.fixture('client.json').then(res => {
+        const client = res[0];
+
+        cy.get('a:contains("Add a new client")').click();
+
+        cy.wait(1000);
+
+        cy.get('input[id="name"]').type(client.name);
+        cy.get('input[id="address.line1"]').type(client.address.line1);
+        cy.get('input[id="address.line3"]').type(client.address.line3);
+        cy.get('input[id="address.line5"]').type(client.address.line5);
+        cy.get('input[id="contact.email"]').type(client.contact.email);
+        cy.get('input[id="contact.telephone"]').type(client.contact.telephone);
+
+        cy.get('button[type="submit"]').click();
+      });
+    });
+
+    it('should add client 2', () => {
+      cy.fixture('client.json').then(res => {
+        const client = res[1];
+
+        cy.get('a:contains("Add a new client")').click();
+
+        cy.wait(1000);
+
+        cy.get('input[id="name"]').type(client.name);
+        cy.get('input[id="address.line1"]').type(client.address.line1);
+        cy.get('input[id="address.line2"]').type(client.address.line2);
+        cy.get('input[id="address.line3"]').type(client.address.line3);
+        cy.get('input[id="address.line4"]').type(client.address.line4);
+        cy.get('input[id="address.line5"]').type(client.address.line5);
+        cy.get('input[id="contact.email"]').type(client.contact.email);
+        cy.get('input[id="contact.telephone"]').type(client.contact.telephone);
+
+        cy.get('button[type="submit"]').click();
+      });
+    });
+
+    it('should add client 3', () => {
+      cy.fixture('client.json').then(res => {
+        const client = res[2];
+
+        cy.get('a:contains("Add a new client")').click();
+
+        cy.wait(1000);
+
+        cy.get('input[id="name"]').type(client.name);
+        cy.get('input[id="address.line1"]').type(client.address.line1);
+        cy.get('input[id="address.line3"]').type(client.address.line3);
+        cy.get('input[id="address.line4"]').type(client.address.line4);
+        cy.get('input[id="address.line5"]').type(client.address.line5);
+        cy.get('input[id="contact.email"]').type(client.contact.email);
+        cy.get('input[id="contact.telephone"]').type(client.contact.telephone);
+
+        cy.get('button[type="submit"]').click();
+      });
+    });
+
+    it('should update client 2', () => {
+      cy.fixture('client.json').then(res => {
+        const client = res[1];
+        const updated = res[3];
+
+        cy.get('a:contains("Manage client details")')
+          .eq(1)
+          .click();
+
+        cy.wait(1000);
+
+        cy.get('input[id="name"]')
+          .should('have.value', client.name)
+          .clear()
+          .type(updated.name);
+        cy.get('input[id="address.line1"]').should(
+          'have.value',
+          client.address.line1,
+        );
+        cy.get('input[id="address.line2"]').should(
+          'have.value',
+          client.address.line2,
+        );
+        cy.get('input[id="address.line3"]').should(
+          'have.value',
+          client.address.line3,
+        );
+        cy.get('input[id="address.line4"]').should(
+          'have.value',
+          client.address.line4,
+        );
+        cy.get('input[id="address.line5"]').should(
+          'have.value',
+          client.address.line5,
+        );
+        cy.get('input[id="contact.email"]').should(
+          'have.value',
+          client.contact.email,
+        );
+        cy.get('input[id="contact.telephone"]').should(
+          'have.value',
+          client.contact.telephone,
+        );
+
+        cy.get('button[type="submit"]').click();
+      });
+    });
+
+    it('should delete client 3', () => {
+      cy.fixture('client.json').then(res => {
+        const client = res[2];
+
+        cy.get('a:contains("Manage client details")')
+          .eq(0)
+          .click();
+
+        cy.wait(1000);
+
+        cy.get(`button:contains("Delete ${client.name}")`).click();
+
+        cy.wait(1000);
+
+        cy.get('input[id="confirmation"]')
+          .focus()
+          .type(client.name);
+
+        cy.get('button[type="submit"]')
+          .eq(1)
+          .click();
+      });
+    });
+  });
+
   describe('Delete company', () => {
     afterEach(() => {
       cy.url().should('eq', 'http://localhost:3000/my-companies');
