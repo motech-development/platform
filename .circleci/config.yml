@@ -322,6 +322,7 @@ workflows:
       #       - build-accounts-client-develop
 
       - cypress/install:
+          attach-workspace: true
           cache-key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           filters:
             branches:
