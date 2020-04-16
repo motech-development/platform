@@ -18,7 +18,7 @@ restore_cache: &restore_cache
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
   codecov: codecov/codecov@1.0.2
-  cypress: cypress-io/cypress@1
+  # cypress: cypress-io/cypress@1
   sonarcloud: sonarsource/sonarcloud@1.0.1
 
 jobs:
@@ -85,6 +85,27 @@ jobs:
       - codecov/upload:
           file: ./packages/serverless-outputs-env/coverage/coverage-final.json
       - sonarcloud/scan
+
+  smoke-test-accounts-client:
+    docker:
+      - image: cypress/base:12.14.0
+        environment:
+          TERM: xterm
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      - run:
+          background: true
+          command: npm start -- --scope=@motech-development/accounts-client
+          name: Start application
+      - run:
+          command: npx wait-on http://localhost:3000
+          name: Wait for application to start
+      - run:
+          command: npm run e2e:ci -- --scope=@motech-development/accounts-client
+          name: Smoke tests
 
   build-accounts-client:
     docker:
@@ -283,25 +304,35 @@ workflows:
       #     requires:
       #       - setup
 
-      - cypress/run:
-          post-checkout:
-            - run: ls -ltra
-          name: smoke-test-accounts-client
-          attach-workspace: true
-          # cache-key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
-          command: npm run e2e:ci -- --scope=@motech-development/accounts-client
+      - smoke-test-accounts-client:
           filters:
             branches:
               only:
                 - /bugfix\/.*/
                 - /feature\/.*/
                 - /hotfix\/.*/
-          # start: npm start -- --scope=@motech-development/accounts-client
-          start: ls -ltra
-          # wait-on: http://localhost:3000
-          # working_directory: /home/circleci/repo
           requires:
             - setup
+
+      # - cypress/run:
+      #     post-checkout:
+      #       - run: ls -ltra
+      #     name: smoke-test-accounts-client
+      #     attach-workspace: true
+      #     # cache-key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
+      #     command: npm run e2e:ci -- --scope=@motech-development/accounts-client
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     # start: npm start -- --scope=@motech-development/accounts-client
+      #     start: ls -ltra
+      #     # wait-on: http://localhost:3000
+      #     # working_directory: /home/circleci/repo
+      #     requires:
+      #       - setup
 
       # - build-accounts-client:
       #     name: build-accounts-client-production
