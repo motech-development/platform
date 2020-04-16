@@ -12,8 +12,8 @@ generate_cache_key: &generate_cache_key
 restore_cache: &restore_cache
   restore_cache:
     keys:
-      - accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
-      - accounts-dependencies-v1-
+      - accounts-dependencies-v2-{{ checksum "./checksum.txt" }}
+      - accounts-dependencies-v2-
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
@@ -36,7 +36,7 @@ jobs:
           command: npm run lint
           name: Lint code
       - save_cache:
-          key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
+          key: accounts-dependencies-v2-{{ checksum "./checksum.txt" }}
           paths:
             - .cache/Cypress
             - node_modules
