@@ -299,7 +299,7 @@ workflows:
           # start: npm start -- --scope=@motech-development/accounts-client
           start: ls -ltra
           # wait-on: http://localhost:3000
-          working_directory: /home/circleci/repo
+          # working_directory: /home/circleci/repo
           requires:
             - setup
 
