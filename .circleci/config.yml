@@ -107,6 +107,10 @@ jobs:
       - run:
           command: npm run e2e:ci -- --scope=@motech-development/accounts-client
           name: Smoke tests
+      - store_artifacts:
+          path: applications/accounts-client/cypress/videos
+      - store_artifacts:
+          path: applications/accounts-client/cypress/screenshots
 
   build-accounts-client:
     docker:
