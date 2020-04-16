@@ -101,6 +101,9 @@ jobs:
           command: mv -v /home/circleci/repo/node_modules .
           name: Move node modules
       - run:
+          command: mv -v /home/circleci/.cache ~/
+          name: Move Cypress cache
+      - run:
           command: ls -ltra
           name: View directory
       # - run:
