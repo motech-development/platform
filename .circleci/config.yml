@@ -1,3 +1,5 @@
+# TODO: Separate cache for Cypress binary to speed things up
+# TODO: Cypress reports
 version: 2.1
 
 attach_workspace: &attach_workspace
@@ -96,19 +98,12 @@ jobs:
       - checkout
       - <<: *attach_workspace
       - <<: *restore_cache
-      # TODO: Use cache instead of reinstalling
       - run:
           command: mv -v /home/circleci/repo/node_modules .
           name: Move node modules
       - run:
           command: mv -v /home/circleci/.cache ~/
           name: Move Cypress cache
-      - run:
-          command: ls -ltra
-          name: View directory
-      # - run:
-      #     command: npm i
-      #     name: Install dependencies
       - run:
           background: true
           command: npx serve -s ./applications/accounts-client/build --listen 3000
