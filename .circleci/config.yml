@@ -38,6 +38,7 @@ jobs:
       - save_cache:
           key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           paths:
+            - .cache/Cypress
             - node_modules
             - applications/accounts-api/node_modules
             - applications/accounts-client/node_modules
@@ -99,6 +100,9 @@ jobs:
       - run:
           command: mv -v /home/circleci/repo/node_modules .
           name: Move node modules
+      - run:
+          command: mv -v /home/circleci/repo/.cache/Cypress .
+          name: Move Cypress binary
       - run:
           command: ls -ltra
           name: View directory
