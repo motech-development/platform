@@ -193,6 +193,7 @@ jobs:
       - persist_to_workspace:
           paths:
             - ./applications/accounts-client/.env.production
+            - ./applications/accounts-client/.env.local
           root: .
 
   deploy-accounts-api-production:
