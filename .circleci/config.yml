@@ -318,28 +318,24 @@ workflows:
                 - /hotfix\/.*/
           requires:
             - smoke-test-accounts-client
-
       # - deploy-infrastructure:
       #     filters:
       #       branches:
       #         only: master
       #     requires:
       #       - unit-test
-
-      - deploy-accounts-infrastructure:
-          filters:
-            branches:
-              only: master
-          requires:
-            - deploy-infrastructure
-
+      # - deploy-accounts-infrastructure:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - deploy-infrastructure
       # - deploy-accounts-data-production:
       #     filters:
       #       branches:
       #         only: master
       #     requires:
       #       - unit-test
-
       # - deploy-accounts-data-develop:
       #     filters:
       #       branches:
@@ -349,31 +345,27 @@ workflows:
       #           - /hotfix\/.*/
       #     requires:
       #       - unit-test
-
-      - deploy-accounts-queue-production:
-          filters:
-            branches:
-              only: master
-          requires:
-            - deploy-open-banking-production
-
-      - deploy-accounts-queue-develop:
-          filters:
-            branches:
-              only:
-                - /bugfix\/.*/
-                - /feature\/.*/
-                - /hotfix\/.*/
-          requires:
-            - deploy-open-banking-develop
-
+      # - deploy-accounts-queue-production:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - deploy-open-banking-production
+      # - deploy-accounts-queue-develop:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     requires:
+      #       - deploy-open-banking-develop
       # - deploy-open-banking-production:
       #     filters:
       #       branches:
       #         only: master
       #     requires:
       #       - unit-test
-
       # - deploy-open-banking-develop:
       #     filters:
       #       branches:
@@ -383,33 +375,29 @@ workflows:
       #           - /hotfix\/.*/
       #     requires:
       #       - unit-test
-
-      - deploy-accounts-api-production:
-          requires:
-            - deploy-accounts-data-production
-            - deploy-accounts-queue-production
-            - deploy-open-banking-production
-
-      - deploy-accounts-api-develop:
-          requires:
-            - deploy-accounts-data-develop
-            - deploy-accounts-queue-develop
-            - deploy-open-banking-develop
-
+      # - deploy-accounts-api-production:
+      #     requires:
+      #       - deploy-accounts-data-production
+      #       - deploy-accounts-queue-production
+      #       - deploy-open-banking-production
+      # - deploy-accounts-api-develop:
+      #     requires:
+      #       - deploy-accounts-data-develop
+      #       - deploy-accounts-queue-develop
+      #       - deploy-open-banking-develop
       # - deploy-auth0:
       #     filters:
       #       branches:
       #         only: master
       #     requires:
       #       - unit-test
-
-      - deploy-accounts-client:
-          filters:
-            branches:
-              only: master
-          requires:
-            - deploy-accounts-infrastructure
-            - build-accounts-client-production
+      # - deploy-accounts-client:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - deploy-accounts-infrastructure
+      #       - build-accounts-client-production
       # - deploy-storybook:
       #     filters:
       #       branches:
