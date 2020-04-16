@@ -97,11 +97,14 @@ jobs:
       - <<: *restore_cache
       # TODO: Use cache instead of reinstalling
       - run:
+          command: mv -v /home/circleci/repo/node_modules .
+          name: Move node modules
+      - run:
           command: ls -ltra
           name: View directory
-      - run:
-          command: npm i
-          name: Install dependencies
+      # - run:
+      #     command: npm i
+      #     name: Install dependencies
       - run:
           background: true
           command: npx serve -s ./applications/accounts-client/build --listen 3000
