@@ -296,7 +296,7 @@ workflows:
                 - /hotfix\/.*/
           start: npm start -- --scope=@motech-development/accounts-client
           # wait-on: http://localhost:3000
-          # working_directory: ~/repo
+          working_directory: /home/circleci/repo
           requires:
             - setup
 
