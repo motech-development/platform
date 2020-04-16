@@ -33,9 +33,9 @@ jobs:
       - run:
           command: npm i
           name: Install dependencies
-      - run:
-          command: npm run lint
-          name: Lint code
+      # - run:
+      #     command: npm run lint
+      #     name: Lint code
       - save_cache:
           key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           paths:
@@ -288,7 +288,7 @@ workflows:
             - run: ls -ltra
           name: smoke-test-accounts-client
           attach-workspace: true
-          cache-key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
+          # cache-key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           command: npm run e2e:ci -- --scope=@motech-development/accounts-client
           filters:
             branches:
