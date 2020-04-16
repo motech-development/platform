@@ -285,6 +285,8 @@ workflows:
 
       - cypress/run:
           name: smoke-test-accounts-client
+          attach-workspace: true
+          cache-key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           command: npm run e2e:ci -- --scope=@motech-development/accounts-client
           filters:
             branches:
