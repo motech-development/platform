@@ -6,6 +6,7 @@
   "scripts": {
     "build": "react-app-rewired build",
     "deploy": "serverless client deploy --verbose --no-confirm",
+    "e2e": "cypress open",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
