@@ -300,13 +300,13 @@ workflows:
           requires:
             - setup
 
-      - build-accounts-client:
-          name: build-accounts-client-production
-          filters:
-            branches:
-              only: master
-          requires:
-            - deploy-accounts-api-production
+      # - build-accounts-client:
+      #     name: build-accounts-client-production
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - deploy-accounts-api-production
 
       - build-accounts-client:
           name: build-accounts-client-develop
