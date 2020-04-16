@@ -284,6 +284,8 @@ workflows:
       #       - setup
 
       - cypress/run:
+          post-checkout:
+            - run: ls -ltra
           name: smoke-test-accounts-client
           attach-workspace: true
           cache-key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
