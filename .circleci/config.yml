@@ -285,7 +285,7 @@ workflows:
 
       - cypress/run:
           name: smoke-test-accounts-client
-          attach-workspace: true
+          # attach-workspace: true
           cache-key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           command: npm run e2e:ci -- --scope=@motech-development/accounts-client
           filters:
@@ -295,8 +295,8 @@ workflows:
                 - /feature\/.*/
                 - /hotfix\/.*/
           start: npm start -- --scope=@motech-development/accounts-client
-          wait-on: http://localhost:3000
-          working_directory: ~/repo
+          # wait-on: http://localhost:3000
+          # working_directory: ~/repo
           requires:
             - setup
 
