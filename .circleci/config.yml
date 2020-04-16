@@ -18,7 +18,6 @@ restore_cache: &restore_cache
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
   codecov: codecov/codecov@1.0.2
-  cypress: cypress-io/cypress@1
   sonarcloud: sonarsource/sonarcloud@1.0.1
 
 jobs:
@@ -33,9 +32,9 @@ jobs:
       - run:
           command: npm i
           name: Install dependencies
-      # - run:
-      #     command: npm run lint
-      #     name: Lint code
+      - run:
+          command: npm run lint
+          name: Lint code
       - save_cache:
           key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
           paths:
@@ -86,33 +85,37 @@ jobs:
           file: ./packages/serverless-outputs-env/coverage/coverage-final.json
       - sonarcloud/scan
 
-  # smoke-test-accounts-client:
-  #   docker:
-  #     - image: cypress/base:12.14.0
-  #       environment:
-  #         TERM: xterm
-  #   working_directory: ~/repo
-  #   steps:
-  #     - checkout
-  #     - <<: *attach_workspace
-  #     - <<: *restore_cache
-  #     - run:
-  #         command: npm i
-  #         name: Install dependencies
-  #     - run:
-  #         background: true
-  #         command: npx serve -s ./applications/accounts-client/build --listen 3000
-  #         name: Start application
-  #     - run:
-  #         command: npx wait-on http://localhost:3000
-  #         name: Wait for application to start
-  #     - run:
-  #         command: npm run e2e:ci -- --scope=@motech-development/accounts-client
-  #         name: Smoke tests
-  #     - store_artifacts:
-  #         path: applications/accounts-client/cypress/videos
-  #     - store_artifacts:
-  #         path: applications/accounts-client/cypress/screenshots
+  smoke-test-accounts-client:
+    docker:
+      - image: cypress/base:12.14.0
+        environment:
+          TERM: xterm
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_cache
+      # TODO: Use cache instead of reinstalling
+      - run:
+          command: ls -ltra
+          name: View directory
+      - run:
+          command: npm i
+          name: Install dependencies
+      - run:
+          background: true
+          command: npx serve -s ./applications/accounts-client/build --listen 3000
+          name: Start application
+      - run:
+          command: npx wait-on http://localhost:3000
+          name: Wait for application to start
+      - run:
+          command: npm run e2e:ci -- --scope=@motech-development/accounts-client
+          name: Smoke tests
+      - store_artifacts:
+          path: applications/accounts-client/cypress/videos
+      - store_artifacts:
+          path: applications/accounts-client/cypress/screenshots
 
   build-accounts-client:
     docker:
@@ -306,24 +309,12 @@ workflows:
               ignore:
                 - gh-pages
 
-      # - unit-test:
-      #     context: SonarCloud
-      #     requires:
-      #       - setup
+      - unit-test:
+          context: SonarCloud
+          requires:
+            - setup
 
-      # - smoke-test-accounts-client:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - /bugfix\/.*/
-      #           - /feature\/.*/
-      #           - /hotfix\/.*/
-      #     requires:
-      #       - build-accounts-client-develop
-
-      - cypress/install:
-          attach-workspace: true
-          cache-key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
+      - smoke-test-accounts-client:
           filters:
             branches:
               only:
@@ -332,16 +323,6 @@ workflows:
                 - /hotfix\/.*/
           requires:
             - build-accounts-client-develop
-
-      - cypress/run:
-          name: smoke-test-accounts-client
-          attach-workspace: true
-          cache-key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
-          command: npm run e2e:ci -- --scope=@motech-development/accounts-client
-          start: npx serve -s ./applications/accounts-client/build --listen 3000
-          wait-on: http://localhost:3000
-          requires:
-            - cypress/install
 
       - build-accounts-client:
           name: build-accounts-client-production
@@ -367,8 +348,7 @@ workflows:
             branches:
               only: master
           requires:
-            # - unit-test
-            - setup
+            - unit-test
 
       - deploy-accounts-infrastructure:
           filters:
@@ -382,8 +362,7 @@ workflows:
             branches:
               only: master
           requires:
-            # - unit-test
-            - setup
+            - unit-test
 
       - deploy-accounts-data-develop:
           filters:
@@ -393,8 +372,7 @@ workflows:
                 - /feature\/.*/
                 - /hotfix\/.*/
           requires:
-            # - unit-test
-            - setup
+            - unit-test
 
       - deploy-accounts-queue-production:
           filters:
@@ -418,8 +396,7 @@ workflows:
             branches:
               only: master
           requires:
-            # - unit-test
-            - setup
+            - unit-test
 
       - deploy-open-banking-develop:
           filters:
@@ -429,8 +406,7 @@ workflows:
                 - /feature\/.*/
                 - /hotfix\/.*/
           requires:
-            # - unit-test
-            - setup
+            - unit-test
 
       - deploy-accounts-api-production:
           requires:
@@ -449,8 +425,7 @@ workflows:
             branches:
               only: master
           requires:
-            # - unit-test
-            - setup
+            - unit-test
 
       - deploy-accounts-client:
           filters:
@@ -465,5 +440,4 @@ workflows:
             branches:
               only: master
           requires:
-            # - unit-test
-            - setup
+            - unit-test
