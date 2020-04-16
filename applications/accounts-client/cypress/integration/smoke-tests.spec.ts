@@ -27,19 +27,39 @@ describe('Smoke tests', () => {
       cy.fixture('company.json').then(res => {
         const company = res[0];
 
-        cy.get('input[id="name"]').type(company.name);
-        cy.get('input[id="companyNumber"]').type(company.companyNumber);
-        cy.get('input[id="vatRegistration"]').type(company.vatRegistration);
-        cy.get('input[id="bank.accountNumber"]').type(
-          company.bank.accountNumber,
-        );
-        cy.get('input[id="bank.sortCode"]').type(company.bank.sortCode);
-        cy.get('input[id="address.line1"]').type(company.address.line1);
-        cy.get('input[id="address.line2"]').type(company.address.line2);
-        cy.get('input[id="address.line3"]').type(company.address.line3);
-        cy.get('input[id="address.line5"]').type(company.address.line5);
-        cy.get('input[id="contact.email"]').type(company.contact.email);
-        cy.get('input[id="contact.telephone"]').type(company.contact.telephone);
+        cy.get('input[id="name"]')
+          .focus()
+          .type(company.name);
+        cy.get('input[id="companyNumber"]')
+          .focus()
+          .type(company.companyNumber);
+        cy.get('input[id="vatRegistration"]')
+          .focus()
+          .type(company.vatRegistration);
+        cy.get('input[id="bank.accountNumber"]')
+          .focus()
+          .type(company.bank.accountNumber);
+        cy.get('input[id="bank.sortCode"]')
+          .focus()
+          .type(company.bank.sortCode);
+        cy.get('input[id="address.line1"]')
+          .focus()
+          .type(company.address.line1);
+        cy.get('input[id="address.line2"]')
+          .focus()
+          .type(company.address.line2);
+        cy.get('input[id="address.line3"]')
+          .focus()
+          .type(company.address.line3);
+        cy.get('input[id="address.line5"]')
+          .focus()
+          .type(company.address.line5);
+        cy.get('input[id="contact.email"]')
+          .focus()
+          .type(company.contact.email);
+        cy.get('input[id="contact.telephone"]')
+          .focus()
+          .type(company.contact.telephone);
 
         cy.get('button[type="submit"]').click();
       });
@@ -49,18 +69,36 @@ describe('Smoke tests', () => {
       cy.fixture('company.json').then(res => {
         const company = res[1];
 
-        cy.get('input[id="name"]').type(company.name);
-        cy.get('input[id="companyNumber"]').type(company.companyNumber);
-        cy.get('input[id="bank.accountNumber"]').type(
-          company.bank.accountNumber,
-        );
-        cy.get('input[id="bank.sortCode"]').type(company.bank.sortCode);
-        cy.get('input[id="address.line1"]').type(company.address.line1);
-        cy.get('input[id="address.line3"]').type(company.address.line3);
-        cy.get('input[id="address.line4"]').type(company.address.line4);
-        cy.get('input[id="address.line5"]').type(company.address.line5);
-        cy.get('input[id="contact.email"]').type(company.contact.email);
-        cy.get('input[id="contact.telephone"]').type(company.contact.telephone);
+        cy.get('input[id="name"]')
+          .focus()
+          .type(company.name);
+        cy.get('input[id="companyNumber"]')
+          .focus()
+          .type(company.companyNumber);
+        cy.get('input[id="bank.accountNumber"]')
+          .focus()
+          .type(company.bank.accountNumber);
+        cy.get('input[id="bank.sortCode"]')
+          .focus()
+          .type(company.bank.sortCode);
+        cy.get('input[id="address.line1"]')
+          .focus()
+          .type(company.address.line1);
+        cy.get('input[id="address.line3"]')
+          .focus()
+          .type(company.address.line3);
+        cy.get('input[id="address.line4"]')
+          .focus()
+          .type(company.address.line4);
+        cy.get('input[id="address.line5"]')
+          .focus()
+          .type(company.address.line5);
+        cy.get('input[id="contact.email"]')
+          .focus()
+          .type(company.contact.email);
+        cy.get('input[id="contact.telephone"]')
+          .focus()
+          .type(company.contact.telephone);
 
         cy.get('button[type="submit"]').click();
       });
@@ -165,15 +203,15 @@ describe('Smoke tests', () => {
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.0.name"]').type(
-          settings.categories[0].name,
-        );
+        cy.get('input[id="categories.0.name"]')
+          .focus()
+          .type(settings.categories[0].name);
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.1.name"]').type(
-          settings.categories[1].name,
-        );
+        cy.get('input[id="categories.1.name"]')
+          .focus()
+          .type(settings.categories[1].name);
 
         cy.get('input[id="categories.1.vatRate"]')
           .clear()
@@ -304,12 +342,24 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
-        cy.get('input[id="name"]').type(client.name);
-        cy.get('input[id="address.line1"]').type(client.address.line1);
-        cy.get('input[id="address.line3"]').type(client.address.line3);
-        cy.get('input[id="address.line5"]').type(client.address.line5);
-        cy.get('input[id="contact.email"]').type(client.contact.email);
-        cy.get('input[id="contact.telephone"]').type(client.contact.telephone);
+        cy.get('input[id="name"]')
+          .focus()
+          .type(client.name);
+        cy.get('input[id="address.line1"]')
+          .focus()
+          .type(client.address.line1);
+        cy.get('input[id="address.line3"]')
+          .focus()
+          .type(client.address.line3);
+        cy.get('input[id="address.line5"]')
+          .focus()
+          .type(client.address.line5);
+        cy.get('input[id="contact.email"]')
+          .focus()
+          .type(client.contact.email);
+        cy.get('input[id="contact.telephone"]')
+          .focus()
+          .type(client.contact.telephone);
 
         cy.get('button[type="submit"]').click();
       });
@@ -323,14 +373,30 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
-        cy.get('input[id="name"]').type(client.name);
-        cy.get('input[id="address.line1"]').type(client.address.line1);
-        cy.get('input[id="address.line2"]').type(client.address.line2);
-        cy.get('input[id="address.line3"]').type(client.address.line3);
-        cy.get('input[id="address.line4"]').type(client.address.line4);
-        cy.get('input[id="address.line5"]').type(client.address.line5);
-        cy.get('input[id="contact.email"]').type(client.contact.email);
-        cy.get('input[id="contact.telephone"]').type(client.contact.telephone);
+        cy.get('input[id="name"]')
+          .focus()
+          .type(client.name);
+        cy.get('input[id="address.line1"]')
+          .focus()
+          .type(client.address.line1);
+        cy.get('input[id="address.line2"]')
+          .focus()
+          .type(client.address.line2);
+        cy.get('input[id="address.line3"]')
+          .focus()
+          .type(client.address.line3);
+        cy.get('input[id="address.line4"]')
+          .focus()
+          .type(client.address.line4);
+        cy.get('input[id="address.line5"]')
+          .focus()
+          .type(client.address.line5);
+        cy.get('input[id="contact.email"]')
+          .focus()
+          .type(client.contact.email);
+        cy.get('input[id="contact.telephone"]')
+          .focus()
+          .type(client.contact.telephone);
 
         cy.get('button[type="submit"]').click();
       });
@@ -344,13 +410,27 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
-        cy.get('input[id="name"]').type(client.name);
-        cy.get('input[id="address.line1"]').type(client.address.line1);
-        cy.get('input[id="address.line3"]').type(client.address.line3);
-        cy.get('input[id="address.line4"]').type(client.address.line4);
-        cy.get('input[id="address.line5"]').type(client.address.line5);
-        cy.get('input[id="contact.email"]').type(client.contact.email);
-        cy.get('input[id="contact.telephone"]').type(client.contact.telephone);
+        cy.get('input[id="name"]')
+          .focus()
+          .type(client.name);
+        cy.get('input[id="address.line1"]')
+          .focus()
+          .type(client.address.line1);
+        cy.get('input[id="address.line3"]')
+          .focus()
+          .type(client.address.line3);
+        cy.get('input[id="address.line4"]')
+          .focus()
+          .type(client.address.line4);
+        cy.get('input[id="address.line5"]')
+          .focus()
+          .type(client.address.line5);
+        cy.get('input[id="contact.email"]')
+          .focus()
+          .type(client.contact.email);
+        cy.get('input[id="contact.telephone"]')
+          .focus()
+          .type(client.contact.telephone);
 
         cy.get('button[type="submit"]').click();
       });
