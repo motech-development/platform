@@ -278,10 +278,10 @@ workflows:
               ignore:
                 - gh-pages
 
-      - unit-test:
-          context: SonarCloud
-          requires:
-            - setup
+      # - unit-test:
+      #     context: SonarCloud
+      #     requires:
+      #       - setup
 
       - cypress/run:
           name: smoke-test-accounts-client
@@ -296,8 +296,9 @@ workflows:
                 - /hotfix\/.*/
           start: npm start -- --scope=@motech-development/accounts-client
           wait-on: http://localhost:3000
+          working_directory: ~/repo
           requires:
-            - deploy-accounts-api-develop
+            - setup
 
       - build-accounts-client:
           name: build-accounts-client-production
@@ -318,12 +319,12 @@ workflows:
           requires:
             - smoke-test-accounts-client
 
-      - deploy-infrastructure:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
+      # - deploy-infrastructure:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - unit-test
 
       - deploy-accounts-infrastructure:
           filters:
@@ -332,22 +333,22 @@ workflows:
           requires:
             - deploy-infrastructure
 
-      - deploy-accounts-data-production:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
+      # - deploy-accounts-data-production:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - unit-test
 
-      - deploy-accounts-data-develop:
-          filters:
-            branches:
-              only:
-                - /bugfix\/.*/
-                - /feature\/.*/
-                - /hotfix\/.*/
-          requires:
-            - unit-test
+      # - deploy-accounts-data-develop:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     requires:
+      #       - unit-test
 
       - deploy-accounts-queue-production:
           filters:
@@ -366,22 +367,22 @@ workflows:
           requires:
             - deploy-open-banking-develop
 
-      - deploy-open-banking-production:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
+      # - deploy-open-banking-production:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - unit-test
 
-      - deploy-open-banking-develop:
-          filters:
-            branches:
-              only:
-                - /bugfix\/.*/
-                - /feature\/.*/
-                - /hotfix\/.*/
-          requires:
-            - unit-test
+      # - deploy-open-banking-develop:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     requires:
+      #       - unit-test
 
       - deploy-accounts-api-production:
           requires:
@@ -395,12 +396,12 @@ workflows:
             - deploy-accounts-queue-develop
             - deploy-open-banking-develop
 
-      - deploy-auth0:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
+      # - deploy-auth0:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - unit-test
 
       - deploy-accounts-client:
           filters:
@@ -409,17 +410,9 @@ workflows:
           requires:
             - deploy-accounts-infrastructure
             - build-accounts-client-production
-
-      - deploy-auth0:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
-
-      - deploy-storybook:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
+      # - deploy-storybook:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - unit-test
