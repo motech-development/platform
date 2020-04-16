@@ -94,11 +94,9 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - <<: *attach_workspace
-      - <<: *restore_cache
       - run:
-          command: ls -ltra
-          name: Output dir
+          command: npm i
+          name: Install dependencies
       - run:
           background: true
           command: npm start -- --scope=@motech-development/accounts-client
