@@ -18,6 +18,7 @@ restore_cache: &restore_cache
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
   codecov: codecov/codecov@1.0.2
+  cypress: cypress-io/cypress@1
   sonarcloud: sonarsource/sonarcloud@1.0.1
 
 jobs:
@@ -84,6 +85,14 @@ jobs:
       - codecov/upload:
           file: ./packages/serverless-outputs-env/coverage/coverage-final.json
       - sonarcloud/scan
+
+  smoke-test-accounts-client:
+    working_directory: ~/repo
+    steps:
+      - cypress/run:
+          start: npm start -- --scope=@motech-development/accounts-client
+          wait-on: http://localhost:3000
+          command: npm run e2e:ci -- --scope=@motech-development/accounts-client
 
   build-accounts-client:
     docker:
@@ -282,6 +291,16 @@ workflows:
           requires:
             - setup
 
+      - smoke-test-accounts-client:
+          filters:
+            branches:
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
+          requires:
+            - deploy-accounts-api-develop
+
       - build-accounts-client:
           name: build-accounts-client-production
           filters:
@@ -299,7 +318,7 @@ workflows:
                 - /feature\/.*/
                 - /hotfix\/.*/
           requires:
-            - deploy-accounts-api-develop
+            - smoke-test-accounts-client
 
       - deploy-infrastructure:
           filters:

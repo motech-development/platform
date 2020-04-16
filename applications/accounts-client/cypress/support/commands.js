@@ -1,30 +1,19 @@
 /* eslint-disable no-undef */
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
+
 Cypress.Commands.add(
   'login',
-  (username = Cypress.env('username'), password = Cypress.env('password')) => {
+  (username = Cypress.env('USERNAME'), password = Cypress.env('PASSWORD')) => {
     const options = {
       body: {
-        audience: Cypress.env('auth_audience'),
-        client_id: Cypress.env('auth_client_id'),
+        audience: Cypress.env('AUDIENCE'),
+        client_id: Cypress.env('CLIENT_ID'),
         grant_type: 'password',
         password,
         scope: 'openid profile email',
         username,
       },
       method: 'POST',
-      url: Cypress.env('auth_url'),
+      url: Cypress.env('AUTH_URL'),
     };
 
     cy.request(options).then(({ body }) => {
@@ -54,7 +43,7 @@ Cypress.Commands.add(
             appState: {
               targetUrl: '/my-companies',
             },
-            audience: Cypress.env('auth_audience'),
+            audience: Cypress.env('AUDIENCE'),
             redirect_uri: 'http://localhost:3000/my-companies',
             scope: 'openid profile email',
           }),
