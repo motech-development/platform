@@ -11,57 +11,60 @@
 //
 //
 // -- This is a parent command --
-Cypress.Commands.add('login', (username, password) => {
-  const options = {
-    body: {
-      audience: Cypress.env('auth_audience'),
-      client_id: Cypress.env('auth_client_id'),
-      client_secret: Cypress.env('auth_client_secret'),
-      grant_type: 'password',
-      password,
-      scope: 'openid profile email',
-      username,
-    },
-    method: 'POST',
-    url: Cypress.env('auth_url'),
-  };
-
-  cy.request(options).then(({ body }) => {
-    // eslint-disable-next-line camelcase
-    const { access_token, expires_in, id_token } = body;
-
-    cy.server();
-
-    cy.route({
-      method: 'POST',
-      response: {
-        access_token,
-        expires_in,
-        id_token,
+Cypress.Commands.add(
+  'login',
+  (username = Cypress.env('username'), password = Cypress.env('password')) => {
+    const options = {
+      body: {
+        audience: Cypress.env('auth_audience'),
+        client_id: Cypress.env('auth_client_id'),
+        grant_type: 'password',
+        password,
         scope: 'openid profile email',
-        token_type: 'Bearer',
+        username,
       },
-      url: 'oauth/token',
-    });
+      method: 'POST',
+      url: Cypress.env('auth_url'),
+    };
 
-    const stateId = 'test';
+    cy.request(options).then(({ body }) => {
+      // eslint-disable-next-line camelcase
+      const { access_token, expires_in, id_token } = body;
 
-    cy.setCookie(
-      `a0.spajs.txs.${stateId}`,
-      encodeURIComponent(
-        JSON.stringify({
-          appState: '/',
-          audience: Cypress.env('auth_audience'),
-          redirect_uri: 'http://localhost:3000',
+      cy.server();
+
+      cy.route({
+        method: 'POST',
+        response: {
+          access_token,
+          expires_in,
+          id_token,
           scope: 'openid profile email',
-        }),
-      ),
-    ).then(() => {
-      // ?code=uxpMEMlxtlozJ11D&state=cV9sYTY0bHlhM1VxeHd2a0JOVEpUcGJobFRvQjYwNUJqalNCS2guaHotNQ%3D%3D
-      cy.visit(`/?code=test-code&state=${stateId}`);
+          token_type: 'Bearer',
+        },
+        url: 'oauth/token',
+      });
+
+      const stateId = 'test';
+
+      cy.setCookie(
+        `a0.spajs.txs.${stateId}`,
+        encodeURIComponent(
+          JSON.stringify({
+            appState: {
+              targetUrl: '/my-companies',
+            },
+            audience: Cypress.env('auth_audience'),
+            redirect_uri: 'http://localhost:3000/my-companies',
+            scope: 'openid profile email',
+          }),
+        ),
+      ).then(() => {
+        cy.visit(`/?code=test-code&state=${stateId}`);
+      });
     });
-  });
-});
+  },
+);
 //
 //
 // -- This is a child command --
