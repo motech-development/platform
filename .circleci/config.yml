@@ -101,7 +101,7 @@ jobs:
           name: Install dependencies
       - run:
           background: true
-          command: npm start -- --scope=@motech-development/accounts-client
+          command: npx serve -s ./applications/accounts-client/build --listen 3000
           name: Start application
       - run:
           command: npx wait-on http://localhost:3000
@@ -193,7 +193,6 @@ jobs:
       - persist_to_workspace:
           paths:
             - ./applications/accounts-client/.env.production
-            - ./applications/accounts-client/.env.local
           root: .
 
   deploy-accounts-api-production:
@@ -320,7 +319,7 @@ workflows:
                 - /feature\/.*/
                 - /hotfix\/.*/
           requires:
-            - deploy-accounts-api-develop
+            - build-accounts-client-develop
 
       # - cypress/run:
       #     post-checkout:
@@ -359,7 +358,7 @@ workflows:
                 - /feature\/.*/
                 - /hotfix\/.*/
           requires:
-            - smoke-test-accounts-client
+            - deploy-accounts-api-develop
 
       - deploy-infrastructure:
           filters:
