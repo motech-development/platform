@@ -91,7 +91,7 @@ jobs:
       - image: cypress/base:12.14.0
         environment:
           TERM: xterm
-    working_directory: ~/repo
+    working_directory: /home/circleci/repo
     steps:
       - checkout
       - <<: *attach_workspace
