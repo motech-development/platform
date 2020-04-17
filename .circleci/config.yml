@@ -37,8 +37,8 @@ jobs:
     steps:
       - checkout
       - <<: *generate_cache_key
-      - <<: *restore_dependencies
-      - <<: *restore_cache
+      # - <<: *restore_dependencies
+      # - <<: *restore_cache
       - run:
           command: npm i
           name: Install dependencies
