@@ -31,6 +31,8 @@ clients:
       - authorization_code
       - implicit
       - refresh_token
+      - password
+      - 'http://auth0.com/oauth/grant-type/password-realm'
     is_first_party: true
     is_token_endpoint_ip_header_trusted: false
     jwt_configuration:
@@ -43,6 +45,9 @@ clients:
       facebook:
         enabled: false
     oidc_conformant: true
+    refresh_token:
+      rotation_type: non-rotating
+      expiration_type: non-expiring
     sso_disabled: false
     token_endpoint_auth_method: none
     web_origins:
@@ -141,6 +146,8 @@ connections:
         - profile
       profile: true
 tenant:
+  default_audience: ''
+  default_directory: Username-Password-Authentication
   enabled_locales:
     - en
   flags:
@@ -148,6 +155,10 @@ tenant:
     universal_login: false
     disable_clickjack_protection_headers: false
     enable_mgmt_api_v1: true
+  friendly_name: Motech Development
+  picture_url: ''
+  support_email: info@motechdevelopment.co.uk
+  support_url: 'https://motechdevelopment.co.uk/support'
   universal_login:
     colors:
       page_background: '#161616'
@@ -176,4 +187,5 @@ branding:
   colors:
     page_background: '#161616'
     primary: '#2e9dc8'
+  logo_url: ''
 prompts: {}

@@ -17,6 +17,9 @@ while read -r -d ''; do
 	FILES+=("$REPLY")
 done < <(find . -name 'package.json' -type f -print0)
 
+# Add CircleCI config so we can cache bust whenever the config changes
+FILES+=(".circleci/config.yml")
+
 # Loop through files and append MD5 to result file
 for FILE in ${FILES[@]}; do
 	echo $(checksum_file $FILE) >> $RESULT_FILE

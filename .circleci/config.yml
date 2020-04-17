@@ -9,11 +9,19 @@ generate_cache_key: &generate_cache_key
     command: ./scripts/checksum.sh ./checksum.txt
     name: Generate cache key
 
-restore_cache: &restore_cache
+restore_dependencies: &restore_dependencies
   restore_cache:
     keys:
       - accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
       - accounts-dependencies-v1-
+    name: Restore dependencies
+
+restore_cache: &restore_cache
+  restore_cache:
+    keys:
+      - accounts-cache-v1-{{ checksum "./checksum.txt" }}
+      - accounts-cache-v1-
+    name: Restore cache
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
@@ -28,6 +36,7 @@ jobs:
     steps:
       - checkout
       - <<: *generate_cache_key
+      - <<: *restore_dependencies
       - <<: *restore_cache
       - run:
           command: npm i
@@ -37,6 +46,7 @@ jobs:
           name: Lint code
       - save_cache:
           key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
+          name: Save dependencies
           paths:
             - node_modules
             - applications/accounts-api/node_modules
@@ -50,6 +60,11 @@ jobs:
             - packages/auth/node_modules
             - packages/breeze-ui/node_modules
             - packages/serverless-outputs-env/node_modules
+      - save_cache:
+          key: accounts-cache-v1-{{ checksum "./checksum.txt" }}
+          name: Save cache
+          paths:
+            - ~/.cache
       - persist_to_workspace:
           paths:
             - ./checksum.txt
@@ -63,7 +78,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run test:ci
           name: Unit test
@@ -85,6 +100,40 @@ jobs:
           file: ./packages/serverless-outputs-env/coverage/coverage-final.json
       - sonarcloud/scan
 
+  smoke-test-accounts-client:
+    docker:
+      - image: cypress/base:12.14.0
+        environment:
+          TERM: xterm
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - <<: *restore_cache
+      - run:
+          command: mv -v /home/circleci/repo/node_modules .
+          name: Move node modules
+      - run:
+          command: mv -v /home/circleci/.cache ~/
+          name: Move Cypress cache
+      - run:
+          background: true
+          command: npx serve -s ./applications/accounts-client/build --listen 3000
+          name: Start application
+      - run:
+          command: npx wait-on http://localhost:3000
+          name: Wait for application to start
+      - run:
+          command: npm run e2e:ci -- --scope=@motech-development/accounts-client
+          name: Smoke tests
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: applications/accounts-client/cypress/videos
+      - store_artifacts:
+          path: applications/accounts-client/cypress/screenshots
+
   build-accounts-client:
     docker:
       - image: circleci/node:12.13
@@ -92,7 +141,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run build -- --scope=@motech-development/accounts-client
           name: Build client
@@ -108,7 +157,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/accounts-infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy accounts infrastructure
@@ -121,7 +170,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/accounts-client -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy accounts client
@@ -133,7 +182,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/accounts-data -- -- --stage develop
           name: Deploy accounts data infrastructure
@@ -145,7 +194,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/accounts-data -- -- --stage production
           name: Deploy accounts data infrastructure
@@ -157,7 +206,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage develop
           name: Deploy accounts API
@@ -173,7 +222,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage production
           name: Deploy accounts API
@@ -189,7 +238,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/accounts-queue -- -- --stage develop
           name: Deploy accounts queue infrastructure
@@ -201,7 +250,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/accounts-queue -- -- --stage production
           name: Deploy accounts queue infrastructure
@@ -213,7 +262,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage develop --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
           name: Deploy open banking API
@@ -225,7 +274,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage production --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
           name: Deploy open banking API
@@ -237,7 +286,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/id
           name: Deploy to Auth0
@@ -249,7 +298,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy infrastructure
@@ -261,7 +310,7 @@ jobs:
     steps:
       - checkout
       - <<: *attach_workspace
-      - <<: *restore_cache
+      - <<: *restore_dependencies
       - run:
           command: npm run deploy -- --scope=@motech-development/breeze-ui
           name: Deploy storybook
@@ -281,6 +330,16 @@ workflows:
           context: SonarCloud
           requires:
             - setup
+
+      - smoke-test-accounts-client:
+          filters:
+            branches:
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
+          requires:
+            - build-accounts-client-develop
 
       - build-accounts-client:
           name: build-accounts-client-production
@@ -392,13 +451,6 @@ workflows:
           requires:
             - deploy-accounts-infrastructure
             - build-accounts-client-production
-
-      - deploy-auth0:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
 
       - deploy-storybook:
           filters:

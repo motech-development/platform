@@ -25,6 +25,7 @@ custom:
     files:
       - ../accounts-client/.env.production
     env:
+      AccountsdevelopGraphQlApiUrl: REACT_APP_APPSYNC_URL
       AccountsproductionGraphQlApiUrl: REACT_APP_APPSYNC_URL
       AWS_REGION: REACT_APP_AWS_REGION
 
