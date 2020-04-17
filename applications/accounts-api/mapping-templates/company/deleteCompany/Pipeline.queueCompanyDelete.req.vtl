@@ -1,12 +1,15 @@
-#set($arguments = {})
-#set($input = $arguments.put("id", $ctx.arguments.id))
-#set($input = $arguments.put("owner", $ctx.identity.sub))
+#set($endpoint = "${queue}")
+#set($id = $ctx.arguments.id)
+#set($owner = $ctx.identity.sub)
 
 {
-  "version": "2017-02-28",
-  "operation": "Invoke",
-  "payload": {
-    "field": "queueCompanyDelete",
-    "arguments":  $utils.toJson($arguments)
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "$endpoint",
+  "params": {
+    "headers": {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    "body": "Action=SendMessage&DelaySeconds=60&MessageBody=Delete+company+$id&MessageAttribute.1.Name=id&MessageAttribute.1.Value.DataType=String&MessageAttribute.1.Value.StringValue=$id&MessageAttribute.2.Name=owner&MessageAttribute.2.Value.DataType=String&MessageAttribute.2.Value.StringValue=$owner"
   }
 }

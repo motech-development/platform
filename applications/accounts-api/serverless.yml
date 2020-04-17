@@ -13,7 +13,6 @@ package:
 
 plugins:
   - serverless-appsync-plugin
-  - serverless-webpack
   - '@motech-development/serverless-outputs-env'
 
 custom:
@@ -271,7 +270,7 @@ custom:
           name: deleteCompany
           request: company/deleteCompany/Pipeline.deleteCompany.req.vtl
           response: company/deleteCompany/Pipeline.deleteCompany.res.vtl
-        - dataSource: Lambda
+        - dataSource: Queue
           name: queueCompanyDelete
           request: company/deleteCompany/Pipeline.queueCompanyDelete.req.vtl
           response: company/deleteCompany/Pipeline.queueCompanyDelete.res.vtl
@@ -288,11 +287,6 @@ custom:
           config:
             tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
             serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
-        - type: AWS_LAMBDA
-          name: Lambda
-          config:
-            lambdaFunctionArn: !GetAtt LambdaDataSourceLambdaFunction.Arn
-            serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
         - type: HTTP
           name: OpenBanking
           config:
@@ -303,18 +297,23 @@ custom:
                 signingRegion: !Ref AWS::Region
                 signingServiceName: execute-api
             serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
+        - type: HTTP
+          name: Queue
+          config:
+            endpoint: !Join
+              - ''
+              - - 'https://sqs.'
+                - !Ref AWS::Region
+                - '.amazonaws.com/'
+            authorizationConfig:
+              authorizationType: AWS_IAM
+              awsIamConfig:
+                signingRegion: !Ref AWS::Region
+                signingServiceName: sqs
+            serviceRoleArn: !GetAtt AppSyncQueueServiceRole.Arn
       substitutions:
         stage: ${self:provider.stage}
-
-  webpack:
-    includeModules: true
-
-functions:
-  LambdaDataSource:
-    handler: src/lambda.handler
-    role: LambdaDataSourceRole
-    environment:
-      QUEUE_URL: !ImportValue ${self:provider.stage}-AccountsQueueUrl
+        queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
 
 resources:
   Resources:
@@ -399,10 +398,10 @@ resources:
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                         - '/index/__typename-data-index'
 
-    AppSyncLambdaServiceRole:
+    AppSyncQueueServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-lambda-service-role
+        RoleName: ${self:custom.prefix}-appsync-queue-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -413,35 +412,7 @@ resources:
               Action:
                 - sts:AssumeRole
         Policies:
-          - PolicyName: ${self:custom.prefix}-appsync-lambda-service-role-policy
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - lambda:invokeFunction
-                  Resource:
-                    - !GetAtt LambdaDataSourceLambdaFunction.Arn
-                    - !Join
-                      - ''
-                      - - !GetAtt LambdaDataSourceLambdaFunction.Arn
-                        - ':*'
-
-    LambdaDataSourceRole:
-      Type: AWS::IAM::Role
-      Properties:
-        RoleName: ${self:custom.prefix}-lambda-data-source-role
-        AssumeRolePolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service:
-                  - lambda.amazonaws.com
-              Action:
-                - sts:AssumeRole
-        Policies:
-          - PolicyName: ${self:custom.prefix}-lambda-data-source-role-policy
+          - PolicyName: ${self:custom.prefix}-appsync-queue-service-role-policy
             PolicyDocument:
               Version: '2012-10-17'
               Statement:
@@ -450,11 +421,3 @@ resources:
                     - sqs:SendMessage
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsQueueArn
-                - Effect: Allow
-                  Action:
-                    - logs:CreateLogGroup
-                    - logs:CreateLogStream
-                    - logs:PutLogEvents
-                    - logs:DescribeLogStreams
-                  Resource:
-                    - 'arn:aws:logs:*:*:*'

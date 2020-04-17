@@ -222,6 +222,11 @@ resources:
         Name: ${self:provider.stage}-AccountsQueueArn
     AccountsQueueUrl:
       Description: Accounts application queue URL
-      Value: !Ref AccountsQueue
+      Value: !Join
+        - ''
+        - - '/'
+          - !Ref AWS::AccountId
+          - '/'
+          - !GetAtt AccountsQueue.QueueName
       Export:
         Name: ${self:provider.stage}-AccountsQueueUrl
