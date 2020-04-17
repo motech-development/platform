@@ -1,4 +1,3 @@
-# TODO: Separate cache for Cypress binary to speed things up
 # TODO: Cypress reports
 version: 2.1
 
@@ -14,8 +13,9 @@ generate_cache_key: &generate_cache_key
 restore_cache: &restore_cache
   restore_cache:
     keys:
-      - accounts-dependencies-v3-{{ checksum "./checksum.txt" }}
-      - accounts-dependencies-v3-
+      - accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
+      - accounts-dependencies-v1-
+    name: Restore dependencies
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
@@ -38,9 +38,9 @@ jobs:
           command: npm run lint
           name: Lint code
       - save_cache:
-          key: accounts-dependencies-v3-{{ checksum "./checksum.txt" }}
+          key: accounts-dependencies-v1-{{ checksum "./checksum.txt" }}
+          name: Save dependencies
           paths:
-            - ~/.cache
             - node_modules
             - applications/accounts-api/node_modules
             - applications/accounts-client/node_modules
@@ -53,6 +53,11 @@ jobs:
             - packages/auth/node_modules
             - packages/breeze-ui/node_modules
             - packages/serverless-outputs-env/node_modules
+      - save_cache:
+          key: accounts-cache-v1-{{ checksum "./checksum.txt" }}
+          name: Save cache
+          paths:
+            - ~/.cache
       - persist_to_workspace:
           paths:
             - ./checksum.txt
@@ -98,6 +103,11 @@ jobs:
       - checkout
       - <<: *attach_workspace
       - <<: *restore_cache
+      - restore_cache:
+          keys:
+            - accounts-cache-v1-{{ checksum "./checksum.txt" }}
+            - accounts-cache-v1-
+          name: Restore cache
       - run:
           command: mv -v /home/circleci/repo/node_modules .
           name: Move node modules
