@@ -13,7 +13,6 @@ package:
 
 plugins:
   - serverless-appsync-plugin
-  - serverless-webpack
   - '@motech-development/serverless-outputs-env'
 
 custom:
@@ -315,9 +314,6 @@ custom:
       substitutions:
         stage: ${self:provider.stage}
         queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
-
-  webpack:
-    includeModules: true
 
 resources:
   Resources:
