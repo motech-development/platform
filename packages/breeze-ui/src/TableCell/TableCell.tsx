@@ -1,27 +1,34 @@
-import { memo } from 'react';
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { FC, memo, TdHTMLAttributes } from 'react';
 import styled from 'styled-components';
 
-export interface ITableCellProps {
+const baseStyles = (align = 'inherit') => `
+  padding: 10px;
+  text-align: ${align};
+  vertical-align: middle;
+`;
+
+const TableDataCell = styled.td`
+  ${({ align }) => `
+    ${baseStyles(align)}
+    font-weight: 300;
+  `}
+`;
+
+const TableHeadCell = styled.th`
+  ${({ align }) => `
+    ${baseStyles(align)}
+    font-family: 'Cabin', sans-serif;
+    font-weight: 600;
+  `}
+`;
+
+export interface ITableCellProps
+  extends TdHTMLAttributes<HTMLTableDataCellElement> {
   as?: 'td' | 'th';
 }
 
-const TableCell = styled.td<ITableCellProps>`
-  ${({ as = 'td' }) => `
-    padding: 10px;
-    text-align: inherit;
-    vertical-align: top;
-
-    ${
-      as === 'td'
-        ? `
-      font-weight: 300;
-    `
-        : `
-      font-family: 'Cabin', sans-serif;
-      font-weight: 600;
-    `
-    }
-  `}
-`;
+const TableCell: FC<ITableCellProps> = ({ as = 'td', ...rest }) =>
+  as === 'td' ? <TableDataCell {...rest} /> : <TableHeadCell {...rest} />;
 
 export default memo(TableCell);

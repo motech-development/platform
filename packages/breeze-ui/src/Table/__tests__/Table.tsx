@@ -14,7 +14,7 @@ describe('Table', () => {
       <Table>
         <TableHead data-testid="table-head">
           <TableRow colour="primary">
-            <TableCell as="th" colspan="2">
+            <TableCell as="th" colSpan={2}>
               My table
             </TableCell>
           </TableRow>
@@ -22,7 +22,7 @@ describe('Table', () => {
 
         <TableBody data-testid="table-body">
           <TableRow colour="primary" data-testid="primary-row">
-            <TableCell as="th" colspan="2">
+            <TableCell as="th" colSpan={2}>
               16th April 2019
             </TableCell>
           </TableRow>
@@ -36,7 +36,9 @@ describe('Table', () => {
 
           <TableRow data-testid="default-row">
             <TableCell>Payment from Joe Bloggs</TableCell>
-            <TableCell data-testid="table-cell">£150</TableCell>
+            <TableCell data-testid="table-cell" align="left">
+              £150
+            </TableCell>
           </TableRow>
 
           <TableRow>
@@ -92,8 +94,8 @@ describe('Table', () => {
     await expect(findByTestId('table-cell')).resolves.toHaveStyle(`
       font-weight: 300;
       padding: 10px;
-      text-align: inherit;
-      vertical-align: top;
+      text-align: left;
+      vertical-align: middle;
     `);
   });
 
@@ -105,7 +107,7 @@ describe('Table', () => {
       font-weight: 600;
       padding: 10px;
       text-align: inherit;
-      vertical-align: top;
+      vertical-align: middle;
     `);
   });
 
