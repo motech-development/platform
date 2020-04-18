@@ -2,6 +2,7 @@ import React, { FC, memo, ReactNode } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
+  border-bottom: 2px solid #2e9dc8;
   display: block;
   overflow-x: auto;
   width: 100%;

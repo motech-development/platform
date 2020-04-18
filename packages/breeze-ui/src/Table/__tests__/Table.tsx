@@ -53,6 +53,7 @@ describe('Table', () => {
     const div = container.querySelector('div');
 
     expect(div).toHaveStyle(`
+      border-bottom: 2px solid #2e9dc8;
       display: block;
       overflow-x: auto;
       width: 100%;
@@ -89,7 +90,7 @@ describe('Table', () => {
     const { findByTestId } = component;
 
     await expect(findByTestId('table-cell')).resolves.toHaveStyle(`
-      font-weight: 400;
+      font-weight: 300;
       padding: 10px;
       text-align: inherit;
       vertical-align: top;
@@ -100,6 +101,7 @@ describe('Table', () => {
     const { findByTestId } = component;
 
     await expect(findByTestId('table-cell-header')).resolves.toHaveStyle(`
+      font-family: 'Cabin',sans-serif;
       font-weight: 600;
       padding: 10px;
       text-align: inherit;
@@ -122,7 +124,7 @@ describe('Table', () => {
 
     await expect(findByTestId('primary-row')).resolves.toHaveStyle(`
       background-color: #2e9dc8;
-      border-bottom: 2px solid #eee;
+      border-bottom: 2px solid 2px solid #2c96c0;
       color: #fff;
     `);
   });

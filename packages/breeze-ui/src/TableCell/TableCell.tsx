@@ -7,10 +7,20 @@ export interface ITableCellProps {
 
 const TableCell = styled.td<ITableCellProps>`
   ${({ as = 'td' }) => `
-    font-weight: ${as === 'td' ? '400' : '600'};
     padding: 10px;
     text-align: inherit;
     vertical-align: top;
+
+    ${
+      as === 'td'
+        ? `
+      font-weight: 300;
+    `
+        : `
+      font-family: 'Cabin', sans-serif;
+      font-weight: 600;
+    `
+    }
   `}
 `;
 

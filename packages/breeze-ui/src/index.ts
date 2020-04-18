@@ -16,11 +16,16 @@ export { default as Modal } from './Modal/Modal';
 export { default as PageTitle } from './PageTitle/PageTitle';
 export { default as Row } from './Row/Row';
 export { default as ScrollToTop } from './ScrollToTop/ScrollToTop';
+export { default as Table } from './Table/Table';
+export { default as TableBody } from './TableBody/TableBody';
+export { default as TableCell } from './TableCell/TableCell';
+export { default as TableHead } from './TableHead/TableHead';
+export { default as TableRow } from './TableRow/TableRow';
+export { default as TextBox } from './TextBox/TextBox';
 export {
   default as ToastProvider,
   ToastContext,
   useToast,
 } from './ToastProvider/ToastProvider';
-export { default as TextBox } from './TextBox/TextBox';
 export { default as Tooltip } from './Tooltip/Tooltip';
 export { default as Typography } from './Typography/Typography';

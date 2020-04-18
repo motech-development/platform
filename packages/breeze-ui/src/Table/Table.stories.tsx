@@ -55,9 +55,15 @@ stories.add('Basic table', () => (
       {data.map(item => (
         <TableBody key={item.date}>
           <TableRow colour="primary">
+            <TableCell as="th">Date</TableCell>
+            <TableCell as="th">Balance</TableCell>
+          </TableRow>
+
+          <TableRow colour="primary">
             <TableCell as="th">{item.date}</TableCell>
             <TableCell as="th">£{item.balance.toString()}</TableCell>
           </TableRow>
+
           <TableRow colour="secondary">
             <TableCell as="th">Transaction</TableCell>
             <TableCell as="th">Value</TableCell>

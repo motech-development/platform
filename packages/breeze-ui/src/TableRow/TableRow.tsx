@@ -1,17 +1,21 @@
 import React, { FC, HTMLAttributes, memo } from 'react';
+import { darken } from 'polished';
 import styled, { ThemeProvider } from 'styled-components';
 
 const tableRowTheme = {
   default: {
     background: '#fff',
+    border: '#eee',
     colour: '#000',
   },
   primary: {
     background: '#2e9dc8',
+    border: darken(0.02, '#2e9dc8'),
     colour: '#fff',
   },
   secondary: {
     background: '#f6f9fc',
+    border: '#eee',
     colour: '#333',
   },
 };
@@ -23,7 +27,7 @@ interface IBaseTableRow {
 const BaseTableRow = styled.tr<IBaseTableRow>`
   ${({ colour, theme }) => `
     background-color: ${theme[colour].background};
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid ${theme[colour].border};
     color: ${theme[colour].colour};
   `}
 `;
