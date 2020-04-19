@@ -96,6 +96,7 @@ describe('Table', () => {
       padding: 10px;
       text-align: left;
       vertical-align: middle;
+      white-space: nowrap;
     `);
   });
 
@@ -108,6 +109,7 @@ describe('Table', () => {
       padding: 10px;
       text-align: inherit;
       vertical-align: middle;
+      white-space: nowrap;
     `);
   });
 

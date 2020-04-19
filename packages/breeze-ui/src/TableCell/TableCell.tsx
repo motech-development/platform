@@ -6,6 +6,7 @@ const baseStyles = (align = 'inherit') => `
   padding: 10px;
   text-align: ${align};
   vertical-align: middle;
+  white-space: nowrap;
 `;
 
 const TableDataCell = styled.td`

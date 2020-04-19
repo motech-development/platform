@@ -40,9 +40,10 @@ describe('TextBox', () => {
           </Formik>,
         );
 
-        await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
-          'color: #fff',
-        );
+        await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(`
+          color: #fff;
+          cursor: pointer;
+        `);
       });
 
       it('should render the textbox with the correct colour when active', async () => {
@@ -66,7 +67,10 @@ describe('TextBox', () => {
 
         const input = await findByPlaceholderText('Test');
 
-        expect(input).toHaveStyle('color: #333');
+        expect(input).toHaveStyle(`
+          color: #333;
+          cursor: text;
+        `);
       });
 
       it('should display an error if input is invalid', async () => {
@@ -234,7 +238,10 @@ describe('TextBox', () => {
 
         const input = await findByPlaceholderText('Test');
 
-        expect(input).toHaveStyle('color: #333');
+        expect(input).toHaveStyle(`
+          color: #333;
+          cursor: text;
+        `);
       });
     });
   });
@@ -267,9 +274,10 @@ describe('TextBox', () => {
           </Formik>,
         );
 
-        await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
-          'color: #fff',
-        );
+        await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(`
+          color: #fff;
+          cursor: pointer;
+        `);
       });
 
       it('should render the textbox with the correct colour when active', async () => {
@@ -298,7 +306,10 @@ describe('TextBox', () => {
 
         const input = await findByPlaceholderText('Test');
 
-        expect(input).toHaveStyle('color: #333');
+        expect(input).toHaveStyle(`
+          color: #333;
+          cursor: text;
+        `);
       });
 
       it('should display an error if input is invalid', async () => {
@@ -481,7 +492,10 @@ describe('TextBox', () => {
 
         const input = await findByPlaceholderText('Test');
 
-        expect(input).toHaveStyle('color: #333');
+        expect(input).toHaveStyle(`
+          color: #333;
+          cursor: text;
+        `);
       });
     });
   });

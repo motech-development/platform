@@ -20,6 +20,7 @@ const Label = styled.label<ILabelProps>`
       return '#aaa';
     })()};
     font-size: 16px;
+    pointer-events: none;
     position: absolute;
     transform: ${
       active ? 'translate(0,4px) scale(.75)' : 'translate(0,16px) scale(1)'

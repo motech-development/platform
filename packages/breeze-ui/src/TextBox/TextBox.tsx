@@ -25,6 +25,7 @@ const BaseTextBox = styled.input<IBaseTextBox>`
     background: #fff;
     border: none;
     color: ${active ? '#333' : '#fff'};
+    cursor: ${active ? 'text' : 'pointer'};
     font-size: 16px;
     outline: 0;
     padding: 16px 0 10px;
