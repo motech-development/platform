@@ -38,10 +38,10 @@ const options = [
     name: 'Travel',
     value: 'travel',
   },
-  // {
-  //   name: 'Sales',
-  //   value: 'sales',
-  // }
+  {
+    name: 'Sales',
+    value: 'sales',
+  },
 ];
 const submit = () => {};
 

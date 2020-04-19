@@ -2,7 +2,7 @@ import { act, fireEvent, render, wait } from '@testing-library/react';
 import { Form, Formik } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
-import Select, { ISelectOptions } from '../Select';
+import Select, { ISelectOption } from '../Select';
 
 interface IInitialValues {
   test: string;
@@ -12,7 +12,7 @@ describe('Select', () => {
   let initialValues: IInitialValues;
   let validationSchema: Yup.ObjectSchema<IInitialValues>;
   let onSubmit: jest.Mock;
-  let options: ISelectOptions[];
+  let options: ISelectOption[];
 
   beforeEach(() => {
     onSubmit = jest.fn();

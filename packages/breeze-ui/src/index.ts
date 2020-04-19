@@ -16,7 +16,7 @@ export { default as Modal } from './Modal/Modal';
 export { default as PageTitle } from './PageTitle/PageTitle';
 export { default as Row } from './Row/Row';
 export { default as ScrollToTop } from './ScrollToTop/ScrollToTop';
-export { default as Select } from './Select/Select';
+export { default as Select, ISelectOption } from './Select/Select';
 export { default as Table } from './Table/Table';
 export { default as TableBody } from './TableBody/TableBody';
 export { default as TableCell } from './TableCell/TableCell';

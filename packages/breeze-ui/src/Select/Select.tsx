@@ -17,7 +17,7 @@ import Tooltip from '../Tooltip/Tooltip';
 
 type SelectSpacing = 'sm' | 'md' | 'lg';
 
-export interface ISelectOptions {
+export interface ISelectOption {
   name: string;
   value: string;
 }
@@ -83,7 +83,7 @@ interface IInternalSelect extends FieldProps {
   active: boolean;
   helpText: string;
   label: string;
-  options: ISelectOptions[];
+  options: ISelectOption[];
   placeholder: string;
   setFocus(focus: boolean): void;
   spacing: SelectSpacing;
@@ -188,7 +188,7 @@ export interface ISelectProps {
   helpText?: string;
   label: string;
   name: string;
-  options: ISelectOptions[];
+  options: ISelectOption[];
   placeholder: string;
   spacing?: SelectSpacing;
 }
