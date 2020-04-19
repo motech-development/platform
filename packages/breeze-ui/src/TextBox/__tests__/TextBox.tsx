@@ -15,6 +15,10 @@ describe('TextBox', () => {
 
   beforeEach(() => {
     onSubmit = jest.fn();
+
+    validationSchema = Yup.object().shape({
+      test: Yup.string().required(),
+    });
   });
 
   describe('with no format is set', () => {
@@ -23,10 +27,6 @@ describe('TextBox', () => {
         initialValues = {
           test: '',
         };
-
-        validationSchema = Yup.object().shape({
-          test: Yup.string().required(),
-        });
       });
 
       it('should render the textbox with the correct colour when not active', async () => {
@@ -252,10 +252,6 @@ describe('TextBox', () => {
         initialValues = {
           test: '',
         };
-
-        validationSchema = Yup.object().shape({
-          test: Yup.string().required(),
-        });
       });
 
       it('should render the textbox with the correct colour when not active', async () => {

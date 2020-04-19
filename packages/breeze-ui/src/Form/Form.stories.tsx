@@ -7,10 +7,12 @@ import Card from '../Card/Card';
 import Col from '../Col/Col';
 import Row from '../Row/Row';
 import TextBox from '../TextBox/TextBox';
+import Select from '../Select/Select';
 import Form from './Form';
 
 const stories = storiesOf('Form', module);
 const initialValues = {
+  category: '',
   email: '',
   extra: {
     sortCode: '',
@@ -20,6 +22,7 @@ const initialValues = {
   password: '',
 };
 const validationSchema = object().shape({
+  category: string().required(),
   email: string()
     .email()
     .required(),
@@ -30,6 +33,16 @@ const validationSchema = object().shape({
   name: string().required(),
   password: string().required(),
 });
+const options = [
+  {
+    name: 'Travel',
+    value: 'travel',
+  },
+  // {
+  //   name: 'Sales',
+  //   value: 'sales',
+  // }
+];
 const submit = () => {};
 
 stories.add('Basic form', () => (
@@ -74,6 +87,13 @@ stories.add('Basic form', () => (
               type="text"
               label="Sort code"
               format="##-##-##"
+            />
+
+            <Select
+              options={options}
+              name="category"
+              label="Category"
+              placeholder="Select category"
             />
           </Form>
         </Card>
