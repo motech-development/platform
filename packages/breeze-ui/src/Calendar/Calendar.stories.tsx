@@ -6,7 +6,7 @@ import Calendar from './Calendar';
 
 const stories = storiesOf('Calendar', module);
 
-stories.add('Basic form', () => (
+stories.add('Basic calendar', () => (
   <>
     <BaseStyles />
 
