@@ -10,18 +10,27 @@ const Wrapper = styled.div`
   -ms-overflow-style: -ms-autohiding-scrollbar;
 `;
 
-const BaseTable = styled.table`
-  max-width: 100%;
-  width: 100%;
+interface IBaseTable {
+  fixed: boolean;
+}
+
+const BaseTable = styled.table<IBaseTable>`
+  ${({ fixed }) => `
+    background-color: #fff;
+    max-width: 100%;
+    table-layout: ${fixed ? 'fixed' : 'auto'};
+    width: 100%;
+  `}
 `;
 
 export interface ITableProps {
   children: ReactNode;
+  fixed?: boolean;
 }
 
-const Table: FC<ITableProps> = ({ children }) => (
+const Table: FC<ITableProps> = ({ children, fixed = false }) => (
   <Wrapper>
-    <BaseTable>{children}</BaseTable>
+    <BaseTable fixed={fixed}>{children}</BaseTable>
   </Wrapper>
 );
 

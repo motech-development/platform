@@ -1,4 +1,4 @@
-import React, { ElementType, FC, memo, ReactNode } from 'react';
+import React, { FC, memo, ReactNode } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const inputWrapperTheme = {
@@ -47,7 +47,7 @@ const ValidatorWrapper = styled.div`
 export interface IInputWrapperProps extends IBaseInputWrapper {
   children: ReactNode;
   helpText?: string;
-  tooltip: ElementType;
+  tooltip: ReactNode;
 }
 
 const InputWrapper: FC<IInputWrapperProps> = ({
@@ -55,13 +55,13 @@ const InputWrapper: FC<IInputWrapperProps> = ({
   error,
   helpText = null,
   spacing,
-  tooltip: Tooltip,
+  tooltip,
 }) => (
   <ThemeProvider theme={inputWrapperTheme}>
     <BaseInputWrapper error={error} spacing={spacing}>
       {children}
 
-      <ValidatorWrapper>{error && <Tooltip />}</ValidatorWrapper>
+      <ValidatorWrapper>{error && tooltip}</ValidatorWrapper>
     </BaseInputWrapper>
 
     {helpText && (

@@ -5,6 +5,7 @@ import BaseStyles from '../BaseStyles/BaseStyles';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 import Col from '../Col/Col';
+import DatePicker from '../DatePicker/DatePicker';
 import Row from '../Row/Row';
 import TextBox from '../TextBox/TextBox';
 import Select from '../Select/Select';
@@ -13,6 +14,7 @@ import Form from './Form';
 const stories = storiesOf('Form', module);
 const initialValues = {
   category: '',
+  date: '',
   email: '',
   extra: {
     sortCode: '',
@@ -23,6 +25,7 @@ const initialValues = {
 };
 const validationSchema = object().shape({
   category: string().required(),
+  date: string().required(),
   email: string()
     .email()
     .required(),
@@ -95,6 +98,8 @@ stories.add('Basic form', () => (
               label="Category"
               placeholder="Select category"
             />
+
+            <DatePicker name="date" label="Date" />
           </Form>
         </Card>
       </Col>

@@ -1,12 +1,4 @@
-import React, {
-  ElementType,
-  FC,
-  memo,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { FC, memo, ReactNode, useEffect, useRef, useState } from 'react';
 import { Manager, Popper, Reference } from 'react-popper';
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -117,7 +109,7 @@ export interface ITooltipProps {
   colour?: keyof typeof tooltipTheme;
   id: string;
   message: ReactNode;
-  parent: ElementType;
+  parent: ReactNode;
   placement: TooltipPlacement;
 }
 
@@ -125,7 +117,7 @@ const Tooltip: FC<ITooltipProps> = ({
   colour = 'primary',
   message,
   id,
-  parent: Parent,
+  parent,
   placement,
 }) => {
   let timer: number;
@@ -163,7 +155,7 @@ const Tooltip: FC<ITooltipProps> = ({
               onMouseOver={showTooltip}
               onMouseOut={hideTooltip}
             >
-              <Parent />
+              {parent}
             </TooltipWrapper>
           )}
         </Reference>

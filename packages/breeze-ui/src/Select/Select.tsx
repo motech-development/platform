@@ -139,15 +139,15 @@ const InternalSelect: FC<IInternalSelect> = ({
       spacing={spacing}
       helpText={helpText}
       error={error}
-      tooltip={() => (
+      tooltip={
         <Tooltip
           id={describedBy}
-          parent={() => <InputAlert message={getIn(errors, field.name)} />}
+          parent={<InputAlert message={getIn(errors, field.name)} />}
           colour="danger"
           placement="left"
           message={getIn(errors, field.name)}
         />
-      )}
+      }
     >
       <Label htmlFor={field.name} active={active} error={error}>
         {label}
