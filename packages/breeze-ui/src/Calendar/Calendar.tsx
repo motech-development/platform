@@ -216,8 +216,14 @@ export interface ICalendarProps {
   onDateChange(date: string): void;
 }
 
-const Calendar: FC<ICalendarProps> = ({ onDateChange, selectedDate }) => {
-  const [date, setDate] = useState(moment(selectedDate));
+const Calendar: FC<ICalendarProps> = ({ onDateChange, selectedDate = '' }) => {
+  const [date, setDate] = useState(() => {
+    if (selectedDate !== '') {
+      return moment(selectedDate);
+    }
+
+    return moment();
+  });
   const [showDates, setShowDates] = useState(true);
   const [showMonths, setShowMonths] = useState(false);
   const [showYears, setShowYears] = useState(false);

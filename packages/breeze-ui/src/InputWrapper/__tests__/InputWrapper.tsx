@@ -17,15 +17,15 @@ describe('InputWrapper', () => {
         <InputWrapper
           spacing="lg"
           error={false}
-          tooltip={() => (
+          tooltip={
             <Tooltip
               id="test"
-              parent={() => <div data-testid="alert" />}
+              parent={<div data-testid="alert" />}
               colour="danger"
               placement="left"
               message={null}
             />
-          )}
+          }
         >
           <input type="test" data-testid="input" />
         </InputWrapper>,
@@ -52,15 +52,15 @@ describe('InputWrapper', () => {
           <InputWrapper
             spacing="md"
             error
-            tooltip={() => (
+            tooltip={
               <Tooltip
                 id="test"
-                parent={() => <div data-testid="alert" />}
+                parent={<div data-testid="alert" />}
                 colour="danger"
                 placement="left"
                 message="This is a test error"
               />
-            )}
+            }
           >
             <input type="test" data-testid="input" />
           </InputWrapper>,
@@ -92,15 +92,15 @@ describe('InputWrapper', () => {
           spacing="lg"
           helpText="This is help text"
           error={false}
-          tooltip={() => (
+          tooltip={
             <Tooltip
               id="test"
-              parent={() => <div data-testid="alert" />}
+              parent={<div data-testid="alert" />}
               colour="danger"
               placement="left"
               message={null}
             />
-          )}
+          }
         >
           <input type="test" data-testid="input" />
         </InputWrapper>,

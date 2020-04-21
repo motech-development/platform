@@ -61,7 +61,7 @@ const SelectInput: FC<ISelectInput> = ({
 );
 
 const IconOuter = styled.div`
-  margin-top: -11px;
+  margin-top: -21px;
   pointer-events: none;
   position: absolute;
   right: 38px;
@@ -73,10 +73,10 @@ const IconInner = styled.div`
   color: #aaa;
   cursor: pointer;
   display: block;
-  height: 22px;
-  line-height: 22px;
+  height: 42px;
+  line-height: 42px;
   text-align: center;
-  width: 22px;
+  width: 42px;
 `;
 
 interface IInternalSelect extends FieldProps {
