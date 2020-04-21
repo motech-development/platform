@@ -15,7 +15,7 @@ import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
 import Tooltip from '../Tooltip/Tooltip';
 
-type InputSpacing = 'sm' | 'md' | 'lg';
+export type InputSpacing = 'sm' | 'md' | 'lg';
 
 interface IBaseTextBox {
   active: boolean;

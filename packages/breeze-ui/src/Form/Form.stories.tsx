@@ -1,6 +1,6 @@
 import { storiesOf } from '@storybook/react';
 import React from 'react';
-import { object, string } from 'yup';
+import { date, object, string } from 'yup';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
@@ -25,7 +25,7 @@ const initialValues = {
 };
 const validationSchema = object().shape({
   category: string().required(),
-  date: string().required(),
+  date: date().required(),
   email: string()
     .email()
     .required(),

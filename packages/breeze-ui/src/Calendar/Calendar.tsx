@@ -30,14 +30,14 @@ const Year: FC<IYear> = ({ currentYear, date, setYear }) => {
   const lower = parseInt(
     date
       .clone()
-      .subtract('year', 4)
+      .subtract(4, 'year')
       .format('Y'),
     10,
   );
   const upper = parseInt(
     date
       .clone()
-      .add('year', 7)
+      .add(7, 'year')
       .format('Y'),
     10,
   );
