@@ -137,10 +137,10 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
       </InputWrapper>
 
       {visible && (
-        // eslint-disable-next-line react/jsx-props-no-spreading
         <CalendarWrapper
           ref={setPopperElement}
           style={styles.popper}
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...attributes.popper}
         >
           <Calendar selectedDate={value} onDateChange={selectDate} />
