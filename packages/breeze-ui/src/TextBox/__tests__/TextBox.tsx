@@ -11,9 +11,11 @@ interface IInitialValues {
 describe('TextBox', () => {
   let initialValues: IInitialValues;
   let validationSchema: Yup.ObjectSchema<IInitialValues>;
+  let onChange: jest.Mock;
   let onSubmit: jest.Mock;
 
   beforeEach(() => {
+    onChange = jest.fn();
     onSubmit = jest.fn();
 
     validationSchema = Yup.object().shape({
@@ -167,6 +169,33 @@ describe('TextBox', () => {
           transform: translate(0,16px) scale(1);
         `);
       });
+
+      it('should call onChange if set', async () => {
+        const { findByLabelText } = render(
+          <Formik initialValues={initialValues} onSubmit={onSubmit}>
+            {() => (
+              <Form>
+                <TextBox label="Test" name="test" onChange={onChange} />
+              </Form>
+            )}
+          </Formik>,
+        );
+
+        await act(async () => {
+          const input = await findByLabelText('Test');
+
+          fireEvent.change(input, {
+            target: {
+              focus: () => {},
+              value: 'Test',
+            },
+          });
+
+          await wait();
+        });
+
+        expect(onChange).toHaveBeenCalled();
+      });
     });
 
     describe('when there are initial values', () => {
@@ -242,6 +271,33 @@ describe('TextBox', () => {
           color: #333;
           cursor: text;
         `);
+      });
+
+      it('should call onChange if set', async () => {
+        const { findByLabelText } = render(
+          <Formik initialValues={initialValues} onSubmit={onSubmit}>
+            {() => (
+              <Form>
+                <TextBox label="Test" name="test" onChange={onChange} />
+              </Form>
+            )}
+          </Formik>,
+        );
+
+        await act(async () => {
+          const input = await findByLabelText('Test');
+
+          fireEvent.change(input, {
+            target: {
+              focus: () => {},
+              value: 'Test',
+            },
+          });
+
+          await wait();
+        });
+
+        expect(onChange).toHaveBeenCalled();
       });
     });
   });
@@ -412,6 +468,38 @@ describe('TextBox', () => {
           transform: translate(0,16px) scale(1);
         `);
       });
+
+      it('should call onChange if set', async () => {
+        const { findByLabelText } = render(
+          <Formik initialValues={initialValues} onSubmit={onSubmit}>
+            {() => (
+              <Form>
+                <TextBox
+                  label="Test"
+                  name="test"
+                  format="##-##-##"
+                  onChange={onChange}
+                />
+              </Form>
+            )}
+          </Formik>,
+        );
+
+        await act(async () => {
+          const input = await findByLabelText('Test');
+
+          fireEvent.change(input, {
+            target: {
+              focus: () => {},
+              value: '000000',
+            },
+          });
+
+          await wait();
+        });
+
+        expect(onChange).toHaveBeenCalled();
+      });
     });
 
     describe('when there are initial values', () => {
@@ -493,6 +581,38 @@ describe('TextBox', () => {
           cursor: text;
         `);
       });
+    });
+
+    it('should call onChange if set', async () => {
+      const { findByLabelText } = render(
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          {() => (
+            <Form>
+              <TextBox
+                label="Test"
+                name="test"
+                format="##-##-##"
+                onChange={onChange}
+              />
+            </Form>
+          )}
+        </Formik>,
+      );
+
+      await act(async () => {
+        const input = await findByLabelText('Test');
+
+        fireEvent.change(input, {
+          target: {
+            focus: () => {},
+            value: '000000',
+          },
+        });
+
+        await wait();
+      });
+
+      expect(onChange).toHaveBeenCalled();
     });
   });
 });
