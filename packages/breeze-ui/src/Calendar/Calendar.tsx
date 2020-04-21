@@ -1,7 +1,9 @@
 /* eslint-disable react/no-array-index-key */
 import {
-  faChevronLeft,
-  faChevronRight,
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
+  faAngleLeft,
+  faAngleRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
@@ -13,153 +15,62 @@ import TableBody from '../TableBody/TableBody';
 import TableCell from '../TableCell/TableCell';
 import TableHead from '../TableHead/TableHead';
 import TableRow from '../TableRow/TableRow';
+import Typography from '../Typography/Typography';
 
 const Toolbar = styled.div`
   align-items: stretch;
+  background-color: #2e9dc8;
+  color: #fff;
   display: flex;
   flex-direction: row;
 `;
 
-interface IYear {
-  currentYear: number;
-  date: moment.Moment;
-  setYear(year: number): void;
+const Title = styled(Typography)`
+  flex-grow: 1;
+  line-height: 40px;
+`;
+
+interface ICalendarButton {
+  fixed?: boolean;
 }
 
-const Year: FC<IYear> = ({ currentYear, date, setYear }) => {
-  const lower = parseInt(
-    date
-      .clone()
-      .subtract(4, 'year')
-      .format('Y'),
-    10,
-  );
-  const upper = parseInt(
-    date
-      .clone()
-      .add(7, 'year')
-      .format('Y'),
-    10,
-  );
-  const range = [...Array(upper - lower + 1)]
-    .fill(0)
-    .map((_, idx) => lower + idx);
-
-  const items = range.map(year => {
-    const colour = year === currentYear ? 'primary' : 'secondary';
-
-    return (
-      <TableCell key={year} align="center">
-        <Button block colour={colour} onClick={() => setYear(year)}>
-          {year}
-        </Button>
-      </TableCell>
-    );
-  });
-  const rows: ReactNode[] = [];
-
-  let cells: ReactNode[] = [];
-
-  items.forEach((row, i) => {
-    if (i % 3 !== 0 || i === 0) {
-      cells.push(row);
-    } else {
-      rows.push(cells);
-      cells = [];
-      cells.push(row);
-    }
-  });
-
-  rows.push(cells);
-
-  return (
-    <Table fixed>
-      <TableBody>
-        {rows.map((y, i) => (
-          <TableRow key={i}>{y}</TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-};
-
-interface IMonths {
-  currentMonth: string;
-  months: string[];
-  setMonth(month: string): void;
-  toggleMonths(): void;
-}
-
-const Months: FC<IMonths> = ({
-  currentMonth,
-  months,
-  setMonth,
-  toggleMonths,
-}) => {
-  const selectMonth = (month: string) => {
-    setMonth(month);
-
-    toggleMonths();
-  };
-
-  const items = months.map(month => {
-    const colour = month === currentMonth ? 'primary' : 'secondary';
-
-    return (
-      <TableCell key={month} align="center">
-        <Button block colour={colour} onClick={() => selectMonth(month)}>
-          {month}
-        </Button>
-      </TableCell>
-    );
-  });
-  const rows: ReactNode[] = [];
-
-  let cells: ReactNode[] = [];
-
-  items.forEach((row, i) => {
-    if (i % 3 !== 0 || i === 0) {
-      cells.push(row);
-    } else {
-      rows.push(cells);
-      cells = [];
-      cells.push(row);
-    }
-  });
-
-  rows.push(cells);
-
-  return (
-    <Table fixed>
-      <TableBody>
-        {rows.map((m, i) => (
-          <TableRow key={i}>{m}</TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-};
+const CalendarButton = styled(Button)<ICalendarButton>`
+  ${({ fixed = false }) => `
+    ${fixed ? 'width' : 'min-width'}: 40px;
+    padding: 0;
+  `}
+`;
 
 const Weekdays: FC = () => {
-  const generateWeekdays = moment.weekdaysShort().map(day => (
-    <TableCell key={day} as="th" align="center">
-      {day}
-    </TableCell>
-  ));
+  const short = moment.weekdaysShort();
+  const abbrs = moment.weekdays();
 
   return (
     <TableHead>
-      <TableRow colour="primary">{generateWeekdays}</TableRow>
+      <TableRow colour="primary">
+        {short.map((day, i) => (
+          <TableCell
+            key={day}
+            abbr={abbrs[i]}
+            as="th"
+            align="center"
+            scope="col"
+          >
+            {day}
+          </TableCell>
+        ))}
+      </TableRow>
     </TableHead>
   );
 };
 
 interface IDates {
   date: moment.Moment;
+  id: string;
   onSelect(day: number): void;
 }
 
-const Dates: FC<IDates> = ({ date, onSelect }) => {
+const Dates: FC<IDates> = ({ date, id, onSelect }) => {
   const clone = date.clone();
   const currentDay = parseInt(clone.format('D'), 10);
   const daysInMonth = clone.daysInMonth();
@@ -174,9 +85,14 @@ const Dates: FC<IDates> = ({ date, onSelect }) => {
 
     return (
       <TableCell key={day} align="center">
-        <Button block colour={colour} onClick={() => onSelect(day)}>
+        <CalendarButton
+          block
+          colour={colour}
+          tabIndex={-1}
+          onClick={() => onSelect(day)}
+        >
           {day}
-        </Button>
+        </CalendarButton>
       </TableCell>
     );
   });
@@ -199,7 +115,7 @@ const Dates: FC<IDates> = ({ date, onSelect }) => {
   });
 
   return (
-    <Table fixed>
+    <Table id={id} role="grid">
       <Weekdays />
 
       <TableBody>
@@ -211,12 +127,19 @@ const Dates: FC<IDates> = ({ date, onSelect }) => {
   );
 };
 
+type JumpUnits = 'month' | 'year';
+
 export interface ICalendarProps {
   selectedDate?: string;
+  id: string;
   onDateChange(date: string): void;
 }
 
-const Calendar: FC<ICalendarProps> = ({ onDateChange, selectedDate = '' }) => {
+const Calendar: FC<ICalendarProps> = ({
+  onDateChange,
+  id,
+  selectedDate = '',
+}) => {
   const [date, setDate] = useState(() => {
     if (selectedDate !== '') {
       return moment(selectedDate);
@@ -224,12 +147,9 @@ const Calendar: FC<ICalendarProps> = ({ onDateChange, selectedDate = '' }) => {
 
     return moment();
   });
-  const [showDates, setShowDates] = useState(true);
-  const [showMonths, setShowMonths] = useState(false);
-  const [showYears, setShowYears] = useState(false);
   const [currentMonth, setCurrentMonth] = useState('');
   const [currentYear, setCurrentYear] = useState(0);
-  const months = moment.months();
+  const label = `${id}-dialog-label`;
   const setDay = (day: number) => {
     const updated = date.clone();
 
@@ -237,46 +157,19 @@ const Calendar: FC<ICalendarProps> = ({ onDateChange, selectedDate = '' }) => {
 
     setDate(updated);
   };
-  const setMonth = (month: string) => {
-    const index = months.indexOf(month);
+  const next = (unit: JumpUnits) => {
     const updated = date.clone();
 
-    updated.set('month', index);
-
-    setDate(updated);
-    toggleMonths();
-  };
-  const setYear = (year: number) => {
-    const updated = date.clone();
-
-    updated.set('year', year);
-
-    setDate(updated);
-    toggleYears();
-  };
-  const next = () => {
-    const updated = date.clone();
-
-    updated.add(1, 'month');
+    updated.add(1, unit);
 
     setDate(updated);
   };
-  const previous = () => {
+  const previous = (unit: JumpUnits) => {
     const updated = date.clone();
 
-    updated.subtract(1, 'month');
+    updated.subtract(1, unit);
 
     setDate(updated);
-  };
-  const toggleMonths = () => {
-    setShowMonths(!showMonths);
-    setShowDates(showMonths);
-    setShowYears(false);
-  };
-  const toggleYears = () => {
-    setShowYears(!showYears);
-    setShowDates(showYears);
-    setShowMonths(false);
   };
 
   useEffect(() => {
@@ -291,37 +184,34 @@ const Calendar: FC<ICalendarProps> = ({ onDateChange, selectedDate = '' }) => {
   return (
     <>
       <Toolbar>
-        <Button onClick={previous}>
-          <FontAwesomeIcon icon={faChevronLeft} />
-        </Button>
+        <CalendarButton block fixed onClick={() => previous('year')}>
+          <FontAwesomeIcon icon={faAngleDoubleLeft} />
+        </CalendarButton>
 
-        <Button block onClick={toggleMonths}>
-          {currentMonth}
-        </Button>
+        <CalendarButton block fixed onClick={() => previous('month')}>
+          <FontAwesomeIcon icon={faAngleLeft} />
+        </CalendarButton>
 
-        <Button block onClick={toggleYears}>
-          {currentYear}
-        </Button>
+        <Title
+          id={label}
+          component="p"
+          variant="h6"
+          align="center"
+          margin="none"
+        >
+          {currentMonth} {currentYear}
+        </Title>
 
-        <Button onClick={next}>
-          <FontAwesomeIcon icon={faChevronRight} />
-        </Button>
+        <CalendarButton block fixed onClick={() => next('month')}>
+          <FontAwesomeIcon icon={faAngleRight} />
+        </CalendarButton>
+
+        <CalendarButton block fixed onClick={() => next('year')}>
+          <FontAwesomeIcon icon={faAngleDoubleRight} />
+        </CalendarButton>
       </Toolbar>
 
-      {showYears && (
-        <Year currentYear={currentYear} date={date} setYear={setYear} />
-      )}
-
-      {showMonths && (
-        <Months
-          currentMonth={currentMonth}
-          months={months}
-          setMonth={setMonth}
-          toggleMonths={toggleMonths}
-        />
-      )}
-
-      {showDates && <Dates date={date} onSelect={setDay} />}
+      <Dates id={label} date={date} onSelect={setDay} />
     </>
   );
 };

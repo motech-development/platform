@@ -74,7 +74,9 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
     null,
   );
-  const { attributes, styles } = usePopper(referenceElement, popperElement);
+  const { attributes, styles } = usePopper(referenceElement, popperElement, {
+    placement: 'bottom-end',
+  });
   const [error, setError] = useState(false);
   const [visible, setVisible] = useState(false);
   const { name, value } = field;
@@ -143,7 +145,7 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...attributes.popper}
         >
-          <Calendar selectedDate={value} onDateChange={selectDate} />
+          <Calendar id={name} selectedDate={value} onDateChange={selectDate} />
         </CalendarWrapper>
       )}
     </DatePickerWrapper>

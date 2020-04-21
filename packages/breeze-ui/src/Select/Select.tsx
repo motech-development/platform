@@ -1,4 +1,4 @@
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Field, FieldProps, getIn } from 'formik';
 import React, {
@@ -176,7 +176,7 @@ const InternalSelect: FC<IInternalSelect> = ({
 
       <IconOuter>
         <IconInner>
-          <FontAwesomeIcon icon={faChevronDown} />
+          <FontAwesomeIcon icon={faAngleDown} />
         </IconInner>
       </IconOuter>
       {/* eslint-enable react/jsx-props-no-spreading */}

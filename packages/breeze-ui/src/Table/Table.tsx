@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode } from 'react';
+import React, { FC, HTMLAttributes, memo, ReactNode } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -23,14 +23,17 @@ const BaseTable = styled.table<IBaseTable>`
   `}
 `;
 
-export interface ITableProps {
+export interface ITableProps extends HTMLAttributes<HTMLTableElement> {
   children: ReactNode;
   fixed?: boolean;
 }
 
-const Table: FC<ITableProps> = ({ children, fixed = false }) => (
+const Table: FC<ITableProps> = ({ children, fixed = false, ...rest }) => (
   <Wrapper>
-    <BaseTable fixed={fixed}>{children}</BaseTable>
+    {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+    <BaseTable fixed={fixed} {...rest}>
+      {children}
+    </BaseTable>
   </Wrapper>
 );
 

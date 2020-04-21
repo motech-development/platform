@@ -12,7 +12,7 @@ stories.add('Basic calendar', () => (
     <BaseStyles />
 
     <Card padding="lg">
-      <Calendar onDateChange={onDateChange} />
+      <Calendar id="test" onDateChange={onDateChange} />
     </Card>
   </>
 ));
