@@ -1,16 +1,20 @@
 import { storiesOf } from '@storybook/react';
 import React from 'react';
-import { object, string } from 'yup';
+import { date, object, string } from 'yup';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 import Col from '../Col/Col';
+import DatePicker from '../DatePicker/DatePicker';
 import Row from '../Row/Row';
 import TextBox from '../TextBox/TextBox';
+import Select from '../Select/Select';
 import Form from './Form';
 
 const stories = storiesOf('Form', module);
 const initialValues = {
+  category: '',
+  dob: '',
   email: '',
   extra: {
     sortCode: '',
@@ -20,6 +24,8 @@ const initialValues = {
   password: '',
 };
 const validationSchema = object().shape({
+  category: string().required(),
+  date: date().required(),
   email: string()
     .email()
     .required(),
@@ -30,6 +36,16 @@ const validationSchema = object().shape({
   name: string().required(),
   password: string().required(),
 });
+const options = [
+  {
+    name: 'Travel',
+    value: 'travel',
+  },
+  {
+    name: 'Sales',
+    value: 'sales',
+  },
+];
 const submit = () => {};
 
 stories.add('Basic form', () => (
@@ -75,6 +91,15 @@ stories.add('Basic form', () => (
               label="Sort code"
               format="##-##-##"
             />
+
+            <Select
+              options={options}
+              name="category"
+              label="Category"
+              placeholder="Select category"
+            />
+
+            <DatePicker name="dob" label="Date of birth" />
           </Form>
         </Card>
       </Col>

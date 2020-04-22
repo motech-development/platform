@@ -1,5 +1,6 @@
-import { Field, FieldProps, getIn } from 'formik';
+import { Field, FieldProps, FormikProps, getIn } from 'formik';
 import React, {
+  ChangeEvent,
   FC,
   FocusEvent,
   HTMLAttributes,
@@ -9,12 +10,11 @@ import React, {
 } from 'react';
 import NumberFormat, { NumberFormatValues } from 'react-number-format';
 import styled from 'styled-components';
-import InputAlert from '../InputAlert/InputAlert';
+import useInputValidation from '../hooks/useInputValidation';
 import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
-import Tooltip from '../Tooltip/Tooltip';
 
-type InputSpacing = 'sm' | 'md' | 'lg';
+export type InputSpacing = 'sm' | 'md' | 'lg';
 
 interface IBaseTextBox {
   active: boolean;
@@ -25,6 +25,7 @@ const BaseTextBox = styled.input<IBaseTextBox>`
     background: #fff;
     border: none;
     color: ${active ? '#333' : '#fff'};
+    cursor: ${active ? 'text' : 'pointer'};
     font-size: 16px;
     outline: 0;
     padding: 16px 0 10px;
@@ -71,9 +72,11 @@ const Input: FC<IInput> = ({ active, describedBy, errors, ...rest }) => (
 
 interface IInternalTextBox extends FieldProps {
   active: boolean;
+  decimalScale: number;
   format: string;
   helpText: string;
   label: string;
+  onChange(e: ChangeEvent<HTMLInputElement>, form: FormikProps<{}>): void;
   prefix: string;
   setFocus(focus: boolean): void;
   spacing: InputSpacing;
@@ -82,11 +85,13 @@ interface IInternalTextBox extends FieldProps {
 
 const InternalTextBox: FC<IInternalTextBox> = ({
   active,
+  decimalScale,
   field,
   format,
   form,
   helpText,
   label,
+  onChange,
   prefix,
   setFocus,
   spacing,
@@ -98,13 +103,13 @@ const InternalTextBox: FC<IInternalTextBox> = ({
 
     setFocus(focus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [field.value]);
 
   const { onBlur, ...rest } = field;
-  const { errors, handleBlur, setFieldValue, touched } = form;
+  const { errors, handleBlur, handleChange, setFieldValue, touched } = form;
+  const error = useInputValidation(field.name, errors, touched);
   const describedBy = `${field.name}-error`;
-  const useNumberFormat = Boolean(format || prefix || suffix);
-  const [error, setError] = useState(false);
+  const useNumberFormat = Boolean(decimalScale || format || prefix || suffix);
   const doBlur = (e: FocusEvent<HTMLInputElement>) => {
     handleBlur(e);
 
@@ -129,28 +134,21 @@ const InternalTextBox: FC<IInternalTextBox> = ({
       setFieldValue(field.name, floatValue);
     }
   };
+  const doChange = (e: ChangeEvent<HTMLInputElement>) => {
+    handleChange(e);
 
-  useEffect(() => {
-    const touch = getIn(touched, field.name);
-    const err = getIn(errors, field.name);
-
-    setError(!!touch && !!err);
-  }, [errors, touched, field.name]);
+    if (onChange) {
+      onChange(e, form);
+    }
+  };
 
   return (
     <InputWrapper
-      spacing={spacing}
-      helpText={helpText}
       error={error}
-      tooltip={() => (
-        <Tooltip
-          id={describedBy}
-          parent={() => <InputAlert message={getIn(errors, field.name)} />}
-          colour="danger"
-          placement="left"
-          message={getIn(errors, field.name)}
-        />
-      )}
+      helpText={helpText}
+      message={getIn(errors, field.name)}
+      name={field.name}
+      spacing={spacing}
     >
       <Label htmlFor={field.name} active={active} error={error}>
         {label}
@@ -163,6 +161,8 @@ const InternalTextBox: FC<IInternalTextBox> = ({
           {...rest}
           isNumericString={Boolean(prefix || suffix)}
           customInput={Input}
+          decimalScale={decimalScale}
+          fixedDecimalScale={!!decimalScale}
           format={format}
           prefix={prefix}
           suffix={suffix}
@@ -170,6 +170,7 @@ const InternalTextBox: FC<IInternalTextBox> = ({
           describedBy={describedBy}
           errors={error}
           onBlur={doBlur}
+          onChange={doChange}
           onFocus={doFocus}
           onValueChange={doValueChange}
         />
@@ -181,6 +182,7 @@ const InternalTextBox: FC<IInternalTextBox> = ({
           describedBy={describedBy}
           errors={error}
           onBlur={doBlur}
+          onChange={doChange}
           onFocus={doFocus}
         />
       )}
@@ -190,6 +192,7 @@ const InternalTextBox: FC<IInternalTextBox> = ({
 };
 
 export interface ITextBoxProps {
+  decimalScale?: number;
   format?: string;
   helpText?: string;
   label: string;
@@ -199,13 +202,16 @@ export interface ITextBoxProps {
   spacing?: InputSpacing;
   suffix?: string;
   type?: 'email' | 'number' | 'password' | 'text';
+  onChange?(e: ChangeEvent<HTMLInputElement>, form: FormikProps<{}>): void;
 }
 
 const TextBox: FC<ITextBoxProps> = ({
+  decimalScale = undefined,
   format = undefined,
   helpText = null,
   label,
   name,
+  onChange = undefined,
   placeholder = '',
   prefix = undefined,
   spacing = 'md',
@@ -218,11 +224,13 @@ const TextBox: FC<ITextBoxProps> = ({
     <Field
       id={name}
       component={InternalTextBox}
+      decimalScale={decimalScale}
       active={focus}
       format={format}
       helpText={helpText}
       type={type}
       name={name}
+      onChange={onChange}
       placeholder={placeholder}
       prefix={prefix}
       setFocus={setFocus}

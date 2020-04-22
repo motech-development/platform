@@ -68,11 +68,11 @@ const withLayout = (Component: ComponentType) =>
 
               <Tooltip
                 id="sign-out"
-                parent={() => (
+                parent={
                   <Button type="button" size="sm" onClick={logOut}>
                     <FontAwesomeIcon icon={faSignOutAlt} />
                   </Button>
-                )}
+                }
                 placement="bottom"
                 colour="primary"
                 message={t('log-out')}

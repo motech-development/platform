@@ -6,7 +6,6 @@ import {
 } from '@testing-library/react';
 import React from 'react';
 import InputWrapper from '../InputWrapper';
-import Tooltip from '../../Tooltip/Tooltip';
 
 describe('InputWrapper', () => {
   let component: RenderResult;
@@ -14,19 +13,7 @@ describe('InputWrapper', () => {
   describe('with no error', () => {
     beforeEach(() => {
       component = render(
-        <InputWrapper
-          spacing="lg"
-          error={false}
-          tooltip={() => (
-            <Tooltip
-              id="test"
-              parent={() => <div data-testid="alert" />}
-              colour="danger"
-              placement="left"
-              message={null}
-            />
-          )}
-        >
+        <InputWrapper error={false} message="" name="test" spacing="lg">
           <input type="test" data-testid="input" />
         </InputWrapper>,
       );
@@ -50,17 +37,10 @@ describe('InputWrapper', () => {
       await act(async () => {
         component = render(
           <InputWrapper
-            spacing="md"
             error
-            tooltip={() => (
-              <Tooltip
-                id="test"
-                parent={() => <div data-testid="alert" />}
-                colour="danger"
-                placement="left"
-                message="This is a test error"
-              />
-            )}
+            spacing="md"
+            name="test"
+            message="This is a test error"
           >
             <input type="test" data-testid="input" />
           </InputWrapper>,
@@ -69,9 +49,9 @@ describe('InputWrapper', () => {
     });
 
     it('should render when the correct styles when there is an error', async () => {
-      const { container, findByTestId } = component;
+      const { container, findByRole } = component;
 
-      await waitForElement(() => findByTestId('alert'));
+      await waitForElement(() => findByRole('alert'));
 
       expect(container.firstChild).toHaveStyle(
         'border-bottom-color: rgb(199,56,79);',
@@ -79,9 +59,9 @@ describe('InputWrapper', () => {
     });
 
     it('should display the alert icon', async () => {
-      const { findByTestId } = component;
+      const { findByRole } = component;
 
-      await expect(findByTestId('alert')).resolves.toBeInTheDocument();
+      await expect(findByRole('alert')).resolves.toBeInTheDocument();
     });
   });
 
@@ -89,18 +69,11 @@ describe('InputWrapper', () => {
     beforeEach(() => {
       component = render(
         <InputWrapper
-          spacing="lg"
-          helpText="This is help text"
           error={false}
-          tooltip={() => (
-            <Tooltip
-              id="test"
-              parent={() => <div data-testid="alert" />}
-              colour="danger"
-              placement="left"
-              message={null}
-            />
-          )}
+          helpText="This is help text"
+          message=""
+          name="test"
+          spacing="lg"
         >
           <input type="test" data-testid="input" />
         </InputWrapper>,

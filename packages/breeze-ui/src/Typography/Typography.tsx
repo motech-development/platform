@@ -81,6 +81,7 @@ export interface ITypographyProps {
   children: ReactNode;
   className?: string;
   component: TypographyVariants;
+  id?: string;
   margin?: keyof typeof margins;
   rule?: boolean;
   variant: TypographyVariants | 'lead';
@@ -91,12 +92,14 @@ const Typography: FC<ITypographyProps> = ({
   children,
   className = '',
   component,
+  id = undefined,
   margin = 'md',
   rule = false,
   variant,
 }) => (
   <>
     <BaseTypography
+      id={id}
       as={component}
       align={align}
       className={className}

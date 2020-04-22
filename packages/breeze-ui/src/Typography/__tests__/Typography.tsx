@@ -389,4 +389,31 @@ describe('Typography', () => {
       expect(queryByRole('separator')).not.toBeInTheDocument();
     });
   });
+
+  describe('id', () => {
+    it('should not have an id by default', async () => {
+      const { findByText } = render(
+        <Typography component="h1" variant="h1" margin="lg">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.not.toHaveAttribute(
+        'id',
+      );
+    });
+
+    it('should have an id if set', async () => {
+      const { findByText } = render(
+        <Typography id="test" component="h1" variant="h1" margin="lg">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveAttribute(
+        'id',
+        'test',
+      );
+    });
+  });
 });

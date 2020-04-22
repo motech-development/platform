@@ -25,11 +25,11 @@ stories.add('Basic tooltip', () => (
 
     <Tooltip
       id="test"
-      parent={() => (
+      parent={
         <Button colour="primary" size="lg">
           Hover over me
         </Button>
-      )}
+      }
       placement={
         select('Placement', placement, 'bottom') as
           | 'bottom'

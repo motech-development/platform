@@ -25,11 +25,11 @@ describe('Tooltip', () => {
       const { findByTestId } = render(
         <Tooltip
           id="test"
-          parent={() => (
+          parent={
             <button type="button" data-testid="button">
               Hello world
             </button>
-          )}
+          }
           placement="top"
           message="Hello"
         />,
@@ -44,11 +44,11 @@ describe('Tooltip', () => {
       const { findByTestId } = render(
         <Tooltip
           id="test"
-          parent={() => (
+          parent={
             <button type="button" data-testid="button">
               Hello world
             </button>
-          )}
+          }
           placement="top"
           message="Hello"
         />,
@@ -69,11 +69,11 @@ describe('Tooltip', () => {
       const { findByTestId, queryByRole } = render(
         <Tooltip
           id="test"
-          parent={() => (
+          parent={
             <button type="button" data-testid="button">
               Hello world
             </button>
-          )}
+          }
           placement="top"
           message="Hello"
         />,
@@ -100,11 +100,11 @@ describe('Tooltip', () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
           id="test"
-          parent={() => (
+          parent={
             <button type="button" data-testid="button">
               Hello world
             </button>
-          )}
+          }
           placement="top"
           message="Hello"
         />,
@@ -140,11 +140,11 @@ describe('Tooltip', () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
           id="test"
-          parent={() => (
+          parent={
             <button type="button" data-testid="button">
               Hello world
             </button>
-          )}
+          }
           placement="top"
           message="Hello"
           colour="danger"
@@ -175,11 +175,11 @@ describe('Tooltip', () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
           id="test"
-          parent={() => (
+          parent={
             <button type="button" data-testid="button">
               Hello world
             </button>
-          )}
+          }
           placement="top"
           message="Hello"
         />,
@@ -207,11 +207,11 @@ describe('Tooltip', () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
           id="test"
-          parent={() => (
+          parent={
             <button type="button" data-testid="button">
               Hello world
             </button>
-          )}
+          }
           placement="bottom"
           message="Hello"
         />,
@@ -239,11 +239,11 @@ describe('Tooltip', () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
           id="test"
-          parent={() => (
+          parent={
             <button type="button" data-testid="button">
               Hello world
             </button>
-          )}
+          }
           placement="left"
           message="Hello"
         />,
@@ -271,11 +271,11 @@ describe('Tooltip', () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
           id="test"
-          parent={() => (
+          parent={
             <button type="button" data-testid="button">
               Hello world
             </button>
-          )}
+          }
           placement="right"
           message="Hello"
         />,
@@ -303,11 +303,11 @@ describe('Tooltip', () => {
       const { findByRole, findByTestId } = render(
         <Tooltip
           id="test"
-          parent={() => (
+          parent={
             <button type="button" data-testid="button">
               Hello world
             </button>
-          )}
+          }
           placement="auto"
           message="Hello"
         />,

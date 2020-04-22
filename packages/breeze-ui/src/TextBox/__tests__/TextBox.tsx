@@ -11,10 +11,16 @@ interface IInitialValues {
 describe('TextBox', () => {
   let initialValues: IInitialValues;
   let validationSchema: Yup.ObjectSchema<IInitialValues>;
+  let onChange: jest.Mock;
   let onSubmit: jest.Mock;
 
   beforeEach(() => {
+    onChange = jest.fn();
     onSubmit = jest.fn();
+
+    validationSchema = Yup.object().shape({
+      test: Yup.string().required(),
+    });
   });
 
   describe('with no format is set', () => {
@@ -23,10 +29,6 @@ describe('TextBox', () => {
         initialValues = {
           test: '',
         };
-
-        validationSchema = Yup.object().shape({
-          test: Yup.string().required(),
-        });
       });
 
       it('should render the textbox with the correct colour when not active', async () => {
@@ -40,9 +42,10 @@ describe('TextBox', () => {
           </Formik>,
         );
 
-        await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
-          'color: #fff',
-        );
+        await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(`
+          color: #fff;
+          cursor: pointer;
+        `);
       });
 
       it('should render the textbox with the correct colour when active', async () => {
@@ -66,7 +69,10 @@ describe('TextBox', () => {
 
         const input = await findByPlaceholderText('Test');
 
-        expect(input).toHaveStyle('color: #333');
+        expect(input).toHaveStyle(`
+          color: #333;
+          cursor: text;
+        `);
       });
 
       it('should display an error if input is invalid', async () => {
@@ -162,6 +168,33 @@ describe('TextBox', () => {
           color: rgb(199,56,79);
           transform: translate(0,16px) scale(1);
         `);
+      });
+
+      it('should call onChange if set', async () => {
+        const { findByLabelText } = render(
+          <Formik initialValues={initialValues} onSubmit={onSubmit}>
+            {() => (
+              <Form>
+                <TextBox label="Test" name="test" onChange={onChange} />
+              </Form>
+            )}
+          </Formik>,
+        );
+
+        await act(async () => {
+          const input = await findByLabelText('Test');
+
+          fireEvent.change(input, {
+            target: {
+              focus: () => {},
+              value: 'Test',
+            },
+          });
+
+          await wait();
+        });
+
+        expect(onChange).toHaveBeenCalled();
       });
     });
 
@@ -234,7 +267,37 @@ describe('TextBox', () => {
 
         const input = await findByPlaceholderText('Test');
 
-        expect(input).toHaveStyle('color: #333');
+        expect(input).toHaveStyle(`
+          color: #333;
+          cursor: text;
+        `);
+      });
+
+      it('should call onChange if set', async () => {
+        const { findByLabelText } = render(
+          <Formik initialValues={initialValues} onSubmit={onSubmit}>
+            {() => (
+              <Form>
+                <TextBox label="Test" name="test" onChange={onChange} />
+              </Form>
+            )}
+          </Formik>,
+        );
+
+        await act(async () => {
+          const input = await findByLabelText('Test');
+
+          fireEvent.change(input, {
+            target: {
+              focus: () => {},
+              value: 'Test',
+            },
+          });
+
+          await wait();
+        });
+
+        expect(onChange).toHaveBeenCalled();
       });
     });
   });
@@ -245,10 +308,6 @@ describe('TextBox', () => {
         initialValues = {
           test: '',
         };
-
-        validationSchema = Yup.object().shape({
-          test: Yup.string().required(),
-        });
       });
 
       it('should render the textbox with the correct colour when not active', async () => {
@@ -267,9 +326,10 @@ describe('TextBox', () => {
           </Formik>,
         );
 
-        await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
-          'color: #fff',
-        );
+        await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(`
+          color: #fff;
+          cursor: pointer;
+        `);
       });
 
       it('should render the textbox with the correct colour when active', async () => {
@@ -298,7 +358,10 @@ describe('TextBox', () => {
 
         const input = await findByPlaceholderText('Test');
 
-        expect(input).toHaveStyle('color: #333');
+        expect(input).toHaveStyle(`
+          color: #333;
+          cursor: text;
+        `);
       });
 
       it('should display an error if input is invalid', async () => {
@@ -404,6 +467,38 @@ describe('TextBox', () => {
           color: rgb(199,56,79);
           transform: translate(0,16px) scale(1);
         `);
+      });
+
+      it('should call onChange if set', async () => {
+        const { findByLabelText } = render(
+          <Formik initialValues={initialValues} onSubmit={onSubmit}>
+            {() => (
+              <Form>
+                <TextBox
+                  label="Test"
+                  name="test"
+                  format="##-##-##"
+                  onChange={onChange}
+                />
+              </Form>
+            )}
+          </Formik>,
+        );
+
+        await act(async () => {
+          const input = await findByLabelText('Test');
+
+          fireEvent.change(input, {
+            target: {
+              focus: () => {},
+              value: '000000',
+            },
+          });
+
+          await wait();
+        });
+
+        expect(onChange).toHaveBeenCalled();
       });
     });
 
@@ -481,8 +576,43 @@ describe('TextBox', () => {
 
         const input = await findByPlaceholderText('Test');
 
-        expect(input).toHaveStyle('color: #333');
+        expect(input).toHaveStyle(`
+          color: #333;
+          cursor: text;
+        `);
       });
+    });
+
+    it('should call onChange if set', async () => {
+      const { findByLabelText } = render(
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          {() => (
+            <Form>
+              <TextBox
+                label="Test"
+                name="test"
+                format="##-##-##"
+                onChange={onChange}
+              />
+            </Form>
+          )}
+        </Formik>,
+      );
+
+      await act(async () => {
+        const input = await findByLabelText('Test');
+
+        fireEvent.change(input, {
+          target: {
+            focus: () => {},
+            value: '000000',
+          },
+        });
+
+        await wait();
+      });
+
+      expect(onChange).toHaveBeenCalled();
     });
   });
 });
