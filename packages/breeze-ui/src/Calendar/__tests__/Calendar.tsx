@@ -1,4 +1,5 @@
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import { advanceTo, clear } from 'jest-date-mock';
 import React from 'react';
 import Calendar from '../Calendar';
 
@@ -111,18 +112,100 @@ describe('Calendar', () => {
   });
 
   describe('with no date selected', () => {
-    it.todo('should show the correct month and year');
+    beforeAll(() => {
+      advanceTo('2015-06-06T19:45:00+00:00');
+    });
 
-    it.todo('should show the days of the week');
+    beforeEach(() => {
+      component = render(<Calendar id="test" onDateChange={onDateChange} />);
+    });
 
-    it.todo('should go back a year');
+    afterAll(() => {
+      clear();
+    });
 
-    it.todo('should go back a month');
+    it('should show the correct month and year', () => {
+      const { container } = component;
+      const label = container.querySelector('#test-dialog-label');
 
-    it.todo('should go forward a month');
+      expect(label).toHaveTextContent('June 2015');
+    });
 
-    it.todo('should go forward a year');
+    it('should show the days of the week', async () => {
+      const { findAllByRole } = component;
+      const days = await findAllByRole('columnheader');
 
-    it.todo('should select the correct date');
+      expect(days[0]).toHaveTextContent('Sun');
+      expect(days[1]).toHaveTextContent('Mon');
+      expect(days[2]).toHaveTextContent('Tue');
+      expect(days[3]).toHaveTextContent('Wed');
+      expect(days[4]).toHaveTextContent('Thu');
+      expect(days[5]).toHaveTextContent('Fri');
+      expect(days[6]).toHaveTextContent('Sat');
+    });
+
+    it('should go back a year', async () => {
+      const { container, findByLabelText } = component;
+      const label = container.querySelector('#test-dialog-label');
+
+      await act(async () => {
+        const button = await findByLabelText('Previous year');
+
+        fireEvent.click(button);
+      });
+
+      expect(label).toHaveTextContent('June 2014');
+    });
+
+    it('should go back a month', async () => {
+      const { container, findByLabelText } = component;
+      const label = container.querySelector('#test-dialog-label');
+
+      await act(async () => {
+        const button = await findByLabelText('Previous month');
+
+        fireEvent.click(button);
+      });
+
+      expect(label).toHaveTextContent('May 2015');
+    });
+
+    it('should go forward a month', async () => {
+      const { container, findByLabelText } = component;
+      const label = container.querySelector('#test-dialog-label');
+
+      await act(async () => {
+        const button = await findByLabelText('Next month');
+
+        fireEvent.click(button);
+      });
+
+      expect(label).toHaveTextContent('July 2015');
+    });
+
+    it('should go forward a year', async () => {
+      const { container, findByLabelText } = component;
+      const label = container.querySelector('#test-dialog-label');
+
+      await act(async () => {
+        const button = await findByLabelText('Next year');
+
+        fireEvent.click(button);
+      });
+
+      expect(label).toHaveTextContent('June 2016');
+    });
+
+    it('should select the correct date', async () => {
+      const { findByText } = component;
+
+      await act(async () => {
+        const button = await findByText('3');
+
+        fireEvent.click(button);
+      });
+
+      expect(onDateChange).toHaveBeenCalledWith('2015-06-03T19:45:00+00:00');
+    });
   });
 });
