@@ -6,7 +6,7 @@ import React, { FC, memo, useEffect, useState } from 'react';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
 import Calendar from '../Calendar/Calendar';
-import DateTime from '../DateTime/DateTime';
+import DateTime, { formatDateTime } from '../DateTime/DateTime';
 import useOutsideClick from '../hooks/useOutsideClick';
 import InputAlert from '../InputAlert/InputAlert';
 import InputWrapper from '../InputWrapper/InputWrapper';
@@ -89,6 +89,7 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
   });
   const { errors, setFieldValue } = form;
   const describedBy = `${name}-error`;
+  const { formatted } = formatDateTime(value);
   const selectDate = (d: string) => {
     setDate(d);
   };
@@ -125,14 +126,19 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
           {label}
         </Label>
 
-        <input hidden id={name} />
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        <input hidden id={name} {...field} />
 
         <LikeInput aria-describedby={error ? describedBy : undefined}>
           <DateTime value={value} />
         </LikeInput>
 
         <IconOuter>
-          <IconButton type="button" onClick={() => setVisible(!visible)}>
+          <IconButton
+            type="button"
+            aria-label={`Choose ${label}, selected date is ${formatted}`}
+            onClick={() => setVisible(!visible)}
+          >
             <FontAwesomeIcon icon={faCalendar} />
           </IconButton>
         </IconOuter>

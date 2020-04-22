@@ -14,7 +14,7 @@ import Form from './Form';
 const stories = storiesOf('Form', module);
 const initialValues = {
   category: '',
-  date: '',
+  dob: '',
   email: '',
   extra: {
     sortCode: '',
@@ -99,7 +99,11 @@ stories.add('Basic form', () => (
               placeholder="Select category"
             />
 
-            <DatePicker name="date" label="Date" />
+            <DatePicker
+              name="dob"
+              label="Date of bith"
+              helpText="The day you were born"
+            />
           </Form>
         </Card>
       </Col>
