@@ -10,6 +10,7 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
+import useInputValidation from '../hooks/useInputValidation';
 import InputAlert from '../InputAlert/InputAlert';
 import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
@@ -110,8 +111,8 @@ const InternalSelect: FC<IInternalSelect> = ({
 
   const { onBlur, ...rest } = field;
   const { errors, handleBlur, handleChange, touched } = form;
+  const error = useInputValidation(field.name, errors, touched);
   const describedBy = `${field.name}-error`;
-  const [error, setError] = useState(false);
   const doBlur = (e: FocusEvent<HTMLSelectElement>) => {
     handleBlur(e);
 
@@ -126,13 +127,6 @@ const InternalSelect: FC<IInternalSelect> = ({
       setFocus(true);
     }
   };
-
-  useEffect(() => {
-    const touch = getIn(touched, field.name);
-    const err = getIn(errors, field.name);
-
-    setError(!!touch && !!err);
-  }, [errors, touched, field.name]);
 
   return (
     <InputWrapper

@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import NumberFormat, { NumberFormatValues } from 'react-number-format';
 import styled from 'styled-components';
+import useInputValidation from '../hooks/useInputValidation';
 import InputAlert from '../InputAlert/InputAlert';
 import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
@@ -108,9 +109,9 @@ const InternalTextBox: FC<IInternalTextBox> = ({
 
   const { onBlur, ...rest } = field;
   const { errors, handleBlur, handleChange, setFieldValue, touched } = form;
+  const error = useInputValidation(field.name, errors, touched);
   const describedBy = `${field.name}-error`;
   const useNumberFormat = Boolean(decimalScale || format || prefix || suffix);
-  const [error, setError] = useState(false);
   const doBlur = (e: FocusEvent<HTMLInputElement>) => {
     handleBlur(e);
 
@@ -142,13 +143,6 @@ const InternalTextBox: FC<IInternalTextBox> = ({
       onChange(e, form);
     }
   };
-
-  useEffect(() => {
-    const touch = getIn(touched, field.name);
-    const err = getIn(errors, field.name);
-
-    setError(!!touch && !!err);
-  }, [errors, touched, field.name]);
 
   return (
     <InputWrapper

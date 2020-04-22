@@ -10,6 +10,8 @@ export { default as Content } from './Content/Content';
 export { default as DatePicker } from './DatePicker/DatePicker';
 export { default as DateTime } from './DateTime/DateTime';
 export { default as Form } from './Form/Form';
+export { default as useOutsideClick } from './hooks/useOutsideClick';
+export { default as useWindowSize } from './hooks/useWindowSize';
 export { default as Link } from './Link/Link';
 export { default as LinkButton } from './LinkButton/LinkButton';
 export { default as Loader } from './Loader/Loader';
