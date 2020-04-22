@@ -88,7 +88,7 @@ describe('get-accounts', () => {
                 type: '123456',
               },
             ],
-            balance: '100.00',
+            balance: 100.0,
             currency: 'GBP',
             id: 'account-id',
             type: 'BUSINESS',
