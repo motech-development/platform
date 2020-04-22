@@ -142,10 +142,10 @@ const Calendar: FC<ICalendarProps> = ({
 }) => {
   const [date, setDate] = useState(() => {
     if (selectedDate !== '') {
-      return moment(selectedDate);
+      return moment(selectedDate).utc();
     }
 
-    return moment();
+    return moment().utc();
   });
   const [currentMonth, setCurrentMonth] = useState('');
   const [currentYear, setCurrentYear] = useState(0);
@@ -184,11 +184,21 @@ const Calendar: FC<ICalendarProps> = ({
   return (
     <>
       <Toolbar>
-        <CalendarButton block fixed onClick={() => previous('year')}>
+        <CalendarButton
+          block
+          fixed
+          aria-label="Previous year"
+          onClick={() => previous('year')}
+        >
           <FontAwesomeIcon icon={faAngleDoubleLeft} />
         </CalendarButton>
 
-        <CalendarButton block fixed onClick={() => previous('month')}>
+        <CalendarButton
+          block
+          fixed
+          aria-label="Previous month"
+          onClick={() => previous('month')}
+        >
           <FontAwesomeIcon icon={faAngleLeft} />
         </CalendarButton>
 
@@ -202,11 +212,21 @@ const Calendar: FC<ICalendarProps> = ({
           {currentMonth} {currentYear}
         </Title>
 
-        <CalendarButton block fixed onClick={() => next('month')}>
+        <CalendarButton
+          block
+          fixed
+          aria-label="Next month"
+          onClick={() => next('month')}
+        >
           <FontAwesomeIcon icon={faAngleRight} />
         </CalendarButton>
 
-        <CalendarButton block fixed onClick={() => next('year')}>
+        <CalendarButton
+          block
+          fixed
+          aria-label="Next year"
+          onClick={() => next('year')}
+        >
           <FontAwesomeIcon icon={faAngleDoubleRight} />
         </CalendarButton>
       </Toolbar>
