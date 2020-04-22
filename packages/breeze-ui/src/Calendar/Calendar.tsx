@@ -142,10 +142,10 @@ const Calendar: FC<ICalendarProps> = ({
 }) => {
   const [date, setDate] = useState(() => {
     if (selectedDate !== '') {
-      return moment(selectedDate).utc();
+      return moment(selectedDate);
     }
 
-    return moment().utc();
+    return moment();
   });
   const [currentMonth, setCurrentMonth] = useState('');
   const [currentYear, setCurrentYear] = useState(0);
