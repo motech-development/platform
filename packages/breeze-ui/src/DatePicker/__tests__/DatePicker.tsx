@@ -69,16 +69,39 @@ describe('DatePicker', () => {
       );
     });
 
-    it('should display the calendar', async () => {
-      const { findByRole } = component;
+    it('should show and hide the calendar', async () => {
+      const { findByRole, queryByRole } = component;
+      const button = await findByRole('button');
 
       await act(async () => {
-        const button = await findByRole('button');
-
         fireEvent.click(button);
       });
 
       await expect(findByRole('grid')).resolves.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      expect(queryByRole('grid')).not.toBeInTheDocument();
+    });
+
+    it('should hide the calendar when clicking elsewhere', async () => {
+      const { container, findByRole, queryByRole } = component;
+      const button = await findByRole('button');
+      const body = container.firstChild as ChildNode;
+
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      await expect(findByRole('grid')).resolves.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.mouseDown(body);
+      });
+
+      expect(queryByRole('grid')).not.toBeInTheDocument();
     });
 
     it('should update the date value', async () => {
@@ -98,6 +121,100 @@ describe('DatePicker', () => {
 
       await expect(findByLabelText('Test')).resolves.toHaveValue(
         '2015-06-03T19:45:00+00:00',
+      );
+    });
+  });
+
+  describe('with an initial value set', () => {
+    beforeEach(async () => {
+      initialValues = {
+        test: '2015-06-03T19:45:00+00:00',
+      };
+
+      component = render(
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
+        >
+          {() => (
+            <Form>
+              <DatePicker name="test" label="Test" />
+            </Form>
+          )}
+        </Formik>,
+      );
+    });
+
+    it('should default to current date', async () => {
+      const { findByLabelText } = component;
+
+      await expect(findByLabelText('Test')).resolves.toHaveValue(
+        '2015-06-03T19:45:00+00:00',
+      );
+    });
+
+    it('should display the correct button label', async () => {
+      const { findByRole } = component;
+
+      await expect(findByRole('button')).resolves.toHaveAttribute(
+        'aria-label',
+        'Choose Test, selected date is 03/06/2015',
+      );
+    });
+
+    it('should show and hide the calendar', async () => {
+      const { findByRole, queryByRole } = component;
+      const button = await findByRole('button');
+
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      await expect(findByRole('grid')).resolves.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      expect(queryByRole('grid')).not.toBeInTheDocument();
+    });
+
+    it('should hide the calendar when clicking elsewhere', async () => {
+      const { container, findByRole, queryByRole } = component;
+      const button = await findByRole('button');
+      const body = container.firstChild as ChildNode;
+
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      await expect(findByRole('grid')).resolves.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.mouseDown(body);
+      });
+
+      expect(queryByRole('grid')).not.toBeInTheDocument();
+    });
+
+    it('should update the date value', async () => {
+      const { findByLabelText, findByRole, findByText } = component;
+
+      await act(async () => {
+        const button = await findByRole('button');
+
+        fireEvent.click(button);
+
+        await findByRole('grid');
+
+        const date = await findByText('20');
+
+        fireEvent.click(date);
+      });
+
+      await expect(findByLabelText('Test')).resolves.toHaveValue(
+        '2015-06-20T19:45:00+00:00',
       );
     });
   });
