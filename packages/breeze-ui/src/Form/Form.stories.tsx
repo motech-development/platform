@@ -99,11 +99,7 @@ stories.add('Basic form', () => (
               placeholder="Select category"
             />
 
-            <DatePicker
-              name="dob"
-              label="Date of bith"
-              helpText="The day you were born"
-            />
+            <DatePicker name="dob" label="Date of birth" />
           </Form>
         </Card>
       </Col>
