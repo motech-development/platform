@@ -1,5 +1,7 @@
 import React, { FC, memo, ReactNode } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
+import InputAlert from '../InputAlert/InputAlert';
+import Tooltip from '../Tooltip/Tooltip';
 
 const inputWrapperTheme = {
   lg: {
@@ -47,29 +49,45 @@ const ValidatorWrapper = styled.div`
 export interface IInputWrapperProps extends IBaseInputWrapper {
   children: ReactNode;
   helpText?: string;
-  tooltip: ReactNode;
+  message: string;
+  name: string;
 }
 
 const InputWrapper: FC<IInputWrapperProps> = ({
   children,
   error,
   helpText = null,
+  message,
+  name,
   spacing,
-  tooltip,
-}) => (
-  <ThemeProvider theme={inputWrapperTheme}>
-    <BaseInputWrapper error={error} spacing={spacing}>
-      {children}
+}) => {
+  const describedBy = `${name}-error`;
 
-      <ValidatorWrapper>{error && tooltip}</ValidatorWrapper>
-    </BaseInputWrapper>
+  return (
+    <ThemeProvider theme={inputWrapperTheme}>
+      <BaseInputWrapper error={error} spacing={spacing}>
+        {children}
 
-    {helpText && (
-      <HelpText error={error} spacing={spacing}>
-        {helpText}
-      </HelpText>
-    )}
-  </ThemeProvider>
-);
+        <ValidatorWrapper>
+          {error && (
+            <Tooltip
+              id={describedBy}
+              parent={<InputAlert message={message} />}
+              colour="danger"
+              placement="left"
+              message={message}
+            />
+          )}
+        </ValidatorWrapper>
+      </BaseInputWrapper>
+
+      {helpText && (
+        <HelpText error={error} spacing={spacing}>
+          {helpText}
+        </HelpText>
+      )}
+    </ThemeProvider>
+  );
+};
 
 export default memo(InputWrapper);

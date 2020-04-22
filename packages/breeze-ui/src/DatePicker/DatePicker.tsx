@@ -8,11 +8,9 @@ import styled from 'styled-components';
 import Calendar from '../Calendar/Calendar';
 import DateTime, { formatDateTime } from '../DateTime/DateTime';
 import useOutsideClick from '../hooks/useOutsideClick';
-import InputAlert from '../InputAlert/InputAlert';
 import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
 import { InputSpacing } from '../TextBox/TextBox';
-import Tooltip from '../Tooltip/Tooltip';
 
 const IconOuter = styled.div`
   margin-top: -21px;
@@ -109,18 +107,11 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
   return (
     <DatePickerWrapper ref={setReferenceElement}>
       <InputWrapper
-        helpText={helpText}
-        spacing={spacing}
         error={error}
-        tooltip={
-          <Tooltip
-            id={describedBy}
-            parent={<InputAlert message={getIn(errors, field.name)} />}
-            colour="danger"
-            placement="left"
-            message={getIn(errors, field.name)}
-          />
-        }
+        helpText={helpText}
+        message={getIn(errors, name)}
+        name={name}
+        spacing={spacing}
       >
         <Label active htmlFor={name} error={error}>
           {label}

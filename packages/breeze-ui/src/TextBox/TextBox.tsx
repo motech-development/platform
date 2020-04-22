@@ -11,10 +11,8 @@ import React, {
 import NumberFormat, { NumberFormatValues } from 'react-number-format';
 import styled from 'styled-components';
 import useInputValidation from '../hooks/useInputValidation';
-import InputAlert from '../InputAlert/InputAlert';
 import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
-import Tooltip from '../Tooltip/Tooltip';
 
 export type InputSpacing = 'sm' | 'md' | 'lg';
 
@@ -146,18 +144,11 @@ const InternalTextBox: FC<IInternalTextBox> = ({
 
   return (
     <InputWrapper
-      spacing={spacing}
-      helpText={helpText}
       error={error}
-      tooltip={
-        <Tooltip
-          id={describedBy}
-          parent={<InputAlert message={getIn(errors, field.name)} />}
-          colour="danger"
-          placement="left"
-          message={getIn(errors, field.name)}
-        />
-      }
+      helpText={helpText}
+      message={getIn(errors, field.name)}
+      name={field.name}
+      spacing={spacing}
     >
       <Label htmlFor={field.name} active={active} error={error}>
         {label}
