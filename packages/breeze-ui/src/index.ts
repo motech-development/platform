@@ -8,7 +8,7 @@ export { default as Card } from './Card/Card';
 export { default as Col } from './Col/Col';
 export { default as Content } from './Content/Content';
 export { default as DatePicker } from './DatePicker/DatePicker';
-export { default as DateTime } from './DateTime/DateTime';
+export { default as DateTime, formatDateTime } from './DateTime/DateTime';
 export { default as Form } from './Form/Form';
 export { default as useOutsideClick } from './hooks/useOutsideClick';
 export { default as useWindowSize } from './hooks/useWindowSize';

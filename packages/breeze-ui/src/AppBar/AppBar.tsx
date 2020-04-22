@@ -52,7 +52,7 @@ const AppBarBase = styled.div`
 export interface IAppBarProps {
   children: ReactNode;
   colour?: keyof typeof appBarTheme;
-  element?: 'caption' | 'header' | 'div';
+  element?: 'header' | 'div';
 }
 
 const AppBar: FC<IAppBarProps> = ({
