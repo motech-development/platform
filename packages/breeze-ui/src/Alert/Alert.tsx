@@ -1,6 +1,6 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { ElementType, FC, memo, useEffect, useState } from 'react';
+import React, { FC, memo, ReactNode, useEffect, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 type AlertSpacing = 'sm' | 'md' | 'lg';
@@ -80,7 +80,7 @@ const AlertDismissButton = styled.button<IAlertDismissButton>`
 export interface IAlertProps {
   colour?: AlertTheme;
   dismissable?: boolean | number;
-  icon?: ElementType;
+  icon?: ReactNode;
   message: string;
   spacing?: AlertSpacing;
   onDismiss?(): void;
@@ -89,7 +89,7 @@ export interface IAlertProps {
 const Alert: FC<IAlertProps> = ({
   colour = 'primary',
   dismissable = false,
-  icon: Icon = null,
+  icon = null,
   message,
   spacing = 'md',
   onDismiss = null,
@@ -128,12 +128,8 @@ const Alert: FC<IAlertProps> = ({
   if (visible) {
     return (
       <ThemeProvider theme={alertTheme}>
-        <BaseAlert role="alert" colour={colour} icon={!!Icon} spacing={spacing}>
-          {Icon && (
-            <AlertIconWrapper>
-              <Icon />
-            </AlertIconWrapper>
-          )}
+        <BaseAlert role="alert" colour={colour} icon={!!icon} spacing={spacing}>
+          {icon && <AlertIconWrapper>{icon}</AlertIconWrapper>}
 
           {message}
 

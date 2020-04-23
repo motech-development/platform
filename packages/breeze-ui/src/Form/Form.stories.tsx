@@ -60,11 +60,11 @@ stories.add('Basic form', () => (
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={submit}
-            cancel={() => (
+            cancel={
               <Button block colour="danger" size="lg">
                 Cancel
               </Button>
-            )}
+            }
           >
             <TextBox name="name" type="text" label="Name" placeholder="Name" />
 

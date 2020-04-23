@@ -1,5 +1,5 @@
 import { Form as FormikForm, Formik, FormikValues } from 'formik';
-import React, { ElementType, FC, memo, ReactNode } from 'react';
+import React, { FC, memo, ReactNode } from 'react';
 import Button from '../Button/Button';
 import Col from '../Col/Col';
 import Row from '../Row/Row';
@@ -36,62 +36,72 @@ function formNormaliser<T>(values: T) {
   return initialValues;
 }
 
-export interface IFormProps<T extends FormikValues = FormikValues> {
+export interface IFormProps {
   children: ReactNode;
-  cancel?: ElementType;
-  initialValues: T;
+  cancel?: ReactNode;
+  initialValues: FormikValues;
   loading?: boolean;
-  onSubmit(value: T): void;
+  onPreSubmit?(values: FormikValues): FormikValues;
+  onSubmit(values: FormikValues): void;
   submitLabel: string;
   validationSchema: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 const Form: FC<IFormProps> = ({
   children,
-  cancel: Cancel = undefined,
+  cancel = null,
   initialValues,
   loading = false,
+  onPreSubmit = null,
   onSubmit,
   submitLabel,
   validationSchema,
-}) => (
-  <Formik
-    validateOnMount
-    initialValues={formNormaliser(initialValues)}
-    validationSchema={validationSchema}
-    onSubmit={onSubmit}
-  >
-    {({ isValid }) => (
-      <FormikForm autoComplete="off">
-        <Row>
-          <Col>{children}</Col>
+}) => {
+  const doSubmit = (values: FormikValues) => {
+    const payload = onPreSubmit ? onPreSubmit(values) : values;
 
-          <Col>
-            <Row>
-              <Col xs={12} md={Cancel ? 3 : 6} mdOffset={7}>
-                <Button
-                  block
-                  type="submit"
-                  colour="success"
-                  disabled={!isValid}
-                  size="lg"
-                  loading={loading}
-                >
-                  {submitLabel}
-                </Button>
-              </Col>
+    onSubmit(payload);
+  };
 
-              {Cancel && (
-                <Col xs={12} md={3}>
-                  <Cancel />
+  return (
+    <Formik
+      validateOnMount
+      initialValues={formNormaliser(initialValues)}
+      validationSchema={validationSchema}
+      onSubmit={doSubmit}
+    >
+      {({ isValid }) => (
+        <FormikForm autoComplete="off">
+          <Row>
+            <Col>{children}</Col>
+
+            <Col>
+              <Row>
+                <Col xs={12} md={cancel ? 3 : 6} mdOffset={7}>
+                  <Button
+                    block
+                    type="submit"
+                    colour="success"
+                    disabled={!isValid}
+                    size="lg"
+                    loading={loading}
+                  >
+                    {submitLabel}
+                  </Button>
                 </Col>
-              )}
-            </Row>
-          </Col>
-        </Row>
-      </FormikForm>
-    )}
-  </Formik>
-);
+
+                {cancel && (
+                  <Col xs={12} md={3}>
+                    {cancel}
+                  </Col>
+                )}
+              </Row>
+            </Col>
+          </Row>
+        </FormikForm>
+      )}
+    </Formik>
+  );
+};
 
 export default memo(Form);
