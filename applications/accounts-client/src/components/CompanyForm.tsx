@@ -107,11 +107,11 @@ const CompanyForm: FC<ICompanyFormProps> = ({
       validationSchema={validationSchema}
       submitLabel={t('company-form.save')}
       onSubmit={onSave}
-      cancel={() => (
+      cancel={
         <LinkButton block to={backTo} colour="secondary" size="lg">
           {t('company-form.cancel')}
         </LinkButton>
-      )}
+      }
     >
       <Row>
         <Col xs={12} md={6}>

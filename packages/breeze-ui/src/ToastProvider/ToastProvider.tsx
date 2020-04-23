@@ -92,7 +92,7 @@ const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
           spacing="lg"
           key={id}
           dismissable={5000}
-          icon={() => <FontAwesomeIcon icon={selectIcon(colour)} />}
+          icon={<FontAwesomeIcon icon={selectIcon(colour)} />}
           colour={colour}
           message={message}
           onDismiss={() => remove(id)}

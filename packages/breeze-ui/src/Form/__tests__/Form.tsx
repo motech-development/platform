@@ -1,4 +1,5 @@
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import { FormikValues } from 'formik';
 import React from 'react';
 import { object, ObjectSchema, string } from 'yup';
 import TextBox from '../../TextBox/TextBox';
@@ -101,11 +102,11 @@ describe('Form', () => {
     beforeEach(() => {
       component = render(
         <Form
-          cancel={() => (
+          cancel={
             <button type="button" data-testid="cancel-button">
               Cancel
             </button>
-          )}
+          }
           submitLabel="Submit"
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -262,6 +263,57 @@ describe('Form', () => {
       const { findByRole } = component;
 
       await expect(findByRole('button')).resolves.toHaveAttribute('disabled');
+    });
+  });
+
+  describe('with onPreSumbit hook', () => {
+    let onPreSumbit;
+
+    beforeEach(() => {
+      onPreSumbit = (values: FormikValues) => ({
+        ...values,
+        obj: {
+          ...values.obj,
+          test: 'Hello',
+        },
+      });
+
+      component = render(
+        <Form
+          submitLabel="Submit"
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onPreSubmit={onPreSumbit}
+          onSubmit={value => onSubmit(value)}
+        >
+          <TextBox label="Test" name="test" prefix="£" />
+        </Form>,
+      );
+    });
+
+    it('should alter the response before submitting', async () => {
+      const { findByLabelText, findByRole } = component;
+
+      await act(async () => {
+        const input = await findByLabelText('Test');
+
+        fireEvent.change(input, {
+          target: { focus: () => {}, value: '20' },
+        });
+
+        const button = await findByRole('button');
+
+        fireEvent.click(button);
+      });
+
+      expect(onSubmit).toHaveBeenCalledWith({
+        empty: '',
+        obj: {
+          empty: '',
+          test: 'Hello',
+        },
+        test: '£20',
+      });
     });
   });
 });
