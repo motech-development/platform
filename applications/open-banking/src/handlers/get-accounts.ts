@@ -44,7 +44,7 @@ export const handler: Handler<APIGatewayEvent> = proxyHandler(async event => {
         items: data.data.map(
           ({ accountIdentifications, balance, currency, id, type }) => ({
             accountIdentifications,
-            balance: parseFloat(balance),
+            balance: parseFloat(parseFloat(balance).toFixed(2)),
             currency,
             id,
             type,
