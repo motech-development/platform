@@ -1,0 +1,103 @@
+{
+  "accounts": {
+    "title": "Accounts",
+    "sub-title": "Your transactions",
+    "dashboard": {
+      "title": "Dashboard",
+      "lead": "Head back to your company dashboard to manage more aspects of your business",
+      "button": "Back to my dashboard"
+    },
+    "purchases": {
+      "title": "Purchases",
+      "lead": "Record a new purchase made by your business and attach any invoices or receipts",
+      "button": "Add a purchase"
+    },
+    "sales": {
+      "title": "Sales",
+      "lead": "Record a new sale made by your business",
+      "button": "Add a sale"
+    },
+    "transactions": {
+      "actions": "Actions",
+      "view": "View",
+      "delete": "Delete"
+    }
+  },
+  "add-purchase": {
+    "title": "Add a new purchase",
+    "sub-title": "Enter your purchase details"
+  },
+  "add-sale": {
+    "title": "Add a new sale",
+    "sub-title": "Enter your sale details"
+  },
+  "purchase-form": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "currency": "£",
+    "purchase-details": {
+      "heading": "Purchase details",
+      "name": {
+        "label": "Supplier",
+        "required": "Supplier is required"
+      },
+      "description": {
+        "label": "Description",
+        "required": "Description is required"
+      },
+      "date": {
+        "label": "Date",
+        "required": "Date is required"
+      }
+    },
+    "purchase-amount": {
+      "heading": "Purchase amount",
+      "category": {
+        "label": "Category",
+        "placeholder": "Select a category",
+        "required": "Category is required"
+      },
+      "amount": {
+        "label": "Amount",
+        "required": "Amount is required"
+      },
+      "vat": {
+        "label": "VAT",
+        "required": "VAT is required"
+      }
+    }
+  },
+  "sales-form": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "category": "Sales",
+    "currency": "£",
+    "sale-details": {
+      "heading": "Sale details",
+      "name": {
+        "label": "Client",
+        "placeholder": "Select a client",
+        "required": "Client is required"
+      },
+      "description": {
+        "label": "Description",
+        "required": "Description is required"
+      },
+      "date": {
+        "label": "Date",
+        "required": "Date is required"
+      }
+    },
+    "sale-amount": {
+      "heading": "Sale amount",
+      "amount": {
+        "label": "Amount",
+        "required": "Amount is required"
+      },
+      "vat": {
+        "label": "VAT",
+        "required": "VAT is required"
+      }
+    }
+  }
+}

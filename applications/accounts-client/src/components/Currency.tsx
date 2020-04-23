@@ -1,6 +1,6 @@
 import React, { FC, memo } from 'react';
 
-const output = (currency: string) => {
+const currencySymbol = (currency: string) => {
   switch (currency) {
     case 'GBP':
       return '£';
@@ -15,14 +15,22 @@ const output = (currency: string) => {
 
 export interface ICurrencyProps {
   currency: string;
-  value: string;
+  value: number;
 }
 
 const Currency: FC<ICurrencyProps> = ({ currency, value }) => {
-  const prefix = output(currency);
-  const balance = parseFloat(value).toFixed(2);
+  const prefix = currencySymbol(currency);
+  const isNegative = value < 0;
 
-  return <>{`${prefix}${balance}`}</>;
+  if (isNegative) {
+    const output = Math.abs(value).toFixed(2);
+
+    return <>{`-${prefix}${output}`}</>;
+  }
+
+  const output = value.toFixed(2);
+
+  return <>{`${prefix}${output}`}</>;
 };
 
 export default memo(Currency);
