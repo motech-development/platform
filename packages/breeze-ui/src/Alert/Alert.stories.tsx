@@ -40,7 +40,7 @@ stories.add('Various alerts', () => (
       message={message()}
       colour={colour()}
       dismissable={dismissable()}
-      icon={() => <FontAwesomeIcon icon={faExclamationTriangle} />}
+      icon={<FontAwesomeIcon icon={faExclamationTriangle} />}
       spacing={spacing()}
     />
   </>

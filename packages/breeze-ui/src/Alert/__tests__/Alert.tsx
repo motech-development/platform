@@ -104,7 +104,7 @@ describe('Alert', () => {
 
   it('should display the an icon if one is set', () => {
     const { findByTestId } = render(
-      <Alert message="Hello world" icon={() => <div data-testid="icon" />} />,
+      <Alert message="Hello world" icon={<div data-testid="icon" />} />,
     );
 
     expect(findByTestId('icon')).toBeDefined();
