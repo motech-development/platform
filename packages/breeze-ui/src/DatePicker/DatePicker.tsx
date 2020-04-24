@@ -53,16 +53,20 @@ const CalendarWrapper = styled.div`
 `;
 
 interface IInnerDatePicker extends FieldProps {
+  disabled: boolean;
   helpText: string;
   label: string;
+  readOnly: boolean;
   spacing: InputSpacing;
 }
 
 const InnerDatePicker: FC<IInnerDatePicker> = ({
+  disabled,
   field,
   form,
   helpText,
   label,
+  readOnly,
   spacing,
 }) => {
   const [
@@ -117,8 +121,14 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
           {label}
         </Label>
 
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <input hidden id={name} {...field} />
+        <input
+          hidden
+          id={name}
+          disabled={disabled}
+          readOnly={readOnly}
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...field}
+        />
 
         <LikeInput aria-describedby={error ? describedBy : undefined}>
           <DateTime value={value} />
@@ -126,6 +136,7 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
 
         <IconOuter>
           <IconButton
+            disabled={disabled || readOnly}
             type="button"
             aria-label={`Choose ${label}, selected date is ${formatted}`}
             onClick={() => setVisible(!visible)}
@@ -150,24 +161,30 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
 };
 
 export interface IDatePicker {
+  disabled?: boolean;
   helpText?: string;
   label: string;
   name: string;
+  readOnly?: boolean;
   spacing?: InputSpacing;
 }
 
 const DatePicker: FC<IDatePicker> = ({
+  disabled = false,
   helpText = null,
   label,
   name,
+  readOnly = false,
   spacing = 'md',
 }) => (
   <Field
     component={InnerDatePicker}
+    disabled={disabled}
     helpText={helpText}
     id={name}
     label={label}
     name={name}
+    readOnly={readOnly}
     spacing={spacing}
   />
 );

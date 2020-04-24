@@ -3,7 +3,7 @@ import React, {
   ChangeEvent,
   FC,
   FocusEvent,
-  HTMLAttributes,
+  InputHTMLAttributes,
   memo,
   useEffect,
   useState,
@@ -55,7 +55,7 @@ const BaseTextBox = styled.input<IBaseTextBox>`
   `}
 `;
 
-interface IInput extends HTMLAttributes<HTMLInputElement> {
+interface IInput extends InputHTMLAttributes<HTMLInputElement> {
   active: boolean;
   describedBy: string;
   errors: boolean;
@@ -193,12 +193,14 @@ const InternalTextBox: FC<IInternalTextBox> = ({
 
 export interface ITextBoxProps {
   decimalScale?: number;
+  disabled?: boolean;
   format?: string;
   helpText?: string;
   label: string;
   name: string;
   placeholder?: string;
   prefix?: string;
+  readOnly?: boolean;
   spacing?: InputSpacing;
   suffix?: string;
   type?: 'email' | 'number' | 'password' | 'text';
@@ -207,6 +209,7 @@ export interface ITextBoxProps {
 
 const TextBox: FC<ITextBoxProps> = ({
   decimalScale = undefined,
+  disabled = false,
   format = undefined,
   helpText = null,
   label,
@@ -214,6 +217,7 @@ const TextBox: FC<ITextBoxProps> = ({
   onChange = undefined,
   placeholder = '',
   prefix = undefined,
+  readOnly = false,
   spacing = 'md',
   suffix = undefined,
   type = 'text',
@@ -225,6 +229,7 @@ const TextBox: FC<ITextBoxProps> = ({
       id={name}
       component={InternalTextBox}
       decimalScale={decimalScale}
+      disabled={disabled}
       active={focus}
       format={format}
       helpText={helpText}
@@ -233,6 +238,7 @@ const TextBox: FC<ITextBoxProps> = ({
       onChange={onChange}
       placeholder={placeholder}
       prefix={prefix}
+      readOnly={readOnly}
       setFocus={setFocus}
       suffix={suffix}
       label={label}

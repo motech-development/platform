@@ -4,8 +4,8 @@ import { Field, FieldProps, getIn } from 'formik';
 import React, {
   FC,
   FocusEvent,
-  HTMLAttributes,
   memo,
+  SelectHTMLAttributes,
   useEffect,
   useState,
 } from 'react';
@@ -39,7 +39,7 @@ const BaseSelectInput = styled.select<IBaseSelectInput>`
   `}
 `;
 
-interface ISelectInput extends HTMLAttributes<HTMLSelectElement> {
+interface ISelectInput extends SelectHTMLAttributes<HTMLSelectElement> {
   active: boolean;
   describedBy: string;
   errors: boolean;
@@ -80,21 +80,25 @@ const IconInner = styled.div`
 
 interface IInternalSelect extends FieldProps {
   active: boolean;
+  disabled: boolean;
   helpText: string;
   label: string;
   options: ISelectOption[];
   placeholder: string;
+  readOnly: boolean;
   setFocus(focus: boolean): void;
   spacing: SelectSpacing;
 }
 
 const InternalSelect: FC<IInternalSelect> = ({
   active,
+  disabled,
   field,
   form,
   helpText,
   label,
   options,
+  readOnly,
   placeholder,
   setFocus,
   spacing,
@@ -144,6 +148,7 @@ const InternalSelect: FC<IInternalSelect> = ({
         {...rest}
         active={active}
         describedBy={describedBy}
+        disabled={disabled || readOnly}
         errors={error}
         onBlur={doBlur}
         onChange={handleChange}
@@ -164,26 +169,32 @@ const InternalSelect: FC<IInternalSelect> = ({
           <FontAwesomeIcon icon={faAngleDown} />
         </IconInner>
       </IconOuter>
+
+      {readOnly && <input hidden {...field} />}
       {/* eslint-enable react/jsx-props-no-spreading */}
     </InputWrapper>
   );
 };
 
 export interface ISelectProps {
+  disabled?: boolean;
   helpText?: string;
   label: string;
   name: string;
   options: ISelectOption[];
   placeholder: string;
+  readOnly?: boolean;
   spacing?: SelectSpacing;
 }
 
 const Select: FC<ISelectProps> = ({
+  disabled = false,
   helpText = null,
   label,
   name,
   options,
   placeholder,
+  readOnly = false,
   spacing = 'md',
 }) => {
   const [focus, setFocus] = useState();
@@ -193,10 +204,12 @@ const Select: FC<ISelectProps> = ({
       id={name}
       component={InternalSelect}
       active={focus}
+      disabled={disabled}
       helpText={helpText}
       name={name}
       options={options}
       placeholder={placeholder}
+      readOnly={readOnly}
       setFocus={setFocus}
       label={label}
       spacing={spacing}

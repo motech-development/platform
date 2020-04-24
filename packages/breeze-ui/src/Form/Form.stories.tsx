@@ -1,3 +1,4 @@
+import { boolean, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
 import { date, object, string } from 'yup';
@@ -47,6 +48,10 @@ const options = [
   },
 ];
 const submit = () => {};
+const disabled = () => boolean('Disabled', false);
+const readOnly = () => boolean('Read only', false);
+
+stories.addDecorator(withKnobs);
 
 stories.add('Basic form', () => (
   <>
@@ -66,9 +71,18 @@ stories.add('Basic form', () => (
               </Button>
             }
           >
-            <TextBox name="name" type="text" label="Name" placeholder="Name" />
+            <TextBox
+              disabled={disabled()}
+              readOnly={readOnly()}
+              name="name"
+              type="text"
+              label="Name"
+              placeholder="Name"
+            />
 
             <TextBox
+              disabled={disabled()}
+              readOnly={readOnly()}
               name="email"
               type="email"
               label="Email address"
@@ -77,15 +91,25 @@ stories.add('Basic form', () => (
             />
 
             <TextBox
+              disabled={disabled()}
+              readOnly={readOnly()}
               name="password"
               type="password"
               label="Password"
               spacing="lg"
             />
 
-            <TextBox name="extra.telephone" type="text" label="Telephone" />
+            <TextBox
+              disabled={disabled()}
+              readOnly={readOnly()}
+              name="extra.telephone"
+              type="text"
+              label="Telephone"
+            />
 
             <TextBox
+              disabled={disabled()}
+              readOnly={readOnly()}
               name="extra.sortCode"
               type="text"
               label="Sort code"
@@ -93,13 +117,20 @@ stories.add('Basic form', () => (
             />
 
             <Select
+              disabled={disabled()}
+              readOnly={readOnly()}
               options={options}
               name="category"
               label="Category"
               placeholder="Select category"
             />
 
-            <DatePicker name="dob" label="Date of birth" />
+            <DatePicker
+              disabled={disabled()}
+              readOnly={readOnly()}
+              name="dob"
+              label="Date of birth"
+            />
           </Form>
         </Card>
       </Col>
