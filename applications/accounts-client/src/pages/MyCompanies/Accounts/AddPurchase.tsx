@@ -1,4 +1,6 @@
+import { useQuery } from '@apollo/react-hooks';
 import { PageTitle } from '@motech-development/breeze-ui';
+import { gql } from 'apollo-boost';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -6,20 +8,29 @@ import Connected from '../../../components/Connected';
 import PurchaseForm from '../../../components/PurchaseForm';
 import withLayout from '../../../hoc/withLayout';
 
-const data = {
+interface IQueryInput {
+  id: string;
+}
+
+interface IQueryOutput {
   getSettings: {
-    categories: [
-      {
-        name: 'Accommodation',
-        vatRate: 20,
-      },
-      {
-        name: 'Travel',
-        vatRate: 0,
-      },
-    ],
-  },
-};
+    categories: {
+      name: string;
+      vatRate: number;
+    }[];
+  };
+}
+
+export const query = gql`
+  query AddPurchase($id: ID!) {
+    getSettings(id: $id) {
+      categories {
+        name
+        vatRate
+      }
+    }
+  }
+`;
 
 interface IAddPurchaseParams {
   companyId: string;
@@ -28,11 +39,16 @@ interface IAddPurchaseParams {
 const AddPurchase: FC = () => {
   const { companyId } = useParams<IAddPurchaseParams>();
   const { t } = useTranslation('accounts');
+  const { error, data, loading } = useQuery<IQueryOutput, IQueryInput>(query, {
+    variables: {
+      id: companyId,
+    },
+  });
   const backTo = (id: string) => `/my-companies/accounts/${id}`;
   const save = () => {};
 
   return (
-    <Connected error={undefined} loading={false}>
+    <Connected error={error} loading={loading}>
       {data && (
         <>
           <PageTitle
