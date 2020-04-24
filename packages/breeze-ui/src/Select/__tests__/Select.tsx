@@ -11,10 +11,12 @@ interface IInitialValues {
 describe('Select', () => {
   let initialValues: IInitialValues;
   let validationSchema: Yup.ObjectSchema<IInitialValues>;
+  let onChange: jest.Mock;
   let onSubmit: jest.Mock;
   let options: ISelectOption[];
 
   beforeEach(() => {
+    onChange = jest.fn();
     onSubmit = jest.fn();
     options = [
       {
@@ -197,6 +199,38 @@ describe('Select', () => {
       expect(opts[1]).toHaveValue('option 1');
       expect(opts[2]).toHaveValue('option 2');
     });
+
+    it('should call onChange if set', async () => {
+      const { findByLabelText } = render(
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          {() => (
+            <Form>
+              <Select
+                onChange={onChange}
+                options={options}
+                label="Test"
+                name="test"
+                placeholder="Select something"
+              />
+            </Form>
+          )}
+        </Formik>,
+      );
+
+      await act(async () => {
+        const input = await findByLabelText('Test');
+
+        fireEvent.change(input, {
+          target: {
+            value: 'Option 1',
+          },
+        });
+
+        await wait();
+      });
+
+      expect(onChange).toHaveBeenCalled();
+    });
   });
 
   describe('when there are initial values', () => {
@@ -331,6 +365,38 @@ describe('Select', () => {
       expect(opts[0]).toHaveValue('');
       expect(opts[1]).toHaveValue('option 1');
       expect(opts[2]).toHaveValue('option 2');
+    });
+
+    it('should call onChange if set', async () => {
+      const { findByLabelText } = render(
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          {() => (
+            <Form>
+              <Select
+                onChange={onChange}
+                options={options}
+                label="Test"
+                name="test"
+                placeholder="Select something"
+              />
+            </Form>
+          )}
+        </Formik>,
+      );
+
+      await act(async () => {
+        const input = await findByLabelText('Test');
+
+        fireEvent.change(input, {
+          target: {
+            value: 'Option 1',
+          },
+        });
+
+        await wait();
+      });
+
+      expect(onChange).toHaveBeenCalled();
     });
   });
 });

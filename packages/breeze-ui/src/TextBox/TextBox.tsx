@@ -1,4 +1,4 @@
-import { Field, FieldProps, FormikProps, getIn } from 'formik';
+import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
 import React, {
   ChangeEvent,
   FC,
@@ -76,7 +76,10 @@ interface IInternalTextBox extends FieldProps {
   format: string;
   helpText: string;
   label: string;
-  onChange(e: ChangeEvent<HTMLInputElement>, form: FormikProps<{}>): void;
+  onChange(
+    e: ChangeEvent<HTMLInputElement>,
+    form: FormikProps<FormikValues>,
+  ): void;
   prefix: string;
   setFocus(focus: boolean): void;
   spacing: InputSpacing;
@@ -204,7 +207,10 @@ export interface ITextBoxProps {
   spacing?: InputSpacing;
   suffix?: string;
   type?: 'email' | 'number' | 'password' | 'text';
-  onChange?(e: ChangeEvent<HTMLInputElement>, form: FormikProps<{}>): void;
+  onChange?(
+    e: ChangeEvent<HTMLInputElement>,
+    form: FormikProps<FormikValues>,
+  ): void;
 }
 
 const TextBox: FC<ITextBoxProps> = ({

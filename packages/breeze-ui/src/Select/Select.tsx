@@ -1,7 +1,8 @@
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Field, FieldProps, getIn } from 'formik';
+import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
 import React, {
+  ChangeEvent,
   FC,
   FocusEvent,
   memo,
@@ -83,6 +84,10 @@ interface IInternalSelect extends FieldProps {
   disabled: boolean;
   helpText: string;
   label: string;
+  onChange(
+    e: ChangeEvent<HTMLSelectElement>,
+    form: FormikProps<FormikValues>,
+  ): void;
   options: ISelectOption[];
   placeholder: string;
   readOnly: boolean;
@@ -97,6 +102,7 @@ const InternalSelect: FC<IInternalSelect> = ({
   form,
   helpText,
   label,
+  onChange,
   options,
   readOnly,
   placeholder,
@@ -123,6 +129,13 @@ const InternalSelect: FC<IInternalSelect> = ({
     }
 
     onBlur(e);
+  };
+  const doChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    handleChange(e);
+
+    if (onChange) {
+      onChange(e, form);
+    }
   };
   const doFocus = () => {
     if (!field.value && field.value !== 0) {
@@ -151,7 +164,7 @@ const InternalSelect: FC<IInternalSelect> = ({
         disabled={disabled || readOnly}
         errors={error}
         onBlur={doBlur}
-        onChange={handleChange}
+        onChange={doChange}
         onFocus={doFocus}
       >
         <option disabled value="">
@@ -185,6 +198,10 @@ export interface ISelectProps {
   placeholder: string;
   readOnly?: boolean;
   spacing?: SelectSpacing;
+  onChange?(
+    e: ChangeEvent<HTMLSelectElement>,
+    form: FormikProps<FormikValues>,
+  ): void;
 }
 
 const Select: FC<ISelectProps> = ({
@@ -192,6 +209,7 @@ const Select: FC<ISelectProps> = ({
   helpText = null,
   label,
   name,
+  onChange = undefined,
   options,
   placeholder,
   readOnly = false,
@@ -207,6 +225,7 @@ const Select: FC<ISelectProps> = ({
       disabled={disabled}
       helpText={helpText}
       name={name}
+      onChange={onChange}
       options={options}
       placeholder={placeholder}
       readOnly={readOnly}
