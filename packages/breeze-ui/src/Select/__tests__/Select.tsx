@@ -113,6 +113,12 @@ describe('Select', () => {
       await act(async () => {
         const input = await findByLabelText('Test');
 
+        fireEvent.change(input, {
+          target: {
+            value: 'Option 1',
+          },
+        });
+
         fireEvent.blur(input);
 
         await wait();
@@ -164,6 +170,12 @@ describe('Select', () => {
 
       await act(async () => {
         const input = await findByLabelText('Test');
+
+        fireEvent.change(input, {
+          target: {
+            value: 'Option 1',
+          },
+        });
 
         fireEvent.blur(input);
 

@@ -10,8 +10,8 @@ import {
   TextBox,
   Typography,
 } from '@motech-development/breeze-ui';
-import { getIn } from 'formik';
-import React, { FC, memo } from 'react';
+import { FormikProps, FormikValues, getIn } from 'formik';
+import React, { ChangeEvent, FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { date, number, object, string } from 'yup';
 
@@ -46,6 +46,7 @@ const PurchaseForm: FC<IPurchaseFormProps> = ({
   loading,
   onSave,
 }) => {
+  const [disableInput, setDisableInput] = useState(true);
   const { t } = useTranslation('accounts');
   const validationSchema = object().shape({
     amount: number().required(
@@ -68,6 +69,24 @@ const PurchaseForm: FC<IPurchaseFormProps> = ({
       name,
       value: i.toString(),
     }));
+  const onChangeSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    setDisableInput(event.target.value === '');
+  };
+  const onInputValue = (
+    event: ChangeEvent<HTMLInputElement>,
+    form: FormikProps<FormikValues>,
+  ) => {
+    const { setFieldValue, values } = form;
+    const value = parseFloat(
+      event.target.value.replace(t('purchase-form.currency'), ''),
+    );
+    const i = getIn(values, 'category');
+    const vat = parseFloat(categories[i].value);
+    const rate = vat / 100 + 1;
+    const calculated = (value - value / rate).toFixed(2);
+
+    setFieldValue('vat', calculated);
+  };
   const onPreSubmit = (value: FormSchema) => {
     const category = categories[value.category].name;
 
@@ -99,18 +118,18 @@ const PurchaseForm: FC<IPurchaseFormProps> = ({
             </Typography>
 
             <TextBox
-              name="name"
               label={t('purchase-form.purchase-details.name.label')}
+              name="name"
             />
 
             <TextBox
-              name="description"
               label={t('purchase-form.purchase-details.description.label')}
+              name="description"
             />
 
             <DatePicker
-              name="date"
               label={t('purchase-form.purchase-details.date.label')}
+              name="date"
             />
           </Card>
         </Col>
@@ -122,33 +141,26 @@ const PurchaseForm: FC<IPurchaseFormProps> = ({
             </Typography>
 
             <Select
-              options={dropdown}
-              name="category"
               label={t('purchase-form.purchase-amount.category.label')}
+              name="category"
+              onChange={onChangeSelect}
+              options={dropdown}
               placeholder={t(
                 'purchase-form.purchase-amount.category.placeholder',
               )}
             />
 
             <TextBox
-              name="amount"
-              label={t('purchase-form.purchase-amount.amount.label')}
-              prefix={t('purchase-form.currency')}
               decimalScale={2}
-              onChange={(e, { setFieldValue, values }) => {
-                const value = parseFloat(
-                  e.target.value.replace(t('purchase-form.currency'), ''),
-                );
-                const i = getIn(values, 'category');
-                const vat = parseFloat(categories[i].value);
-                const rate = vat / 100 + 1;
-                const calculated = (value - value / rate).toFixed(2);
-
-                setFieldValue('vat', calculated);
-              }}
+              disabled={disableInput}
+              label={t('purchase-form.purchase-amount.amount.label')}
+              name="amount"
+              onChange={onInputValue}
+              prefix={t('purchase-form.currency')}
             />
 
             <TextBox
+              disabled={disableInput}
               name="vat"
               label={t('purchase-form.purchase-amount.vat.label')}
               prefix={t('purchase-form.currency')}

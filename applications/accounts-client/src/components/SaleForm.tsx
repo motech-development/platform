@@ -10,7 +10,8 @@ import {
   TextBox,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FormikProps, FormikValues } from 'formik';
+import React, { ChangeEvent, FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { date, number, object, string } from 'yup';
 
@@ -58,6 +59,18 @@ const SaleForm: FC<ISaleFormProps> = ({
     name: string().required(t('sales-form.sale-details.name.required')),
     vat: number().required(t('sales-form.sale-amount.vat.required')),
   });
+  const onInputValue = (
+    event: ChangeEvent<HTMLInputElement>,
+    form: FormikProps<FormikValues>,
+  ) => {
+    const { setFieldValue } = form;
+    const value = parseFloat(
+      event.target.value.replace(t('sales-form.currency'), ''),
+    );
+    const calculated = ((value / 100) * vat).toFixed(2);
+
+    setFieldValue('vat', calculated);
+  };
   const onPreSubmit = (values: FormSchema) => ({
     ...values,
     category: t('sales-form.category'),
@@ -85,20 +98,20 @@ const SaleForm: FC<ISaleFormProps> = ({
             </Typography>
 
             <Select
-              options={clients}
-              name="name"
               label={t('sales-form.sale-details.name.label')}
+              name="name"
+              options={clients}
               placeholder={t('sales-form.sale-details.name.placeholder')}
             />
 
             <TextBox
-              name="description"
               label={t('sales-form.sale-details.description.label')}
+              name="description"
             />
 
             <DatePicker
-              name="date"
               label={t('sales-form.sale-details.date.label')}
+              name="date"
             />
           </Card>
         </Col>
@@ -110,25 +123,18 @@ const SaleForm: FC<ISaleFormProps> = ({
             </Typography>
 
             <TextBox
-              name="amount"
-              label={t('sales-form.sale-amount.amount.label')}
-              prefix={t('sales-form.currency')}
               decimalScale={2}
-              onChange={(e, { setFieldValue }) => {
-                const value = parseFloat(
-                  e.target.value.replace(t('sales-form.currency'), ''),
-                );
-                const calculated = ((value / 100) * vat).toFixed(2);
-
-                setFieldValue('vat', calculated);
-              }}
+              label={t('sales-form.sale-amount.amount.label')}
+              name="amount"
+              onChange={onInputValue}
+              prefix={t('sales-form.currency')}
             />
 
             <TextBox
-              name="vat"
-              label={t('sales-form.sale-amount.vat.label')}
-              prefix={t('sales-form.currency')}
               decimalScale={2}
+              label={t('sales-form.sale-amount.vat.label')}
+              name="vat"
+              prefix={t('sales-form.currency')}
             />
           </Card>
         </Col>
