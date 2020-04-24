@@ -10,10 +10,14 @@ export interface IEvent {
 }
 
 export const handler: Handler<IEvent> = async event => {
-  const { TABLE } = process.env;
+  const { TABLE, TYPENAME } = process.env;
 
   if (!TABLE) {
     throw new Error('No table set');
+  }
+
+  if (!TYPENAME) {
+    throw new Error('No typename set');
   }
 
   const { count, current, items } = event;
@@ -25,7 +29,7 @@ export const handler: Handler<IEvent> = async event => {
           ...items[current].map(id => ({
             DeleteRequest: {
               Key: {
-                __typename: 'Client',
+                __typename: TYPENAME,
                 id,
               },
             },

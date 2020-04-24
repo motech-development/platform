@@ -10,10 +10,14 @@ export interface IEvent {
 }
 
 export const handler: Handler<IEvent> = async event => {
-  const { TABLE } = process.env;
+  const { TABLE, TYPENAME } = process.env;
 
   if (!TABLE) {
     throw new Error('No table set');
+  }
+
+  if (!TYPENAME) {
+    throw new Error('No typename set');
   }
 
   const { id, owner } = event;
@@ -28,7 +32,7 @@ export const handler: Handler<IEvent> = async event => {
       ExpressionAttributeValues: {
         ':data': `${owner}:${id}`,
         ':owner': owner,
-        ':typename': 'Client',
+        ':typename': TYPENAME,
       },
       FilterExpression: '#owner = :owner',
       IndexName: '__typename-data-index',
