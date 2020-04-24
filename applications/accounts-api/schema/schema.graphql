@@ -10,6 +10,7 @@ type Mutation {
   deleteCompany(id: ID!): Company!
   updateCompany(input: CompanyInput!): Company!
   updateSettings(input: SettingsInput!): Settings!
+  addTransaction(input: TransactionInput!): Transaction!
 }
 
 type Query {

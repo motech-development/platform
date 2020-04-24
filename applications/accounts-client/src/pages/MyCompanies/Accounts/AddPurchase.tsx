@@ -1,11 +1,15 @@
-import { useQuery } from '@apollo/react-hooks';
-import { PageTitle } from '@motech-development/breeze-ui';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { gql } from 'apollo-boost';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
-import PurchaseForm from '../../../components/PurchaseForm';
+import PurchaseForm, { FormSchema } from '../../../components/PurchaseForm';
+import ADD_TRANSACTION, {
+  IAddTransactionInput,
+  IAddTransactionOutput,
+} from '../../../graphql/transaction/ADD_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
 
 interface IQueryInput {
@@ -37,18 +41,42 @@ interface IAddPurchaseParams {
 }
 
 const AddPurchase: FC = () => {
+  const history = useHistory();
+  const { add } = useToast();
   const { companyId } = useParams<IAddPurchaseParams>();
   const { t } = useTranslation('accounts');
+  const backTo = (id: string) => `/my-companies/accounts/${id}`;
   const { error, data, loading } = useQuery<IQueryOutput, IQueryInput>(query, {
     variables: {
       id: companyId,
     },
   });
-  const backTo = (id: string) => `/my-companies/accounts/${id}`;
-  const save = () => {};
+  const [mutation, { error: addError, loading: addLoading }] = useMutation<
+    IAddTransactionOutput,
+    IAddTransactionInput
+  >(ADD_TRANSACTION, {
+    onCompleted: ({ addTransaction }) => {
+      add({
+        colour: 'success',
+        message: t('add-purchase.success'),
+      });
+
+      history.push(backTo(addTransaction.companyId));
+    },
+  });
+
+  const save = (input: FormSchema) => {
+    (async () => {
+      await mutation({
+        variables: {
+          input,
+        },
+      });
+    })();
+  };
 
   return (
-    <Connected error={error} loading={loading}>
+    <Connected error={error || addError} loading={loading}>
       {data && (
         <>
           <PageTitle
@@ -65,7 +93,7 @@ const AddPurchase: FC = () => {
               }),
             )}
             companyId={companyId}
-            loading={false}
+            loading={addLoading}
             onSave={save}
           />
         </>

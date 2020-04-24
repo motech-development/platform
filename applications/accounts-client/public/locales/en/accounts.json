@@ -25,11 +25,13 @@
   },
   "add-purchase": {
     "title": "Add a new purchase",
-    "sub-title": "Enter your purchase details"
+    "sub-title": "Enter your purchase details",
+    "success": "Purchase has been saved"
   },
   "add-sale": {
     "title": "Add a new sale",
-    "sub-title": "Enter your sale details"
+    "sub-title": "Enter your sale details",
+    "success": "Sale has been saved"
   },
   "purchase-form": {
     "cancel": "Cancel",

@@ -21,10 +21,23 @@ const formSchema = {
   companyId: '',
   date: '',
   description: '',
+  id: '',
   name: '',
+  status: '',
+  vat: '',
 };
 
-export type FormSchema = typeof formSchema;
+export type FormSchema = {
+  amount: number;
+  category: string;
+  companyId: string;
+  date: string;
+  description: string;
+  id: string;
+  name: string;
+  status: string;
+  vat: number;
+};
 
 export interface IPurchaseFormProps {
   backTo: string;
@@ -42,6 +55,7 @@ const PurchaseForm: FC<IPurchaseFormProps> = ({
   initialValues = {
     ...formSchema,
     companyId,
+    status: 'confirmed', // TODO: This needs to be a option
   },
   loading,
   onSave,
@@ -92,6 +106,7 @@ const PurchaseForm: FC<IPurchaseFormProps> = ({
 
     return {
       ...value,
+      amount: -Math.abs(value.amount),
       category,
     };
   };

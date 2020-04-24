@@ -17,14 +17,27 @@ import { date, number, object, string } from 'yup';
 
 const formSchema = {
   amount: '',
+  category: '',
   companyId: '',
   date: '',
   description: '',
+  id: '',
   name: '',
+  status: '',
   vat: '',
 };
 
-export type FormSchema = typeof formSchema;
+export type FormSchema = {
+  amount: number;
+  category: string;
+  companyId: string;
+  date: string;
+  description: string;
+  id: string;
+  name: string;
+  status: string;
+  vat: number;
+};
 
 export interface ISaleFormProps {
   backTo: string;
@@ -43,6 +56,7 @@ const SaleForm: FC<ISaleFormProps> = ({
   initialValues = {
     ...formSchema,
     companyId,
+    status: 'confirmed', // TODO: This needs to be a option
   },
   loading,
   onSave,

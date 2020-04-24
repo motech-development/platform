@@ -1,0 +1,29 @@
+enum TransactionStatus {
+  confirmed
+  pending
+}
+
+type Transaction {
+  amount: Float
+  category: String
+  companyId: String
+  date: AWSDateTime
+  description: String
+  id: ID
+  name: String
+  status: TransactionStatus
+  vat: Float
+}
+
+input TransactionInput {
+  __typename: String
+  amount: Float!
+  category: String!
+  companyId: String!
+  date: AWSDateTime!
+  description: String!
+  id: ID!
+  name: String!
+  status: TransactionStatus!
+  vat: Float!
+}
