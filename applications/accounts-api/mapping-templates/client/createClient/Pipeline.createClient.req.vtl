@@ -1,8 +1,10 @@
 #set($id = $util.autoId())
+#set($companyId = $ctx.stash.companyId)
+#set($name = $ctx.args.input.name)
 #set($typename = "Client")
 #set($owner = $ctx.identity.sub)
 #set($defaultGroups = ["Admin"])
-#set($data = "$owner:$ctx.stash.companyId:$ctx.args.input.name")
+#set($data = "$owner:$companyId:$name")
 
 {
   "version": "2017-02-28",

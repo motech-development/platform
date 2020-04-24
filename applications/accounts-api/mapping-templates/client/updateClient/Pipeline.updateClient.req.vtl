@@ -1,7 +1,9 @@
 #set($id = $ctx.args.input.id)
+#set($companyId = $ctx.stash.companyId)
+#set($name = $ctx.args.input.name)
 #set($typename = $ctx.args.input["__typename"])
 #set($owner = $ctx.identity.sub)
-#set($data = "$owner:$ctx.stash.companyId:$ctx.args.input.name")
+#set($data = "$owner:$companyId:$name")
 
 #set($input = $ctx.args.input.remove("__typename"))
 #set($input = $ctx.args.input.remove("id"))

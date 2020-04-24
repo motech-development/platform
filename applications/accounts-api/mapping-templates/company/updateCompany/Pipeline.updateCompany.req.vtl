@@ -1,7 +1,8 @@
 #set($id = $ctx.args.input.id)
 #set($typename = $ctx.args.input["__typename"])
 #set($owner = $ctx.identity.sub)
-#set($data = "$owner:$ctx.args.input.name")
+#set($name = $ctx.args.input.name)
+#set($data = "$owner:$name")
 
 #set($input = $ctx.args.input.remove("__typename"))
 #set($input = $ctx.args.input.remove("id"))

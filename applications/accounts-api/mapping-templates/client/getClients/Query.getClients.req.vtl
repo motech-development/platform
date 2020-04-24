@@ -1,5 +1,7 @@
 #set($owner = $ctx.identity.sub)
-#set($data = "$owner:$ctx.args.companyId")
+#set($companyId = $ctx.args.companyId)
+#set($data = "$owner:$companyId")
+#set($typename = "Client")
 
 {
   "version": "2017-02-28",
@@ -13,7 +15,7 @@
     },
     "expressionValues": {
       ":data": $util.dynamodb.toDynamoDBJson($data),
-      ":typename": $util.dynamodb.toDynamoDBJson("Client")
+      ":typename": $util.dynamodb.toDynamoDBJson($typename)
     }
   },
   "filter": {

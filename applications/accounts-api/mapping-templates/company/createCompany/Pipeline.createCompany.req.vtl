@@ -1,8 +1,9 @@
 #set($id = $util.autoId())
 #set($typename = "Company")
 #set($owner = $ctx.identity.sub)
+#set($name = $ctx.args.input.name)
 #set($defaultGroups = ["Admin"])
-#set($data = "$owner:$ctx.args.input.name")
+#set($data = "$owner:$name")
 
 {
   "version": "2017-02-28",
