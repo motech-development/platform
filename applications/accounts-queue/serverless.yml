@@ -57,6 +57,18 @@ functions:
     environment:
       TYPENAME: Client
 
+  DeleteTransactions:
+    handler: src/handlers/delete-records.handler
+    role: LambdaFunctionRole
+    environment:
+      TYPENAME: Transaction
+
+  GetTransactions:
+    handler: src/handlers/get-records.handler
+    role: LambdaFunctionRole
+    environment:
+      TYPENAME: Transaction
+
   UnlinkBank:
     handler: src/handlers/unlink-bank.handler
     role: LambdaFunctionRole
@@ -102,22 +114,46 @@ stepFunctions:
                   GetClients:
                     Type: Task
                     Resource: !GetAtt GetClientsLambdaFunction.Arn
-                    Next: IsDeleteComplete
+                    Next: IsDeleteClientsComplete
 
                   DeleteClients:
                     Type: Task
                     Resource: !GetAtt DeleteClientsLambdaFunction.Arn
-                    Next: IsDeleteComplete
+                    Next: IsDeleteClientsComplete
 
-                  IsDeleteComplete:
+                  IsDeleteClientsComplete:
                     Type: Choice
                     Choices:
                       - Variable: $.complete
                         BooleanEquals: false
                         Next: DeleteClients
-                    Default: Complete
+                    Default: DeleteClientsComplete
 
-                  Complete:
+                  DeleteClientsComplete:
+                    Type: Pass
+                    End: true
+
+              - StartAt: GetTransactions
+                States:
+                  GetTransactions:
+                    Type: Task
+                    Resource: !GetAtt GetTransactionsLambdaFunction.Arn
+                    Next: IsDeleteTransactionsComplete
+
+                  DeleteTransactions:
+                    Type: Task
+                    Resource: !GetAtt DeleteTransactionsLambdaFunction.Arn
+                    Next: IsDeleteTransactionsComplete
+
+                  IsDeleteTransactionsComplete:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.complete
+                        BooleanEquals: false
+                        Next: DeleteTransactions
+                    Default: DeleteTransactionsComplete
+
+                  DeleteTransactionsComplete:
                     Type: Pass
                     End: true
 
