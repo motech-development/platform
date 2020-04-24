@@ -196,6 +196,22 @@ describe('TextBox', () => {
 
         expect(onChange).toHaveBeenCalled();
       });
+
+      it('should render the textbox with the correct colour when disabled', async () => {
+        const { findByPlaceholderText } = render(
+          <Formik initialValues={initialValues} onSubmit={onSubmit}>
+            {() => (
+              <Form>
+                <TextBox disabled label="Test" name="test" placeholder="Test" />
+              </Form>
+            )}
+          </Formik>,
+        );
+
+        await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
+          'color: #aaa;',
+        );
+      });
     });
 
     describe('when there are initial values', () => {
@@ -298,6 +314,22 @@ describe('TextBox', () => {
         });
 
         expect(onChange).toHaveBeenCalled();
+      });
+
+      it('should render the textbox with the correct colour when disabled', async () => {
+        const { findByPlaceholderText } = render(
+          <Formik initialValues={initialValues} onSubmit={onSubmit}>
+            {() => (
+              <Form>
+                <TextBox disabled label="Test" name="test" placeholder="Test" />
+              </Form>
+            )}
+          </Formik>,
+        );
+
+        await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
+          'color: #aaa;',
+        );
       });
     });
   });

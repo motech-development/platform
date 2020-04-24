@@ -398,5 +398,49 @@ describe('Select', () => {
 
       expect(onChange).toHaveBeenCalled();
     });
+
+    it('should render the dropdown with the correct colour when disabled', async () => {
+      const { findByLabelText } = render(
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          {() => (
+            <Form>
+              <Select
+                disabled
+                options={options}
+                label="Test"
+                name="test"
+                placeholder="Select something"
+              />
+            </Form>
+          )}
+        </Formik>,
+      );
+
+      await expect(findByLabelText('Test')).resolves.toHaveStyle(
+        'color: #aaa;',
+      );
+    });
+
+    it('should render the dropdown with the correct colour when read only', async () => {
+      const { findByLabelText } = render(
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          {() => (
+            <Form>
+              <Select
+                readOnly
+                options={options}
+                label="Test"
+                name="test"
+                placeholder="Select something"
+              />
+            </Form>
+          )}
+        </Formik>,
+      );
+
+      await expect(findByLabelText('Test')).resolves.toHaveStyle(
+        'color: #333;',
+      );
+    });
   });
 });

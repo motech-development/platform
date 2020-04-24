@@ -34,14 +34,20 @@ const IconButton = styled.button`
   width: 42px;
 `;
 
-const LikeInput = styled.div`
-  background: #fff;
-  border: none;
-  color: #333;
-  font-size: 16px;
-  outline: 0;
-  padding: 16px 0 10px;
-  width: 100%;
+interface ILikeInput {
+  disabled: boolean;
+}
+
+const LikeInput = styled.div<ILikeInput>`
+  ${({ disabled }) => `
+    background: #fff;
+    border: none;
+    color: ${disabled ? '#aaa' : '#333'};
+    font-size: 16px;
+    outline: 0;
+    padding: 16px 0 10px;
+    width: 100%;
+  `}
 `;
 
 const DatePickerWrapper = styled.div`
@@ -90,6 +96,7 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
     return value;
   });
   const { errors, setFieldValue } = form;
+  const markAsDisabled = disabled || readOnly;
   const describedBy = `${name}-error`;
   const { formatted } = formatDateTime(value);
   const selectDate = (d: string) => {
@@ -130,13 +137,16 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
           {...field}
         />
 
-        <LikeInput aria-describedby={error ? describedBy : undefined}>
+        <LikeInput
+          aria-describedby={error ? describedBy : undefined}
+          disabled={disabled}
+        >
           <DateTime value={value} />
         </LikeInput>
 
         <IconOuter>
           <IconButton
-            disabled={disabled || readOnly}
+            disabled={markAsDisabled}
             type="button"
             aria-label={`Choose ${label}, selected date is ${formatted}`}
             onClick={() => setVisible(!visible)}

@@ -31,6 +31,10 @@ const BaseTextBox = styled.input<IBaseTextBox>`
     padding: 16px 0 10px;
     width: 100%;
 
+    :disabled {
+      color: #aaa;
+    }
+
     ::placeholder {
       color: ${active ? '#aaa' : '#fff'};
     }
