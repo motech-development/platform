@@ -183,6 +183,21 @@ custom:
           field: addTransaction
           request: transaction/addTransaction/Mutation.addTransaction.req.vtl
           response: transaction/addTransaction/Mutation.addTransaction.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: deleteTransaction
+          request: transaction/deleteTransaction/Mutation.deleteTransaction.req.vtl
+          response: transaction/deleteTransaction/Mutation.deleteTransaction.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getTransaction
+          request: transaction/getTransaction/Query.getTransaction.req.vtl
+          response: transaction/getTransaction/Query.getTransaction.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: updateTransaction
+          request: transaction/updateTransaction/Mutation.updateTransaction.req.vtl
+          response: transaction/updateTransaction/Mutation.updateTransaction.res.vtl
       schema:
         - schema/address.graphql
         - schema/bank-account.graphql

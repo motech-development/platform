@@ -11,6 +11,8 @@ type Mutation {
   updateCompany(input: CompanyInput!): Company!
   updateSettings(input: SettingsInput!): Settings!
   addTransaction(input: TransactionInput!): Transaction!
+  deleteTransaction(id: ID!): Transaction!
+  updateTransaction(input: TransactionInput!): Transaction!
 }
 
 type Query {
@@ -22,6 +24,7 @@ type Query {
   getCompanies(count: Int, nextToken: String): Companies!
   getCompany(id: ID!): Company!
   getSettings(id: ID!): Settings!
+  getTransaction(id: ID!): Transaction!
 }
 
 type Subscription {
