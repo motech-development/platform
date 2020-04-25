@@ -1,0 +1,29 @@
+#set($id = $ctx.prev.result.id)
+#set($typename = "Balance")
+#set($owner = $ctx.identity.sub)
+#set($defaultGroups = ["Admin"])
+#set($data = "$owner:$id:$typename")
+#set($balance = 0)
+#set($currency = "GBP")
+#set($items = [])
+
+{
+  "version": "2017-02-28",
+  "operation": "PutItem",
+  "key" : {
+    "id": $util.dynamodb.toDynamoDBJson($id),
+    "__typename": $util.dynamodb.toDynamoDBJson($typename)
+  },
+  "attributeValues": {
+    "createdAt": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601()),
+    "data": $util.dynamodb.toDynamoDBJson($data),
+    "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
+    "owner": $util.dynamodb.toDynamoDBJson($owner),
+    "balance": $util.dynamodb.toDynamoDBJson($balance),
+    "currency": $util.dynamodb.toDynamoDBJson($currency),
+    "items": $util.dynamodb.toDynamoDBJson($items),
+  },
+  "condition": {
+    "expression": "attribute_not_exists(id)"
+  }
+}

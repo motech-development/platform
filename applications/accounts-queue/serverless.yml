@@ -39,6 +39,12 @@ functions:
     environment:
       STATE_MACHINE_ARN: !Ref DeleteCompanyDataStateMachine
 
+  DeleteBalance:
+    handler: src/handlers/delete-record.handler
+    role: LambdaFunctionRole
+    environment:
+      TYPENAME: Balance
+
   DeleteSettings:
     handler: src/handlers/delete-record.handler
     role: LambdaFunctionRole
@@ -90,6 +96,13 @@ stepFunctions:
             Type: Parallel
             Next: Final state
             Branches:
+              - StartAt: DeleteBalance
+                States:
+                  DeleteBalance:
+                    Type: Task
+                    Resource: !GetAtt DeleteBalanceLambdaFunction.Arn
+                    End: true
+
               - StartAt: DeleteSettings
                 States:
                   DeleteSettings:
