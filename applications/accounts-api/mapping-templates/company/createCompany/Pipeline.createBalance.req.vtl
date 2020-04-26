@@ -4,8 +4,12 @@
 #set($defaultGroups = ["Admin"])
 #set($data = "$owner:$id:$typename")
 #set($balance = 0)
+#set($vat = {})
 #set($currency = "GBP")
 #set($items = [])
+
+#set($input = $vat.put("owed", 0))
+#set($input = $vat.put("paid", 0))
 
 {
   "version": "2017-02-28",
@@ -22,6 +26,7 @@
     "balance": $util.dynamodb.toDynamoDBJson($balance),
     "currency": $util.dynamodb.toDynamoDBJson($currency),
     "items": $util.dynamodb.toDynamoDBJson($items),
+    "vat": $util.dynamodb.toDynamoDBJson($vat)
   },
   "condition": {
     "expression": "attribute_not_exists(id)"

@@ -23,5 +23,8 @@
   "jest-junit": {
     "outputDirectory": "../../reports/junit",
     "outputName": "accounts-data.xml"
+  },
+  "dependencies": {
+    "decimal.js": "^10.2.0"
   }
 }

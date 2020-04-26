@@ -87,7 +87,7 @@ const SaleForm: FC<ISaleFormProps> = ({
   };
   const onPreSubmit = (values: FormSchema) => ({
     ...values,
-    category: t('sales-form.category'),
+    category: t('sales-form.category'), // TODO: Handle this API side
   });
 
   return (

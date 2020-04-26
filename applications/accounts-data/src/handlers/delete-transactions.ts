@@ -17,10 +17,13 @@ const deleteTransactions = (tableName: string, records: DynamoDBRecord[]) => {
             ExpressionAttributeNames: {
               '#balance': 'balance',
               '#updatedAt': 'updatedAt',
+              '#vat': 'vat',
+              '#vatProperty': record.category === 'Sales' ? 'owed' : 'paid',
             },
             ExpressionAttributeValues: {
               ':balance': record.amount,
               ':updatedAt': now.toISOString(),
+              ':vat': record.vat,
             },
             Key: {
               __typename: 'Balance',
@@ -28,7 +31,7 @@ const deleteTransactions = (tableName: string, records: DynamoDBRecord[]) => {
             },
             TableName: tableName,
             UpdateExpression:
-              'SET #updatedAt = :updatedAt, #balance = #balance - :balance',
+              'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat',
           },
         }
       : {},
