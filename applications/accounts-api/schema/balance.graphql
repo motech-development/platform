@@ -1,0 +1,19 @@
+type Balance {
+  balance: Float
+  currency: String
+  id: ID
+  transactions: [BalanceTransaction]
+  vat: BalanceVat
+}
+
+type BalanceVat {
+  owed: Float
+  paid: Float
+}
+
+type BalanceTransaction {
+  balance: Float
+  currency: String
+  date: AWSDateTime
+  items: [Transaction]
+}

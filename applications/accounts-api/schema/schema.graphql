@@ -16,6 +16,7 @@ type Mutation {
 }
 
 type Query {
+  getBalance(id: ID!): Balance!
   getBanks: Banks!
   getBankAccounts(id: ID!): BankAccounts!
   getBankSettings(id: ID!): BankSettings!

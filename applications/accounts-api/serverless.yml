@@ -13,6 +13,7 @@ package:
 
 plugins:
   - serverless-appsync-plugin
+  - serverless-webpack
   - '@motech-development/serverless-outputs-env'
 
 custom:
@@ -37,6 +38,12 @@ custom:
         loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
         level: ERROR
       mappingTemplates:
+        - dataSource: Lambda
+          type: Query
+          field: getBalance
+          request: balance/getBalance/Query.getBalance.req.vtl
+          response: balance/getBalance/Query.getBalance.res.vtl
+
         - dataSource: OpenBanking
           type: Query
           field: getBanks
@@ -201,6 +208,7 @@ custom:
           response: transaction/updateTransaction/Mutation.updateTransaction.res.vtl
       schema:
         - schema/address.graphql
+        - schema/balance.graphql
         - schema/bank-account.graphql
         - schema/bank-connection.graphql
         - schema/bank-callback.graphql
@@ -314,6 +322,11 @@ custom:
           config:
             tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
             serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
+        - type: AWS_LAMBDA
+          name: Lambda
+          config:
+            lambdaFunctionArn: !GetAtt LambdaDataSourceLambdaFunction.Arn
+            serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
         - type: HTTP
           name: OpenBanking
           config:
@@ -341,6 +354,16 @@ custom:
       substitutions:
         stage: ${self:provider.stage}
         queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
+
+  webpack:
+    includeModules: true
+
+functions:
+  LambdaDataSource:
+    handler: src/lambda.handler
+    role: LambdaDataSourceRole
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
 resources:
   Resources:
@@ -448,3 +471,68 @@ resources:
                     - sqs:SendMessage
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsQueueArn
+
+    AppSyncLambdaServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-lambda-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-lambda-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:invokeFunction
+                  Resource:
+                    - !GetAtt LambdaDataSourceLambdaFunction.Arn
+                    - !Join
+                      - ''
+                      - - !GetAtt LambdaDataSourceLambdaFunction.Arn
+                        - ':*'
+
+    LambdaDataSourceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-lambda-data-source-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-lambda-data-source-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:GetItem
+                    - dynamodb:Query
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'

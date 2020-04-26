@@ -1,3 +1,4 @@
+// TODO: Handle date change
 import { DynamoDBRecord } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
 import { Decimal } from 'decimal.js';

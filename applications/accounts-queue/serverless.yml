@@ -96,13 +96,6 @@ stepFunctions:
             Type: Parallel
             Next: Final state
             Branches:
-              - StartAt: DeleteBalance
-                States:
-                  DeleteBalance:
-                    Type: Task
-                    Resource: !GetAtt DeleteBalanceLambdaFunction.Arn
-                    End: true
-
               - StartAt: DeleteSettings
                 States:
                   DeleteSettings:
@@ -164,10 +157,11 @@ stepFunctions:
                       - Variable: $.complete
                         BooleanEquals: false
                         Next: DeleteTransactions
-                    Default: DeleteTransactionsComplete
+                    Default: DeleteBalance
 
-                  DeleteTransactionsComplete:
-                    Type: Pass
+                  DeleteBalance:
+                    Type: Task
+                    Resource: !GetAtt DeleteBalanceLambdaFunction.Arn
                     End: true
 
           Final state:

@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/react-hooks';
 import {
   Button,
   Card,
@@ -12,6 +13,7 @@ import {
   TableRow,
   Typography,
 } from '@motech-development/breeze-ui';
+import { gql } from 'apollo-boost';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -20,58 +22,59 @@ import Currency from '../../../components/Currency';
 import TransactionArrow from '../../../components/TransactionArrow';
 import withLayout from '../../../hoc/withLayout';
 
-const data = {
-  getAccounts: {
-    items: [
-      {
-        balance: 644.75,
-        currency: 'GBP',
-        date: '2019-04-18T00:00:00.007Z',
-        transactions: [
-          {
-            amount: 150,
-            currency: 'GBP',
-            date: '2019-04-18T10:16:10.487Z',
-            description: 'Invoice #12',
-            id: '48b45431-fecc-459b-948c-414b965289d6',
-            name: 'Client 1',
-          },
-          {
-            amount: -5.25,
-            currency: 'GBP',
-            date: '2019-04-18T12:11:10.487Z',
-            description: 'Lunch',
-            id: '9a1170d0-6e4b-4fdb-84e4-0a87c98d8b72',
-            name: 'KFC',
-          },
-        ],
-      },
-      {
-        balance: 500,
-        currency: 'GBP',
-        date: '2019-04-17T00:00:00.007Z',
-        transactions: [
-          {
-            amount: 150,
-            currency: 'GBP',
-            date: '2019-04-17T10:16:10.487Z',
-            description: 'Invoice 33',
-            id: '48b45431-fecc-459b-948c-414b965289d6',
-            name: 'Client B',
-          },
-          {
-            amount: -5.25,
-            currency: 'GBP',
-            date: '2019-04-17T12:11:10.487Z',
-            description: 'Lunch',
-            id: '9a1170d0-6e4b-4fdb-84e4-0a87c98d8b72',
-            name: 'Subway',
-          },
-        ],
-      },
-    ],
-  },
-};
+interface IQueryInput {
+  id: string;
+}
+
+interface IQueryOutput {
+  getBalance: {
+    balance: number;
+    currency: string;
+    id: string;
+    transactions: {
+      balance: number;
+      currency: string;
+      date: string;
+      items: {
+        amount: number;
+        date: string;
+        description: string;
+        id: string;
+        name: string;
+      }[];
+    }[];
+    vat: {
+      owed: number;
+      paid: number;
+    };
+  };
+}
+
+const query = gql`
+  query GetBalance($id: ID!) {
+    getBalance(id: $id) {
+      balance
+      currency
+      id
+      transactions {
+        balance
+        currency
+        date
+        items {
+          amount
+          date
+          description
+          id
+          name
+        }
+      }
+      vat {
+        owed
+        paid
+      }
+    }
+  }
+`;
 
 interface IAccountsParams {
   companyId: string;
@@ -79,6 +82,11 @@ interface IAccountsParams {
 
 const Accounts: FC = () => {
   const { companyId } = useParams<IAccountsParams>();
+  const { data, error, loading } = useQuery<IQueryOutput, IQueryInput>(query, {
+    variables: {
+      id: companyId,
+    },
+  });
   const { t } = useTranslation('accounts');
   const action = (amount: number) => {
     if (amount > 0) {
@@ -89,7 +97,7 @@ const Accounts: FC = () => {
   };
 
   return (
-    <Connected error={undefined} loading={false}>
+    <Connected error={error} loading={loading}>
       {data && (
         <>
           <PageTitle
@@ -158,63 +166,62 @@ const Accounts: FC = () => {
 
             <Col>
               <Table>
-                {data.getAccounts.items.map(item => (
-                  <TableBody key={item.date}>
-                    <TableRow colour="primary">
-                      <TableCell as="th" colSpan={2}>
-                        <DateTime value={item.date} format="dddd, DD MMMM" />
-                      </TableCell>
-                      <TableCell as="th" align="right">
-                        <Currency
-                          currency={item.currency}
-                          value={item.balance}
-                        />
-                      </TableCell>
-                      <TableCell as="th">
-                        {t('accounts.transactions.actions')}
-                      </TableCell>
-                    </TableRow>
-
-                    {item.transactions.map(transaction => (
-                      <TableRow key={transaction.id}>
-                        <TableCell align="center">
-                          <TransactionArrow value={transaction.amount} />
+                {data.getBalance.transactions.map(
+                  ({ balance, currency, date, items }) => (
+                    <TableBody key={date}>
+                      <TableRow colour="primary">
+                        <TableCell as="th" colSpan={2}>
+                          <DateTime value={date} format="dddd, DD MMMM YYYY" />
                         </TableCell>
-
-                        <TableCell>
-                          <Typography component="p" variant="h6">
-                            {transaction.name}
-                          </Typography>
-
-                          <Typography component="p" variant="p" margin="none">
-                            {transaction.description}
-                          </Typography>
-                        </TableCell>
-
-                        <TableCell align="right">
+                        <TableCell as="th" align="right">
                           <Currency
-                            currency={transaction.currency}
-                            value={transaction.amount}
+                            currency={data.getBalance.currency}
+                            value={balance}
                           />
                         </TableCell>
-
-                        <TableCell>
-                          <LinkButton
-                            to={`/my-companies/accounts/${companyId}/${action(
-                              transaction.amount,
-                            )}/${transaction.id}`}
-                            size="sm"
-                          >
-                            {t('accounts.transactions.view')}
-                          </LinkButton>{' '}
-                          <Button colour="danger" size="sm">
-                            {t('accounts.transactions.delete')}
-                          </Button>
+                        <TableCell as="th">
+                          {t('accounts.transactions.actions')}
                         </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                ))}
+
+                      {items.map(item => (
+                        <TableRow key={item.id}>
+                          <TableCell align="center">
+                            <TransactionArrow value={item.amount} />
+                          </TableCell>
+
+                          <TableCell>
+                            <Typography component="p" variant="h6">
+                              {item.name}
+                            </Typography>
+
+                            <Typography component="p" variant="p" margin="none">
+                              {item.description}
+                            </Typography>
+                          </TableCell>
+
+                          <TableCell align="right">
+                            <Currency currency={currency} value={item.amount} />
+                          </TableCell>
+
+                          <TableCell>
+                            <LinkButton
+                              to={`/my-companies/accounts/${companyId}/${action(
+                                item.amount,
+                              )}/${item.id}`}
+                              size="sm"
+                            >
+                              {t('accounts.transactions.view')}
+                            </LinkButton>{' '}
+                            <Button colour="danger" size="sm">
+                              {t('accounts.transactions.delete')}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  ),
+                )}
               </Table>
             </Col>
           </Row>
