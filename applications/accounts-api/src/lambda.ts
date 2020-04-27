@@ -12,10 +12,9 @@ export interface IEvent {
 export const handler: Handler<IEvent> = async event => {
   const { args, field } = event;
 
-  switch (field) {
-    case 'getBalance':
-      return getBalance(args);
-    default:
-      throw new Error('Unrecognised field');
+  if (field === 'getBalance') {
+    return getBalance(args);
   }
+
+  throw new Error('Unrecognised field');
 };
