@@ -1,10 +1,11 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   Button,
   Card,
   Col,
   DateTime,
   LinkButton,
+  Modal,
   PageTitle,
   Row,
   Table,
@@ -12,10 +13,13 @@ import {
   TableCell,
   TableRow,
   Typography,
+  useToast,
 } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import { gql } from 'apollo-boost';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+import ConfirmDelete from '../../../components/ConfirmDelete';
 import Connected from '../../../components/Connected';
 import Currency, { formatCurrency } from '../../../components/Currency';
 import TransactionArrow from '../../../components/TransactionArrow';
@@ -25,11 +29,35 @@ import GET_BALANCE, {
 } from '../../../graphql/balance/GET_BALANCE';
 import withLayout from '../../../hoc/withLayout';
 
+interface IDeleteTransactionInput {
+  id: string;
+}
+
+interface IDeleteTransactionOutput {
+  deleteTransaction: {
+    id: string;
+  };
+}
+
+export const DELETE_TRANSACTION = gql`
+  mutation DeleteTransaction($id: ID!) {
+    deleteTransaction(id: $id) {
+      id
+    }
+  }
+`;
+
 interface IAccountsParams {
   companyId: string;
 }
 
 const Accounts: FC = () => {
+  const [selected, setSelected] = useState({
+    id: '',
+    name: '',
+  });
+  const [modal, setModal] = useState(false);
+  const { add } = useToast();
   const { companyId } = useParams<IAccountsParams>();
   const { data, error, loading } = useQuery<
     IGetBalanceOutput,
@@ -39,6 +67,36 @@ const Accounts: FC = () => {
       id: companyId,
     },
   });
+  const [mutation, { loading: deleteLoading }] = useMutation<
+    IDeleteTransactionOutput,
+    IDeleteTransactionInput
+  >(DELETE_TRANSACTION, {
+    awaitRefetchQueries: true,
+    onCompleted: () => {
+      add({
+        colour: 'success',
+        message: t('accounts.delete-transaction.success'),
+      });
+
+      onDismiss();
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('accounts.delete-transaction.error'),
+      });
+
+      onDismiss();
+    },
+    refetchQueries: () => [
+      {
+        query: GET_BALANCE,
+        variables: {
+          id: companyId,
+        },
+      },
+    ],
+  });
   const { t } = useTranslation('accounts');
   const action = (amount: number) => {
     if (amount > 0) {
@@ -47,6 +105,33 @@ const Accounts: FC = () => {
 
     return 'view-purchase';
   };
+  const confirmDelete = (id: string, name: string) => {
+    setSelected({
+      id,
+      name,
+    });
+  };
+  const onDelete = () => {
+    (async () => {
+      const { id } = selected;
+
+      await mutation({
+        variables: {
+          id,
+        },
+      });
+    })();
+  };
+  const onDismiss = () => {
+    setSelected({
+      id: '',
+      name: '',
+    });
+  };
+
+  useEffect(() => {
+    setModal(!!selected.id);
+  }, [selected]);
 
   return (
     <Connected error={error} loading={loading}>
@@ -200,7 +285,11 @@ const Accounts: FC = () => {
                             >
                               {t('accounts.transactions.view')}
                             </LinkButton>{' '}
-                            <Button colour="danger" size="sm">
+                            <Button
+                              colour="danger"
+                              size="sm"
+                              onClick={() => confirmDelete(item.id, item.name)}
+                            >
                               {t('accounts.transactions.delete')}
                             </Button>
                           </TableCell>
@@ -214,6 +303,23 @@ const Accounts: FC = () => {
           </Row>
         </>
       )}
+
+      <Modal isOpen={modal} onDismiss={onDismiss}>
+        <Typography rule component="h3" variant="h3" margin="lg">
+          {t('accounts.delete-transaction.title')}
+        </Typography>
+
+        <Typography component="p" variant="p">
+          {t('accounts.delete-transaction.warning')}
+        </Typography>
+
+        <ConfirmDelete
+          loading={deleteLoading}
+          name={selected.name}
+          onCancel={onDismiss}
+          onDelete={onDelete}
+        />
+      </Modal>
     </Connected>
   );
 };

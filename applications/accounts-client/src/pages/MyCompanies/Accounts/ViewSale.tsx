@@ -13,12 +13,12 @@ import UPDATE_TRANSACTION, {
 } from '../../../graphql/transaction/UPDATE_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
 
-interface IQueryInput {
+interface IViewSaleInput {
   companyId: string;
   transactionId: string;
 }
 
-interface IQueryOutput {
+interface IViewSaleOutput {
   getClients: {
     items: {
       name: string;
@@ -42,7 +42,7 @@ interface IQueryOutput {
   };
 }
 
-export const query = gql`
+export const VIEW_SALE = gql`
   query ViewSale($companyId: ID!, $transactionId: ID!) {
     getClients(companyId: $companyId) {
       items {
@@ -79,12 +79,15 @@ const ViewSale: FC = () => {
   const { companyId, transactionId } = useParams<IViewSaleParams>();
   const { t } = useTranslation('accounts');
   const backTo = (id: string) => `/my-companies/accounts/${id}`;
-  const { error, data, loading } = useQuery<IQueryOutput, IQueryInput>(query, {
-    variables: {
-      companyId,
-      transactionId,
+  const { error, data, loading } = useQuery<IViewSaleOutput, IViewSaleInput>(
+    VIEW_SALE,
+    {
+      variables: {
+        companyId,
+        transactionId,
+      },
     },
-  });
+  );
   const [mutation, { error: addError, loading: addLoading }] = useMutation<
     IUpdateTransactionOutput,
     IUpdateTransactionInput

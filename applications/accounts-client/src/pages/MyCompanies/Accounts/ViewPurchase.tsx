@@ -13,12 +13,12 @@ import UPDATE_TRANSACTION, {
 } from '../../../graphql/transaction/UPDATE_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
 
-interface IQueryInput {
+interface IViewPurchaseInput {
   companyId: string;
   transactionId: string;
 }
 
-interface IQueryOutput {
+interface IViewPurchaseOutput {
   getSettings: {
     categories: {
       name: string;
@@ -38,7 +38,7 @@ interface IQueryOutput {
   };
 }
 
-export const query = gql`
+export const VIEW_PURCHASE = gql`
   query ViewPurchase($companyId: ID!, $transactionId: ID!) {
     getSettings(id: $companyId) {
       categories {
@@ -71,7 +71,10 @@ const ViewPurchase: FC = () => {
   const { companyId, transactionId } = useParams<IViewPurchaseParams>();
   const { t } = useTranslation('accounts');
   const backTo = (id: string) => `/my-companies/accounts/${id}`;
-  const { error, data, loading } = useQuery<IQueryOutput, IQueryInput>(query, {
+  const { error, data, loading } = useQuery<
+    IViewPurchaseOutput,
+    IViewPurchaseInput
+  >(VIEW_PURCHASE, {
     variables: {
       companyId,
       transactionId,

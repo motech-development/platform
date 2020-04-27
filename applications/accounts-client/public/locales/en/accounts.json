@@ -27,6 +27,12 @@
       "balance": "Balance: {{amount}}",
       "vat-owed": "VAT owed: {{amount}}",
       "vat-paid": "VAT paid: {{amount}}"
+    },
+    "delete-transaction": {
+      "title": "Are you sure you want to delete this transaction?",
+      "warning": "This will permanetly delete this transaction",
+      "success": "Transaction has been deleted",
+      "error": "Unable to delete this transaction"
     }
   },
   "add-purchase": {

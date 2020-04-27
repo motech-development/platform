@@ -13,11 +13,11 @@ import ADD_TRANSACTION, {
 } from '../../../graphql/transaction/ADD_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
 
-interface IQueryInput {
+interface IAddPurchaseInput {
   id: string;
 }
 
-interface IQueryOutput {
+interface IAddPurchaseOutput {
   getSettings: {
     categories: {
       name: string;
@@ -26,7 +26,7 @@ interface IQueryOutput {
   };
 }
 
-export const query = gql`
+export const ADD_PURCHASE = gql`
   query AddPurchase($id: ID!) {
     getSettings(id: $id) {
       categories {
@@ -47,7 +47,10 @@ const AddPurchase: FC = () => {
   const { companyId } = useParams<IAddPurchaseParams>();
   const { t } = useTranslation('accounts');
   const backTo = (id: string) => `/my-companies/accounts/${id}`;
-  const { error, data, loading } = useQuery<IQueryOutput, IQueryInput>(query, {
+  const { error, data, loading } = useQuery<
+    IAddPurchaseOutput,
+    IAddPurchaseInput
+  >(ADD_PURCHASE, {
     variables: {
       id: companyId,
     },

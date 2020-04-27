@@ -13,11 +13,11 @@ import ADD_TRANSACTION, {
 } from '../../../graphql/transaction/ADD_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
 
-interface IQueryInput {
+interface IAddSaleInput {
   id: string;
 }
 
-interface IQueryOutput {
+interface IAddSaleOutput {
   getClients: {
     items: {
       name: string;
@@ -30,7 +30,7 @@ interface IQueryOutput {
   };
 }
 
-export const query = gql`
+export const ADD_SALE = gql`
   query AddSale($id: ID!) {
     getClients(companyId: $id) {
       items {
@@ -56,11 +56,14 @@ const AddSale: FC = () => {
   const { companyId } = useParams<IAddSaleParams>();
   const { t } = useTranslation('accounts');
   const backTo = (id: string) => `/my-companies/accounts/${id}`;
-  const { error, data, loading } = useQuery<IQueryOutput, IQueryInput>(query, {
-    variables: {
-      id: companyId,
+  const { error, data, loading } = useQuery<IAddSaleOutput, IAddSaleInput>(
+    ADD_SALE,
+    {
+      variables: {
+        id: companyId,
+      },
     },
-  });
+  );
   const [mutation, { error: addError, loading: addLoading }] = useMutation<
     IAddTransactionOutput,
     IAddTransactionInput
