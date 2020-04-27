@@ -18,7 +18,7 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
-import Currency from '../../../components/Currency';
+import Currency, { formatCurrency } from '../../../components/Currency';
 import TransactionArrow from '../../../components/TransactionArrow';
 import withLayout from '../../../hoc/withLayout';
 
@@ -106,6 +106,41 @@ const Accounts: FC = () => {
           />
 
           <Row>
+            <Col xs={12} md={3}>
+              <Card padding="lg">
+                <Typography rule component="h3" variant="h3" margin="lg">
+                  {t('accounts.overview.title')}
+                </Typography>
+
+                <Typography component="p" variant="lead">
+                  {t('accounts.overview.balance', {
+                    amount: formatCurrency(
+                      data.getBalance.currency,
+                      data.getBalance.balance,
+                    ),
+                  })}
+                </Typography>
+
+                <Typography component="p" variant="lead">
+                  {t('accounts.overview.vat-paid', {
+                    amount: formatCurrency(
+                      data.getBalance.currency,
+                      data.getBalance.vat.paid,
+                    ),
+                  })}
+                </Typography>
+
+                <Typography component="p" variant="lead" margin="none">
+                  {t('accounts.overview.vat-owed', {
+                    amount: formatCurrency(
+                      data.getBalance.currency,
+                      data.getBalance.vat.owed,
+                    ),
+                  })}
+                </Typography>
+              </Card>
+            </Col>
+
             <Col xs={12} md={3}>
               <Card padding="lg">
                 <Typography rule component="h3" variant="h3" margin="lg">

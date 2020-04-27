@@ -21,6 +21,12 @@
       "actions": "Actions",
       "view": "View",
       "delete": "Delete"
+    },
+    "overview": {
+      "title": "Overview",
+      "balance": "Balance: {{amount}}",
+      "vat-owed": "VAT paid: {{amount}}",
+      "vat-paid": "VAT owed: {{amount}}"
     }
   },
   "add-purchase": {

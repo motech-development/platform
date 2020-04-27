@@ -13,24 +13,27 @@ const currencySymbol = (currency: string) => {
   }
 };
 
+export const formatCurrency = (currency: string, value: number) => {
+  const prefix = currencySymbol(currency);
+  const isNegative = value < 0;
+  const output = isNegative ? Math.abs(value).toFixed(2) : value.toFixed(2);
+
+  if (isNegative) {
+    return `-${prefix}${output}`;
+  }
+
+  return `${prefix}${output}`;
+};
+
 export interface ICurrencyProps {
   currency: string;
   value: number;
 }
 
 const Currency: FC<ICurrencyProps> = ({ currency, value }) => {
-  const prefix = currencySymbol(currency);
-  const isNegative = value < 0;
+  const output = formatCurrency(currency, value);
 
-  if (isNegative) {
-    const output = Math.abs(value).toFixed(2);
-
-    return <>{`-${prefix}${output}`}</>;
-  }
-
-  const output = value.toFixed(2);
-
-  return <>{`${prefix}${output}`}</>;
+  return <>{output}</>;
 };
 
 export default memo(Currency);

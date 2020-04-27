@@ -1,4 +1,3 @@
-// TODO: Handle date change
 import { DynamoDBRecord } from 'aws-lambda';
 import { Decimal } from 'decimal.js';
 import aggregatedDay from '../shared/aggregated-day';
@@ -25,7 +24,7 @@ const updateTransactions = (tableName: string, records: DynamoDBRecord[]) => {
             .minus(OldImage.amount)
             .toNumber(),
           ':itemPropertyNew': NewImage.amount,
-          ':itemPropertyOld': NewImage.amount,
+          ':itemPropertyOld': OldImage.amount,
           ':updatedAt': now.toISOString(),
           ':vat': new Decimal(NewImage.vat).minus(OldImage.vat).toNumber(),
         },
