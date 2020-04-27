@@ -86,28 +86,20 @@ jobs:
           path: reports/junit
       - codecov/upload:
           file: ./applications/accounts-api/coverage/coverage-final.json
-          name: Upload accounts API coverage
       - codecov/upload:
           file: ./applications/accounts-client/coverage/coverage-final.json
-          name: Upload accounts client coverage
       - codecov/upload:
           file: ./applications/accounts-data/coverage/coverage-final.json
-          name: Upload accounts data coverage
       - codecov/upload:
           file: ./applications/accounts-queue/coverage/coverage-final.json
-          name: Upload accounts queue coverage
       - codecov/upload:
           file: ./applications/open-banking/coverage/coverage-final.json
-          name: Upload Open Banking coverage
       - codecov/upload:
           file: ./packages/auth/coverage/coverage-final.json
-          name: Upload auth coverage
       - codecov/upload:
           file: ./packages/breeze-ui/coverage/coverage-final.json
-          name: Upload Breeze UI coverage
       - codecov/upload:
           file: ./packages/serverless-outputs-env/coverage/coverage-final.json
-          name: Upload output env plugin coverage
       - sonarcloud/scan
 
   smoke-test-accounts-client:
