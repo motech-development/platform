@@ -13,7 +13,8 @@ const updateTransactions = (tableName: string, records: DynamoDBRecord[]) => {
       Update: {
         ExpressionAttributeNames: {
           '#balance': 'balance',
-          '#itemProperty': aggregatedDay(NewImage.date),
+          '#itemPropertyNew': aggregatedDay(NewImage.date),
+          '#itemPropertyOld': aggregatedDay(OldImage.date),
           '#items': 'items',
           '#updatedAt': 'updatedAt',
           '#vat': 'vat',
@@ -23,6 +24,8 @@ const updateTransactions = (tableName: string, records: DynamoDBRecord[]) => {
           ':balance': new Decimal(NewImage.amount)
             .minus(OldImage.amount)
             .toNumber(),
+          ':itemPropertyNew': NewImage.amount,
+          ':itemPropertyOld': NewImage.amount,
           ':updatedAt': now.toISOString(),
           ':vat': new Decimal(NewImage.vat).minus(OldImage.vat).toNumber(),
         },
@@ -32,7 +35,7 @@ const updateTransactions = (tableName: string, records: DynamoDBRecord[]) => {
         },
         TableName: tableName,
         UpdateExpression:
-          'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+          'SET #updatedAt = :updatedAt, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemPropertyNew :itemPropertyNew',
       },
     }),
   );
