@@ -1,4 +1,5 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import delay from '../shared/delay';
 import transformBalance from '../shared/transform-balance';
 
 const client = new DocumentClient();
@@ -14,6 +15,9 @@ const getBalance = async (event: IEvent) => {
   if (!TABLE) {
     throw new Error('No table set');
   }
+
+  // TODO: Find a better solution than having an artificial delay
+  await delay(1000);
 
   const { id, owner } = event;
 
