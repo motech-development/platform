@@ -2,10 +2,10 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { Decimal } from 'decimal.js';
 import aggregatedDay from '../shared/aggregated-day';
-import unmarshallRecords from '../shared/unmarshall-records';
+import { unmarshallAllRecords } from '../shared/unmarshall-records';
 
 const updateTransactions = (tableName: string, records: DynamoDBRecord[]) => {
-  const unmarshalledRecords = unmarshallRecords(records, 'Transaction');
+  const unmarshalledRecords = unmarshallAllRecords(records, 'Transaction');
   const now = new Date();
 
   const transactionItems = unmarshalledRecords.map(

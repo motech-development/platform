@@ -1,16 +1,23 @@
 import { DynamoDBRecord, StreamRecord } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
 
-const unmarshallRecords = (records: DynamoDBRecord[], typename: string) =>
+const getRecords = (records: DynamoDBRecord[]) =>
   records
     .filter(record => record.dynamodb !== undefined)
+    .map(record => record.dynamodb as StreamRecord);
+
+export const unmarshallAllRecords = (
+  records: DynamoDBRecord[],
+  typename: string,
+) =>
+  getRecords(records)
     .filter(record => {
-      const { NewImage, OldImage } = record.dynamodb as StreamRecord;
+      const { NewImage, OldImage } = record;
 
       return NewImage !== undefined && OldImage !== undefined;
     })
     .map(record => {
-      const { NewImage, OldImage } = record.dynamodb as StreamRecord;
+      const { NewImage, OldImage } = record;
 
       return {
         NewImage: DynamoDB.Converter.unmarshall(
@@ -27,4 +34,52 @@ const unmarshallRecords = (records: DynamoDBRecord[], typename: string) =>
         NewImage.__typename === typename && OldImage.__typename === typename,
     );
 
-export default unmarshallRecords;
+export const unmarshallNewRecords = (
+  records: DynamoDBRecord[],
+  typename: string,
+) =>
+  getRecords(records)
+    .filter(record => {
+      const { NewImage } = record;
+
+      return NewImage !== undefined;
+    })
+    .map(record => {
+      const { NewImage } = record;
+
+      return {
+        NewImage: DynamoDB.Converter.unmarshall(
+          NewImage as DynamoDB.AttributeMap,
+        ),
+      };
+    })
+    .filter(
+      ({ NewImage }) =>
+        // eslint-disable-next-line no-underscore-dangle
+        NewImage.__typename === typename,
+    );
+
+export const unmarshallOldRecords = (
+  records: DynamoDBRecord[],
+  typename: string,
+) =>
+  getRecords(records)
+    .filter(record => {
+      const { OldImage } = record;
+
+      return OldImage !== undefined;
+    })
+    .map(record => {
+      const { OldImage } = record;
+
+      return {
+        OldImage: DynamoDB.Converter.unmarshall(
+          OldImage as DynamoDB.AttributeMap,
+        ),
+      };
+    })
+    .filter(
+      ({ OldImage }) =>
+        // eslint-disable-next-line no-underscore-dangle
+        OldImage.__typename === typename,
+    );

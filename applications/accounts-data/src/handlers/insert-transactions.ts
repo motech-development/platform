@@ -1,9 +1,9 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import aggregatedDay from '../shared/aggregated-day';
-import unmarshallRecords from '../shared/unmarshall-records';
+import { unmarshallNewRecords } from '../shared/unmarshall-records';
 
 const insertTransactions = (tableName: string, records: DynamoDBRecord[]) => {
-  const unmarshalledRecords = unmarshallRecords(records, 'Transaction');
+  const unmarshalledRecords = unmarshallNewRecords(records, 'Transaction');
   const now = new Date();
 
   const transactionItems = unmarshalledRecords.map(({ NewImage }) => ({

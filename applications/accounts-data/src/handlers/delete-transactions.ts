@@ -1,9 +1,9 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import aggregatedDay from '../shared/aggregated-day';
-import unmarshallRecords from '../shared/unmarshall-records';
+import { unmarshallOldRecords } from '../shared/unmarshall-records';
 
 const deleteTransactions = (tableName: string, records: DynamoDBRecord[]) => {
-  const unmarshalledRecords = unmarshallRecords(records, 'Transaction');
+  const unmarshalledRecords = unmarshallOldRecords(records, 'Transaction');
   const now = new Date();
 
   const transactionItems = unmarshalledRecords.map(({ OldImage }) => ({
