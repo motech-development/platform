@@ -7,13 +7,25 @@ const updateTransactions = (tableName: string, records: DynamoDBRecord[]) => {
   const unmarshalledRecords = unmarshallAllRecords(records, 'Transaction');
   const now = new Date();
 
-  const transactionItems = unmarshalledRecords.map(
-    ({ NewImage, OldImage }) => ({
+  const transactionItems = unmarshalledRecords.map(({ NewImage, OldImage }) => {
+    const isSameDate =
+      aggregatedDay(NewImage.date) === aggregatedDay(OldImage.date);
+    const UpdateExpression = isSameDate
+      ? 'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance'
+      : 'SET #updatedAt = :updatedAt, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemPropertyNew :itemPropertyNew';
+
+    return {
       Update: {
         ExpressionAttributeNames: {
           '#balance': 'balance',
-          '#itemPropertyNew': aggregatedDay(NewImage.date),
-          '#itemPropertyOld': aggregatedDay(OldImage.date),
+          ...(isSameDate
+            ? {
+                '#itemProperty': aggregatedDay(NewImage.date),
+              }
+            : {
+                '#itemPropertyNew': aggregatedDay(NewImage.date),
+                '#itemPropertyOld': aggregatedDay(OldImage.date),
+              }),
           '#items': 'items',
           '#updatedAt': 'updatedAt',
           '#vat': 'vat',
@@ -23,8 +35,12 @@ const updateTransactions = (tableName: string, records: DynamoDBRecord[]) => {
           ':balance': new Decimal(NewImage.amount)
             .minus(OldImage.amount)
             .toNumber(),
-          ':itemPropertyNew': NewImage.amount,
-          ':itemPropertyOld': OldImage.amount,
+          ...(isSameDate
+            ? {}
+            : {
+                ':itemPropertyNew': NewImage.amount,
+                ':itemPropertyOld': OldImage.amount,
+              }),
           ':updatedAt': now.toISOString(),
           ':vat': new Decimal(NewImage.vat).minus(OldImage.vat).toNumber(),
         },
@@ -33,11 +49,10 @@ const updateTransactions = (tableName: string, records: DynamoDBRecord[]) => {
           id: NewImage.companyId,
         },
         TableName: tableName,
-        UpdateExpression:
-          'SET #updatedAt = :updatedAt, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemPropertyNew :itemPropertyNew',
+        UpdateExpression,
       },
-    }),
-  );
+    };
+  });
 
   return transactionItems;
 };

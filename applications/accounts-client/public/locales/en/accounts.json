@@ -39,6 +39,16 @@
     "sub-title": "Enter your sale details",
     "success": "Sale has been saved"
   },
+  "view-purchase": {
+    "title": "Your purchase",
+    "sub-title": "View or update your purchase details",
+    "success": "Purchase has been updated"
+  },
+  "view-sale": {
+    "title": "Your sale",
+    "sub-title": "View or update your sale details",
+    "success": "Sale has been updated"
+  },
   "purchase-form": {
     "cancel": "Cancel",
     "save": "Save",

@@ -60,7 +60,17 @@ const PurchaseForm: FC<IPurchaseFormProps> = ({
   loading,
   onSave,
 }) => {
-  const [disableInput, setDisableInput] = useState(true);
+  const formValues = {
+    ...initialValues,
+    amount: initialValues.amount
+      ? Math.abs(initialValues.amount as number)
+      : initialValues.amount,
+    category:
+      initialValues.category === ''
+        ? initialValues.category
+        : categories.findIndex(({ name }) => name === initialValues.category),
+  };
+  const [disableInput, setDisableInput] = useState(formValues.category === '');
   const { t } = useTranslation('accounts');
   const validationSchema = object().shape({
     amount: number().required(
@@ -113,7 +123,7 @@ const PurchaseForm: FC<IPurchaseFormProps> = ({
 
   return (
     <Form
-      initialValues={initialValues}
+      initialValues={formValues}
       loading={loading}
       validationSchema={validationSchema}
       submitLabel={t('purchase-form.save')}

@@ -32,7 +32,12 @@ export const handler: DynamoDBStreamHandler = async event => {
   };
 
   if (params.TransactItems.length > 0) {
-    await documentClient.transactWrite(params).promise();
+    try {
+      await documentClient.transactWrite(params).promise();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e.message);
+    }
   }
 
   return Promise.resolve();
