@@ -7,7 +7,7 @@ import transformBalance, {
 
 const client = new DocumentClient();
 
-interface IEvent {
+export interface IEvent {
   id: string;
   owner: string;
 }

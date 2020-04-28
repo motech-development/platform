@@ -40,10 +40,14 @@ const transformBalance = (
     throw new Error('Balance not found');
   }
 
+  if (!Array.isArray(transactionItems)) {
+    throw new Error('No transactions returned');
+  }
+
   const { balance, currency, id, items, vat } = balanceItem;
   const transactions = Object.keys(items)
     .map(key => ({
-      balance: items[key] as number,
+      balance: items[key],
       currency,
       date: key,
     }))
@@ -56,13 +60,11 @@ const transformBalance = (
           i > 0
             ? new Decimal(acc[i - 1].balance).add(current.balance).toNumber()
             : current.balance,
-        items: transactionItems
-          ? transactionItems.filter(({ date }) =>
-              moment(date)
-                .startOf('day')
-                .isSame(moment(current.date).startOf('day')),
-            )
-          : [],
+        items: transactionItems.filter(({ date }) =>
+          moment(date)
+            .startOf('day')
+            .isSame(moment(current.date).startOf('day')),
+        ),
       };
 
       acc.push(update);

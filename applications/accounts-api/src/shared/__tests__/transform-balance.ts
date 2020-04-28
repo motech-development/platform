@@ -1,10 +1,27 @@
-import transformBalance from '../transform-balance';
+import transformBalance, { ITransactionItem } from '../transform-balance';
 
 describe('transform-balance', () => {
   it('should throw if balance is undefined', () => {
     expect(() => {
       transformBalance();
     }).toThrow('Balance not found');
+  });
+
+  it('should throw if transactions are undefined', () => {
+    const balance = {
+      balance: 0,
+      currency: 'GBP',
+      id: 'company-id',
+      items: {},
+      vat: {
+        owed: 0,
+        paid: 0,
+      },
+    };
+
+    expect(() => {
+      transformBalance(balance);
+    }).toThrow('No transactions returned');
   });
 
   it('should return balance when there are no transactions', () => {
@@ -18,8 +35,9 @@ describe('transform-balance', () => {
         paid: 0,
       },
     };
+    const transactions: ITransactionItem[] = [];
 
-    expect(transformBalance(balance)).toEqual({
+    expect(transformBalance(balance, transactions)).toEqual({
       balance: 0,
       currency: 'GBP',
       id: 'company-id',
