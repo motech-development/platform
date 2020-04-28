@@ -1,4 +1,4 @@
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { Decimal } from 'decimal.js';
 import moment from 'moment';
 
 interface IBalance {
@@ -7,15 +7,40 @@ interface IBalance {
   date: string;
 }
 
+export interface IBalanceItem {
+  balance: number;
+  currency: string;
+  id: string;
+  items: {
+    [name: string]: number;
+  };
+  vat: {
+    owed: number;
+    paid: number;
+  };
+}
+
+export interface ITransactionItem {
+  amount: number;
+  category: string;
+  companyId: string;
+  date: string;
+  description: string;
+  id: string;
+  name: string;
+  status: string;
+  vat: number;
+}
+
 const transformBalance = (
-  item: DocumentClient.AttributeMap | undefined,
-  transactionItems: DocumentClient.ItemList | undefined,
+  balanceItem?: IBalanceItem,
+  transactionItems?: ITransactionItem[],
 ) => {
-  if (!item) {
+  if (!balanceItem) {
     throw new Error('Balance not found');
   }
 
-  const { balance, currency, id, items, vat } = item;
+  const { balance, currency, id, items, vat } = balanceItem;
   const transactions = Object.keys(items)
     .map(key => ({
       balance: items[key] as number,
@@ -27,7 +52,10 @@ const transformBalance = (
     .reduce<IBalance[]>((acc, current, i) => {
       const update = {
         ...current,
-        balance: i > 0 ? acc[i - 1].balance + current.balance : current.balance,
+        balance:
+          i > 0
+            ? new Decimal(acc[i - 1].balance).add(current.balance).toNumber()
+            : current.balance,
         items: transactionItems
           ? transactionItems.filter(({ date }) =>
               moment(date)

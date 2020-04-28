@@ -1,6 +1,9 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import delay from '../shared/delay';
-import transformBalance from '../shared/transform-balance';
+import transformBalance, {
+  IBalanceItem,
+  ITransactionItem,
+} from '../shared/transform-balance';
 
 const client = new DocumentClient();
 
@@ -55,8 +58,10 @@ const getBalance = async (event: IEvent) => {
     balanceQuery,
     transactionsQuery,
   ]);
+  const balanceResult = balance.Item as IBalanceItem;
+  const transactionsResult = transactions.Items as ITransactionItem[];
 
-  const result = transformBalance(balance.Item, transactions.Items);
+  const result = transformBalance(balanceResult, transactionsResult);
 
   return result;
 };
