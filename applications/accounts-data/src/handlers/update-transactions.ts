@@ -1,9 +1,14 @@
 import { DynamoDBRecord } from 'aws-lambda';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Decimal } from 'decimal.js';
 import aggregatedDay from '../shared/aggregated-day';
 import { unmarshallAllRecords } from '../shared/unmarshall-records';
 
-const updateTransactions = (tableName: string, records: DynamoDBRecord[]) => {
+const updateTransactions = (
+  documentClient: DocumentClient,
+  tableName: string,
+  records: DynamoDBRecord[],
+) => {
   const unmarshalledRecords = unmarshallAllRecords(records, 'Transaction');
   const now = new Date();
 
@@ -14,8 +19,8 @@ const updateTransactions = (tableName: string, records: DynamoDBRecord[]) => {
       ? 'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance'
       : 'SET #updatedAt = :updatedAt, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemPropertyNew :itemPropertyNew';
 
-    return {
-      Update: {
+    return documentClient
+      .update({
         ExpressionAttributeNames: {
           '#balance': 'balance',
           ...(isSameDate
@@ -50,8 +55,8 @@ const updateTransactions = (tableName: string, records: DynamoDBRecord[]) => {
         },
         TableName: tableName,
         UpdateExpression,
-      },
-    };
+      })
+      .promise();
   });
 
   return transactionItems;

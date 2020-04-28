@@ -23,22 +23,14 @@ export const handler: DynamoDBStreamHandler = async event => {
     ({ eventName }) => eventName === 'REMOVE',
   );
 
-  const params: DocumentClient.TransactWriteItemsInput = {
-    TransactItems: [
-      ...insertTransactions(TABLE, inserts),
-      ...updateTransactions(TABLE, updates),
-      ...deleteTransactions(TABLE, removals),
-    ],
-  };
-
-  if (params.TransactItems.length > 0) {
-    try {
-      await documentClient.transactWrite(params).promise();
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e.message);
-    }
+  try {
+    await Promise.all([
+      ...insertTransactions(documentClient, TABLE, inserts),
+      ...updateTransactions(documentClient, TABLE, updates),
+      ...deleteTransactions(documentClient, TABLE, removals),
+    ]);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e.message);
   }
-
-  return Promise.resolve();
 };
