@@ -20,6 +20,9 @@
       "../../node_modules",
       "<rootDir>/node_modules"
     ],
+    "setupFiles": [
+      "jest-date-mock"
+    ],
     "testEnvironment": "node"
   },
   "jest-junit": {
