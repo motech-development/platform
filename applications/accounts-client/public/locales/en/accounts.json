@@ -1,7 +1,7 @@
 {
   "accounts": {
     "title": "Accounts",
-    "sub-title": "Your transactions",
+    "sub-title": "Keep on top of you finances",
     "dashboard": {
       "title": "Dashboard",
       "lead": "Head back to your company dashboard to manage more aspects of your business",
@@ -16,11 +16,6 @@
       "title": "Sales",
       "lead": "Record a new sale made by your business",
       "button": "Add a sale"
-    },
-    "transactions": {
-      "actions": "Actions",
-      "view": "View",
-      "delete": "Delete"
     },
     "overview": {
       "title": "Overview",
@@ -54,6 +49,15 @@
     "title": "Your sale",
     "sub-title": "View or update your sale details",
     "success": "Sale has been updated"
+  },
+  "transactions-list": {
+    "actions": "Actions",
+    "view": "View",
+    "delete": "Delete",
+    "no-transactions": {
+      "title": "No transactions found",
+      "description": "Get started by adding some purchases and sales"
+    }
   },
   "purchase-form": {
     "cancel": "Cancel",
