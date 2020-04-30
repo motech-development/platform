@@ -9,12 +9,14 @@ import Col from '../Col/Col';
 import DatePicker from '../DatePicker/DatePicker';
 import Row from '../Row/Row';
 import TextBox from '../TextBox/TextBox';
+import Radio from '../Radio/Radio';
 import Select from '../Select/Select';
 import Form from './Form';
 
 const stories = storiesOf('Form', module);
 const initialValues = {
   category: '',
+  choice: '',
   dob: '',
   email: '',
   extra: {
@@ -26,7 +28,8 @@ const initialValues = {
 };
 const validationSchema = object().shape({
   category: string().required(),
-  date: date().required(),
+  choice: string().required(),
+  dob: date().required(),
   email: string()
     .email()
     .required(),
@@ -99,6 +102,23 @@ stories.add('Basic form', () => (
               spacing="lg"
             />
 
+            <Select
+              disabled={disabled()}
+              readOnly={readOnly()}
+              options={options}
+              name="category"
+              label="Category"
+              placeholder="Select category"
+            />
+
+            <Radio
+              disabled={disabled()}
+              readOnly={readOnly()}
+              options={options}
+              name="choice"
+              label="Choice"
+            />
+
             <TextBox
               disabled={disabled()}
               readOnly={readOnly()}
@@ -114,15 +134,6 @@ stories.add('Basic form', () => (
               type="text"
               label="Sort code"
               format="##-##-##"
-            />
-
-            <Select
-              disabled={disabled()}
-              readOnly={readOnly()}
-              options={options}
-              name="category"
-              label="Category"
-              placeholder="Select category"
             />
 
             <DatePicker
