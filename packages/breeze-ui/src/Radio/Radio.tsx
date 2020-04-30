@@ -76,8 +76,8 @@ const InternalRadio: FC<IInternalRadio> = ({
         {options.map(({ name, value }) => (
           <OptionLabel key={value}>
             <CheckWrapper selected={field.value === value}>
-              {/* eslint-disable-next-line react/jsx-props-no-spreading */}
               <BaseRadio
+                // eslint-disable-next-line react/jsx-props-no-spreading
                 {...field}
                 type="radio"
                 value={value}
