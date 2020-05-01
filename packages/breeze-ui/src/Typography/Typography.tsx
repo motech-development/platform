@@ -10,7 +10,7 @@ interface IBaseTypographyProps {
 }
 
 const BaseTypography = styled.p<IBaseTypographyProps>`
-  ${({ align = 'left', margin = 'md', variant }) => `
+  ${({ align, margin, variant }) => `
     text-align: ${align};
     margin: ${margins[margin] ? `0 0 ${margins[margin]}rem` : '0'};
 
