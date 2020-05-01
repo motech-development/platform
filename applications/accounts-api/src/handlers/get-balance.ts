@@ -20,7 +20,7 @@ const getBalance = async (event: IEvent) => {
   }
 
   // TODO: Find a better solution than having an artificial delay
-  await delay(500);
+  await delay(750);
 
   const { id, owner } = event;
 

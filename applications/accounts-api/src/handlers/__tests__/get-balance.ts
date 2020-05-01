@@ -124,7 +124,7 @@ describe('get-balance', () => {
     it('should have the correct delay', async () => {
       await getBalance(event);
 
-      expect(delay).toHaveBeenCalledWith(500);
+      expect(delay).toHaveBeenCalledWith(750);
     });
 
     it('should call get with the correct params', async () => {

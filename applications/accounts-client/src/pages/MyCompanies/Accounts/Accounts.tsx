@@ -1,17 +1,11 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
-  Button,
   Card,
   Col,
-  DateTime,
   LinkButton,
   Modal,
   PageTitle,
   Row,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
@@ -19,10 +13,10 @@ import { gql } from 'apollo-boost';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+import TransactionsList from '../../../components/TransactionsList';
 import ConfirmDelete from '../../../components/ConfirmDelete';
 import Connected from '../../../components/Connected';
-import Currency, { formatCurrency } from '../../../components/Currency';
-import TransactionArrow from '../../../components/TransactionArrow';
+import { formatCurrency } from '../../../components/Currency';
 import GET_BALANCE, {
   IGetBalanceInput,
   IGetBalanceOutput,
@@ -98,13 +92,6 @@ const Accounts: FC = () => {
     ],
   });
   const { t } = useTranslation('accounts');
-  const action = (amount: number) => {
-    if (amount > 0) {
-      return 'view-sale';
-    }
-
-    return 'view-purchase';
-  };
   const confirmDelete = (id: string, name: string) => {
     setSelected({
       id,
@@ -237,68 +224,11 @@ const Accounts: FC = () => {
             </Col>
 
             <Col>
-              <Table>
-                {data.getBalance.transactions.map(
-                  ({ balance, currency, date, items }) => (
-                    <TableBody key={date}>
-                      <TableRow colour="primary">
-                        <TableCell as="th" colSpan={2}>
-                          <DateTime value={date} format="dddd, DD MMMM" />
-                        </TableCell>
-                        <TableCell as="th" align="right">
-                          <Currency
-                            currency={data.getBalance.currency}
-                            value={balance}
-                          />
-                        </TableCell>
-                        <TableCell as="th">
-                          {t('accounts.transactions.actions')}
-                        </TableCell>
-                      </TableRow>
-
-                      {items.map(item => (
-                        <TableRow key={item.id}>
-                          <TableCell align="center">
-                            <TransactionArrow value={item.amount} />
-                          </TableCell>
-
-                          <TableCell>
-                            <Typography component="p" variant="h6">
-                              {item.name}
-                            </Typography>
-
-                            <Typography component="p" variant="p" margin="none">
-                              {item.description}
-                            </Typography>
-                          </TableCell>
-
-                          <TableCell align="right">
-                            <Currency currency={currency} value={item.amount} />
-                          </TableCell>
-
-                          <TableCell>
-                            <LinkButton
-                              to={`/my-companies/accounts/${companyId}/${action(
-                                item.amount,
-                              )}/${item.id}`}
-                              size="sm"
-                            >
-                              {t('accounts.transactions.view')}
-                            </LinkButton>{' '}
-                            <Button
-                              colour="danger"
-                              size="sm"
-                              onClick={() => confirmDelete(item.id, item.name)}
-                            >
-                              {t('accounts.transactions.delete')}
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  ),
-                )}
-              </Table>
+              <TransactionsList
+                companyId={data.getBalance.id}
+                transactions={data.getBalance.transactions}
+                onDelete={confirmDelete}
+              />
             </Col>
           </Row>
         </>
