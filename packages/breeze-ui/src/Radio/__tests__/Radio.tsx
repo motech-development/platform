@@ -141,7 +141,27 @@ describe('Radio', () => {
       );
     });
 
-    it('should have the correct colour legend', async () => {
+    it('should have the correct colour legend when input is valid', async () => {
+      const { findByLabelText, findByText } = component;
+
+      await act(async () => {
+        const option = await findByLabelText('Option 1');
+
+        fireEvent.click(option);
+
+        fireEvent.blur(option);
+
+        await wait();
+      });
+
+      await expect(findByText('Test')).resolves.toHaveStyle(`
+        color: #2e9dc8;
+        font-size: 16px;
+        margin-bottom: 10px;
+      `);
+    });
+
+    it('should have the correct colour legend when input is invalid', async () => {
       const { findByLabelText, findByText } = component;
 
       await act(async () => {
@@ -177,6 +197,24 @@ describe('Radio', () => {
     });
   });
 
+  it('should not show the help text if not set', () => {
+    initialValues = {
+      test: 'option 2',
+    };
+
+    const { queryByText } = render(
+      <Formik initialValues={initialValues} onSubmit={onSubmit}>
+        {() => (
+          <Form>
+            <Radio options={options} label="Test" name="test" />
+          </Form>
+        )}
+      </Formik>,
+    );
+
+    expect(queryByText('This is help text')).not.toBeInTheDocument();
+  });
+
   it('should show the help text', async () => {
     initialValues = {
       test: 'option 2',
@@ -187,7 +225,6 @@ describe('Radio', () => {
         {() => (
           <Form>
             <Radio
-              readOnly
               options={options}
               label="Test"
               name="test"
