@@ -19,6 +19,7 @@ export { default as Overlay } from './Overlay/Overlay';
 export { default as Masonry } from './Masonry/Masonry';
 export { default as Modal } from './Modal/Modal';
 export { default as PageTitle } from './PageTitle/PageTitle';
+export { default as Radio, IRadioOption } from './Radio/Radio';
 export { default as Row } from './Row/Row';
 export { default as ScrollToTop } from './ScrollToTop/ScrollToTop';
 export { default as Select, ISelectOption } from './Select/Select';

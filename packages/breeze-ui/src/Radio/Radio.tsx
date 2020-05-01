@@ -2,7 +2,6 @@ import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
 import React, { ChangeEvent, FC, memo } from 'react';
 import styled from 'styled-components';
 import useInputValidation from '../hooks/useInputValidation';
-import CheckWrapper from '../CheckWrapper/CheckWrapper';
 import FieldSet from '../FieldSet/FieldSet';
 import Legend from '../Legend/Legend';
 import OptionLabel from '../OptionLabel/OptionLabel';
@@ -42,16 +41,19 @@ interface IInternalRadio extends FieldProps {
 }
 
 const InternalRadio: FC<IInternalRadio> = ({
+  disabled,
   field,
   form,
   helpText,
   label,
   onChange,
   options,
+  readOnly,
   spacing,
 }) => {
   const { errors, handleChange, setFieldValue, touched } = form;
   const error = useInputValidation(field.name, errors, touched);
+  const markAsDisabled = disabled || readOnly;
   const doChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
     handleChange(e);
 
@@ -70,25 +72,30 @@ const InternalRadio: FC<IInternalRadio> = ({
       name={field.name}
       spacing={spacing}
     >
-      <>
-        <Legend error={error}>{label}</Legend>
+      <Legend error={error}>{label}</Legend>
 
-        {options.map(({ name, value }) => (
-          <OptionLabel key={value}>
-            <CheckWrapper selected={field.value === value}>
-              <BaseRadio
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                {...field}
-                type="radio"
-                value={value}
-                onChange={e => doChange(e, value)}
-              />
+      {options.map(({ name, value }) => (
+        <OptionLabel
+          key={value}
+          disabled={disabled}
+          selected={field.value === value}
+        >
+          <BaseRadio
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...field}
+            disabled={markAsDisabled}
+            readOnly={readOnly}
+            type="radio"
+            value={value}
+            onChange={e => doChange(e, value)}
+          />
 
-              <OptionLabelText>{name}</OptionLabelText>
-            </CheckWrapper>
-          </OptionLabel>
-        ))}
-      </>
+          <OptionLabelText>{name}</OptionLabelText>
+        </OptionLabel>
+      ))}
+
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+      {readOnly && <input hidden {...field} />}
     </FieldSet>
   );
 };
