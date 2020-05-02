@@ -5,25 +5,31 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
-import PurchaseForm, { FormSchema } from '../../../components/PurchaseForm';
+import TransactionForm, {
+  FormSchema,
+} from '../../../components/TransactionForm';
 import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
-import UPDATE_TRANSACTION, {
-  IUpdateTransactionInput,
-  IUpdateTransactionOutput,
-} from '../../../graphql/transaction/UPDATE_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
 
-interface IViewPurchaseInput {
+interface IViewTransactionInput {
   companyId: string;
   transactionId: string;
 }
 
-interface IViewPurchaseOutput {
+interface IViewTransactionOutput {
+  getClients: {
+    items: {
+      name: string;
+    }[];
+  };
   getSettings: {
     categories: {
       name: string;
       vatRate: number;
     }[];
+    vat: {
+      pay: number;
+    };
   };
   getTransaction: {
     amount: number;
@@ -38,12 +44,21 @@ interface IViewPurchaseOutput {
   };
 }
 
-export const VIEW_PURCHASE = gql`
-  query ViewPurchase($companyId: ID!, $transactionId: ID!) {
+export const VIEW_TRANSACTION = gql`
+  query ViewTransaction($companyId: ID!, $transactionId: ID!) {
+    getClients(companyId: $companyId) {
+      items {
+        id
+        name
+      }
+    }
     getSettings(id: $companyId) {
       categories {
         name
         vatRate
+      }
+      vat {
+        pay
       }
     }
     getTransaction(id: $transactionId) {
@@ -60,21 +75,50 @@ export const VIEW_PURCHASE = gql`
   }
 `;
 
-interface IViewPurchaseParams {
+interface IUpdateTransactionInput {
+  input: {
+    amount: number;
+    category: string;
+    companyId: string;
+    date: string;
+    description: string;
+    id: string;
+    name: string;
+    status: string;
+    vat: number;
+  };
+}
+
+interface IUpdateTransactionOutput {
+  updateTransaction: {
+    companyId: string;
+    id: string;
+  };
+}
+
+const UPDATE_TRANSACTION = gql`
+  mutation UpdateTransaction($input: TransactionInput!) {
+    updateTransaction(input: $input) {
+      id
+      companyId
+    }
+  }
+`;
+
+interface IViewTransactionParams {
   companyId: string;
   transactionId: string;
 }
 
-const ViewPurchase: FC = () => {
+const ViewTransaction: FC = () => {
   const history = useHistory();
-  const { add } = useToast();
-  const { companyId, transactionId } = useParams<IViewPurchaseParams>();
+  const { companyId, transactionId } = useParams<IViewTransactionParams>();
   const { t } = useTranslation('accounts');
-  const backTo = (id: string) => `/my-companies/accounts/${id}`;
-  const { error, data, loading } = useQuery<
-    IViewPurchaseOutput,
-    IViewPurchaseInput
-  >(VIEW_PURCHASE, {
+  const { add } = useToast();
+  const { data, error, loading } = useQuery<
+    IViewTransactionOutput,
+    IViewTransactionInput
+  >(VIEW_TRANSACTION, {
     variables: {
       companyId,
       transactionId,
@@ -90,7 +134,7 @@ const ViewPurchase: FC = () => {
       onCompleted: ({ updateTransaction }) => {
         add({
           colour: 'success',
-          message: t('view-purchase.success'),
+          message: t('view-transaction.success'),
         });
 
         history.push(backTo(updateTransaction.companyId));
@@ -105,7 +149,7 @@ const ViewPurchase: FC = () => {
       ],
     },
   );
-
+  const backTo = (id: string) => `/my-companies/accounts/${id}`;
   const save = (input: FormSchema) => {
     (async () => {
       await mutation({
@@ -121,11 +165,11 @@ const ViewPurchase: FC = () => {
       {data && (
         <>
           <PageTitle
-            title={t('view-purchase.title')}
-            subTitle={t('view-purchase.sub-title')}
+            title={t('view-transaction.title')}
+            subTitle={t('view-transaction.sub-title')}
           />
 
-          <PurchaseForm
+          <TransactionForm
             backTo={backTo(companyId)}
             categories={data.getSettings.categories.map(
               ({ name, vatRate }) => ({
@@ -133,9 +177,14 @@ const ViewPurchase: FC = () => {
                 value: vatRate.toFixed(2),
               }),
             )}
+            clients={data.getClients.items.map(({ name }) => ({
+              name,
+              value: name,
+            }))}
             companyId={companyId}
             initialValues={data.getTransaction}
             loading={mutationLoading}
+            vat={data.getSettings.vat.pay}
             onSave={save}
           />
         </>
@@ -144,4 +193,4 @@ const ViewPurchase: FC = () => {
   );
 };
 
-export default withLayout(ViewPurchase);
+export default withLayout(ViewTransaction);

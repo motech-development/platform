@@ -30,15 +30,10 @@
     "sub-title": "Add a new business transaction",
     "success": "Transaction has been saved"
   },
-  "view-purchase": {
-    "title": "Your purchase",
-    "sub-title": "View or update your purchase details",
-    "success": "Purchase has been updated"
-  },
-  "view-sale": {
-    "title": "Your sale",
-    "sub-title": "View or update your sale details",
-    "success": "Sale has been updated"
+  "view-transaction": {
+    "title": "View transaction",
+    "sub-title": "View and update a business transaction",
+    "success": "Transaction has been updated"
   },
   "transactions-list": {
     "actions": "Actions",
@@ -47,75 +42,6 @@
     "no-transactions": {
       "title": "No transactions found",
       "description": "Get started by adding some purchases and sales"
-    }
-  },
-  "purchase-form": {
-    "cancel": "Cancel",
-    "save": "Save",
-    "currency": "£",
-    "purchase-details": {
-      "heading": "Purchase details",
-      "name": {
-        "label": "Supplier",
-        "required": "Supplier is required"
-      },
-      "description": {
-        "label": "Description",
-        "required": "Description is required"
-      },
-      "date": {
-        "label": "Date",
-        "required": "Date is required"
-      }
-    },
-    "purchase-amount": {
-      "heading": "Purchase amount",
-      "category": {
-        "label": "Category",
-        "placeholder": "Select a category",
-        "required": "Category is required"
-      },
-      "amount": {
-        "label": "Amount",
-        "required": "Amount is required"
-      },
-      "vat": {
-        "label": "VAT",
-        "required": "VAT is required"
-      }
-    }
-  },
-  "sales-form": {
-    "cancel": "Cancel",
-    "save": "Save",
-    "category": "Sales",
-    "currency": "£",
-    "sale-details": {
-      "heading": "Sale details",
-      "name": {
-        "label": "Client",
-        "placeholder": "Select a client",
-        "required": "Client is required"
-      },
-      "description": {
-        "label": "Description",
-        "required": "Description is required"
-      },
-      "date": {
-        "label": "Date",
-        "required": "Date is required"
-      }
-    },
-    "sale-amount": {
-      "heading": "Sale amount",
-      "amount": {
-        "label": "Amount",
-        "required": "Amount is required"
-      },
-      "vat": {
-        "label": "VAT",
-        "required": "VAT is required"
-      }
     }
   },
   "transaction-form": {

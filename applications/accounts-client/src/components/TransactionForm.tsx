@@ -51,6 +51,10 @@ export interface ITransactionForm {
   onSave(value: FormSchema): void;
 }
 
+interface IFormValues extends FormSchema {
+  transaction: string;
+}
+
 const TransactionForm: FC<ITransactionForm> = ({
   backTo,
   categories,
@@ -64,10 +68,29 @@ const TransactionForm: FC<ITransactionForm> = ({
   onSave,
   vat,
 }) => {
-  const [transactionType, setTransactionType] = useState<string>();
-  const [disableInput, setDisableInput] = useState(
-    initialValues.category === '',
+  const isEmpty = initialValues.amount === '';
+  const initialTransaction = initialValues.amount > 0 ? 'sale' : 'purchase';
+  const formValues = {
+    ...initialValues,
+    amount: initialValues.amount
+      ? Math.abs(initialValues.amount as number)
+      : initialValues.amount,
+    category:
+      initialValues.category === ''
+        ? initialValues.category
+        : categories.findIndex(({ name }) => name === initialValues.category),
+    ...(isEmpty
+      ? {
+          transaction: '',
+        }
+      : {
+          transaction: initialTransaction,
+        }),
+  };
+  const [transactionType, setTransactionType] = useState(
+    formValues.transaction,
   );
+  const [disableInput, setDisableInput] = useState(formValues.category === '');
   const { t } = useTranslation('accounts');
   const currency = t('transaction-form.currency');
   const validationSchema = object().shape({
@@ -165,10 +188,7 @@ const TransactionForm: FC<ITransactionForm> = ({
 
     setFieldValue('vat', calculated);
   };
-  const onPreSubmit = ({
-    transaction,
-    ...value
-  }: FormSchema & { transaction: string }) => {
+  const onPreSubmit = ({ transaction, ...value }: IFormValues) => {
     const isPurchase = transaction === 'purchase';
     const amount = isPurchase ? -Math.abs(value.amount) : value.amount;
     const category = isPurchase ? categories[value.category].name : transaction;
@@ -182,7 +202,7 @@ const TransactionForm: FC<ITransactionForm> = ({
 
   return (
     <Form
-      initialValues={initialValues}
+      initialValues={formValues}
       loading={loading}
       validationSchema={validationSchema}
       submitLabel={t('transaction-form.save')}

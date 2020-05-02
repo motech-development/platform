@@ -4,8 +4,7 @@ import { Switch } from 'react-router-dom';
 
 const Accounts = lazy(() => import('./Accounts'));
 const RecordTransaction = lazy(() => import('./RecordTransaction'));
-const ViewPurchase = lazy(() => import('./ViewPurchase'));
-const ViewSale = lazy(() => import('./ViewSale'));
+const ViewTransaction = lazy(() => import('./ViewTransaction'));
 
 const Routes: FC = () => (
   <Switch>
@@ -21,13 +20,8 @@ const Routes: FC = () => (
     />
     <ProtectedRoute
       exact
-      component={ViewPurchase}
-      path="/my-companies/accounts/:companyId/view-purchase/:transactionId"
-    />
-    <ProtectedRoute
-      exact
-      component={ViewSale}
-      path="/my-companies/accounts/:companyId/view-sale/:transactionId"
+      component={ViewTransaction}
+      path="/my-companies/accounts/:companyId/view-transaction/:transactionId"
     />
   </Switch>
 );

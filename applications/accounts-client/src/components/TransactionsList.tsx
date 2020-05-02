@@ -37,14 +37,6 @@ const TransactionsList: FC<ITransactionsListProps> = ({
   transactions,
 }) => {
   const { t } = useTranslation('accounts');
-  // TODO: Unified edit screen
-  const action = (amount: number) => {
-    if (amount > 0) {
-      return 'view-sale';
-    }
-
-    return 'view-purchase';
-  };
 
   if (transactions.length === 0) {
     return (
@@ -96,9 +88,7 @@ const TransactionsList: FC<ITransactionsListProps> = ({
 
               <TableCell>
                 <LinkButton
-                  to={`/my-companies/accounts/${companyId}/${action(
-                    item.amount,
-                  )}/${item.id}`}
+                  to={`/my-companies/accounts/${companyId}/view-transaction/${item.id}`}
                   size="sm"
                 >
                   {t('transactions-list.view')}
