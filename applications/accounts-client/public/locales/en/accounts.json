@@ -7,21 +7,16 @@
       "lead": "Head back to your company dashboard to manage more aspects of your business",
       "button": "Back to my dashboard"
     },
-    "purchases": {
-      "title": "Purchases",
-      "lead": "Record a new purchase made by your business and attach any invoices or receipts",
-      "button": "Add a purchase"
-    },
-    "sales": {
-      "title": "Sales",
-      "lead": "Record a new sale made by your business",
-      "button": "Add a sale"
-    },
     "overview": {
       "title": "Overview",
       "balance": "Balance: {{amount}}",
       "vat-owed": "VAT owed: {{amount}}",
       "vat-paid": "VAT paid: {{amount}}"
+    },
+    "record-transaction": {
+      "title": "Transactions",
+      "lead": "Record any money coming in and going out of your business",
+      "button": "Record a new transaction"
     },
     "delete-transaction": {
       "title": "Are you sure you want to delete this transaction?",
@@ -30,15 +25,10 @@
       "error": "Unable to delete this transaction"
     }
   },
-  "add-purchase": {
-    "title": "Add a new purchase",
-    "sub-title": "Enter your purchase details",
-    "success": "Purchase has been saved"
-  },
-  "add-sale": {
-    "title": "Add a new sale",
-    "sub-title": "Enter your sale details",
-    "success": "Sale has been saved"
+  "record-transaction": {
+    "title": "Record transaction",
+    "sub-title": "Add a new business transaction",
+    "success": "Transaction has been saved"
   },
   "view-purchase": {
     "title": "Your purchase",
@@ -118,6 +108,59 @@
     },
     "sale-amount": {
       "heading": "Sale amount",
+      "amount": {
+        "label": "Amount",
+        "required": "Amount is required"
+      },
+      "vat": {
+        "label": "VAT",
+        "required": "VAT is required"
+      }
+    }
+  },
+  "transaction-form": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "currency": "£",
+    "transaction-details": {
+      "heading": "Transaction details",
+      "transaction": {
+        "label": "Transaction type",
+        "options": {
+          "purchase": "Purchase",
+          "sale": "Sale"
+        },
+        "required": "Please select a transaction type"
+      },
+      "name": {
+        "label": "Supplier",
+        "placeholder": "Select a supplier",
+        "required": "Supplier is required"
+      },
+      "description": {
+        "label": "Description",
+        "required": "Description is required"
+      },
+      "date": {
+        "label": "Date",
+        "required": "Date is required"
+      }
+    },
+    "transaction-amount": {
+      "heading": "Transaction amount",
+      "status": {
+        "label": "Status",
+        "options": {
+          "confirmed": "Confirmed",
+          "pending": "Pending"
+        },
+        "required": "Status is required"
+      },
+      "category": {
+        "label": "Category",
+        "placeholder": "Select a category",
+        "required": "Category is required"
+      },
       "amount": {
         "label": "Amount",
         "required": "Amount is required"

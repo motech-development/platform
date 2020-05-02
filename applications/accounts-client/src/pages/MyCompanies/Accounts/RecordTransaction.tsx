@@ -5,33 +5,35 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
-import SaleForm, { FormSchema } from '../../../components/SaleForm';
+import TransactionForm, {
+  FormSchema,
+} from '../../../components/TransactionForm';
 import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
-import ADD_TRANSACTION, {
-  IAddTransactionInput,
-  IAddTransactionOutput,
-} from '../../../graphql/transaction/ADD_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
 
-interface IAddSaleInput {
+interface IRecordTransactionInput {
   id: string;
 }
 
-interface IAddSaleOutput {
+interface IRecordTransactionOutput {
   getClients: {
     items: {
       name: string;
     }[];
   };
   getSettings: {
+    categories: {
+      name: string;
+      vatRate: number;
+    }[];
     vat: {
       pay: number;
     };
   };
 }
 
-export const ADD_SALE = gql`
-  query AddSale($id: ID!) {
+export const RECORD_TRANSACTION = gql`
+  query RecordTransaction($id: ID!) {
     getClients(companyId: $id) {
       items {
         id
@@ -39,6 +41,10 @@ export const ADD_SALE = gql`
       }
     }
     getSettings(id: $id) {
+      categories {
+        name
+        vatRate
+      }
       vat {
         pay
       }
@@ -46,24 +52,53 @@ export const ADD_SALE = gql`
   }
 `;
 
-interface IAddSaleParams {
+interface IAddTransactionInput {
+  input: {
+    amount: number;
+    category: string;
+    companyId: string;
+    date: string;
+    description: string;
+    id: string;
+    name: string;
+    status: string;
+    vat: number;
+  };
+}
+
+interface IAddTransactionOutput {
+  addTransaction: {
+    companyId: string;
+    id: string;
+  };
+}
+
+export const ADD_TRANSACTION = gql`
+  mutation AddTransaction($input: TransactionInput!) {
+    addTransaction(input: $input) {
+      id
+      companyId
+    }
+  }
+`;
+
+interface IRecordTransactionParams {
   companyId: string;
 }
 
-const AddSale: FC = () => {
+const RecordTransaction: FC = () => {
   const history = useHistory();
-  const { add } = useToast();
-  const { companyId } = useParams<IAddSaleParams>();
+  const { companyId } = useParams<IRecordTransactionParams>();
   const { t } = useTranslation('accounts');
-  const backTo = (id: string) => `/my-companies/accounts/${id}`;
-  const { error, data, loading } = useQuery<IAddSaleOutput, IAddSaleInput>(
-    ADD_SALE,
-    {
-      variables: {
-        id: companyId,
-      },
+  const { add } = useToast();
+  const { data, error, loading } = useQuery<
+    IRecordTransactionOutput,
+    IRecordTransactionInput
+  >(RECORD_TRANSACTION, {
+    variables: {
+      id: companyId,
     },
-  );
+  });
   const [mutation, { error: addError, loading: addLoading }] = useMutation<
     IAddTransactionOutput,
     IAddTransactionInput
@@ -72,7 +107,7 @@ const AddSale: FC = () => {
     onCompleted: ({ addTransaction }) => {
       add({
         colour: 'success',
-        message: t('add-sale.success'),
+        message: t('record-transaction.success'),
       });
 
       history.push(backTo(addTransaction.companyId));
@@ -86,6 +121,7 @@ const AddSale: FC = () => {
       },
     ],
   });
+  const backTo = (id: string) => `/my-companies/accounts/${id}`;
   const save = (input: FormSchema) => {
     (async () => {
       await mutation({
@@ -101,12 +137,18 @@ const AddSale: FC = () => {
       {data && (
         <>
           <PageTitle
-            title={t('add-sale.title')}
-            subTitle={t('add-sale.sub-title')}
+            title={t('record-transaction.title')}
+            subTitle={t('record-transaction.sub-title')}
           />
 
-          <SaleForm
+          <TransactionForm
             backTo={backTo(companyId)}
+            categories={data.getSettings.categories.map(
+              ({ name, vatRate }) => ({
+                name,
+                value: vatRate.toFixed(2),
+              }),
+            )}
             clients={data.getClients.items.map(({ name }) => ({
               name,
               value: name,
@@ -122,4 +164,4 @@ const AddSale: FC = () => {
   );
 };
 
-export default withLayout(AddSale);
+export default withLayout(RecordTransaction);

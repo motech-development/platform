@@ -168,38 +168,19 @@ const Accounts: FC = () => {
             <Col xs={12} md={3}>
               <Card padding="lg">
                 <Typography rule component="h3" variant="h3" margin="lg">
-                  {t('accounts.sales.title')}
+                  {t('accounts.record-transaction.title')}
                 </Typography>
 
                 <Typography component="p" variant="lead" margin="none">
-                  {t('accounts.sales.lead')}
+                  {t('accounts.record-transaction.lead')}
                 </Typography>
               </Card>
               <LinkButton
                 block
-                to={`/my-companies/accounts/${companyId}/add-sale`}
+                to={`/my-companies/accounts/${companyId}/record-transaction`}
                 size="lg"
               >
-                {t('accounts.sales.button')}
-              </LinkButton>
-            </Col>
-
-            <Col xs={12} md={3}>
-              <Card padding="lg">
-                <Typography rule component="h3" variant="h3" margin="lg">
-                  {t('accounts.purchases.title')}
-                </Typography>
-
-                <Typography component="p" variant="lead" margin="none">
-                  {t('accounts.purchases.lead')}
-                </Typography>
-              </Card>
-              <LinkButton
-                block
-                to={`/my-companies/accounts/${companyId}/add-purchase`}
-                size="lg"
-              >
-                {t('accounts.purchases.button')}
+                {t('accounts.record-transaction.button')}
               </LinkButton>
             </Col>
 
