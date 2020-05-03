@@ -1,3 +1,4 @@
+// TODO: Update balance when going from pending to confirmed and back
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Decimal } from 'decimal.js';

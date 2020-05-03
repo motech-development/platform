@@ -228,6 +228,7 @@ const TransactionForm: FC<ITransactionForm> = ({
               )}
               options={transactionTypeOptions}
               onChange={onTransactionTypeChange}
+              readOnly={!!formValues.id}
             />
 
             {transactionType && (
