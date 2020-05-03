@@ -15,7 +15,6 @@ export interface IGetBalanceOutput {
       date: string;
       items: {
         amount: number;
-        date: string;
         description: string;
         id: string;
         name: string;
@@ -40,7 +39,6 @@ const GET_BALANCE = gql`
         date
         items {
           amount
-          date
           description
           id
           name

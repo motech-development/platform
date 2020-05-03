@@ -22,7 +22,6 @@ export interface ITransactionsListProps {
     date: string;
     items: {
       amount: number;
-      date: string;
       description: string;
       id: string;
       name: string;
@@ -45,7 +44,7 @@ const TransactionsList: FC<ITransactionsListProps> = ({
           {t('transactions-list.no-transactions.title')}
         </Typography>
 
-        <Typography align="center" component="h3" variant="lead" margin="none">
+        <Typography align="center" component="p" variant="lead" margin="none">
           {t('transactions-list.no-transactions.description')}
         </Typography>
       </Card>
