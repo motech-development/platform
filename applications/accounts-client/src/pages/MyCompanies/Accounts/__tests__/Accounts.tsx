@@ -239,14 +239,14 @@ describe('Accounts', () => {
     });
 
     it('should hide the delete confirmation modal', async () => {
-      const { findAllByRole, findByRole, queryByRole } = component;
+      const { findAllByRole, queryByRole } = component;
 
       await act(async () => {
         const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
-        await findByRole('dialog');
+        await wait();
 
         const [, , , cancelButton] = await findAllByRole('button');
 
@@ -263,8 +263,6 @@ describe('Accounts', () => {
         const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
-
-        await findByRole('dialog');
 
         const input = await findByLabelText('confirm-delete');
 
@@ -285,6 +283,8 @@ describe('Accounts', () => {
 
         await wait();
       });
+
+      await findByRole('table');
 
       expect(add).toHaveBeenCalledWith({
         colour: 'success',
@@ -377,8 +377,6 @@ describe('Accounts', () => {
 
         fireEvent.click(button);
 
-        await findByRole('dialog');
-
         const input = await findByLabelText('confirm-delete');
 
         fireEvent.change(input, {
@@ -398,6 +396,8 @@ describe('Accounts', () => {
 
         await wait();
       });
+
+      await findByRole('table');
 
       expect(add).toHaveBeenCalledWith({
         colour: 'danger',
