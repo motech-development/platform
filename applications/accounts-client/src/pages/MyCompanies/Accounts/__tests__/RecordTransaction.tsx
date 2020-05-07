@@ -120,7 +120,7 @@ describe('RecordTransaction', () => {
               amount: -999.99,
               category: 'Equipment',
               companyId: 'company-id',
-              date: '2020-05-07T11:58:17+01:00',
+              date: '2020-05-07T10:58:17+00:00',
               description: 'Laptop',
               id: '',
               name: 'Apple',
@@ -208,11 +208,10 @@ describe('RecordTransaction', () => {
         },
       });
 
-      await wait();
-
       fireEvent.change(amount, {
         target: {
-          value: 999.99,
+          focus: () => {},
+          value: '999.99',
         },
       });
 
@@ -282,11 +281,10 @@ describe('RecordTransaction', () => {
         },
       });
 
-      await wait();
-
       fireEvent.change(amount, {
         target: {
-          value: 999.99,
+          focus: () => {},
+          value: '999.99',
         },
       });
 
