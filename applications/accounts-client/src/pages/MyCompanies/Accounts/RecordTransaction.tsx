@@ -76,8 +76,8 @@ interface IAddTransactionOutput {
 export const ADD_TRANSACTION = gql`
   mutation AddTransaction($input: TransactionInput!) {
     addTransaction(input: $input) {
-      id
       companyId
+      id
     }
   }
 `;

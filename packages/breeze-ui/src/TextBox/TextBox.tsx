@@ -142,7 +142,9 @@ const InternalTextBox: FC<IInternalTextBox> = ({
     }
   };
   const doChange = (e: ChangeEvent<HTMLInputElement>) => {
-    handleChange(e);
+    if (!useNumberFormat) {
+      handleChange(e);
+    }
 
     if (onChange) {
       onChange(e, form);

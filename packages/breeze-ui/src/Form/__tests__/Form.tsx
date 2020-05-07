@@ -199,7 +199,7 @@ describe('Form', () => {
           empty: '',
           test: '',
         },
-        test: '20%',
+        test: 20,
       });
     });
   });
@@ -239,7 +239,7 @@ describe('Form', () => {
           empty: '',
           test: '',
         },
-        test: '£20',
+        test: 20,
       });
     });
   });
@@ -312,7 +312,7 @@ describe('Form', () => {
           empty: '',
           test: 'Hello',
         },
-        test: '£20',
+        test: 20,
       });
     });
   });
