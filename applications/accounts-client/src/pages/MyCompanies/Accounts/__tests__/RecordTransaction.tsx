@@ -185,9 +185,6 @@ describe('RecordTransaction', () => {
       const amount = await findByLabelText(
         'transaction-form.transaction-amount.amount.label',
       );
-      const vat = await findByLabelText(
-        'transaction-form.transaction-amount.vat.label',
-      );
 
       fireEvent.change(supplier, {
         target: {
@@ -220,9 +217,6 @@ describe('RecordTransaction', () => {
       });
 
       await wait();
-
-      fireEvent.focus(vat);
-      fireEvent.blur(vat);
 
       const [, , button] = await findAllByRole('button');
 
@@ -265,9 +259,6 @@ describe('RecordTransaction', () => {
       const amount = await findByLabelText(
         'transaction-form.transaction-amount.amount.label',
       );
-      const vat = await findByLabelText(
-        'transaction-form.transaction-amount.vat.label',
-      );
 
       fireEvent.change(supplier, {
         target: {
@@ -300,9 +291,6 @@ describe('RecordTransaction', () => {
       });
 
       await wait();
-
-      fireEvent.focus(vat);
-      fireEvent.blur(vat);
 
       const [, , button] = await findAllByRole('button');
 

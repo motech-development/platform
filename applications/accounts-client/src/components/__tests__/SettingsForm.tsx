@@ -147,7 +147,7 @@ describe('SettingsForm', () => {
           {
             __typename: 'ExpenseCategory',
             name: 'Utilities',
-            vatRate: '5%',
+            vatRate: 5,
           },
         ],
       });
