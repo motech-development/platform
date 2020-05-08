@@ -103,7 +103,7 @@ interface IUpdateTransactionOutput {
   };
 }
 
-const UPDATE_TRANSACTION = gql`
+export const UPDATE_TRANSACTION = gql`
   mutation UpdateTransaction($input: TransactionInput!) {
     updateTransaction(input: $input) {
       amount
