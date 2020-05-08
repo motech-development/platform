@@ -6,9 +6,6 @@ import '@testing-library/jest-dom/extend-expect';
 import { randomFillSync } from 'crypto';
 import 'jest-date-mock';
 import 'jest-styled-components';
-import timezoneMock from 'timezone-mock';
-
-timezoneMock.register('UTC');
 
 Object.defineProperty(window, 'crypto', {
   value: {
