@@ -11,32 +11,34 @@ const deleteTransactions = (
   const unmarshalledRecords = unmarshallOldRecords(records, 'Transaction');
   const now = new Date();
 
-  const transactionItems = unmarshalledRecords.map(({ OldImage }) =>
-    documentClient
-      .update({
-        ExpressionAttributeNames: {
-          '#balance': 'balance',
-          '#itemProperty': aggregatedDay(OldImage.date),
-          '#items': 'items',
-          '#updatedAt': 'updatedAt',
-          '#vat': 'vat',
-          '#vatProperty': OldImage.category === 'Sales' ? 'owed' : 'paid',
-        },
-        ExpressionAttributeValues: {
-          ':balance': OldImage.amount,
-          ':updatedAt': now.toISOString(),
-          ':vat': OldImage.vat,
-        },
-        Key: {
-          __typename: 'Balance',
-          id: OldImage.companyId,
-        },
-        TableName: tableName,
-        UpdateExpression:
-          'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
-      })
-      .promise(),
-  );
+  const transactionItems = unmarshalledRecords
+    .filter(({ OldImage }) => OldImage.status === 'confirmed')
+    .map(({ OldImage }) =>
+      documentClient
+        .update({
+          ExpressionAttributeNames: {
+            '#balance': 'balance',
+            '#itemProperty': aggregatedDay(OldImage.date),
+            '#items': 'items',
+            '#updatedAt': 'updatedAt',
+            '#vat': 'vat',
+            '#vatProperty': OldImage.category === 'Sales' ? 'owed' : 'paid',
+          },
+          ExpressionAttributeValues: {
+            ':balance': OldImage.amount,
+            ':updatedAt': now.toISOString(),
+            ':vat': OldImage.vat,
+          },
+          Key: {
+            __typename: 'Balance',
+            id: OldImage.companyId,
+          },
+          TableName: tableName,
+          UpdateExpression:
+            'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
+        })
+        .promise(),
+    );
 
   return transactionItems;
 };

@@ -78,6 +78,9 @@ describe('balance', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  status: {
+                    S: 'confirmed',
+                  },
                   vat: {
                     N: '1.2',
                   },
@@ -97,6 +100,9 @@ describe('balance', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  status: {
+                    S: 'confirmed',
                   },
                   vat: {
                     N: '2.4',
@@ -123,6 +129,9 @@ describe('balance', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  status: {
+                    S: 'confirmed',
+                  },
                   vat: {
                     N: '1.2',
                   },
@@ -142,6 +151,9 @@ describe('balance', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  status: {
+                    S: 'confirmed',
                   },
                   vat: {
                     N: '2.4',
@@ -168,6 +180,9 @@ describe('balance', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  status: {
+                    S: 'confirmed',
+                  },
                   vat: {
                     N: '1.2',
                   },
@@ -187,6 +202,9 @@ describe('balance', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  status: {
+                    S: 'confirmed',
                   },
                   vat: {
                     N: '2.4',
@@ -236,6 +254,9 @@ describe('balance', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  status: {
+                    S: 'confirmed',
+                  },
                   vat: {
                     N: '1.2',
                   },
@@ -255,6 +276,9 @@ describe('balance', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  status: {
+                    S: 'confirmed',
                   },
                   vat: {
                     N: '2.4',
@@ -281,6 +305,9 @@ describe('balance', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  status: {
+                    S: 'confirmed',
+                  },
                   vat: {
                     N: '1.2',
                   },
@@ -300,6 +327,9 @@ describe('balance', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  status: {
+                    S: 'confirmed',
                   },
                   vat: {
                     N: '2.4',
@@ -326,6 +356,9 @@ describe('balance', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  status: {
+                    S: 'confirmed',
+                  },
                   vat: {
                     N: '1.2',
                   },
@@ -345,6 +378,9 @@ describe('balance', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  status: {
+                    S: 'confirmed',
                   },
                   vat: {
                     N: '2.4',

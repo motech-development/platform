@@ -11,32 +11,34 @@ const insertTransactions = (
   const unmarshalledRecords = unmarshallNewRecords(records, 'Transaction');
   const now = new Date();
 
-  const transactionItems = unmarshalledRecords.map(({ NewImage }) =>
-    documentClient
-      .update({
-        ExpressionAttributeNames: {
-          '#balance': 'balance',
-          '#itemProperty': aggregatedDay(NewImage.date),
-          '#items': 'items',
-          '#updatedAt': 'updatedAt',
-          '#vat': 'vat',
-          '#vatProperty': NewImage.category === 'Sales' ? 'owed' : 'paid',
-        },
-        ExpressionAttributeValues: {
-          ':balance': NewImage.amount,
-          ':updatedAt': now.toISOString(),
-          ':vat': NewImage.vat,
-        },
-        Key: {
-          __typename: 'Balance',
-          id: NewImage.companyId,
-        },
-        TableName: tableName,
-        UpdateExpression:
-          'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
-      })
-      .promise(),
-  );
+  const transactionItems = unmarshalledRecords
+    .filter(({ NewImage }) => NewImage.status === 'confirmed')
+    .map(({ NewImage }) =>
+      documentClient
+        .update({
+          ExpressionAttributeNames: {
+            '#balance': 'balance',
+            '#itemProperty': aggregatedDay(NewImage.date),
+            '#items': 'items',
+            '#updatedAt': 'updatedAt',
+            '#vat': 'vat',
+            '#vatProperty': NewImage.category === 'Sales' ? 'owed' : 'paid',
+          },
+          ExpressionAttributeValues: {
+            ':balance': NewImage.amount,
+            ':updatedAt': now.toISOString(),
+            ':vat': NewImage.vat,
+          },
+          Key: {
+            __typename: 'Balance',
+            id: NewImage.companyId,
+          },
+          TableName: tableName,
+          UpdateExpression:
+            'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+        })
+        .promise(),
+    );
 
   return transactionItems;
 };
