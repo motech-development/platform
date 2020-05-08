@@ -17,71 +17,56 @@ export interface ITransaction {
   vat: number;
 }
 
+const commonUpdate = (tableName: string, record: ITransaction) => {
+  const now = new Date();
+
+  return {
+    ExpressionAttributeNames: {
+      '#balance': 'balance',
+      '#itemProperty': aggregatedDay(record.date),
+      '#items': 'items',
+      '#updatedAt': 'updatedAt',
+      '#vat': 'vat',
+      '#vatProperty': record.category === 'Sales' ? 'owed' : 'paid',
+    },
+    ExpressionAttributeValues: {
+      ':balance': record.amount,
+      ':updatedAt': now.toISOString(),
+      ':vat': record.vat,
+    },
+    Key: {
+      __typename: 'Balance',
+      id: record.companyId,
+    },
+    TableName: tableName,
+  };
+};
+
 export const insert = (
   documentClient: DocumentClient,
   tableName: string,
   record: ITransaction,
-) => {
-  const now = new Date();
-
-  return documentClient
+) =>
+  documentClient
     .update({
-      ExpressionAttributeNames: {
-        '#balance': 'balance',
-        '#itemProperty': aggregatedDay(record.date),
-        '#items': 'items',
-        '#updatedAt': 'updatedAt',
-        '#vat': 'vat',
-        '#vatProperty': record.category === 'Sales' ? 'owed' : 'paid',
-      },
-      ExpressionAttributeValues: {
-        ':balance': record.amount,
-        ':updatedAt': now.toISOString(),
-        ':vat': record.vat,
-      },
-      Key: {
-        __typename: 'Balance',
-        id: record.companyId,
-      },
-      TableName: tableName,
+      ...commonUpdate(tableName, record),
       UpdateExpression:
         'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
     })
     .promise();
-};
 
 export const remove = (
   documentClient: DocumentClient,
   tableName: string,
   record: ITransaction,
-) => {
-  const now = new Date();
-
-  return documentClient
+) =>
+  documentClient
     .update({
-      ExpressionAttributeNames: {
-        '#balance': 'balance',
-        '#itemProperty': aggregatedDay(record.date),
-        '#items': 'items',
-        '#updatedAt': 'updatedAt',
-        '#vat': 'vat',
-        '#vatProperty': record.category === 'Sales' ? 'owed' : 'paid',
-      },
-      ExpressionAttributeValues: {
-        ':balance': record.amount,
-        ':updatedAt': now.toISOString(),
-        ':vat': record.vat,
-      },
-      Key: {
-        __typename: 'Balance',
-        id: record.companyId,
-      },
-      TableName: tableName,
+      ...commonUpdate(tableName, record),
       UpdateExpression:
         'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
     })
     .promise();
-};
 
 export const update = (
   documentClient: DocumentClient,
