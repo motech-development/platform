@@ -91,16 +91,30 @@ interface IUpdateTransactionInput {
 
 interface IUpdateTransactionOutput {
   updateTransaction: {
+    amount: number;
+    category: string;
     companyId: string;
+    date: string;
+    description: string;
     id: string;
+    name: string;
+    status: string;
+    vat: number;
   };
 }
 
 const UPDATE_TRANSACTION = gql`
   mutation UpdateTransaction($input: TransactionInput!) {
     updateTransaction(input: $input) {
-      id
+      amount
+      category
       companyId
+      date
+      description
+      id
+      name
+      status
+      vat
     }
   }
 `;

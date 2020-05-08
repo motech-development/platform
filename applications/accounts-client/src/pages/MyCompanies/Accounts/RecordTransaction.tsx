@@ -69,16 +69,30 @@ interface IAddTransactionInput {
 
 interface IAddTransactionOutput {
   addTransaction: {
+    amount: number;
+    category: string;
     companyId: string;
+    date: string;
+    description: string;
     id: string;
+    name: string;
+    status: string;
+    vat: number;
   };
 }
 
 export const ADD_TRANSACTION = gql`
   mutation AddTransaction($input: TransactionInput!) {
     addTransaction(input: $input) {
+      amount
+      category
       companyId
+      date
+      description
       id
+      name
+      status
+      vat
     }
   }
 `;

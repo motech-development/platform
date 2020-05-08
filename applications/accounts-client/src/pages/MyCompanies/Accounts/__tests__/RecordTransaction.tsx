@@ -139,8 +139,15 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               addTransaction: {
+                amount: -999.99,
+                category: 'Equipment',
                 companyId: 'company-id',
+                date: '2020-05-07T10:58:17+00:00',
+                description: 'Laptop',
                 id: 'transaction-id',
+                name: 'Apple',
+                status: 'confirmed',
+                vat: 166.66,
               },
             },
           },
@@ -412,8 +419,15 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               addTransaction: {
+                amount: 999.99,
+                category: 'Sale',
                 companyId: 'company-id',
+                date: '2020-05-07T10:58:17+00:00',
+                description: 'Invoice #1',
                 id: 'transaction-id',
+                name: 'Motech Development',
+                status: 'confirmed',
+                vat: 200,
               },
             },
           },
