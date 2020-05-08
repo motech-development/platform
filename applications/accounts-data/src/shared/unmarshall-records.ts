@@ -1,5 +1,6 @@
 import { DynamoDBRecord, StreamRecord } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
+import { ITransaction } from './transaction';
 
 const getRecords = (records: DynamoDBRecord[]) =>
   records
@@ -22,10 +23,10 @@ export const unmarshallAllRecords = (
       return {
         NewImage: DynamoDB.Converter.unmarshall(
           NewImage as DynamoDB.AttributeMap,
-        ),
+        ) as ITransaction,
         OldImage: DynamoDB.Converter.unmarshall(
           OldImage as DynamoDB.AttributeMap,
-        ),
+        ) as ITransaction,
       };
     })
     .filter(
@@ -50,7 +51,7 @@ export const unmarshallNewRecords = (
       return {
         NewImage: DynamoDB.Converter.unmarshall(
           NewImage as DynamoDB.AttributeMap,
-        ),
+        ) as ITransaction,
       };
     })
     .filter(
@@ -75,7 +76,7 @@ export const unmarshallOldRecords = (
       return {
         OldImage: DynamoDB.Converter.unmarshall(
           OldImage as DynamoDB.AttributeMap,
-        ),
+        ) as ITransaction,
       };
     })
     .filter(

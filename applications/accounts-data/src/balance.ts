@@ -1,6 +1,6 @@
 import { DynamoDBStreamHandler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import deleteTransactions from './handlers/delete-transactions';
+import removeTransactions from './handlers/remove-transactions';
 import insertTransactions from './handlers/insert-transactions';
 import updateTransactions from './handlers/update-transactions';
 
@@ -27,7 +27,7 @@ export const handler: DynamoDBStreamHandler = async event => {
     await Promise.all([
       ...insertTransactions(documentClient, TABLE, inserts),
       ...updateTransactions(documentClient, TABLE, updates),
-      ...deleteTransactions(documentClient, TABLE, removals),
+      ...removeTransactions(documentClient, TABLE, removals),
     ]);
   } catch (e) {
     // eslint-disable-next-line no-console

@@ -1,9 +1,9 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { advanceTo, clear } from 'jest-date-mock';
-import deleteTransactions from '../delete-transactions';
+import removeTransactions from '../remove-transactions';
 
-describe('delete-transactions', () => {
+describe('remove-transactions', () => {
   let documentClient: DocumentClient;
   let tableName: string;
   let records: DynamoDBRecord[];
@@ -182,7 +182,7 @@ describe('delete-transactions', () => {
   });
 
   it('should return update with the correct params', () => {
-    deleteTransactions(documentClient, tableName, records);
+    removeTransactions(documentClient, tableName, records);
 
     expect(documentClient.update).toHaveBeenCalledWith({
       ExpressionAttributeNames: {
@@ -232,7 +232,7 @@ describe('delete-transactions', () => {
   });
 
   it('should call update the correct number of times', () => {
-    deleteTransactions(documentClient, tableName, records);
+    removeTransactions(documentClient, tableName, records);
 
     expect(documentClient.update).toHaveBeenCalledTimes(2);
   });
