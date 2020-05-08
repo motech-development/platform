@@ -69,7 +69,7 @@ const TransactionForm: FC<ITransactionForm> = ({
   vat,
 }) => {
   const isEmpty = initialValues.amount === '';
-  const initialTransaction = initialValues.amount > 0 ? 'sale' : 'purchase';
+  const initialTransaction = initialValues.amount > 0 ? 'Sale' : 'Purchase';
   const formValues = {
     ...initialValues,
     amount: initialValues.amount
@@ -131,11 +131,11 @@ const TransactionForm: FC<ITransactionForm> = ({
       name: t(
         'transaction-form.transaction-details.transaction.options.purchase',
       ),
-      value: 'purchase',
+      value: 'Purchase',
     },
     {
       name: t('transaction-form.transaction-details.transaction.options.sale'),
-      value: 'sale',
+      value: 'Sale',
     },
   ];
   const statusOptions = [
@@ -158,7 +158,7 @@ const TransactionForm: FC<ITransactionForm> = ({
 
     setFieldValue('name', '');
 
-    if (event.target.value === 'sale') {
+    if (event.target.value === 'Sale') {
       setFieldValue('category', event.target.value);
     }
   };
@@ -189,7 +189,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     setFieldValue('vat', calculated);
   };
   const onPreSubmit = ({ transaction, ...value }: IFormValues) => {
-    const isPurchase = transaction === 'purchase';
+    const isPurchase = transaction === 'Purchase';
     const amount = isPurchase ? -Math.abs(value.amount) : value.amount;
     const category = isPurchase ? categories[value.category].name : transaction;
 
@@ -233,7 +233,7 @@ const TransactionForm: FC<ITransactionForm> = ({
 
             {transactionType && (
               <>
-                {transactionType === 'sale' ? (
+                {transactionType === 'Sale' ? (
                   <Select
                     label={t('transaction-form.transaction-details.name.label')}
                     name="name"
@@ -279,7 +279,7 @@ const TransactionForm: FC<ITransactionForm> = ({
 
             {transactionType && (
               <>
-                {transactionType === 'purchase' ? (
+                {transactionType === 'Purchase' ? (
                   <>
                     <Select
                       label={t(

@@ -18,6 +18,7 @@ interface IRecordTransactionInput {
 interface IRecordTransactionOutput {
   getClients: {
     items: {
+      id: string;
       name: string;
     }[];
   };
