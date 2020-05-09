@@ -206,16 +206,33 @@ describe('Accounts', () => {
       );
     });
 
-    it('should show the dashboard card', async () => {
+    it('should show the pending transactiosn card', async () => {
       const { findAllByRole } = component;
       const [, , , , title] = await findAllByRole('heading');
+
+      expect(title).toHaveTextContent('accounts.pending-transactions.title');
+    });
+
+    it('should have the correct pending transactions link', async () => {
+      const { findAllByRole } = component;
+      const [, link] = await findAllByRole('link');
+
+      expect(link).toHaveAttribute(
+        'href',
+        '/my-companies/accounts/company-id/pending-transactions',
+      );
+    });
+
+    it('should show the dashboard card', async () => {
+      const { findAllByRole } = component;
+      const [, , , , , title] = await findAllByRole('heading');
 
       expect(title).toHaveTextContent('accounts.dashboard.title');
     });
 
     it('should have the correct dashboard link', async () => {
       const { findAllByRole } = component;
-      const [, link] = await findAllByRole('link');
+      const [, , link] = await findAllByRole('link');
 
       expect(link).toHaveAttribute(
         'href',

@@ -24,7 +24,7 @@ describe('TransactionsList', () => {
     );
 
     await expect(findByRole('heading')).resolves.toHaveTextContent(
-      'transactions-list.no-transactions.title',
+      'no-transactions.title',
     );
   });
 

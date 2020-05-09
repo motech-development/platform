@@ -1,6 +1,5 @@
 import {
   Button,
-  Card,
   DateTime,
   LinkButton,
   Table,
@@ -12,6 +11,7 @@ import {
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Currency from './Currency';
+import NoTransactions from './NoTransactions';
 import TransactionArrow from './TransactionArrow';
 
 export interface ITransactionsListProps {
@@ -38,17 +38,7 @@ const TransactionsList: FC<ITransactionsListProps> = ({
   const { t } = useTranslation('accounts');
 
   if (transactions.length === 0) {
-    return (
-      <Card padding="lg">
-        <Typography rule align="center" component="h2" variant="h2" margin="lg">
-          {t('transactions-list.no-transactions.title')}
-        </Typography>
-
-        <Typography align="center" component="p" variant="lead" margin="none">
-          {t('transactions-list.no-transactions.description')}
-        </Typography>
-      </Card>
-    );
+    return <NoTransactions />;
   }
 
   return (

@@ -187,6 +187,25 @@ const Accounts: FC = () => {
             <Col xs={12} md={3}>
               <Card padding="lg">
                 <Typography rule component="h3" variant="h3" margin="lg">
+                  {t('accounts.pending-transactions.title')}
+                </Typography>
+
+                <Typography component="p" variant="lead" margin="none">
+                  {t('accounts.pending-transactions.lead')}
+                </Typography>
+              </Card>
+              <LinkButton
+                block
+                to={`/my-companies/accounts/${companyId}/pending-transactions`}
+                size="lg"
+              >
+                {t('accounts.pending-transactions.button')}
+              </LinkButton>
+            </Col>
+
+            <Col xs={12} md={3}>
+              <Card padding="lg">
+                <Typography rule component="h3" variant="h3" margin="lg">
                   {t('accounts.dashboard.title')}
                 </Typography>
 

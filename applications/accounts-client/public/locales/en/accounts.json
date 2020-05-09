@@ -14,9 +14,14 @@
       "vat-paid": "VAT paid: {{amount}}"
     },
     "record-transaction": {
-      "title": "Transactions",
+      "title": "New transactions",
       "lead": "Record any money coming in and going out of your business",
       "button": "Record a new transaction"
+    },
+    "pending-transactions": {
+      "title": "Pending transactions",
+      "lead": "View and manage any transactions that are waiting to be approved",
+      "button": "View pending transactions"
     },
     "delete-transaction": {
       "title": "Are you sure you want to delete this transaction?",
@@ -30,6 +35,18 @@
     "sub-title": "Add a new business transaction",
     "success": "Transaction has been saved"
   },
+  "pending-transactions": {
+    "title": "Pending transactions",
+    "sub-title": "Manage transactions awaiting your approval",
+    "go-back": "Go back to accounts",
+    "transactions": {
+      "name": "Name",
+      "date": "Date",
+      "amount": "Amount",
+      "actions": "Actions",
+      "view": "View"
+    }
+  },
   "view-transaction": {
     "title": "View transaction",
     "sub-title": "View and update a business transaction",
@@ -38,11 +55,7 @@
   "transactions-list": {
     "actions": "Actions",
     "view": "View",
-    "delete": "Delete",
-    "no-transactions": {
-      "title": "No transactions found",
-      "description": "Get started by adding some purchases and sales"
-    }
+    "delete": "Delete"
   },
   "transaction-form": {
     "cancel": "Cancel",
@@ -96,5 +109,9 @@
         "required": "VAT is required"
       }
     }
+  },
+  "no-transactions": {
+    "title": "No transactions found",
+    "description": "Get started by adding some purchases and sales"
   }
 }
