@@ -44,7 +44,7 @@ export interface ITransactionForm {
   backTo: string;
   categories: ISelectOption[];
   clients: ISelectOption[];
-  companyId?: string;
+  companyId: string;
   initialValues?: FormSchema;
   loading: boolean;
   vat: number;
@@ -59,7 +59,7 @@ const TransactionForm: FC<ITransactionForm> = ({
   backTo,
   categories,
   clients,
-  companyId = null,
+  companyId,
   initialValues = {
     ...formSchema,
     companyId,
