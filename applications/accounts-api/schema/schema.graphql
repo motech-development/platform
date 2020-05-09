@@ -26,6 +26,12 @@ type Query {
   getCompany(id: ID!): Company!
   getSettings(id: ID!): Settings!
   getTransaction(id: ID!): Transaction!
+  getTransactions(
+    companyId: ID!
+    status: TransactionStatus!
+    count: Int
+    nextToken: String
+  ): Transactions!
 }
 
 type Subscription {

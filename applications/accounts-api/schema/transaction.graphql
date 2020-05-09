@@ -3,6 +3,11 @@ enum TransactionStatus {
   pending
 }
 
+type Transactions {
+  items: [Transaction]
+  nextToken: String
+}
+
 type Transaction {
   amount: Float
   category: String

@@ -202,6 +202,11 @@ custom:
           request: transaction/getTransaction/Query.getTransaction.req.vtl
           response: transaction/getTransaction/Query.getTransaction.res.vtl
         - dataSource: Data
+          type: Query
+          field: getTransactions
+          request: transaction/getTransactions/Query.getTransactions.req.vtl
+          response: transaction/getTransactions/Query.getTransactions.res.vtl
+        - dataSource: Data
           type: Mutation
           field: updateTransaction
           request: transaction/updateTransaction/Mutation.updateTransaction.req.vtl
