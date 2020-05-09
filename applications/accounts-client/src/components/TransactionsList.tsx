@@ -1,5 +1,4 @@
 import {
-  Button,
   DateTime,
   LinkButton,
   Table,
@@ -27,12 +26,10 @@ export interface ITransactionsListProps {
       name: string;
     }[];
   }[];
-  onDelete(id: string, name: string): void;
 }
 
 const TransactionsList: FC<ITransactionsListProps> = ({
   companyId,
-  onDelete,
   transactions,
 }) => {
   const { t } = useTranslation('accounts');
@@ -81,14 +78,7 @@ const TransactionsList: FC<ITransactionsListProps> = ({
                   size="sm"
                 >
                   {t('transactions-list.view')}
-                </LinkButton>{' '}
-                <Button
-                  colour="danger"
-                  size="sm"
-                  onClick={() => onDelete(item.id, item.name)}
-                >
-                  {t('transactions-list.delete')}
-                </Button>
+                </LinkButton>
               </TableCell>
             </TableRow>
           ))}

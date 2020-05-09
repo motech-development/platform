@@ -22,12 +22,6 @@
       "title": "Pending transactions",
       "lead": "View and manage any transactions that are waiting to be approved",
       "button": "View pending transactions"
-    },
-    "delete-transaction": {
-      "title": "Are you sure you want to delete this transaction?",
-      "warning": "This will permanetly delete this transaction",
-      "success": "Transaction has been deleted",
-      "error": "Unable to delete this transaction"
     }
   },
   "record-transaction": {
@@ -54,8 +48,7 @@
   },
   "transactions-list": {
     "actions": "Actions",
-    "view": "View",
-    "delete": "Delete"
+    "view": "View"
   },
   "transaction-form": {
     "cancel": "Cancel",

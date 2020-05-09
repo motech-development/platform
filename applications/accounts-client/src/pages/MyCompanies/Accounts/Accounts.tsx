@@ -1,20 +1,16 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import {
   Card,
   Col,
   LinkButton,
-  Modal,
   PageTitle,
   Row,
   Typography,
-  useToast,
 } from '@motech-development/breeze-ui';
-import { gql } from 'apollo-boost';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import TransactionsList from '../../../components/TransactionsList';
-import ConfirmDelete from '../../../components/ConfirmDelete';
 import Connected from '../../../components/Connected';
 import { formatCurrency } from '../../../components/Currency';
 import GET_BALANCE, {
@@ -23,35 +19,11 @@ import GET_BALANCE, {
 } from '../../../graphql/balance/GET_BALANCE';
 import withLayout from '../../../hoc/withLayout';
 
-interface IDeleteTransactionInput {
-  id: string;
-}
-
-interface IDeleteTransactionOutput {
-  deleteTransaction: {
-    id: string;
-  };
-}
-
-export const DELETE_TRANSACTION = gql`
-  mutation DeleteTransaction($id: ID!) {
-    deleteTransaction(id: $id) {
-      id
-    }
-  }
-`;
-
 interface IAccountsParams {
   companyId: string;
 }
 
 const Accounts: FC = () => {
-  const [selected, setSelected] = useState({
-    id: '',
-    name: '',
-  });
-  const [modal, setModal] = useState(false);
-  const { add } = useToast();
   const { companyId } = useParams<IAccountsParams>();
   const { data, error, loading } = useQuery<
     IGetBalanceOutput,
@@ -61,64 +33,7 @@ const Accounts: FC = () => {
       id: companyId,
     },
   });
-  const [mutation, { loading: deleteLoading }] = useMutation<
-    IDeleteTransactionOutput,
-    IDeleteTransactionInput
-  >(DELETE_TRANSACTION, {
-    awaitRefetchQueries: true,
-    onCompleted: () => {
-      add({
-        colour: 'success',
-        message: t('accounts.delete-transaction.success'),
-      });
-
-      onDismiss();
-    },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('accounts.delete-transaction.error'),
-      });
-
-      onDismiss();
-    },
-    refetchQueries: () => [
-      {
-        query: GET_BALANCE,
-        variables: {
-          id: companyId,
-        },
-      },
-    ],
-  });
   const { t } = useTranslation('accounts');
-  const confirmDelete = (id: string, name: string) => {
-    setSelected({
-      id,
-      name,
-    });
-  };
-  const onDelete = () => {
-    (async () => {
-      const { id } = selected;
-
-      await mutation({
-        variables: {
-          id,
-        },
-      });
-    })();
-  };
-  const onDismiss = () => {
-    setSelected({
-      id: '',
-      name: '',
-    });
-  };
-
-  useEffect(() => {
-    setModal(!!selected.id);
-  }, [selected]);
 
   return (
     <Connected error={error} loading={loading}>
@@ -227,29 +142,11 @@ const Accounts: FC = () => {
               <TransactionsList
                 companyId={data.getBalance.id}
                 transactions={data.getBalance.transactions}
-                onDelete={confirmDelete}
               />
             </Col>
           </Row>
         </>
       )}
-
-      <Modal isOpen={modal} onDismiss={onDismiss}>
-        <Typography rule component="h3" variant="h3" margin="lg">
-          {t('accounts.delete-transaction.title')}
-        </Typography>
-
-        <Typography component="p" variant="p">
-          {t('accounts.delete-transaction.warning')}
-        </Typography>
-
-        <ConfirmDelete
-          loading={deleteLoading}
-          name={selected.name}
-          onCancel={onDismiss}
-          onDelete={onDelete}
-        />
-      </Modal>
     </Connected>
   );
 };

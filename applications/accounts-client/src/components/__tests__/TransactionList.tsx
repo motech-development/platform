@@ -1,25 +1,19 @@
-import { fireEvent, render, RenderResult } from '@testing-library/react';
+import { render, RenderResult } from '@testing-library/react';
 import React from 'react';
 import TestProvider from '../../utils/TestProvider';
 import TransactionsList from '../TransactionsList';
 
 describe('TransactionsList', () => {
   let companyId: string;
-  let onDelete: jest.Mock;
 
   beforeEach(() => {
     companyId = 'company-id';
-    onDelete = jest.fn();
   });
 
   it('should display a message if there are no transactions', async () => {
     const { findByRole } = render(
       <TestProvider>
-        <TransactionsList
-          companyId={companyId}
-          transactions={[]}
-          onDelete={onDelete}
-        />
+        <TransactionsList companyId={companyId} transactions={[]} />
       </TestProvider>,
     );
 
@@ -63,11 +57,7 @@ describe('TransactionsList', () => {
 
       component = render(
         <TestProvider>
-          <TransactionsList
-            companyId={companyId}
-            transactions={transactions}
-            onDelete={onDelete}
-          />
+          <TransactionsList companyId={companyId} transactions={transactions} />
         </TestProvider>,
       );
     });
@@ -101,22 +91,6 @@ describe('TransactionsList', () => {
         'href',
         '/my-companies/accounts/company-id/view-transaction/transaction-2',
       );
-    });
-
-    it('should have a delete button', async () => {
-      const { findAllByRole } = component;
-      const [button] = await findAllByRole('button');
-
-      expect(button).toHaveTextContent('transactions-list.delete');
-    });
-
-    it('should call onDelete with the correct params', async () => {
-      const { findAllByRole } = component;
-      const [button] = await findAllByRole('button');
-
-      fireEvent.click(button);
-
-      expect(onDelete).toHaveBeenCalledWith('transaction-2', 'KFC');
     });
 
     it('should display the transaction name', async () => {
