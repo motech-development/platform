@@ -23,7 +23,9 @@ describe('DatePicker', () => {
     onSubmit = jest.fn();
 
     validationSchema = Yup.object().shape({
-      test: Yup.date().required(),
+      test: Yup.date()
+        .min('2015-06-03T19:45:00+00:00')
+        .required(),
     });
   });
 
@@ -123,6 +125,24 @@ describe('DatePicker', () => {
         '2015-06-03T19:45:00+00:00',
       );
     });
+
+    it('should display validation error', async () => {
+      const { findByRole, findByText } = component;
+
+      await act(async () => {
+        const button = await findByRole('button');
+
+        fireEvent.click(button);
+
+        await findByRole('grid');
+
+        const date = await findByText('1');
+
+        fireEvent.click(date);
+      });
+
+      await expect(findByRole('alert')).resolves.toBeInTheDocument();
+    });
   });
 
   describe('with an initial value set', () => {
@@ -216,6 +236,24 @@ describe('DatePicker', () => {
       await expect(findByLabelText('Test')).resolves.toHaveValue(
         '2015-06-20T19:45:00+00:00',
       );
+    });
+
+    it('should display validation error', async () => {
+      const { findByRole, findByText } = component;
+
+      await act(async () => {
+        const button = await findByRole('button');
+
+        fireEvent.click(button);
+
+        await findByRole('grid');
+
+        const date = await findByText('1');
+
+        fireEvent.click(date);
+      });
+
+      await expect(findByRole('alert')).resolves.toBeInTheDocument();
     });
   });
 
