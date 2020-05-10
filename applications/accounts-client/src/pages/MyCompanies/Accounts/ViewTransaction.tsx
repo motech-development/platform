@@ -9,6 +9,10 @@ import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
 import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
+import UPDATE_TRANSACTION, {
+  IUpdateTransactionInput,
+  IUpdateTransactionOutput,
+} from '../../../graphql/transaction/UPDATE_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
 
 interface IViewTransactionInput {
@@ -62,50 +66,6 @@ export const VIEW_TRANSACTION = gql`
       }
     }
     getTransaction(id: $transactionId) {
-      amount
-      category
-      companyId
-      date
-      description
-      id
-      name
-      status
-      vat
-    }
-  }
-`;
-
-interface IUpdateTransactionInput {
-  input: {
-    amount: number;
-    category: string;
-    companyId: string;
-    date: string;
-    description: string;
-    id: string;
-    name: string;
-    status: string;
-    vat: number;
-  };
-}
-
-interface IUpdateTransactionOutput {
-  updateTransaction: {
-    amount: number;
-    category: string;
-    companyId: string;
-    date: string;
-    description: string;
-    id: string;
-    name: string;
-    status: string;
-    vat: number;
-  };
-}
-
-export const UPDATE_TRANSACTION = gql`
-  mutation UpdateTransaction($input: TransactionInput!) {
-    updateTransaction(input: $input) {
       amount
       category
       companyId

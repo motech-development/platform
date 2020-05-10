@@ -9,6 +9,11 @@ import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
 import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
+import ADD_TRANSACTION, {
+  IAddTransactionInput,
+  IAddTransactionOutput,
+  updateCache,
+} from '../../../graphql/transaction/ADD_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
 
 interface IRecordTransactionInput {
@@ -49,50 +54,6 @@ export const RECORD_TRANSACTION = gql`
       vat {
         pay
       }
-    }
-  }
-`;
-
-interface IAddTransactionInput {
-  input: {
-    amount: number;
-    category: string;
-    companyId: string;
-    date: string;
-    description: string;
-    id: string;
-    name: string;
-    status: string;
-    vat: number;
-  };
-}
-
-interface IAddTransactionOutput {
-  addTransaction: {
-    amount: number;
-    category: string;
-    companyId: string;
-    date: string;
-    description: string;
-    id: string;
-    name: string;
-    status: string;
-    vat: number;
-  };
-}
-
-export const ADD_TRANSACTION = gql`
-  mutation AddTransaction($input: TransactionInput!) {
-    addTransaction(input: $input) {
-      amount
-      category
-      companyId
-      date
-      description
-      id
-      name
-      status
-      vat
     }
   }
 `;
@@ -140,6 +101,7 @@ const RecordTransaction: FC = () => {
   const save = (input: FormSchema) => {
     (async () => {
       await mutation({
+        update: updateCache,
         variables: {
           input,
         },

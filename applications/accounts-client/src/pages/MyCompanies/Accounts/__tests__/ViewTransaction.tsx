@@ -13,11 +13,9 @@ import {
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
+import UPDATE_TRANSACTION from '../../../../graphql/transaction/UPDATE_TRANSACTION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
-import ViewTransaction, {
-  UPDATE_TRANSACTION,
-  VIEW_TRANSACTION,
-} from '../ViewTransaction';
+import ViewTransaction, { VIEW_TRANSACTION } from '../ViewTransaction';
 
 describe('ViewTransaction', () => {
   let component: RenderResult;

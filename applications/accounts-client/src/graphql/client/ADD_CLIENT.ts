@@ -46,27 +46,34 @@ export const updateCache: MutationUpdaterFn<IAddClientOutput> = (
   client,
   { data },
 ) => {
-  const { createClient } = data as IAddClientOutput;
-  const id = createClient.companyId;
-  const cache = client.readQuery<IGetClientsOutput, IGetClientsInput>({
-    query: GET_CLIENTS,
-    variables: {
-      id,
-    },
-  }) as IGetClientsOutput;
+  if (data) {
+    const { createClient } = data;
 
-  cache.getClients.items = [
-    ...cache.getClients.items,
-    createClient,
-  ].sort((a, b) => a.name.localeCompare(b.name));
+    try {
+      const cache = client.readQuery<IGetClientsOutput, IGetClientsInput>({
+        query: GET_CLIENTS,
+        variables: {
+          id: createClient.companyId,
+        },
+      });
 
-  client.writeQuery<IGetClientsOutput, IGetClientsInput>({
-    data: cache,
-    query: GET_CLIENTS,
-    variables: {
-      id,
-    },
-  });
+      if (cache) {
+        cache.getClients.items = [
+          ...cache.getClients.items,
+          createClient,
+        ].sort((a, b) => a.name.localeCompare(b.name));
+
+        client.writeQuery<IGetClientsOutput, IGetClientsInput>({
+          data: cache,
+          query: GET_CLIENTS,
+          variables: {
+            id: createClient.companyId,
+          },
+        });
+      }
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
 };
 
 const ADD_CLIENT = gql`

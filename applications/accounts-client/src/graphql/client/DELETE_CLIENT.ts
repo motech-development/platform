@@ -20,22 +20,33 @@ export const updateCache: MutationUpdaterFn<IDeleteClientOutput> = (
   client,
   { data },
 ) => {
-  const { deleteClient } = data as IDeleteClientOutput;
-  const cache = client.readQuery<IGetClientsOutput, IGetClientsInput>({
-    query: GET_CLIENTS,
-    variables: {
-      id: deleteClient.companyId,
-    },
-  }) as IGetClientsOutput;
+  if (data) {
+    const { deleteClient } = data;
 
-  cache.getClients.items = cache.getClients.items.filter(
-    ({ id }) => deleteClient.id !== id,
-  );
+    try {
+      const cache = client.readQuery<IGetClientsOutput, IGetClientsInput>({
+        query: GET_CLIENTS,
+        variables: {
+          id: deleteClient.companyId,
+        },
+      });
 
-  client.writeQuery<IGetClientsOutput>({
-    data: cache,
-    query: GET_CLIENTS,
-  });
+      if (cache) {
+        cache.getClients.items = cache.getClients.items.filter(
+          ({ id }) => deleteClient.id !== id,
+        );
+
+        client.writeQuery<IGetClientsOutput, IGetClientsInput>({
+          data: cache,
+          query: GET_CLIENTS,
+          variables: {
+            id: deleteClient.companyId,
+          },
+        });
+      }
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
 };
 
 const DELETE_CLIENT = gql`

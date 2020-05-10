@@ -10,17 +10,18 @@ import {
   RenderResult,
   wait,
 } from '@testing-library/react';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { advanceTo, clear } from 'jest-date-mock';
 import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
+import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
+import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
-import RecordTransaction, {
-  ADD_TRANSACTION,
-  RECORD_TRANSACTION,
-} from '../RecordTransaction';
+import RecordTransaction, { RECORD_TRANSACTION } from '../RecordTransaction';
 
 describe('RecordTransaction', () => {
+  let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
@@ -35,6 +36,46 @@ describe('RecordTransaction', () => {
     });
 
     jest.spyOn(history, 'push');
+
+    cache = new InMemoryCache({});
+
+    cache.writeQuery({
+      data: {
+        getBalance: {
+          __typename: 'Balance',
+          currency: 'GBP',
+          id: 'company-id',
+        },
+        getTransactions: {
+          __typename: 'Transactions',
+          items: [],
+        },
+      },
+      query: GET_TRANSACTIONS,
+      variables: {
+        companyId: 'company-id',
+        status: 'pending',
+      },
+    });
+
+    cache.writeQuery({
+      data: {
+        getBalance: {
+          __typename: 'Balance',
+          currency: 'GBP',
+          id: 'company-id',
+        },
+        getTransactions: {
+          __typename: 'Transactions',
+          items: [],
+        },
+      },
+      query: GET_TRANSACTIONS,
+      variables: {
+        companyId: 'company-id',
+        status: 'confirmed',
+      },
+    });
   });
 
   afterAll(() => {
@@ -54,16 +95,19 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               getBalance: {
+                __typename: 'Balance',
                 balance: 180,
                 currency: 'GBP',
                 id: 'company-id',
                 transactions: [
                   {
+                    __typename: 'BalanceTransaction',
                     balance: 180,
                     currency: 'GBP',
                     date: '2020-04-15T14:07:18+0000',
                     items: [
                       {
+                        __typename: 'Transaction',
                         amount: -20,
                         description: 'Lunch',
                         id: 'transaction-2',
@@ -72,11 +116,13 @@ describe('RecordTransaction', () => {
                     ],
                   },
                   {
+                    __typename: 'BalanceTransaction',
                     balance: 200,
                     currency: 'GBP',
                     date: '2020-04-13T14:07:18+0000',
                     items: [
                       {
+                        __typename: 'Transaction',
                         amount: 200,
                         description: 'Invoice #1',
                         id: 'transaction-1',
@@ -86,6 +132,7 @@ describe('RecordTransaction', () => {
                   },
                 ],
                 vat: {
+                  __typename: 'BalanceVat',
                   owed: 100,
                   paid: 99.9,
                 },
@@ -103,16 +150,20 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               getClients: {
+                __typename: 'Clients',
                 items: [],
               },
               getSettings: {
+                __typename: 'Settings',
                 categories: [
                   {
+                    __typename: 'ExpenseCategory',
                     name: 'Equipment',
                     vatRate: 20,
                   },
                 ],
                 vat: {
+                  __typename: 'VatSettings',
                   pay: 20,
                 },
               },
@@ -139,6 +190,7 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               addTransaction: {
+                __typename: 'Transaction',
                 amount: -999.99,
                 category: 'Equipment',
                 companyId: 'company-id',
@@ -160,7 +212,7 @@ describe('RecordTransaction', () => {
             path="/accounts/:companyId/record-transaction"
             history={history}
           >
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cache}>
               <RecordTransaction />
             </MockedProvider>
           </TestProvider>,
@@ -329,16 +381,19 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               getBalance: {
+                __typename: 'Balance',
                 balance: 180,
                 currency: 'GBP',
                 id: 'company-id',
                 transactions: [
                   {
+                    __typename: 'BalanceTransaction',
                     balance: 180,
                     currency: 'GBP',
                     date: '2020-04-15T14:07:18+0000',
                     items: [
                       {
+                        __typename: 'Transaction',
                         amount: -20,
                         description: 'Lunch',
                         id: 'transaction-2',
@@ -347,11 +402,13 @@ describe('RecordTransaction', () => {
                     ],
                   },
                   {
+                    __typename: 'BalanceTransaction',
                     balance: 200,
                     currency: 'GBP',
                     date: '2020-04-13T14:07:18+0000',
                     items: [
                       {
+                        __typename: 'Transaction',
                         amount: 200,
                         description: 'Invoice #1',
                         id: 'transaction-1',
@@ -361,6 +418,7 @@ describe('RecordTransaction', () => {
                   },
                 ],
                 vat: {
+                  __typename: 'BalanceVat',
                   owed: 100,
                   paid: 99.9,
                 },
@@ -378,21 +436,26 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               getClients: {
+                __typename: 'Clients',
                 items: [
                   {
+                    __typename: 'Client',
                     id: 'client-id',
                     name: 'Motech Development',
                   },
                 ],
               },
               getSettings: {
+                __typename: 'Settings',
                 categories: [
                   {
+                    __typename: 'ExpenseCategory',
                     name: 'Equipment',
                     vatRate: 20,
                   },
                 ],
                 vat: {
+                  __typename: 'VatSettings',
                   pay: 20,
                 },
               },
@@ -419,6 +482,7 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               addTransaction: {
+                __typename: 'Transaction',
                 amount: 999.99,
                 category: 'Sale',
                 companyId: 'company-id',
@@ -440,7 +504,7 @@ describe('RecordTransaction', () => {
             path="/accounts/:companyId/record-transaction"
             history={history}
           >
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cache}>
               <RecordTransaction />
             </MockedProvider>
           </TestProvider>,

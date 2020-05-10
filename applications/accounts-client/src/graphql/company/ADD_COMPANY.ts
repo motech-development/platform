@@ -53,20 +53,28 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
   client,
   { data },
 ) => {
-  const cache = client.readQuery<IGetCompaniesOutput>({
-    query: GET_COMPANIES,
-  }) as IGetCompaniesOutput;
-  const { createCompany } = data as IAddCompanyOutput;
+  if (data) {
+    const { createCompany } = data;
 
-  cache.getCompanies.items = [
-    ...cache.getCompanies.items,
-    createCompany,
-  ].sort((a, b) => a.name.localeCompare(b.name));
+    try {
+      const cache = client.readQuery<IGetCompaniesOutput>({
+        query: GET_COMPANIES,
+      });
 
-  client.writeQuery<IGetCompaniesOutput>({
-    data: cache,
-    query: GET_COMPANIES,
-  });
+      if (cache) {
+        cache.getCompanies.items = [
+          ...cache.getCompanies.items,
+          createCompany,
+        ].sort((a, b) => a.name.localeCompare(b.name));
+
+        client.writeQuery<IGetCompaniesOutput>({
+          data: cache,
+          query: GET_COMPANIES,
+        });
+      }
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
 };
 
 const ADD_COMPANY = gql`

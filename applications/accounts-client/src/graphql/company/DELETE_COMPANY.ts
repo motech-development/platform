@@ -16,19 +16,27 @@ export const updateCache: MutationUpdaterFn<IDeleteCompanyOutput> = (
   client,
   { data },
 ) => {
-  const cache = client.readQuery<IGetCompaniesOutput>({
-    query: GET_COMPANIES,
-  }) as IGetCompaniesOutput;
-  const { deleteCompany } = data as IDeleteCompanyOutput;
+  if (data) {
+    const { deleteCompany } = data;
 
-  cache.getCompanies.items = cache.getCompanies.items.filter(
-    ({ id }) => deleteCompany.id !== id,
-  );
+    try {
+      const cache = client.readQuery<IGetCompaniesOutput>({
+        query: GET_COMPANIES,
+      });
 
-  client.writeQuery<IGetCompaniesOutput>({
-    data: cache,
-    query: GET_COMPANIES,
-  });
+      if (cache) {
+        cache.getCompanies.items = cache.getCompanies.items.filter(
+          ({ id }) => deleteCompany.id !== id,
+        );
+
+        client.writeQuery<IGetCompaniesOutput>({
+          data: cache,
+          query: GET_COMPANIES,
+        });
+      }
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
 };
 
 const DELETE_COMPANY = gql`

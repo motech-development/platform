@@ -9,7 +9,6 @@ import {
   TableCell,
   Typography,
 } from '@motech-development/breeze-ui';
-import { gql } from 'apollo-boost';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -17,46 +16,11 @@ import Connected from '../../../components/Connected';
 import Currency from '../../../components/Currency';
 import NoTransactions from '../../../components/NoTransactions';
 import TransactionArrow from '../../../components/TransactionArrow';
+import GET_TRANSACTIONS, {
+  IGetTransactionsInput,
+  IGetTransactionsOutput,
+} from '../../../graphql/transaction/GET_TRANSACTIONS';
 import withLayout from '../../../hoc/withLayout';
-
-interface IPendingTransactionsInput {
-  companyId: string;
-  status: string;
-}
-
-interface IPendingTransactionsOutput {
-  getBalance: {
-    currency: string;
-    id: string;
-  };
-  getTransactions: {
-    items: {
-      amount: number;
-      date: string;
-      description: string;
-      id: string;
-      name: string;
-    }[];
-  };
-}
-
-const PENDING_TRANSACTIONS = gql`
-  query GetTransactions($companyId: ID!, $status: TransactionStatus!) {
-    getBalance(id: $companyId) {
-      currency
-      id
-    }
-    getTransactions(companyId: $companyId, status: $status) {
-      items {
-        amount
-        date
-        description
-        id
-        name
-      }
-    }
-  }
-`;
 
 interface IPendingTransactionParams {
   companyId: string;
@@ -66,9 +30,9 @@ const PendingTransaction: FC = () => {
   const { t } = useTranslation('accounts');
   const { companyId } = useParams<IPendingTransactionParams>();
   const { data, error, loading } = useQuery<
-    IPendingTransactionsOutput,
-    IPendingTransactionsInput
-  >(PENDING_TRANSACTIONS, {
+    IGetTransactionsOutput,
+    IGetTransactionsInput
+  >(GET_TRANSACTIONS, {
     variables: {
       companyId,
       status: 'pending',
