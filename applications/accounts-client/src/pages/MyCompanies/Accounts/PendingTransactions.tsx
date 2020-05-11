@@ -1,5 +1,6 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
+  Button,
   Col,
   DataTable,
   DateTime,
@@ -8,14 +9,21 @@ import {
   Row,
   TableCell,
   Typography,
+  useToast,
 } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import Currency from '../../../components/Currency';
+import DeleteItem from '../../../components/DeleteItem';
 import NoTransactions from '../../../components/NoTransactions';
 import TransactionArrow from '../../../components/TransactionArrow';
+import DELETE_TRANSACTION, {
+  IDeleteTransactionInput,
+  IDeleteTransactionOutput,
+  updateCache,
+} from '../../../graphql/transaction/DELETE_TRANSACTION';
 import GET_TRANSACTIONS, {
   IGetTransactionsInput,
   IGetTransactionsOutput,
@@ -27,8 +35,10 @@ interface IPendingTransactionParams {
 }
 
 const PendingTransaction: FC = () => {
+  const [transactionId, setTransactionId] = useState('');
   const { t } = useTranslation('accounts');
   const { companyId } = useParams<IPendingTransactionParams>();
+  const { add } = useToast();
   const { data, error, loading } = useQuery<
     IGetTransactionsOutput,
     IGetTransactionsInput
@@ -38,6 +48,41 @@ const PendingTransaction: FC = () => {
       status: 'pending',
     },
   });
+  const [deleteMutation, { loading: deleteLoading }] = useMutation<
+    IDeleteTransactionOutput,
+    IDeleteTransactionInput
+  >(DELETE_TRANSACTION, {
+    onCompleted: () => {
+      add({
+        colour: 'success',
+        message: t('delete-transaction.success'),
+      });
+
+      onDismiss();
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('delete-transaction.error'),
+      });
+    },
+  });
+  const launchDeleteModal = (value: string) => {
+    setTransactionId(value);
+  };
+  const onDismiss = () => {
+    setTransactionId('');
+  };
+  const onDelete = (id: string) => {
+    (async () => {
+      await deleteMutation({
+        update: updateCache,
+        variables: {
+          id,
+        },
+      });
+    })();
+  };
 
   return (
     <Connected error={error} loading={loading}>
@@ -101,8 +146,25 @@ const PendingTransaction: FC = () => {
                         size="sm"
                       >
                         {t('pending-transactions.transactions.view')}
-                      </LinkButton>
+                      </LinkButton>{' '}
+                      <Button
+                        colour="danger"
+                        size="sm"
+                        onClick={() => launchDeleteModal(id)}
+                      >
+                        {t('pending-transactions.transactions.delete')}
+                      </Button>
                     </TableCell>
+
+                    <DeleteItem
+                      title={t('delete-transaction.title')}
+                      warning={t('delete-transaction.warning')}
+                      display={transactionId === id}
+                      loading={deleteLoading}
+                      name={name}
+                      onDelete={() => onDelete(id)}
+                      onDismiss={onDismiss}
+                    />
                   </>
                 )}
                 noResults={<NoTransactions />}

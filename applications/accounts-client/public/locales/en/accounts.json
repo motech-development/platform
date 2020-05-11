@@ -38,17 +38,26 @@
       "date": "Date",
       "amount": "Amount",
       "actions": "Actions",
-      "view": "View"
+      "view": "View",
+      "delete": "Delete"
     }
+  },
+  "delete-transaction": {
+    "title": "Are you sure you want to delete this transaction?",
+    "warning": "This will permanetly delete this transaction",
+    "success": "Transaction has been deleted",
+    "error": "Unable to delete this transaction"
   },
   "view-transaction": {
     "title": "View transaction",
     "sub-title": "View and update a business transaction",
-    "success": "Transaction has been updated"
+    "success": "Transaction has been updated",
+    "delete-transaction": "Delete transaction"
   },
   "transactions-list": {
     "actions": "Actions",
-    "view": "View"
+    "view": "View",
+    "delete": "Delete"
   },
   "transaction-form": {
     "cancel": "Cancel",

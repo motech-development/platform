@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   Card,
   Col,
@@ -6,6 +6,7 @@ import {
   PageTitle,
   Row,
   Typography,
+  useToast,
 } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +18,11 @@ import GET_BALANCE, {
   IGetBalanceInput,
   IGetBalanceOutput,
 } from '../../../graphql/balance/GET_BALANCE';
+import DELETE_TRANSACTION, {
+  IDeleteTransactionInput,
+  IDeleteTransactionOutput,
+  updateCache,
+} from '../../../graphql/transaction/DELETE_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
 
 interface IAccountsParams {
@@ -25,6 +31,8 @@ interface IAccountsParams {
 
 const Accounts: FC = () => {
   const { companyId } = useParams<IAccountsParams>();
+  const { t } = useTranslation('accounts');
+  const { add } = useToast();
   const { data, error, loading } = useQuery<
     IGetBalanceOutput,
     IGetBalanceInput
@@ -33,7 +41,42 @@ const Accounts: FC = () => {
       id: companyId,
     },
   });
-  const { t } = useTranslation('accounts');
+  const [deleteMutation, { loading: deleteLoading }] = useMutation<
+    IDeleteTransactionOutput,
+    IDeleteTransactionInput
+  >(DELETE_TRANSACTION, {
+    awaitRefetchQueries: true,
+    onCompleted: () => {
+      add({
+        colour: 'success',
+        message: t('delete-transaction.success'),
+      });
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('delete-transaction.error'),
+      });
+    },
+    refetchQueries: () => [
+      {
+        query: GET_BALANCE,
+        variables: {
+          id: companyId,
+        },
+      },
+    ],
+  });
+  const onDelete = (id: string) => {
+    (async () => {
+      await deleteMutation({
+        update: updateCache,
+        variables: {
+          id,
+        },
+      });
+    })();
+  };
 
   return (
     <Connected error={error} loading={loading}>
@@ -141,6 +184,8 @@ const Accounts: FC = () => {
             <Col>
               <TransactionsList
                 companyId={data.getBalance.id}
+                loading={deleteLoading}
+                onDelete={onDelete}
                 transactions={data.getBalance.transactions}
               />
             </Col>
