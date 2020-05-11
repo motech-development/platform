@@ -298,7 +298,7 @@ describe('ViewTransaction', () => {
               },
               getTransaction: {
                 amount: 999.99,
-                category: 'Sale',
+                category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
                 description: 'Invoice #1',
@@ -316,7 +316,7 @@ describe('ViewTransaction', () => {
             variables: {
               input: {
                 amount: 999.99,
-                category: 'Sale',
+                category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
                 description: 'Invoice #1',
@@ -331,7 +331,7 @@ describe('ViewTransaction', () => {
             data: {
               updateTransaction: {
                 amount: 999.99,
-                category: 'Sale',
+                category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
                 description: 'Invoice #1',

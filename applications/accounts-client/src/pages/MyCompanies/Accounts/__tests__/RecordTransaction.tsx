@@ -468,7 +468,7 @@ describe('RecordTransaction', () => {
             variables: {
               input: {
                 amount: 999.99,
-                category: 'Sale',
+                category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
                 description: 'Invoice #1',
@@ -484,7 +484,7 @@ describe('RecordTransaction', () => {
               addTransaction: {
                 __typename: 'Transaction',
                 amount: 999.99,
-                category: 'Sale',
+                category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
                 description: 'Invoice #1',

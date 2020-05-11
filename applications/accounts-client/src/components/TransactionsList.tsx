@@ -8,7 +8,7 @@ import {
   TableRow,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, Fragment, memo, useState } from 'react';
+import React, { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Currency from './Currency';
 import DeleteItem from './DeleteItem';
@@ -38,36 +38,47 @@ const TransactionsList: FC<ITransactionsListProps> = ({
   onDelete,
   transactions,
 }) => {
-  const [transactionId, setTransactionId] = useState('');
+  const [transaction, setTransaction] = useState({
+    id: '',
+    name: '',
+  });
   const { t } = useTranslation('accounts');
-  const launchDeleteModal = (value: string) => {
-    setTransactionId(value);
+  const launchDeleteModal = (id: string, name: string) => {
+    setTransaction({
+      id,
+      name,
+    });
   };
   const onDismiss = () => {
-    setTransactionId('');
+    setTransaction({
+      id: '',
+      name: '',
+    });
   };
+
+  useEffect(onDismiss, [transactions]);
 
   if (transactions.length === 0) {
     return <NoTransactions />;
   }
 
   return (
-    <Table>
-      {transactions.map(({ balance, currency, date, items }) => (
-        <TableBody key={date}>
-          <TableRow colour="primary">
-            <TableCell as="th" colSpan={2}>
-              <DateTime value={date} format="dddd, DD MMMM" />
-            </TableCell>
-            <TableCell as="th" align="right">
-              <Currency currency={currency} value={balance} />
-            </TableCell>
-            <TableCell as="th">{t('transactions-list.actions')}</TableCell>
-          </TableRow>
+    <>
+      <Table>
+        {transactions.map(({ balance, currency, date, items }) => (
+          <TableBody key={date}>
+            <TableRow colour="primary">
+              <TableCell as="th" colSpan={2}>
+                <DateTime value={date} format="dddd, DD MMMM" />
+              </TableCell>
+              <TableCell as="th" align="right">
+                <Currency currency={currency} value={balance} />
+              </TableCell>
+              <TableCell as="th">{t('transactions-list.actions')}</TableCell>
+            </TableRow>
 
-          {items.map(item => (
-            <Fragment key={item.id}>
-              <TableRow>
+            {items.map(item => (
+              <TableRow key={item.id}>
                 <TableCell align="center">
                   <TransactionArrow value={item.amount} />
                 </TableCell>
@@ -96,27 +107,27 @@ const TransactionsList: FC<ITransactionsListProps> = ({
                   <Button
                     colour="danger"
                     size="sm"
-                    onClick={() => launchDeleteModal(item.id)}
+                    onClick={() => launchDeleteModal(item.id, item.name)}
                   >
                     {t('transactions-list.delete')}
                   </Button>
                 </TableCell>
               </TableRow>
+            ))}
+          </TableBody>
+        ))}
+      </Table>
 
-              <DeleteItem
-                title={t('delete-transaction.title')}
-                warning={t('delete-transaction.warning')}
-                display={transactionId === item.id}
-                loading={loading}
-                name={item.name}
-                onDelete={() => onDelete(item.id)}
-                onDismiss={onDismiss}
-              />
-            </Fragment>
-          ))}
-        </TableBody>
-      ))}
-    </Table>
+      <DeleteItem
+        title={t('delete-transaction.title')}
+        warning={t('delete-transaction.warning')}
+        display={!!transaction.id}
+        loading={loading}
+        name={transaction.name}
+        onDelete={() => onDelete(transaction.id)}
+        onDismiss={onDismiss}
+      />
+    </>
   );
 };
 

@@ -69,7 +69,7 @@ const TransactionForm: FC<ITransactionForm> = ({
   vat,
 }) => {
   const isEmpty = initialValues.amount === '';
-  const initialTransaction = initialValues.amount > 0 ? 'Sale' : 'Purchase';
+  const initialTransaction = initialValues.amount > 0 ? 'Sales' : 'Purchase';
   const formValues = {
     ...initialValues,
     amount: initialValues.amount
@@ -135,7 +135,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     },
     {
       name: t('transaction-form.transaction-details.transaction.options.sale'),
-      value: 'Sale',
+      value: 'Sales',
     },
   ];
   const statusOptions = [
@@ -158,7 +158,7 @@ const TransactionForm: FC<ITransactionForm> = ({
 
     setFieldValue('name', '');
 
-    if (event.target.value === 'Sale') {
+    if (event.target.value === 'Sales') {
       setFieldValue('category', event.target.value);
     }
   };
@@ -233,7 +233,7 @@ const TransactionForm: FC<ITransactionForm> = ({
 
             {transactionType && (
               <>
-                {transactionType === 'Sale' ? (
+                {transactionType === 'Sales' ? (
                   <Select
                     label={t('transaction-form.transaction-details.name.label')}
                     name="name"

@@ -35,7 +35,10 @@ interface IPendingTransactionParams {
 }
 
 const PendingTransaction: FC = () => {
-  const [transactionId, setTransactionId] = useState('');
+  const [transaction, setTransaction] = useState({
+    id: '',
+    name: '',
+  });
   const { t } = useTranslation('accounts');
   const { companyId } = useParams<IPendingTransactionParams>();
   const { add } = useToast();
@@ -67,11 +70,17 @@ const PendingTransaction: FC = () => {
       });
     },
   });
-  const launchDeleteModal = (value: string) => {
-    setTransactionId(value);
+  const launchDeleteModal = (id: string, name: string) => {
+    setTransaction({
+      id,
+      name,
+    });
   };
   const onDismiss = () => {
-    setTransactionId('');
+    setTransaction({
+      id: '',
+      name: '',
+    });
   };
   const onDelete = (id: string) => {
     (async () => {
@@ -150,21 +159,11 @@ const PendingTransaction: FC = () => {
                       <Button
                         colour="danger"
                         size="sm"
-                        onClick={() => launchDeleteModal(id)}
+                        onClick={() => launchDeleteModal(id, name)}
                       >
                         {t('pending-transactions.transactions.delete')}
                       </Button>
                     </TableCell>
-
-                    <DeleteItem
-                      title={t('delete-transaction.title')}
-                      warning={t('delete-transaction.warning')}
-                      display={transactionId === id}
-                      loading={deleteLoading}
-                      name={name}
-                      onDelete={() => onDelete(id)}
-                      onDismiss={onDismiss}
-                    />
                   </>
                 )}
                 noResults={<NoTransactions />}
@@ -182,6 +181,16 @@ const PendingTransaction: FC = () => {
               </LinkButton>
             </Col>
           </Row>
+
+          <DeleteItem
+            title={t('delete-transaction.title')}
+            warning={t('delete-transaction.warning')}
+            display={!!transaction.id}
+            loading={deleteLoading}
+            name={transaction.name}
+            onDelete={() => onDelete(transaction.id)}
+            onDismiss={onDismiss}
+          />
         </>
       )}
     </Connected>
