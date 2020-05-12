@@ -2,13 +2,13 @@ import React, { FC, memo } from 'react';
 import styled from 'styled-components';
 
 interface ICircle {
-  colour: 'default' | 'secondary';
+  $colour: 'default' | 'secondary';
 }
 
 const Circle = styled.circle<ICircle>`
-  ${({ colour }) => `
+  ${({ $colour }) => `
     animation: dash 1.5s ease-in-out infinite;
-    stroke: ${colour === 'default' ? '#2e9dc8' : '#fff'};;
+    stroke: ${$colour === 'default' ? '#2e9dc8' : '#fff'};;
     stroke-linecap: round;
 
     @keyframes dash {
@@ -52,7 +52,7 @@ export interface ILoaderProps {
 const Loader: FC<ILoaderProps> = ({ colour = 'default', className = '' }) => (
   <BaseLoader className={className} viewBox="0 0 50 50">
     <Circle
-      colour={colour}
+      $colour={colour}
       cx="25"
       cy="25"
       r="20"

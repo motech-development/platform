@@ -17,15 +17,15 @@ import Label from '../Label/Label';
 export type InputSpacing = 'sm' | 'md' | 'lg';
 
 interface IBaseTextBox {
-  active: boolean;
+  $active: boolean;
 }
 
 const BaseTextBox = styled.input<IBaseTextBox>`
-  ${({ active }) => `
+  ${({ $active }) => `
     background: #fff;
     border: none;
-    color: ${active ? '#333' : '#fff'};
-    cursor: ${active ? 'text' : 'pointer'};
+    color: ${$active ? '#333' : '#fff'};
+    cursor: ${$active ? 'text' : 'pointer'};
     font-size: 16px;
     outline: 0;
     padding: 16px 0 10px;
@@ -36,15 +36,15 @@ const BaseTextBox = styled.input<IBaseTextBox>`
     }
 
     ::placeholder {
-      color: ${active ? '#aaa' : '#fff'};
+      color: ${$active ? '#aaa' : '#fff'};
     }
 
     :-ms-input-placeholder {
-      color: ${active ? '#aaa' : '#fff'};
+      color: ${$active ? '#aaa' : '#fff'};
     }
 
     ::-ms-input-placeholder {
-      color: ${active ? '#aaa' : '#fff'};
+      color: ${$active ? '#aaa' : '#fff'};
     }
 
     ::-webkit-outer-spin-button,
@@ -67,7 +67,7 @@ interface IInput extends InputHTMLAttributes<HTMLInputElement> {
 
 const Input: FC<IInput> = ({ active, describedBy, errors, ...rest }) => (
   <BaseTextBox
-    active={active}
+    $active={active}
     aria-describedby={errors ? describedBy : undefined}
     // eslint-disable-next-line react/jsx-props-no-spreading
     {...rest}

@@ -19,14 +19,14 @@ const cardTheme = {
 type CardPadding = keyof typeof cardTheme;
 
 interface IBaseCard {
-  padding: CardPadding;
+  $padding: CardPadding;
 }
 
 const BaseCard = styled.div<IBaseCard>`
-  ${({ theme, padding }) => `
+  ${({ $padding, theme }) => `
     background: #f8f8f8;
     color: #000;
-    padding: ${theme[padding].padding}
+    padding: ${theme[$padding].padding}
   `}
 `;
 
@@ -37,7 +37,7 @@ export interface ICardProps {
 
 const Card: FC<ICardProps> = ({ children, padding = 'md' }) => (
   <ThemeProvider theme={cardTheme}>
-    <BaseCard padding={padding}>{children}</BaseCard>
+    <BaseCard $padding={padding}>{children}</BaseCard>
   </ThemeProvider>
 );
 

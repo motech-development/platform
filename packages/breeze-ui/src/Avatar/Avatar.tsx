@@ -2,26 +2,26 @@ import React, { FC, memo } from 'react';
 import styled from 'styled-components';
 
 interface IImageProps {
-  internalWidth: number;
+  $width: number;
 }
 
 const Image = styled.img<IImageProps>`
-  ${({ internalWidth }) => `
+  ${({ $width }) => `
     display: block;
-    width: ${internalWidth ? `${internalWidth}px` : 'auto'};
+    width: ${$width ? `${$width}px` : 'auto'};
   `}
 `;
 
 interface IWrapperProps {
-  internalWidth: number;
+  $width: number;
 }
 
 const Wrapper = styled.div<IWrapperProps>`
-  ${({ internalWidth }) => `
+  ${({ $width }) => `
     border-radius: 50%;
     display: inline-block;
     overflow: hidden;
-    width: ${internalWidth ? `${internalWidth}px` : 'auto'};
+    width: ${$width ? `${$width}px` : 'auto'};
   `}
 `;
 
@@ -32,8 +32,8 @@ export interface IAvatarProps {
 }
 
 const Avatar: FC<IAvatarProps> = ({ alt, src, width = 0 }) => (
-  <Wrapper internalWidth={width}>
-    <Image alt={alt} src={src} internalWidth={width} />
+  <Wrapper $width={width}>
+    <Image alt={alt} src={src} $width={width} />
   </Wrapper>
 );
 

@@ -7,12 +7,14 @@ const helpTextSpacing = {
   sm: '5px',
 };
 
-interface IHelpText {
+export interface IHelpTextProps {
   error: boolean;
   spacing: keyof typeof helpTextSpacing;
 }
 
-const HelpText = styled.p<IHelpText>`
+const HelpText = styled('p').withConfig({
+  shouldForwardProp: prop => !['error', 'spacing'].includes(prop),
+})<IHelpTextProps>`
   ${({ error, spacing }) => `
     color: ${error ? 'rgb(199,56,79)' : '#999'};
     font-size: 0.75rem;

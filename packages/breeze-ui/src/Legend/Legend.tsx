@@ -5,7 +5,9 @@ export interface ILegendProps {
   error: boolean;
 }
 
-const Legend = styled.legend<ILegendProps>`
+const Legend = styled('legend').withConfig({
+  shouldForwardProp: prop => !['error'].includes(prop),
+})<ILegendProps>`
   ${({ error }) => `
     color: ${error ? 'rgb(199,56,79)' : '#2e9dc8'};
     font-size: 16px;

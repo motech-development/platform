@@ -27,17 +27,17 @@ const alertTheme = {
 export type AlertTheme = keyof typeof alertTheme;
 
 interface IBaseAlert {
-  colour: AlertTheme;
-  icon: boolean;
-  spacing: AlertSpacing;
+  $colour: AlertTheme;
+  $icon: boolean;
+  $spacing: AlertSpacing;
 }
 
 const BaseAlert = styled.div<IBaseAlert>`
-  ${({ colour, icon, spacing, theme }) => `
-    background-color: ${theme[colour].background};
-    color: ${theme[colour].colour};
+  ${({ $colour, $icon, $spacing, theme }) => `
+    background-color: ${theme[$colour].background};
+    color: ${theme[$colour].colour};
     margin-bottom: ${(() => {
-      switch (spacing) {
+      switch ($spacing) {
         case 'lg':
           return '20px';
         case 'md':
@@ -46,7 +46,7 @@ const BaseAlert = styled.div<IBaseAlert>`
           return '5px';
       }
     })()};
-    padding: 12px 56px 12px ${icon ? '56px' : '20px'};
+    padding: 12px 56px 12px ${$icon ? '56px' : '20px'};
     position: relative;
   `}
 `;
@@ -58,15 +58,15 @@ const AlertIconWrapper = styled.div`
 `;
 
 interface IAlertDismissButton {
-  colour: AlertTheme;
+  $colour: AlertTheme;
 }
 
 const AlertDismissButton = styled.button<IAlertDismissButton>`
-  ${({ colour, theme }) => `
+  ${({ $colour, theme }) => `
     appearance: none;
-    background-color: ${theme[colour].background};
+    background-color: ${theme[$colour].background};
     border: 0;
-    color: ${theme[colour].colour};
+    color: ${theme[$colour].colour};
     cursor: pointer;
     font-size: inherit;
     margin: 0;
@@ -128,7 +128,12 @@ const Alert: FC<IAlertProps> = ({
   if (visible) {
     return (
       <ThemeProvider theme={alertTheme}>
-        <BaseAlert role="alert" colour={colour} icon={!!icon} spacing={spacing}>
+        <BaseAlert
+          role="alert"
+          $colour={colour}
+          $icon={!!icon}
+          $spacing={spacing}
+        >
           {icon && <AlertIconWrapper>{icon}</AlertIconWrapper>}
 
           {message}
@@ -137,7 +142,7 @@ const Alert: FC<IAlertProps> = ({
             <AlertDismissButton
               type="button"
               aria-label="Dismiss"
-              colour={colour}
+              $colour={colour}
               onClick={dismiss}
             >
               <FontAwesomeIcon icon={faTimes} />

@@ -27,7 +27,9 @@ export interface IBaseButtonProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-const BaseButton = styled.button<IBaseButtonProps>`
+const BaseButton = styled('button').withConfig({
+  shouldForwardProp: prop => !['block', 'colour', 'size'].includes(prop),
+})<IBaseButtonProps>`
   ${({ block = false, colour = 'primary', size = 'md', theme }) => `
     appearance: none;
     background-color: ${theme[colour].background};

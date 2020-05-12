@@ -25,24 +25,24 @@ const loaderSizes = {
 };
 
 interface IButtonLoaderProps extends ILoaderProps {
-  size: keyof typeof loaderSizes;
+  $size: keyof typeof loaderSizes;
 }
 
 const ButtonLoader = styled(Loader)<IButtonLoaderProps>`
-  ${({ size }) => `
-    height: ${loaderSizes[size].height};
-    margin: ${loaderSizes[size].margin};
-    width: ${loaderSizes[size].width};
+  ${({ $size }) => `
+    height: ${loaderSizes[$size].height};
+    margin: ${loaderSizes[$size].margin};
+    width: ${loaderSizes[$size].width};
   `}
 `;
 
 interface IButtonContainerProps {
-  isLoading: boolean;
+  $isLoading: boolean;
 }
 
 const ButtonContainer = styled.span<IButtonContainerProps>`
-  ${({ isLoading }) => `
-    visibility: ${isLoading ? 'hidden' : 'visible'};
+  ${({ $isLoading }) => `
+    visibility: ${$isLoading ? 'hidden' : 'visible'};
   `}
 `;
 
@@ -78,9 +78,9 @@ const Button: FC<IButtonProps> = ({
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...rest}
       >
-        {loading && <ButtonLoader colour={loadingColour} size={size} />}
+        {loading && <ButtonLoader colour={loadingColour} $size={size} />}
 
-        <ButtonContainer isLoading={loading}>{children}</ButtonContainer>
+        <ButtonContainer $isLoading={loading}>{children}</ButtonContainer>
       </BaseButton>
     </ThemeProvider>
   );

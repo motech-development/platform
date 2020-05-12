@@ -2,37 +2,39 @@ import React, { FC, memo, ReactNode } from 'react';
 import styled from 'styled-components';
 
 interface IColContainer {
-  align: 'centre' | 'left' | 'right';
-  lg: number;
-  lgOffset: number;
-  md: number;
-  mdOffset: number;
-  sm: number;
-  smOffset: number;
-  verticalAlign: boolean;
-  xs: number;
-  xsOffset: number;
+  $align: 'centre' | 'left' | 'right';
+  $lg: number;
+  $lgOffset: number;
+  $md: number;
+  $mdOffset: number;
+  $sm: number;
+  $smOffset: number;
+  $verticalAlign: boolean;
+  $xs: number;
+  $xsOffset: number;
 }
 
 const ColContainer = styled.div<IColContainer>`
   ${({
-    align,
-    lg,
-    lgOffset,
-    md,
-    mdOffset,
-    sm,
-    smOffset,
-    verticalAlign,
-    xs,
-    xsOffset,
+    $align,
+    $lg,
+    $lgOffset,
+    $md,
+    $mdOffset,
+    $sm,
+    $smOffset,
+    $verticalAlign,
+    $xs,
+    $xsOffset,
   }) => `
-    grid-column: ${xsOffset > 0 ? `${xsOffset} / span ${xs}` : `span ${xs}`};
+    grid-column: ${
+      $xsOffset > 0 ? `${$xsOffset} / span ${$xs}` : `span ${$xs}`
+    };
     position: relative;
-    text-align ${align === 'centre' ? 'center' : align};
+    text-align ${$align === 'centre' ? 'center' : $align};
 
     ${
-      verticalAlign
+      $verticalAlign
         ? `
       align-items: center;
       display: flex;
@@ -41,11 +43,11 @@ const ColContainer = styled.div<IColContainer>`
     }
 
     ${
-      sm
+      $sm
         ? `
       @media (min-width: 576px) {
         grid-column: ${
-          smOffset > 0 ? `${smOffset} / span ${sm}` : `span ${sm}`
+          $smOffset > 0 ? `${$smOffset} / span ${$sm}` : `span ${$sm}`
         };
       }
     `
@@ -53,11 +55,11 @@ const ColContainer = styled.div<IColContainer>`
     }
 
     ${
-      md
+      $md
         ? `
       @media (min-width: 768px) {
         grid-column: ${
-          mdOffset > 0 ? `${mdOffset} / span ${md}` : `span ${md}`
+          $mdOffset > 0 ? `${$mdOffset} / span ${$md}` : `span ${$md}`
         };
       }
     `
@@ -65,11 +67,11 @@ const ColContainer = styled.div<IColContainer>`
     }
 
     ${
-      lg
+      $lg
         ? `
       @media (min-width: 992px) {
         grid-column: ${
-          lgOffset > 0 ? `${lgOffset} / span ${lg}` : `span ${lg}`
+          $lgOffset > 0 ? `${$lgOffset} / span ${$lg}` : `span ${$lg}`
         };
       }
     `
@@ -110,16 +112,16 @@ const Col: FC<IColProps> = ({
   xsOffset = 0,
 }) => (
   <ColContainer
-    align={align}
-    lg={lg}
-    lgOffset={lgOffset}
-    md={md}
-    mdOffset={mdOffset}
-    sm={sm}
-    smOffset={smOffset}
-    verticalAlign={!!verticalAlign}
-    xs={xs}
-    xsOffset={xsOffset}
+    $align={align}
+    $lg={lg}
+    $lgOffset={lgOffset}
+    $md={md}
+    $mdOffset={mdOffset}
+    $sm={sm}
+    $smOffset={smOffset}
+    $verticalAlign={!!verticalAlign}
+    $xs={xs}
+    $xsOffset={xsOffset}
   >
     {verticalAlign ? (
       <VericalAlignWrapper>{children}</VericalAlignWrapper>
