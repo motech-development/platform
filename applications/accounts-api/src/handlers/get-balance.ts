@@ -20,7 +20,7 @@ const getBalance = async (event: IEvent) => {
   }
 
   // TODO: Find a better solution than having an artificial delay
-  await delay(1000);
+  await delay(1250);
 
   const { id, owner } = event;
 
@@ -63,6 +63,7 @@ const getBalance = async (event: IEvent) => {
 
   const result = transformBalance(balanceResult, transactionsResult);
 
+  // TODO: Return nothing if you are not the owner
   return result;
 };
 
