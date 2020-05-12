@@ -6,7 +6,9 @@ export interface ILabelProps {
   error: boolean;
 }
 
-const Label = styled.label<ILabelProps>`
+const Label = styled('label').withConfig({
+  shouldForwardProp: prop => !['active', 'error'].includes(prop),
+})<ILabelProps>`
   ${({ active, error }) => `
     color: ${(() => {
       if (error) {

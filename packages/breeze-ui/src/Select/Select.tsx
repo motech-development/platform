@@ -23,16 +23,16 @@ export interface ISelectOption {
 }
 
 interface IBaseSelectInput {
-  active: boolean;
-  readOnly: boolean;
+  $active: boolean;
+  $readOnly: boolean;
 }
 
 const BaseSelectInput = styled.select<IBaseSelectInput>`
-  ${({ active, readOnly }) => `
+  ${({ $active, $readOnly }) => `
     appearance: none;
     background: #fff;
     border: none;
-    color: ${active ? '#333' : '#fff'};
+    color: ${$active ? '#333' : '#fff'};
     cursor: pointer;
     font-size: 16px;
     outline: 0;
@@ -40,15 +40,15 @@ const BaseSelectInput = styled.select<IBaseSelectInput>`
     width: 100%;
 
     ${
-      readOnly
+      $readOnly
         ? `
       :disabled {
-        color: ${active ? '#333' : '#fff'};
+        color: ${$active ? '#333' : '#fff'};
       }
     `
         : `
       :disabled {
-        color: ${active ? '#aaa' : '#fff'};
+        color: ${$active ? '#aaa' : '#fff'};
       }
     `
     }
@@ -70,9 +70,9 @@ const SelectInput: FC<ISelectInput> = ({
   ...rest
 }) => (
   <BaseSelectInput
-    active={active}
+    $active={active}
+    $readOnly={readOnly}
     aria-describedby={errors ? describedBy : undefined}
-    readOnly={readOnly}
     // eslint-disable-next-line react/jsx-props-no-spreading
     {...rest}
   />

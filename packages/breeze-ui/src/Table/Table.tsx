@@ -11,14 +11,14 @@ const Wrapper = styled.div`
 `;
 
 interface IBaseTable {
-  fixed: boolean;
+  $fixed: boolean;
 }
 
 const BaseTable = styled.table<IBaseTable>`
-  ${({ fixed }) => `
+  ${({ $fixed }) => `
     background-color: #fff;
     max-width: 100%;
-    table-layout: ${fixed ? 'fixed' : 'auto'};
+    table-layout: ${$fixed ? 'fixed' : 'auto'};
     width: 100%;
   `}
 `;
@@ -31,7 +31,7 @@ export interface ITableProps extends HTMLAttributes<HTMLTableElement> {
 const Table: FC<ITableProps> = ({ children, fixed = false, ...rest }) => (
   <Wrapper>
     {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-    <BaseTable fixed={fixed} {...rest}>
+    <BaseTable $fixed={fixed} {...rest}>
       {children}
     </BaseTable>
   </Wrapper>

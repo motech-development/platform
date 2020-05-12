@@ -18,15 +18,15 @@ const inputWrapperTheme = {
 };
 
 interface IBaseInputWrapper {
-  error: boolean;
-  spacing: keyof typeof inputWrapperTheme;
+  $error: boolean;
+  $spacing: keyof typeof inputWrapperTheme;
 }
 
 const BaseInputWrapper = styled.div<IBaseInputWrapper>`
-  ${({ error, theme, spacing }) => `
+  ${({ theme, $error, $spacing }) => `
     background: #fff;
-    border-bottom: 2px solid ${error ? 'rgb(199,56,79)' : '#eee'};
-    margin-bottom: ${theme[spacing].spacing};
+    border-bottom: 2px solid ${$error ? 'rgb(199,56,79)' : '#eee'};
+    margin-bottom: ${theme[$spacing].spacing};
     padding: 0 38px 0 8px;
     position: relative;
   `}
@@ -53,7 +53,7 @@ const InputWrapper: FC<IInputWrapperProps> = ({
 
   return (
     <ThemeProvider theme={inputWrapperTheme}>
-      <BaseInputWrapper error={error} spacing={helpText ? 'md' : spacing}>
+      <BaseInputWrapper $error={error} $spacing={helpText ? 'md' : spacing}>
         {children}
 
         <ValidatorWrapper>

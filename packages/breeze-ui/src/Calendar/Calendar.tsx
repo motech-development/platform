@@ -31,12 +31,12 @@ const Title = styled(Typography)`
 `;
 
 interface ICalendarButton {
-  fixed?: boolean;
+  $fixed?: boolean;
 }
 
 const CalendarButton = styled(Button)<ICalendarButton>`
-  ${({ fixed = false }) => `
-    ${fixed ? 'width' : 'min-width'}: 40px;
+  ${({ $fixed = false }) => `
+    ${$fixed ? 'width' : 'min-width'}: 40px;
     padding: 0;
   `}
 `;
@@ -185,8 +185,8 @@ const Calendar: FC<ICalendarProps> = ({
     <>
       <Toolbar>
         <CalendarButton
+          $fixed
           block
-          fixed
           aria-label="Previous year"
           onClick={() => previous('year')}
         >
@@ -194,8 +194,8 @@ const Calendar: FC<ICalendarProps> = ({
         </CalendarButton>
 
         <CalendarButton
+          $fixed
           block
-          fixed
           aria-label="Previous month"
           onClick={() => previous('month')}
         >
@@ -213,8 +213,8 @@ const Calendar: FC<ICalendarProps> = ({
         </Title>
 
         <CalendarButton
+          $fixed
           block
-          fixed
           aria-label="Next month"
           onClick={() => next('month')}
         >
@@ -222,8 +222,8 @@ const Calendar: FC<ICalendarProps> = ({
         </CalendarButton>
 
         <CalendarButton
+          $fixed
           block
-          fixed
           aria-label="Next year"
           onClick={() => next('year')}
         >

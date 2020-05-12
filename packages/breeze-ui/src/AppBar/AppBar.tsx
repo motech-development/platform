@@ -10,14 +10,14 @@ const AppBarInner = styled.div`
 `;
 
 interface IAppBarToolbarBase {
-  colour: keyof typeof appBarTheme;
+  $colour: keyof typeof appBarTheme;
 }
 
 const AppBarToolbar = styled.header<IAppBarToolbarBase>`
-  ${({ colour, theme }) => `
-    background-color: ${theme[colour].background};
+  ${({ $colour, theme }) => `
+    background-color: ${theme[$colour].background};
     box-sizing: border-box;
-    color: ${theme[colour].colour};
+    color: ${theme[$colour].colour};
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -62,7 +62,7 @@ const AppBar: FC<IAppBarProps> = ({
 }) => (
   <ThemeProvider theme={appBarTheme}>
     <AppBarBase>
-      <AppBarToolbar as={element} colour={colour}>
+      <AppBarToolbar as={element} $colour={colour}>
         <AppBarInner>{children}</AppBarInner>
       </AppBarToolbar>
     </AppBarBase>

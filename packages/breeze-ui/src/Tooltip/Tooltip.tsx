@@ -38,21 +38,21 @@ type TooltipPlacement =
   | 'left-start';
 
 interface ITooltipPlacement {
-  colour: keyof typeof tooltipTheme;
-  placement: TooltipPlacement;
+  $colour: keyof typeof tooltipTheme;
+  $placement: TooltipPlacement;
 }
 
 const TooltipArrow = styled.div<ITooltipPlacement>`
-  ${({ colour, placement, theme }) => `
+  ${({ $colour, $placement, theme }) => `
     height: 0;
     position: absolute;
     width: 0;
 
     ${(() => {
-      switch (placement) {
+      switch ($placement) {
         case 'bottom':
           return `
-            border-bottom: 5px solid ${theme[colour].background};
+            border-bottom: 5px solid ${theme[$colour].background};
             border-left: 5px solid transparent;
             border-right: 5px solid transparent;
             top: -5px;
@@ -60,14 +60,14 @@ const TooltipArrow = styled.div<ITooltipPlacement>`
         case 'left':
           return `
             border-bottom: 5px solid transparent;
-            border-left: 5px solid ${theme[colour].background};
+            border-left: 5px solid ${theme[$colour].background};
             border-top: 5px solid transparent;
             right: -5px;
           `;
         case 'right':
           return `
             border-bottom: 5px solid transparent;
-            border-right: 5px solid ${theme[colour].background};
+            border-right: 5px solid ${theme[$colour].background};
             border-top: 5px solid transparent;
             left: -5px;
           `;
@@ -75,7 +75,7 @@ const TooltipArrow = styled.div<ITooltipPlacement>`
           return `
             border-left: 5px solid transparent;
             border-right: 5px solid transparent;
-            border-top: 5px solid ${theme[colour].background};
+            border-top: 5px solid ${theme[$colour].background};
             bottom: -5px;
           `;
         default:
@@ -91,17 +91,17 @@ const TooltipWrapper = styled.div`
 `;
 
 interface ITooltipContent extends ITooltipPlacement {
-  visible: boolean;
+  $visible: boolean;
 }
 
 const TooltipContent = styled.div<ITooltipContent>`
-  ${({ colour, theme, visible }) => `
-    background-color: ${theme[colour].background};
-    color: ${theme[colour].colour};
+  ${({ $colour, $visible, theme }) => `
+    background-color: ${theme[$colour].background};
+    color: ${theme[$colour].colour};
     font-size: 14px;
     line-height: 22px;
     padding: 0 5px;
-    visibility: ${visible ? 'visible' : 'hidden'};
+    visibility: ${$visible ? 'visible' : 'hidden'};
   `}
 `;
 
@@ -178,20 +178,20 @@ const Tooltip: FC<ITooltipProps> = ({
 
             return (
               <TooltipContent
+                $placement={placementToUse}
+                $visible={visible}
                 id={id}
                 role="tooltip"
-                visible={visible}
                 ref={ref}
-                colour={colour}
+                $colour={colour}
                 style={style}
-                placement={placementToUse}
               >
                 {message}
                 <TooltipArrow
+                  $placement={placementToUse}
                   ref={arrowProps.ref}
-                  colour={colour}
+                  $colour={colour}
                   style={arrowProps.style}
-                  placement={placementToUse}
                 />
               </TooltipContent>
             );

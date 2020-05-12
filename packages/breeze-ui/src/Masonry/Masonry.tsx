@@ -5,12 +5,12 @@ import Col from '../Col/Col';
 import Row from '../Row/Row';
 
 interface IMasonryItemContainerProps {
-  gutter: string;
+  $gutter: string;
 }
 
 const MasonryItem = styled.div<IMasonryItemContainerProps>`
-  ${({ gutter }) => `
-    margin-bottom: ${gutter};
+  ${({ $gutter }) => `
+    margin-bottom: ${$gutter};
   `}
 `;
 
@@ -74,7 +74,7 @@ const Masonry: FC<IMasonryProps> = ({
 
     cols[colIndex].push(
       // eslint-disable-next-line react/no-array-index-key
-      <MasonryItem key={i} gutter={gutter}>
+      <MasonryItem key={i} $gutter={gutter}>
         {child}
       </MasonryItem>,
     );

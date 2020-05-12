@@ -35,14 +35,14 @@ const IconButton = styled.button`
 `;
 
 interface ILikeInput {
-  disabled: boolean;
+  $disabled: boolean;
 }
 
 const LikeInput = styled.div<ILikeInput>`
-  ${({ disabled }) => `
+  ${({ $disabled }) => `
     background: #fff;
     border: none;
-    color: ${disabled ? '#aaa' : '#333'};
+    color: ${$disabled ? '#aaa' : '#333'};
     font-size: 16px;
     outline: 0;
     padding: 16px 0 10px;
@@ -139,7 +139,7 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
 
         <LikeInput
           aria-describedby={error ? describedBy : undefined}
-          disabled={disabled}
+          $disabled={disabled}
         >
           <DateTime value={value} />
         </LikeInput>

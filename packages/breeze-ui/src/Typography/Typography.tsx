@@ -4,18 +4,18 @@ import styled from 'styled-components';
 type TypographyVariants = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
 
 interface IBaseTypographyProps {
-  align: 'left' | 'right' | 'center';
-  margin: keyof typeof margins;
-  variant: TypographyVariants | 'lead';
+  $align: 'left' | 'right' | 'center';
+  $margin: keyof typeof margins;
+  $variant: TypographyVariants | 'lead';
 }
 
 const BaseTypography = styled.p<IBaseTypographyProps>`
-  ${({ align, margin, variant }) => `
-    text-align: ${align};
-    margin: ${margins[margin] ? `0 0 ${margins[margin]}rem` : '0'};
+  ${({ $align, $margin, $variant }) => `
+    text-align: ${$align};
+    margin: ${margins[$margin] ? `0 0 ${margins[$margin]}rem` : '0'};
 
     ${(() => {
-      switch (variant) {
+      switch ($variant) {
         case 'p':
           return `
             color: inherit;
@@ -32,7 +32,7 @@ const BaseTypography = styled.p<IBaseTypographyProps>`
             color: inherit;
             font-family: 'Cabin', sans-serif;
             font-size: ${(() => {
-              switch (variant) {
+              switch ($variant) {
                 case 'h6':
                   return '1rem';
                 case 'h5':
@@ -63,14 +63,14 @@ const margins = {
 };
 
 interface ILineProps {
-  margin: keyof typeof margins;
+  $margin: keyof typeof margins;
 }
 
 const Line = styled.hr<ILineProps>`
-  ${({ margin }) => `
+  ${({ $margin }) => `
     border: 0;
     border-top: 2.5px solid #2e9dc8;
-    margin: ${margins[margin] ? `${margins[margin]}rem 0` : '0'};
+    margin: ${margins[$margin] ? `${margins[$margin]}rem 0` : '0'};
     padding: 0;
 
   `}
@@ -101,15 +101,15 @@ const Typography: FC<ITypographyProps> = ({
     <BaseTypography
       id={id}
       as={component}
-      align={align}
       className={className}
-      margin={margin}
-      variant={variant}
+      $align={align}
+      $margin={margin}
+      $variant={variant}
     >
       {children}
     </BaseTypography>
 
-    {rule && <Line margin={margin} />}
+    {rule && <Line $margin={margin} />}
   </>
 );
 
