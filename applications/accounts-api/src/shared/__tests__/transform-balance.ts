@@ -13,6 +13,7 @@ describe('transform-balance', () => {
       currency: 'GBP',
       id: 'company-id',
       items: {},
+      owner: 'owner',
       vat: {
         owed: 0,
         paid: 0,
@@ -30,6 +31,7 @@ describe('transform-balance', () => {
       currency: 'GBP',
       id: 'company-id',
       items: {},
+      owner: 'owner',
       vat: {
         owed: 0,
         paid: 0,
@@ -41,6 +43,7 @@ describe('transform-balance', () => {
       balance: 0,
       currency: 'GBP',
       id: 'company-id',
+      owner: 'owner',
       transactions: [],
       vat: {
         owed: 0,
@@ -60,6 +63,7 @@ describe('transform-balance', () => {
         '2019-12-15T00:00:00.000Z': -349,
         '2019-12-31T00:00:00.000Z': 2960.91,
       },
+      owner: 'owner',
       vat: {
         owed: 493.48,
         paid: 98.54,
@@ -116,6 +120,7 @@ describe('transform-balance', () => {
       balance: 2419.71,
       currency: 'GBP',
       id: 'company-id',
+      owner: 'owner',
       transactions: [
         {
           balance: 2419.71,
