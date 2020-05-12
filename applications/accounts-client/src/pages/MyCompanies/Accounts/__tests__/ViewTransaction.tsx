@@ -103,6 +103,7 @@ describe('ViewTransaction', () => {
                     vatRate: 20,
                   },
                 ],
+                id: 'company-id',
                 vat: {
                   pay: 20,
                 },
@@ -417,6 +418,7 @@ describe('ViewTransaction', () => {
                     vatRate: 20,
                   },
                 ],
+                id: 'company-id',
                 vat: {
                   pay: 20,
                 },

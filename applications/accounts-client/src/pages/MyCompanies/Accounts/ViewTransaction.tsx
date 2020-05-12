@@ -43,6 +43,7 @@ interface IViewTransactionOutput {
       name: string;
       vatRate: number;
     }[];
+    id: string;
     vat: {
       pay: number;
     };
@@ -73,6 +74,7 @@ export const VIEW_TRANSACTION = gql`
         name
         vatRate
       }
+      id
       vat {
         pay
       }
