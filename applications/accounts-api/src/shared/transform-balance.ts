@@ -14,6 +14,7 @@ export interface IBalanceItem {
   items: {
     [name: string]: number;
   };
+  owner: string;
   vat: {
     owed: number;
     paid: number;
@@ -44,7 +45,7 @@ const transformBalance = (
     throw new Error('No transactions returned');
   }
 
-  const { balance, currency, id, items, vat } = balanceItem;
+  const { balance, currency, id, items, owner, vat } = balanceItem;
   const transactions = Object.keys(items)
     .map(key => ({
       balance: items[key],
@@ -77,6 +78,7 @@ const transformBalance = (
     balance,
     currency,
     id,
+    owner,
     transactions,
     vat,
   };

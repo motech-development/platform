@@ -63,7 +63,6 @@ const getBalance = async (event: IEvent) => {
 
   const result = transformBalance(balanceResult, transactionsResult);
 
-  // TODO: Return nothing if you are not the owner
   return result;
 };
 
