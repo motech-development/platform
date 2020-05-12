@@ -13,6 +13,7 @@ import {
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
+import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import UPDATE_TRANSACTION from '../../../../graphql/transaction/UPDATE_TRANSACTION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import ViewTransaction, { VIEW_TRANSACTION } from '../ViewTransaction';
@@ -153,6 +154,23 @@ describe('ViewTransaction', () => {
             },
           },
         },
+        {
+          request: {
+            query: DELETE_TRANSACTION,
+            variables: {
+              id: 'transaction-id',
+            },
+          },
+          result: {
+            data: {
+              deleteTransaction: {
+                companyId: 'company-id',
+                id: 'transaction-id',
+                status: 'confirmed',
+              },
+            },
+          },
+        },
       ];
 
       await act(async () => {
@@ -211,6 +229,113 @@ describe('ViewTransaction', () => {
       expect(add).toHaveBeenCalledWith({
         colour: 'success',
         message: 'view-transaction.success',
+      });
+    });
+
+    it('should display delete confirmation modal', async () => {
+      const { findByRole, findByText } = component;
+      const button = await findByText('view-transaction.delete-transaction');
+
+      fireEvent.click(button);
+
+      await expect(findByRole('dialog')).resolves.toBeInTheDocument();
+    });
+
+    it('should hide the delete confirmation modal', async () => {
+      const { findAllByRole, findByRole, findByText, queryByRole } = component;
+
+      await act(async () => {
+        await findByText('view-transaction.title');
+
+        const [, , , button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        await findByRole('dialog');
+
+        const [, , , , cancelButton] = await findAllByRole('button');
+
+        fireEvent.click(cancelButton);
+      });
+
+      expect(queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    it('should delete the transaction', async () => {
+      const {
+        findAllByRole,
+        findByLabelText,
+        findByTestId,
+        findByText,
+      } = component;
+
+      await act(async () => {
+        await findByText('view-transaction.title');
+
+        const [, , , button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        const input = await findByLabelText('confirm-delete');
+
+        fireEvent.change(input, {
+          target: {
+            focus: () => {},
+            value: 'Apple',
+          },
+        });
+
+        await wait();
+
+        const [, , , , , deleteButton] = await findAllByRole('button');
+
+        fireEvent.click(deleteButton);
+
+        await apolloWait(0);
+
+        await wait();
+
+        await findByTestId('next-page');
+      });
+
+      expect(history.push).toHaveBeenCalledWith(
+        '/my-companies/accounts/company-id',
+      );
+    });
+
+    it('should display a success toast when deleting a client', async () => {
+      const { findAllByRole, findByLabelText, findByText } = component;
+
+      await act(async () => {
+        await findByText('view-transaction.title');
+
+        const [, , , button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        const input = await findByLabelText('confirm-delete');
+
+        fireEvent.change(input, {
+          target: {
+            focus: () => {},
+            value: 'Apple',
+          },
+        });
+
+        await wait();
+
+        const [, , , , , deleteButton] = await findAllByRole('button');
+
+        fireEvent.click(deleteButton);
+
+        await apolloWait(0);
+
+        await wait();
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'success',
+        message: 'delete-transaction.success',
       });
     });
   });
@@ -343,6 +468,15 @@ describe('ViewTransaction', () => {
             },
           },
         },
+        {
+          error: new Error(),
+          request: {
+            query: DELETE_TRANSACTION,
+            variables: {
+              id: 'transaction-id',
+            },
+          },
+        },
       ];
 
       await act(async () => {
@@ -401,6 +535,42 @@ describe('ViewTransaction', () => {
       expect(add).toHaveBeenCalledWith({
         colour: 'success',
         message: 'view-transaction.success',
+      });
+    });
+
+    it('should display an error toast when deleting a client', async () => {
+      const { findAllByRole, findByLabelText, findByText } = component;
+
+      await act(async () => {
+        await findByText('view-transaction.title');
+
+        const [, , , button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        const input = await findByLabelText('confirm-delete');
+
+        fireEvent.change(input, {
+          target: {
+            focus: () => {},
+            value: 'Motech Development',
+          },
+        });
+
+        await wait();
+
+        const [, , , , , deleteButton] = await findAllByRole('button');
+
+        fireEvent.click(deleteButton);
+
+        await apolloWait(0);
+
+        await wait();
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'danger',
+        message: 'delete-transaction.error',
       });
     });
   });
