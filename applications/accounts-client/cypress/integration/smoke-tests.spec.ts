@@ -811,7 +811,7 @@ describe('Smoke tests', () => {
       });
     });
 
-    describe.skip('Non-VAT registered company', () => {
+    describe('Non-VAT registered company', () => {
       beforeEach(() => {
         cy.get('a:contains("Select company")')
           .eq(0)
