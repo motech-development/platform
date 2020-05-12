@@ -4,6 +4,7 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
 import { randomFillSync } from 'crypto';
+import 'jest-date-mock';
 import 'jest-styled-components';
 
 Object.defineProperty(window, 'matchMedia', {

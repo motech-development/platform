@@ -1,9 +1,9 @@
-import { Field, FieldProps, FormikProps, getIn } from 'formik';
+import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
 import React, {
   ChangeEvent,
   FC,
   FocusEvent,
-  HTMLAttributes,
+  InputHTMLAttributes,
   memo,
   useEffect,
   useState,
@@ -31,6 +31,10 @@ const BaseTextBox = styled.input<IBaseTextBox>`
     padding: 16px 0 10px;
     width: 100%;
 
+    :disabled {
+      color: #aaa;
+    }
+
     ::placeholder {
       color: ${active ? '#aaa' : '#fff'};
     }
@@ -55,7 +59,7 @@ const BaseTextBox = styled.input<IBaseTextBox>`
   `}
 `;
 
-interface IInput extends HTMLAttributes<HTMLInputElement> {
+interface IInput extends InputHTMLAttributes<HTMLInputElement> {
   active: boolean;
   describedBy: string;
   errors: boolean;
@@ -76,7 +80,10 @@ interface IInternalTextBox extends FieldProps {
   format: string;
   helpText: string;
   label: string;
-  onChange(e: ChangeEvent<HTMLInputElement>, form: FormikProps<{}>): void;
+  onChange(
+    e: ChangeEvent<HTMLInputElement>,
+    form: FormikProps<FormikValues>,
+  ): void;
   prefix: string;
   setFocus(focus: boolean): void;
   spacing: InputSpacing;
@@ -135,7 +142,9 @@ const InternalTextBox: FC<IInternalTextBox> = ({
     }
   };
   const doChange = (e: ChangeEvent<HTMLInputElement>) => {
-    handleChange(e);
+    if (!useNumberFormat) {
+      handleChange(e);
+    }
 
     if (onChange) {
       onChange(e, form);
@@ -193,20 +202,26 @@ const InternalTextBox: FC<IInternalTextBox> = ({
 
 export interface ITextBoxProps {
   decimalScale?: number;
+  disabled?: boolean;
   format?: string;
   helpText?: string;
   label: string;
   name: string;
   placeholder?: string;
   prefix?: string;
+  readOnly?: boolean;
   spacing?: InputSpacing;
   suffix?: string;
   type?: 'email' | 'number' | 'password' | 'text';
-  onChange?(e: ChangeEvent<HTMLInputElement>, form: FormikProps<{}>): void;
+  onChange?(
+    e: ChangeEvent<HTMLInputElement>,
+    form: FormikProps<FormikValues>,
+  ): void;
 }
 
 const TextBox: FC<ITextBoxProps> = ({
   decimalScale = undefined,
+  disabled = false,
   format = undefined,
   helpText = null,
   label,
@@ -214,6 +229,7 @@ const TextBox: FC<ITextBoxProps> = ({
   onChange = undefined,
   placeholder = '',
   prefix = undefined,
+  readOnly = false,
   spacing = 'md',
   suffix = undefined,
   type = 'text',
@@ -225,6 +241,7 @@ const TextBox: FC<ITextBoxProps> = ({
       id={name}
       component={InternalTextBox}
       decimalScale={decimalScale}
+      disabled={disabled}
       active={focus}
       format={format}
       helpText={helpText}
@@ -233,6 +250,7 @@ const TextBox: FC<ITextBoxProps> = ({
       onChange={onChange}
       placeholder={placeholder}
       prefix={prefix}
+      readOnly={readOnly}
       setFocus={setFocus}
       suffix={suffix}
       label={label}

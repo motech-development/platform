@@ -34,14 +34,20 @@ const IconButton = styled.button`
   width: 42px;
 `;
 
-const LikeInput = styled.div`
-  background: #fff;
-  border: none;
-  color: #333;
-  font-size: 16px;
-  outline: 0;
-  padding: 16px 0 10px;
-  width: 100%;
+interface ILikeInput {
+  disabled: boolean;
+}
+
+const LikeInput = styled.div<ILikeInput>`
+  ${({ disabled }) => `
+    background: #fff;
+    border: none;
+    color: ${disabled ? '#aaa' : '#333'};
+    font-size: 16px;
+    outline: 0;
+    padding: 16px 0 10px;
+    width: 100%;
+  `}
 `;
 
 const DatePickerWrapper = styled.div`
@@ -53,16 +59,20 @@ const CalendarWrapper = styled.div`
 `;
 
 interface IInnerDatePicker extends FieldProps {
+  disabled: boolean;
   helpText: string;
   label: string;
+  readOnly: boolean;
   spacing: InputSpacing;
 }
 
 const InnerDatePicker: FC<IInnerDatePicker> = ({
+  disabled,
   field,
   form,
   helpText,
   label,
+  readOnly,
   spacing,
 }) => {
   const [
@@ -86,6 +96,7 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
     return value;
   });
   const { errors, setFieldValue } = form;
+  const markAsDisabled = disabled || readOnly;
   const describedBy = `${name}-error`;
   const { formatted } = formatDateTime(value);
   const selectDate = (d: string) => {
@@ -117,15 +128,25 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
           {label}
         </Label>
 
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <input hidden id={name} {...field} />
+        <input
+          hidden
+          id={name}
+          disabled={disabled}
+          readOnly={readOnly}
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...field}
+        />
 
-        <LikeInput aria-describedby={error ? describedBy : undefined}>
+        <LikeInput
+          aria-describedby={error ? describedBy : undefined}
+          disabled={disabled}
+        >
           <DateTime value={value} />
         </LikeInput>
 
         <IconOuter>
           <IconButton
+            disabled={markAsDisabled}
             type="button"
             aria-label={`Choose ${label}, selected date is ${formatted}`}
             onClick={() => setVisible(!visible)}
@@ -150,24 +171,30 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
 };
 
 export interface IDatePicker {
+  disabled?: boolean;
   helpText?: string;
   label: string;
   name: string;
+  readOnly?: boolean;
   spacing?: InputSpacing;
 }
 
 const DatePicker: FC<IDatePicker> = ({
+  disabled = false,
   helpText = null,
   label,
   name,
+  readOnly = false,
   spacing = 'md',
 }) => (
   <Field
     component={InnerDatePicker}
+    disabled={disabled}
     helpText={helpText}
     id={name}
     label={label}
     name={name}
+    readOnly={readOnly}
     spacing={spacing}
   />
 );

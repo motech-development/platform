@@ -10,9 +10,13 @@ type Mutation {
   deleteCompany(id: ID!): Company!
   updateCompany(input: CompanyInput!): Company!
   updateSettings(input: SettingsInput!): Settings!
+  addTransaction(input: TransactionInput!): Transaction!
+  deleteTransaction(id: ID!): Transaction!
+  updateTransaction(input: TransactionInput!): Transaction!
 }
 
 type Query {
+  getBalance(id: ID!): Balance!
   getBanks: Banks!
   getBankAccounts(id: ID!): BankAccounts!
   getBankSettings(id: ID!): BankSettings!
@@ -21,6 +25,13 @@ type Query {
   getCompanies(count: Int, nextToken: String): Companies!
   getCompany(id: ID!): Company!
   getSettings(id: ID!): Settings!
+  getTransaction(id: ID!): Transaction!
+  getTransactions(
+    companyId: ID!
+    status: TransactionStatus!
+    count: Int
+    nextToken: String
+  ): Transactions!
 }
 
 type Subscription {

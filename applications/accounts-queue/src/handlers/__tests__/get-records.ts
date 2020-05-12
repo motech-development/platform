@@ -2,9 +2,9 @@ import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import chunk from '../../shared/chunk';
-import { handler, IEvent } from '../get-clients';
+import { handler, IEvent } from '../get-records';
 
-describe('get-clients', () => {
+describe('get-records', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: IEvent;
@@ -37,6 +37,29 @@ describe('get-clients', () => {
       };
 
       process.env.TABLE = 'app-table';
+    });
+
+    afterEach(() => {
+      process.env = env;
+    });
+
+    it('should throw if no typename set is set', async () => {
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'No typename set',
+      );
+    });
+  });
+
+  describe('with a table and typename set', () => {
+    let env: NodeJS.ProcessEnv;
+
+    beforeEach(() => {
+      env = {
+        ...process.env,
+      };
+
+      process.env.TABLE = 'app-table';
+      process.env.TYPENAME = 'Client';
     });
 
     afterEach(() => {

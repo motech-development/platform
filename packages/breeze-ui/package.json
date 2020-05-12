@@ -62,6 +62,7 @@
       "src/**/*.{ts,tsx}",
       "!src/**/*.stories.{ts,tsx}"
     ],
+    "globalSetup": "<rootDir>/globalSetup.js",
     "moduleDirectories": [
       "../../node_modules",
       "<rootDir>/node_modules"

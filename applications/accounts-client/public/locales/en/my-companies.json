@@ -22,8 +22,6 @@
   "delete-company": {
     "title": "Are you sure you want to delete {{name}}?",
     "warning": "This action cannot be undone.",
-    "delete": "Delete",
-    "cancel": "Cancel",
     "success": "{{name}} has been deleted",
     "error": "Unable to delete company"
   },

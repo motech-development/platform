@@ -2,18 +2,16 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   Button,
   Col,
-  Modal,
   PageTitle,
   Row,
-  Typography,
   useToast,
 } from '@motech-development/breeze-ui';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import ClientForm, { FormSchema } from '../../../components/ClientForm';
-import ConfirmDelete from '../../../components/ConfirmDelete';
 import Connected from '../../../components/Connected';
+import DeleteItem from '../../../components/DeleteItem';
 import DELETE_CLIENT, {
   IDeleteClientInput,
   IDeleteClientOutput,
@@ -148,24 +146,17 @@ const UpdateDetails: FC = () => {
             </Col>
           </Row>
 
-          <Modal isOpen={modal} onDismiss={onDismiss}>
-            <Typography rule component="h3" variant="h3" margin="lg">
-              {t('delete-client.title', {
-                name: data.getClient.name,
-              })}
-            </Typography>
-
-            <Typography component="p" variant="p">
-              {t('delete-client.warning')}
-            </Typography>
-
-            <ConfirmDelete
-              loading={deleteLoading}
-              name={data.getClient.name}
-              onCancel={onDismiss}
-              onDelete={onDelete}
-            />
-          </Modal>
+          <DeleteItem
+            title={t('delete-client.title', {
+              name: data.getClient.name,
+            })}
+            warning={t('delete-client.warning')}
+            display={modal}
+            loading={deleteLoading}
+            name={data.getClient.name}
+            onDelete={onDelete}
+            onDismiss={onDismiss}
+          />
         </>
       )}
     </Connected>

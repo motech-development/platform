@@ -11,7 +11,7 @@ export interface IGetBankAccountsOutput {
         identification: string;
         type: string;
       }[];
-      balance: string;
+      balance: number;
       currency: string;
       id: string;
       type: string;

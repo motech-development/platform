@@ -1,0 +1,12 @@
+#set($args = {})
+#set($input = $args.put("id", $ctx.arguments.id))
+#set($input = $args.put("owner", $ctx.identity.sub))
+
+{
+  "version": "2017-02-28",
+  "operation": "Invoke",
+  "payload": {
+    "field": "getBalance",
+    "args": $utils.toJson($args)
+  }
+}

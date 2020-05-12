@@ -8,8 +8,28 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-data
 
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+
 custom:
   prefix: ${self:service}-${self:provider.stage}
+
+  webpack:
+    includeModules: true
+
+functions:
+  Balance:
+    handler: src/balance.handler
+    role: DataLambdaFunctionRole
+    environment:
+      TABLE: !Ref ApplicationTable
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
 
 resources:
   Resources:
@@ -39,6 +59,48 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
+    DataLambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-data-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-data-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:UpdateItem
+                    - dynamodb:GetRecords
+                    - dynamodb:GetShardIterator
+                    - dynamodb:DescribeStream
+                    - dynamodb:ListStreams
+                  Resource:
+                    - !GetAtt ApplicationTable.Arn
+                    - !Join
+                      - ''
+                      - - !GetAtt ApplicationTable.Arn
+                        - '/stream/*'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
 
   Outputs:
     AccountsApplicationTable:

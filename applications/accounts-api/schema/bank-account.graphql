@@ -5,7 +5,7 @@ type BankAccountIdentification {
 
 type BankAccount {
   accountIdentifications: [BankAccountIdentification]
-  balance: String
+  balance: Float
   currency: String
   id: ID
   type: String

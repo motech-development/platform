@@ -2,6 +2,7 @@ import { ProtectedRoute } from '@motech-development/auth';
 import React, { FC, lazy, memo } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
+const Accounts = lazy(() => import('./Accounts'));
 const AddCompany = lazy(() => import('./AddCompany'));
 const Clients = lazy(() => import('./Clients'));
 const Dashboard = lazy(() => import('./Dashboard'));
@@ -22,6 +23,7 @@ const Routes: FC = () => (
       component={Dashboard}
       path="/my-companies/dashboard/:companyId"
     />
+    <Route component={Accounts} path="/my-companies/accounts/:companyId" />
     <Route component={Clients} path="/my-companies/clients/:companyId" />
     <Route component={Settings} path="/my-companies/settings/:companyId" />
     <ProtectedRoute

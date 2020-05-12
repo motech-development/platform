@@ -13,6 +13,7 @@ package:
 
 plugins:
   - serverless-appsync-plugin
+  - serverless-webpack
   - '@motech-development/serverless-outputs-env'
 
 custom:
@@ -37,6 +38,12 @@ custom:
         loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
         level: ERROR
       mappingTemplates:
+        - dataSource: Lambda
+          type: Query
+          field: getBalance
+          request: balance/getBalance/Query.getBalance.req.vtl
+          response: balance/getBalance/Query.getBalance.res.vtl
+
         - dataSource: OpenBanking
           type: Query
           field: getBanks
@@ -133,6 +140,7 @@ custom:
             - createCompany
             - createSettings
             - createBankSettings
+            - createBalance
           request: company/createCompany/Mutation.createCompany.req.vtl
           response: company/createCompany/Mutation.createCompany.res.vtl
         - kind: PIPELINE
@@ -177,8 +185,35 @@ custom:
           field: getSettings
           request: settings/getSettings/Query.getSettings.req.vtl
           response: settings/getSettings/Query.getSettings.res.vtl
+
+        - dataSource: Data
+          type: Mutation
+          field: addTransaction
+          request: transaction/addTransaction/Mutation.addTransaction.req.vtl
+          response: transaction/addTransaction/Mutation.addTransaction.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: deleteTransaction
+          request: transaction/deleteTransaction/Mutation.deleteTransaction.req.vtl
+          response: transaction/deleteTransaction/Mutation.deleteTransaction.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getTransaction
+          request: transaction/getTransaction/Query.getTransaction.req.vtl
+          response: transaction/getTransaction/Query.getTransaction.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getTransactions
+          request: transaction/getTransactions/Query.getTransactions.req.vtl
+          response: transaction/getTransactions/Query.getTransactions.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: updateTransaction
+          request: transaction/updateTransaction/Mutation.updateTransaction.req.vtl
+          response: transaction/updateTransaction/Mutation.updateTransaction.res.vtl
       schema:
         - schema/address.graphql
+        - schema/balance.graphql
         - schema/bank-account.graphql
         - schema/bank-connection.graphql
         - schema/bank-callback.graphql
@@ -191,6 +226,7 @@ custom:
         - schema/expense-category.graphql
         - schema/schema.graphql
         - schema/settings.graphql
+        - schema/transaction.graphql
         - schema/vat-settings.graphql
       functionConfigurations:
         # Validation
@@ -255,6 +291,10 @@ custom:
 
         # Companies
         - dataSource: Data
+          name: createBalance
+          request: company/createCompany/Pipeline.createBalance.req.vtl
+          response: company/createCompany/Pipeline.createBalance.res.vtl
+        - dataSource: Data
           name: createBankSettings
           request: company/createCompany/Pipeline.createBankSettings.req.vtl
           response: company/createCompany/Pipeline.createBankSettings.res.vtl
@@ -287,6 +327,11 @@ custom:
           config:
             tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
             serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
+        - type: AWS_LAMBDA
+          name: Lambda
+          config:
+            lambdaFunctionArn: !GetAtt LambdaDataSourceLambdaFunction.Arn
+            serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
         - type: HTTP
           name: OpenBanking
           config:
@@ -314,6 +359,16 @@ custom:
       substitutions:
         stage: ${self:provider.stage}
         queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
+
+  webpack:
+    includeModules: true
+
+functions:
+  LambdaDataSource:
+    handler: src/lambda.handler
+    role: LambdaDataSourceRole
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
 resources:
   Resources:
@@ -421,3 +476,68 @@ resources:
                     - sqs:SendMessage
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsQueueArn
+
+    AppSyncLambdaServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-lambda-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-lambda-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:invokeFunction
+                  Resource:
+                    - !GetAtt LambdaDataSourceLambdaFunction.Arn
+                    - !Join
+                      - ''
+                      - - !GetAtt LambdaDataSourceLambdaFunction.Arn
+                        - ':*'
+
+    LambdaDataSourceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-lambda-data-source-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-lambda-data-source-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:GetItem
+                    - dynamodb:Query
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'

@@ -1,3 +1,4 @@
+import { boolean, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
 import { date, object, string } from 'yup';
@@ -8,12 +9,14 @@ import Col from '../Col/Col';
 import DatePicker from '../DatePicker/DatePicker';
 import Row from '../Row/Row';
 import TextBox from '../TextBox/TextBox';
+import Radio from '../Radio/Radio';
 import Select from '../Select/Select';
 import Form from './Form';
 
 const stories = storiesOf('Form', module);
 const initialValues = {
   category: '',
+  choice: '',
   dob: '',
   email: '',
   extra: {
@@ -25,7 +28,8 @@ const initialValues = {
 };
 const validationSchema = object().shape({
   category: string().required(),
-  date: date().required(),
+  choice: string().required(),
+  dob: date().required(),
   email: string()
     .email()
     .required(),
@@ -47,6 +51,10 @@ const options = [
   },
 ];
 const submit = () => {};
+const disabled = () => boolean('Disabled', false);
+const readOnly = () => boolean('Read only', false);
+
+stories.addDecorator(withKnobs);
 
 stories.add('Basic form', () => (
   <>
@@ -66,9 +74,18 @@ stories.add('Basic form', () => (
               </Button>
             }
           >
-            <TextBox name="name" type="text" label="Name" placeholder="Name" />
+            <TextBox
+              disabled={disabled()}
+              readOnly={readOnly()}
+              name="name"
+              type="text"
+              label="Name"
+              placeholder="Name"
+            />
 
             <TextBox
+              disabled={disabled()}
+              readOnly={readOnly()}
               name="email"
               type="email"
               label="Email address"
@@ -77,29 +94,54 @@ stories.add('Basic form', () => (
             />
 
             <TextBox
+              disabled={disabled()}
+              readOnly={readOnly()}
               name="password"
               type="password"
               label="Password"
               spacing="lg"
             />
 
-            <TextBox name="extra.telephone" type="text" label="Telephone" />
-
-            <TextBox
-              name="extra.sortCode"
-              type="text"
-              label="Sort code"
-              format="##-##-##"
-            />
-
             <Select
+              disabled={disabled()}
+              readOnly={readOnly()}
               options={options}
               name="category"
               label="Category"
               placeholder="Select category"
             />
 
-            <DatePicker name="dob" label="Date of birth" />
+            <Radio
+              disabled={disabled()}
+              readOnly={readOnly()}
+              options={options}
+              name="choice"
+              label="Choice"
+            />
+
+            <TextBox
+              disabled={disabled()}
+              readOnly={readOnly()}
+              name="extra.telephone"
+              type="text"
+              label="Telephone"
+            />
+
+            <TextBox
+              disabled={disabled()}
+              readOnly={readOnly()}
+              name="extra.sortCode"
+              type="text"
+              label="Sort code"
+              format="##-##-##"
+            />
+
+            <DatePicker
+              disabled={disabled()}
+              readOnly={readOnly()}
+              name="dob"
+              label="Date of birth"
+            />
           </Form>
         </Card>
       </Col>

@@ -1,0 +1,119 @@
+{
+  "accounts": {
+    "title": "Accounts",
+    "sub-title": "Keep on top of your finances",
+    "dashboard": {
+      "title": "Dashboard",
+      "lead": "Head back to your company dashboard to manage more aspects of your business",
+      "button": "Back to my dashboard"
+    },
+    "overview": {
+      "title": "Overview",
+      "balance": "Balance: {{amount}}",
+      "vat-owed": "VAT owed: {{amount}}",
+      "vat-paid": "VAT paid: {{amount}}"
+    },
+    "record-transaction": {
+      "title": "New transactions",
+      "lead": "Record any money coming in and going out of your business",
+      "button": "Record a new transaction"
+    },
+    "pending-transactions": {
+      "title": "Pending transactions",
+      "lead": "View and manage any transactions that are waiting to be approved",
+      "button": "View pending transactions"
+    }
+  },
+  "record-transaction": {
+    "title": "Record transaction",
+    "sub-title": "Add a new business transaction",
+    "success": "Transaction has been saved"
+  },
+  "pending-transactions": {
+    "title": "Pending transactions",
+    "sub-title": "Manage transactions awaiting your approval",
+    "go-back": "Go back to accounts",
+    "transactions": {
+      "name": "Name",
+      "date": "Date",
+      "amount": "Amount",
+      "actions": "Actions",
+      "view": "View",
+      "delete": "Delete"
+    }
+  },
+  "delete-transaction": {
+    "title": "Are you sure you want to delete this transaction?",
+    "warning": "This will permanetly delete this transaction",
+    "success": "Transaction has been deleted",
+    "error": "Unable to delete this transaction"
+  },
+  "view-transaction": {
+    "title": "View transaction",
+    "sub-title": "View and update a business transaction",
+    "success": "Transaction has been updated",
+    "delete-transaction": "Delete transaction"
+  },
+  "transactions-list": {
+    "actions": "Actions",
+    "view": "View",
+    "delete": "Delete"
+  },
+  "transaction-form": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "currency": "£",
+    "transaction-details": {
+      "heading": "Transaction details",
+      "transaction": {
+        "label": "Transaction type",
+        "options": {
+          "purchase": "Purchase",
+          "sale": "Sale"
+        },
+        "required": "Please select a transaction type"
+      },
+      "name": {
+        "label": "Supplier",
+        "placeholder": "Select a supplier",
+        "required": "Supplier is required"
+      },
+      "description": {
+        "label": "Description",
+        "required": "Description is required"
+      },
+      "date": {
+        "label": "Date",
+        "required": "Date is required"
+      }
+    },
+    "transaction-amount": {
+      "heading": "Transaction amount",
+      "status": {
+        "label": "Status",
+        "options": {
+          "confirmed": "Confirmed",
+          "pending": "Pending"
+        },
+        "required": "Status is required"
+      },
+      "category": {
+        "label": "Category",
+        "placeholder": "Select a category",
+        "required": "Category is required"
+      },
+      "amount": {
+        "label": "Amount",
+        "required": "Amount is required"
+      },
+      "vat": {
+        "label": "VAT",
+        "required": "VAT is required"
+      }
+    }
+  },
+  "no-transactions": {
+    "title": "No transactions found",
+    "description": "Get started by adding some purchases and sales"
+  }
+}

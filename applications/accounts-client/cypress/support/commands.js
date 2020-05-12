@@ -57,6 +57,8 @@ Cypress.Commands.add(
 
 Cypress.Commands.add('format', (type, value) => {
   switch (type) {
+    case 'currency':
+      return `£${Math.abs(value).toFixed(2)}`;
     case 'percentage':
       return `${value}%`;
     case 'sort code':

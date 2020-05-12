@@ -1,11 +1,12 @@
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Field, FieldProps, getIn } from 'formik';
+import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
 import React, {
+  ChangeEvent,
   FC,
   FocusEvent,
-  HTMLAttributes,
   memo,
+  SelectHTMLAttributes,
   useEffect,
   useState,
 } from 'react';
@@ -23,10 +24,11 @@ export interface ISelectOption {
 
 interface IBaseSelectInput {
   active: boolean;
+  readOnly: boolean;
 }
 
 const BaseSelectInput = styled.select<IBaseSelectInput>`
-  ${({ active }) => `
+  ${({ active, readOnly }) => `
     appearance: none;
     background: #fff;
     border: none;
@@ -36,24 +38,41 @@ const BaseSelectInput = styled.select<IBaseSelectInput>`
     outline: 0;
     padding: 16px 0 10px;
     width: 100%;
+
+    ${
+      readOnly
+        ? `
+      :disabled {
+        color: ${active ? '#333' : '#fff'};
+      }
+    `
+        : `
+      :disabled {
+        color: ${active ? '#aaa' : '#fff'};
+      }
+    `
+    }
   `}
 `;
 
-interface ISelectInput extends HTMLAttributes<HTMLSelectElement> {
+interface ISelectInput extends SelectHTMLAttributes<HTMLSelectElement> {
   active: boolean;
   describedBy: string;
   errors: boolean;
+  readOnly: boolean;
 }
 
 const SelectInput: FC<ISelectInput> = ({
   active,
   describedBy,
   errors,
+  readOnly,
   ...rest
 }) => (
   <BaseSelectInput
     active={active}
     aria-describedby={errors ? describedBy : undefined}
+    readOnly={readOnly}
     // eslint-disable-next-line react/jsx-props-no-spreading
     {...rest}
   />
@@ -80,21 +99,30 @@ const IconInner = styled.div`
 
 interface IInternalSelect extends FieldProps {
   active: boolean;
+  disabled: boolean;
   helpText: string;
   label: string;
+  onChange(
+    e: ChangeEvent<HTMLSelectElement>,
+    form: FormikProps<FormikValues>,
+  ): void;
   options: ISelectOption[];
   placeholder: string;
+  readOnly: boolean;
   setFocus(focus: boolean): void;
   spacing: SelectSpacing;
 }
 
 const InternalSelect: FC<IInternalSelect> = ({
   active,
+  disabled,
   field,
   form,
   helpText,
   label,
+  onChange,
   options,
+  readOnly,
   placeholder,
   setFocus,
   spacing,
@@ -110,6 +138,7 @@ const InternalSelect: FC<IInternalSelect> = ({
   const { onBlur, ...rest } = field;
   const { errors, handleBlur, handleChange, touched } = form;
   const error = useInputValidation(field.name, errors, touched);
+  const markAsDisabled = disabled || readOnly;
   const describedBy = `${field.name}-error`;
   const doBlur = (e: FocusEvent<HTMLSelectElement>) => {
     handleBlur(e);
@@ -119,6 +148,13 @@ const InternalSelect: FC<IInternalSelect> = ({
     }
 
     onBlur(e);
+  };
+  const doChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    handleChange(e);
+
+    if (onChange) {
+      onChange(e, form);
+    }
   };
   const doFocus = () => {
     if (!field.value && field.value !== 0) {
@@ -144,10 +180,12 @@ const InternalSelect: FC<IInternalSelect> = ({
         {...rest}
         active={active}
         describedBy={describedBy}
+        disabled={markAsDisabled}
         errors={error}
         onBlur={doBlur}
-        onChange={handleChange}
+        onChange={doChange}
         onFocus={doFocus}
+        readOnly={readOnly}
       >
         <option disabled value="">
           {placeholder}
@@ -164,26 +202,37 @@ const InternalSelect: FC<IInternalSelect> = ({
           <FontAwesomeIcon icon={faAngleDown} />
         </IconInner>
       </IconOuter>
+
+      {readOnly && <input hidden {...field} />}
       {/* eslint-enable react/jsx-props-no-spreading */}
     </InputWrapper>
   );
 };
 
 export interface ISelectProps {
+  disabled?: boolean;
   helpText?: string;
   label: string;
   name: string;
   options: ISelectOption[];
   placeholder: string;
+  readOnly?: boolean;
   spacing?: SelectSpacing;
+  onChange?(
+    e: ChangeEvent<HTMLSelectElement>,
+    form: FormikProps<FormikValues>,
+  ): void;
 }
 
 const Select: FC<ISelectProps> = ({
+  disabled = false,
   helpText = null,
   label,
   name,
+  onChange = undefined,
   options,
   placeholder,
+  readOnly = false,
   spacing = 'md',
 }) => {
   const [focus, setFocus] = useState();
@@ -193,10 +242,13 @@ const Select: FC<ISelectProps> = ({
       id={name}
       component={InternalSelect}
       active={focus}
+      disabled={disabled}
       helpText={helpText}
       name={name}
+      onChange={onChange}
       options={options}
       placeholder={placeholder}
+      readOnly={readOnly}
       setFocus={setFocus}
       label={label}
       spacing={spacing}

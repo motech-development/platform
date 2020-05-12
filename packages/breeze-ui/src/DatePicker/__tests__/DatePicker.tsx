@@ -23,7 +23,9 @@ describe('DatePicker', () => {
     onSubmit = jest.fn();
 
     validationSchema = Yup.object().shape({
-      test: Yup.date().required(),
+      test: Yup.date()
+        .min('2015-06-03T19:45:00+00:00')
+        .required(),
     });
   });
 
@@ -32,7 +34,7 @@ describe('DatePicker', () => {
   });
 
   describe('with no initial value set', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       initialValues = {
         test: '',
       };
@@ -123,10 +125,28 @@ describe('DatePicker', () => {
         '2015-06-03T19:45:00+00:00',
       );
     });
+
+    it('should display validation error', async () => {
+      const { findByRole, findByText } = component;
+
+      await act(async () => {
+        const button = await findByRole('button');
+
+        fireEvent.click(button);
+
+        await findByRole('grid');
+
+        const date = await findByText('1');
+
+        fireEvent.click(date);
+      });
+
+      await expect(findByRole('alert')).resolves.toBeInTheDocument();
+    });
   });
 
   describe('with an initial value set', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       initialValues = {
         test: '2015-06-03T19:45:00+00:00',
       };
@@ -216,6 +236,98 @@ describe('DatePicker', () => {
       await expect(findByLabelText('Test')).resolves.toHaveValue(
         '2015-06-20T19:45:00+00:00',
       );
+    });
+
+    it('should display validation error', async () => {
+      const { findByRole, findByText } = component;
+
+      await act(async () => {
+        const button = await findByRole('button');
+
+        fireEvent.click(button);
+
+        await findByRole('grid');
+
+        const date = await findByText('1');
+
+        fireEvent.click(date);
+      });
+
+      await expect(findByRole('alert')).resolves.toBeInTheDocument();
+    });
+  });
+
+  describe('when disabled', () => {
+    beforeEach(async () => {
+      initialValues = {
+        test: '2015-06-03T19:45:00+00:00',
+      };
+
+      await act(async () => {
+        component = render(
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit}
+          >
+            {() => (
+              <Form>
+                <DatePicker disabled name="test" label="Test" />
+              </Form>
+            )}
+          </Formik>,
+        );
+      });
+    });
+
+    it('should have the correct styles', () => {
+      const { container } = component;
+      const [, , likeInput] = container.querySelectorAll('div');
+
+      expect(likeInput).toHaveStyle('color: #aaa;');
+    });
+
+    it('should disable the button', async () => {
+      const { findByRole } = component;
+
+      await expect(findByRole('button')).resolves.toHaveAttribute('disabled');
+    });
+  });
+
+  describe('when read only', () => {
+    beforeEach(async () => {
+      initialValues = {
+        test: '2015-06-03T19:45:00+00:00',
+      };
+
+      await act(async () => {
+        component = render(
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit}
+          >
+            {() => (
+              <Form>
+                <DatePicker readOnly name="test" label="Test" />
+              </Form>
+            )}
+          </Formik>,
+        );
+      });
+    });
+
+    it('should have the correct styles', () => {
+      const { container } = component;
+      const [, , likeInput] = container.querySelectorAll('div');
+
+      expect(likeInput).toHaveStyle('color: #333;');
+    });
+
+    it('should disable the button', async () => {
+      const { findByRole } = component;
+
+      await expect(findByRole('button')).resolves.toHaveAttribute('disabled');
     });
   });
 });
