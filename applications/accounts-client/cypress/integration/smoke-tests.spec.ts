@@ -712,6 +712,10 @@ describe('Smoke tests', () => {
             .focus()
             .type(transaction.amount);
 
+          cy.format('currency', transaction.vat).then(value => {
+            cy.get('input[id="vat"]').should('have.value', value);
+          });
+
           cy.get('button[type="submit"]').click();
         });
       });
@@ -743,6 +747,10 @@ describe('Smoke tests', () => {
           cy.get('input[id="amount"]')
             .focus()
             .type(transaction.amount);
+
+          cy.format('currency', transaction.vat).then(value => {
+            cy.get('input[id="vat"]').should('have.value', value);
+          });
 
           cy.get('button[type="submit"]').click();
         });
@@ -776,6 +784,10 @@ describe('Smoke tests', () => {
             .focus()
             .type(transaction.amount);
 
+          cy.format('currency', transaction.vat).then(value => {
+            cy.get('input[id="vat"]').should('have.value', value);
+          });
+
           cy.get('button[type="submit"]').click();
         });
       });
@@ -786,6 +798,54 @@ describe('Smoke tests', () => {
         cy.contains('VAT owed: £310.00').should('be.visible');
 
         cy.contains('VAT paid: £16.27').should('be.visible');
+      });
+
+      it('should update a transaction', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[6];
+
+          cy.get('a:contains("View")')
+            .eq(3)
+            .click();
+
+          cy.wait(1000);
+
+          cy.get('input[name="transaction"][hidden]').should(
+            'have.value',
+            transaction.type,
+          );
+
+          cy.get('select[id="name"]').should(
+            'have.value',
+            transaction.supplier,
+          );
+
+          cy.get('input[id="description"]').should(
+            'have.value',
+            transaction.description,
+          );
+
+          cy.get(`input[value="${transaction.status}"]`).should(
+            'have.prop',
+            'checked',
+          );
+
+          cy.get('input[id="amount"]')
+            .clear()
+            .type(transaction.amount);
+
+          cy.format('currency', transaction.vat).then(value => {
+            cy.get('input[id="vat"]').should('have.value', value);
+          });
+
+          cy.get('button[type="submit"]').click();
+
+          cy.wait(1000);
+
+          cy.contains('Balance: £2290.40').should('be.visible');
+
+          cy.contains('VAT owed: £387.50').should('be.visible');
+        });
       });
 
       it('should delete a confirmed transaction', () => {
@@ -855,6 +915,10 @@ describe('Smoke tests', () => {
             .focus()
             .type(transaction.amount);
 
+          cy.format('currency', '0').then(value => {
+            cy.get('input[id="vat"]').should('have.value', value);
+          });
+
           cy.get('button[type="submit"]').click();
         });
       });
@@ -887,6 +951,10 @@ describe('Smoke tests', () => {
             .focus()
             .type(transaction.amount);
 
+          cy.format('currency', transaction.vat).then(value => {
+            cy.get('input[id="vat"]').should('have.value', value);
+          });
+
           cy.get('button[type="submit"]').click();
         });
       });
@@ -918,6 +986,10 @@ describe('Smoke tests', () => {
           cy.get('input[id="amount"]')
             .focus()
             .type(transaction.amount);
+
+          cy.format('currency', transaction.vat).then(value => {
+            cy.get('input[id="vat"]').should('have.value', value);
+          });
 
           cy.get('button[type="submit"]').click();
         });
@@ -975,6 +1047,10 @@ describe('Smoke tests', () => {
             .focus()
             .type(transaction.amount);
 
+          cy.format('currency', '0').then(value => {
+            cy.get('input[id="vat"]').should('have.value', value);
+          });
+
           cy.get('button[type="submit"]').click();
         });
       });
@@ -1007,6 +1083,10 @@ describe('Smoke tests', () => {
             .focus()
             .type(transaction.amount);
 
+          cy.format('currency', transaction.vat).then(value => {
+            cy.get('input[id="vat"]').should('have.value', value);
+          });
+
           cy.get('button[type="submit"]').click();
         });
       });
@@ -1038,6 +1118,10 @@ describe('Smoke tests', () => {
           cy.get('input[id="amount"]')
             .focus()
             .type(transaction.amount);
+
+          cy.format('currency', transaction.vat).then(value => {
+            cy.get('input[id="vat"]').should('have.value', value);
+          });
 
           cy.get('button[type="submit"]').click();
         });

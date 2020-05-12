@@ -50,5 +50,13 @@
     "category": "1",
     "amount": "112",
     "vat": "0"
+  },
+  {
+    "type": "Sales",
+    "supplier": "Motech Development",
+    "description": "Confirmed invoice",
+    "status": "confirmed",
+    "amount": "2500",
+    "vat": "387.50"
   }
 ]
