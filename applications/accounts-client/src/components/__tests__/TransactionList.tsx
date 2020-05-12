@@ -5,15 +5,22 @@ import TransactionsList from '../TransactionsList';
 
 describe('TransactionsList', () => {
   let companyId: string;
+  let onDelete: jest.Mock;
 
   beforeEach(() => {
     companyId = 'company-id';
+    onDelete = jest.fn();
   });
 
   it('should display a message if there are no transactions', async () => {
     const { findByRole } = render(
       <TestProvider>
-        <TransactionsList companyId={companyId} transactions={[]} />
+        <TransactionsList
+          companyId={companyId}
+          loading={false}
+          transactions={[]}
+          onDelete={onDelete}
+        />
       </TestProvider>,
     );
 
@@ -57,7 +64,12 @@ describe('TransactionsList', () => {
 
       component = render(
         <TestProvider>
-          <TransactionsList companyId={companyId} transactions={transactions} />
+          <TransactionsList
+            companyId={companyId}
+            loading={false}
+            transactions={transactions}
+            onDelete={onDelete}
+          />
         </TestProvider>,
       );
     });

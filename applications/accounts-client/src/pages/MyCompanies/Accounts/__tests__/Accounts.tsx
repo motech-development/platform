@@ -278,7 +278,7 @@ describe('Accounts', () => {
       expect(queryByRole('dialog')).not.toBeInTheDocument();
     });
 
-    it('should display a success toast when deleting a client', async () => {
+    it('should display a success toast when deleting a transaction', async () => {
       const { findAllByRole, findByLabelText, findByText } = component;
 
       await act(async () => {
@@ -433,7 +433,7 @@ describe('Accounts', () => {
       });
     });
 
-    it('should display an error toast when deleting a client', async () => {
+    it('should display an error toast when deleting a transaction', async () => {
       const { findAllByRole, findByLabelText, findByText } = component;
 
       await act(async () => {
