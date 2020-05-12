@@ -187,7 +187,7 @@ describe('Smoke tests', () => {
       );
     });
 
-    it('should update company settings', () => {
+    it('should update VAT registered company settings', () => {
       cy.fixture('settings.json').then(res => {
         const settings = res[0];
 
@@ -216,6 +216,16 @@ describe('Smoke tests', () => {
         cy.get('input[id="categories.1.vatRate"]')
           .clear()
           .type(settings.categories[1].vatRate);
+
+        cy.get('button:contains("Add a new category")').click();
+
+        cy.get('input[id="categories.2.name"]')
+          .focus()
+          .type(settings.categories[2].name);
+
+        cy.get('input[id="categories.2.vatRate"]')
+          .clear()
+          .type(settings.categories[2].vatRate);
 
         cy.format('percentage', '20').then(value => {
           cy.get('input[id="vat.pay"]')
@@ -266,6 +276,18 @@ describe('Smoke tests', () => {
           );
         });
 
+        cy.get('input[id="categories.2.name"]').should(
+          'have.value',
+          settings.categories[2].name,
+        );
+
+        cy.format('percentage', settings.categories[2].vatRate).then(value => {
+          cy.get('input[id="categories.2.vatRate"]').should(
+            'have.value',
+            value,
+          );
+        });
+
         cy.format('percentage', settings.vat.charge).then(value => {
           cy.get('input[id="vat.charge"]').should('have.value', value);
         });
@@ -281,6 +303,44 @@ describe('Smoke tests', () => {
         cy.get('button:contains("Remove")')
           .eq(0)
           .click();
+
+        cy.get('button:contains("Remove")')
+          .eq(0)
+          .click();
+
+        cy.get('button[type="submit"]').click();
+      });
+    });
+
+    it('should re-add expense categories', () => {
+      cy.fixture('settings.json').then(res => {
+        const settings = res[0];
+
+        cy.get('a:contains("Select company")')
+          .eq(1)
+          .click();
+
+        cy.wait(1000);
+
+        cy.get('a:contains("Manage settings")').click();
+
+        cy.wait(1000);
+
+        cy.get('button:contains("Add a new category")').click();
+
+        cy.get('input[id="categories.0.name"]')
+          .focus()
+          .type(settings.categories[0].name);
+
+        cy.get('button:contains("Add a new category")').click();
+
+        cy.get('input[id="categories.1.name"]')
+          .focus()
+          .type(settings.categories[1].name);
+
+        cy.get('input[id="categories.1.vatRate"]')
+          .clear()
+          .type(settings.categories[1].vatRate);
 
         cy.get('button[type="submit"]').click();
       });
@@ -311,200 +371,700 @@ describe('Smoke tests', () => {
         cy.get('button[type="submit"]').click();
       });
     });
-  });
 
-  describe('Clients', () => {
-    beforeEach(() => {
-      cy.get('a:contains("Select company")')
-        .eq(0)
-        .click();
+    it('should update non-VAT registered company settings', () => {
+      cy.fixture('settings.json').then(res => {
+        const settings = res[1];
 
-      cy.wait(1000);
-
-      cy.get('a:contains("Manage clients")').click();
-
-      cy.wait(1000);
-
-      cy.url().should('include', 'http://localhost:3000/my-companies/clients/');
-
-      cy.wait(1000);
-    });
-
-    afterEach(() => {
-      cy.url().should('include', 'http://localhost:3000/my-companies/clients/');
-    });
-
-    it('should add client 1', () => {
-      cy.fixture('client.json').then(res => {
-        const client = res[0];
-
-        cy.get('a:contains("Add a new client")').click();
-
-        cy.wait(1000);
-
-        cy.get('input[id="name"]')
-          .focus()
-          .type(client.name);
-        cy.get('input[id="address.line1"]')
-          .focus()
-          .type(client.address.line1);
-        cy.get('input[id="address.line3"]')
-          .focus()
-          .type(client.address.line3);
-        cy.get('input[id="address.line5"]')
-          .focus()
-          .type(client.address.line5);
-        cy.get('input[id="contact.email"]')
-          .focus()
-          .type(client.contact.email);
-        cy.get('input[id="contact.telephone"]')
-          .focus()
-          .type(client.contact.telephone);
-
-        cy.get('button[type="submit"]').click();
-      });
-    });
-
-    it('should add client 2', () => {
-      cy.fixture('client.json').then(res => {
-        const client = res[1];
-
-        cy.get('a:contains("Add a new client")').click();
-
-        cy.wait(1000);
-
-        cy.get('input[id="name"]')
-          .focus()
-          .type(client.name);
-        cy.get('input[id="address.line1"]')
-          .focus()
-          .type(client.address.line1);
-        cy.get('input[id="address.line2"]')
-          .focus()
-          .type(client.address.line2);
-        cy.get('input[id="address.line3"]')
-          .focus()
-          .type(client.address.line3);
-        cy.get('input[id="address.line4"]')
-          .focus()
-          .type(client.address.line4);
-        cy.get('input[id="address.line5"]')
-          .focus()
-          .type(client.address.line5);
-        cy.get('input[id="contact.email"]')
-          .focus()
-          .type(client.contact.email);
-        cy.get('input[id="contact.telephone"]')
-          .focus()
-          .type(client.contact.telephone);
-
-        cy.get('button[type="submit"]').click();
-      });
-    });
-
-    it('should add client 3', () => {
-      cy.fixture('client.json').then(res => {
-        const client = res[2];
-
-        cy.get('a:contains("Add a new client")').click();
-
-        cy.wait(1000);
-
-        cy.get('input[id="name"]')
-          .focus()
-          .type(client.name);
-        cy.get('input[id="address.line1"]')
-          .focus()
-          .type(client.address.line1);
-        cy.get('input[id="address.line3"]')
-          .focus()
-          .type(client.address.line3);
-        cy.get('input[id="address.line4"]')
-          .focus()
-          .type(client.address.line4);
-        cy.get('input[id="address.line5"]')
-          .focus()
-          .type(client.address.line5);
-        cy.get('input[id="contact.email"]')
-          .focus()
-          .type(client.contact.email);
-        cy.get('input[id="contact.telephone"]')
-          .focus()
-          .type(client.contact.telephone);
-
-        cy.get('button[type="submit"]').click();
-      });
-    });
-
-    it('should update client 2', () => {
-      cy.fixture('client.json').then(res => {
-        const client = res[1];
-        const updated = res[3];
-
-        cy.get('a:contains("Manage client details")')
-          .eq(1)
-          .click();
-
-        cy.wait(1000);
-
-        cy.get('input[id="name"]')
-          .should('have.value', client.name)
-          .clear()
-          .type(updated.name);
-        cy.get('input[id="address.line1"]').should(
-          'have.value',
-          client.address.line1,
-        );
-        cy.get('input[id="address.line2"]').should(
-          'have.value',
-          client.address.line2,
-        );
-        cy.get('input[id="address.line3"]').should(
-          'have.value',
-          client.address.line3,
-        );
-        cy.get('input[id="address.line4"]').should(
-          'have.value',
-          client.address.line4,
-        );
-        cy.get('input[id="address.line5"]').should(
-          'have.value',
-          client.address.line5,
-        );
-        cy.get('input[id="contact.email"]').should(
-          'have.value',
-          client.contact.email,
-        );
-        cy.get('input[id="contact.telephone"]').should(
-          'have.value',
-          client.contact.telephone,
-        );
-
-        cy.get('button[type="submit"]').click();
-      });
-    });
-
-    it('should delete client 3', () => {
-      cy.fixture('client.json').then(res => {
-        const client = res[2];
-
-        cy.get('a:contains("Manage client details")')
+        cy.get('a:contains("Select company")')
           .eq(0)
           .click();
 
         cy.wait(1000);
 
-        cy.get(`button:contains("Delete ${client.name}")`).click();
+        cy.get('a:contains("Manage settings")').click();
 
         cy.wait(1000);
 
-        cy.get('input[id="confirmation"]')
-          .focus()
-          .type(client.name);
+        cy.get('button:contains("Add a new category")').click();
 
-        cy.get('button[type="submit"]')
+        cy.get('input[id="categories.0.name"]')
+          .focus()
+          .type(settings.categories[0].name);
+
+        cy.get('button:contains("Add a new category")').click();
+
+        cy.get('input[id="categories.1.name"]')
+          .focus()
+          .type(settings.categories[1].name);
+
+        cy.get('input[id="categories.1.vatRate"]')
+          .clear()
+          .type(settings.categories[1].vatRate);
+
+        cy.get('button[type="submit"]').click();
+      });
+    });
+  });
+
+  describe('Clients', () => {
+    afterEach(() => {
+      cy.url().should('include', 'http://localhost:3000/my-companies/clients/');
+    });
+
+    describe('VAT registered company', () => {
+      beforeEach(() => {
+        cy.get('a:contains("Select company")')
           .eq(1)
           .click();
+
+        cy.wait(1000);
+
+        cy.get('a:contains("Manage clients")').click();
+
+        cy.wait(1000);
+
+        cy.url().should(
+          'include',
+          'http://localhost:3000/my-companies/clients/',
+        );
+
+        cy.wait(1000);
+      });
+
+      it('should add client 1', () => {
+        cy.fixture('client.json').then(res => {
+          const client = res[0];
+
+          cy.get('a:contains("Add a new client")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[id="name"]')
+            .focus()
+            .type(client.name);
+          cy.get('input[id="address.line1"]')
+            .focus()
+            .type(client.address.line1);
+          cy.get('input[id="address.line3"]')
+            .focus()
+            .type(client.address.line3);
+          cy.get('input[id="address.line5"]')
+            .focus()
+            .type(client.address.line5);
+          cy.get('input[id="contact.email"]')
+            .focus()
+            .type(client.contact.email);
+          cy.get('input[id="contact.telephone"]')
+            .focus()
+            .type(client.contact.telephone);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+    });
+
+    describe('Non-VAT registered company', () => {
+      beforeEach(() => {
+        cy.get('a:contains("Select company")')
+          .eq(0)
+          .click();
+
+        cy.wait(1000);
+
+        cy.get('a:contains("Manage clients")').click();
+
+        cy.wait(1000);
+
+        cy.url().should(
+          'include',
+          'http://localhost:3000/my-companies/clients/',
+        );
+
+        cy.wait(1000);
+      });
+
+      it('should add client 1', () => {
+        cy.fixture('client.json').then(res => {
+          const client = res[0];
+
+          cy.get('a:contains("Add a new client")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[id="name"]')
+            .focus()
+            .type(client.name);
+          cy.get('input[id="address.line1"]')
+            .focus()
+            .type(client.address.line1);
+          cy.get('input[id="address.line3"]')
+            .focus()
+            .type(client.address.line3);
+          cy.get('input[id="address.line5"]')
+            .focus()
+            .type(client.address.line5);
+          cy.get('input[id="contact.email"]')
+            .focus()
+            .type(client.contact.email);
+          cy.get('input[id="contact.telephone"]')
+            .focus()
+            .type(client.contact.telephone);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should add client 2', () => {
+        cy.fixture('client.json').then(res => {
+          const client = res[1];
+
+          cy.get('a:contains("Add a new client")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[id="name"]')
+            .focus()
+            .type(client.name);
+          cy.get('input[id="address.line1"]')
+            .focus()
+            .type(client.address.line1);
+          cy.get('input[id="address.line2"]')
+            .focus()
+            .type(client.address.line2);
+          cy.get('input[id="address.line3"]')
+            .focus()
+            .type(client.address.line3);
+          cy.get('input[id="address.line4"]')
+            .focus()
+            .type(client.address.line4);
+          cy.get('input[id="address.line5"]')
+            .focus()
+            .type(client.address.line5);
+          cy.get('input[id="contact.email"]')
+            .focus()
+            .type(client.contact.email);
+          cy.get('input[id="contact.telephone"]')
+            .focus()
+            .type(client.contact.telephone);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should add client 3', () => {
+        cy.fixture('client.json').then(res => {
+          const client = res[2];
+
+          cy.get('a:contains("Add a new client")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[id="name"]')
+            .focus()
+            .type(client.name);
+          cy.get('input[id="address.line1"]')
+            .focus()
+            .type(client.address.line1);
+          cy.get('input[id="address.line3"]')
+            .focus()
+            .type(client.address.line3);
+          cy.get('input[id="address.line4"]')
+            .focus()
+            .type(client.address.line4);
+          cy.get('input[id="address.line5"]')
+            .focus()
+            .type(client.address.line5);
+          cy.get('input[id="contact.email"]')
+            .focus()
+            .type(client.contact.email);
+          cy.get('input[id="contact.telephone"]')
+            .focus()
+            .type(client.contact.telephone);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should update client 2', () => {
+        cy.fixture('client.json').then(res => {
+          const client = res[1];
+          const updated = res[3];
+
+          cy.get('a:contains("Manage client details")')
+            .eq(1)
+            .click();
+
+          cy.wait(1000);
+
+          cy.get('input[id="name"]')
+            .should('have.value', client.name)
+            .clear()
+            .type(updated.name);
+          cy.get('input[id="address.line1"]').should(
+            'have.value',
+            client.address.line1,
+          );
+          cy.get('input[id="address.line2"]').should(
+            'have.value',
+            client.address.line2,
+          );
+          cy.get('input[id="address.line3"]').should(
+            'have.value',
+            client.address.line3,
+          );
+          cy.get('input[id="address.line4"]').should(
+            'have.value',
+            client.address.line4,
+          );
+          cy.get('input[id="address.line5"]').should(
+            'have.value',
+            client.address.line5,
+          );
+          cy.get('input[id="contact.email"]').should(
+            'have.value',
+            client.contact.email,
+          );
+          cy.get('input[id="contact.telephone"]').should(
+            'have.value',
+            client.contact.telephone,
+          );
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should delete client 3', () => {
+        cy.fixture('client.json').then(res => {
+          const client = res[2];
+
+          cy.get('a:contains("Manage client details")')
+            .eq(0)
+            .click();
+
+          cy.wait(1000);
+
+          cy.get(`button:contains("Delete ${client.name}")`).click();
+
+          cy.wait(1000);
+
+          cy.get('input[id="confirmation"]')
+            .focus()
+            .type(client.name);
+
+          cy.get('button[type="submit"]')
+            .eq(1)
+            .click();
+        });
+      });
+    });
+  });
+
+  describe('Accounts', () => {
+    afterEach(() => {
+      cy.url().should(
+        'include',
+        'http://localhost:3000/my-companies/accounts/',
+      );
+    });
+
+    describe('VAT registered company', () => {
+      beforeEach(() => {
+        cy.get('a:contains("Select company")')
+          .eq(1)
+          .click();
+
+        cy.wait(1000);
+
+        cy.get('a:contains("Manage accounts")').click();
+
+        cy.wait(1000);
+
+        cy.url().should(
+          'include',
+          'http://localhost:3000/my-companies/accounts/',
+        );
+
+        cy.wait(1000);
+      });
+
+      it('should add a confirmed sale', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[0];
+
+          cy.get('a:contains("Record a new transaction")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[type="radio"]').check(transaction.type);
+
+          cy.get('select[id="name"]')
+            .focus()
+            .select(transaction.supplier);
+
+          cy.get('input[id="description"]')
+            .focus()
+            .type(transaction.description);
+
+          cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('input[id="amount"]')
+            .focus()
+            .type(transaction.amount);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should add a confirmed purchase', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[1];
+
+          cy.get('a:contains("Record a new transaction")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[type="radio"]').check(transaction.type);
+
+          cy.get('input[id="name"]')
+            .focus()
+            .type(transaction.supplier);
+
+          cy.get('input[id="description"]')
+            .focus()
+            .type(transaction.description);
+
+          cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('select[id="category"]')
+            .focus()
+            .select(transaction.category);
+
+          cy.get('input[id="amount"]')
+            .focus()
+            .type(transaction.amount);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should add a confirmed zero VAT rate purchase', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[2];
+
+          cy.get('a:contains("Record a new transaction")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[type="radio"]').check(transaction.type);
+
+          cy.get('input[id="name"]')
+            .focus()
+            .type(transaction.supplier);
+
+          cy.get('input[id="description"]')
+            .focus()
+            .type(transaction.description);
+
+          cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('select[id="category"]')
+            .focus()
+            .select(transaction.category);
+
+          cy.get('input[id="amount"]')
+            .focus()
+            .type(transaction.amount);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should show correct balance details', () => {
+        cy.contains('Balance: £1790.40').should('be.visible');
+
+        cy.contains('VAT owed: £310.00').should('be.visible');
+
+        cy.contains('VAT paid: £16.27').should('be.visible');
+      });
+
+      it('should delete a confirmed transaction', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[0];
+
+          cy.get('button:contains("Delete")')
+            .eq(2)
+            .click();
+
+          cy.wait(1000);
+
+          cy.get('input[id="confirmation"]')
+            .focus()
+            .type(transaction.supplier);
+
+          cy.get('button[type="submit"]').click();
+
+          cy.contains('Balance: -£209.60').should('be.visible');
+
+          cy.contains('VAT owed: £0.00').should('be.visible');
+        });
+      });
+    });
+
+    describe.skip('Non-VAT registered company', () => {
+      beforeEach(() => {
+        cy.get('a:contains("Select company")')
+          .eq(0)
+          .click();
+
+        cy.wait(1000);
+
+        cy.get('a:contains("Manage accounts")').click();
+
+        cy.wait(1000);
+
+        cy.url().should(
+          'include',
+          'http://localhost:3000/my-companies/accounts/',
+        );
+
+        cy.wait(1000);
+      });
+
+      it('should add a confirmed sale', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[0];
+
+          cy.get('a:contains("Record a new transaction")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[type="radio"]').check(transaction.type);
+
+          cy.get('select[id="name"]')
+            .focus()
+            .select(transaction.supplier);
+
+          cy.get('input[id="description"]')
+            .focus()
+            .type(transaction.description);
+
+          cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('input[id="amount"]')
+            .focus()
+            .type(transaction.amount);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should add a confirmed purchase', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[1];
+
+          cy.get('a:contains("Record a new transaction")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[type="radio"]').check(transaction.type);
+
+          cy.get('input[id="name"]')
+            .focus()
+            .type(transaction.supplier);
+
+          cy.get('input[id="description"]')
+            .focus()
+            .type(transaction.description);
+
+          cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('select[id="category"]')
+            .focus()
+            .select(transaction.category);
+
+          cy.get('input[id="amount"]')
+            .focus()
+            .type(transaction.amount);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should add a confirmed zero VAT rate purchase', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[2];
+
+          cy.get('a:contains("Record a new transaction")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[type="radio"]').check(transaction.type);
+
+          cy.get('input[id="name"]')
+            .focus()
+            .type(transaction.supplier);
+
+          cy.get('input[id="description"]')
+            .focus()
+            .type(transaction.description);
+
+          cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('select[id="category"]')
+            .focus()
+            .select(transaction.category);
+
+          cy.get('input[id="amount"]')
+            .focus()
+            .type(transaction.amount);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should show correct balance details', () => {
+        cy.contains('Balance: £1790.40').should('be.visible');
+
+        cy.contains('VAT owed: £0.00').should('be.visible');
+
+        cy.contains('VAT paid: £16.27').should('be.visible');
+      });
+
+      it('should delete a confirmed transaction', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[2];
+
+          cy.get('button:contains("Delete")')
+            .eq(0)
+            .click();
+
+          cy.wait(1000);
+
+          cy.get('input[id="confirmation"]')
+            .focus()
+            .type(transaction.supplier);
+
+          cy.get('button[type="submit"]').click();
+
+          cy.contains('Balance: £1902.40').should('be.visible');
+        });
+      });
+
+      it('should add a pending sale', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[3];
+
+          cy.get('a:contains("Record a new transaction")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[type="radio"]').check(transaction.type);
+
+          cy.get('select[id="name"]')
+            .focus()
+            .select(transaction.supplier);
+
+          cy.get('input[id="description"]')
+            .focus()
+            .type(transaction.description);
+
+          cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('input[id="amount"]')
+            .focus()
+            .type(transaction.amount);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should add a pending purchase', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[4];
+
+          cy.get('a:contains("Record a new transaction")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[type="radio"]').check(transaction.type);
+
+          cy.get('input[id="name"]')
+            .focus()
+            .type(transaction.supplier);
+
+          cy.get('input[id="description"]')
+            .focus()
+            .type(transaction.description);
+
+          cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('select[id="category"]')
+            .focus()
+            .select(transaction.category);
+
+          cy.get('input[id="amount"]')
+            .focus()
+            .type(transaction.amount);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should add a pending zero VAT rate purchase', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[5];
+
+          cy.get('a:contains("Record a new transaction")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[type="radio"]').check(transaction.type);
+
+          cy.get('input[id="name"]')
+            .focus()
+            .type(transaction.supplier);
+
+          cy.get('input[id="description"]')
+            .focus()
+            .type(transaction.description);
+
+          cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('select[id="category"]')
+            .focus()
+            .select(transaction.category);
+
+          cy.get('input[id="amount"]')
+            .focus()
+            .type(transaction.amount);
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should delete a pending transaction', () => {
+        cy.fixture('account.json').then(res => {
+          const transaction = res[5];
+
+          cy.get('a:contains("View pending transactions")').click();
+
+          cy.wait(1000);
+
+          cy.get('button:contains("Delete")')
+            .eq(2)
+            .click();
+
+          cy.wait(1000);
+
+          cy.get('input[id="confirmation"]')
+            .focus()
+            .type(transaction.supplier);
+
+          cy.get('button[type="submit"]').click();
+
+          cy.get('button:contains("Delete")').should('have.length', 2);
+        });
       });
     });
   });

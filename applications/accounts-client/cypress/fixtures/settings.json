@@ -8,6 +8,10 @@
       {
         "name": "Travel",
         "vatRate": "0"
+      },
+      {
+        "name": "Sustenance",
+        "vatRate": "20"
       }
     ],
     "vat": {
@@ -16,6 +20,16 @@
     }
   },
   {
+    "categories": [
+      {
+        "name": "Accommodation",
+        "vatRate": "20"
+      },
+      {
+        "name": "Travel",
+        "vatRate": "0"
+      }
+    ],
     "vat": {
       "charge": "0",
       "pay": "0"
