@@ -1,10 +1,9 @@
-import { Handler } from 'aws-lambda';
+import proxyHandler from '@motech-development/api-gateway-handler';
 import client from '../shared/document-client';
-import proxyHandler from '../shared/proxy-handler';
 
 const documentClient = client();
 
-export const handler: Handler = proxyHandler(async () => {
+export const handler = proxyHandler(async () => {
   const { TABLE } = process.env;
 
   if (!TABLE) {

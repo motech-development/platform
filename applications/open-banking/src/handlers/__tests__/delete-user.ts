@@ -62,6 +62,7 @@ describe('delete-user', () => {
     await handler(event as APIGatewayEvent, context, callback);
 
     expect(callback).toHaveBeenCalledWith(null, {
+      body: '',
       statusCode: 204,
     });
   });

@@ -1,8 +1,7 @@
-import { APIGatewayEvent, Handler } from 'aws-lambda';
+import proxyHandler from '@motech-development/api-gateway-handler';
 import httpClient from '../shared/http-client';
-import proxyHandler from '../shared/proxy-handler';
 
-export const handler: Handler<APIGatewayEvent> = proxyHandler(async event => {
+export const handler = proxyHandler(async event => {
   const { pathParameters } = event;
 
   if (!pathParameters) {
@@ -37,6 +36,7 @@ export const handler: Handler<APIGatewayEvent> = proxyHandler(async event => {
     await httpClient.delete(endpoint);
 
     return {
+      body: '',
       statusCode: 204,
     };
   } catch (e) {

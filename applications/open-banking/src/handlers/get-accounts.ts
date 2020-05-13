@@ -1,6 +1,5 @@
-import { APIGatewayEvent, Handler } from 'aws-lambda';
+import proxyHandler from '@motech-development/api-gateway-handler';
 import httpClient from '../shared/http-client';
-import proxyHandler from '../shared/proxy-handler';
 
 interface IAccounts {
   data: {
@@ -15,7 +14,7 @@ interface IAccounts {
   }[];
 }
 
-export const handler: Handler<APIGatewayEvent> = proxyHandler(async event => {
+export const handler = proxyHandler(async event => {
   const { Consent } = event.headers;
 
   if (!Consent) {
