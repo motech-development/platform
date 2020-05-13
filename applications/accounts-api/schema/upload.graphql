@@ -1,0 +1,8 @@
+type Upload {
+  id: ID
+  url: String
+}
+
+input UploadInput {
+  extension: String!
+}

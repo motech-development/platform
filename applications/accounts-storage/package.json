@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@motech-development/api-gateway-handler": "^0.0.0",
+    "uuid": "^8.0.0",
     "yup": "^0.28.3"
   }
 }

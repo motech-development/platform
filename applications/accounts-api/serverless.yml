@@ -211,6 +211,12 @@ custom:
           field: updateTransaction
           request: transaction/updateTransaction/Mutation.updateTransaction.req.vtl
           response: transaction/updateTransaction/Mutation.updateTransaction.res.vtl
+
+        - dataSource: StorageUpload
+          type: Mutation
+          field: requestUpload
+          request: upload/requestUpload/Mutation.requestUpload.req.vtl
+          response: upload/requestUpload/Mutation.requestUpload.res.vtl
       schema:
         - schema/address.graphql
         - schema/balance.graphql
@@ -227,6 +233,7 @@ custom:
         - schema/schema.graphql
         - schema/settings.graphql
         - schema/transaction.graphql
+        - schema/upload.graphql
         - schema/vat-settings.graphql
       functionConfigurations:
         # Validation
@@ -343,6 +350,16 @@ custom:
                 signingServiceName: execute-api
             serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
         - type: HTTP
+          name: StorageUpload
+          config:
+            endpoint: !ImportValue ${self:provider.stage}-StorageUploadApiEndpoint
+            authorizationConfig:
+              authorizationType: AWS_IAM
+              awsIamConfig:
+                signingRegion: !Ref AWS::Region
+                signingServiceName: execute-api
+            serviceRoleArn: !GetAtt AppSyncStorageUploadServiceRole.Arn
+        - type: HTTP
           name: Queue
           config:
             endpoint: !Join
@@ -394,6 +411,29 @@ resources:
                   Action:
                     - execute-api:Invoke
                   Resource: !ImportValue ${self:provider.stage}-OpenBankingApiArn
+
+    AppSyncStorageUploadServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-storage-upload-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-storage-upload-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - execute-api:Invoke
+                  Resource: !ImportValue ${self:provider.stage}-StorageUploadApiArn
 
     AppSyncLoggingServiceRole:
       Type: AWS::IAM::Role
