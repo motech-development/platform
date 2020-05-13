@@ -54,6 +54,7 @@ jobs:
             - applications/accounts-data/node_modules
             - applications/accounts-infrastructure/node_modules
             - applications/accounts-queue/node_modules
+            - applications/accounts-storage/node_modules
             - applications/id/node_modules
             - applications/infrastructure/node_modules
             - applications/open-banking/node_modules
@@ -93,6 +94,8 @@ jobs:
           file: ./applications/accounts-data/coverage/coverage-final.json
       - codecov/upload:
           file: ./applications/accounts-queue/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./applications/accounts-storage/coverage/coverage-final.json
       - codecov/upload:
           file: ./applications/open-banking/coverage/coverage-final.json
       - codecov/upload:
@@ -260,6 +263,30 @@ jobs:
           command: npm run deploy -- --scope=@motech-development/accounts-queue -- -- --stage production
           name: Deploy accounts queue infrastructure
 
+  deploy-accounts-storage-develop:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-storage -- -- --stage develop
+          name: Deploy accounts storage infrastructure
+
+  deploy-accounts-storage-production:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-storage -- -- --stage production
+          name: Deploy accounts storage infrastructure
+
   deploy-open-banking-develop:
     docker:
       - image: circleci/node:12.13
@@ -413,6 +440,23 @@ workflows:
           requires:
             - deploy-open-banking-develop
 
+      - deploy-accounts-storage-production:
+          filters:
+            branches:
+              only: master
+          requires:
+            - deploy-accounts-data-production
+
+      - deploy-accounts-storage-develop:
+          filters:
+            branches:
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
+          requires:
+            - deploy-accounts-data-develop
+
       - deploy-open-banking-production:
           filters:
             branches:
@@ -434,12 +478,14 @@ workflows:
           requires:
             - deploy-accounts-data-production
             - deploy-accounts-queue-production
+            - deploy-accounts-storage-production
             - deploy-open-banking-production
 
       - deploy-accounts-api-develop:
           requires:
             - deploy-accounts-data-develop
             - deploy-accounts-queue-develop
+            - deploy-accounts-storage-develop
             - deploy-open-banking-develop
 
       - deploy-auth0:
