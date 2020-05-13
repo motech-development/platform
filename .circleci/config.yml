@@ -57,6 +57,7 @@ jobs:
             - applications/id/node_modules
             - applications/infrastructure/node_modules
             - applications/open-banking/node_modules
+            - packages/api-gateway-handler/node_modules
             - packages/auth/node_modules
             - packages/breeze-ui/node_modules
             - packages/serverless-outputs-env/node_modules
@@ -94,6 +95,8 @@ jobs:
           file: ./applications/accounts-queue/coverage/coverage-final.json
       - codecov/upload:
           file: ./applications/open-banking/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./packages/api-gateway-handler/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/auth/coverage/coverage-final.json
       - codecov/upload:

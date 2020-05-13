@@ -1,4 +1,4 @@
-import { Context } from 'aws-lambda';
+import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { handler } from '../get-banks';
@@ -6,6 +6,7 @@ import { handler } from '../get-banks';
 describe('get-banks', () => {
   let callback: jest.Mock;
   let context: Context;
+  let event: APIGatewayProxyEvent;
 
   beforeEach(() => {
     context = ctx();
@@ -13,10 +14,12 @@ describe('get-banks', () => {
     context.done();
 
     callback = jest.fn();
+
+    event = {} as APIGatewayProxyEvent;
   });
 
   it('should return an error if table is not set', async () => {
-    await handler({}, context, callback);
+    await handler(event, context, callback);
 
     expect(callback).toHaveBeenCalledWith(null, {
       body: JSON.stringify({
@@ -62,7 +65,7 @@ describe('get-banks', () => {
         }),
       });
 
-      await handler({}, context, callback);
+      await handler(event, context, callback);
 
       expect(callback).toHaveBeenCalledWith(null, {
         body: JSON.stringify({
@@ -90,7 +93,7 @@ describe('get-banks', () => {
         promise: jest.fn().mockResolvedValueOnce({}),
       });
 
-      await handler({}, context, callback);
+      await handler(event, context, callback);
 
       expect(callback).toHaveBeenCalledWith(null, {
         body: JSON.stringify({
