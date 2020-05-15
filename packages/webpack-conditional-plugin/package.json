@@ -1,11 +1,11 @@
 {
-  "name": "@motech-development/webpack-permissions-plugin",
+  "name": "@motech-development/webpack-conditional-plugin",
   "version": "0.0.0",
-  "description": "A Webpack plugin to set permissions for your output files and folders",
+  "description": "A Webpack plugin to conditionally apply plugins",
   "private": true,
-  "main": "lib/webpack-permissions-plugin.cjs.js",
-  "module": "lib/webpack-permissions-plugin.esm.js",
-  "types": "lib/webpack-permissions-plugin.d.ts",
+  "main": "lib/webpack-conditional-plugin.cjs.js",
+  "module": "lib/webpack-conditional-plugin.esm.js",
+  "types": "lib/webpack-conditional-plugin.d.ts",
   "scripts": {
     "build": "rollup -c",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
@@ -29,12 +29,6 @@
   },
   "jest-junit": {
     "outputDirectory": "../../reports/junit",
-    "outputName": "webpack-permissions-plugin.xml"
-  },
-  "dependencies": {
-    "filehound": "^1.17.4"
-  },
-  "peerDependencies": {
-    "filehound": "^1.17.4"
+    "outputName": "webpack-conditional-plugin.xml"
   }
 }

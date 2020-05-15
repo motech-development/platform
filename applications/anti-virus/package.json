@@ -27,6 +27,7 @@
     "outputName": "anti-virus.xml"
   },
   "devDependencies": {
+    "@motech-development/webpack-conditional-plugin": "^0.0.0",
     "@motech-development/webpack-permissions-plugin": "^0.0.0",
     "filehound": "^1.17.4"
   }

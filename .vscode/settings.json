@@ -20,11 +20,27 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./applications/accounts-data"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./applications/accounts-queue"
     },
     {
       "changeProcessCWD": true,
+      "directory": "./applications/accounts-storage"
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./applications/anti-virus"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./applications/open-banking"
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./packages/api-gateway-handler"
     },
     {
       "changeProcessCWD": true,
@@ -37,6 +53,14 @@
     {
       "changeProcessCWD": true,
       "directory": "./packages/serverless-outputs-env"
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./packages/webpack-conditional-plugin"
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./packages/webpack-permissions-plugin"
     }
   ]
 }
