@@ -55,6 +55,7 @@ jobs:
             - applications/accounts-infrastructure/node_modules
             - applications/accounts-queue/node_modules
             - applications/accounts-storage/node_modules
+            - applications/anti-virus/node_modules
             - applications/id/node_modules
             - applications/infrastructure/node_modules
             - applications/open-banking/node_modules
@@ -97,6 +98,8 @@ jobs:
           file: ./applications/accounts-queue/coverage/coverage-final.json
       - codecov/upload:
           file: ./applications/accounts-storage/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./applications/anti-virus/coverage/coverage-final.json
       - codecov/upload:
           file: ./applications/open-banking/coverage/coverage-final.json
       - codecov/upload:

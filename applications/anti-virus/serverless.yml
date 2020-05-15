@@ -14,6 +14,7 @@ package:
   individually: true
 
 plugins:
+  - serverless-step-functions
   - serverless-webpack
 
 custom:
@@ -37,6 +38,15 @@ functions:
     role: LambdaFunctionRole
     timeout: 300
 
+  StartScan:
+    handler: src/handlers/start-scan.handler
+    role: StartScanLambdaFunctionRole
+    events:
+      - sqs:
+          arn: !GetAtt AntiVirusQueue.Arn
+    environment:
+      STATE_MACHINE_ARN: !Ref ScanUploadStateMachine
+
   UpdateDefinitions:
     handler: src/handlers/update-definitions.handler
     # TODO: Schedule updates
@@ -46,6 +56,39 @@ functions:
     memorySize: 1024
     role: LambdaFunctionRole
     timeout: 300
+
+stepFunctions:
+  validate: true
+  stateMachines:
+    scanUpload:
+      name: ${self:custom.prefix}-scan-upload
+      id: ScanUploadStateMachine
+      definition:
+        Comment: Scan uploaded file
+        StartAt: ScanFile
+        States:
+          ScanFile:
+            Type: Task
+            Resource: !GetAtt ScanFileLambdaFunction.Arn
+            Next: ProcessResult
+
+          ProcessResult:
+            Type: Choice
+            Choices:
+              - Variable: $.result
+                BooleanEquals: true
+                Next: MoveFile
+            Default: RemoveFile
+
+          MoveFile:
+            Type: Task
+            Resource: !GetAtt MoveFileLambdaFunction.Arn
+            End: true
+
+          RemoveFile:
+            Type: Task
+            Resource: !GetAtt RemoveFileLambdaFunction.Arn
+            End: true
 
 resources:
   Resources:
@@ -95,6 +138,48 @@ resources:
                   Resource:
                     - 'arn:aws:logs:*:*:*'
 
+    StartScanLambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-start-scan-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-start-scan-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - states:StartExecution
+                  Resource:
+                    - !Ref ScanUploadStateMachine
+                    - !Join
+                      - ''
+                      - - !Ref ScanUploadStateMachine
+                        - '*'
+                - Effect: Allow
+                  Action:
+                    - sqs:DeleteMessage
+                    - sqs:GetQueueAttributes
+                    - sqs:ReceiveMessage
+                  Resource:
+                    - !GetAtt AntiVirusQueue.Arn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
   Outputs:
     AntiVirusQueueArn:
       Description: Anti Virus queue ARN

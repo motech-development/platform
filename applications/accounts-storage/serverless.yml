@@ -111,6 +111,10 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.uploads}
+        LifecycleConfiguration:
+          Rules:
+            - ExpirationInDays: 1
+              Status: Enabled
         # TODO: Is this really needed?
         CorsConfiguration:
           CorsRules:
