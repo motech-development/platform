@@ -63,6 +63,7 @@ jobs:
             - packages/auth/node_modules
             - packages/breeze-ui/node_modules
             - packages/serverless-outputs-env/node_modules
+            - packages/webpack-conditional-plugin/node_modules
             - packages/webpack-permissions-plugin/node_modules
       - save_cache:
           key: accounts-cache-v1-{{ checksum "./checksum.txt" }}
@@ -110,6 +111,8 @@ jobs:
           file: ./packages/breeze-ui/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/serverless-outputs-env/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./packages/webpack-conditional-plugin/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/webpack-permissions-plugin/coverage/coverage-final.json
       - sonarcloud/scan
