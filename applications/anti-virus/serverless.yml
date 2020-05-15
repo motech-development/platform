@@ -1,0 +1,109 @@
+service:
+  name: ${opt:appName, 'anti-virus'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}
+  environment:
+    BUCKET: !Ref DefinitionsBucket
+
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+
+  webpack:
+    includeModules: true
+
+functions:
+  MoveFile:
+    handler: src/handlers/move-file.handler
+    role: LambdaFunctionRole
+
+  RemoveFile:
+    handler: src/handlers/remove-file.handler
+    role: LambdaFunctionRole
+
+  ScanFile:
+    handler: src/handlers/scan-file.handler
+    memorySize: 1024
+    role: LambdaFunctionRole
+    timeout: 300
+
+  UpdateDefinitions:
+    handler: src/handlers/update-definitions.handler
+    # TODO: Schedule updates
+    # events:
+    #   - schedule:
+    #       rate: rate(1 day)
+    memorySize: 1024
+    role: LambdaFunctionRole
+    timeout: 300
+
+resources:
+  Resources:
+    AntiVirusQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.prefix}-queue
+
+    DefinitionsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.prefix}-definitions
+
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - s3:DeleteObject
+                    - s3:GetObject
+                    - S3:GetObjectTagging
+                    - s3:PutObject
+                    - S3:PutObjectTagging
+                  Resource:
+                    - 'arn:aws:s3:::*'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+
+  Outputs:
+    AntiVirusQueueArn:
+      Description: Anti Virus queue ARN
+      Value: !GetAtt AntiVirusQueue.Arn
+      Export:
+        Name: ${self:provider.stage}-AntiVirusQueueArn
+
+    AntiVirusQueueUrl:
+      Description: Anti Virus queue URL
+      Value: !Ref AntiVirusQueue
+      Export:
+        Name: ${self:provider.stage}-AntiVirusQueueUrl
