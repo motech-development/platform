@@ -6,6 +6,7 @@ import { object, string } from 'yup';
 const whitelist = ['gif', 'jpeg', 'jpg', 'pdf', 'png'];
 const s3 = new S3();
 const schema = object().shape({
+  companyId: string().required(),
   extension: string()
     .oneOf(whitelist)
     .required(),
@@ -13,9 +14,9 @@ const schema = object().shape({
 });
 
 export const handler = proxyHandler(async event => {
-  const { BUCKET } = process.env;
+  const { UPLOAD_BUCKET } = process.env;
 
-  if (!BUCKET) {
+  if (!UPLOAD_BUCKET) {
     const response = {
       body: JSON.stringify({
         message: 'No bucket set',
@@ -46,14 +47,14 @@ export const handler = proxyHandler(async event => {
       stripUnknown: true,
     });
     const id = uuid();
-    const { extension, owner } = result;
+    const { companyId, extension, owner } = result;
     const expirationInSeconds = 30;
 
     const url = await s3.getSignedUrlPromise('putObject', {
-      Bucket: BUCKET,
+      Bucket: UPLOAD_BUCKET,
       ContentType: 'multipart/form-data',
       Expires: expirationInSeconds,
-      Key: `${owner}/${id}.${extension}`,
+      Key: `${owner}/${companyId}/${id}.${extension}`,
     });
 
     return {

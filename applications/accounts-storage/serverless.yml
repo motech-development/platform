@@ -8,7 +8,8 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-storage
   environment:
-    BUCKET: !Ref UploadBucket
+    DOWNLOAD_BUCKET: !Ref DownloadBucket
+    UPLOAD_BUCKET: !Ref UploadBucket
 
 package:
   individually: true
@@ -19,6 +20,7 @@ plugins:
 
 custom:
   prefix: ${self:service}-${self:provider.stage}
+  downloads: ${self:custom.prefix}-downloads
   uploads: ${self:custom.prefix}-uploads
 
   webpack:
@@ -29,6 +31,17 @@ custom:
     useChildProcesses: true
 
 functions:
+  QueueUpload:
+    handler: src/handlers/queue-upload.handler
+    events:
+      - s3:
+          bucket: ${self:custom.uploads}
+          event: s3:ObjectCreated:Put
+          existing: true
+    role: LambdaFunctionRole
+    environment:
+      QUEUE_URL: !ImportValue ${self:provider.stage}-AntiVirusQueueUrl
+
   SignedUpload:
     handler: src/handlers/signed-upload.handler
     events:
@@ -68,6 +81,11 @@ resources:
                         - '/*'
                 - Effect: Allow
                   Action:
+                    - sqs:SendMessage
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AntiVirusQueueArn
+                - Effect: Allow
+                  Action:
                     - logs:CreateLogGroup
                     - logs:CreateLogStream
                     - logs:PutLogEvents
@@ -75,10 +93,25 @@ resources:
                   Resource:
                     - 'arn:aws:logs:*:*:*'
 
+    DownloadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.downloads}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+              AllowedOrigins:
+                - '*'
+              MaxAge: 3000
+
     UploadBucket:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.uploads}
+        # TODO: Is this really needed?
         CorsConfiguration:
           CorsRules:
             - AllowedHeaders:
