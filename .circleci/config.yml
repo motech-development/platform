@@ -304,8 +304,7 @@ jobs:
       - checkout
       - <<: *attach_workspace
       - <<: *restore_dependencies
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - setup_remote_docker
       - run:
           command: npm run deploy -- --scope=@motech-development/anti-virus -- -- --stage develop
           name: Deploy anti virus service
