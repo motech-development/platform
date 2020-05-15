@@ -4,5 +4,6 @@ type Upload {
 }
 
 input UploadInput {
+  companyId: ID!
   extension: String!
 }
