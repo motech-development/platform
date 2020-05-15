@@ -293,6 +293,22 @@ jobs:
           command: npm run deploy -- --scope=@motech-development/accounts-storage -- -- --stage production
           name: Deploy accounts storage infrastructure
 
+  deploy-anti-virus-develop:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          command: npm run deploy -- --scope=@motech-development/anti-virus -- -- --stage develop
+          name: Deploy anti virus service
+
+  # TODO: Deploy prod AV
+
   deploy-open-banking-develop:
     docker:
       - image: circleci/node:12.13
@@ -452,6 +468,8 @@ workflows:
               only: master
           requires:
             - deploy-accounts-data-production
+            # TODO: Enable
+            # - deploy-anti-virus-production
 
       - deploy-accounts-storage-develop:
           filters:
@@ -462,6 +480,17 @@ workflows:
                 - /hotfix\/.*/
           requires:
             - deploy-accounts-data-develop
+            - deploy-anti-virus-develop
+
+      - deploy-anti-virus-develop:
+          filters:
+            branches:
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
+          requires:
+            - unit-test
 
       - deploy-open-banking-production:
           filters:
