@@ -1,11 +1,9 @@
 import { Handler } from 'aws-lambda';
-import { S3 } from 'aws-sdk';
 import { createReadStream } from 'fs';
 import { join } from 'path';
 import { updateDefinitions } from '../shared/clam-av';
+import { createFile } from '../shared/file-operations';
 import virusDefinitions from '../shared/virus-definitions';
-
-const s3 = new S3();
 
 export const handler: Handler = async () => {
   const { BUCKET } = process.env;
@@ -24,13 +22,7 @@ export const handler: Handler = async () => {
       const body = createReadStream(path);
       const key = definition;
 
-      return s3
-        .putObject({
-          Body: body,
-          Bucket: BUCKET,
-          Key: key,
-        })
-        .promise();
+      return createFile(BUCKET, key, body);
     });
 
     await Promise.all(upload);
