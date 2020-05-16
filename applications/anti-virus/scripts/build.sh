@@ -3,8 +3,6 @@ set -e
 
 mkdir -p clamav
 
-ls -ltra
-
 echo "-- Downloading AmazonLinux container --"
 docker pull amazonlinux
 docker create -i -t -v ${PWD}/clamav:/home/docker  --name s3-antivirus-builder amazonlinux
@@ -23,6 +21,10 @@ docker stop s3-antivirus-builder
 docker rm s3-antivirus-builder
 
 mkdir ./bin
+
+ls -ltra
+
+ls -ltra clamav
 
 echo "-- Copying the executables and required libraries --"
 cp clamav/* bin/.
