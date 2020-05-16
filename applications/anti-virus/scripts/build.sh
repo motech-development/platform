@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 set -e
-LAMBDA_FILE="lambda.zip"
-
-rm -f ${LAMBDA_FILE}
 
 mkdir -p clamav
+
+ls -ltra
 
 echo "-- Downloading AmazonLinux container --"
 docker pull amazonlinux
