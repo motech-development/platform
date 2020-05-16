@@ -3,11 +3,9 @@ set -e
 
 mkdir -p clamav
 
-echo ${PWD}
-
 echo "-- Downloading AmazonLinux container --"
 docker pull amazonlinux
-docker create -i -t -v ${PWD}/clamav:/home/docker  --name s3-antivirus-builder amazonlinux
+docker create -i -t -v /home/docker --name s3-antivirus-builder amazonlinux
 docker start s3-antivirus-builder
 
 echo "-- Updating, downloading and unpacking clamAV and ClamAV update --"
@@ -19,13 +17,15 @@ docker exec -t -w /home/docker s3-antivirus-builder /bin/sh -c "ldd /usr/bin/fre
 docker exec -t -w /home/docker s3-antivirus-builder /bin/sh -c "cp /usr/bin/clamscan ."
 docker exec -t -w /home/docker s3-antivirus-builder /bin/sh -c "cp /usr/bin/freshclam ."
 
+docker cp s3-antivirus-builder:/home/docker clamav
+
 docker stop s3-antivirus-builder
 docker rm s3-antivirus-builder
 
 mkdir ./bin
 
 echo "-- Copying the executables and required libraries --"
-cp clamav/* bin/.
+cp clamav/docker/* bin/.
 
 echo "-- Cleaning up ClamAV folder --"
 rm -rf clamav
