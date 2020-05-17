@@ -203,7 +203,7 @@ const InternalSelect: FC<IInternalSelect> = ({
         </IconInner>
       </IconOuter>
 
-      {readOnly && <input hidden {...field} />}
+      {readOnly && <input type="hidden" {...field} />}
       {/* eslint-enable react/jsx-props-no-spreading */}
     </InputWrapper>
   );
