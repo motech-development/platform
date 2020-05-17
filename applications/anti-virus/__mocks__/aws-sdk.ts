@@ -8,6 +8,8 @@ AWS.S3.prototype.copyObject = mock;
 
 AWS.S3.prototype.deleteObject = mock;
 
+AWS.S3.prototype.putObject = mock;
+
 AWS.StepFunctions.prototype.startExecution = mock;
 
 module.exports = AWS;
