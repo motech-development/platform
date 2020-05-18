@@ -34,7 +34,7 @@ export const useGet = <T>(url: string) => {
   };
 };
 
-type UsePut<T, X = FormData> = [
+type UseFetch<T, X = FormData> = [
   (url: string, input: X, headers?: IHeaders) => Promise<void>,
   {
     data?: T;
@@ -43,7 +43,7 @@ type UsePut<T, X = FormData> = [
   },
 ];
 
-export const usePut = <T, X = FormData>(): UsePut<T, X> => {
+const useFetch = <T, X = FormData>(method: string): UseFetch<T, X> => {
   const [data, setData] = useState<T>();
   const [error, setError] = useState<Error>();
   const [loading, setLoading] = useState(true);
@@ -56,7 +56,7 @@ export const usePut = <T, X = FormData>(): UsePut<T, X> => {
       const response = await fetch(url, {
         body,
         headers,
-        method: 'PUT',
+        method,
       });
       const result = await response.json();
 
@@ -77,3 +77,7 @@ export const usePut = <T, X = FormData>(): UsePut<T, X> => {
     },
   ];
 };
+
+export const usePost = <T, X = FormData>() => useFetch<T, X>('POST');
+
+export const usePut = <T, X = FormData>() => useFetch<T, X>('PUT');
