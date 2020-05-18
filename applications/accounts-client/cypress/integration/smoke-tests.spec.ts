@@ -810,7 +810,7 @@ describe('Smoke tests', () => {
 
           cy.wait(1000);
 
-          cy.get('input[name="transaction"][hidden]').should(
+          cy.get('input[name="transaction"][type="hidden"]').should(
             'have.value',
             transaction.type,
           );
