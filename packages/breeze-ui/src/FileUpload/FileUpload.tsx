@@ -70,15 +70,15 @@ const InternalFileUpload: FC<IInternalFileUpload> = ({
 
       setFileName(file.name);
 
+      form.setFieldTouched(name, true);
+
       onSelect(file, form);
     }
   };
   const onClick = () => {
-    const input = document.getElementById(name);
+    const input = document.getElementById(name) as HTMLInputElement;
 
-    if (input) {
-      input.click();
-    }
+    input.click();
   };
 
   useEffect(() => {
