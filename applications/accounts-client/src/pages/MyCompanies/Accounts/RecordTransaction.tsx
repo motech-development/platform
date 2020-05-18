@@ -14,7 +14,12 @@ import ADD_TRANSACTION, {
   IAddTransactionOutput,
   updateCache,
 } from '../../../graphql/transaction/ADD_TRANSACTION';
+import REQUEST_UPLOAD, {
+  IRequestUploadInput,
+  IRequestUploadOutput,
+} from '../../../graphql/upload/REQUEST_UPLOAD';
 import withLayout from '../../../hoc/withLayout';
+import { usePut } from '../../../hooks/useFetch';
 
 interface IRecordTransactionInput {
   id: string;
@@ -67,6 +72,7 @@ const RecordTransaction: FC = () => {
   const { companyId } = useParams<IRecordTransactionParams>();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
+  const [doUpload, { loading: uploadLoading }] = usePut();
   const { data, error, loading } = useQuery<
     IRecordTransactionOutput,
     IRecordTransactionInput
@@ -97,6 +103,10 @@ const RecordTransaction: FC = () => {
       },
     ],
   });
+  const [request, { loading: requestUploadLoading }] = useMutation<
+    IRequestUploadOutput,
+    IRequestUploadInput
+  >(REQUEST_UPLOAD);
   const backTo = (id: string) => `/my-companies/accounts/${id}`;
   const save = (input: FormSchema) => {
     (async () => {
@@ -106,6 +116,35 @@ const RecordTransaction: FC = () => {
           input,
         },
       });
+    })();
+  };
+  const upload = (file: File) => {
+    (async () => {
+      const extension = file.name.split('.').pop();
+
+      if (extension) {
+        const { data: uploadData } = await request({
+          variables: {
+            input: {
+              companyId,
+              extension,
+            },
+          },
+        });
+
+        if (uploadData) {
+          const { requestUpload } = uploadData;
+          const formData = new FormData();
+
+          formData.append(file.name, file, file.name);
+
+          await doUpload(requestUpload.url, formData, {
+            'Content-Type': 'multipart/form-data',
+          });
+
+          // TODO: Set form field
+        }
+      }
     })();
   };
 
@@ -131,9 +170,10 @@ const RecordTransaction: FC = () => {
               value: name,
             }))}
             companyId={companyId}
-            loading={addLoading}
+            loading={addLoading || requestUploadLoading || uploadLoading}
             vat={data.getSettings.vat.pay}
             onSave={save}
+            onUpload={upload}
           />
         </>
       )}

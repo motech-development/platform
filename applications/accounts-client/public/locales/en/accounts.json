@@ -110,6 +110,17 @@
         "label": "VAT",
         "required": "VAT is required"
       }
+    },
+    "upload": {
+      "heading": "Upload {{transactionType}}",
+      "upload": {
+        "button": "Browse",
+        "label": "Select file to upload",
+        "help-text": {
+          "purchase": "Attach a receipt or invoice to this transaction",
+          "sale": "Attach an invoice to this transaction"
+        }
+      }
     }
   },
   "no-transactions": {

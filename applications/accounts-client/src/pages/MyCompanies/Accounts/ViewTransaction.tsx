@@ -221,6 +221,8 @@ const ViewTransaction: FC = () => {
                 loading={mutationLoading}
                 vat={data.getSettings.vat.pay}
                 onSave={save}
+                // TODO: File upload
+                onUpload={() => {}}
               />
             </Col>
 

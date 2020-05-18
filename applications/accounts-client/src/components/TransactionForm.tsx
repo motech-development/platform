@@ -2,6 +2,7 @@ import {
   Card,
   Col,
   DatePicker,
+  FileUpload,
   Form,
   ISelectOption,
   LinkButton,
@@ -49,6 +50,7 @@ export interface ITransactionForm {
   loading: boolean;
   vat: number;
   onSave(value: FormSchema): void;
+  onUpload(file: File, form: FormikProps<FormikValues>): void;
 }
 
 interface IFormValues extends FormSchema {
@@ -66,6 +68,7 @@ const TransactionForm: FC<ITransactionForm> = ({
   },
   loading,
   onSave,
+  onUpload,
   vat,
 }) => {
   const isEmpty = initialValues.amount === '';
@@ -266,75 +269,109 @@ const TransactionForm: FC<ITransactionForm> = ({
         </Col>
 
         <Col xs={12} md={6}>
-          <Card padding="lg">
-            <Typography rule component="h3" variant="h3">
-              {t('transaction-form.transaction-amount.heading')}
-            </Typography>
+          <Row>
+            <Col>
+              <Card padding="lg">
+                <Typography rule component="h3" variant="h3">
+                  {t('transaction-form.transaction-amount.heading')}
+                </Typography>
 
-            <Radio
-              name="status"
-              label={t('transaction-form.transaction-amount.status.label')}
-              options={statusOptions}
-            />
+                <Radio
+                  name="status"
+                  label={t('transaction-form.transaction-amount.status.label')}
+                  options={statusOptions}
+                />
 
-            {transactionType && (
-              <>
-                {transactionType === 'Purchase' ? (
+                {transactionType && (
                   <>
-                    <Select
-                      label={t(
-                        'transaction-form.transaction-amount.category.label',
-                      )}
-                      name="category"
-                      onChange={onCategoryChange}
-                      options={dropdown}
-                      placeholder={t(
-                        'transaction-form.transaction-amount.category.placeholder',
-                      )}
-                    />
+                    {transactionType === 'Purchase' ? (
+                      <>
+                        <Select
+                          label={t(
+                            'transaction-form.transaction-amount.category.label',
+                          )}
+                          name="category"
+                          onChange={onCategoryChange}
+                          options={dropdown}
+                          placeholder={t(
+                            'transaction-form.transaction-amount.category.placeholder',
+                          )}
+                        />
 
-                    <TextBox
-                      decimalScale={2}
-                      disabled={disableInput}
-                      label={t(
-                        'transaction-form.transaction-amount.amount.label',
-                      )}
-                      name="amount"
-                      onChange={onPurchaseAmountChange}
-                      prefix={currency}
-                    />
+                        <TextBox
+                          decimalScale={2}
+                          disabled={disableInput}
+                          label={t(
+                            'transaction-form.transaction-amount.amount.label',
+                          )}
+                          name="amount"
+                          onChange={onPurchaseAmountChange}
+                          prefix={currency}
+                        />
 
-                    <TextBox
-                      disabled={disableInput}
-                      name="vat"
-                      label={t('transaction-form.transaction-amount.vat.label')}
-                      prefix={currency}
-                      decimalScale={2}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <TextBox
-                      decimalScale={2}
-                      label={t(
-                        'transaction-form.transaction-amount.amount.label',
-                      )}
-                      name="amount"
-                      onChange={onSaleAmountChange}
-                      prefix={currency}
-                    />
+                        <TextBox
+                          disabled={disableInput}
+                          name="vat"
+                          label={t(
+                            'transaction-form.transaction-amount.vat.label',
+                          )}
+                          prefix={currency}
+                          decimalScale={2}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <TextBox
+                          decimalScale={2}
+                          label={t(
+                            'transaction-form.transaction-amount.amount.label',
+                          )}
+                          name="amount"
+                          onChange={onSaleAmountChange}
+                          prefix={currency}
+                        />
 
-                    <TextBox
-                      decimalScale={2}
-                      label={t('transaction-form.transaction-amount.vat.label')}
-                      name="vat"
-                      prefix={currency}
-                    />
+                        <TextBox
+                          decimalScale={2}
+                          label={t(
+                            'transaction-form.transaction-amount.vat.label',
+                          )}
+                          name="vat"
+                          prefix={currency}
+                        />
+                      </>
+                    )}
                   </>
                 )}
-              </>
+              </Card>
+            </Col>
+
+            {transactionType && (
+              <Col>
+                <Card padding="lg">
+                  <Typography rule component="h3" variant="h3">
+                    {t('transaction-form.upload.heading', {
+                      transactionType:
+                        transactionType === 'Purchase' ? 'receipt' : 'invoice',
+                    })}
+                  </Typography>
+
+                  <FileUpload
+                    accept="application/pdf, image/gif, image/png, image/jpeg"
+                    buttonText={t('transaction-form.upload.upload.button')}
+                    helpText={
+                      transactionType === 'Purchase'
+                        ? t('transaction-form.upload.upload.help-text.purchase')
+                        : t('transaction-form.upload.upload.help-text.sale')
+                    }
+                    label={t('transaction-form.upload.upload.label')}
+                    name="upload"
+                    onSelect={onUpload}
+                  />
+                </Card>
+              </Col>
             )}
-          </Card>
+          </Row>
         </Col>
       </Row>
     </Form>

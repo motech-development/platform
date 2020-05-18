@@ -279,7 +279,7 @@ describe('RecordTransaction', () => {
 
         await wait();
 
-        const [, , button] = await findAllByRole('button');
+        const [, , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -352,7 +352,7 @@ describe('RecordTransaction', () => {
 
         await wait();
 
-        const [, , button] = await findAllByRole('button');
+        const [, , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -562,7 +562,7 @@ describe('RecordTransaction', () => {
 
         await wait();
 
-        const [, , button] = await findAllByRole('button');
+        const [, , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
