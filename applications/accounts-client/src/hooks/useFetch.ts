@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
 
-interface IHeaders {
-  [name: string]: string;
-}
-
 export const useGet = <T>(url: string) => {
   const [data, setData] = useState<T>();
   const [error, setError] = useState<Error>();
@@ -34,23 +30,23 @@ export const useGet = <T>(url: string) => {
   };
 };
 
-type UseFetch<T, X = FormData> = [
-  (url: string, input: X, headers?: IHeaders) => Promise<void>,
+type UseFetch<TData, TBody> = [
+  (url: string, input: TBody, headers?: Headers) => Promise<TData | undefined>,
   {
-    data?: T;
+    data?: TData;
     error?: Error;
     loading: boolean;
   },
 ];
 
-const useFetch = <T, X = FormData>(method: string): UseFetch<T, X> => {
-  const [data, setData] = useState<T>();
+const useFetch = <TData, TBody>(method: string): UseFetch<TData, TBody> => {
+  const [data, setData] = useState<TData>();
   const [error, setError] = useState<Error>();
   const [loading, setLoading] = useState(true);
   const complete = () => {
     setLoading(false);
   };
-  const execute = async (url: string, input: X, headers?: IHeaders) => {
+  const execute = async (url: string, input: TBody, headers?: Headers) => {
     try {
       const body = input instanceof FormData ? input : JSON.stringify(input);
       const response = await fetch(url, {
@@ -58,12 +54,14 @@ const useFetch = <T, X = FormData>(method: string): UseFetch<T, X> => {
         headers,
         method,
       });
-      const result = await response.json();
+      const result: TData = await response.json();
 
       setData(result);
     } catch (e) {
       setError(e);
     }
+
+    return data;
   };
 
   useEffect(complete, [data, error]);
@@ -78,6 +76,6 @@ const useFetch = <T, X = FormData>(method: string): UseFetch<T, X> => {
   ];
 };
 
-export const usePost = <T, X = FormData>() => useFetch<T, X>('POST');
+export const usePost = <TData, TBody>() => useFetch<TData, TBody>('POST');
 
-export const usePut = <T, X = FormData>() => useFetch<T, X>('PUT');
+export const usePut = <TData, TBody>() => useFetch<TData, TBody>('PUT');

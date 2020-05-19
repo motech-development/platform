@@ -19,6 +19,7 @@ import { date, number, object, string } from 'yup';
 
 const formSchema = {
   amount: '',
+  attachment: '',
   category: '',
   companyId: '',
   date: '',
@@ -31,6 +32,7 @@ const formSchema = {
 
 export type FormSchema = {
   amount: number;
+  attachment: string;
   category: string;
   companyId: string;
   date: string;
@@ -100,6 +102,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     amount: number().required(
       t('transaction-form.transaction-amount.amount.required'),
     ),
+    attachment: string(),
     category: string().required(
       t('transaction-form.transaction-amount.category.required'),
     ),
@@ -110,6 +113,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     description: string().required(
       t('transaction-form.transaction-details.description.required'),
     ),
+    id: string(),
     name: string().required(
       t('transaction-form.transaction-details.name.required'),
     ),

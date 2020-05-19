@@ -10,6 +10,7 @@ type Transactions {
 
 type Transaction {
   amount: Float
+  attachment: String
   category: String
   companyId: String
   date: AWSDateTime
@@ -23,6 +24,7 @@ type Transaction {
 input TransactionInput {
   __typename: String
   amount: Float!
+  attachment: String!
   category: String!
   companyId: String!
   date: AWSDateTime!

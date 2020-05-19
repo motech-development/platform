@@ -7,6 +7,7 @@ import {
   useToast,
 } from '@motech-development/breeze-ui';
 import { gql } from 'apollo-boost';
+import { FormikProps, FormikValues } from 'formik';
 import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
@@ -25,7 +26,12 @@ import UPDATE_TRANSACTION, {
   IUpdateTransactionInput,
   IUpdateTransactionOutput,
 } from '../../../graphql/transaction/UPDATE_TRANSACTION';
+import REQUEST_UPLOAD, {
+  IRequestUploadInput,
+  IRequestUploadOutput,
+} from '../../../graphql/upload/REQUEST_UPLOAD';
 import withLayout from '../../../hoc/withLayout';
+import { usePut } from '../../../hooks/useFetch';
 
 interface IViewTransactionInput {
   companyId: string;
@@ -50,6 +56,7 @@ interface IViewTransactionOutput {
   };
   getTransaction: {
     amount: number;
+    attachment: string;
     category: string;
     companyId: string;
     date: string;
@@ -81,6 +88,7 @@ export const VIEW_TRANSACTION = gql`
     }
     getTransaction(id: $transactionId) {
       amount
+      attachment
       category
       companyId
       date
@@ -104,6 +112,7 @@ const ViewTransaction: FC = () => {
   const { companyId, transactionId } = useParams<IViewTransactionParams>();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
+  const [put, { loading: uploadLoading }] = usePut();
   const backTo = (id: string) => `/my-companies/accounts/${id}`;
   const { data, error, loading } = useQuery<
     IViewTransactionOutput,
@@ -167,6 +176,10 @@ const ViewTransaction: FC = () => {
       },
     ],
   });
+  const [requestMutation, { loading: requestUploadLoading }] = useMutation<
+    IRequestUploadOutput,
+    IRequestUploadInput
+  >(REQUEST_UPLOAD);
   const launchDeleteModal = () => {
     setModal(true);
   };
@@ -190,6 +203,36 @@ const ViewTransaction: FC = () => {
           input,
         },
       });
+    })();
+  };
+  const upload = (file: File, form: FormikProps<FormikValues>) => {
+    (async () => {
+      const extension = file.name.split('.').pop();
+
+      if (extension) {
+        const { data: uploadData } = await requestMutation({
+          variables: {
+            input: {
+              companyId,
+              extension,
+            },
+          },
+        });
+
+        if (uploadData) {
+          const { requestUpload } = uploadData;
+          const formData = new FormData();
+          const headers = new Headers();
+
+          headers.append('Content-Type', 'multipart/form-data');
+
+          formData.append(file.name, file, file.name);
+
+          await put(requestUpload.url, formData, headers);
+
+          form.setFieldValue('attachment', requestUpload.id);
+        }
+      }
     })();
   };
 
@@ -218,11 +261,12 @@ const ViewTransaction: FC = () => {
                 }))}
                 companyId={companyId}
                 initialValues={data.getTransaction}
-                loading={mutationLoading}
+                loading={
+                  mutationLoading || requestUploadLoading || uploadLoading
+                }
                 vat={data.getSettings.vat.pay}
                 onSave={save}
-                // TODO: File upload
-                onUpload={() => {}}
+                onUpload={upload}
               />
             </Col>
 

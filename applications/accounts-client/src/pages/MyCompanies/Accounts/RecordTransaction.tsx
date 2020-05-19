@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { gql } from 'apollo-boost';
+import { FormikProps, FormikValues } from 'formik';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
@@ -72,7 +73,7 @@ const RecordTransaction: FC = () => {
   const { companyId } = useParams<IRecordTransactionParams>();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
-  const [doUpload, { loading: uploadLoading }] = usePut();
+  const [put, { loading: uploadLoading }] = usePut();
   const { data, error, loading } = useQuery<
     IRecordTransactionOutput,
     IRecordTransactionInput
@@ -103,7 +104,7 @@ const RecordTransaction: FC = () => {
       },
     ],
   });
-  const [request, { loading: requestUploadLoading }] = useMutation<
+  const [requestMutation, { loading: requestUploadLoading }] = useMutation<
     IRequestUploadOutput,
     IRequestUploadInput
   >(REQUEST_UPLOAD);
@@ -118,12 +119,12 @@ const RecordTransaction: FC = () => {
       });
     })();
   };
-  const upload = (file: File) => {
+  const upload = (file: File, form: FormikProps<FormikValues>) => {
     (async () => {
       const extension = file.name.split('.').pop();
 
       if (extension) {
-        const { data: uploadData } = await request({
+        const { data: uploadData } = await requestMutation({
           variables: {
             input: {
               companyId,
@@ -135,14 +136,15 @@ const RecordTransaction: FC = () => {
         if (uploadData) {
           const { requestUpload } = uploadData;
           const formData = new FormData();
+          const headers = new Headers();
+
+          headers.append('Content-Type', 'multipart/form-data');
 
           formData.append(file.name, file, file.name);
 
-          await doUpload(requestUpload.url, formData, {
-            'Content-Type': 'multipart/form-data',
-          });
+          await put(requestUpload.url, formData, headers);
 
-          // TODO: Set form field
+          form.setFieldValue('attachment', requestUpload.id);
         }
       }
     })();
