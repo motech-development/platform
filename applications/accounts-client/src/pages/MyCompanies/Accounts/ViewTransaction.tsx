@@ -230,7 +230,7 @@ const ViewTransaction: FC = () => {
 
           await put(requestUpload.url, formData, headers);
 
-          form.setFieldValue('attachment', requestUpload.id);
+          form.setFieldValue('attachment', `${requestUpload.id}.${extension}`);
         }
       }
     })();
@@ -261,9 +261,8 @@ const ViewTransaction: FC = () => {
                 }))}
                 companyId={companyId}
                 initialValues={data.getTransaction}
-                loading={
-                  mutationLoading || requestUploadLoading || uploadLoading
-                }
+                loading={mutationLoading}
+                uploading={requestUploadLoading || uploadLoading}
                 vat={data.getSettings.vat.pay}
                 onSave={save}
                 onUpload={upload}

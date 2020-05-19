@@ -50,6 +50,7 @@ export interface ITransactionForm {
   companyId: string;
   initialValues?: FormSchema;
   loading: boolean;
+  uploading: boolean;
   vat: number;
   onSave(value: FormSchema): void;
   onUpload(file: File, form: FormikProps<FormikValues>): void;
@@ -71,6 +72,7 @@ const TransactionForm: FC<ITransactionForm> = ({
   loading,
   onSave,
   onUpload,
+  uploading,
   vat,
 }) => {
   const isEmpty = initialValues.amount === '';
@@ -369,6 +371,7 @@ const TransactionForm: FC<ITransactionForm> = ({
                         : t('transaction-form.upload.upload.help-text.sale')
                     }
                     label={t('transaction-form.upload.upload.label')}
+                    loading={uploading}
                     name="upload"
                     onSelect={onUpload}
                   />
