@@ -13,7 +13,8 @@ type Mutation {
   addTransaction(input: TransactionInput!): Transaction!
   deleteTransaction(id: ID!): Transaction!
   updateTransaction(input: TransactionInput!): Transaction!
-  requestUpload(input: UploadInput!): Upload!
+  requestUpload(id: ID!, extension: String!): StorageUpload!
+  deleteFile(path: ID!): Storage!
 }
 
 type Query {

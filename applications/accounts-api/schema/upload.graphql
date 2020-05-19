@@ -1,9 +1,0 @@
-type Upload {
-  id: ID
-  url: String
-}
-
-input UploadInput {
-  companyId: ID!
-  extension: String!
-}

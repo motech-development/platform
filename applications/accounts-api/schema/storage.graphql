@@ -1,0 +1,8 @@
+type Storage {
+  path: String
+}
+
+type StorageUpload {
+  id: ID
+  url: String
+}

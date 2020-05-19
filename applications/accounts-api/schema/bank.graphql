@@ -6,3 +6,51 @@ type Bank {
 type Banks {
   items: [Bank]
 }
+
+type BankCallback {
+  authorisationUrl: String
+  status: String
+}
+
+type BankConnection {
+  status: String
+}
+
+type BankDetails {
+  accountNumber: String
+  sortCode: String
+}
+
+type BankSettings {
+  account: String
+  bank: String
+  consent: String
+  id: ID
+  user: String
+}
+
+input BankCallbackInput {
+  authorisationUrl: String!
+  id: ID!
+}
+
+input BankConnectionInput {
+  bank: String!
+  callback: String!
+  companyId: String!
+  user: String
+}
+
+input BankDetailsInput {
+  __typename: String
+  accountNumber: String!
+  sortCode: String!
+}
+
+input BankSettingsInput {
+  account: String
+  bank: String
+  consent: String
+  id: ID!
+  user: String
+}

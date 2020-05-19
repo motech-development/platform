@@ -1,0 +1,7 @@
+#if($ctx.result.statusCode == 200)
+  {
+    "path": $util.toJson($ctx.stash.path)
+  }
+#else
+  $utils.error($ctx.result.body, "$ctx.result.statusCode")
+#end

@@ -169,9 +169,11 @@ custom:
           field: getCompanies
           request: company/getCompanies/Query.getCompanies.req.vtl
           response: company/getCompanies/Query.getCompanies.res.vtl
-        - dataSource: Data
+        - kind: PIPELINE
           type: Query
           field: getCompany
+          functions:
+            - getCompany
           request: company/getCompany/Query.getCompany.req.vtl
           response: company/getCompany/Query.getCompany.res.vtl
 
@@ -212,19 +214,22 @@ custom:
           request: transaction/updateTransaction/Mutation.updateTransaction.req.vtl
           response: transaction/updateTransaction/Mutation.updateTransaction.res.vtl
 
-        - dataSource: StorageUpload
+        - dataSource: Queue
+          type: Mutation
+          field: deleteFile
+          request: storage/deleteFile/Mutation.deleteFile.req.vtl
+          response: storage/deleteFile/Mutation.deleteFile.res.vtl
+        - kind: PIPELINE
           type: Mutation
           field: requestUpload
-          request: upload/requestUpload/Mutation.requestUpload.req.vtl
-          response: upload/requestUpload/Mutation.requestUpload.res.vtl
+          functions:
+            - getCompany
+            - requestUpload
+          request: storage/requestUpload/Mutation.requestUpload.req.vtl
+          response: storage/requestUpload/Mutation.requestUpload.res.vtl
       schema:
         - schema/address.graphql
         - schema/balance.graphql
-        - schema/bank-account.graphql
-        - schema/bank-connection.graphql
-        - schema/bank-callback.graphql
-        - schema/bank-details.graphql
-        - schema/bank-settings.graphql
         - schema/bank.graphql
         - schema/client.graphql
         - schema/company.graphql
@@ -232,8 +237,8 @@ custom:
         - schema/expense-category.graphql
         - schema/schema.graphql
         - schema/settings.graphql
+        - schema/storage.graphql
         - schema/transaction.graphql
-        - schema/upload.graphql
         - schema/vat-settings.graphql
       functionConfigurations:
         # Validation
@@ -267,6 +272,10 @@ custom:
           name: bankSettings
           request: shared/bankSettings/Pipeline.bankSettings.req.vtl
           response: shared/bankSettings/Pipeline.bankSettings.res.vtl
+        - dataSource: Data
+          name: getCompany
+          request: shared/getCompany/Pipeline.getCompany.req.vtl
+          response: shared/getCompany/Pipeline.getCompany.res.vtl
 
         # Bank
         - dataSource: OpenBanking
@@ -325,6 +334,12 @@ custom:
           name: updateCompany
           request: company/updateCompany/Pipeline.updateCompany.req.vtl
           response: company/updateCompany/Pipeline.updateCompany.res.vtl
+
+        # Storage
+        - dataSource: StorageUpload
+          name: requestUpload
+          request: storage/requestUpload/Pipeline.requestUpload.req.vtl
+          response: storage/requestUpload/Pipeline.requestUpload.res.vtl
       dataSources:
         - type: NONE
           name: Resolver
@@ -375,6 +390,7 @@ custom:
             serviceRoleArn: !GetAtt AppSyncQueueServiceRole.Arn
       substitutions:
         stage: ${self:provider.stage}
+        deleteFileQueue: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
         queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
 
   webpack:
@@ -516,6 +532,7 @@ resources:
                     - sqs:SendMessage
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsQueueArn
+                    - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
 
     AppSyncLambdaServiceRole:
       Type: AWS::IAM::Role

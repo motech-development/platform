@@ -1,9 +1,0 @@
-type BankCallback {
-  authorisationUrl: String
-  status: String
-}
-
-input BankCallbackInput {
-  authorisationUrl: String!
-  id: ID!
-}
