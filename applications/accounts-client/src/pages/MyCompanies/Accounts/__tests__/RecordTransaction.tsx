@@ -176,6 +176,7 @@ describe('RecordTransaction', () => {
             variables: {
               input: {
                 amount: -999.99,
+                attachment: '',
                 category: 'Equipment',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
@@ -192,6 +193,7 @@ describe('RecordTransaction', () => {
               addTransaction: {
                 __typename: 'Transaction',
                 amount: -999.99,
+                attachment: '',
                 category: 'Equipment',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
@@ -468,6 +470,7 @@ describe('RecordTransaction', () => {
             variables: {
               input: {
                 amount: 999.99,
+                attachment: '',
                 category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
@@ -484,6 +487,7 @@ describe('RecordTransaction', () => {
               addTransaction: {
                 __typename: 'Transaction',
                 amount: 999.99,
+                attachment: '',
                 category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
