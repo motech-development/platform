@@ -31,6 +31,13 @@ custom:
     useChildProcesses: true
 
 functions:
+  ProcessDelete:
+    handler: src/handlers/process-delete.handler
+    events:
+      - sqs:
+          arn: !GetAtt DeleteFileQueue.Arn
+    role: LambdaFunctionRole
+
   QueueUpload:
     handler: src/handlers/queue-upload.handler
     events:
@@ -73,12 +80,27 @@ resources:
               Statement:
                 - Effect: Allow
                   Action:
+                    - s3:deleteObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !GetAtt DownloadBucket.Arn
+                        - '/*'
+                - Effect: Allow
+                  Action:
                     - s3:PutObject
                   Resource:
                     - !Join
                       - ''
                       - - !GetAtt UploadBucket.Arn
                         - '/*'
+                - Effect: Allow
+                  Action:
+                    - sqs:DeleteMessage
+                    - sqs:GetQueueAttributes
+                    - sqs:ReceiveMessage
+                  Resource:
+                    - !GetAtt DeleteFileQueue.Arn
                 - Effect: Allow
                   Action:
                     - sqs:SendMessage
@@ -126,6 +148,11 @@ resources:
               AllowedOrigins:
                 - '*'
               MaxAge: 3000
+
+    DeleteFileQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.prefix}-delete-file-queue
 
   Outputs:
     StorageUploadApiEndpoint:
