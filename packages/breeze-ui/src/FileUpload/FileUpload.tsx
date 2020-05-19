@@ -44,6 +44,7 @@ interface IInternalFileUpload extends FieldProps {
   disabled: boolean;
   helpText: string;
   label: string;
+  loading: boolean;
   spacing: FileUploadSpacing;
   onSelect(file: File, form: FormikProps<FormikValues>): void;
 }
@@ -56,6 +57,7 @@ const InternalFileUpload: FC<IInternalFileUpload> = ({
   form,
   helpText,
   label,
+  loading,
   onSelect,
   spacing,
 }) => {
@@ -114,7 +116,12 @@ const InternalFileUpload: FC<IInternalFileUpload> = ({
           <input {...field} type="hidden" disabled={disabled} />
         </InputContainer>
 
-        <UploadButton colour="secondary" disabled={disabled} onClick={onClick}>
+        <UploadButton
+          colour="secondary"
+          disabled={disabled}
+          loading={loading}
+          onClick={onClick}
+        >
           {buttonText}
         </UploadButton>
       </InnerFileUpload>
@@ -128,6 +135,7 @@ export interface IFileUploadProps {
   disabled?: boolean;
   helpText?: string;
   label: string;
+  loading?: boolean;
   name: string;
   spacing?: FileUploadSpacing;
   onSelect(file: File, form: FormikProps<FormikValues>): void;
@@ -139,6 +147,7 @@ const FileUpload: FC<IFileUploadProps> = ({
   disabled = false,
   helpText = undefined,
   label,
+  loading = false,
   name,
   onSelect,
   spacing = 'md',
@@ -150,6 +159,7 @@ const FileUpload: FC<IFileUploadProps> = ({
     disabled={disabled}
     helpText={helpText}
     label={label}
+    loading={loading}
     name={name}
     onSelect={onSelect}
     spacing={spacing}
