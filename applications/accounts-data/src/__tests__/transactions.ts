@@ -1,9 +1,9 @@
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { handler } from '../balance';
+import { handler } from '../transactions';
 
-describe('balance', () => {
+describe('transactions', () => {
   let callback: jest.Mock;
   let context: Context;
 
@@ -40,13 +40,34 @@ describe('balance', () => {
       process.env = env;
     });
 
-    describe('when there are no errors thrown by DynamoDB', () => {
-      beforeEach(() => {
-        DocumentClient.prototype.update = jest.fn().mockReturnValue({
-          promise: jest.fn(),
-        });
-      });
+    it('should throw an error', async () => {
+      const event = {
+        Records: [],
+      };
 
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'No attachment queue set',
+      );
+    });
+  });
+
+  describe('with table and storage queue set', () => {
+    let env: NodeJS.ProcessEnv;
+
+    beforeEach(() => {
+      env = {
+        ...process.env,
+      };
+
+      process.env.TABLE = 'app-table';
+      process.env.ATTACHMENT_QUEUE = 'attachment-queue';
+    });
+
+    afterEach(() => {
+      process.env = env;
+    });
+
+    describe('when there are no errors thrown by DynamoDB', () => {
       it('should do nothing if there is nothing to process', async () => {
         const event = {
           Records: [],
@@ -224,7 +245,7 @@ describe('balance', () => {
 
     describe('when DyanmoDB throws an error', () => {
       beforeEach(() => {
-        DocumentClient.prototype.update = jest.fn().mockReturnValue({
+        (DocumentClient.prototype.update as jest.Mock).mockReturnValue({
           promise: jest
             .fn()
             .mockRejectedValue(new Error('Something has gone wrong')),

@@ -448,7 +448,7 @@ workflows:
             branches:
               only: master
           requires:
-            - unit-test
+            - deploy-accounts-storage-production
 
       - deploy-accounts-data-develop:
           filters:
@@ -458,7 +458,7 @@ workflows:
                 - /feature\/.*/
                 - /hotfix\/.*/
           requires:
-            - unit-test
+            - deploy-accounts-storage-production
 
       - deploy-accounts-queue-production:
           filters:
@@ -482,7 +482,6 @@ workflows:
             branches:
               only: master
           requires:
-            - deploy-accounts-data-production
             - deploy-anti-virus-production
 
       - deploy-accounts-storage-develop:
@@ -493,7 +492,6 @@ workflows:
                 - /feature\/.*/
                 - /hotfix\/.*/
           requires:
-            - deploy-accounts-data-develop
             - deploy-anti-virus-develop
 
       - deploy-anti-virus-production:

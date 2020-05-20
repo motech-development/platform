@@ -10,9 +10,11 @@ export enum TransactionStatus {
 export interface ITransaction {
   __typename: string;
   amount: number;
+  attachment: string;
   category: string;
   companyId: string;
   date: string;
+  id: string;
   status: TransactionStatus;
   vat: number;
 }
