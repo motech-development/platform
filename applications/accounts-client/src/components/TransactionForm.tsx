@@ -379,10 +379,9 @@ const TransactionForm: FC<ITransactionForm> = ({
               <Col>
                 <Card padding="lg">
                   <Typography rule component="h3" variant="h3">
-                    {t('transaction-form.upload.heading', {
-                      transactionType:
-                        transactionType === 'Purchase' ? 'receipt' : 'invoice',
-                    })}
+                    {transactionType === 'Purchase'
+                      ? t('transaction-form.upload.purchase.heading')
+                      : t('transaction-form.upload.sale.heading')}
                   </Typography>
 
                   {attached ? (
@@ -395,10 +394,8 @@ const TransactionForm: FC<ITransactionForm> = ({
                       buttonText={t('transaction-form.upload.upload.button')}
                       helpText={
                         transactionType === 'Purchase'
-                          ? t(
-                              'transaction-form.upload.upload.help-text.purchase',
-                            )
-                          : t('transaction-form.upload.upload.help-text.sale')
+                          ? t('transaction-form.upload.purchase.help-text')
+                          : t('transaction-form.upload.sale.help-text')
                       }
                       label={t('transaction-form.upload.upload.label')}
                       loading={uploading}

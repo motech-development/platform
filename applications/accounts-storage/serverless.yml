@@ -189,6 +189,12 @@ resources:
 
     DeleteFileQueueUrl:
       Description: Delete from downloads storage queue URL
+      Value: !Ref DeleteFileQueue
+      Export:
+        Name: ${self:provider.stage}-DeleteFileQueueUrl
+
+    DeleteFileQueueUrlPath:
+      Description: Delete from downloads storage queue URL path
       Value: !Join
         - ''
         - - '/'
@@ -196,4 +202,4 @@ resources:
           - '/'
           - !GetAtt DeleteFileQueue.QueueName
       Export:
-        Name: ${self:provider.stage}-DeleteFileQueueUrl
+        Name: ${self:provider.stage}-DeleteFileQueueUrlPath

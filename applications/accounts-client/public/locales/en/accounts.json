@@ -112,15 +112,19 @@
       }
     },
     "upload": {
-      "heading": "Upload {{transactionType}}",
-      "delete-file": "Delete uploaded file",
+      "delete-file": "Delete file",
+      "download-file": "Download file",
+      "purchase": {
+        "heading": "Invoice or receipt",
+        "help-text": "Attach a invoice or receipt to this transaction"
+      },
+      "sale": {
+        "heading": "Invoice",
+        "help-text": "Attach an invoice to this transaction"
+      },
       "upload": {
         "button": "Browse",
-        "label": "Select file to upload",
-        "help-text": {
-          "purchase": "Attach a receipt or invoice to this transaction",
-          "sale": "Attach an invoice to this transaction"
-        }
+        "label": "Select file to upload"
       }
     }
   },

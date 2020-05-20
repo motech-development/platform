@@ -390,7 +390,7 @@ custom:
             serviceRoleArn: !GetAtt AppSyncQueueServiceRole.Arn
       substitutions:
         stage: ${self:provider.stage}
-        deleteFileQueue: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
+        deleteFileQueue: !ImportValue ${self:provider.stage}-DeleteFileQueueUrlPath
         queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
 
   webpack:

@@ -7,6 +7,23 @@ type Banks {
   items: [Bank]
 }
 
+type BankAccountIdentification {
+  identification: String
+  type: String
+}
+
+type BankAccount {
+  accountIdentifications: [BankAccountIdentification]
+  balance: Float
+  currency: String
+  id: ID
+  type: String
+}
+
+type BankAccounts {
+  items: [BankAccount]
+}
+
 type BankCallback {
   authorisationUrl: String
   status: String
