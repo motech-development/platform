@@ -1,5 +1,6 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { SQS } from 'aws-sdk';
+import { join } from 'path';
 import { unmarshallOldRecords } from '../shared/unmarshall-records';
 
 const deleteAttachments = (
@@ -8,23 +9,29 @@ const deleteAttachments = (
   records: DynamoDBRecord[],
 ) => {
   const unmarshalledRecords = unmarshallOldRecords(records, 'Transaction');
-  const entries = unmarshalledRecords.map(({ OldImage }) => ({
-    Id: OldImage.id,
-    MessageAttributes: {
-      key: {
-        DataType: 'String',
-        StringValue: OldImage.attachment,
+  const entries = unmarshalledRecords
+    .filter(({ OldImage }) => !!OldImage.attachment)
+    .map(({ OldImage }) => ({
+      Id: OldImage.id,
+      MessageAttributes: {
+        key: {
+          DataType: 'String',
+          StringValue: join(OldImage.owner, OldImage.attachment),
+        },
       },
-    },
-    MessageBody: `Delete ${OldImage.attachment}`,
-  }));
+      MessageBody: `Delete ${OldImage.attachment}`,
+    }));
 
-  return sqs
-    .sendMessageBatch({
-      Entries: entries,
-      QueueUrl: queueUrl,
-    })
-    .promise();
+  if (entries.length > 0) {
+    return sqs
+      .sendMessageBatch({
+        Entries: entries,
+        QueueUrl: queueUrl,
+      })
+      .promise();
+  }
+
+  return Promise.resolve();
 };
 
 export default deleteAttachments;

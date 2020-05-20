@@ -96,6 +96,11 @@ resources:
                         - '/stream/*'
                 - Effect: Allow
                   Action:
+                    - sqs:SendMessage
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
+                - Effect: Allow
+                  Action:
                     - logs:CreateLogGroup
                     - logs:CreateLogStream
                     - logs:PutLogEvents
