@@ -14,7 +14,7 @@ export const handler: SQSHandler = async event => {
     const { messageAttributes } = record;
     const { key } = messageAttributes;
 
-    if (key.stringValue) {
+    if (key && key.stringValue) {
       return s3
         .deleteObject({
           Bucket: DOWNLOAD_BUCKET,

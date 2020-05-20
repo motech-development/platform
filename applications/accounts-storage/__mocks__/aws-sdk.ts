@@ -6,6 +6,8 @@ const mock = jest.fn().mockReturnValue({
 
 AWS.SQS.prototype.sendMessageBatch = mock;
 
+AWS.S3.prototype.deleteObject = mock;
+
 AWS.S3.prototype.getSignedUrlPromise = jest
   .fn()
   .mockResolvedValue('https://signed-url');
