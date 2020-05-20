@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   Col,
   DatePicker,
@@ -52,8 +53,9 @@ export interface ITransactionForm {
   loading: boolean;
   uploading: boolean;
   vat: number;
+  onFileRemove(path: string): void;
   onSave(value: FormSchema): void;
-  onUpload(file: File, form: FormikProps<FormikValues>): void;
+  onUpload(file: File, extension: string): Promise<string>;
 }
 
 interface IFormValues extends FormSchema {
@@ -70,6 +72,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     companyId,
   },
   loading,
+  onFileRemove,
   onSave,
   onUpload,
   uploading,
@@ -94,6 +97,7 @@ const TransactionForm: FC<ITransactionForm> = ({
           transaction: initialTransaction,
         }),
   };
+  const [attached, setAttached] = useState(formValues.attachment);
   const [transactionType, setTransactionType] = useState(
     formValues.transaction,
   );
@@ -197,7 +201,25 @@ const TransactionForm: FC<ITransactionForm> = ({
 
     setFieldValue('vat', calculated);
   };
-  const onPreSubmit = ({ transaction, ...value }: IFormValues) => {
+  const onFileChange = (file: File, form: FormikProps<FormikValues>) => {
+    (async () => {
+      const extension = file.name.split('.').pop();
+
+      if (extension) {
+        const attachment = await onUpload(file, extension);
+
+        form.setFieldValue('attachment', attachment);
+
+        setAttached(attachment);
+      }
+    })();
+  };
+  const onFileDelete = () => {
+    onFileRemove(attached);
+
+    setAttached('');
+  };
+  const onPreSubmit = ({ attachment, transaction, ...value }: IFormValues) => {
     const isPurchase = transaction === 'Purchase';
     const amount = isPurchase ? -Math.abs(value.amount) : value.amount;
     const category = isPurchase ? categories[value.category].name : transaction;
@@ -205,6 +227,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     return {
       ...value,
       amount,
+      attachment: attached,
       category,
     };
   };
@@ -362,19 +385,27 @@ const TransactionForm: FC<ITransactionForm> = ({
                     })}
                   </Typography>
 
-                  <FileUpload
-                    accept="application/pdf, image/gif, image/png, image/jpeg"
-                    buttonText={t('transaction-form.upload.upload.button')}
-                    helpText={
-                      transactionType === 'Purchase'
-                        ? t('transaction-form.upload.upload.help-text.purchase')
-                        : t('transaction-form.upload.upload.help-text.sale')
-                    }
-                    label={t('transaction-form.upload.upload.label')}
-                    loading={uploading}
-                    name="upload"
-                    onSelect={onUpload}
-                  />
+                  {attached ? (
+                    <Button block colour="danger" onClick={onFileDelete}>
+                      {t('transaction-form.upload.delete-file')}
+                    </Button>
+                  ) : (
+                    <FileUpload
+                      accept="application/pdf, image/gif, image/png, image/jpeg"
+                      buttonText={t('transaction-form.upload.upload.button')}
+                      helpText={
+                        transactionType === 'Purchase'
+                          ? t(
+                              'transaction-form.upload.upload.help-text.purchase',
+                            )
+                          : t('transaction-form.upload.upload.help-text.sale')
+                      }
+                      label={t('transaction-form.upload.upload.label')}
+                      loading={uploading}
+                      name="upload"
+                      onSelect={onFileChange}
+                    />
+                  )}
                 </Card>
               </Col>
             )}

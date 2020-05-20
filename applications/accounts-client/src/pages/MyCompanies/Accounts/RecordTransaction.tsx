@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { gql } from 'apollo-boost';
-import { FormikProps, FormikValues } from 'formik';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
@@ -10,15 +9,19 @@ import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
 import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
+import DELETE_FILE, {
+  IDeleteFileInput,
+  IDeleteFileOutput,
+} from '../../../graphql/storage/DELETE_FILE';
+import REQUEST_UPLOAD, {
+  IRequestUploadInput,
+  IRequestUploadOutput,
+} from '../../../graphql/storage/REQUEST_UPLOAD';
 import ADD_TRANSACTION, {
   IAddTransactionInput,
   IAddTransactionOutput,
   updateCache,
 } from '../../../graphql/transaction/ADD_TRANSACTION';
-import REQUEST_UPLOAD, {
-  IRequestUploadInput,
-  IRequestUploadOutput,
-} from '../../../graphql/upload/REQUEST_UPLOAD';
 import withLayout from '../../../hoc/withLayout';
 import { usePut } from '../../../hooks/useFetch';
 
@@ -104,6 +107,23 @@ const RecordTransaction: FC = () => {
       },
     ],
   });
+  const [deleteFileMutation] = useMutation<IDeleteFileOutput, IDeleteFileInput>(
+    DELETE_FILE,
+    {
+      onCompleted: () => {
+        add({
+          colour: 'success',
+          message: t('uploads.delete.success'),
+        });
+      },
+      onError: () => {
+        add({
+          colour: 'danger',
+          message: t('uploads.delete.error'),
+        });
+      },
+    },
+  );
   const [requestMutation, { loading: requestUploadLoading }] = useMutation<
     IRequestUploadOutput,
     IRequestUploadInput
@@ -119,34 +139,37 @@ const RecordTransaction: FC = () => {
       });
     })();
   };
-  const upload = (file: File, form: FormikProps<FormikValues>) => {
+  const upload = async (file: File, extension: string) => {
+    const { data: uploadData } = await requestMutation({
+      variables: {
+        extension,
+        id: companyId,
+      },
+    });
+
+    if (uploadData) {
+      const { requestUpload } = uploadData;
+      const formData = new FormData();
+      const headers = new Headers();
+
+      formData.append(file.name, file, file.name);
+
+      headers.append('Content-Type', 'multipart/form-data');
+
+      await put(requestUpload.url, formData, headers);
+
+      return `${companyId}/${requestUpload.id}.${extension}`;
+    }
+
+    return '';
+  };
+  const removeUpload = (path: string) => {
     (async () => {
-      const extension = file.name.split('.').pop();
-
-      if (extension) {
-        const { data: uploadData } = await requestMutation({
-          variables: {
-            input: {
-              companyId,
-              extension,
-            },
-          },
-        });
-
-        if (uploadData) {
-          const { requestUpload } = uploadData;
-          const formData = new FormData();
-          const headers = new Headers();
-
-          headers.append('Content-Type', 'multipart/form-data');
-
-          formData.append(file.name, file, file.name);
-
-          await put(requestUpload.url, formData, headers);
-
-          form.setFieldValue('attachment', `${requestUpload.id}.${extension}`);
-        }
-      }
+      await deleteFileMutation({
+        variables: {
+          path,
+        },
+      });
     })();
   };
 
@@ -175,6 +198,7 @@ const RecordTransaction: FC = () => {
             loading={addLoading}
             uploading={requestUploadLoading || uploadLoading}
             vat={data.getSettings.vat.pay}
+            onFileRemove={removeUpload}
             onSave={save}
             onUpload={upload}
           />

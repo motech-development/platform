@@ -180,3 +180,20 @@ resources:
           - '/*'
       Export:
         Name: ${self:provider.stage}-StorageUploadApiArn
+
+    DeleteFileQueueArn:
+      Description: Delete from downloads storage queue ARN
+      Value: !GetAtt DeleteFileQueue.Arn
+      Export:
+        Name: ${self:provider.stage}-DeleteFileQueueArn
+
+    DeleteFileQueueUrl:
+      Description: Delete from downloads storage queue URL
+      Value: !Join
+        - ''
+        - - '/'
+          - !Ref AWS::AccountId
+          - '/'
+          - !GetAtt DeleteFileQueue.QueueName
+      Export:
+        Name: ${self:provider.stage}-DeleteFileQueueUrl

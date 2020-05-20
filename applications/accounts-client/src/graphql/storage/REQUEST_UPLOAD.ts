@@ -1,10 +1,8 @@
 import { gql } from 'apollo-boost';
 
 export interface IRequestUploadInput {
-  input: {
-    companyId: string;
-    extension: string;
-  };
+  id: string;
+  extension: string;
 }
 
 export interface IRequestUploadOutput {
@@ -15,8 +13,8 @@ export interface IRequestUploadOutput {
 }
 
 const REQUEST_UPLOAD = gql`
-  mutation RequestUpload($input: UploadInput!) {
-    requestUpload(input: $input) {
+  mutation RequestUpload($id: ID!, $extension: String!) {
+    requestUpload(id: $id, extension: $extension) {
       id
       url
     }

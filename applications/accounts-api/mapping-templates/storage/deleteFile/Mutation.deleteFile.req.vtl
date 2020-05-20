@@ -13,6 +13,6 @@ $util.qr($ctx.stash.put("path", $path))
     "headers": {
       "Content-Type": "application/x-www-form-urlencoded"
     },
-    "body": "Action=SendMessage&MessageBody=Delete+file+$key&MessageAttribute.1.Name=key&MessageAttribute.1.Value.DataType=String&MessageAttribute.1.Value.StringValue=$key"
+    "body": "Action=SendMessage&DelaySeconds=300&MessageBody=Delete+file+$key&MessageAttribute.1.Name=key&MessageAttribute.1.Value.DataType=String&MessageAttribute.1.Value.StringValue=$key"
   }
 }

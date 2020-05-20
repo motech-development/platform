@@ -113,6 +113,7 @@
     },
     "upload": {
       "heading": "Upload {{transactionType}}",
+      "delete-file": "Delete uploaded file",
       "upload": {
         "button": "Browse",
         "label": "Select file to upload",
@@ -126,5 +127,15 @@
   "no-transactions": {
     "title": "No transactions found",
     "description": "Get started by adding some purchases and sales"
+  },
+  "uploads": {
+    "add": {
+      "success": "Upload complete",
+      "error": "Unable to upload this file"
+    },
+    "delete": {
+      "success": "File has been deleted",
+      "error": "Unable to delete this file"
+    }
   }
 }
