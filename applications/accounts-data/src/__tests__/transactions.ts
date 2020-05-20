@@ -1,5 +1,6 @@
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import { SQS } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { handler } from '../transactions';
 
@@ -90,6 +91,9 @@ describe('transactions', () => {
                   amount: {
                     N: '100.25',
                   },
+                  attachment: {
+                    S: '',
+                  },
                   category: {
                     S: 'Sales',
                   },
@@ -98,6 +102,9 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  owner: {
+                    S: 'owner',
                   },
                   status: {
                     S: 'confirmed',
@@ -113,6 +120,9 @@ describe('transactions', () => {
                   amount: {
                     N: '200.5',
                   },
+                  attachment: {
+                    S: '',
+                  },
                   category: {
                     S: 'Sales',
                   },
@@ -121,6 +131,9 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  owner: {
+                    S: 'owner',
                   },
                   status: {
                     S: 'confirmed',
@@ -141,6 +154,9 @@ describe('transactions', () => {
                   amount: {
                     N: '100.25',
                   },
+                  attachment: {
+                    S: '',
+                  },
                   category: {
                     S: 'Expenses',
                   },
@@ -149,6 +165,9 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  owner: {
+                    S: 'owner',
                   },
                   status: {
                     S: 'confirmed',
@@ -164,6 +183,9 @@ describe('transactions', () => {
                   amount: {
                     N: '200.5',
                   },
+                  attachment: {
+                    S: '',
+                  },
                   category: {
                     S: 'Expenses',
                   },
@@ -172,6 +194,9 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  owner: {
+                    S: 'owner',
                   },
                   status: {
                     S: 'confirmed',
@@ -192,6 +217,9 @@ describe('transactions', () => {
                   amount: {
                     N: '100.25',
                   },
+                  attachment: {
+                    S: 'path/to/file.pdf',
+                  },
                   category: {
                     S: 'Sales',
                   },
@@ -200,6 +228,9 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  owner: {
+                    S: 'owner',
                   },
                   status: {
                     S: 'confirmed',
@@ -215,6 +246,9 @@ describe('transactions', () => {
                   amount: {
                     N: '200.5',
                   },
+                  attachment: {
+                    S: 'path/to/file.pdf',
+                  },
                   category: {
                     S: 'Sales',
                   },
@@ -223,6 +257,9 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  owner: {
+                    S: 'owner',
                   },
                   status: {
                     S: 'confirmed',
@@ -240,6 +277,7 @@ describe('transactions', () => {
         await handler(event, context, callback);
 
         expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(3);
+        expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledTimes(1);
       });
     });
 
@@ -275,6 +313,9 @@ describe('transactions', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  owner: {
+                    S: 'owner',
+                  },
                   status: {
                     S: 'confirmed',
                   },
@@ -297,6 +338,9 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  owner: {
+                    S: 'owner',
                   },
                   status: {
                     S: 'confirmed',
@@ -326,6 +370,9 @@ describe('transactions', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  owner: {
+                    S: 'owner',
+                  },
                   status: {
                     S: 'confirmed',
                   },
@@ -348,6 +395,9 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  owner: {
+                    S: 'owner',
                   },
                   status: {
                     S: 'confirmed',
@@ -377,6 +427,9 @@ describe('transactions', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  owner: {
+                    S: 'owner',
+                  },
                   status: {
                     S: 'confirmed',
                   },
@@ -399,6 +452,9 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  owner: {
+                    S: 'owner',
                   },
                   status: {
                     S: 'confirmed',
