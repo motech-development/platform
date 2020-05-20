@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks';
-import { Button } from '@motech-development/breeze-ui';
+import { Button, useToast } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import DELETE_FILE, {
@@ -14,13 +14,24 @@ export interface IDeleteTransactionProps {
 
 const DeleteTransaction: FC<IDeleteTransactionProps> = ({ onDelete, path }) => {
   const { t } = useTranslation('accounts');
-  // TODO: Toasts
+  const { add } = useToast();
   const [mutation, { loading }] = useMutation<
     IDeleteFileOutput,
     IDeleteFileInput
   >(DELETE_FILE, {
     onCompleted: () => {
+      add({
+        colour: 'success',
+        message: t('uploads.delete.success'),
+      });
+
       onDelete('');
+    },
+    onError: () => {
+      add({
+        colour: 'success',
+        message: t('uploads.delete.error'),
+      });
     },
   });
 

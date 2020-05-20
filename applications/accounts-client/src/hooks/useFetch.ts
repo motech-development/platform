@@ -1,4 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
+
+interface IUseFetchOptions<TData> {
+  onCompleted?(data?: TData | string): void;
+  onError?(error: Error): void;
+}
+
+const parseResponse = <T>(text: string) => {
+  try {
+    const response = JSON.parse(text) as T;
+
+    return response;
+  } catch {
+    return text;
+  }
+};
 
 export const useGet = <T>(url: string) => {
   const [data, setData] = useState<T>();
@@ -31,16 +47,23 @@ export const useGet = <T>(url: string) => {
 };
 
 type UseFetch<TData, TBody> = [
-  (url: string, input: TBody, headers?: Headers) => Promise<TData | undefined>,
+  (
+    url: string,
+    input: TBody,
+    headers?: Headers,
+  ) => Promise<TData | string | undefined>,
   {
-    data?: TData;
+    data?: TData | string;
     error?: Error;
     loading: boolean;
   },
 ];
 
-const useFetch = <TData, TBody>(method: string): UseFetch<TData, TBody> => {
-  const [data, setData] = useState<TData>();
+const useFetch = <TData, TBody>(
+  method: string,
+  options?: IUseFetchOptions<TData>,
+): UseFetch<TData, TBody> => {
+  const [data, setData] = useState<string | TData>();
   const [error, setError] = useState<Error>();
   const [loading, setLoading] = useState(true);
   const complete = () => {
@@ -54,7 +77,8 @@ const useFetch = <TData, TBody>(method: string): UseFetch<TData, TBody> => {
         headers,
         method,
       });
-      const result: TData = await response.json();
+      const text = await response.text();
+      const result = parseResponse<TData>(text);
 
       setData(result);
     } catch (e) {
@@ -66,6 +90,26 @@ const useFetch = <TData, TBody>(method: string): UseFetch<TData, TBody> => {
 
   useEffect(complete, [data, error]);
 
+  useEffect(() => {
+    if (options) {
+      const { onCompleted } = options;
+
+      if (onCompleted && data !== undefined) {
+        onCompleted(data);
+      }
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (options) {
+      const { onError } = options;
+
+      if (onError && error) {
+        onError(error);
+      }
+    }
+  }, [error]);
+
   return [
     execute,
     {
@@ -76,6 +120,8 @@ const useFetch = <TData, TBody>(method: string): UseFetch<TData, TBody> => {
   ];
 };
 
-export const usePost = <TData, TBody>() => useFetch<TData, TBody>('POST');
+export const usePost = <TData, TBody>(options?: IUseFetchOptions<TData>) =>
+  useFetch<TData, TBody>('POST', options);
 
-export const usePut = <TData, TBody>() => useFetch<TData, TBody>('PUT');
+export const usePut = <TData, TBody>(options?: IUseFetchOptions<TData>) =>
+  useFetch<TData, TBody>('PUT', options);

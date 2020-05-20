@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks';
-import { FileUpload } from '@motech-development/breeze-ui';
+import { FileUpload, useToast } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import REQUEST_UPLOAD, {
@@ -20,12 +20,28 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
   onUpload,
 }) => {
   const { t } = useTranslation('accounts');
-  // TODO: Toasts
+  const { add } = useToast();
+  const onError = () => {
+    add({
+      colour: 'danger',
+      message: t('uploads.add.error'),
+    });
+  };
   const [mutation, { loading: mutationLoading }] = useMutation<
     IRequestUploadOutput,
     IRequestUploadInput
-  >(REQUEST_UPLOAD);
-  const [put, { loading: putLoading }] = usePut();
+  >(REQUEST_UPLOAD, {
+    onError,
+  });
+  const [put, { loading: putLoading }] = usePut({
+    onCompleted: () => {
+      add({
+        colour: 'success',
+        message: t('uploads.add.success'),
+      });
+    },
+    onError,
+  });
 
   return (
     <FileUpload
