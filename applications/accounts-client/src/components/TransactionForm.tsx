@@ -1,9 +1,7 @@
 import {
-  Button,
   Card,
   Col,
   DatePicker,
-  FileUpload,
   Form,
   ISelectOption,
   LinkButton,
@@ -14,7 +12,7 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { FormikProps, FormikValues, getIn } from 'formik';
-import React, { ChangeEvent, FC, memo, useState } from 'react';
+import React, { ChangeEvent, FC, memo, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { date, number, object, string } from 'yup';
 
@@ -45,17 +43,17 @@ export type FormSchema = {
 };
 
 export interface ITransactionForm {
+  attachment: string;
   backTo: string;
   categories: ISelectOption[];
   clients: ISelectOption[];
+  deleteAttachment: ReactNode;
   companyId: string;
   initialValues?: FormSchema;
   loading: boolean;
-  uploading: boolean;
+  uploader: ReactNode;
   vat: number;
-  onFileRemove(path: string): void;
   onSave(value: FormSchema): void;
-  onUpload(file: File, extension: string): Promise<string>;
 }
 
 interface IFormValues extends FormSchema {
@@ -63,19 +61,19 @@ interface IFormValues extends FormSchema {
 }
 
 const TransactionForm: FC<ITransactionForm> = ({
+  attachment,
   backTo,
   categories,
   clients,
   companyId,
+  deleteAttachment,
   initialValues = {
     ...formSchema,
     companyId,
   },
   loading,
-  onFileRemove,
   onSave,
-  onUpload,
-  uploading,
+  uploader,
   vat,
 }) => {
   const isEmpty = initialValues.amount === '';
@@ -97,7 +95,7 @@ const TransactionForm: FC<ITransactionForm> = ({
           transaction: initialTransaction,
         }),
   };
-  const [attached, setAttached] = useState(formValues.attachment);
+
   const [transactionType, setTransactionType] = useState(
     formValues.transaction,
   );
@@ -201,25 +199,7 @@ const TransactionForm: FC<ITransactionForm> = ({
 
     setFieldValue('vat', calculated);
   };
-  const onFileChange = (file: File, form: FormikProps<FormikValues>) => {
-    (async () => {
-      const extension = file.name.split('.').pop();
-
-      if (extension) {
-        const attachment = await onUpload(file, extension);
-
-        form.setFieldValue('attachment', attachment);
-
-        setAttached(attachment);
-      }
-    })();
-  };
-  const onFileDelete = () => {
-    onFileRemove(attached);
-
-    setAttached('');
-  };
-  const onPreSubmit = ({ attachment, transaction, ...value }: IFormValues) => {
+  const onPreSubmit = ({ transaction, ...value }: IFormValues) => {
     const isPurchase = transaction === 'Purchase';
     const amount = isPurchase ? -Math.abs(value.amount) : value.amount;
     const category = isPurchase ? categories[value.category].name : transaction;
@@ -227,7 +207,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     return {
       ...value,
       amount,
-      attachment: attached,
+      attachment,
       category,
     };
   };
@@ -384,25 +364,7 @@ const TransactionForm: FC<ITransactionForm> = ({
                       : t('transaction-form.upload.sale.heading')}
                   </Typography>
 
-                  {attached ? (
-                    <Button block colour="danger" onClick={onFileDelete}>
-                      {t('transaction-form.upload.delete-file')}
-                    </Button>
-                  ) : (
-                    <FileUpload
-                      accept="application/pdf, image/gif, image/png, image/jpeg"
-                      buttonText={t('transaction-form.upload.upload.button')}
-                      helpText={
-                        transactionType === 'Purchase'
-                          ? t('transaction-form.upload.purchase.help-text')
-                          : t('transaction-form.upload.sale.help-text')
-                      }
-                      label={t('transaction-form.upload.upload.label')}
-                      loading={uploading}
-                      name="upload"
-                      onSelect={onFileChange}
-                    />
-                  )}
+                  {attachment ? deleteAttachment : uploader}
                 </Card>
               </Col>
             )}

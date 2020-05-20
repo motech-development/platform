@@ -16,14 +16,6 @@ import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
 import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
-import DELETE_FILE, {
-  IDeleteFileInput,
-  IDeleteFileOutput,
-} from '../../../graphql/storage/DELETE_FILE';
-import REQUEST_UPLOAD, {
-  IRequestUploadInput,
-  IRequestUploadOutput,
-} from '../../../graphql/storage/REQUEST_UPLOAD';
 import DELETE_TRANSACTION, {
   IDeleteTransactionInput,
   IDeleteTransactionOutput,
@@ -34,7 +26,8 @@ import UPDATE_TRANSACTION, {
   IUpdateTransactionOutput,
 } from '../../../graphql/transaction/UPDATE_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
-import { usePut } from '../../../hooks/useFetch';
+import DeleteAttachment from './DeleteAttachment';
+import UploadAttachment from './UploadAttachment';
 
 interface IViewTransactionInput {
   companyId: string;
@@ -111,16 +104,19 @@ interface IViewTransactionParams {
 
 const ViewTransaction: FC = () => {
   const history = useHistory();
-  const [modal, setModal] = useState(false);
   const { companyId, transactionId } = useParams<IViewTransactionParams>();
+  const [attachment, setAttachment] = useState('');
+  const [modal, setModal] = useState(false);
   const { t } = useTranslation('accounts');
   const { add } = useToast();
-  const [put, { loading: uploadLoading }] = usePut();
   const backTo = (id: string) => `/my-companies/accounts/${id}`;
   const { data, error, loading } = useQuery<
     IViewTransactionOutput,
     IViewTransactionInput
   >(VIEW_TRANSACTION, {
+    onCompleted: ({ getTransaction }) => {
+      setAttachment(getTransaction.attachment);
+    },
     variables: {
       companyId,
       transactionId,
@@ -179,27 +175,6 @@ const ViewTransaction: FC = () => {
       },
     ],
   });
-  const [deleteFileMutation] = useMutation<IDeleteFileOutput, IDeleteFileInput>(
-    DELETE_FILE,
-    {
-      onCompleted: () => {
-        add({
-          colour: 'success',
-          message: t('uploads.delete.success'),
-        });
-      },
-      onError: () => {
-        add({
-          colour: 'danger',
-          message: t('uploads.delete.error'),
-        });
-      },
-    },
-  );
-  const [requestMutation, { loading: requestUploadLoading }] = useMutation<
-    IRequestUploadOutput,
-    IRequestUploadInput
-  >(REQUEST_UPLOAD);
   const launchDeleteModal = () => {
     setModal(true);
   };
@@ -225,40 +200,6 @@ const ViewTransaction: FC = () => {
       });
     })();
   };
-  // TODO: Add some toasts
-  const upload = async (file: File, extension: string) => {
-    const { data: uploadData } = await requestMutation({
-      variables: {
-        extension,
-        id: companyId,
-      },
-    });
-
-    if (uploadData) {
-      const { requestUpload } = uploadData;
-      const formData = new FormData();
-      const headers = new Headers();
-
-      formData.append(file.name, file, file.name);
-
-      headers.append('Content-Type', 'multipart/form-data');
-
-      await put(requestUpload.url, formData, headers);
-
-      return `${companyId}/${requestUpload.id}.${extension}`;
-    }
-
-    return '';
-  };
-  const removeUpload = (path: string) => {
-    (async () => {
-      await deleteFileMutation({
-        variables: {
-          path,
-        },
-      });
-    })();
-  };
 
   return (
     <Connected error={error || mutationError} loading={loading}>
@@ -272,6 +213,7 @@ const ViewTransaction: FC = () => {
           <Row>
             <Col>
               <TransactionForm
+                attachment={attachment}
                 backTo={backTo(companyId)}
                 categories={data.getSettings.categories.map(
                   ({ name, vatRate }) => ({
@@ -284,13 +226,23 @@ const ViewTransaction: FC = () => {
                   value: name,
                 }))}
                 companyId={companyId}
+                deleteAttachment={
+                  <DeleteAttachment
+                    path={attachment}
+                    onDelete={setAttachment}
+                  />
+                }
                 initialValues={data.getTransaction}
                 loading={mutationLoading}
-                uploading={requestUploadLoading || uploadLoading}
+                uploader={
+                  <UploadAttachment
+                    id={companyId}
+                    name="attachment"
+                    onUpload={setAttachment}
+                  />
+                }
                 vat={data.getSettings.vat.pay}
-                onFileRemove={removeUpload}
                 onSave={save}
-                onUpload={upload}
               />
             </Col>
 
