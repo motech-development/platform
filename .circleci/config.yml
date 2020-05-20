@@ -458,7 +458,7 @@ workflows:
                 - /feature\/.*/
                 - /hotfix\/.*/
           requires:
-            - deploy-accounts-storage-production
+            - deploy-accounts-storage-develop
 
       - deploy-accounts-queue-production:
           filters:
