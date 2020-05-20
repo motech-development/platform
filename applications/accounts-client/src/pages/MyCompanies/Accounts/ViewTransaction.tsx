@@ -115,7 +115,7 @@ const ViewTransaction: FC = () => {
     IViewTransactionInput
   >(VIEW_TRANSACTION, {
     onCompleted: ({ getTransaction }) => {
-      setAttachment(getTransaction.attachment);
+      setAttachment(getTransaction.attachment || '');
     },
     variables: {
       companyId,
