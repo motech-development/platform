@@ -66,7 +66,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
               const formData = new FormData();
               const headers = new Headers();
 
-              formData.append(file.name, file, file.name);
+              formData.append('file', file, file.name);
 
               headers.append('Content-Type', 'multipart/form-data');
 

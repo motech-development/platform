@@ -220,6 +220,14 @@ custom:
           request: storage/deleteFile/Mutation.deleteFile.req.vtl
           response: storage/deleteFile/Mutation.deleteFile.res.vtl
         - kind: PIPELINE
+          type: Query
+          field: getDownload
+          functions:
+            - getCompany
+            - getDownload
+          request: storage/getDownload/Query.getDownload.req.vtl
+          response: storage/getDownload/Query.getDownload.res.vtl
+        - kind: PIPELINE
           type: Mutation
           field: requestUpload
           functions:
@@ -336,6 +344,10 @@ custom:
           response: company/updateCompany/Pipeline.updateCompany.res.vtl
 
         # Storage
+        - dataSource: StorageUpload
+          name: getDownload
+          request: storage/getDownload/Pipeline.getDownload.req.vtl
+          response: storage/getDownload/Pipeline.getDownload.res.vtl
         - dataSource: StorageUpload
           name: requestUpload
           request: storage/requestUpload/Pipeline.requestUpload.req.vtl

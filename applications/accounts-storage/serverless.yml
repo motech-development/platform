@@ -49,6 +49,15 @@ functions:
     environment:
       QUEUE_URL: !ImportValue ${self:provider.stage}-AntiVirusQueueUrl
 
+  SignedDownload:
+    handler: src/handlers/signed-download.handler
+    events:
+      - http:
+          authorizer: aws_iam
+          method: post
+          path: api/v1/signed-download
+    role: LambdaFunctionRole
+
   SignedUpload:
     handler: src/handlers/signed-upload.handler
     events:
@@ -81,6 +90,7 @@ resources:
                 - Effect: Allow
                   Action:
                     - s3:deleteObject
+                    - s3:getObject
                   Resource:
                     - !Join
                       - ''
