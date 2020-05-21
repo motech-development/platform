@@ -23,6 +23,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
     "@fortawesome/react-fontawesome": "^0.1.8",
     "@motech-development/auth": "^0.0.0",
+    "@motech-development/axios-hooks": "^0.0.0",
     "@motech-development/breeze-ui": "^0.0.0",
     "@popperjs/core": "^2.2.2",
     "apollo-boost": "^0.4.7",

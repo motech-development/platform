@@ -1,0 +1,65 @@
+extends:
+  - airbnb
+  - eslint:recommended
+  - react-app
+  - prettier
+  - prettier/react
+
+overrides:
+  - files:
+      - setupTests.ts
+      - '**/*.spec.tsx'
+      - '**/*.test.tsx'
+    rules:
+      import/no-extraneous-dependencies: off
+  - files:
+      - '**/*.tsx'
+    rules:
+      react/prop-types: off
+
+parser: '@typescript-eslint/parser'
+
+plugins:
+  - '@typescript-eslint'
+  - prettier
+
+rules:
+  import/extensions:
+    - error
+    - ignorePackages
+    - js: never
+      mjs: never
+      jsx: never
+      ts: never
+      tsx: never
+  import/no-extraneous-dependencies:
+    - error
+    - packageDir:
+        - './'
+        - '../../'
+  react/jsx-filename-extension:
+    - error
+    - extensions:
+        - .jsx
+        - .tsx
+  sort-keys:
+    - error
+    - asc
+    - caseSensitive: true
+      natural: false
+  spaced-comment:
+    - error
+    - always
+    - markers:
+        - /
+  '@typescript-eslint/no-explicit-any':
+    - error
+
+settings:
+  import/resolver:
+    node:
+      extensions:
+        - .js
+        - .jsx
+        - .ts
+        - .tsx

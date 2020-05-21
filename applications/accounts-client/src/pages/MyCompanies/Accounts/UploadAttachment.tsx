@@ -1,9 +1,9 @@
 import { useMutation } from '@apollo/react-hooks';
+import { usePut } from '@motech-development/axios-hooks';
 import { FileUpload, useToast } from '@motech-development/breeze-ui';
 import { gql } from 'apollo-boost';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePut } from '../../../hooks/useAxios';
 
 interface IRequestUploadInput {
   id: string;

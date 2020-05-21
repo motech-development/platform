@@ -48,6 +48,10 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./packages/axios-hooks"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./packages/breeze-ui"
     },
     {

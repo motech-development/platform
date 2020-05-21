@@ -61,6 +61,7 @@ jobs:
             - applications/open-banking/node_modules
             - packages/api-gateway-handler/node_modules
             - packages/auth/node_modules
+            - packages/axios-hooks/node_modules
             - packages/breeze-ui/node_modules
             - packages/serverless-outputs-env/node_modules
             - packages/webpack-conditional-plugin/node_modules
@@ -107,6 +108,8 @@ jobs:
           file: ./packages/api-gateway-handler/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/auth/coverage/coverage-final.json
+      - codecov/upload:
+          file: ./packages/axios-hooks/coverage/coverage-final.json
       - codecov/upload:
           file: ./packages/breeze-ui/coverage/coverage-final.json
       - codecov/upload:
