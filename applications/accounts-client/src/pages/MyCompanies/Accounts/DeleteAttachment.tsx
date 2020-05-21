@@ -1,11 +1,26 @@
 import { useMutation } from '@apollo/react-hooks';
 import { Button, useToast } from '@motech-development/breeze-ui';
+import { gql } from 'apollo-boost';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import DELETE_FILE, {
-  IDeleteFileInput,
-  IDeleteFileOutput,
-} from '../../../graphql/storage/DELETE_FILE';
+
+interface IDeleteFileInput {
+  path: string;
+}
+
+interface IDeleteFileOutput {
+  deleteFile: {
+    path: string;
+  };
+}
+
+export const DELETE_FILE = gql`
+  mutation DeleteFile($path: ID!) {
+    deleteFile(path: $path) {
+      path
+    }
+  }
+`;
 
 export interface IDeleteTransactionProps {
   path: string;

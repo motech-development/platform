@@ -4,7 +4,7 @@
   "description": "Motech Development applications monorepo",
   "private": true,
   "scripts": {
-    "add": "lerna add --no-bootstrap",
+    "add": "lerna add",
     "add:dev": "lerna add --no-bootstrap --dev",
     "add:peer": "lerna add --no-bootstrap --peer",
     "bootstrap": "lerna bootstrap",

@@ -1,12 +1,33 @@
 import { useMutation } from '@apollo/react-hooks';
 import { FileUpload, useToast } from '@motech-development/breeze-ui';
+import { gql } from 'apollo-boost';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import REQUEST_UPLOAD, {
-  IRequestUploadInput,
-  IRequestUploadOutput,
-} from '../../../graphql/storage/REQUEST_UPLOAD';
-import { usePut } from '../../../hooks/useFetch';
+import { usePut } from '../../../hooks/useAxios';
+
+interface IRequestUploadInput {
+  id: string;
+  input: {
+    contentType: string;
+    extension: string;
+  };
+}
+
+interface IRequestUploadOutput {
+  requestUpload: {
+    id: string;
+    url: string;
+  };
+}
+
+export const REQUEST_UPLOAD = gql`
+  mutation RequestUpload($id: ID!, $input: StorageUploadInput!) {
+    requestUpload(id: $id, input: $input) {
+      id
+      url
+    }
+  }
+`;
 
 export interface IUploadAttachmentProps {
   id: string;
@@ -33,7 +54,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
   >(REQUEST_UPLOAD, {
     onError,
   });
-  const [put, { loading: putLoading }] = usePut({
+  const [put, { loading: putLoading }] = usePut<null, File>({
     onCompleted: () => {
       add({
         colour: 'success',
@@ -56,21 +77,21 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
           if (extension) {
             const { data } = await mutation({
               variables: {
-                extension,
                 id,
+                input: {
+                  contentType: file.type,
+                  extension,
+                },
               },
             });
 
             if (data) {
               const { requestUpload } = data;
-              const formData = new FormData();
-              const headers = new Headers();
+              const headers = {
+                'Content-Type': file.type,
+              };
 
-              formData.append('file', file, file.name);
-
-              headers.append('Content-Type', 'multipart/form-data');
-
-              await put(requestUpload.url, formData, headers);
+              await put(requestUpload.url, file, headers);
 
               const attachment = `${id}/${requestUpload.id}.${extension}`;
 

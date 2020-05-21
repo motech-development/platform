@@ -1,24 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import axios, { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 
-interface IUseFetchOptions<TData> {
+interface IOptions<TData> {
   onCompleted?(data?: TData | string): void;
   onError?(error: Error): void;
 }
 
-const parseResponse = <T>(text: string) => {
-  try {
-    const response = JSON.parse(text) as T;
+interface IHeaders {
+  [name: string]: string;
+}
 
-    return response;
-  } catch {
-    return text;
-  }
-};
+const client = axios.create();
 
 export const useGet = <T>(url: string) => {
   const [data, setData] = useState<T>();
-  const [error, setError] = useState<Error>();
+  const [error, setError] = useState<AxiosError>();
   const [loading, setLoading] = useState(true);
   const complete = () => {
     setLoading(false);
@@ -27,10 +24,9 @@ export const useGet = <T>(url: string) => {
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetch(url);
-        const result = await response.json();
+        const response = await client.get<T>(url);
 
-        setData(result);
+        setData(response.data);
       } catch (e) {
         setError(e);
       }
@@ -46,41 +42,37 @@ export const useGet = <T>(url: string) => {
   };
 };
 
-type UseFetch<TData, TBody> = [
-  (
-    url: string,
-    input: TBody,
-    headers?: Headers,
-  ) => Promise<TData | string | undefined>,
+type UseAxios<TData, TBody> = [
+  (url: string, input: TBody, headers?: IHeaders) => Promise<TData | undefined>,
   {
-    data?: TData | string;
+    data?: TData;
     error?: Error;
     loading: boolean;
   },
 ];
 
-const useFetch = <TData, TBody>(
-  method: string,
-  options?: IUseFetchOptions<TData>,
-): UseFetch<TData, TBody> => {
-  const [data, setData] = useState<string | TData>();
-  const [error, setError] = useState<Error>();
+type Method = 'POST' | 'PUT';
+
+const useAxios = <TData, TBody>(
+  method: Method,
+  options?: IOptions<TData>,
+): UseAxios<TData, TBody> => {
+  const [data, setData] = useState<TData>();
+  const [error, setError] = useState<AxiosError>();
   const [loading, setLoading] = useState(true);
   const complete = () => {
     setLoading(false);
   };
-  const execute = async (url: string, input: TBody, headers?: Headers) => {
+  const execute = async (url: string, body: TBody, headers?: IHeaders) => {
     try {
-      const body = input instanceof FormData ? input : JSON.stringify(input);
-      const response = await fetch(url, {
-        body,
+      const response = await client.request<TData>({
+        data: body,
         headers,
         method,
+        url,
       });
-      const text = await response.text();
-      const result = parseResponse<TData>(text);
 
-      setData(result);
+      setData(response.data);
     } catch (e) {
       setError(e);
     }
@@ -120,8 +112,8 @@ const useFetch = <TData, TBody>(
   ];
 };
 
-export const usePost = <TData, TBody>(options?: IUseFetchOptions<TData>) =>
-  useFetch<TData, TBody>('POST', options);
+export const usePost = <TData, TBody>(options?: IOptions<TData>) =>
+  useAxios<TData, TBody>('POST', options);
 
-export const usePut = <TData, TBody>(options?: IUseFetchOptions<TData>) =>
-  useFetch<TData, TBody>('PUT', options);
+export const usePut = <TData, TBody>(options?: IOptions<TData>) =>
+  useAxios<TData, TBody>('PUT', options);
