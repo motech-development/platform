@@ -26,8 +26,8 @@ import UPDATE_TRANSACTION, {
   IUpdateTransactionOutput,
 } from '../../../graphql/transaction/UPDATE_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
-import DeleteAttachment from './DeleteAttachment';
 import UploadAttachment from './UploadAttachment';
+import ViewAttachment from './ViewAttachment';
 
 interface IViewTransactionInput {
   companyId: string;
@@ -214,6 +214,13 @@ const ViewTransaction: FC = () => {
             <Col>
               <TransactionForm
                 attachment={attachment}
+                attachmentView={
+                  <ViewAttachment
+                    id={companyId}
+                    path={attachment}
+                    onDelete={setAttachment}
+                  />
+                }
                 backTo={backTo(companyId)}
                 categories={data.getSettings.categories.map(
                   ({ name, vatRate }) => ({
@@ -226,12 +233,6 @@ const ViewTransaction: FC = () => {
                   value: name,
                 }))}
                 companyId={companyId}
-                deleteAttachment={
-                  <DeleteAttachment
-                    path={attachment}
-                    onDelete={setAttachment}
-                  />
-                }
                 initialValues={data.getTransaction}
                 loading={mutationLoading}
                 uploader={

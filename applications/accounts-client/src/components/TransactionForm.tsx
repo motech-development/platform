@@ -44,10 +44,10 @@ export type FormSchema = {
 
 export interface ITransactionForm {
   attachment: string;
+  attachmentView: ReactNode;
   backTo: string;
   categories: ISelectOption[];
   clients: ISelectOption[];
-  deleteAttachment: ReactNode;
   companyId: string;
   initialValues?: FormSchema;
   loading: boolean;
@@ -62,11 +62,11 @@ interface IFormValues extends FormSchema {
 
 const TransactionForm: FC<ITransactionForm> = ({
   attachment,
+  attachmentView,
   backTo,
   categories,
   clients,
   companyId,
-  deleteAttachment,
   initialValues = {
     ...formSchema,
     companyId,
@@ -364,7 +364,7 @@ const TransactionForm: FC<ITransactionForm> = ({
                       : t('transaction-form.upload.sale.heading')}
                   </Typography>
 
-                  {attachment ? deleteAttachment : uploader}
+                  {attachment ? attachmentView : uploader}
                 </Card>
               </Col>
             )}

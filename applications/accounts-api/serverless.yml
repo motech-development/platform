@@ -221,12 +221,12 @@ custom:
           response: storage/deleteFile/Mutation.deleteFile.res.vtl
         - kind: PIPELINE
           type: Query
-          field: getDownload
+          field: requestDownload
           functions:
             - getCompany
-            - getDownload
-          request: storage/getDownload/Query.getDownload.req.vtl
-          response: storage/getDownload/Query.getDownload.res.vtl
+            - requestDownload
+          request: storage/requestDownload/Query.requestDownload.req.vtl
+          response: storage/requestDownload/Query.requestDownload.res.vtl
         - kind: PIPELINE
           type: Mutation
           field: requestUpload
@@ -345,9 +345,9 @@ custom:
 
         # Storage
         - dataSource: StorageUpload
-          name: getDownload
-          request: storage/getDownload/Pipeline.getDownload.req.vtl
-          response: storage/getDownload/Pipeline.getDownload.res.vtl
+          name: requestDownload
+          request: storage/requestDownload/Pipeline.requestDownload.req.vtl
+          response: storage/requestDownload/Pipeline.requestDownload.res.vtl
         - dataSource: StorageUpload
           name: requestUpload
           request: storage/requestUpload/Pipeline.requestUpload.req.vtl

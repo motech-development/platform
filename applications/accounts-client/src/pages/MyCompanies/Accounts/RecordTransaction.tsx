@@ -15,8 +15,8 @@ import ADD_TRANSACTION, {
   updateCache,
 } from '../../../graphql/transaction/ADD_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
-import DeleteAttachment from './DeleteAttachment';
 import UploadAttachment from './UploadAttachment';
+import ViewAttachment from './ViewAttachment';
 
 interface IRecordTransactionInput {
   id: string;
@@ -123,6 +123,13 @@ const RecordTransaction: FC = () => {
 
           <TransactionForm
             attachment={attachment}
+            attachmentView={
+              <ViewAttachment
+                id={companyId}
+                path={attachment}
+                onDelete={setAttachment}
+              />
+            }
             backTo={backTo(companyId)}
             categories={data.getSettings.categories.map(
               ({ name, vatRate }) => ({
@@ -135,9 +142,6 @@ const RecordTransaction: FC = () => {
               value: name,
             }))}
             companyId={companyId}
-            deleteAttachment={
-              <DeleteAttachment path={attachment} onDelete={setAttachment} />
-            }
             loading={addLoading}
             uploader={
               <UploadAttachment
