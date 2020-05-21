@@ -31,11 +31,7 @@ export default [
         clean: true,
         rollupCommonJSResolveHack: true,
         tsconfigOverride: {
-          exclude: [
-            '**/__tests__/*.tsx',
-            '**/*.stories.tsx',
-            'src/setupTests.ts',
-          ],
+          exclude: ['**/__tests__/*.ts', 'src/setupTests.ts'],
         },
       }),
       resolve({

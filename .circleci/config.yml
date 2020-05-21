@@ -25,7 +25,6 @@ restore_cache: &restore_cache
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
-  codecov: codecov/codecov@1.0.2
   sonarcloud: sonarsource/sonarcloud@1.0.1
 
 jobs:
@@ -90,34 +89,6 @@ jobs:
           name: Unit test
       - store_test_results:
           path: reports/junit
-      - codecov/upload:
-          file: ./applications/accounts-api/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./applications/accounts-client/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./applications/accounts-data/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./applications/accounts-queue/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./applications/accounts-storage/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./applications/anti-virus/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./applications/open-banking/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./packages/api-gateway-handler/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./packages/auth/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./packages/axios-hooks/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./packages/breeze-ui/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./packages/serverless-outputs-env/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./packages/webpack-conditional-plugin/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./packages/webpack-permissions-plugin/coverage/coverage-final.json
       - sonarcloud/scan
 
   smoke-test-accounts-client:
