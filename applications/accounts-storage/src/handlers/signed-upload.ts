@@ -1,4 +1,8 @@
-import proxyHandler from '@motech-development/api-gateway-handler';
+import {
+  apiGatewayHandler,
+  paramCheck,
+  response,
+} from '@motech-development/api-gateway-handler';
 import { S3 } from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
 import { object, string } from 'yup';
@@ -14,37 +18,14 @@ const schema = object().shape({
   owner: string().required(),
 });
 
-export const handler = proxyHandler(async event => {
+export const handler = apiGatewayHandler(async event => {
   const { UPLOAD_BUCKET } = process.env;
-
-  if (!UPLOAD_BUCKET) {
-    const response = {
-      body: JSON.stringify({
-        message: 'No bucket set',
-        statusCode: 400,
-      }),
-      statusCode: 400,
-    };
-
-    throw response;
-  }
-
-  if (!event.body) {
-    const response = {
-      body: JSON.stringify({
-        message: 'No body found',
-        statusCode: 400,
-      }),
-      statusCode: 400,
-    };
-
-    throw response;
-  }
-
-  const body = JSON.parse(event.body);
+  const bucket = paramCheck(UPLOAD_BUCKET, 'No bucket set', 400);
+  const body = paramCheck(event.body, 'No body found', 400);
+  const bodyParams = JSON.parse(body);
 
   try {
-    const result = await schema.validate(body, {
+    const result = await schema.validate(bodyParams, {
       stripUnknown: true,
     });
     const id = uuid();
@@ -52,28 +33,26 @@ export const handler = proxyHandler(async event => {
     const expirationInSeconds = 30;
 
     const url = await s3.getSignedUrlPromise('putObject', {
-      Bucket: UPLOAD_BUCKET,
+      Bucket: bucket,
       ContentType: contentType,
       Expires: expirationInSeconds,
       Key: `${owner}/${companyId}/${id}.${extension}`,
     });
 
-    return {
-      body: JSON.stringify({
+    return response(
+      {
         id,
         url,
-      }),
-      statusCode: 200,
-    };
+      },
+      200,
+    );
   } catch (e) {
-    const response = {
-      body: JSON.stringify({
+    return response(
+      {
         message: 'Invalid request',
         statusCode: 400,
-      }),
-      statusCode: 400,
-    };
-
-    throw response;
+      },
+      400,
+    );
   }
 });

@@ -10,7 +10,7 @@ export default [
       ...pkg.peerDependencies,
       ...pkg.dependencies,
     },
-    input: 'src/api-gateway-handler.ts',
+    input: 'src/index.ts',
     output: [
       {
         file: pkg.main,

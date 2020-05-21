@@ -24,9 +24,9 @@ describe('get-banks', () => {
     expect(callback).toHaveBeenCalledWith(null, {
       body: JSON.stringify({
         message: 'No table set',
-        statusCode: 500,
+        statusCode: 400,
       }),
-      statusCode: 500,
+      statusCode: 400,
     });
   });
 

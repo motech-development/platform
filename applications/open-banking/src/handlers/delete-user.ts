@@ -1,53 +1,28 @@
-import proxyHandler from '@motech-development/api-gateway-handler';
+import {
+  apiGatewayHandler,
+  paramCheck,
+  response,
+} from '@motech-development/api-gateway-handler';
 import httpClient from '../shared/http-client';
 
-export const handler = proxyHandler(async event => {
-  const { pathParameters } = event;
-
-  if (!pathParameters) {
-    const response = {
-      body: JSON.stringify({
-        message: 'No params set',
-        statusCode: 400,
-      }),
-      statusCode: 400,
-    };
-
-    throw response;
-  }
-
-  const { userId } = pathParameters;
-
-  if (!userId) {
-    const response = {
-      body: JSON.stringify({
-        message: 'No user id',
-        statusCode: 400,
-      }),
-      statusCode: 400,
-    };
-
-    throw response;
-  }
-
+export const handler = apiGatewayHandler(async event => {
+  const pathParameters = paramCheck(event.pathParameters, 'No params set', 400);
+  const userId = paramCheck(pathParameters.userId, 'No user id', 400);
   const endpoint = `/users/${userId}`;
 
   try {
     await httpClient.delete(endpoint);
 
-    return {
-      body: '',
-      statusCode: 204,
-    };
+    return response('', 204);
   } catch (e) {
     const { status } = e.response;
 
-    return {
-      body: JSON.stringify({
+    return response(
+      {
         message: 'Unable to delete user',
         statusCode: status,
-      }),
-      statusCode: status,
-    };
+      },
+      status,
+    );
   }
 });

@@ -1,4 +1,8 @@
-import proxyHandler from '@motech-development/api-gateway-handler';
+import {
+  apiGatewayHandler,
+  paramCheck,
+  response,
+} from '@motech-development/api-gateway-handler';
 import { S3 } from 'aws-sdk';
 import { join } from 'path';
 import { object, string } from 'yup';
@@ -9,37 +13,14 @@ const schema = object().shape({
   path: string().required(),
 });
 
-export const handler = proxyHandler(async event => {
+export const handler = apiGatewayHandler(async event => {
   const { DOWNLOAD_BUCKET } = process.env;
-
-  if (!DOWNLOAD_BUCKET) {
-    const response = {
-      body: JSON.stringify({
-        message: 'No bucket set',
-        statusCode: 400,
-      }),
-      statusCode: 400,
-    };
-
-    throw response;
-  }
-
-  if (!event.body) {
-    const response = {
-      body: JSON.stringify({
-        message: 'No body found',
-        statusCode: 400,
-      }),
-      statusCode: 400,
-    };
-
-    throw response;
-  }
-
-  const body = JSON.parse(event.body);
+  const bucket = paramCheck(DOWNLOAD_BUCKET, 'No bucket set', 400);
+  const body = paramCheck(event.body, 'No body found', 400);
+  const bodyParams = JSON.parse(body);
 
   try {
-    const result = await schema.validate(body, {
+    const result = await schema.validate(bodyParams, {
       stripUnknown: true,
     });
 
@@ -47,26 +28,24 @@ export const handler = proxyHandler(async event => {
     const expirationInSeconds = 30;
 
     const url = await s3.getSignedUrlPromise('getObject', {
-      Bucket: DOWNLOAD_BUCKET,
+      Bucket: bucket,
       Expires: expirationInSeconds,
       Key: join(owner, path),
     });
 
-    return {
-      body: JSON.stringify({
+    return response(
+      {
         url,
-      }),
-      statusCode: 200,
-    };
+      },
+      200,
+    );
   } catch (e) {
-    const response = {
-      body: JSON.stringify({
+    return response(
+      {
         message: 'Invalid request',
         statusCode: 400,
-      }),
-      statusCode: 400,
-    };
-
-    throw response;
+      },
+      400,
+    );
   }
 });

@@ -1,23 +1,14 @@
-import proxyHandler from '@motech-development/api-gateway-handler';
+import {
+  apiGatewayHandler,
+  paramCheck,
+  response,
+} from '@motech-development/api-gateway-handler';
 import client from '../shared/document-client';
 
 const documentClient = client();
 
-export const handler = proxyHandler(async () => {
-  const { TABLE } = process.env;
-
-  if (!TABLE) {
-    const response = {
-      body: JSON.stringify({
-        message: 'No table set',
-        statusCode: 500,
-      }),
-      statusCode: 500,
-    };
-
-    throw response;
-  }
-
+export const handler = apiGatewayHandler(async () => {
+  const TABLE = paramCheck(process.env.TABLE, 'No table set', 400);
   const { Items } = await documentClient
     .query({
       ExpressionAttributeNames: {
@@ -42,10 +33,10 @@ export const handler = proxyHandler(async () => {
       }))
     : [];
 
-  return {
-    body: JSON.stringify({
+  return response(
+    {
       items,
-    }),
-    statusCode: 200,
-  };
+    },
+    200,
+  );
 });

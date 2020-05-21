@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "description": "Utility to make working with API gateway lambda functions less of a pain",
   "private": true,
-  "main": "lib/api-gateway-handler.cjs.js",
-  "module": "lib/api-gateway-handler.esm.js",
-  "types": "lib/api-gateway-handler.d.ts",
+  "main": "lib/index.cjs.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
