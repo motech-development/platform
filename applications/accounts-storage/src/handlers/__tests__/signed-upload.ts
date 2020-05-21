@@ -22,6 +22,7 @@ describe('signed-upload', () => {
     event = {
       body: JSON.stringify({
         companyId: 'company-id',
+        contentType: 'image/png',
         extension: 'png',
         owner: 'owner',
       }),
@@ -106,7 +107,7 @@ describe('signed-upload', () => {
         'putObject',
         {
           Bucket: 'upload-bucket',
-          ContentType: 'multipart/form-data',
+          ContentType: 'image/png',
           Expires: 30,
           Key: 'owner/company-id/test-uuid.png',
         },

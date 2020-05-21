@@ -13,7 +13,7 @@ type Mutation {
   addTransaction(input: TransactionInput!): Transaction!
   deleteTransaction(id: ID!): Transaction!
   updateTransaction(input: TransactionInput!): Transaction!
-  requestUpload(id: ID!, extension: String!): StorageUpload!
+  requestUpload(id: ID!, input: StorageUploadInput!): StorageUpload!
   # TODO: Use pipeline to protect this
   deleteFile(path: ID!): Storage!
 }

@@ -7,6 +7,7 @@ const whitelist = ['gif', 'jpeg', 'jpg', 'pdf', 'png'];
 const s3 = new S3();
 const schema = object().shape({
   companyId: string().required(),
+  contentType: string().required(),
   extension: string()
     .oneOf(whitelist)
     .required(),
@@ -47,12 +48,12 @@ export const handler = proxyHandler(async event => {
       stripUnknown: true,
     });
     const id = uuid();
-    const { companyId, extension, owner } = result;
+    const { companyId, contentType, extension, owner } = result;
     const expirationInSeconds = 30;
 
     const url = await s3.getSignedUrlPromise('putObject', {
       Bucket: UPLOAD_BUCKET,
-      ContentType: 'multipart/form-data',
+      ContentType: contentType,
       Expires: expirationInSeconds,
       Key: `${owner}/${companyId}/${id}.${extension}`,
     });

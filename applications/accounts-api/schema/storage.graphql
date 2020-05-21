@@ -10,3 +10,8 @@ type StorageUpload {
   id: ID
   url: String
 }
+
+input StorageUploadInput {
+  contentType: String!
+  extension: String!
+}
