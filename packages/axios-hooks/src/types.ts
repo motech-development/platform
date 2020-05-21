@@ -21,7 +21,7 @@ export type UseWithInput<TData, TBody> = [
 ];
 
 export type UseWithoutInput<TData> = [
-  (url: string) => Promise<TData | undefined>,
+  (url: string, headers?: IHeaders) => Promise<TData | undefined>,
   {
     data?: TData;
     error?: AxiosError;

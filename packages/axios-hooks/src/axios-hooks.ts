@@ -17,11 +17,23 @@ const executeGet = async <TData>(
   url: string,
   setData: SetData<TData>,
   setError: SetError,
-  options?: IOptions<TData>,
+  options: IOptions<TData> = {},
+  additionalHeaders: IHeaders = {},
 ) => {
   try {
-    const { onCompleted, onError, ...rest } = options!;
-    const { data } = await client.get<TData>(url, rest);
+    const { headers, onCompleted, onError, ...rest } = options;
+    const opts = {
+      ...rest,
+      headers: {
+        ...headers,
+        ...additionalHeaders,
+      },
+    };
+    const { data } = await client.request<TData>({
+      ...opts,
+      method: 'GET',
+      url,
+    });
 
     setData(data);
 
@@ -39,11 +51,11 @@ const executeForm = async <TData, TBody>(
   body: TBody,
   setData: SetData<TData>,
   setError: SetError,
-  options?: IOptions<TData>,
-  additionalHeaders?: IHeaders,
+  options: IOptions<TData> = {},
+  additionalHeaders: IHeaders = {},
 ) => {
   try {
-    const { headers, onCompleted, onError, ...rest } = options!;
+    const { headers, onCompleted, onError, ...rest } = options;
     const opts = {
       ...rest,
       headers: {
@@ -129,8 +141,8 @@ export const useLazyGet = <TData>(
   const [data, setData] = useState<TData>();
   const [error, setError] = useState<AxiosError>();
   const [loading, setLoading] = useState(true);
-  const execute = async (url: string) =>
-    executeGet(url, setData, setError, options);
+  const execute = async (url: string, headers?: IHeaders) =>
+    executeGet(url, setData, setError, options, headers);
 
   useEffect(() => complete(setLoading), [data, error]);
 
