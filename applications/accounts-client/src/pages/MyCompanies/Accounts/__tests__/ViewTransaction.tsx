@@ -43,450 +43,552 @@ describe('ViewTransaction', () => {
   });
 
   describe('purchase', () => {
-    beforeEach(async () => {
-      mocks = [
-        {
-          request: {
-            query: GET_BALANCE,
-            variables: {
-              id: 'company-id',
-            },
-          },
-          result: {
-            data: {
-              getBalance: {
-                balance: 180,
-                currency: 'GBP',
+    describe('without an attachment', () => {
+      beforeEach(async () => {
+        mocks = [
+          {
+            request: {
+              query: GET_BALANCE,
+              variables: {
                 id: 'company-id',
-                transactions: [
-                  {
-                    balance: 180,
-                    currency: 'GBP',
-                    date: '2020-04-15T14:07:18+0000',
-                    items: [
-                      {
-                        amount: -20,
-                        description: 'Lunch',
-                        id: 'transaction-2',
-                        name: 'KFC',
-                      },
-                    ],
+              },
+            },
+            result: {
+              data: {
+                getBalance: {
+                  balance: 180,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  transactions: [
+                    {
+                      balance: 180,
+                      currency: 'GBP',
+                      date: '2020-04-15T14:07:18+0000',
+                      items: [
+                        {
+                          amount: -20,
+                          description: 'Lunch',
+                          id: 'transaction-2',
+                          name: 'KFC',
+                        },
+                      ],
+                    },
+                    {
+                      balance: 200,
+                      currency: 'GBP',
+                      date: '2020-04-13T14:07:18+0000',
+                      items: [
+                        {
+                          amount: 200,
+                          description: 'Invoice #1',
+                          id: 'transaction-1',
+                          name: 'Client',
+                        },
+                      ],
+                    },
+                  ],
+                  vat: {
+                    owed: 100,
+                    paid: 99.9,
                   },
-                  {
-                    balance: 200,
-                    currency: 'GBP',
-                    date: '2020-04-13T14:07:18+0000',
-                    items: [
-                      {
-                        amount: 200,
-                        description: 'Invoice #1',
-                        id: 'transaction-1',
-                        name: 'Client',
-                      },
-                    ],
-                  },
-                ],
-                vat: {
-                  owed: 100,
-                  paid: 99.9,
                 },
               },
             },
           },
-        },
-        {
-          request: {
-            query: VIEW_TRANSACTION,
-            variables: {
-              companyId: 'company-id',
-              transactionId: 'transaction-id',
-            },
-          },
-          result: {
-            data: {
-              getClients: {
-                items: [],
+          {
+            request: {
+              query: VIEW_TRANSACTION,
+              variables: {
+                companyId: 'company-id',
+                transactionId: 'transaction-id',
               },
-              getSettings: {
-                categories: [
-                  {
-                    name: 'Equipment',
-                    vatRate: 20,
+            },
+            result: {
+              data: {
+                getClients: {
+                  items: [],
+                },
+                getSettings: {
+                  categories: [
+                    {
+                      name: 'Equipment',
+                      vatRate: 20,
+                    },
+                  ],
+                  id: 'company-id',
+                  vat: {
+                    pay: 20,
                   },
-                ],
-                id: 'company-id',
-                vat: {
-                  pay: 20,
+                },
+                getTransaction: {
+                  amount: -999.99,
+                  attachment: '',
+                  category: 'Equipment',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17+00:00',
+                  description: 'Laptop',
+                  id: 'transaction-id',
+                  name: 'Apple',
+                  status: 'confirmed',
+                  vat: 166.66,
                 },
               },
-              getTransaction: {
-                amount: -999.99,
-                attachment: 'path/to/attachment.pdf',
-                category: 'Equipment',
-                companyId: 'company-id',
-                date: '2020-05-07T10:58:17+00:00',
-                description: 'Laptop',
-                id: 'transaction-id',
-                name: 'Apple',
-                status: 'confirmed',
-                vat: 166.66,
+            },
+          },
+          {
+            request: {
+              query: UPDATE_TRANSACTION,
+              variables: {
+                input: {
+                  amount: -999.99,
+                  attachment: '',
+                  category: 'Equipment',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17+00:00',
+                  description: 'Laptop',
+                  id: 'transaction-id',
+                  name: 'Apple',
+                  status: 'confirmed',
+                  vat: 166.66,
+                },
+              },
+            },
+            result: {
+              data: {
+                updateTransaction: {
+                  amount: -999.99,
+                  attachment: '',
+                  category: 'Equipment',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17+00:00',
+                  description: 'Laptop',
+                  id: 'transaction-id',
+                  name: 'Apple',
+                  status: 'confirmed',
+                  vat: 166.66,
+                },
               },
             },
           },
-        },
-        {
-          request: {
-            query: UPDATE_TRANSACTION,
-            variables: {
-              input: {
-                amount: -999.99,
-                attachment: 'path/to/attachment.pdf',
-                category: 'Equipment',
-                companyId: 'company-id',
-                date: '2020-05-07T10:58:17+00:00',
-                description: 'Laptop',
+          {
+            request: {
+              query: DELETE_TRANSACTION,
+              variables: {
                 id: 'transaction-id',
-                name: 'Apple',
-                status: 'confirmed',
-                vat: 166.66,
+              },
+            },
+            result: {
+              data: {
+                deleteTransaction: {
+                  companyId: 'company-id',
+                  id: 'transaction-id',
+                  status: 'confirmed',
+                },
               },
             },
           },
-          result: {
-            data: {
-              updateTransaction: {
-                amount: -999.99,
-                attachment: 'path/to/attachment.pdf',
-                category: 'Equipment',
+        ];
+
+        await act(async () => {
+          component = render(
+            <TestProvider
+              path="/accounts/:companyId/view-transaction/:transactionId"
+              history={history}
+            >
+              <MockedProvider mocks={mocks} addTypename={false}>
+                <ViewTransaction />
+              </MockedProvider>
+            </TestProvider>,
+          );
+        });
+      });
+
+      it('should redirect you back to accounts page on complete', async () => {
+        const { findAllByRole, findByTestId, findByText } = component;
+
+        await act(async () => {
+          await findByText('view-transaction.title');
+
+          const [, , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          await wait();
+
+          await apolloWait(0);
+
+          await findByTestId('next-page');
+        });
+
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/accounts/company-id',
+        );
+      });
+
+      it('should display a success toast', async () => {
+        const { findAllByRole, findByTestId, findByText } = component;
+
+        await act(async () => {
+          await findByText('view-transaction.title');
+
+          const [, , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          await wait();
+
+          await apolloWait(0);
+
+          await findByTestId('next-page');
+        });
+
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'view-transaction.success',
+        });
+      });
+
+      it('should display delete confirmation modal', async () => {
+        const { findByRole, findByText } = component;
+        const button = await findByText('view-transaction.delete-transaction');
+
+        fireEvent.click(button);
+
+        await expect(findByRole('dialog')).resolves.toBeInTheDocument();
+      });
+
+      it('should hide the delete confirmation modal', async () => {
+        const {
+          findAllByRole,
+          findByRole,
+          findByText,
+          queryByRole,
+        } = component;
+
+        await act(async () => {
+          await findByText('view-transaction.title');
+
+          const [, , , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          await findByRole('dialog');
+
+          const [, , , , , cancelButton] = await findAllByRole('button');
+
+          fireEvent.click(cancelButton);
+        });
+
+        expect(queryByRole('dialog')).not.toBeInTheDocument();
+      });
+
+      it('should delete the transaction', async () => {
+        const {
+          findAllByRole,
+          findByLabelText,
+          findByTestId,
+          findByText,
+        } = component;
+
+        await act(async () => {
+          await findByText('view-transaction.title');
+
+          const [, , , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          const input = await findByLabelText('confirm-delete');
+
+          fireEvent.change(input, {
+            target: {
+              focus: () => {},
+              value: 'Apple',
+            },
+          });
+
+          await wait();
+
+          const [, , , , , , deleteButton] = await findAllByRole('button');
+
+          fireEvent.click(deleteButton);
+
+          await apolloWait(0);
+
+          await wait();
+
+          await findByTestId('next-page');
+        });
+
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/accounts/company-id',
+        );
+      });
+
+      it('should display a success toast when deleting a transaction', async () => {
+        const { findAllByRole, findByLabelText, findByText } = component;
+
+        await act(async () => {
+          await findByText('view-transaction.title');
+
+          const [, , , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          const input = await findByLabelText('confirm-delete');
+
+          fireEvent.change(input, {
+            target: {
+              focus: () => {},
+              value: 'Apple',
+            },
+          });
+
+          await wait();
+
+          const [, , , , , , deleteButton] = await findAllByRole('button');
+
+          fireEvent.click(deleteButton);
+
+          await apolloWait(0);
+
+          await wait();
+        });
+
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'delete-transaction.success',
+        });
+      });
+    });
+
+    describe('with an attachment', () => {
+      beforeEach(async () => {
+        mocks = [
+          {
+            request: {
+              query: VIEW_TRANSACTION,
+              variables: {
                 companyId: 'company-id',
-                date: '2020-05-07T10:58:17+00:00',
-                description: 'Laptop',
-                id: 'transaction-id',
-                name: 'Apple',
-                status: 'confirmed',
-                vat: 166.66,
+                transactionId: 'transaction-id',
+              },
+            },
+            result: {
+              data: {
+                getClients: {
+                  items: [],
+                },
+                getSettings: {
+                  categories: [
+                    {
+                      name: 'Equipment',
+                      vatRate: 20,
+                    },
+                  ],
+                  id: 'company-id',
+                  vat: {
+                    pay: 20,
+                  },
+                },
+                getTransaction: {
+                  amount: -999.99,
+                  attachment: 'path/to/attachment.pdf',
+                  category: 'Equipment',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17+00:00',
+                  description: 'Laptop',
+                  id: 'transaction-id',
+                  name: 'Apple',
+                  status: 'confirmed',
+                  vat: 166.66,
+                },
               },
             },
           },
-        },
-        {
-          request: {
-            query: DELETE_TRANSACTION,
-            variables: {
-              id: 'transaction-id',
+          {
+            request: {
+              query: UPDATE_TRANSACTION,
+              variables: {
+                input: {
+                  amount: -999.99,
+                  attachment: 'path/to/attachment.pdf',
+                  category: 'Equipment',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17+00:00',
+                  description: 'Laptop',
+                  id: 'transaction-id',
+                  name: 'Apple',
+                  status: 'confirmed',
+                  vat: 166.66,
+                },
+              },
             },
-          },
-          result: {
-            data: {
-              deleteTransaction: {
-                companyId: 'company-id',
-                id: 'transaction-id',
-                status: 'confirmed',
+            result: {
+              data: {
+                updateTransaction: {
+                  amount: -999.99,
+                  attachment: 'path/to/attachment.pdf',
+                  category: 'Equipment',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17+00:00',
+                  description: 'Laptop',
+                  id: 'transaction-id',
+                  name: 'Apple',
+                  status: 'confirmed',
+                  vat: 166.66,
+                },
               },
             },
           },
-        },
-        {
-          request: {
-            query: DELETE_FILE,
-            variables: {
-              path: 'path/to/attachment.pdf',
-            },
-          },
-          result: {
-            data: {
-              deleteFile: {
+          {
+            request: {
+              query: DELETE_FILE,
+              variables: {
                 path: 'path/to/attachment.pdf',
               },
             },
-          },
-        },
-        {
-          request: {
-            query: REQUEST_DOWNLOAD,
-            variables: {
-              id: 'company-id',
-              path: 'path/to/attachment.pdf',
-            },
-          },
-          result: {
-            data: {
-              requestDownload: {
-                url: 'https://download.url',
+            result: {
+              data: {
+                deleteFile: {
+                  path: 'path/to/attachment.pdf',
+                },
               },
             },
           },
-        },
-      ];
-
-      await act(async () => {
-        component = render(
-          <TestProvider
-            path="/accounts/:companyId/view-transaction/:transactionId"
-            history={history}
-          >
-            <MockedProvider mocks={mocks} addTypename={false}>
-              <ViewTransaction />
-            </MockedProvider>
-          </TestProvider>,
-        );
-      });
-    });
-
-    it('should redirect you back to accounts page on complete', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
-
-      await act(async () => {
-        await findByText('view-transaction.title');
-
-        const [, , , , button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        await wait();
-
-        await apolloWait(0);
-
-        await findByTestId('next-page');
-      });
-
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/accounts/company-id',
-      );
-    });
-
-    it('should display a success toast', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
-
-      await act(async () => {
-        await findByText('view-transaction.title');
-
-        const [, , , , button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        await wait();
-
-        await apolloWait(0);
-
-        await findByTestId('next-page');
-      });
-
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'view-transaction.success',
-      });
-    });
-
-    it('should display delete confirmation modal', async () => {
-      const { findByRole, findByText } = component;
-      const button = await findByText('view-transaction.delete-transaction');
-
-      fireEvent.click(button);
-
-      await expect(findByRole('dialog')).resolves.toBeInTheDocument();
-    });
-
-    it('should hide the delete confirmation modal', async () => {
-      const { findAllByRole, findByRole, findByText, queryByRole } = component;
-
-      await act(async () => {
-        await findByText('view-transaction.title');
-
-        const [, , , , , button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        await findByRole('dialog');
-
-        const [, , , , , , cancelButton] = await findAllByRole('button');
-
-        fireEvent.click(cancelButton);
-      });
-
-      expect(queryByRole('dialog')).not.toBeInTheDocument();
-    });
-
-    it('should delete the transaction', async () => {
-      const {
-        findAllByRole,
-        findByLabelText,
-        findByTestId,
-        findByText,
-      } = component;
-
-      await act(async () => {
-        await findByText('view-transaction.title');
-
-        const [, , , , , button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        const input = await findByLabelText('confirm-delete');
-
-        fireEvent.change(input, {
-          target: {
-            focus: () => {},
-            value: 'Apple',
+          {
+            request: {
+              query: REQUEST_DOWNLOAD,
+              variables: {
+                id: 'company-id',
+                path: 'path/to/attachment.pdf',
+              },
+            },
+            result: {
+              data: {
+                requestDownload: {
+                  url: 'https://download.url',
+                },
+              },
+            },
           },
+        ];
+
+        await act(async () => {
+          component = render(
+            <TestProvider
+              path="/accounts/:companyId/view-transaction/:transactionId"
+              history={history}
+            >
+              <MockedProvider mocks={mocks} addTypename={false}>
+                <ViewTransaction />
+              </MockedProvider>
+            </TestProvider>,
+          );
+        });
+      });
+
+      it('should remove download attachment', async () => {
+        const { findByLabelText, findByText } = component;
+
+        await act(async () => {
+          const deleteButton = await findByText(
+            'transaction-form.upload.delete-file',
+          );
+
+          fireEvent.click(deleteButton);
+
+          await apolloWait(0);
+
+          await wait();
         });
 
-        await wait();
-
-        const [, , , , , , , deleteButton] = await findAllByRole('button');
-
-        fireEvent.click(deleteButton);
-
-        await apolloWait(0);
-
-        await wait();
-
-        await findByTestId('next-page');
+        await expect(
+          findByLabelText('transaction-form.upload.upload.label'),
+        ).resolves.toBeInTheDocument();
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/accounts/company-id',
-      );
-    });
+      it('should display success toast when attachment is removed', async () => {
+        const { findByText } = component;
 
-    it('should display a success toast when deleting a transaction', async () => {
-      const { findAllByRole, findByLabelText, findByText } = component;
+        await act(async () => {
+          const deleteButton = await findByText(
+            'transaction-form.upload.delete-file',
+          );
 
-      await act(async () => {
-        await findByText('view-transaction.title');
+          fireEvent.click(deleteButton);
 
-        const [, , , , , button] = await findAllByRole('button');
+          await apolloWait(0);
 
-        fireEvent.click(button);
-
-        const input = await findByLabelText('confirm-delete');
-
-        fireEvent.change(input, {
-          target: {
-            focus: () => {},
-            value: 'Apple',
-          },
+          await wait();
         });
 
-        await wait();
-
-        const [, , , , , , , deleteButton] = await findAllByRole('button');
-
-        fireEvent.click(deleteButton);
-
-        await apolloWait(0);
-
-        await wait();
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'uploads.delete.success',
+        });
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'delete-transaction.success',
-      });
-    });
+      it('should download the attachment', async () => {
+        const { findByText } = component;
 
-    it('should remove download attachment', async () => {
-      const { findByLabelText, findByText } = component;
+        await act(async () => {
+          const downloadButton = await findByText(
+            'transaction-form.upload.download-file',
+          );
 
-      await act(async () => {
-        const deleteButton = await findByText(
-          'transaction-form.upload.delete-file',
-        );
+          fireEvent.click(downloadButton);
 
-        fireEvent.click(deleteButton);
+          await apolloWait(0);
 
-        await apolloWait(0);
+          await wait();
+        });
 
-        await wait();
+        expect(saveAs).toHaveBeenCalledWith('success', 'attachment.pdf');
       });
 
-      await expect(
-        findByLabelText('transaction-form.upload.upload.label'),
-      ).resolves.toBeInTheDocument();
-    });
+      it('should display a success toast when attachment is downloaded', async () => {
+        const { findByText } = component;
 
-    it('should display success toast when attachment is removed', async () => {
-      const { findByText } = component;
+        await act(async () => {
+          const downloadButton = await findByText(
+            'transaction-form.upload.download-file',
+          );
 
-      await act(async () => {
-        const deleteButton = await findByText(
-          'transaction-form.upload.delete-file',
-        );
+          fireEvent.click(downloadButton);
 
-        fireEvent.click(deleteButton);
+          await apolloWait(0);
 
-        await apolloWait(0);
+          await wait();
+        });
 
-        await wait();
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'uploads.download.success',
+        });
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'uploads.delete.success',
-      });
-    });
+      it('should display an error toast if file fails to download', async () => {
+        (axios.request as jest.Mock).mockRejectedValueOnce({
+          data: 'fail',
+        });
 
-    it('should download the attachment', async () => {
-      const { findByText } = component;
+        const { findByText } = component;
 
-      await act(async () => {
-        const downloadButton = await findByText(
-          'transaction-form.upload.download-file',
-        );
+        await act(async () => {
+          const downloadButton = await findByText(
+            'transaction-form.upload.download-file',
+          );
 
-        fireEvent.click(downloadButton);
+          fireEvent.click(downloadButton);
 
-        await apolloWait(0);
+          await apolloWait(0);
 
-        await wait();
-      });
+          await wait();
+        });
 
-      expect(saveAs).toHaveBeenCalledWith('success', 'attachment.pdf');
-    });
-
-    it('should display a success toast when attachment is downloaded', async () => {
-      const { findByText } = component;
-
-      await act(async () => {
-        const downloadButton = await findByText(
-          'transaction-form.upload.download-file',
-        );
-
-        fireEvent.click(downloadButton);
-
-        await apolloWait(0);
-
-        await wait();
-      });
-
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'uploads.download.success',
-      });
-    });
-
-    it('should display an error toast if file fails to download', async () => {
-      (axios.request as jest.Mock).mockRejectedValueOnce({
-        data: 'fail',
-      });
-
-      const { findByText } = component;
-
-      await act(async () => {
-        const downloadButton = await findByText(
-          'transaction-form.upload.download-file',
-        );
-
-        fireEvent.click(downloadButton);
-
-        await apolloWait(0);
-
-        await wait();
-      });
-
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'uploads.download.error',
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'uploads.download.error',
+        });
       });
     });
   });

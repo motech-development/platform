@@ -73,9 +73,11 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
       onSelect={(file, form) => {
         (async () => {
           try {
-            const extension = file.name.split('.').pop();
+            const extIndex = file.name.lastIndexOf('.');
 
-            if (extension) {
+            if (extIndex > 0) {
+              const extension = file.name.substring(extIndex + 1);
+
               const { data } = await mutation({
                 variables: {
                   id,
@@ -86,7 +88,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
                 },
               });
 
-              if (data) {
+              if (data && data.requestUpload) {
                 const { requestUpload } = data;
                 const headers = {
                   'Content-Type': file.type,
