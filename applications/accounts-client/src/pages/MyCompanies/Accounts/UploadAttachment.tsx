@@ -72,34 +72,39 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
       name={name}
       onSelect={(file, form) => {
         (async () => {
-          const extension = file.name.split('.').pop();
+          try {
+            const extension = file.name.split('.').pop();
 
-          if (extension) {
-            const { data } = await mutation({
-              variables: {
-                id,
-                input: {
-                  contentType: file.type,
-                  extension,
+            if (extension) {
+              const { data } = await mutation({
+                variables: {
+                  id,
+                  input: {
+                    contentType: file.type,
+                    extension,
+                  },
                 },
-              },
-            });
+              });
 
-            if (data) {
-              const { requestUpload } = data;
-              const headers = {
-                'Content-Type': file.type,
-              };
+              if (data) {
+                const { requestUpload } = data;
+                const headers = {
+                  'Content-Type': file.type,
+                };
 
-              await put(requestUpload.url, file, headers);
+                const result = await put(requestUpload.url, file, headers);
 
-              const attachment = `${id}/${requestUpload.id}.${extension}`;
+                if (result) {
+                  const attachment = `${id}/${requestUpload.id}.${extension}`;
 
-              form.setFieldValue('attachment', attachment);
+                  form.setFieldValue('attachment', attachment);
 
-              onUpload(attachment);
+                  onUpload(attachment);
+                }
+              }
             }
-          }
+            // eslint-disable-next-line no-empty
+          } catch (e) {}
         })();
       }}
     />

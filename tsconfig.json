@@ -15,6 +15,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
+    "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true
   },
   "exclude": ["node_modules/cypress"]
