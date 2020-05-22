@@ -56,12 +56,24 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
 }) => {
   const { t } = useTranslation('accounts');
   const { add } = useToast();
+  const onError = () => {
+    add({
+      colour: 'danger',
+      message: t('uploads.download.error'),
+    });
+  };
   const [download] = useLazyGet<Blob>({
     onCompleted: data => {
       const fileName = path.split('/').pop();
 
       saveAs(data, fileName);
+
+      add({
+        colour: 'success',
+        message: t('uploads.download.success'),
+      });
     },
+    onError,
     responseType: 'blob',
   });
   const [request, { loading: requestLoading }] = useLazyQuery<
@@ -71,6 +83,7 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
     onCompleted: async ({ requestDownload }) => {
       await download(requestDownload.url);
     },
+    onError,
   });
   const [upload, { loading: uploadLoading }] = useMutation<
     IDeleteFileOutput,
@@ -86,7 +99,7 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
     },
     onError: () => {
       add({
-        colour: 'success',
+        colour: 'danger',
         message: t('uploads.delete.error'),
       });
     },

@@ -443,6 +443,52 @@ describe('ViewTransaction', () => {
 
       expect(saveAs).toHaveBeenCalledWith('success', 'attachment.pdf');
     });
+
+    it('should display a success toast when attachment is downloaded', async () => {
+      const { findByText } = component;
+
+      await act(async () => {
+        const downloadButton = await findByText(
+          'transaction-form.upload.download-file',
+        );
+
+        fireEvent.click(downloadButton);
+
+        await apolloWait(0);
+
+        await wait();
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'success',
+        message: 'uploads.download.success',
+      });
+    });
+
+    it('should display an error toast if file fails to download', async () => {
+      (axios.request as jest.Mock).mockRejectedValueOnce({
+        data: 'fail',
+      });
+
+      const { findByText } = component;
+
+      await act(async () => {
+        const downloadButton = await findByText(
+          'transaction-form.upload.download-file',
+        );
+
+        fireEvent.click(downloadButton);
+
+        await apolloWait(0);
+
+        await wait();
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'danger',
+        message: 'uploads.download.error',
+      });
+    });
   });
 
   describe('sale', () => {
@@ -529,7 +575,7 @@ describe('ViewTransaction', () => {
               },
               getTransaction: {
                 amount: 999.99,
-                attachment: '',
+                attachment: 'path/to/attachment.pdf',
                 category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
@@ -548,7 +594,7 @@ describe('ViewTransaction', () => {
             variables: {
               input: {
                 amount: 999.99,
-                attachment: '',
+                attachment: 'path/to/attachment.pdf',
                 category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
@@ -564,7 +610,7 @@ describe('ViewTransaction', () => {
             data: {
               updateTransaction: {
                 amount: 999.99,
-                attachment: '',
+                attachment: 'path/to/attachment.pdf',
                 category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
@@ -583,6 +629,25 @@ describe('ViewTransaction', () => {
             query: DELETE_TRANSACTION,
             variables: {
               id: 'transaction-id',
+            },
+          },
+        },
+        {
+          error: new Error(),
+          request: {
+            query: REQUEST_DOWNLOAD,
+            variables: {
+              id: 'company-id',
+              path: 'path/to/attachment.pdf',
+            },
+          },
+        },
+        {
+          error: new Error(),
+          request: {
+            query: DELETE_FILE,
+            variables: {
+              path: 'path/to/attachment.pdf',
             },
           },
         },
@@ -608,7 +673,7 @@ describe('ViewTransaction', () => {
       await act(async () => {
         await findByText('view-transaction.title');
 
-        const [, , , button] = await findAllByRole('button');
+        const [, , , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -630,7 +695,7 @@ describe('ViewTransaction', () => {
       await act(async () => {
         await findByText('view-transaction.title');
 
-        const [, , , button] = await findAllByRole('button');
+        const [, , , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -653,7 +718,7 @@ describe('ViewTransaction', () => {
       await act(async () => {
         await findByText('view-transaction.title');
 
-        const [, , , , button] = await findAllByRole('button');
+        const [, , , , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -668,7 +733,7 @@ describe('ViewTransaction', () => {
 
         await wait();
 
-        const [, , , , , , deleteButton] = await findAllByRole('button');
+        const [, , , , , , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
@@ -680,6 +745,48 @@ describe('ViewTransaction', () => {
       expect(add).toHaveBeenCalledWith({
         colour: 'danger',
         message: 'delete-transaction.error',
+      });
+    });
+
+    it('should display an error toast if file fails to download', async () => {
+      const { findByText } = component;
+
+      await act(async () => {
+        const downloadButton = await findByText(
+          'transaction-form.upload.download-file',
+        );
+
+        fireEvent.click(downloadButton);
+
+        await apolloWait(0);
+
+        await wait();
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'danger',
+        message: 'uploads.download.error',
+      });
+    });
+
+    it('should display an error toast if file fails to delete', async () => {
+      const { findByText } = component;
+
+      await act(async () => {
+        const deleteButton = await findByText(
+          'transaction-form.upload.delete-file',
+        );
+
+        fireEvent.click(deleteButton);
+
+        await apolloWait(0);
+
+        await wait();
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'danger',
+        message: 'uploads.delete.error',
       });
     });
   });

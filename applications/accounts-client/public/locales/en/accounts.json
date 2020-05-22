@@ -140,6 +140,10 @@
     "delete": {
       "success": "File has been deleted",
       "error": "Unable to delete this file"
+    },
+    "download": {
+      "success": "The download has started",
+      "error": "Unable to download this file"
     }
   }
 }
