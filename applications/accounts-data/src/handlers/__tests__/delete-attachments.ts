@@ -221,6 +221,7 @@ describe('delete-attachments', () => {
     expect(sqs.sendMessageBatch).toHaveBeenCalledWith({
       Entries: [
         {
+          DelaySeconds: 300,
           Id: '1',
           MessageAttributes: {
             key: {
@@ -231,6 +232,7 @@ describe('delete-attachments', () => {
           MessageBody: 'Delete path/to/file-1.pdf',
         },
         {
+          DelaySeconds: 300,
           Id: '2',
           MessageAttributes: {
             key: {

@@ -12,6 +12,7 @@ const deleteAttachments = (
   const entries = unmarshalledRecords
     .filter(({ OldImage }) => !!OldImage.attachment)
     .map(({ OldImage }) => ({
+      DelaySeconds: 300,
       Id: OldImage.id,
       MessageAttributes: {
         key: {
