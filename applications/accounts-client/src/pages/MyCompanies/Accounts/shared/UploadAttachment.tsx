@@ -78,7 +78,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
             if (extIndex > 0) {
               const extension = file.name.substring(extIndex + 1);
 
-              const { data } = await mutation({
+              const result = await mutation({
                 variables: {
                   id,
                   input: {
@@ -88,15 +88,19 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
                 },
               });
 
-              if (data && data.requestUpload) {
-                const { requestUpload } = data;
+              if (result?.data) {
+                const { requestUpload } = result.data;
                 const headers = {
                   'Content-Type': file.type,
                 };
 
-                const result = await put(requestUpload.url, file, headers);
+                const uploadResult = await put(
+                  requestUpload.url,
+                  file,
+                  headers,
+                );
 
-                if (result) {
+                if (uploadResult) {
                   const attachment = `${id}/${requestUpload.id}.${extension}`;
 
                   form.setFieldValue('attachment', attachment);

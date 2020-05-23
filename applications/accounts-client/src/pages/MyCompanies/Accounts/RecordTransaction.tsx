@@ -15,8 +15,8 @@ import ADD_TRANSACTION, {
   updateCache,
 } from '../../../graphql/transaction/ADD_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
-import UploadAttachment from './UploadAttachment';
-import ViewAttachment from './ViewAttachment';
+import UploadAttachment from './shared/UploadAttachment';
+import ViewAttachment from './shared/ViewAttachment';
 
 interface IRecordTransactionInput {
   id: string;

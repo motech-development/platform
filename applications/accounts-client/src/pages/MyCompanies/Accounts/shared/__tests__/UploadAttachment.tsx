@@ -7,8 +7,9 @@ import {
   wait,
 } from '@testing-library/react';
 import { Form, Formik } from 'formik';
+import { GraphQLError } from 'graphql';
 import React from 'react';
-import TestProvider from '../../../../utils/TestProvider';
+import TestProvider from '../../../../../utils/TestProvider';
 import UploadAttachment, { REQUEST_UPLOAD } from '../UploadAttachment';
 
 interface IInitialValues {
@@ -34,13 +35,16 @@ describe('UploadAttachment', () => {
           query: REQUEST_UPLOAD,
           variables: {
             id: 'test',
-            inputs: {
+            input: {
               contentType: 'image/pdf',
               extension: 'pdf',
             },
           },
         },
-        result: {},
+        result: {
+          data: {},
+          errors: [new GraphQLError('Error!')],
+        },
       },
     ];
 

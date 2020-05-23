@@ -26,8 +26,8 @@ import UPDATE_TRANSACTION, {
   IUpdateTransactionOutput,
 } from '../../../graphql/transaction/UPDATE_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
-import UploadAttachment from './UploadAttachment';
-import ViewAttachment from './ViewAttachment';
+import UploadAttachment from './shared/UploadAttachment';
+import ViewAttachment from './shared/ViewAttachment';
 
 interface IViewTransactionInput {
   companyId: string;

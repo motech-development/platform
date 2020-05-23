@@ -20,7 +20,7 @@ import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
 import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import RecordTransaction, { RECORD_TRANSACTION } from '../RecordTransaction';
-import { REQUEST_UPLOAD } from '../UploadAttachment';
+import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 
 describe('RecordTransaction', () => {
   let cache: InMemoryCache;
