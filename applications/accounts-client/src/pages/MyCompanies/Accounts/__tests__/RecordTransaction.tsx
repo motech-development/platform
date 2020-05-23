@@ -80,7 +80,7 @@ describe('RecordTransaction', () => {
       },
     });
 
-    upload = new File(['dummy content'], 'invoice.pdf', {
+    upload = new File(['dummy content'], 'invoice.PDF', {
       type: 'application/pdf',
     });
 

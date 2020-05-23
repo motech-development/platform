@@ -77,7 +77,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
             const extIndex = file.name.lastIndexOf('.');
 
             if (extIndex > 0) {
-              const extension = file.name.substring(extIndex + 1);
+              const extension = file.name.substring(extIndex + 1).toLowerCase();
 
               const result = await mutation({
                 variables: {
