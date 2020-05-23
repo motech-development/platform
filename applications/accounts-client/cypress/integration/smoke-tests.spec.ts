@@ -24,7 +24,7 @@ describe('Smoke tests', () => {
     });
 
     it('should create a VAT registered company', () => {
-      cy.fixture('company.json').then(res => {
+      cy.fixture('data/company.json').then(res => {
         const company = res[0];
 
         cy.get('input[id="name"]')
@@ -66,7 +66,7 @@ describe('Smoke tests', () => {
     });
 
     it('should create a non-VAT registered company', () => {
-      cy.fixture('company.json').then(res => {
+      cy.fixture('data/company.json').then(res => {
         const company = res[1];
 
         cy.get('input[id="name"]')
@@ -114,7 +114,7 @@ describe('Smoke tests', () => {
     });
 
     it('should update company details', () => {
-      cy.fixture('company.json').then(res => {
+      cy.fixture('data/company.json').then(res => {
         const company = res[0];
         const updated = res[2];
 
@@ -188,7 +188,7 @@ describe('Smoke tests', () => {
     });
 
     it('should update VAT registered company settings', () => {
-      cy.fixture('settings.json').then(res => {
+      cy.fixture('data/settings.json').then(res => {
         const settings = res[0];
 
         cy.get('a:contains("Select company")')
@@ -239,7 +239,7 @@ describe('Smoke tests', () => {
     });
 
     it('should remove expenses category', () => {
-      cy.fixture('settings.json').then(res => {
+      cy.fixture('data/settings.json').then(res => {
         const settings = res[0];
 
         cy.get('a:contains("Select company")')
@@ -313,7 +313,7 @@ describe('Smoke tests', () => {
     });
 
     it('should re-add expense categories', () => {
-      cy.fixture('settings.json').then(res => {
+      cy.fixture('data/settings.json').then(res => {
         const settings = res[0];
 
         cy.get('a:contains("Select company")')
@@ -347,7 +347,7 @@ describe('Smoke tests', () => {
     });
 
     it('should have correct defaults for non-VAT registered company', () => {
-      cy.fixture('settings.json').then(res => {
+      cy.fixture('data/settings.json').then(res => {
         const settings = res[1];
 
         cy.get('a:contains("Select company")')
@@ -373,7 +373,7 @@ describe('Smoke tests', () => {
     });
 
     it('should update non-VAT registered company settings', () => {
-      cy.fixture('settings.json').then(res => {
+      cy.fixture('data/settings.json').then(res => {
         const settings = res[1];
 
         cy.get('a:contains("Select company")')
@@ -433,7 +433,7 @@ describe('Smoke tests', () => {
       });
 
       it('should add client 1', () => {
-        cy.fixture('client.json').then(res => {
+        cy.fixture('data/client.json').then(res => {
           const client = res[0];
 
           cy.get('a:contains("Add a new client")').click();
@@ -485,7 +485,7 @@ describe('Smoke tests', () => {
       });
 
       it('should add client 1', () => {
-        cy.fixture('client.json').then(res => {
+        cy.fixture('data/client.json').then(res => {
           const client = res[0];
 
           cy.get('a:contains("Add a new client")').click();
@@ -516,7 +516,7 @@ describe('Smoke tests', () => {
       });
 
       it('should add client 2', () => {
-        cy.fixture('client.json').then(res => {
+        cy.fixture('data/client.json').then(res => {
           const client = res[1];
 
           cy.get('a:contains("Add a new client")').click();
@@ -553,7 +553,7 @@ describe('Smoke tests', () => {
       });
 
       it('should add client 3', () => {
-        cy.fixture('client.json').then(res => {
+        cy.fixture('data/client.json').then(res => {
           const client = res[2];
 
           cy.get('a:contains("Add a new client")').click();
@@ -587,7 +587,7 @@ describe('Smoke tests', () => {
       });
 
       it('should update client 2', () => {
-        cy.fixture('client.json').then(res => {
+        cy.fixture('data/client.json').then(res => {
           const client = res[1];
           const updated = res[3];
 
@@ -635,7 +635,7 @@ describe('Smoke tests', () => {
       });
 
       it('should delete client 3', () => {
-        cy.fixture('client.json').then(res => {
+        cy.fixture('data/client.json').then(res => {
           const client = res[2];
 
           cy.get('a:contains("Manage client details")')
@@ -689,106 +689,148 @@ describe('Smoke tests', () => {
       });
 
       it('should add a confirmed sale', () => {
-        cy.fixture('account.json').then(res => {
-          const transaction = res[0];
+        cy.fixture('data/account.json').then(res => {
+          cy.fixture('upload/invoice.pdf').then(file => {
+            const transaction = res[0];
 
-          cy.get('a:contains("Record a new transaction")').click();
+            cy.get('a:contains("Record a new transaction")').click();
 
-          cy.wait(1000);
+            cy.wait(1000);
 
-          cy.get('input[type="radio"]').check(transaction.type);
+            cy.get('input[type="radio"]').check(transaction.type);
 
-          cy.get('select[id="name"]')
-            .focus()
-            .select(transaction.supplier);
+            cy.get('input[id="attachment"]').upload({
+              fileContent: file,
+              fileName: 'invoice.pdf',
+              mimeType: 'application/pdf',
+            });
 
-          cy.get('input[id="description"]')
-            .focus()
-            .type(transaction.description);
+            cy.get('input[id="attachment"]').should('not.be.visible');
 
-          cy.get('input[type="radio"]').check(transaction.status);
+            cy.get('select[id="name"]')
+              .focus()
+              .select(transaction.supplier);
 
-          cy.get('input[id="amount"]')
-            .focus()
-            .type(transaction.amount);
+            cy.get('input[id="description"]')
+              .focus()
+              .type(transaction.description);
 
-          cy.format('currency', transaction.vat).then(value => {
-            cy.get('input[id="vat"]').should('have.value', value);
+            cy.get('input[type="radio"]').check(transaction.status);
+
+            cy.get('input[id="amount"]')
+              .focus()
+              .type(transaction.amount);
+
+            cy.format('currency', transaction.vat).then(value => {
+              cy.get('input[id="vat"]').should('have.value', value);
+            });
+
+            cy.get('div:contains("File has been uploaded")', {
+              timeout: 10000,
+            }).should('not.be.visible');
+
+            cy.get('button[type="submit"]').click();
           });
-
-          cy.get('button[type="submit"]').click();
         });
       });
 
       it('should add a confirmed purchase', () => {
-        cy.fixture('account.json').then(res => {
-          const transaction = res[1];
+        cy.fixture('data/account.json').then(res => {
+          cy.fixture('upload/invoice.pdf').then(file => {
+            const transaction = res[1];
 
-          cy.get('a:contains("Record a new transaction")').click();
+            cy.get('a:contains("Record a new transaction")').click();
 
-          cy.wait(1000);
+            cy.wait(1000);
 
-          cy.get('input[type="radio"]').check(transaction.type);
+            cy.get('input[type="radio"]').check(transaction.type);
 
-          cy.get('input[id="name"]')
-            .focus()
-            .type(transaction.supplier);
+            cy.get('input[id="name"]')
+              .focus()
+              .type(transaction.supplier);
 
-          cy.get('input[id="description"]')
-            .focus()
-            .type(transaction.description);
+            cy.get('input[id="description"]')
+              .focus()
+              .type(transaction.description);
 
-          cy.get('input[type="radio"]').check(transaction.status);
+            cy.get('input[type="radio"]').check(transaction.status);
 
-          cy.get('select[id="category"]')
-            .focus()
-            .select(transaction.category);
+            cy.get('input[id="attachment"]').upload({
+              fileContent: file,
+              fileName: 'invoice.pdf',
+              mimeType: 'application/pdf',
+            });
 
-          cy.get('input[id="amount"]')
-            .focus()
-            .type(transaction.amount);
+            cy.get('input[id="attachment"]').should('not.be.visible');
 
-          cy.format('currency', transaction.vat).then(value => {
-            cy.get('input[id="vat"]').should('have.value', value);
+            cy.get('select[id="category"]')
+              .focus()
+              .select(transaction.category);
+
+            cy.get('input[id="amount"]')
+              .focus()
+              .type(transaction.amount);
+
+            cy.format('currency', transaction.vat).then(value => {
+              cy.get('input[id="vat"]').should('have.value', value);
+            });
+
+            cy.get('div:contains("File has been uploaded")', {
+              timeout: 10000,
+            }).should('not.be.visible');
+
+            cy.get('button[type="submit"]').click();
           });
-
-          cy.get('button[type="submit"]').click();
         });
       });
 
       it('should add a confirmed zero VAT rate purchase', () => {
-        cy.fixture('account.json').then(res => {
-          const transaction = res[2];
+        cy.fixture('data/account.json').then(res => {
+          cy.fixture('upload/invoice.pdf').then(file => {
+            const transaction = res[2];
 
-          cy.get('a:contains("Record a new transaction")').click();
+            cy.get('a:contains("Record a new transaction")').click();
 
-          cy.wait(1000);
+            cy.wait(1000);
 
-          cy.get('input[type="radio"]').check(transaction.type);
+            cy.get('input[type="radio"]').check(transaction.type);
 
-          cy.get('input[id="name"]')
-            .focus()
-            .type(transaction.supplier);
+            cy.get('input[id="name"]')
+              .focus()
+              .type(transaction.supplier);
 
-          cy.get('input[id="description"]')
-            .focus()
-            .type(transaction.description);
+            cy.get('input[id="description"]')
+              .focus()
+              .type(transaction.description);
 
-          cy.get('input[type="radio"]').check(transaction.status);
+            cy.get('input[type="radio"]').check(transaction.status);
 
-          cy.get('select[id="category"]')
-            .focus()
-            .select(transaction.category);
+            cy.get('input[id="attachment"]').upload({
+              fileContent: file,
+              fileName: 'invoice.pdf',
+              mimeType: 'application/pdf',
+            });
 
-          cy.get('input[id="amount"]')
-            .focus()
-            .type(transaction.amount);
+            cy.get('input[id="attachment"]').should('not.be.visible');
 
-          cy.format('currency', transaction.vat).then(value => {
-            cy.get('input[id="vat"]').should('have.value', value);
+            cy.get('select[id="category"]')
+              .focus()
+              .select(transaction.category);
+
+            cy.get('input[id="amount"]')
+              .focus()
+              .type(transaction.amount);
+
+            cy.format('currency', transaction.vat).then(value => {
+              cy.get('input[id="vat"]').should('have.value', value);
+            });
+
+            cy.get('div:contains("File has been uploaded")', {
+              timeout: 10000,
+            }).should('not.be.visible');
+
+            cy.get('button[type="submit"]').click();
           });
-
-          cy.get('button[type="submit"]').click();
         });
       });
 
@@ -801,55 +843,75 @@ describe('Smoke tests', () => {
       });
 
       it('should update a transaction', () => {
-        cy.fixture('account.json').then(res => {
-          const transaction = res[6];
+        cy.fixture('data/account.json').then(res => {
+          cy.fixture('upload/invoice.pdf').then(file => {
+            const transaction = res[6];
 
-          cy.get('a:contains("View")')
-            .eq(3)
-            .click();
+            cy.get('a:contains("View")')
+              .eq(3)
+              .click();
 
-          cy.wait(1000);
+            cy.wait(1000);
 
-          cy.get('input[name="transaction"][type="hidden"]').should(
-            'have.value',
-            transaction.type,
-          );
+            cy.get('input[name="transaction"][type="hidden"]').should(
+              'have.value',
+              transaction.type,
+            );
 
-          cy.get('select[id="name"]').should(
-            'have.value',
-            transaction.supplier,
-          );
+            cy.get('select[id="name"]').should(
+              'have.value',
+              transaction.supplier,
+            );
 
-          cy.get('input[id="description"]').should(
-            'have.value',
-            transaction.description,
-          );
+            cy.get('input[id="description"]').should(
+              'have.value',
+              transaction.description,
+            );
 
-          cy.get(`input[value="${transaction.status}"]`).should(
-            'have.prop',
-            'checked',
-          );
+            cy.get(`input[value="${transaction.status}"]`).should(
+              'have.prop',
+              'checked',
+            );
 
-          cy.get('input[id="amount"]')
-            .clear()
-            .type(transaction.amount);
+            cy.get('input[id="amount"]')
+              .clear()
+              .type(transaction.amount);
 
-          cy.format('currency', transaction.vat).then(value => {
-            cy.get('input[id="vat"]').should('have.value', value);
+            cy.format('currency', transaction.vat).then(value => {
+              cy.get('input[id="vat"]').should('have.value', value);
+            });
+
+            cy.get('button:contains("Delete file")').click();
+
+            cy.get('div:contains("File has been deleted")', {
+              timeout: 10000,
+            }).should('not.be.visible');
+
+            cy.get('input[id="attachment"]').upload({
+              fileContent: file,
+              fileName: 'invoice.pdf',
+              mimeType: 'application/pdf',
+            });
+
+            cy.get('input[id="attachment"]').should('not.be.visible');
+
+            cy.get('div:contains("File has been uploaded")', {
+              timeout: 10000,
+            }).should('not.be.visible');
+
+            cy.get('button[type="submit"]').click();
+
+            cy.wait(1000);
+
+            cy.contains('Balance: £2290.40').should('be.visible');
+
+            cy.contains('VAT owed: £387.50').should('be.visible');
           });
-
-          cy.get('button[type="submit"]').click();
-
-          cy.wait(1000);
-
-          cy.contains('Balance: £2290.40').should('be.visible');
-
-          cy.contains('VAT owed: £387.50').should('be.visible');
         });
       });
 
       it('should delete a confirmed transaction', () => {
-        cy.fixture('account.json').then(res => {
+        cy.fixture('data/account.json').then(res => {
           const transaction = res[0];
 
           cy.get('button:contains("Delete")')
@@ -892,7 +954,7 @@ describe('Smoke tests', () => {
       });
 
       it('should add a confirmed sale', () => {
-        cy.fixture('account.json').then(res => {
+        cy.fixture('data/account.json').then(res => {
           const transaction = res[0];
 
           cy.get('a:contains("Record a new transaction")').click();
@@ -924,7 +986,7 @@ describe('Smoke tests', () => {
       });
 
       it('should add a confirmed purchase', () => {
-        cy.fixture('account.json').then(res => {
+        cy.fixture('data/account.json').then(res => {
           const transaction = res[1];
 
           cy.get('a:contains("Record a new transaction")').click();
@@ -960,7 +1022,7 @@ describe('Smoke tests', () => {
       });
 
       it('should add a confirmed zero VAT rate purchase', () => {
-        cy.fixture('account.json').then(res => {
+        cy.fixture('data/account.json').then(res => {
           const transaction = res[2];
 
           cy.get('a:contains("Record a new transaction")').click();
@@ -1004,7 +1066,7 @@ describe('Smoke tests', () => {
       });
 
       it('should delete a confirmed transaction', () => {
-        cy.fixture('account.json').then(res => {
+        cy.fixture('data/account.json').then(res => {
           const transaction = res[2];
 
           cy.get('button:contains("Delete")')
@@ -1024,7 +1086,7 @@ describe('Smoke tests', () => {
       });
 
       it('should add a pending sale', () => {
-        cy.fixture('account.json').then(res => {
+        cy.fixture('data/account.json').then(res => {
           const transaction = res[3];
 
           cy.get('a:contains("Record a new transaction")').click();
@@ -1056,7 +1118,7 @@ describe('Smoke tests', () => {
       });
 
       it('should add a pending purchase', () => {
-        cy.fixture('account.json').then(res => {
+        cy.fixture('data/account.json').then(res => {
           const transaction = res[4];
 
           cy.get('a:contains("Record a new transaction")').click();
@@ -1092,7 +1154,7 @@ describe('Smoke tests', () => {
       });
 
       it('should add a pending zero VAT rate purchase', () => {
-        cy.fixture('account.json').then(res => {
+        cy.fixture('data/account.json').then(res => {
           const transaction = res[5];
 
           cy.get('a:contains("Record a new transaction")').click();
@@ -1128,7 +1190,7 @@ describe('Smoke tests', () => {
       });
 
       it('should delete a pending transaction', () => {
-        cy.fixture('account.json').then(res => {
+        cy.fixture('data/account.json').then(res => {
           const transaction = res[5];
 
           cy.get('a:contains("View pending transactions")').click();
@@ -1159,7 +1221,7 @@ describe('Smoke tests', () => {
     });
 
     it('should remove VAT registered company', () => {
-      cy.fixture('company.json').then(res => {
+      cy.fixture('data/company.json').then(res => {
         const company = res[0];
 
         cy.get('a:contains("Select company")')
@@ -1187,7 +1249,7 @@ describe('Smoke tests', () => {
     });
 
     it('should remove non-VAT registered company', () => {
-      cy.fixture('company.json').then(res => {
+      cy.fixture('data/company.json').then(res => {
         const company = res[1];
 
         cy.get('a:contains("Select company")')

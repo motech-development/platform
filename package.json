@@ -67,6 +67,7 @@
     "commitizen": "^4.0.4",
     "copy-webpack-plugin": "^5.1.1",
     "cypress": "^4.4.0",
+    "cypress-file-upload": "^3.5.3",
     "cz-lerna-changelog": "^2.0.2",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^18.0.1",

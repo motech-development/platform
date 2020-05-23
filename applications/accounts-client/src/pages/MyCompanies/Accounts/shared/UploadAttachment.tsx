@@ -66,6 +66,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
 
   return (
     <FileUpload
+      accept="application/pdf,image/*"
       buttonText={t('transaction-form.upload.upload.button')}
       label={t('transaction-form.upload.upload.label')}
       loading={mutationLoading || putLoading}

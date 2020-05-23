@@ -134,7 +134,7 @@
   },
   "uploads": {
     "add": {
-      "success": "Upload complete",
+      "success": "File has been uploaded",
       "error": "Unable to upload this file"
     },
     "delete": {
