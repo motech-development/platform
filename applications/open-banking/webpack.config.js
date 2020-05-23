@@ -8,7 +8,11 @@ const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   entry: slsw.lib.entries,
-  externals: [nodeExternals()],
+  externals: [
+    nodeExternals({
+      whitelist: ['@motech-development/api-gateway-handler'],
+    }),
+  ],
   mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
   module: {
     rules: [

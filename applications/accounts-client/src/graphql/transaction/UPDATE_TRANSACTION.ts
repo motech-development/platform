@@ -3,6 +3,7 @@ import { gql } from 'apollo-boost';
 export interface IUpdateTransactionInput {
   input: {
     amount: number;
+    attachment: string;
     category: string;
     companyId: string;
     date: string;
@@ -17,6 +18,7 @@ export interface IUpdateTransactionInput {
 export interface IUpdateTransactionOutput {
   updateTransaction: {
     amount: number;
+    attachment: string;
     category: string;
     companyId: string;
     date: string;
@@ -32,6 +34,7 @@ const UPDATE_TRANSACTION = gql`
   mutation UpdateTransaction($input: TransactionInput!) {
     updateTransaction(input: $input) {
       amount
+      attachment
       category
       companyId
       date

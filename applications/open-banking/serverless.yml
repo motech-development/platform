@@ -97,6 +97,7 @@ stepFunctions:
   validate: true
   stateMachines:
     connectToBank:
+      name: ${self:custom.prefix}-connect-to-bank
       events:
         - http:
             authorizer: aws_iam

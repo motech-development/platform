@@ -7,6 +7,7 @@ import Button from '../Button/Button';
 import Card from '../Card/Card';
 import Col from '../Col/Col';
 import DatePicker from '../DatePicker/DatePicker';
+import FileUpload from '../FileUpload/FileUpload';
 import Row from '../Row/Row';
 import TextBox from '../TextBox/TextBox';
 import Radio from '../Radio/Radio';
@@ -25,6 +26,7 @@ const initialValues = {
   },
   name: 'Mo Gusbi',
   password: '',
+  upload: '',
 };
 const validationSchema = object().shape({
   category: string().required(),
@@ -39,6 +41,7 @@ const validationSchema = object().shape({
   }),
   name: string().required(),
   password: string().required(),
+  upload: string().required(),
 });
 const options = [
   {
@@ -141,6 +144,18 @@ stories.add('Basic form', () => (
               readOnly={readOnly()}
               name="dob"
               label="Date of birth"
+            />
+
+            <FileUpload
+              accept="image/png"
+              buttonText="Browse"
+              disabled={disabled()}
+              helpText="Select a photo to upload"
+              name="upload"
+              label="Your photo"
+              onSelect={(file, form) => {
+                form.setFieldValue('upload', file.name);
+              }}
             />
           </Form>
         </Card>

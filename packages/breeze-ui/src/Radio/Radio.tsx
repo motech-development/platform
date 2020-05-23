@@ -95,7 +95,7 @@ const InternalRadio: FC<IInternalRadio> = ({
       ))}
 
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      {readOnly && <input hidden {...field} />}
+      {readOnly && <input type="hidden" {...field} />}
     </FieldSet>
   );
 };

@@ -7,6 +7,9 @@ provider:
   region: ${opt:region, 'eu-west-1'}
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-data
+  environment:
+    ATTACHMENT_QUEUE: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
+    TABLE: !Ref ApplicationTable
 
 package:
   individually: true
@@ -21,11 +24,9 @@ custom:
     includeModules: true
 
 functions:
-  Balance:
-    handler: src/balance.handler
+  Transactions:
+    handler: src/transactions.handler
     role: DataLambdaFunctionRole
-    environment:
-      TABLE: !Ref ApplicationTable
     events:
       - stream:
           type: dynamodb
@@ -93,6 +94,11 @@ resources:
                       - ''
                       - - !GetAtt ApplicationTable.Arn
                         - '/stream/*'
+                - Effect: Allow
+                  Action:
+                    - sqs:SendMessage
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup

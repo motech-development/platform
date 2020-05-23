@@ -12,12 +12,13 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { FormikProps, FormikValues, getIn } from 'formik';
-import React, { ChangeEvent, FC, memo, useState } from 'react';
+import React, { ChangeEvent, FC, memo, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { date, number, object, string } from 'yup';
 
 const formSchema = {
   amount: '',
+  attachment: '',
   category: '',
   companyId: '',
   date: '',
@@ -30,6 +31,7 @@ const formSchema = {
 
 export type FormSchema = {
   amount: number;
+  attachment: string;
   category: string;
   companyId: string;
   date: string;
@@ -41,12 +43,15 @@ export type FormSchema = {
 };
 
 export interface ITransactionForm {
+  attachment: string;
+  attachmentView: ReactNode;
   backTo: string;
   categories: ISelectOption[];
   clients: ISelectOption[];
   companyId: string;
   initialValues?: FormSchema;
   loading: boolean;
+  uploader: ReactNode;
   vat: number;
   onSave(value: FormSchema): void;
 }
@@ -56,6 +61,8 @@ interface IFormValues extends FormSchema {
 }
 
 const TransactionForm: FC<ITransactionForm> = ({
+  attachment,
+  attachmentView,
   backTo,
   categories,
   clients,
@@ -66,6 +73,7 @@ const TransactionForm: FC<ITransactionForm> = ({
   },
   loading,
   onSave,
+  uploader,
   vat,
 }) => {
   const isEmpty = initialValues.amount === '';
@@ -87,6 +95,7 @@ const TransactionForm: FC<ITransactionForm> = ({
           transaction: initialTransaction,
         }),
   };
+
   const [transactionType, setTransactionType] = useState(
     formValues.transaction,
   );
@@ -97,6 +106,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     amount: number().required(
       t('transaction-form.transaction-amount.amount.required'),
     ),
+    attachment: string(),
     category: string().required(
       t('transaction-form.transaction-amount.category.required'),
     ),
@@ -107,6 +117,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     description: string().required(
       t('transaction-form.transaction-details.description.required'),
     ),
+    id: string(),
     name: string().required(
       t('transaction-form.transaction-details.name.required'),
     ),
@@ -196,6 +207,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     return {
       ...value,
       amount,
+      attachment,
       category,
     };
   };
@@ -266,75 +278,97 @@ const TransactionForm: FC<ITransactionForm> = ({
         </Col>
 
         <Col xs={12} md={6}>
-          <Card padding="lg">
-            <Typography rule component="h3" variant="h3">
-              {t('transaction-form.transaction-amount.heading')}
-            </Typography>
+          <Row>
+            <Col>
+              <Card padding="lg">
+                <Typography rule component="h3" variant="h3">
+                  {t('transaction-form.transaction-amount.heading')}
+                </Typography>
 
-            <Radio
-              name="status"
-              label={t('transaction-form.transaction-amount.status.label')}
-              options={statusOptions}
-            />
+                <Radio
+                  name="status"
+                  label={t('transaction-form.transaction-amount.status.label')}
+                  options={statusOptions}
+                />
 
-            {transactionType && (
-              <>
-                {transactionType === 'Purchase' ? (
+                {transactionType && (
                   <>
-                    <Select
-                      label={t(
-                        'transaction-form.transaction-amount.category.label',
-                      )}
-                      name="category"
-                      onChange={onCategoryChange}
-                      options={dropdown}
-                      placeholder={t(
-                        'transaction-form.transaction-amount.category.placeholder',
-                      )}
-                    />
+                    {transactionType === 'Purchase' ? (
+                      <>
+                        <Select
+                          label={t(
+                            'transaction-form.transaction-amount.category.label',
+                          )}
+                          name="category"
+                          onChange={onCategoryChange}
+                          options={dropdown}
+                          placeholder={t(
+                            'transaction-form.transaction-amount.category.placeholder',
+                          )}
+                        />
 
-                    <TextBox
-                      decimalScale={2}
-                      disabled={disableInput}
-                      label={t(
-                        'transaction-form.transaction-amount.amount.label',
-                      )}
-                      name="amount"
-                      onChange={onPurchaseAmountChange}
-                      prefix={currency}
-                    />
+                        <TextBox
+                          decimalScale={2}
+                          disabled={disableInput}
+                          label={t(
+                            'transaction-form.transaction-amount.amount.label',
+                          )}
+                          name="amount"
+                          onChange={onPurchaseAmountChange}
+                          prefix={currency}
+                        />
 
-                    <TextBox
-                      disabled={disableInput}
-                      name="vat"
-                      label={t('transaction-form.transaction-amount.vat.label')}
-                      prefix={currency}
-                      decimalScale={2}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <TextBox
-                      decimalScale={2}
-                      label={t(
-                        'transaction-form.transaction-amount.amount.label',
-                      )}
-                      name="amount"
-                      onChange={onSaleAmountChange}
-                      prefix={currency}
-                    />
+                        <TextBox
+                          disabled={disableInput}
+                          name="vat"
+                          label={t(
+                            'transaction-form.transaction-amount.vat.label',
+                          )}
+                          prefix={currency}
+                          decimalScale={2}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <TextBox
+                          decimalScale={2}
+                          label={t(
+                            'transaction-form.transaction-amount.amount.label',
+                          )}
+                          name="amount"
+                          onChange={onSaleAmountChange}
+                          prefix={currency}
+                        />
 
-                    <TextBox
-                      decimalScale={2}
-                      label={t('transaction-form.transaction-amount.vat.label')}
-                      name="vat"
-                      prefix={currency}
-                    />
+                        <TextBox
+                          decimalScale={2}
+                          label={t(
+                            'transaction-form.transaction-amount.vat.label',
+                          )}
+                          name="vat"
+                          prefix={currency}
+                        />
+                      </>
+                    )}
                   </>
                 )}
-              </>
+              </Card>
+            </Col>
+
+            {transactionType && (
+              <Col>
+                <Card padding="lg">
+                  <Typography rule component="h3" variant="h3">
+                    {transactionType === 'Purchase'
+                      ? t('transaction-form.upload.purchase.heading')
+                      : t('transaction-form.upload.sale.heading')}
+                  </Typography>
+
+                  {attachment ? attachmentView : uploader}
+                </Card>
+              </Col>
             )}
-          </Card>
+          </Row>
         </Col>
       </Row>
     </Form>

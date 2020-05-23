@@ -29,6 +29,7 @@
     "outputName": "open-banking.xml"
   },
   "dependencies": {
+    "@motech-development/api-gateway-handler": "^0.0.0",
     "axios": "^0.19.2",
     "yup": "^0.28.3"
   },

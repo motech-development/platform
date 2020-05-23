@@ -11,6 +11,7 @@ import {
   wait,
 } from '@testing-library/react';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import axios from 'axios';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { advanceTo, clear } from 'jest-date-mock';
 import React from 'react';
@@ -19,12 +20,14 @@ import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
 import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import RecordTransaction, { RECORD_TRANSACTION } from '../RecordTransaction';
+import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 
 describe('RecordTransaction', () => {
   let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
+  let upload: File;
 
   beforeAll(() => {
     advanceTo('2020-05-07T11:58:17+01:00');
@@ -75,6 +78,14 @@ describe('RecordTransaction', () => {
         companyId: 'company-id',
         status: 'confirmed',
       },
+    });
+
+    upload = new File(['dummy content'], 'invoice.pdf', {
+      type: 'application/pdf',
+    });
+
+    axios.request = jest.fn().mockResolvedValue({
+      data: 'success',
     });
   });
 
@@ -176,6 +187,7 @@ describe('RecordTransaction', () => {
             variables: {
               input: {
                 amount: -999.99,
+                attachment: 'company-id/test-id.pdf',
                 category: 'Equipment',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
@@ -192,6 +204,7 @@ describe('RecordTransaction', () => {
               addTransaction: {
                 __typename: 'Transaction',
                 amount: -999.99,
+                attachment: 'company-id/test-id.pdf',
                 category: 'Equipment',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
@@ -200,6 +213,27 @@ describe('RecordTransaction', () => {
                 name: 'Apple',
                 status: 'confirmed',
                 vat: 166.66,
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: REQUEST_UPLOAD,
+            variables: {
+              id: 'company-id',
+              input: {
+                contentType: 'application/pdf',
+                extension: 'pdf',
+              },
+            },
+          },
+          result: {
+            data: {
+              requestUpload: {
+                __typename: 'StorageUpload',
+                id: 'test-id',
+                url: 'https://temp-upload.url/',
               },
             },
           },
@@ -247,6 +281,9 @@ describe('RecordTransaction', () => {
         const amount = await findByLabelText(
           'transaction-form.transaction-amount.amount.label',
         );
+        const fileUpload = await findByLabelText(
+          'transaction-form.upload.upload.label',
+        );
 
         fireEvent.change(supplier, {
           target: {
@@ -277,9 +314,15 @@ describe('RecordTransaction', () => {
           },
         });
 
+        Object.defineProperty(fileUpload, 'files', {
+          value: [upload],
+        });
+
+        fireEvent.change(fileUpload);
+
         await wait();
 
-        const [, , button] = await findAllByRole('button');
+        const [, , , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -293,7 +336,7 @@ describe('RecordTransaction', () => {
       );
     });
 
-    it('should display a success toast', async () => {
+    it('should display a success toast when transaction is added', async () => {
       const { findAllByRole, findByLabelText, findByTestId } = component;
 
       await act(async () => {
@@ -320,6 +363,9 @@ describe('RecordTransaction', () => {
         const amount = await findByLabelText(
           'transaction-form.transaction-amount.amount.label',
         );
+        const fileUpload = await findByLabelText(
+          'transaction-form.upload.upload.label',
+        );
 
         fireEvent.change(supplier, {
           target: {
@@ -350,9 +396,15 @@ describe('RecordTransaction', () => {
           },
         });
 
+        Object.defineProperty(fileUpload, 'files', {
+          value: [upload],
+        });
+
+        fireEvent.change(fileUpload);
+
         await wait();
 
-        const [, , button] = await findAllByRole('button');
+        const [, , , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -364,6 +416,160 @@ describe('RecordTransaction', () => {
       expect(add).toHaveBeenCalledWith({
         colour: 'success',
         message: 'record-transaction.success',
+      });
+    });
+
+    it('should display an success toast if upload is successful', async () => {
+      const { findByLabelText } = component;
+
+      await act(async () => {
+        const transactionType = await findByLabelText(
+          'transaction-form.transaction-details.transaction.options.purchase',
+        );
+
+        fireEvent.click(transactionType);
+
+        await wait();
+
+        const supplier = await findByLabelText(
+          'transaction-form.transaction-details.name.label',
+        );
+        const description = await findByLabelText(
+          'transaction-form.transaction-details.description.label',
+        );
+        const status = await findByLabelText(
+          'transaction-form.transaction-amount.status.options.confirmed',
+        );
+        const category = await findByLabelText(
+          'transaction-form.transaction-amount.category.label',
+        );
+        const amount = await findByLabelText(
+          'transaction-form.transaction-amount.amount.label',
+        );
+        const fileUpload = await findByLabelText(
+          'transaction-form.upload.upload.label',
+        );
+
+        fireEvent.change(supplier, {
+          target: {
+            focus: () => {},
+            value: 'Apple',
+          },
+        });
+
+        fireEvent.change(description, {
+          target: {
+            focus: () => {},
+            value: 'Laptop',
+          },
+        });
+
+        fireEvent.click(status);
+
+        fireEvent.change(category, {
+          target: {
+            value: 0,
+          },
+        });
+
+        fireEvent.change(amount, {
+          target: {
+            focus: () => {},
+            value: '999.99',
+          },
+        });
+
+        Object.defineProperty(fileUpload, 'files', {
+          value: [upload],
+        });
+
+        fireEvent.change(fileUpload);
+
+        await wait();
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'success',
+        message: 'uploads.add.success',
+      });
+    });
+
+    it('should display an error toast if upload is unsuccessful', async () => {
+      (axios.request as jest.Mock).mockRejectedValueOnce({
+        data: 'fail',
+      });
+
+      const { findByLabelText } = component;
+
+      await act(async () => {
+        const transactionType = await findByLabelText(
+          'transaction-form.transaction-details.transaction.options.purchase',
+        );
+
+        fireEvent.click(transactionType);
+
+        await wait();
+
+        const supplier = await findByLabelText(
+          'transaction-form.transaction-details.name.label',
+        );
+        const description = await findByLabelText(
+          'transaction-form.transaction-details.description.label',
+        );
+        const status = await findByLabelText(
+          'transaction-form.transaction-amount.status.options.confirmed',
+        );
+        const category = await findByLabelText(
+          'transaction-form.transaction-amount.category.label',
+        );
+        const amount = await findByLabelText(
+          'transaction-form.transaction-amount.amount.label',
+        );
+        const fileUpload = await findByLabelText(
+          'transaction-form.upload.upload.label',
+        );
+
+        fireEvent.change(supplier, {
+          target: {
+            focus: () => {},
+            value: 'Apple',
+          },
+        });
+
+        fireEvent.change(description, {
+          target: {
+            focus: () => {},
+            value: 'Laptop',
+          },
+        });
+
+        fireEvent.click(status);
+
+        fireEvent.change(category, {
+          target: {
+            value: 0,
+          },
+        });
+
+        fireEvent.change(amount, {
+          target: {
+            focus: () => {},
+            value: '999.99',
+          },
+        });
+
+        Object.defineProperty(fileUpload, 'files', {
+          value: [upload],
+        });
+
+        fireEvent.change(fileUpload);
+
+        await wait();
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'danger',
+        message: 'uploads.add.error',
       });
     });
   });
@@ -468,6 +674,7 @@ describe('RecordTransaction', () => {
             variables: {
               input: {
                 amount: 999.99,
+                attachment: '',
                 category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
@@ -484,6 +691,7 @@ describe('RecordTransaction', () => {
               addTransaction: {
                 __typename: 'Transaction',
                 amount: 999.99,
+                attachment: '',
                 category: 'Sales',
                 companyId: 'company-id',
                 date: '2020-05-07T10:58:17+00:00',
@@ -492,6 +700,19 @@ describe('RecordTransaction', () => {
                 name: 'Motech Development',
                 status: 'confirmed',
                 vat: 200,
+              },
+            },
+          },
+        },
+        {
+          error: new Error(),
+          request: {
+            query: REQUEST_UPLOAD,
+            variables: {
+              id: 'company-id',
+              input: {
+                contentType: 'application/pdf',
+                extension: 'pdf',
               },
             },
           },
@@ -562,7 +783,7 @@ describe('RecordTransaction', () => {
 
         await wait();
 
-        const [, , button] = await findAllByRole('button');
+        const [, , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -574,6 +795,72 @@ describe('RecordTransaction', () => {
       expect(history.push).toHaveBeenCalledWith(
         '/my-companies/accounts/company-id',
       );
+    });
+
+    it('should display an error toast if upload is unsuccessful', async () => {
+      const { findByLabelText } = component;
+
+      await act(async () => {
+        const transactionType = await findByLabelText(
+          'transaction-form.transaction-details.transaction.options.sale',
+        );
+
+        fireEvent.click(transactionType);
+
+        await wait();
+
+        const supplier = await findByLabelText(
+          'transaction-form.transaction-details.name.label',
+        );
+        const description = await findByLabelText(
+          'transaction-form.transaction-details.description.label',
+        );
+        const status = await findByLabelText(
+          'transaction-form.transaction-amount.status.options.confirmed',
+        );
+        const amount = await findByLabelText(
+          'transaction-form.transaction-amount.amount.label',
+        );
+        const fileUpload = await findByLabelText(
+          'transaction-form.upload.upload.label',
+        );
+
+        fireEvent.change(supplier, {
+          target: {
+            focus: () => {},
+            value: 'Motech Development',
+          },
+        });
+
+        fireEvent.change(description, {
+          target: {
+            focus: () => {},
+            value: 'Invoice #1',
+          },
+        });
+
+        fireEvent.click(status);
+
+        fireEvent.change(amount, {
+          target: {
+            focus: () => {},
+            value: '999.99',
+          },
+        });
+
+        Object.defineProperty(fileUpload, 'files', {
+          value: [upload],
+        });
+
+        fireEvent.change(fileUpload);
+
+        await wait();
+      });
+
+      expect(add).toHaveBeenCalledWith({
+        colour: 'danger',
+        message: 'uploads.add.error',
+      });
     });
   });
 });

@@ -7,6 +7,7 @@ import GET_TRANSACTIONS, {
 export interface IAddTransactionInput {
   input: {
     amount: number;
+    attachment: string;
     category: string;
     companyId: string;
     date: string;
@@ -21,6 +22,7 @@ export interface IAddTransactionInput {
 export interface IAddTransactionOutput {
   addTransaction: {
     amount: number;
+    attachment: string;
     category: string;
     companyId: string;
     date: string;
@@ -75,6 +77,7 @@ const ADD_TRANSACTION = gql`
   mutation AddTransaction($input: TransactionInput!) {
     addTransaction(input: $input) {
       amount
+      attachment
       category
       companyId
       date

@@ -10,6 +10,7 @@ import DateTime, { formatDateTime } from '../DateTime/DateTime';
 import useOutsideClick from '../hooks/useOutsideClick';
 import InputWrapper from '../InputWrapper/InputWrapper';
 import Label from '../Label/Label';
+import LikeInput from '../LikeInput/LikeInput';
 import { InputSpacing } from '../TextBox/TextBox';
 
 const IconOuter = styled.div`
@@ -32,22 +33,6 @@ const IconButton = styled.button`
   padding: 0;
   text-align: center;
   width: 42px;
-`;
-
-interface ILikeInput {
-  $disabled: boolean;
-}
-
-const LikeInput = styled.div<ILikeInput>`
-  ${({ $disabled }) => `
-    background: #fff;
-    border: none;
-    color: ${$disabled ? '#aaa' : '#333'};
-    font-size: 16px;
-    outline: 0;
-    padding: 16px 0 10px;
-    width: 100%;
-  `}
 `;
 
 const DatePickerWrapper = styled.div`

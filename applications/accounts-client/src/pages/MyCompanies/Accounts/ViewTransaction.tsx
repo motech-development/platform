@@ -26,6 +26,8 @@ import UPDATE_TRANSACTION, {
   IUpdateTransactionOutput,
 } from '../../../graphql/transaction/UPDATE_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
+import UploadAttachment from './shared/UploadAttachment';
+import ViewAttachment from './shared/ViewAttachment';
 
 interface IViewTransactionInput {
   companyId: string;
@@ -50,6 +52,7 @@ interface IViewTransactionOutput {
   };
   getTransaction: {
     amount: number;
+    attachment: string;
     category: string;
     companyId: string;
     date: string;
@@ -81,6 +84,7 @@ export const VIEW_TRANSACTION = gql`
     }
     getTransaction(id: $transactionId) {
       amount
+      attachment
       category
       companyId
       date
@@ -100,8 +104,9 @@ interface IViewTransactionParams {
 
 const ViewTransaction: FC = () => {
   const history = useHistory();
-  const [modal, setModal] = useState(false);
   const { companyId, transactionId } = useParams<IViewTransactionParams>();
+  const [attachment, setAttachment] = useState('');
+  const [modal, setModal] = useState(false);
   const { t } = useTranslation('accounts');
   const { add } = useToast();
   const backTo = (id: string) => `/my-companies/accounts/${id}`;
@@ -109,6 +114,9 @@ const ViewTransaction: FC = () => {
     IViewTransactionOutput,
     IViewTransactionInput
   >(VIEW_TRANSACTION, {
+    onCompleted: ({ getTransaction }) => {
+      setAttachment(getTransaction.attachment || '');
+    },
     variables: {
       companyId,
       transactionId,
@@ -205,6 +213,14 @@ const ViewTransaction: FC = () => {
           <Row>
             <Col>
               <TransactionForm
+                attachment={attachment}
+                attachmentView={
+                  <ViewAttachment
+                    id={companyId}
+                    path={attachment}
+                    onDelete={setAttachment}
+                  />
+                }
                 backTo={backTo(companyId)}
                 categories={data.getSettings.categories.map(
                   ({ name, vatRate }) => ({
@@ -219,6 +235,13 @@ const ViewTransaction: FC = () => {
                 companyId={companyId}
                 initialValues={data.getTransaction}
                 loading={mutationLoading}
+                uploader={
+                  <UploadAttachment
+                    id={companyId}
+                    name="attachment"
+                    onUpload={setAttachment}
+                  />
+                }
                 vat={data.getSettings.vat.pay}
                 onSave={save}
               />

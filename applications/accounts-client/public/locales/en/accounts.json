@@ -110,10 +110,40 @@
         "label": "VAT",
         "required": "VAT is required"
       }
+    },
+    "upload": {
+      "delete-file": "Delete file",
+      "download-file": "Download file",
+      "purchase": {
+        "heading": "Invoice or receipt",
+        "help-text": "Attach a invoice or receipt to this transaction"
+      },
+      "sale": {
+        "heading": "Invoice",
+        "help-text": "Attach an invoice to this transaction"
+      },
+      "upload": {
+        "button": "Browse",
+        "label": "Select file to upload"
+      }
     }
   },
   "no-transactions": {
     "title": "No transactions found",
     "description": "Get started by adding some purchases and sales"
+  },
+  "uploads": {
+    "add": {
+      "success": "File has been uploaded",
+      "error": "Unable to upload this file"
+    },
+    "delete": {
+      "success": "File has been deleted",
+      "error": "Unable to delete this file"
+    },
+    "download": {
+      "success": "The download has started",
+      "error": "Unable to download this file"
+    }
   }
 }

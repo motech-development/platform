@@ -1,0 +1,17 @@
+type Storage {
+  path: String
+}
+
+type StorageDownload {
+  url: String
+}
+
+type StorageUpload {
+  id: ID
+  url: String
+}
+
+input StorageUploadInput {
+  contentType: String!
+  extension: String!
+}

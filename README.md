@@ -1,5 +1,4 @@
 [![CircleCI](https://circleci.com/gh/motech-development/platform.svg?style=shield)](https://circleci.com/gh/motech-development/platform)
-[![codecov](https://codecov.io/gh/motech-development/platform/branch/master/graph/badge.svg)](https://codecov.io/gh/motech-development/platform)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=motech-development_platform&metric=alert_status)](https://sonarcloud.io/dashboard?id=motech-development_platform)
 
 # Platform

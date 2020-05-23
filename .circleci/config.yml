@@ -25,7 +25,6 @@ restore_cache: &restore_cache
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.13
-  codecov: codecov/codecov@1.0.2
   sonarcloud: sonarsource/sonarcloud@1.0.1
 
 jobs:
@@ -54,12 +53,18 @@ jobs:
             - applications/accounts-data/node_modules
             - applications/accounts-infrastructure/node_modules
             - applications/accounts-queue/node_modules
+            - applications/accounts-storage/node_modules
+            - applications/anti-virus/node_modules
             - applications/id/node_modules
             - applications/infrastructure/node_modules
             - applications/open-banking/node_modules
+            - packages/api-gateway-handler/node_modules
             - packages/auth/node_modules
+            - packages/axios-hooks/node_modules
             - packages/breeze-ui/node_modules
             - packages/serverless-outputs-env/node_modules
+            - packages/webpack-conditional-plugin/node_modules
+            - packages/webpack-permissions-plugin/node_modules
       - save_cache:
           key: accounts-cache-v1-{{ checksum "./checksum.txt" }}
           name: Save cache
@@ -84,22 +89,6 @@ jobs:
           name: Unit test
       - store_test_results:
           path: reports/junit
-      - codecov/upload:
-          file: ./applications/accounts-api/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./applications/accounts-client/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./applications/accounts-data/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./applications/accounts-queue/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./applications/open-banking/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./packages/auth/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./packages/breeze-ui/coverage/coverage-final.json
-      - codecov/upload:
-          file: ./packages/serverless-outputs-env/coverage/coverage-final.json
       - sonarcloud/scan
 
   smoke-test-accounts-client:
@@ -257,6 +246,58 @@ jobs:
           command: npm run deploy -- --scope=@motech-development/accounts-queue -- -- --stage production
           name: Deploy accounts queue infrastructure
 
+  deploy-accounts-storage-develop:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-storage -- -- --stage develop
+          name: Deploy accounts storage infrastructure
+
+  deploy-accounts-storage-production:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - run:
+          command: npm run deploy -- --scope=@motech-development/accounts-storage -- -- --stage production
+          name: Deploy accounts storage infrastructure
+
+  deploy-anti-virus-develop:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - run:
+          command: npm run deploy -- --scope=@motech-development/anti-virus -- -- --stage develop
+          name: Deploy anti virus service
+
+  deploy-anti-virus-production:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - run:
+          command: npm run deploy -- --scope=@motech-development/anti-virus -- -- --stage production
+          name: Deploy anti virus service
+
   deploy-open-banking-develop:
     docker:
       - image: circleci/node:12.13
@@ -381,7 +422,7 @@ workflows:
             branches:
               only: master
           requires:
-            - unit-test
+            - deploy-accounts-storage-production
 
       - deploy-accounts-data-develop:
           filters:
@@ -391,7 +432,7 @@ workflows:
                 - /feature\/.*/
                 - /hotfix\/.*/
           requires:
-            - unit-test
+            - deploy-accounts-storage-develop
 
       - deploy-accounts-queue-production:
           filters:
@@ -409,6 +450,40 @@ workflows:
                 - /hotfix\/.*/
           requires:
             - deploy-open-banking-develop
+
+      - deploy-accounts-storage-production:
+          filters:
+            branches:
+              only: master
+          requires:
+            - deploy-anti-virus-production
+
+      - deploy-accounts-storage-develop:
+          filters:
+            branches:
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
+          requires:
+            - deploy-anti-virus-develop
+
+      - deploy-anti-virus-production:
+          filters:
+            branches:
+              only: master
+          requires:
+            - unit-test
+
+      - deploy-anti-virus-develop:
+          filters:
+            branches:
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
+          requires:
+            - unit-test
 
       - deploy-open-banking-production:
           filters:
@@ -431,12 +506,14 @@ workflows:
           requires:
             - deploy-accounts-data-production
             - deploy-accounts-queue-production
+            - deploy-accounts-storage-production
             - deploy-open-banking-production
 
       - deploy-accounts-api-develop:
           requires:
             - deploy-accounts-data-develop
             - deploy-accounts-queue-develop
+            - deploy-accounts-storage-develop
             - deploy-open-banking-develop
 
       - deploy-auth0:

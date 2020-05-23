@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { gql } from 'apollo-boost';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -15,6 +15,8 @@ import ADD_TRANSACTION, {
   updateCache,
 } from '../../../graphql/transaction/ADD_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
+import UploadAttachment from './shared/UploadAttachment';
+import ViewAttachment from './shared/ViewAttachment';
 
 interface IRecordTransactionInput {
   id: string;
@@ -65,6 +67,7 @@ interface IRecordTransactionParams {
 const RecordTransaction: FC = () => {
   const history = useHistory();
   const { companyId } = useParams<IRecordTransactionParams>();
+  const [attachment, setAttachment] = useState('');
   const { t } = useTranslation('accounts');
   const { add } = useToast();
   const { data, error, loading } = useQuery<
@@ -119,6 +122,14 @@ const RecordTransaction: FC = () => {
           />
 
           <TransactionForm
+            attachment={attachment}
+            attachmentView={
+              <ViewAttachment
+                id={companyId}
+                path={attachment}
+                onDelete={setAttachment}
+              />
+            }
             backTo={backTo(companyId)}
             categories={data.getSettings.categories.map(
               ({ name, vatRate }) => ({
@@ -132,6 +143,13 @@ const RecordTransaction: FC = () => {
             }))}
             companyId={companyId}
             loading={addLoading}
+            uploader={
+              <UploadAttachment
+                id={companyId}
+                name="attachment"
+                onUpload={setAttachment}
+              />
+            }
             vat={data.getSettings.vat.pay}
             onSave={save}
           />

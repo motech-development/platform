@@ -1,6 +1,9 @@
-import { APIGatewayEvent, Handler } from 'aws-lambda';
+import {
+  apiGatewayHandler,
+  paramCheck,
+  response,
+} from '@motech-development/api-gateway-handler';
 import httpClient from '../shared/http-client';
-import proxyHandler from '../shared/proxy-handler';
 
 interface IAccounts {
   data: {
@@ -15,21 +18,8 @@ interface IAccounts {
   }[];
 }
 
-export const handler: Handler<APIGatewayEvent> = proxyHandler(async event => {
-  const { Consent } = event.headers;
-
-  if (!Consent) {
-    const response = {
-      body: JSON.stringify({
-        message: 'No consent',
-        statusCode: 401,
-      }),
-      statusCode: 401,
-    };
-
-    throw response;
-  }
-
+export const handler = apiGatewayHandler(async event => {
+  const Consent = paramCheck(event.headers.Consent, 'No consent', 401);
   const endpoint = '/accounts';
 
   try {
@@ -39,8 +29,8 @@ export const handler: Handler<APIGatewayEvent> = proxyHandler(async event => {
       },
     });
 
-    return {
-      body: JSON.stringify({
+    return response(
+      {
         items: data.data.map(
           ({ accountIdentifications, balance, currency, id, type }) => ({
             accountIdentifications,
@@ -50,18 +40,18 @@ export const handler: Handler<APIGatewayEvent> = proxyHandler(async event => {
             type,
           }),
         ),
-      }),
-      statusCode: 200,
-    };
+      },
+      200,
+    );
   } catch (e) {
     const { status } = e.response;
 
-    return {
-      body: JSON.stringify({
+    return response(
+      {
         message: 'Unable to get accounts',
         statusCode: status,
-      }),
-      statusCode: status,
-    };
+      },
+      status,
+    );
   }
 });

@@ -10,6 +10,7 @@ export { default as Content } from './Content/Content';
 export { default as DataTable } from './DataTable/DataTable';
 export { default as DatePicker } from './DatePicker/DatePicker';
 export { default as DateTime, formatDateTime } from './DateTime/DateTime';
+export { default as FileUpload } from './FileUpload/FileUpload';
 export { default as Form } from './Form/Form';
 export { default as useOutsideClick } from './hooks/useOutsideClick';
 export { default as useWindowSize } from './hooks/useWindowSize';

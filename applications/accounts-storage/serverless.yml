@@ -1,0 +1,213 @@
+service:
+  name: ${opt:appName, 'accounts'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-storage
+  environment:
+    DOWNLOAD_BUCKET: !Ref DownloadBucket
+    UPLOAD_BUCKET: !Ref UploadBucket
+
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+  downloads: ${self:custom.prefix}-downloads
+  uploads: ${self:custom.prefix}-uploads
+
+  webpack:
+    includeModules: true
+
+  serverless-offline:
+    httpPort: 4100
+    useChildProcesses: true
+
+functions:
+  ProcessDelete:
+    handler: src/handlers/process-delete.handler
+    events:
+      - sqs:
+          arn: !GetAtt DeleteFileQueue.Arn
+    role: LambdaFunctionRole
+
+  QueueUpload:
+    handler: src/handlers/queue-upload.handler
+    events:
+      - s3:
+          bucket: ${self:custom.uploads}
+          event: s3:ObjectCreated:Put
+          existing: true
+    role: LambdaFunctionRole
+    environment:
+      QUEUE_URL: !ImportValue ${self:provider.stage}-AntiVirusQueueUrl
+
+  SignedDownload:
+    handler: src/handlers/signed-download.handler
+    events:
+      - http:
+          authorizer: aws_iam
+          method: post
+          path: api/v1/signed-download
+    role: LambdaFunctionRole
+
+  SignedUpload:
+    handler: src/handlers/signed-upload.handler
+    events:
+      - http:
+          authorizer: aws_iam
+          method: post
+          path: api/v1/signed-upload
+    role: LambdaFunctionRole
+
+resources:
+  Resources:
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-storage-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-storage-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - s3:deleteObject
+                    - s3:getObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !GetAtt DownloadBucket.Arn
+                        - '/*'
+                - Effect: Allow
+                  Action:
+                    - s3:PutObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !GetAtt UploadBucket.Arn
+                        - '/*'
+                - Effect: Allow
+                  Action:
+                    - sqs:DeleteMessage
+                    - sqs:GetQueueAttributes
+                    - sqs:ReceiveMessage
+                  Resource:
+                    - !GetAtt DeleteFileQueue.Arn
+                - Effect: Allow
+                  Action:
+                    - sqs:SendMessage
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AntiVirusQueueArn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+
+    DownloadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.downloads}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+              AllowedOrigins:
+                - '*'
+              MaxAge: 3000
+
+    UploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.uploads}
+        LifecycleConfiguration:
+          Rules:
+            - ExpirationInDays: 1
+              Status: Enabled
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - PUT
+              AllowedOrigins:
+                - '*'
+              MaxAge: 3000
+
+    DeleteFileQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.prefix}-delete-file-queue
+
+  Outputs:
+    StorageUploadApiEndpoint:
+      Description: Storage upload API endpoint
+      Value: !Join
+        - ''
+        - - 'https://'
+          - !Ref ApiGatewayRestApi
+          - '.execute-api.'
+          - !Ref AWS::Region
+          - '.amazonaws.com'
+      Export:
+        Name: ${self:provider.stage}-StorageUploadApiEndpoint
+
+    StorageUploadApiArn:
+      Description: Storage upload API ARN
+      Value: !Join
+        - ''
+        - - 'arn:aws:execute-api:'
+          - !Ref AWS::Region
+          - ':'
+          - !Ref AWS::AccountId
+          - ':'
+          - !Ref ApiGatewayRestApi
+          - '/*'
+      Export:
+        Name: ${self:provider.stage}-StorageUploadApiArn
+
+    DeleteFileQueueArn:
+      Description: Delete from downloads storage queue ARN
+      Value: !GetAtt DeleteFileQueue.Arn
+      Export:
+        Name: ${self:provider.stage}-DeleteFileQueueArn
+
+    DeleteFileQueueUrl:
+      Description: Delete from downloads storage queue URL
+      Value: !Ref DeleteFileQueue
+      Export:
+        Name: ${self:provider.stage}-DeleteFileQueueUrl
+
+    DeleteFileQueueUrlPath:
+      Description: Delete from downloads storage queue URL path
+      Value: !Join
+        - ''
+        - - '/'
+          - !Ref AWS::AccountId
+          - '/'
+          - !GetAtt DeleteFileQueue.QueueName
+      Export:
+        Name: ${self:provider.stage}-DeleteFileQueueUrlPath

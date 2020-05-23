@@ -169,9 +169,11 @@ custom:
           field: getCompanies
           request: company/getCompanies/Query.getCompanies.req.vtl
           response: company/getCompanies/Query.getCompanies.res.vtl
-        - dataSource: Data
+        - kind: PIPELINE
           type: Query
           field: getCompany
+          functions:
+            - getCompany
           request: company/getCompany/Query.getCompany.req.vtl
           response: company/getCompany/Query.getCompany.res.vtl
 
@@ -211,14 +213,34 @@ custom:
           field: updateTransaction
           request: transaction/updateTransaction/Mutation.updateTransaction.req.vtl
           response: transaction/updateTransaction/Mutation.updateTransaction.res.vtl
+
+        - kind: PIPELINE
+          type: Mutation
+          field: deleteFile
+          functions:
+            - getCompany
+            - deleteFile
+          request: storage/deleteFile/Mutation.deleteFile.req.vtl
+          response: storage/deleteFile/Mutation.deleteFile.res.vtl
+        - kind: PIPELINE
+          type: Query
+          field: requestDownload
+          functions:
+            - getCompany
+            - requestDownload
+          request: storage/requestDownload/Query.requestDownload.req.vtl
+          response: storage/requestDownload/Query.requestDownload.res.vtl
+        - kind: PIPELINE
+          type: Mutation
+          field: requestUpload
+          functions:
+            - getCompany
+            - requestUpload
+          request: storage/requestUpload/Mutation.requestUpload.req.vtl
+          response: storage/requestUpload/Mutation.requestUpload.res.vtl
       schema:
         - schema/address.graphql
         - schema/balance.graphql
-        - schema/bank-account.graphql
-        - schema/bank-connection.graphql
-        - schema/bank-callback.graphql
-        - schema/bank-details.graphql
-        - schema/bank-settings.graphql
         - schema/bank.graphql
         - schema/client.graphql
         - schema/company.graphql
@@ -226,6 +248,7 @@ custom:
         - schema/expense-category.graphql
         - schema/schema.graphql
         - schema/settings.graphql
+        - schema/storage.graphql
         - schema/transaction.graphql
         - schema/vat-settings.graphql
       functionConfigurations:
@@ -260,6 +283,10 @@ custom:
           name: bankSettings
           request: shared/bankSettings/Pipeline.bankSettings.req.vtl
           response: shared/bankSettings/Pipeline.bankSettings.res.vtl
+        - dataSource: Data
+          name: getCompany
+          request: shared/getCompany/Pipeline.getCompany.req.vtl
+          response: shared/getCompany/Pipeline.getCompany.res.vtl
 
         # Bank
         - dataSource: OpenBanking
@@ -318,6 +345,20 @@ custom:
           name: updateCompany
           request: company/updateCompany/Pipeline.updateCompany.req.vtl
           response: company/updateCompany/Pipeline.updateCompany.res.vtl
+
+        # Storage
+        - dataSource: Queue
+          name: deleteFile
+          request: storage/deleteFile/Pipeline.deleteFile.req.vtl
+          response: storage/deleteFile/Pipeline.deleteFile.res.vtl
+        - dataSource: StorageUpload
+          name: requestDownload
+          request: storage/requestDownload/Pipeline.requestDownload.req.vtl
+          response: storage/requestDownload/Pipeline.requestDownload.res.vtl
+        - dataSource: StorageUpload
+          name: requestUpload
+          request: storage/requestUpload/Pipeline.requestUpload.req.vtl
+          response: storage/requestUpload/Pipeline.requestUpload.res.vtl
       dataSources:
         - type: NONE
           name: Resolver
@@ -343,6 +384,16 @@ custom:
                 signingServiceName: execute-api
             serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
         - type: HTTP
+          name: StorageUpload
+          config:
+            endpoint: !ImportValue ${self:provider.stage}-StorageUploadApiEndpoint
+            authorizationConfig:
+              authorizationType: AWS_IAM
+              awsIamConfig:
+                signingRegion: !Ref AWS::Region
+                signingServiceName: execute-api
+            serviceRoleArn: !GetAtt AppSyncStorageUploadServiceRole.Arn
+        - type: HTTP
           name: Queue
           config:
             endpoint: !Join
@@ -358,6 +409,7 @@ custom:
             serviceRoleArn: !GetAtt AppSyncQueueServiceRole.Arn
       substitutions:
         stage: ${self:provider.stage}
+        deleteFileQueue: !ImportValue ${self:provider.stage}-DeleteFileQueueUrlPath
         queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
 
   webpack:
@@ -394,6 +446,29 @@ resources:
                   Action:
                     - execute-api:Invoke
                   Resource: !ImportValue ${self:provider.stage}-OpenBankingApiArn
+
+    AppSyncStorageUploadServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-storage-upload-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-storage-upload-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - execute-api:Invoke
+                  Resource: !ImportValue ${self:provider.stage}-StorageUploadApiArn
 
     AppSyncLoggingServiceRole:
       Type: AWS::IAM::Role
@@ -476,6 +551,7 @@ resources:
                     - sqs:SendMessage
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsQueueArn
+                    - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
 
     AppSyncLambdaServiceRole:
       Type: AWS::IAM::Role
