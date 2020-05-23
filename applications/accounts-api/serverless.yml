@@ -214,9 +214,12 @@ custom:
           request: transaction/updateTransaction/Mutation.updateTransaction.req.vtl
           response: transaction/updateTransaction/Mutation.updateTransaction.res.vtl
 
-        - dataSource: Queue
+        - kind: PIPELINE
           type: Mutation
           field: deleteFile
+          functions:
+            - getCompany
+            - deleteFile
           request: storage/deleteFile/Mutation.deleteFile.req.vtl
           response: storage/deleteFile/Mutation.deleteFile.res.vtl
         - kind: PIPELINE
@@ -344,6 +347,10 @@ custom:
           response: company/updateCompany/Pipeline.updateCompany.res.vtl
 
         # Storage
+        - dataSource: Queue
+          name: deleteFile
+          request: storage/deleteFile/Pipeline.deleteFile.req.vtl
+          response: storage/deleteFile/Pipeline.deleteFile.res.vtl
         - dataSource: StorageUpload
           name: requestDownload
           request: storage/requestDownload/Pipeline.requestDownload.req.vtl

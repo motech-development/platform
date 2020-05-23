@@ -49,10 +49,9 @@ functions:
 
   UpdateDefinitions:
     handler: src/handlers/update-definitions.handler
-    # TODO: Schedule updates
-    # events:
-    #   - schedule:
-    #       rate: rate(1 day)
+    events:
+      - schedule:
+          rate: rate(1 day)
     memorySize: 1024
     role: LambdaFunctionRole
     timeout: 300

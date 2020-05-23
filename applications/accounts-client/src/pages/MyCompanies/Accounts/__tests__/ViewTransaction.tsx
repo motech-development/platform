@@ -443,6 +443,7 @@ describe('ViewTransaction', () => {
             request: {
               query: DELETE_FILE,
               variables: {
+                id: 'company-id',
                 path: 'path/to/attachment.pdf',
               },
             },
@@ -749,6 +750,7 @@ describe('ViewTransaction', () => {
           request: {
             query: DELETE_FILE,
             variables: {
+              id: 'company-id',
               path: 'path/to/attachment.pdf',
             },
           },

@@ -7,6 +7,7 @@ import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface IDeleteFileInput {
+  id: string;
   path: string;
 }
 
@@ -17,8 +18,8 @@ interface IDeleteFileOutput {
 }
 
 export const DELETE_FILE = gql`
-  mutation DeleteFile($path: ID!) {
-    deleteFile(path: $path) {
+  mutation DeleteFile($id: ID!, $path: String!) {
+    deleteFile(id: $id, path: $path) {
       path
     }
   }
@@ -133,6 +134,7 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
             (async () => {
               await upload({
                 variables: {
+                  id,
                   path,
                 },
               });

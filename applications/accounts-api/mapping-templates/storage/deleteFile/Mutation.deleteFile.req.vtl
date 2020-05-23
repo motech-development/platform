@@ -1,18 +1,1 @@
-#set($endpoint = "${deleteFileQueue}")
-#set($path = $ctx.arguments.path)
-#set($owner = $ctx.identity.sub)
-#set($key = "$owner/$path")
-
-$util.qr($ctx.stash.put("path", $path))
-
-{
-  "version": "2018-05-29",
-  "method": "POST",
-  "resourcePath": "$endpoint",
-  "params": {
-    "headers": {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    "body": "Action=SendMessage&DelaySeconds=300&MessageBody=Delete+file+$key&MessageAttribute.1.Name=key&MessageAttribute.1.Value.DataType=String&MessageAttribute.1.Value.StringValue=$key"
-  }
-}
+{}

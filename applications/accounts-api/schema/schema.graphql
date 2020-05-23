@@ -14,8 +14,7 @@ type Mutation {
   deleteTransaction(id: ID!): Transaction!
   updateTransaction(input: TransactionInput!): Transaction!
   requestUpload(id: ID!, input: StorageUploadInput!): StorageUpload!
-  # TODO: Use pipeline to protect this
-  deleteFile(path: ID!): Storage!
+  deleteFile(id: ID!, path: String!): Storage!
 }
 
 type Query {

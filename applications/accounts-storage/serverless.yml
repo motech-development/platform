@@ -147,7 +147,6 @@ resources:
           Rules:
             - ExpirationInDays: 1
               Status: Enabled
-        # TODO: Is this really needed?
         CorsConfiguration:
           CorsRules:
             - AllowedHeaders:
