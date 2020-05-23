@@ -17,10 +17,13 @@ const executeGet = async <TData>(
   url: string,
   setData: SetData<TData>,
   setError: SetError,
+  setLoading: SetLoading,
   options: IOptions<TData> = {},
   additionalHeaders: IHeaders = {},
 ) => {
   try {
+    setLoading(true);
+
     const { headers, onCompleted, onError, ...rest } = options;
     const opts = {
       ...rest,
@@ -51,10 +54,13 @@ const executeForm = async <TData, TBody>(
   body: TBody,
   setData: SetData<TData>,
   setError: SetError,
+  setLoading: SetLoading,
   options: IOptions<TData> = {},
   additionalHeaders: IHeaders = {},
 ) => {
   try {
+    setLoading(true);
+
     const { headers, onCompleted, onError, ...rest } = options;
     const opts = {
       ...rest,
@@ -115,11 +121,11 @@ const useCallbacks = <TData>(
 export const useGet = <TData>(url: string, options?: IOptions<TData>) => {
   const [data, setData] = useState<TData>();
   const [error, setError] = useState<AxiosError>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
-      await executeGet(url, setData, setError, options);
+      await executeGet(url, setData, setError, setLoading, options);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -140,9 +146,9 @@ export const useLazyGet = <TData>(
 ): UseWithoutInput<TData> => {
   const [data, setData] = useState<TData>();
   const [error, setError] = useState<AxiosError>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const execute = async (url: string, headers?: IHeaders) =>
-    executeGet(url, setData, setError, options, headers);
+    executeGet(url, setData, setError, setLoading, options, headers);
 
   useEffect(() => complete(setLoading), [data, error]);
 
@@ -164,9 +170,18 @@ const useFormAction = <TData, TBody>(
 ): UseWithInput<TData, TBody> => {
   const [data, setData] = useState<TData>();
   const [error, setError] = useState<AxiosError>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const execute = async (url: string, body: TBody, headers?: IHeaders) =>
-    executeForm(method, url, body, setData, setError, options, headers);
+    executeForm(
+      method,
+      url,
+      body,
+      setData,
+      setError,
+      setLoading,
+      options,
+      headers,
+    );
 
   useEffect(() => complete(setLoading), [data, error]);
 

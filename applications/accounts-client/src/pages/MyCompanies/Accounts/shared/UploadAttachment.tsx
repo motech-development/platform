@@ -100,7 +100,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
                   headers,
                 );
 
-                if (uploadResult) {
+                if (uploadResult !== undefined) {
                   const attachment = `${id}/${requestUpload.id}.${extension}`;
 
                   form.setFieldValue('attachment', attachment);
