@@ -13,6 +13,7 @@ const schema = object().shape({
   companyId: string().required(),
   contentType: string().required(),
   extension: string()
+    .lowercase()
     .oneOf(whitelist)
     .required(),
   owner: string().required(),

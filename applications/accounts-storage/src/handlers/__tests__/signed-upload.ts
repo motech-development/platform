@@ -88,6 +88,25 @@ describe('signed-upload', () => {
       });
     });
 
+    it('should update a file regardless of extension case', async () => {
+      event.body = JSON.stringify({
+        companyId: 'company-id',
+        contentType: 'image/png',
+        extension: 'PDF',
+        owner: 'owner',
+      });
+
+      await handler(event, context, callback);
+
+      expect(callback).toHaveBeenCalledWith(null, {
+        body: JSON.stringify({
+          id: 'test-uuid',
+          url: 'https://signed-url',
+        }),
+        statusCode: 200,
+      });
+    });
+
     it('should return a success response', async () => {
       await handler(event, context, callback);
 
