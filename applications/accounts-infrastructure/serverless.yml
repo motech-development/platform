@@ -8,13 +8,32 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-infrastructure
 
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+
 custom:
   prefix: ${self:service}-${self:provider.stage}
   domainName: ${opt:domain-name}
   subDomain: ${self:service}.${self:custom.domainName}
 
+  webpack:
+    includeModules: true
+
+functions:
+  Cache:
+    handler: src/handlers/cache.handler
+    role: LambdaFunctionRole
+
 resources:
   Resources:
+    CacheLambdaVersion:
+      Type: AWS::Lambda::Version
+      Properties:
+        FunctionName: !Ref CacheLambdaFunction
+
     Bucket:
       Type: AWS::S3::Bucket
       Properties:
@@ -80,6 +99,9 @@ resources:
               Cookies:
                 Forward: none
             ViewerProtocolPolicy: redirect-to-https
+            LambdaFunctionAssociations:
+              - EventType: origin-response
+                LambdaFunctionARN: !Ref CacheLambdaVersion
           # TODO: Logging
           # Logging:
           #   IncludeCookies: 'false'
@@ -95,3 +117,20 @@ resources:
         AliasTarget:
           HostedZoneId: Z2FDTNDATAQYW2
           DNSName: !GetAtt CloudFrontDistribution.DomainName
+
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-infrastructure-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - edgelambda.amazonaws.com
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
