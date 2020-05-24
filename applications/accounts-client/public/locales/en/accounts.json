@@ -56,6 +56,7 @@
   },
   "transactions-list": {
     "actions": "Actions",
+    "no-attachment": "No invoice or receipt",
     "view": "View",
     "delete": "Delete"
   },
