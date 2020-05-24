@@ -19,6 +19,7 @@ import Currency from '../../../components/Currency';
 import DeleteItem from '../../../components/DeleteItem';
 import NoTransactions from '../../../components/NoTransactions';
 import TransactionArrow from '../../../components/TransactionArrow';
+import WarningText from '../../../components/WarningText';
 import DELETE_TRANSACTION, {
   IDeleteTransactionInput,
   IDeleteTransactionOutput,
@@ -122,16 +123,26 @@ const PendingTransaction: FC = () => {
                     </TableCell>
                   </>
                 }
-                row={({ amount, date, description, id, name }) => (
+                row={({ amount, attachment, date, description, id, name }) => (
                   <>
                     <TableCell align="center">
                       <TransactionArrow value={amount} />
                     </TableCell>
 
                     <TableCell>
-                      <Typography component="p" variant="h6">
+                      <WarningText
+                        id={id}
+                        component="p"
+                        margin="none"
+                        message={t(
+                          'pending-transactions.transactions.no-attachment',
+                        )}
+                        placement="right"
+                        show={!attachment}
+                        variant="h6"
+                      >
                         {name}
-                      </Typography>
+                      </WarningText>
 
                       <Typography component="p" variant="p" margin="none">
                         {description}

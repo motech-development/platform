@@ -12,9 +12,9 @@ import React, { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Currency from './Currency';
 import DeleteItem from './DeleteItem';
-import WarningText from './WarningText';
 import NoTransactions from './NoTransactions';
 import TransactionArrow from './TransactionArrow';
+import WarningText from './WarningText';
 
 export interface ITransactionsListProps {
   companyId: string;
