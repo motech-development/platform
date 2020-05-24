@@ -37,6 +37,7 @@
       "name": "Name",
       "date": "Date",
       "amount": "Amount",
+      "no-attachment": "No invoice or receipt",
       "actions": "Actions",
       "view": "View",
       "delete": "Delete"
@@ -56,6 +57,7 @@
   },
   "transactions-list": {
     "actions": "Actions",
+    "no-attachment": "No invoice or receipt",
     "view": "View",
     "delete": "Delete"
   },

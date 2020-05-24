@@ -120,6 +120,7 @@ describe('RecordTransaction', () => {
                       {
                         __typename: 'Transaction',
                         amount: -20,
+                        attachment: '',
                         description: 'Lunch',
                         id: 'transaction-2',
                         name: 'KFC',
@@ -135,6 +136,7 @@ describe('RecordTransaction', () => {
                       {
                         __typename: 'Transaction',
                         amount: 200,
+                        attachment: '',
                         description: 'Invoice #1',
                         id: 'transaction-1',
                         name: 'Client',
@@ -601,6 +603,7 @@ describe('RecordTransaction', () => {
                       {
                         __typename: 'Transaction',
                         amount: -20,
+                        attachment: '',
                         description: 'Lunch',
                         id: 'transaction-2',
                         name: 'KFC',
@@ -616,6 +619,7 @@ describe('RecordTransaction', () => {
                       {
                         __typename: 'Transaction',
                         amount: 200,
+                        attachment: '',
                         description: 'Invoice #1',
                         id: 'transaction-1',
                         name: 'Client',

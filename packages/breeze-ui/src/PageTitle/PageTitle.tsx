@@ -2,18 +2,25 @@ import React, { FC, memo } from 'react';
 import styled from 'styled-components';
 import Typography from '../Typography/Typography';
 
-const TitleWrapper = styled.div`
-  background-color: #2e9dc8;
-  color: #fff;
-  display: inline-block;
-  padding: 0.5rem 1rem 0;
+const PageTitleTypography = styled(Typography)`
+  line-height: 1.4;
+  margin: 0 0 0.2rem;
 `;
 
-const SubTitleWrapper = styled.div`
+const TitleInner = styled.span`
+  background-color: #2e9dc8;
+  box-decoration-break: clone;
+  color: #fff;
+  display: inline;
+  padding: 0.25rem 0.5rem;
+`;
+
+const SubTitleInner = styled.span`
   background-color: #f8f8f8;
+  box-decoration-break: clone;
   color: #000;
-  display: inline-block;
-  padding: 0.25rem 1rem;
+  display: inline;
+  padding: 0.25rem 0.5rem;
 `;
 
 const Split = styled.hr`
@@ -24,6 +31,7 @@ const Split = styled.hr`
 
 const Wrapper = styled.div`
   margin-bottom: 1rem;
+  padding: 0 0.25rem 0 0;
 `;
 
 export interface IPageTitleProps {
@@ -33,20 +41,16 @@ export interface IPageTitleProps {
 
 const PageTitle: FC<IPageTitleProps> = ({ subTitle = null, title }) => (
   <Wrapper>
-    <TitleWrapper>
-      <Typography component="h2" variant="h2">
-        {title}
-      </Typography>
-    </TitleWrapper>
+    <PageTitleTypography component="h2" variant="h2">
+      <TitleInner>{title}</TitleInner>
+    </PageTitleTypography>
 
     <Split />
 
     {subTitle && (
-      <SubTitleWrapper>
-        <Typography component="p" variant="lead" margin="none">
-          {subTitle}
-        </Typography>
-      </SubTitleWrapper>
+      <PageTitleTypography component="p" variant="lead" margin="none">
+        <SubTitleInner>{subTitle}</SubTitleInner>
+      </PageTitleTypography>
     )}
   </Wrapper>
 );

@@ -67,6 +67,7 @@ describe('ViewTransaction', () => {
                       items: [
                         {
                           amount: -20,
+                          attachment: '',
                           description: 'Lunch',
                           id: 'transaction-2',
                           name: 'KFC',
@@ -80,6 +81,7 @@ describe('ViewTransaction', () => {
                       items: [
                         {
                           amount: 200,
+                          attachment: '',
                           description: 'Invoice #1',
                           id: 'transaction-1',
                           name: 'Client',
@@ -618,6 +620,7 @@ describe('ViewTransaction', () => {
                     items: [
                       {
                         amount: -20,
+                        attachment: '',
                         description: 'Lunch',
                         id: 'transaction-2',
                         name: 'KFC',
@@ -631,6 +634,7 @@ describe('ViewTransaction', () => {
                     items: [
                       {
                         amount: 200,
+                        attachment: '',
                         description: 'Invoice #1',
                         id: 'transaction-1',
                         name: 'Client',

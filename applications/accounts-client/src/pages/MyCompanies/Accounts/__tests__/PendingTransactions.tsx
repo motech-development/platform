@@ -49,6 +49,7 @@ describe('PendingTransactions', () => {
                 items: [
                   {
                     amount: -20,
+                    attachment: '',
                     date: '2020-04-15T14:07:18+0000',
                     description: 'Lunch',
                     id: 'transaction-2',
@@ -56,6 +57,7 @@ describe('PendingTransactions', () => {
                   },
                   {
                     amount: 200,
+                    attachment: '',
                     date: '2020-04-13T14:07:18+0000',
                     description: 'Invoice #1',
                     id: 'transaction-1',
@@ -223,6 +225,7 @@ describe('PendingTransactions', () => {
                 items: [
                   {
                     amount: -20,
+                    attachment: '',
                     date: '2020-04-15T14:07:18+0000',
                     description: 'Lunch',
                     id: 'transaction-2',
@@ -230,6 +233,7 @@ describe('PendingTransactions', () => {
                   },
                   {
                     amount: 200,
+                    attachment: '',
                     date: '2020-04-13T14:07:18+0000',
                     description: 'Invoice #1',
                     id: 'transaction-1',

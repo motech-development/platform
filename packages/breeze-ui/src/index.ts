@@ -37,4 +37,7 @@ export {
   useToast,
 } from './ToastProvider/ToastProvider';
 export { default as Tooltip } from './Tooltip/Tooltip';
-export { default as Typography } from './Typography/Typography';
+export {
+  default as Typography,
+  ITypographyProps,
+} from './Typography/Typography';

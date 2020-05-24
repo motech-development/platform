@@ -1,4 +1,4 @@
-import { render, RenderResult } from '@testing-library/react';
+import { act, render, RenderResult } from '@testing-library/react';
 import React from 'react';
 import TestProvider from '../../utils/TestProvider';
 import TransactionsList from '../TransactionsList';
@@ -32,7 +32,7 @@ describe('TransactionsList', () => {
   describe('when there are transaction', () => {
     let component: RenderResult;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       const transactions = [
         {
           balance: 180,
@@ -41,6 +41,7 @@ describe('TransactionsList', () => {
           items: [
             {
               amount: -20,
+              attachment: '',
               description: 'Lunch',
               id: 'transaction-2',
               name: 'KFC',
@@ -54,6 +55,7 @@ describe('TransactionsList', () => {
           items: [
             {
               amount: 200,
+              attachment: 'invoice.pdf',
               description: 'Invoice #1',
               id: 'transaction-1',
               name: 'Client',
@@ -62,16 +64,18 @@ describe('TransactionsList', () => {
         },
       ];
 
-      component = render(
-        <TestProvider>
-          <TransactionsList
-            companyId={companyId}
-            loading={false}
-            transactions={transactions}
-            onDelete={onDelete}
-          />
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider>
+            <TransactionsList
+              companyId={companyId}
+              loading={false}
+              transactions={transactions}
+              onDelete={onDelete}
+            />
+          </TestProvider>,
+        );
+      });
     });
 
     it('should display the action table heading', async () => {

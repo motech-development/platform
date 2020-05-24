@@ -14,6 +14,7 @@ import Currency from './Currency';
 import DeleteItem from './DeleteItem';
 import NoTransactions from './NoTransactions';
 import TransactionArrow from './TransactionArrow';
+import WarningText from './WarningText';
 
 export interface ITransactionsListProps {
   companyId: string;
@@ -24,6 +25,7 @@ export interface ITransactionsListProps {
     date: string;
     items: {
       amount: number;
+      attachment: string;
       description: string;
       id: string;
       name: string;
@@ -84,9 +86,17 @@ const TransactionsList: FC<ITransactionsListProps> = ({
                 </TableCell>
 
                 <TableCell>
-                  <Typography component="p" variant="h6">
+                  <WarningText
+                    id={item.id}
+                    component="p"
+                    margin="none"
+                    message={t('transactions-list.no-attachment')}
+                    placement="right"
+                    show={!item.attachment}
+                    variant="h6"
+                  >
                     {item.name}
-                  </Typography>
+                  </WarningText>
 
                   <Typography component="p" variant="p" margin="none">
                     {item.description}

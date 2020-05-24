@@ -52,6 +52,7 @@ describe('Accounts', () => {
                     items: [
                       {
                         amount: -20,
+                        attachment: '',
                         description: 'Lunch',
                         id: 'transaction-2',
                         name: 'KFC',
@@ -65,6 +66,7 @@ describe('Accounts', () => {
                     items: [
                       {
                         amount: 200,
+                        attachment: '',
                         description: 'Invoice #1',
                         id: 'transaction-1',
                         name: 'Client',
@@ -107,6 +109,7 @@ describe('Accounts', () => {
                     items: [
                       {
                         amount: 200,
+                        attachment: '',
                         description: 'Invoice #1',
                         id: 'transaction-1',
                         name: 'Client',
@@ -268,6 +271,8 @@ describe('Accounts', () => {
 
         fireEvent.click(button);
 
+        await wait();
+
         await findByRole('dialog');
 
         const [, , , cancelButton] = await findAllByRole('button');
@@ -339,6 +344,7 @@ describe('Accounts', () => {
                     items: [
                       {
                         amount: -20,
+                        attachment: '',
                         description: 'Lunch',
                         id: 'transaction-2',
                         name: 'KFC',
@@ -352,6 +358,7 @@ describe('Accounts', () => {
                     items: [
                       {
                         amount: 200,
+                        attachment: '',
                         description: 'Invoice #1',
                         id: 'transaction-1',
                         name: 'Client',
@@ -394,6 +401,7 @@ describe('Accounts', () => {
                     items: [
                       {
                         amount: 200,
+                        attachment: '',
                         description: 'Invoice #1',
                         id: 'transaction-1',
                         name: 'Client',

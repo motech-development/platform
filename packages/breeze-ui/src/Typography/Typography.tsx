@@ -11,8 +11,13 @@ interface IBaseTypographyProps {
 
 const BaseTypography = styled.p<IBaseTypographyProps>`
   ${({ $align, $margin, $variant }) => `
-    text-align: ${$align};
+    hyphens: auto;
     margin: ${margins[$margin] ? `0 0 ${margins[$margin]}rem` : '0'};
+    overflow-wrap: break-word;
+    text-align: ${$align};
+    word-wrap: break-word;
+    word-break: break-all;
+    word-break: break-word;
 
     ${(() => {
       switch ($variant) {

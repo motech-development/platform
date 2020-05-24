@@ -1,10 +1,9 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   Card,
-  Col,
   LinkButton,
+  Masonry,
   PageTitle,
-  Row,
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
@@ -87,43 +86,41 @@ const Accounts: FC = () => {
             subTitle={t('accounts.sub-title')}
           />
 
-          <Row>
-            <Col xs={12} md={3}>
-              <Card padding="lg">
-                <Typography rule component="h3" variant="h3" margin="lg">
-                  {t('accounts.overview.title')}
-                </Typography>
+          <Masonry xs={1} sm={2} md={3} lg={4}>
+            <Card padding="lg">
+              <Typography rule component="h3" variant="h3" margin="lg">
+                {t('accounts.overview.title')}
+              </Typography>
 
-                <Typography component="p" variant="lead">
-                  {t('accounts.overview.balance', {
-                    amount: formatCurrency(
-                      data.getBalance.currency,
-                      data.getBalance.balance,
-                    ),
-                  })}
-                </Typography>
+              <Typography component="p" variant="lead">
+                {t('accounts.overview.balance', {
+                  amount: formatCurrency(
+                    data.getBalance.currency,
+                    data.getBalance.balance,
+                  ),
+                })}
+              </Typography>
 
-                <Typography component="p" variant="lead">
-                  {t('accounts.overview.vat-owed', {
-                    amount: formatCurrency(
-                      data.getBalance.currency,
-                      data.getBalance.vat.owed,
-                    ),
-                  })}
-                </Typography>
+              <Typography component="p" variant="lead">
+                {t('accounts.overview.vat-owed', {
+                  amount: formatCurrency(
+                    data.getBalance.currency,
+                    data.getBalance.vat.owed,
+                  ),
+                })}
+              </Typography>
 
-                <Typography component="p" variant="lead" margin="none">
-                  {t('accounts.overview.vat-paid', {
-                    amount: formatCurrency(
-                      data.getBalance.currency,
-                      data.getBalance.vat.paid,
-                    ),
-                  })}
-                </Typography>
-              </Card>
-            </Col>
+              <Typography component="p" variant="lead" margin="none">
+                {t('accounts.overview.vat-paid', {
+                  amount: formatCurrency(
+                    data.getBalance.currency,
+                    data.getBalance.vat.paid,
+                  ),
+                })}
+              </Typography>
+            </Card>
 
-            <Col xs={12} md={3}>
+            <>
               <Card padding="lg">
                 <Typography rule component="h3" variant="h3" margin="lg">
                   {t('accounts.record-transaction.title')}
@@ -140,9 +137,9 @@ const Accounts: FC = () => {
               >
                 {t('accounts.record-transaction.button')}
               </LinkButton>
-            </Col>
+            </>
 
-            <Col xs={12} md={3}>
+            <>
               <Card padding="lg">
                 <Typography rule component="h3" variant="h3" margin="lg">
                   {t('accounts.pending-transactions.title')}
@@ -159,9 +156,9 @@ const Accounts: FC = () => {
               >
                 {t('accounts.pending-transactions.button')}
               </LinkButton>
-            </Col>
+            </>
 
-            <Col xs={12} md={3}>
+            <>
               <Card padding="lg">
                 <Typography rule component="h3" variant="h3" margin="lg">
                   {t('accounts.dashboard.title')}
@@ -179,17 +176,15 @@ const Accounts: FC = () => {
               >
                 {t('accounts.dashboard.button')}
               </LinkButton>
-            </Col>
+            </>
+          </Masonry>
 
-            <Col>
-              <TransactionsList
-                companyId={data.getBalance.id}
-                loading={deleteLoading}
-                onDelete={onDelete}
-                transactions={data.getBalance.transactions}
-              />
-            </Col>
-          </Row>
+          <TransactionsList
+            companyId={data.getBalance.id}
+            loading={deleteLoading}
+            onDelete={onDelete}
+            transactions={data.getBalance.transactions}
+          />
         </>
       )}
     </Connected>
