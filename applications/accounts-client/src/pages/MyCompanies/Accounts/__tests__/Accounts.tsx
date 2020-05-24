@@ -271,6 +271,8 @@ describe('Accounts', () => {
 
         fireEvent.click(button);
 
+        await wait();
+
         await findByRole('dialog');
 
         const [, , , cancelButton] = await findAllByRole('button');
