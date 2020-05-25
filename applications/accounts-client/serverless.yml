@@ -38,6 +38,6 @@ custom:
           value: text/javascript
       '**/*.json':
         - name: Cache-Control
-          value: no-store, no-cache, must-revalidate
+          value: public, max-age=0
         - name: Content-Type
           value: application/json
