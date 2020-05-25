@@ -4,7 +4,7 @@
   "description": "Motech Development universal login",
   "private": true,
   "scripts": {
-    "deploy": "a0deploy import -c config.json -i ./src/tenant.yaml",
+    "deploy": "a0deploy import -i ./src/tenant.yaml",
     "import": "a0deploy export -c config.local.json -f yaml -o ./src"
   },
   "devDependencies": {

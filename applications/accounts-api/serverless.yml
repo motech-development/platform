@@ -19,7 +19,7 @@ plugins:
 custom:
   prefix: ${self:service}-${self:provider.stage}
   oidc:
-    issuer: https://${env:REACT_APP_AUTH0_DOMAIN, ''}/
+    issuer: https://${opt:issuer, ''}/
 
   outputs:
     files:
