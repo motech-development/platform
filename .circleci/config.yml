@@ -375,11 +375,11 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-        command: |
-          echo "export AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_PROD:$PATH" >> $BASH_ENV
-          echo "export AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET_PROD:$PATH" >> $BASH_ENV
-          echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD:$PATH" >> $BASH_ENV
-        name: Setup environment variables
+          command: |
+            echo "export AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_PROD:$PATH" >> $BASH_ENV
+            echo "export AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET_PROD:$PATH" >> $BASH_ENV
+            echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD:$PATH" >> $BASH_ENV
+          name: Setup environment variables
       - run:
           command: npm run deploy -- --scope=@motech-development/id -- -- -c config.json
           name: Deploy to Auth0
