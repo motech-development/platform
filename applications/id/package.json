@@ -8,6 +8,6 @@
     "import": "a0deploy export -c config.local.json -f yaml -o ./src"
   },
   "devDependencies": {
-    "auth0-deploy-cli": "^4.2.1"
+    "auth0-deploy-cli": "^4.3.1"
   }
 }

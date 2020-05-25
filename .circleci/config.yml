@@ -133,11 +133,11 @@ jobs:
       - checkout
       - <<: *attach_workspace
       - <<: *restore_dependencies
-      # - run:
-      #     command: |
-      #       echo "export REACT_APP_AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_DEV:$PATH" >> $BASH_ENV
-      #       echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV:$PATH" >> $BASH_ENV
-      #     name: Setup environment variables
+      - run:
+          command: |
+            echo "export REACT_APP_AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_DEV:$PATH" >> $BASH_ENV
+            echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV:$PATH" >> $BASH_ENV
+          name: Setup environment variables
       - run:
           command: npm run build -- --scope=@motech-development/accounts-client
           name: Build client
@@ -154,11 +154,11 @@ jobs:
       - checkout
       - <<: *attach_workspace
       - <<: *restore_dependencies
-      # - run:
-      #     command: |
-      #       echo "export REACT_APP_AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_PROD:$PATH" >> $BASH_ENV
-      #       echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD:$PATH" >> $BASH_ENV
-      #     name: Setup environment variables
+      - run:
+          command: |
+            echo "export REACT_APP_AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_PROD:$PATH" >> $BASH_ENV
+            echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD:$PATH" >> $BASH_ENV
+          name: Setup environment variables
       - run:
           command: npm run build -- --scope=@motech-development/accounts-client
           name: Build client
@@ -357,7 +357,13 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/id -- -- -c config.dev.json
+          command: |
+            echo "export AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_DEV:$PATH" >> $BASH_ENV
+            echo "export AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET_DEV:$PATH" >> $BASH_ENV
+            echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV:$PATH" >> $BASH_ENV
+          name: Setup environment variables
+      - run:
+          command: npm run deploy -- --scope=@motech-development/id -- -- -c config.json
           name: Deploy to Auth0
 
   deploy-auth0-production:
@@ -369,7 +375,13 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/id -- -- -c config.prod.json
+        command: |
+          echo "export AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_PROD:$PATH" >> $BASH_ENV
+          echo "export AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET_PROD:$PATH" >> $BASH_ENV
+          echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD:$PATH" >> $BASH_ENV
+        name: Setup environment variables
+      - run:
+          command: npm run deploy -- --scope=@motech-development/id -- -- -c config.json
           name: Deploy to Auth0
 
   deploy-infrastructure:
