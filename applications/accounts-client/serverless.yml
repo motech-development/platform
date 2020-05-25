@@ -21,11 +21,6 @@ custom:
     bucketName: ${self:custom.subDomain}
     distributionFolder: build
     objectHeaders:
-      '**/*.js':
-        - name: Cache-Control
-          value: max-age=31536000
-        - name: Content-Type
-          value: text/js
       '**/*.css':
         - name: Cache-Control
           value: max-age=31536000
@@ -33,6 +28,16 @@ custom:
           value: text/css
       '**/*.html':
         - name: Cache-Control
-          value: max-age=10
+          value: no-store, no-cache, must-revalidate
         - name: Content-Type
           value: text/html
+      '**/*.js':
+        - name: Cache-Control
+          value: max-age=31536000
+        - name: Content-Type
+          value: text/javascript
+      '**/*.json':
+        - name: Cache-Control
+          value: no-store, no-cache, must-revalidate
+        - name: Content-Type
+          value: application/json
