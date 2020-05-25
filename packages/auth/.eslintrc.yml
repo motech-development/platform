@@ -37,7 +37,6 @@ rules:
     - packageDir:
         - './'
         - '../../'
-  prettier/prettier: error
   react/jsx-filename-extension:
     - error
     - extensions:
