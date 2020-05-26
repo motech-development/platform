@@ -19,11 +19,12 @@ import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION, {
   IDeleteTransactionInput,
   IDeleteTransactionOutput,
-  updateCache,
+  updateCache as deleteTransactionCache,
 } from '../../../graphql/transaction/DELETE_TRANSACTION';
 import UPDATE_TRANSACTION, {
   IUpdateTransactionInput,
   IUpdateTransactionOutput,
+  updateCache as updateTransactionCache,
 } from '../../../graphql/transaction/UPDATE_TRANSACTION';
 import withLayout from '../../../hoc/withLayout';
 import UploadAttachment from './shared/UploadAttachment';
@@ -184,7 +185,7 @@ const ViewTransaction: FC = () => {
   const onDelete = () => {
     (async () => {
       await deleteMutation({
-        update: updateCache,
+        update: deleteTransactionCache,
         variables: {
           id: transactionId,
         },
@@ -194,6 +195,7 @@ const ViewTransaction: FC = () => {
   const save = (input: FormSchema) => {
     (async () => {
       await mutation({
+        update: updateTransactionCache,
         variables: {
           input,
         },
