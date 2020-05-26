@@ -24,20 +24,12 @@ custom:
       '**/*.css':
         - name: Cache-Control
           value: max-age=31536000
-        - name: Content-Type
-          value: text/css
       '**/*.html':
         - name: Cache-Control
           value: no-store, no-cache, must-revalidate
-        - name: Content-Type
-          value: text/html
       '**/*.js':
         - name: Cache-Control
           value: max-age=31536000
-        - name: Content-Type
-          value: text/javascript
       '**/*.json':
         - name: Cache-Control
           value: public, max-age=0
-        - name: Content-Type
-          value: application/json

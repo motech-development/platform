@@ -125,7 +125,7 @@ jobs:
       - store_artifacts:
           path: applications/accounts-client/cypress/screenshots
 
-  build-accounts-client:
+  build-accounts-client-develop:
     docker:
       - image: circleci/node:12.13
     working_directory: ~/repo
@@ -133,6 +133,32 @@ jobs:
       - checkout
       - <<: *attach_workspace
       - <<: *restore_dependencies
+      - run:
+          command: |
+            echo "export REACT_APP_AUTH0_CLIENT_ID=$ACCOUNTS_APP_CLIENT_ID_DEV" >> $BASH_ENV
+            echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV" >> $BASH_ENV
+          name: Setup environment variables
+      - run:
+          command: npm run build -- --scope=@motech-development/accounts-client
+          name: Build client
+      - persist_to_workspace:
+          paths:
+            - ./applications/accounts-client/build
+          root: .
+
+  build-accounts-client-production:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - run:
+          command: |
+            echo "export REACT_APP_AUTH0_CLIENT_ID=$ACCOUNTS_APP_CLIENT_ID_PROD" >> $BASH_ENV
+            echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD" >> $BASH_ENV
+          name: Setup environment variables
       - run:
           command: npm run build -- --scope=@motech-development/accounts-client
           name: Build client
@@ -199,7 +225,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage develop
+          command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage develop --issuer $AUTH0_DOMAIN_DEV
           name: Deploy accounts API
       - persist_to_workspace:
           paths:
@@ -215,7 +241,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage production
+          command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage production --issuer $AUTH0_DOMAIN_PROD
           name: Deploy accounts API
       - persist_to_workspace:
           paths:
@@ -322,7 +348,7 @@ jobs:
           command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage production --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
           name: Deploy open banking API
 
-  deploy-auth0:
+  deploy-auth0-develop:
     docker:
       - image: circleci/node:12.13
     working_directory: ~/repo
@@ -331,7 +357,31 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/id
+          command: |
+            echo "export AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_DEV" >> $BASH_ENV
+            echo "export AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET_DEV" >> $BASH_ENV
+            echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV" >> $BASH_ENV
+          name: Setup environment variables
+      - run:
+          command: npm run deploy -- --scope=@motech-development/id -- -- -c config.json
+          name: Deploy to Auth0
+
+  deploy-auth0-production:
+    docker:
+      - image: circleci/node:12.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - run:
+          command: |
+            echo "export AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_PROD" >> $BASH_ENV
+            echo "export AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET_PROD" >> $BASH_ENV
+            echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD" >> $BASH_ENV
+          name: Setup environment variables
+      - run:
+          command: npm run deploy -- --scope=@motech-development/id -- -- -c config.json
           name: Deploy to Auth0
 
   deploy-infrastructure:
@@ -384,16 +434,14 @@ workflows:
           requires:
             - build-accounts-client-develop
 
-      - build-accounts-client:
-          name: build-accounts-client-production
+      - build-accounts-client-production:
           filters:
             branches:
               only: master
           requires:
             - deploy-accounts-api-production
 
-      - build-accounts-client:
-          name: build-accounts-client-develop
+      - build-accounts-client-develop:
           filters:
             branches:
               only:
@@ -516,10 +564,20 @@ workflows:
             - deploy-accounts-storage-develop
             - deploy-open-banking-develop
 
-      - deploy-auth0:
+      - deploy-auth0-production:
           filters:
             branches:
               only: master
+          requires:
+            - unit-test
+
+      - deploy-auth0-develop:
+          filters:
+            branches:
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
           requires:
             - unit-test
 
