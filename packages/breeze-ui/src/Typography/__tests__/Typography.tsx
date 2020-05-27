@@ -416,4 +416,22 @@ describe('Typography', () => {
       );
     });
   });
+
+  describe('break word', () => {
+    it('should set the additional word break styled', async () => {
+      const { findByText } = render(
+        <Typography breakWord component="h1" variant="h1">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveStyle(`
+        hyphens: auto;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-all;
+        word-break: break-word;
+      `);
+    });
+  });
 });
