@@ -134,5 +134,15 @@ describe('Stepper', () => {
       await expect(findByTestId('step-2')).resolves.toBeInTheDocument();
       await expect(findAllByText('Step')).resolves.toHaveLength(1);
     });
+
+    it('should go back to the first step', async () => {
+      const { findAllByRole, findAllByText, findByTestId } = component;
+      const [button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
+      await expect(findByTestId('step-1')).resolves.toBeInTheDocument();
+      await expect(findAllByText('Step')).resolves.toHaveLength(1);
+    });
   });
 });
