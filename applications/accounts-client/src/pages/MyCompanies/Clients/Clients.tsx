@@ -80,6 +80,7 @@ const Clients: FC = () => {
                   </Typography>
 
                   <Typography
+                    breakWord
                     component="p"
                     variant="p"
                     align="center"

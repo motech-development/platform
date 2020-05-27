@@ -5,19 +5,27 @@ type TypographyVariants = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
 
 interface IBaseTypographyProps {
   $align: 'left' | 'right' | 'center';
+  $breakWord: boolean;
   $margin: keyof typeof margins;
   $variant: TypographyVariants | 'lead';
 }
 
 const BaseTypography = styled.p<IBaseTypographyProps>`
-  ${({ $align, $margin, $variant }) => `
-    hyphens: auto;
+  ${({ $align, $breakWord, $margin, $variant }) => `
     margin: ${margins[$margin] ? `0 0 ${margins[$margin]}rem` : '0'};
-    overflow-wrap: break-word;
     text-align: ${$align};
-    word-wrap: break-word;
-    word-break: break-all;
-    word-break: break-word;
+
+    ${
+      $breakWord
+        ? `
+      hyphens: auto;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-all;
+      word-break: break-word;
+    `
+        : ''
+    }
 
     ${(() => {
       switch ($variant) {
@@ -83,6 +91,7 @@ const Line = styled.hr<ILineProps>`
 
 export interface ITypographyProps {
   align?: 'left' | 'right' | 'center';
+  breakWord?: boolean;
   children: ReactNode;
   className?: string;
   component: TypographyVariants;
@@ -94,6 +103,7 @@ export interface ITypographyProps {
 
 const Typography: FC<ITypographyProps> = ({
   align = 'left',
+  breakWord = false,
   children,
   className = '',
   component,
@@ -108,6 +118,7 @@ const Typography: FC<ITypographyProps> = ({
       as={component}
       className={className}
       $align={align}
+      $breakWord={breakWord}
       $margin={margin}
       $variant={variant}
     >
