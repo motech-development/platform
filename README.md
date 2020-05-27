@@ -31,12 +31,26 @@ Open Banking API
 
 Reusable NPM packages used in our applications
 
+### API Gateway handler
+
+Utility to make working with API gateway lambda functions less of a pain
+
+Build the package by running `npm run build -- --scope=@motech-development/api-gateway-handler`\
+Test the package by running `npm test -- --scope=@motech-development/api-gateway-handler`
+
 ### Auth
 
 An Auth0 helper library for React
 
 Build the package by running `npm run build -- --scope=@motech-development/auth`\
 Test the package by running `npm test -- --scope=@motech-development/auth`
+
+### Axios hooks
+
+Axios hooks for React
+
+Build the package by running `npm run build -- --scope=@motech-development/axios-hooks`\
+Test the package by running `npm test -- --scope=@motech-development/axios-hooks`
 
 ### Breeze UI
 
@@ -52,3 +66,17 @@ Serverless plugin to take AWS outputs and write them into `.env` files
 
 Build the package by running `npm run build -- --scope=@motech-development/serverless-outputs-env`\
 Test the package by running `npm test -- --scope=@motech-development/serverless-outputs-env`
+
+### Webpack conditional plugin
+
+A Webpack plugin to conditionally apply plugins
+
+Build the package by running `npm run build -- --scope=@motech-development/webpack-conditional-plugin`\
+Test the package by running `npm test -- --scope=@motech-development/webpack-conditional-plugin`
+
+### Webpack permissions plugin
+
+A Webpack plugin to set permissions for your output files and folders
+
+Build the package by running `npm run build -- --scope=@motech-development/webpack-permissions-plugin`\
+Test the package by running `npm test -- --scope=@motech-development/webpack-permissions-plugin`
