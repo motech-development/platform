@@ -1,5 +1,6 @@
 import React, { FC, memo, ReactNode, useState } from 'react';
 import Button from '../Button/Button';
+import Card from '../Card/Card';
 import Col from '../Col/Col';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import Row from '../Row/Row';
@@ -38,23 +39,43 @@ const Stepper: FC<IStepper> = ({
       <Col>{children.map((child, index) => index === step && child)}</Col>
 
       <Col>
-        <ProgressBar progress={progress} />
-      </Col>
+        <Row>
+          <Col xs={12} md={6} mdOffset={7}>
+            <Card padding="none">
+              <ProgressBar progress={progress} />
+            </Card>
 
-      <Col xs={6}>
-        <Button disabled={disablePrevious} onClick={previous}>
-          {previousLabel}
-        </Button>
-      </Col>
+            <Card padding="lg">
+              <Row>
+                <Col xs={12} md={6}>
+                  <Button
+                    block
+                    disabled={disablePrevious}
+                    size="lg"
+                    onClick={previous}
+                  >
+                    {previousLabel}
+                  </Button>
+                </Col>
 
-      <Col xs={6} align="right">
-        {showNext ? (
-          <Button disabled={!enableNext(step)} onClick={next}>
-            {nextLabel}
-          </Button>
-        ) : (
-          onComplete
-        )}
+                <Col xs={12} md={6} align="right">
+                  {showNext ? (
+                    <Button
+                      block
+                      disabled={!enableNext(step)}
+                      size="lg"
+                      onClick={next}
+                    >
+                      {nextLabel}
+                    </Button>
+                  ) : (
+                    onComplete
+                  )}
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+        </Row>
       </Col>
     </Row>
   );
