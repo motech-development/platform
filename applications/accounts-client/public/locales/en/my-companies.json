@@ -28,6 +28,7 @@
   "company-form": {
     "cancel": "Cancel",
     "save": "Save",
+    "currency": "£",
     "address": {
       "heading": "Address",
       "line1": {
@@ -79,6 +80,32 @@
       "telephone": {
         "required": "Telephone number is required",
         "invalid": "Telephone number is invalid"
+      }
+    },
+    "vat-settings": {
+      "heading": "VAT settings",
+      "charge": {
+        "label": "VAT to charge",
+        "required": "Please enter a value. Set to 0 if not needed"
+      },
+      "pay": {
+        "label": "VAT to pay",
+        "required": "Please enter a value. Set to 0 if not needed"
+      }
+    },
+    "accounts-settings": {
+      "heading": "Accounts settings",
+      "balance": {
+        "label": "Opening balance",
+        "required": "You must set an opening balance"
+      },
+      "vat-owed": {
+        "label": "VAT owed",
+        "required": "You must set the VAT owed"
+      },
+      "vat-paid": {
+        "label": "Opening balance",
+        "required": "You must set the VAT paid"
       }
     }
   }

@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Col,
+  LinkButton,
   Row,
   Stepper,
   TextBox,
@@ -10,100 +11,135 @@ import {
 import { Form, Formik } from 'formik';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { object, string } from 'yup';
+import { number, object, string } from 'yup';
 import regex from '../regex';
 import AddressFields from './AddressFields';
 import ContactDetailsFields from './ContactDetailsFields';
 
 const formSchema = {
-  address: {
-    line1: '',
-    line2: '',
-    line3: '',
-    line4: '',
-    line5: '',
+  balance: {
+    balance: 0,
+    vat: {
+      owed: 0,
+      paid: 0,
+    },
   },
-  bank: {
-    accountNumber: '',
-    sortCode: '',
+  company: {
+    address: {
+      line1: '',
+      line2: '',
+      line3: '',
+      line4: '',
+      line5: '',
+    },
+    bank: {
+      accountNumber: '',
+      sortCode: '',
+    },
+    companyNumber: '',
+    contact: {
+      email: '',
+      telephone: '',
+    },
+    id: '',
+    name: '',
+    vatRegistration: '',
   },
-  companyNumber: '',
-  contact: {
-    email: '',
-    telephone: '',
+  vat: {
+    charge: 20,
+    pay: 20,
   },
-  id: '',
-  name: '',
-  vatRegistration: '',
 };
 
 export type FormSchema = typeof formSchema;
 
 export interface ICompanyWizardProps {
   backTo: string;
-  initialValues?: FormSchema;
   loading: boolean;
   onSave(value: FormSchema): void;
 }
 
 const CompanyWizard: FC<ICompanyWizardProps> = ({
-  initialValues = formSchema,
+  backTo,
   loading,
   onSave,
 }) => {
   const { t } = useTranslation('my-companies');
+  const currency = t('company-form.currency');
   const validationSchema = object().shape({
-    address: object().shape({
-      line1: string().required(t('company-form.address.line1.required')),
-      line2: string(),
-      line3: string().required(t('company-form.address.line3.required')),
-      line4: string(),
-      line5: string()
-        .matches(
-          regex.address.postcode,
-          t('company-form.address.line5.invalid'),
-        )
-        .required(t('company-form.address.line5.required')),
+    balance: object().shape({
+      balance: number().required(
+        t('company-form.accounts-settings.balance.required'),
+      ),
+      vat: object().shape({
+        owed: number().required(
+          t('company-form.accounts-settings.vat-owed.required'),
+        ),
+        paid: number().required(
+          t('company-form.accounts-settings.vat-paid.required'),
+        ),
+      }),
     }),
-    bank: object().shape({
-      accountNumber: string()
+    company: object().shape({
+      address: object().shape({
+        line1: string().required(t('company-form.address.line1.required')),
+        line2: string(),
+        line3: string().required(t('company-form.address.line3.required')),
+        line4: string(),
+        line5: string()
+          .matches(
+            regex.address.postcode,
+            t('company-form.address.line5.invalid'),
+          )
+          .required(t('company-form.address.line5.required')),
+      }),
+      bank: object().shape({
+        accountNumber: string()
+          .matches(
+            regex.bank.accountNumber,
+            t('company-form.bank.account-number.invalid'),
+          )
+          .required(t('company-form.bank.account-number.required')),
+        sortCode: string()
+          .matches(
+            regex.bank.sortCode,
+            t('company-form.bank.sort-code.invalid'),
+          )
+          .required(t('company-form.bank.sort-code.required')),
+      }),
+      companyNumber: string()
         .matches(
-          regex.bank.accountNumber,
-          t('company-form.bank.account-number.invalid'),
+          regex.companyNumber,
+          t('company-form.company-details.company-number.invalid'),
         )
-        .required(t('company-form.bank.account-number.required')),
-      sortCode: string()
-        .matches(regex.bank.sortCode, t('company-form.bank.sort-code.invalid'))
-        .required(t('company-form.bank.sort-code.required')),
+        .required(t('company-form.company-details.company-number.required')),
+      contact: object().shape({
+        email: string()
+          .email(t('company-form.contact.email.invalid'))
+          .required(t('company-form.contact.email.required')),
+        telephone: string()
+          .matches(
+            regex.contact.telephone,
+            t('company-form.contact.telephone.invalid'),
+          )
+          .required(t('company-form.contact.telephone.required')),
+      }),
+      name: string().required(t('company-form.company-details.name.required')),
+      vatRegistration: string().matches(
+        regex.vatRegistration,
+        t('company-form.company-details.vat-registration.invalid'),
+      ),
     }),
-    companyNumber: string()
-      .matches(
-        regex.companyNumber,
-        t('company-form.company-details.company-number.invalid'),
-      )
-      .required(t('company-form.company-details.company-number.required')),
-    contact: object().shape({
-      email: string()
-        .email(t('company-form.contact.email.invalid'))
-        .required(t('company-form.contact.email.required')),
-      telephone: string()
-        .matches(
-          regex.contact.telephone,
-          t('company-form.contact.telephone.invalid'),
-        )
-        .required(t('company-form.contact.telephone.required')),
+    vat: object().shape({
+      charge: number().required(t('company-form.vat-settings.charge.required')),
+      pay: number().required(t('company-form.vat-settings.pay.required')),
     }),
-    name: string().required(t('company-form.company-details.name.required')),
-    vatRegistration: string().matches(
-      regex.vatRegistration,
-      t('company-form.company-details.vat-registration.invalid'),
-    ),
   });
 
   return (
     <Formik
       validateOnMount
-      initialValues={initialValues}
+      initialValues={formSchema}
       validationSchema={validationSchema}
       onSubmit={onSave}
     >
@@ -120,9 +156,17 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
                 disabled={!isValid}
                 loading={loading}
                 size="lg"
+                onClick={e => {
+                  e.preventDefault();
+                }}
               >
                 {t('company-form.save')}
               </Button>
+            }
+            onStart={
+              <LinkButton block to={backTo} colour="secondary" size="lg">
+                {t('company-form.cancel')}
+              </LinkButton>
             }
           >
             <Row>
@@ -135,12 +179,12 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
                       </Typography>
 
                       <TextBox
-                        name="name"
+                        name="company.name"
                         label={t('company-form.company-details.name.label')}
                       />
 
                       <TextBox
-                        name="companyNumber"
+                        name="company.companyNumber"
                         label={t(
                           'company-form.company-details.company-number.label',
                         )}
@@ -148,7 +192,7 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
                       />
 
                       <TextBox
-                        name="vatRegistration"
+                        name="company.vatRegistration"
                         label={t(
                           'company-form.company-details.vat-registration.label',
                         )}
@@ -164,13 +208,13 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
                       </Typography>
 
                       <TextBox
-                        name="bank.accountNumber"
+                        name="company.bank.accountNumber"
                         label={t('company-form.bank.account-number.label')}
                         format="########"
                       />
 
                       <TextBox
-                        name="bank.sortCode"
+                        name="company.bank.sortCode"
                         label={t('company-form.bank.sort-code.label')}
                         format="##-##-##"
                       />
@@ -187,7 +231,7 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
                         {t('company-form.address.heading')}
                       </Typography>
 
-                      <AddressFields />
+                      <AddressFields prefix="company" />
                     </Card>
                   </Col>
 
@@ -197,7 +241,7 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
                         {t('company-form.contact.heading')}
                       </Typography>
 
-                      <ContactDetailsFields />
+                      <ContactDetailsFields prefix="company" />
                     </Card>
                   </Col>
                 </Row>
@@ -208,19 +252,19 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
               <Col xs={12} md={6}>
                 <Card padding="lg">
                   <Typography rule component="h3" variant="h3">
-                    VAT settings
+                    {t('company-form.vat-settings.heading')}
                   </Typography>
 
                   <TextBox
                     suffix="%"
                     name="vat.charge"
-                    label={t('settings-form.vat.charge.label')}
+                    label={t('company-form.vat-settings.charge.label')}
                   />
 
                   <TextBox
                     suffix="%"
                     name="vat.pay"
-                    label={t('settings-form.vat.pay.label')}
+                    label={t('company-form.vat-settings.pay.label')}
                   />
                 </Card>
               </Col>
@@ -228,21 +272,28 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
               <Col xs={12} md={6}>
                 <Card padding="lg">
                   <Typography rule component="h3" variant="h3">
-                    Accounts settings
+                    {t('company-form.accounts-settings.heading')}
                   </Typography>
 
                   <TextBox
                     decimalScale={2}
-                    name="vat.charge"
-                    label={t('settings-form.vat.charge.label')}
-                    prefix="£"
+                    name="balance.balance"
+                    label={t('company-form.accounts-settings.balance.label')}
+                    prefix={currency}
                   />
 
                   <TextBox
                     decimalScale={2}
-                    name="vat.pay"
-                    label={t('settings-form.vat.pay.label')}
-                    prefix="£"
+                    name="balance.vat.owed"
+                    label={t('company-form.accounts-settings.vat-owed.label')}
+                    prefix={currency}
+                  />
+
+                  <TextBox
+                    decimalScale={2}
+                    name="balance.vat.paid"
+                    label={t('company-form.accounts-settings.vat-paid.label')}
+                    prefix={currency}
                   />
                 </Card>
               </Col>

@@ -3,7 +3,7 @@ import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import CompanyForm, { FormSchema } from '../../components/CompanyForm';
+import CompanyWizard, { FormSchema } from '../../components/CompanyWizard';
 import Connected from '../../components/Connected';
 import ADD_COMPANY, {
   IAddCompanyInput,
@@ -51,7 +51,7 @@ const AddCompany: FC = () => {
         subTitle={t('add-company.sub-title')}
       />
 
-      <CompanyForm backTo="/my-companies" loading={loading} onSave={save} />
+      <CompanyWizard backTo="/my-companies" loading={loading} onSave={save} />
     </Connected>
   );
 };

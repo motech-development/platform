@@ -3,25 +3,38 @@ import GET_COMPANIES, { IGetCompaniesOutput } from './GET_COMPANIES';
 
 export interface IAddCompanyInput {
   input: {
-    address: {
-      line1: string;
-      line2: string;
-      line3: string;
-      line4: string;
-      line5: string;
+    balance: {
+      balance: number;
+      vat: {
+        owed: number;
+        paid: number;
+      };
     };
-    bank: {
-      accountNumber: string;
-      sortCode: string;
+    company: {
+      address: {
+        line1: string;
+        line2: string;
+        line3: string;
+        line4: string;
+        line5: string;
+      };
+      bank: {
+        accountNumber: string;
+        sortCode: string;
+      };
+      companyNumber: string;
+      contact: {
+        email: string;
+        telephone: string;
+      };
+      id: string;
+      name: string;
+      vatRegistration: string;
     };
-    companyNumber: string;
-    contact: {
-      email: string;
-      telephone: string;
+    vat: {
+      charge: number;
+      pay: number;
     };
-    id: string;
-    name: string;
-    vatRegistration: string;
   };
 }
 
@@ -78,7 +91,7 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
 };
 
 const ADD_COMPANY = gql`
-  mutation CreateCompany($input: CompanyInput!) {
+  mutation CreateCompany($input: CreateCompanyInput!) {
     createCompany(input: $input) {
       address {
         line1
