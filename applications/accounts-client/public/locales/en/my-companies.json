@@ -104,7 +104,7 @@
         "required": "You must set the VAT owed"
       },
       "vat-paid": {
-        "label": "Opening balance",
+        "label": "VAT paid",
         "required": "You must set the VAT paid"
       }
     }

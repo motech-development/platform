@@ -138,6 +138,7 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
 
   return (
     <Formik
+      enableReinitialize={false}
       validateOnMount
       initialValues={formSchema}
       validationSchema={validationSchema}
@@ -156,9 +157,6 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
                 disabled={!isValid}
                 loading={loading}
                 size="lg"
-                onClick={e => {
-                  e.preventDefault();
-                }}
               >
                 {t('company-form.save')}
               </Button>

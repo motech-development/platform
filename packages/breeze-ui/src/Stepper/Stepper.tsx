@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode, useState } from 'react';
+import React, { Children, FC, memo, ReactNode, useState } from 'react';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 import Col from '../Col/Col';
@@ -25,7 +25,8 @@ const Stepper: FC<IStepper> = ({
   start = 0,
 }) => {
   const [step, setStep] = useState(start);
-  const steps = children.length - 1;
+  const activeStep = Children.toArray(children)[step];
+  const steps = Children.count(children) - 1;
   const next = () => {
     setStep(step + 1);
   };
@@ -35,10 +36,11 @@ const Stepper: FC<IStepper> = ({
   };
   const disablePrevious = step === 0;
   const progress = (step / steps) * 100;
+  const showOnStart = disablePrevious && onStart;
 
   return (
     <Row>
-      <Col>{children.map((child, index) => index === step && child)}</Col>
+      <Col>{activeStep}</Col>
 
       <Col>
         <Row>
@@ -50,9 +52,9 @@ const Stepper: FC<IStepper> = ({
             <Card padding="lg">
               <Row>
                 <Col xs={12} md={6}>
-                  {disablePrevious && onStart ? (
-                    onStart
-                  ) : (
+                  {showOnStart && onStart}
+
+                  {!showOnStart && (
                     <Button
                       block
                       disabled={disablePrevious}
@@ -65,7 +67,7 @@ const Stepper: FC<IStepper> = ({
                 </Col>
 
                 <Col xs={12} md={6} align="right">
-                  {showNext ? (
+                  {showNext && (
                     <Button
                       block
                       disabled={!enableNext(step)}
@@ -74,9 +76,9 @@ const Stepper: FC<IStepper> = ({
                     >
                       {nextLabel}
                     </Button>
-                  ) : (
-                    onComplete
                   )}
+
+                  {!showNext && onComplete}
                 </Col>
               </Row>
             </Card>
