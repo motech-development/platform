@@ -29,6 +29,8 @@
     "cancel": "Cancel",
     "save": "Save",
     "currency": "£",
+    "details": "Details",
+    "settings": "Settings",
     "address": {
       "heading": "Address",
       "line1": {

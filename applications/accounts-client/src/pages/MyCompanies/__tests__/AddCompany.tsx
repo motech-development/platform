@@ -47,25 +47,38 @@ describe('AddCompany', () => {
           query: ADD_COMPANY,
           variables: {
             input: {
-              address: {
-                line1: '1 Street',
-                line2: '',
-                line3: 'Town',
-                line4: 'County',
-                line5: 'KT1 1NE',
+              balance: {
+                balance: 0,
+                vat: {
+                  owed: 0,
+                  paid: 0,
+                },
               },
-              bank: {
-                accountNumber: '12345678',
-                sortCode: '12-34-56',
+              company: {
+                address: {
+                  line1: '1 Street',
+                  line2: '',
+                  line3: 'Town',
+                  line4: 'County',
+                  line5: 'KT1 1NE',
+                },
+                bank: {
+                  accountNumber: '12345678',
+                  sortCode: '12-34-56',
+                },
+                companyNumber: '12345678',
+                contact: {
+                  email: 'info@contact.com',
+                  telephone: '07712345678',
+                },
+                id: '',
+                name: 'New company',
+                vatRegistration: 'GB123456789',
               },
-              companyNumber: '12345678',
-              contact: {
-                email: 'info@contact.com',
-                telephone: '07712345678',
+              vat: {
+                charge: 20,
+                pay: 20,
               },
-              id: '',
-              name: 'New company',
-              vatRegistration: 'GB123456789',
             },
           },
         },
@@ -172,9 +185,13 @@ describe('AddCompany', () => {
 
       await wait();
 
-      const [, button] = await findAllByRole('button');
+      const [, next] = await findAllByRole('button');
 
-      fireEvent.click(button);
+      fireEvent.click(next);
+
+      const [, , submit] = await findAllByRole('button');
+
+      fireEvent.click(submit);
 
       await apolloWait(0);
 
@@ -246,9 +263,13 @@ describe('AddCompany', () => {
 
       await wait();
 
-      const [, button] = await findAllByRole('button');
+      const [, next] = await findAllByRole('button');
 
-      fireEvent.click(button);
+      fireEvent.click(next);
+
+      const [, , submit] = await findAllByRole('button');
+
+      fireEvent.click(submit);
 
       await apolloWait(0);
 

@@ -147,8 +147,8 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
       {({ isValid }) => (
         <Form>
           <Stepper
-            previousLabel="Details"
-            nextLabel="Settings"
+            previousLabel={t('company-form.details')}
+            nextLabel={t('company-form.settings')}
             onComplete={
               <Button
                 block
