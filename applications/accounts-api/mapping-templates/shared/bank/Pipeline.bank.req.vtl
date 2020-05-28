@@ -1,5 +1,5 @@
-#set($validAccountNumber = $util.matches("^(\d){8}$", $ctx.args.input.bank.accountNumber))
-#set($validSortCode = $util.matches("^(\d){2}-(\d){2}-(\d){2}$", $ctx.args.input.bank.sortCode))
+#set($validAccountNumber = $util.matches("^(\d){8}$", $ctx.stash.bank.accountNumber))
+#set($validSortCode = $util.matches("^(\d){2}-(\d){2}-(\d){2}$", $ctx.stash.bank.sortCode))
 
 #if (!$validAccountNumber)
   $utils.error("Account number is invalid")

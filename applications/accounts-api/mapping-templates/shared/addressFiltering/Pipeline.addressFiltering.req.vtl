@@ -1,11 +1,11 @@
 #set($address = {})
 
-#foreach ($key in $ctx.args.input.address.keySet())
-  #if($ctx.args.input.address.get($key) != "")
-    #set($values = $address.put($key, $ctx.args.input.address.get($key)))
+#foreach ($key in $ctx.stash.address.keySet())
+  #if($ctx.stash.address.get($key) != "")
+    #set($values = $address.put($key, $ctx.stash.address.get($key)))
   #end
 #end
 
-#set($input = $ctx.args.input.put("address", $address))
+#set($input = $ctx.stash.put("address", $address))
 
 {}

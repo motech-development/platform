@@ -8,6 +8,7 @@
 #set($input = $ctx.args.input.remove("__typename"))
 #set($input = $ctx.args.input.remove("id"))
 #set($input = $ctx.args.input.remove("companyId"))
+#set($input = $ctx.args.input.put("address", $ctx.stash.address))
 
 #set($set = "SET")
 

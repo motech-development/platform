@@ -19,7 +19,7 @@ plugins:
 custom:
   prefix: ${self:service}-${self:provider.stage}
   oidc:
-    issuer: https://${opt:issuer, ''}/
+    issuer: https://${opt:issuer}/
 
   outputs:
     files:
@@ -138,9 +138,6 @@ custom:
             - telephone
             - vatRegistration
             - createCompany
-            - createSettings
-            - createBankSettings
-            - createBalance
           request: company/createCompany/Mutation.createCompany.req.vtl
           response: company/createCompany/Mutation.createCompany.res.vtl
         - kind: PIPELINE
@@ -318,21 +315,9 @@ custom:
 
         # Companies
         - dataSource: Data
-          name: createBalance
-          request: company/createCompany/Pipeline.createBalance.req.vtl
-          response: company/createCompany/Pipeline.createBalance.res.vtl
-        - dataSource: Data
-          name: createBankSettings
-          request: company/createCompany/Pipeline.createBankSettings.req.vtl
-          response: company/createCompany/Pipeline.createBankSettings.res.vtl
-        - dataSource: Data
           name: createCompany
           request: company/createCompany/Pipeline.createCompany.req.vtl
           response: company/createCompany/Pipeline.createCompany.res.vtl
-        - dataSource: Data
-          name: createSettings
-          request: company/createCompany/Pipeline.createSettings.req.vtl
-          response: company/createCompany/Pipeline.createSettings.res.vtl
         - dataSource: Data
           name: deleteCompany
           request: company/deleteCompany/Pipeline.deleteCompany.req.vtl
@@ -408,9 +393,10 @@ custom:
                 signingServiceName: sqs
             serviceRoleArn: !GetAtt AppSyncQueueServiceRole.Arn
       substitutions:
-        stage: ${self:provider.stage}
+        appTable: !ImportValue ${self:provider.stage}-AccountsApplicationTable
         deleteFileQueue: !ImportValue ${self:provider.stage}-DeleteFileQueueUrlPath
         queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
+        stage: ${self:provider.stage}
 
   webpack:
     includeModules: true

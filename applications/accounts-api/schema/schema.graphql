@@ -6,7 +6,7 @@ type Mutation {
   createClient(input: ClientInput!): Client!
   deleteClient(id: ID!): Client!
   updateClient(input: ClientInput!): Client!
-  createCompany(input: CompanyInput!): Company!
+  createCompany(input: CreateCompanyInput!): Company!
   deleteCompany(id: ID!): Company!
   updateCompany(input: CompanyInput!): Company!
   updateSettings(input: SettingsInput!): Settings!

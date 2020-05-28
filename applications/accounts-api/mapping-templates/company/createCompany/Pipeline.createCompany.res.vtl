@@ -1,5 +1,9 @@
 #if($ctx.error)
-  $utils.error($ctx.error.message, $ctx.error.type)
+  $util.appendError($ctx.error.message, $ctx.error.type, null, $ctx.result.cancellationReasons)
 #end
 
-$utils.toJson($context.result)
+#set($id = $context.result.keys[0].id)
+#set($company = $ctx.args.input.company)
+#set($input = $company.put("id", $id))
+
+$utils.toJson($company)
