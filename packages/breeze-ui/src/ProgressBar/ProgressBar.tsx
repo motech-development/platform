@@ -19,7 +19,6 @@ const ProgressBarInternal = styled.progress`
   &::-webkit-progress-value {
     background-color: #2e9dc8;
     height: 20px;
-    transition: width 0.4s linear;
   }
 
   &::-moz-progress-bar {

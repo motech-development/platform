@@ -89,6 +89,43 @@ describe('Stepper', () => {
     });
   });
 
+  describe('with a custom on start button', () => {
+    beforeEach(() => {
+      component = render(
+        <Stepper
+          previousLabel="Prev"
+          nextLabel="Next"
+          onStart={
+            <button type="button" data-testid="custom-button">
+              Start
+            </button>
+          }
+        >
+          <div data-testid="step-1">Step</div>
+
+          <div data-testid="step-2">Step</div>
+        </Stepper>,
+      );
+    });
+
+    it('should display custom on start button', async () => {
+      const { findByTestId } = component;
+
+      await expect(findByTestId('custom-button')).resolves.toBeInTheDocument();
+    });
+
+    it('should show usual back button', async () => {
+      const { findAllByRole, findByText, queryByTestId } = component;
+      const [, button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
+      expect(queryByTestId('custom-button')).not.toBeInTheDocument();
+
+      await expect(findByText('Prev')).resolves.toBeInTheDocument();
+    });
+  });
+
   describe('with custom logic to enable the next button', () => {
     beforeEach(() => {
       component = render(

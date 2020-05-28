@@ -9,6 +9,7 @@ export interface IStepper {
   children: ReactNode[];
   nextLabel: string;
   onComplete?: ReactNode;
+  onStart?: ReactNode;
   previousLabel: string;
   start?: number;
   enableNext?(step: number): boolean;
@@ -19,6 +20,7 @@ const Stepper: FC<IStepper> = ({
   enableNext = () => true,
   nextLabel,
   onComplete = undefined,
+  onStart = undefined,
   previousLabel,
   start = 0,
 }) => {
@@ -48,14 +50,18 @@ const Stepper: FC<IStepper> = ({
             <Card padding="lg">
               <Row>
                 <Col xs={12} md={6}>
-                  <Button
-                    block
-                    disabled={disablePrevious}
-                    size="lg"
-                    onClick={previous}
-                  >
-                    {previousLabel}
-                  </Button>
+                  {disablePrevious && onStart ? (
+                    onStart
+                  ) : (
+                    <Button
+                      block
+                      disabled={disablePrevious}
+                      size="lg"
+                      onClick={previous}
+                    >
+                      {previousLabel}
+                    </Button>
+                  )}
                 </Col>
 
                 <Col xs={12} md={6} align="right">
