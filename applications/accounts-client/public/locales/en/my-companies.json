@@ -32,61 +32,19 @@
     "details": "Details",
     "settings": "Settings",
     "address": {
-      "heading": "Address",
-      "line1": {
-        "required": "Address line 1 is required"
-      },
-      "line3": {
-        "required": "Town is required"
-      },
-      "line5": {
-        "required": "Postcode is required",
-        "invalid": "Postcode is invalid"
-      }
+      "heading": "Address"
     },
     "bank": {
-      "heading": "Bank details",
-      "account-number": {
-        "required": "Account number is required",
-        "invalid": "Account number is invalid"
-      },
-      "sort-code": {
-        "required": "Sort code is required",
-        "invalid": "Sort code is invalid"
-      }
+      "heading": "Bank details"
     },
     "company-details": {
-      "heading": "Company details",
-      "name": {
-        "required": "Name is required"
-      },
-      "company-number": {
-        "required": "Company number is required",
-        "invalid": "Company number is invalid"
-      },
-      "vat-registration": {
-        "invalid": "VAT registration number is invalid"
-      }
+      "heading": "Company details"
     },
     "contact": {
-      "heading": "Contact details",
-      "email": {
-        "required": "Email address is required",
-        "invalid": "Email address is invalid"
-      },
-      "telephone": {
-        "required": "Telephone number is required",
-        "invalid": "Telephone number is invalid"
-      }
+      "heading": "Contact details"
     },
     "vat-settings": {
-      "heading": "VAT settings",
-      "charge": {
-        "required": "Please enter a value. Set to 0 if not needed"
-      },
-      "pay": {
-        "required": "Please enter a value. Set to 0 if not needed"
-      }
+      "heading": "VAT settings"
     },
     "accounts-settings": {
       "heading": "Accounts settings",

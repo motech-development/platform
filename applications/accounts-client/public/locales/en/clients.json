@@ -28,17 +28,7 @@
     "cancel": "Cancel",
     "save": "Save",
     "address": {
-      "heading": "Address",
-      "line1": {
-        "required": "Address line 1 is required"
-      },
-      "line3": {
-        "required": "Town is required"
-      },
-      "line5": {
-        "required": "Postcode is required",
-        "invalid": "Postcode is invalid"
-      }
+      "heading": "Address"
     },
     "client-details": {
       "heading": "Company details",
@@ -48,15 +38,7 @@
       }
     },
     "contact": {
-      "heading": "Contact details",
-      "email": {
-        "required": "Email address is required",
-        "invalid": "Email address is invalid"
-      },
-      "telephone": {
-        "required": "Telephone number is required",
-        "invalid": "Telephone number is invalid"
-      }
+      "heading": "Contact details"
     }
   },
   "go-back": {

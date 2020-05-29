@@ -9,13 +9,7 @@
     "cancel": "Cancel",
     "save": "Save",
     "vat": {
-      "title": "VAT settings",
-      "charge": {
-        "required": "Please enter a value. Set to 0 if not needed"
-      },
-      "pay": {
-        "required": "Please enter a value. Set to 0 if not needed"
-      }
+      "title": "VAT settings"
     },
     "bank": {
       "title": "Banking settings",

@@ -11,6 +11,7 @@ import { FieldArray, Form, Formik } from 'formik';
 import React, { FC, Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { array, object, string } from 'yup';
+import { useVatSettings } from '../hooks/schema';
 import { VatSettingsFields } from './CommonFields';
 
 export type FormSchema = {
@@ -48,6 +49,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
 }) => {
   const { t } = useTranslation('settings');
   const { connected, disconnectLoading, link, name, onDisconnect } = bank;
+  const vat = useVatSettings();
   const validationSchema = object().shape({
     categories: array().of(
       object().shape({
@@ -59,10 +61,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
         ),
       }),
     ),
-    vat: object().shape({
-      charge: string().required(t('settings-form.vat.charge.required')),
-      pay: string().required(t('settings-form.vat.pay.required')),
-    }),
+    vat,
   });
 
   return (

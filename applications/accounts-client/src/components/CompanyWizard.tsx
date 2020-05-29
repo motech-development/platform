@@ -11,8 +11,14 @@ import {
 import { Form, Formik } from 'formik';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { number, object, string } from 'yup';
-import regex from '../regex';
+import { number, object } from 'yup';
+import {
+  useAddress,
+  useBank,
+  useCompanyDetails,
+  useContactDetails,
+  useVatSettings,
+} from '../hooks/schema';
 import {
   AddressFields,
   BankFields,
@@ -71,6 +77,11 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
 }) => {
   const { t } = useTranslation('my-companies');
   const currency = t('company-form.currency');
+  const address = useAddress();
+  const bank = useBank();
+  const company = useCompanyDetails();
+  const contact = useContactDetails();
+  const vat = useVatSettings();
   const validationSchema = object().shape({
     balance: object().shape({
       balance: number().required(
@@ -85,60 +96,14 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
         ),
       }),
     }),
-    company: object().shape({
-      address: object().shape({
-        line1: string().required(t('company-form.address.line1.required')),
-        line2: string(),
-        line3: string().required(t('company-form.address.line3.required')),
-        line4: string(),
-        line5: string()
-          .matches(
-            regex.address.postcode,
-            t('company-form.address.line5.invalid'),
-          )
-          .required(t('company-form.address.line5.required')),
+    company: object()
+      .concat(company)
+      .shape({
+        address,
+        bank,
+        contact,
       }),
-      bank: object().shape({
-        accountNumber: string()
-          .matches(
-            regex.bank.accountNumber,
-            t('company-form.bank.account-number.invalid'),
-          )
-          .required(t('company-form.bank.account-number.required')),
-        sortCode: string()
-          .matches(
-            regex.bank.sortCode,
-            t('company-form.bank.sort-code.invalid'),
-          )
-          .required(t('company-form.bank.sort-code.required')),
-      }),
-      companyNumber: string()
-        .matches(
-          regex.companyNumber,
-          t('company-form.company-details.company-number.invalid'),
-        )
-        .required(t('company-form.company-details.company-number.required')),
-      contact: object().shape({
-        email: string()
-          .email(t('company-form.contact.email.invalid'))
-          .required(t('company-form.contact.email.required')),
-        telephone: string()
-          .matches(
-            regex.contact.telephone,
-            t('company-form.contact.telephone.invalid'),
-          )
-          .required(t('company-form.contact.telephone.required')),
-      }),
-      name: string().required(t('company-form.company-details.name.required')),
-      vatRegistration: string().matches(
-        regex.vatRegistration,
-        t('company-form.company-details.vat-registration.invalid'),
-      ),
-    }),
-    vat: object().shape({
-      charge: number().required(t('company-form.vat-settings.charge.required')),
-      pay: number().required(t('company-form.vat-settings.pay.required')),
-    }),
+    vat,
   });
 
   return (
