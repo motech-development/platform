@@ -11,6 +11,7 @@ import { FieldArray, Form, Formik } from 'formik';
 import React, { FC, Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { array, object, string } from 'yup';
+import { VatSettingsFields } from './CommonFields';
 
 export type FormSchema = {
   categories: {
@@ -190,17 +191,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
                   {t('settings-form.vat.title')}
                 </Typography>
 
-                <TextBox
-                  suffix="%"
-                  name="vat.charge"
-                  label={t('settings-form.vat.charge.label')}
-                />
-
-                <TextBox
-                  suffix="%"
-                  name="vat.pay"
-                  label={t('settings-form.vat.pay.label')}
-                />
+                <VatSettingsFields prefix="vat" />
               </Card>
             </Col>
 

@@ -11,8 +11,7 @@ import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 import regex from '../regex';
-import AddressFields from './AddressFields';
-import ContactDetailsFields from './ContactDetailsFields';
+import { AddressFields, ContactDetailsFields } from './CommonFields';
 
 const formSchema = {
   address: {

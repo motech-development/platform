@@ -13,8 +13,13 @@ import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { number, object, string } from 'yup';
 import regex from '../regex';
-import AddressFields from './AddressFields';
-import ContactDetailsFields from './ContactDetailsFields';
+import {
+  AddressFields,
+  BankFields,
+  CompanyDetailsFields,
+  ContactDetailsFields,
+  VatSettingsFields,
+} from './CommonFields';
 
 const formSchema = {
   balance: {
@@ -176,26 +181,7 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
                         {t('company-form.company-details.heading')}
                       </Typography>
 
-                      <TextBox
-                        name="company.name"
-                        label={t('company-form.company-details.name.label')}
-                      />
-
-                      <TextBox
-                        name="company.companyNumber"
-                        label={t(
-                          'company-form.company-details.company-number.label',
-                        )}
-                        format="########"
-                      />
-
-                      <TextBox
-                        name="company.vatRegistration"
-                        label={t(
-                          'company-form.company-details.vat-registration.label',
-                        )}
-                        format="GB#########"
-                      />
+                      <CompanyDetailsFields prefix="company" />
                     </Card>
                   </Col>
 
@@ -205,17 +191,7 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
                         {t('company-form.bank.heading')}
                       </Typography>
 
-                      <TextBox
-                        name="company.bank.accountNumber"
-                        label={t('company-form.bank.account-number.label')}
-                        format="########"
-                      />
-
-                      <TextBox
-                        name="company.bank.sortCode"
-                        label={t('company-form.bank.sort-code.label')}
-                        format="##-##-##"
-                      />
+                      <BankFields prefix="company" />
                     </Card>
                   </Col>
                 </Row>
@@ -253,17 +229,7 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
                     {t('company-form.vat-settings.heading')}
                   </Typography>
 
-                  <TextBox
-                    suffix="%"
-                    name="vat.charge"
-                    label={t('company-form.vat-settings.charge.label')}
-                  />
-
-                  <TextBox
-                    suffix="%"
-                    name="vat.pay"
-                    label={t('company-form.vat-settings.pay.label')}
-                  />
+                  <VatSettingsFields prefix="vat" />
                 </Card>
               </Col>
 

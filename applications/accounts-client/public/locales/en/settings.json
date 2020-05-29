@@ -11,11 +11,9 @@
     "vat": {
       "title": "VAT settings",
       "charge": {
-        "label": "VAT to charge",
         "required": "Please enter a value. Set to 0 if not needed"
       },
       "pay": {
-        "label": "VAT to pay",
         "required": "Please enter a value. Set to 0 if not needed"
       }
     },

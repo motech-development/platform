@@ -1,0 +1,26 @@
+{
+  "address": {
+    "line1": "Address line 1*",
+    "line2": "Address line 2",
+    "line3": "Town*",
+    "line4": "County",
+    "line5": "Postcode*"
+  },
+  "bank": {
+    "account-number": "Account number*",
+    "sort-code": "Sort code*"
+  },
+  "company-details": {
+    "name": "Name*",
+    "company-number": "Company number*",
+    "vat-registration": "VAT registration number"
+  },
+  "contact-details": {
+    "email": "Email address*",
+    "telephone": "Telephone number*"
+  },
+  "vat-settings": {
+    "charge": "VAT to charge",
+    "pay": "VAT to pay"
+  }
+}

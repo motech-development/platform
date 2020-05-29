@@ -129,26 +129,20 @@ describe('AddCompany', () => {
     const { findAllByRole, findByLabelText, findByTestId } = component;
 
     await act(async () => {
-      const line1 = await findByLabelText('line1');
-      const line3 = await findByLabelText('line3');
-      const line4 = await findByLabelText('line4');
-      const line5 = await findByLabelText('line5');
-      const accountNumber = await findByLabelText(
-        'company-form.bank.account-number.label',
-      );
-      const sortCode = await findByLabelText(
-        'company-form.bank.sort-code.label',
-      );
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const accountNumber = await findByLabelText('bank.account-number');
+      const sortCode = await findByLabelText('bank.sort-code');
       const companyNumber = await findByLabelText(
-        'company-form.company-details.company-number.label',
+        'company-details.company-number',
       );
-      const email = await findByLabelText('email');
-      const telephone = await findByLabelText('telephone');
-      const name = await findByLabelText(
-        'company-form.company-details.name.label',
-      );
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText('company-details.name');
       const vatRegistration = await findByLabelText(
-        'company-form.company-details.vat-registration.label',
+        'company-details.vat-registration',
       );
 
       fireEvent.change(line1, {
@@ -207,26 +201,20 @@ describe('AddCompany', () => {
     const { findAllByRole, findByLabelText, findByTestId } = component;
 
     await act(async () => {
-      const line1 = await findByLabelText('line1');
-      const line3 = await findByLabelText('line3');
-      const line4 = await findByLabelText('line4');
-      const line5 = await findByLabelText('line5');
-      const accountNumber = await findByLabelText(
-        'company-form.bank.account-number.label',
-      );
-      const sortCode = await findByLabelText(
-        'company-form.bank.sort-code.label',
-      );
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const accountNumber = await findByLabelText('bank.account-number');
+      const sortCode = await findByLabelText('bank.sort-code');
       const companyNumber = await findByLabelText(
-        'company-form.company-details.company-number.label',
+        'company-details.company-number',
       );
-      const email = await findByLabelText('email');
-      const telephone = await findByLabelText('telephone');
-      const name = await findByLabelText(
-        'company-form.company-details.name.label',
-      );
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText('company-details.name');
       const vatRegistration = await findByLabelText(
-        'company-form.company-details.vat-registration.label',
+        'company-details.vat-registration',
       );
 
       fireEvent.change(line1, {

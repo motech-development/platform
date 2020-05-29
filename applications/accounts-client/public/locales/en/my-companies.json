@@ -47,12 +47,10 @@
     "bank": {
       "heading": "Bank details",
       "account-number": {
-        "label": "Account number*",
         "required": "Account number is required",
         "invalid": "Account number is invalid"
       },
       "sort-code": {
-        "label": "Sort code*",
         "required": "Sort code is required",
         "invalid": "Sort code is invalid"
       }
@@ -60,16 +58,13 @@
     "company-details": {
       "heading": "Company details",
       "name": {
-        "label": "Name*",
         "required": "Name is required"
       },
       "company-number": {
-        "label": "Company number*",
         "required": "Company number is required",
         "invalid": "Company number is invalid"
       },
       "vat-registration": {
-        "label": "VAT registration number",
         "invalid": "VAT registration number is invalid"
       }
     },
@@ -87,11 +82,9 @@
     "vat-settings": {
       "heading": "VAT settings",
       "charge": {
-        "label": "VAT to charge",
         "required": "Please enter a value. Set to 0 if not needed"
       },
       "pay": {
-        "label": "VAT to pay",
         "required": "Please enter a value. Set to 0 if not needed"
       }
     },

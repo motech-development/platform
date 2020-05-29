@@ -4,15 +4,18 @@ import {
   Form,
   LinkButton,
   Row,
-  TextBox,
   Typography,
 } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 import regex from '../regex';
-import AddressFields from './AddressFields';
-import ContactDetailsFields from './ContactDetailsFields';
+import {
+  AddressFields,
+  BankFields,
+  CompanyDetailsFields,
+  ContactDetailsFields,
+} from './CommonFields';
 
 const formSchema = {
   address: {
@@ -122,24 +125,7 @@ const CompanyForm: FC<ICompanyFormProps> = ({
                   {t('company-form.company-details.heading')}
                 </Typography>
 
-                <TextBox
-                  name="name"
-                  label={t('company-form.company-details.name.label')}
-                />
-
-                <TextBox
-                  name="companyNumber"
-                  label={t('company-form.company-details.company-number.label')}
-                  format="########"
-                />
-
-                <TextBox
-                  name="vatRegistration"
-                  label={t(
-                    'company-form.company-details.vat-registration.label',
-                  )}
-                  format="GB#########"
-                />
+                <CompanyDetailsFields />
               </Card>
             </Col>
 
@@ -149,17 +135,7 @@ const CompanyForm: FC<ICompanyFormProps> = ({
                   {t('company-form.bank.heading')}
                 </Typography>
 
-                <TextBox
-                  name="bank.accountNumber"
-                  label={t('company-form.bank.account-number.label')}
-                  format="########"
-                />
-
-                <TextBox
-                  name="bank.sortCode"
-                  label={t('company-form.bank.sort-code.label')}
-                  format="##-##-##"
-                />
+                <BankFields />
               </Card>
             </Col>
           </Row>
