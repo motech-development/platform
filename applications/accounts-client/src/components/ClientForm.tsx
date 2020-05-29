@@ -10,9 +10,8 @@ import {
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
-import regex from '../regex';
-import AddressFields from './AddressFields';
-import ContactDetailsFields from './ContactDetailsFields';
+import { useAddress, useContactDetails } from '../hooks/schema';
+import { AddressFields, ContactDetailsFields } from './CommonFields';
 
 const formSchema = {
   address: {
@@ -52,28 +51,12 @@ const ClientForm: FC<IClientFormProps> = ({
   onSave,
 }) => {
   const { t } = useTranslation('clients');
+  const address = useAddress();
+  const contact = useContactDetails();
   const validationSchema = object().shape({
-    address: object().shape({
-      line1: string().required(t('client-form.address.line1.required')),
-      line2: string(),
-      line3: string().required(t('client-form.address.line3.required')),
-      line4: string(),
-      line5: string()
-        .matches(regex.address.postcode, t('client-form.address.line5.invalid'))
-        .required(t('client-form.address.line5.required')),
-    }),
+    address,
     companyId: string().required(),
-    contact: object().shape({
-      email: string()
-        .email(t('client-form.contact.email.invalid'))
-        .required(t('client-form.contact.email.required')),
-      telephone: string()
-        .matches(
-          regex.contact.telephone,
-          t('client-form.contact.telephone.invalid'),
-        )
-        .required(t('client-form.contact.telephone.required')),
-    }),
+    contact,
     name: string().required(t('client-form.client-details.name.required')),
   });
 

@@ -5,6 +5,7 @@
 #set($owner = $ctx.identity.sub)
 #set($defaultGroups = ["Admin"])
 #set($data = "$owner:$companyId:$name")
+#set($input = $ctx.args.input.put("address", $ctx.stash.address))
 
 {
   "version": "2017-02-28",

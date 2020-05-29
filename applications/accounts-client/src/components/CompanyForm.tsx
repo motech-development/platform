@@ -4,15 +4,23 @@ import {
   Form,
   LinkButton,
   Row,
-  TextBox,
   Typography,
 } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { object, string } from 'yup';
-import regex from '../regex';
-import AddressFields from './AddressFields';
-import ContactDetailsFields from './ContactDetailsFields';
+import { object } from 'yup';
+import {
+  useAddress,
+  useBank,
+  useCompanyDetails,
+  useContactDetails,
+} from '../hooks/schema';
+import {
+  AddressFields,
+  BankFields,
+  CompanyDetailsFields,
+  ContactDetailsFields,
+} from './CommonFields';
 
 const formSchema = {
   address: {
@@ -52,53 +60,17 @@ const CompanyForm: FC<ICompanyFormProps> = ({
   onSave,
 }) => {
   const { t } = useTranslation('my-companies');
-  const validationSchema = object().shape({
-    address: object().shape({
-      line1: string().required(t('company-form.address.line1.required')),
-      line2: string(),
-      line3: string().required(t('company-form.address.line3.required')),
-      line4: string(),
-      line5: string()
-        .matches(
-          regex.address.postcode,
-          t('company-form.address.line5.invalid'),
-        )
-        .required(t('company-form.address.line5.required')),
-    }),
-    bank: object().shape({
-      accountNumber: string()
-        .matches(
-          regex.bank.accountNumber,
-          t('company-form.bank.account-number.invalid'),
-        )
-        .required(t('company-form.bank.account-number.required')),
-      sortCode: string()
-        .matches(regex.bank.sortCode, t('company-form.bank.sort-code.invalid'))
-        .required(t('company-form.bank.sort-code.required')),
-    }),
-    companyNumber: string()
-      .matches(
-        regex.companyNumber,
-        t('company-form.company-details.company-number.invalid'),
-      )
-      .required(t('company-form.company-details.company-number.required')),
-    contact: object().shape({
-      email: string()
-        .email(t('company-form.contact.email.invalid'))
-        .required(t('company-form.contact.email.required')),
-      telephone: string()
-        .matches(
-          regex.contact.telephone,
-          t('company-form.contact.telephone.invalid'),
-        )
-        .required(t('company-form.contact.telephone.required')),
-    }),
-    name: string().required(t('company-form.company-details.name.required')),
-    vatRegistration: string().matches(
-      regex.vatRegistration,
-      t('company-form.company-details.vat-registration.invalid'),
-    ),
-  });
+  const address = useAddress();
+  const bank = useBank();
+  const company = useCompanyDetails();
+  const contact = useContactDetails();
+  const validationSchema = object()
+    .concat(company)
+    .shape({
+      address,
+      bank,
+      contact,
+    });
 
   return (
     <Form
@@ -122,24 +94,7 @@ const CompanyForm: FC<ICompanyFormProps> = ({
                   {t('company-form.company-details.heading')}
                 </Typography>
 
-                <TextBox
-                  name="name"
-                  label={t('company-form.company-details.name.label')}
-                />
-
-                <TextBox
-                  name="companyNumber"
-                  label={t('company-form.company-details.company-number.label')}
-                  format="########"
-                />
-
-                <TextBox
-                  name="vatRegistration"
-                  label={t(
-                    'company-form.company-details.vat-registration.label',
-                  )}
-                  format="GB#########"
-                />
+                <CompanyDetailsFields />
               </Card>
             </Col>
 
@@ -149,17 +104,7 @@ const CompanyForm: FC<ICompanyFormProps> = ({
                   {t('company-form.bank.heading')}
                 </Typography>
 
-                <TextBox
-                  name="bank.accountNumber"
-                  label={t('company-form.bank.account-number.label')}
-                  format="########"
-                />
-
-                <TextBox
-                  name="bank.sortCode"
-                  label={t('company-form.bank.sort-code.label')}
-                  format="##-##-##"
-                />
+                <BankFields />
               </Card>
             </Col>
           </Row>

@@ -1,51 +1,68 @@
 [
   {
-    "address": {
-      "line1": "Unit 1",
-      "line2": "123 Cypress Street",
-      "line3": "London",
-      "line5": "SW21 1NA"
+    "balance": {
+      "balance": "1000",
+      "vat": {
+        "owed": "100",
+        "paid": "10"
+      }
     },
-    "bank": {
-      "accountNumber": "62057264",
-      "sortCode": "308639"
-    },
-    "companyNumber": "94385093",
-    "contact": {
-      "email": "vat-registered@motechdevelopment.co.uk",
-      "telephone": "02083895728"
-    },
-    "name": "VAT registered co.",
-    "vatRegistration": "216506516"
+    "company": {
+      "address": {
+        "line1": "Unit 1",
+        "line2": "123 Cypress Street",
+        "line3": "London",
+        "line5": "SW21 1NA"
+      },
+      "bank": {
+        "accountNumber": "62057264",
+        "sortCode": "308639"
+      },
+      "companyNumber": "94385093",
+      "contact": {
+        "email": "vat-registered@motechdevelopment.co.uk",
+        "telephone": "02083895728"
+      },
+      "name": "VAT registered co.",
+      "vatRegistration": "216506516"
+    }
   },
   {
-    "address": {
-      "line1": "30 Imber Lane",
-      "line3": "Esher",
-      "line4": "Surrey",
-      "line5": "KT10 8YF"
+    "company": {
+      "address": {
+        "line1": "30 Imber Lane",
+        "line3": "Esher",
+        "line4": "Surrey",
+        "line5": "KT10 8YF"
+      },
+      "bank": {
+        "accountNumber": "65408984",
+        "sortCode": "905673"
+      },
+      "companyNumber": "34170620",
+      "contact": {
+        "email": "no-vat@motechdevelopment.co.uk",
+        "telephone": "07726478934"
+      },
+      "name": "NoVAT co. Ltd"
     },
-    "bank": {
-      "accountNumber": "65408984",
-      "sortCode": "905673"
-    },
-    "companyNumber": "34170620",
-    "contact": {
-      "email": "no-vat@motechdevelopment.co.uk",
-      "telephone": "07726478934"
-    },
-    "name": "NoVAT co. Ltd"
+    "vat": {
+      "charge": "0",
+      "pay": "0"
+    }
   },
   {
-    "address": {
-      "line1": "Motech Towers"
-    },
-    "bank": {
-      "accountNumber": "74782147",
-      "sortCode": "347924"
-    },
-    "contact": {
-      "email": "update@motechdevelopment.co.uk"
+    "company": {
+      "address": {
+        "line1": "Motech Towers"
+      },
+      "bank": {
+        "accountNumber": "74782147",
+        "sortCode": "347924"
+      },
+      "contact": {
+        "email": "update@motechdevelopment.co.uk"
+      }
     }
   }
 ]

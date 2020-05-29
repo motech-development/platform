@@ -47,25 +47,38 @@ describe('AddCompany', () => {
           query: ADD_COMPANY,
           variables: {
             input: {
-              address: {
-                line1: '1 Street',
-                line2: '',
-                line3: 'Town',
-                line4: 'County',
-                line5: 'KT1 1NE',
+              balance: {
+                balance: 0,
+                vat: {
+                  owed: 0,
+                  paid: 0,
+                },
               },
-              bank: {
-                accountNumber: '12345678',
-                sortCode: '12-34-56',
+              company: {
+                address: {
+                  line1: '1 Street',
+                  line2: '',
+                  line3: 'Town',
+                  line4: 'County',
+                  line5: 'KT1 1NE',
+                },
+                bank: {
+                  accountNumber: '12345678',
+                  sortCode: '12-34-56',
+                },
+                companyNumber: '12345678',
+                contact: {
+                  email: 'info@contact.com',
+                  telephone: '07712345678',
+                },
+                id: '',
+                name: 'New company',
+                vatRegistration: 'GB123456789',
               },
-              companyNumber: '12345678',
-              contact: {
-                email: 'info@contact.com',
-                telephone: '07712345678',
+              vat: {
+                charge: 20,
+                pay: 20,
               },
-              id: '',
-              name: 'New company',
-              vatRegistration: 'GB123456789',
             },
           },
         },
@@ -116,26 +129,20 @@ describe('AddCompany', () => {
     const { findAllByRole, findByLabelText, findByTestId } = component;
 
     await act(async () => {
-      const line1 = await findByLabelText('line1');
-      const line3 = await findByLabelText('line3');
-      const line4 = await findByLabelText('line4');
-      const line5 = await findByLabelText('line5');
-      const accountNumber = await findByLabelText(
-        'company-form.bank.account-number.label',
-      );
-      const sortCode = await findByLabelText(
-        'company-form.bank.sort-code.label',
-      );
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const accountNumber = await findByLabelText('bank.account-number');
+      const sortCode = await findByLabelText('bank.sort-code');
       const companyNumber = await findByLabelText(
-        'company-form.company-details.company-number.label',
+        'company-details.company-number',
       );
-      const email = await findByLabelText('email');
-      const telephone = await findByLabelText('telephone');
-      const name = await findByLabelText(
-        'company-form.company-details.name.label',
-      );
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText('company-details.name');
       const vatRegistration = await findByLabelText(
-        'company-form.company-details.vat-registration.label',
+        'company-details.vat-registration',
       );
 
       fireEvent.change(line1, {
@@ -172,9 +179,13 @@ describe('AddCompany', () => {
 
       await wait();
 
-      const [, button] = await findAllByRole('button');
+      const [, next] = await findAllByRole('button');
 
-      fireEvent.click(button);
+      fireEvent.click(next);
+
+      const [, , submit] = await findAllByRole('button');
+
+      fireEvent.click(submit);
 
       await apolloWait(0);
 
@@ -190,26 +201,20 @@ describe('AddCompany', () => {
     const { findAllByRole, findByLabelText, findByTestId } = component;
 
     await act(async () => {
-      const line1 = await findByLabelText('line1');
-      const line3 = await findByLabelText('line3');
-      const line4 = await findByLabelText('line4');
-      const line5 = await findByLabelText('line5');
-      const accountNumber = await findByLabelText(
-        'company-form.bank.account-number.label',
-      );
-      const sortCode = await findByLabelText(
-        'company-form.bank.sort-code.label',
-      );
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const accountNumber = await findByLabelText('bank.account-number');
+      const sortCode = await findByLabelText('bank.sort-code');
       const companyNumber = await findByLabelText(
-        'company-form.company-details.company-number.label',
+        'company-details.company-number',
       );
-      const email = await findByLabelText('email');
-      const telephone = await findByLabelText('telephone');
-      const name = await findByLabelText(
-        'company-form.company-details.name.label',
-      );
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText('company-details.name');
       const vatRegistration = await findByLabelText(
-        'company-form.company-details.vat-registration.label',
+        'company-details.vat-registration',
       );
 
       fireEvent.change(line1, {
@@ -246,9 +251,13 @@ describe('AddCompany', () => {
 
       await wait();
 
-      const [, button] = await findAllByRole('button');
+      const [, next] = await findAllByRole('button');
 
-      fireEvent.click(button);
+      fireEvent.click(next);
+
+      const [, , submit] = await findAllByRole('button');
+
+      fireEvent.click(submit);
 
       await apolloWait(0);
 

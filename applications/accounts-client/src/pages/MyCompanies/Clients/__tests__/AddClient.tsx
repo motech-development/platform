@@ -115,12 +115,12 @@ describe('AddClient', () => {
     const { findAllByRole, findByLabelText, findByTestId } = component;
 
     await act(async () => {
-      const line1 = await findByLabelText('line1');
-      const line3 = await findByLabelText('line3');
-      const line4 = await findByLabelText('line4');
-      const line5 = await findByLabelText('line5');
-      const email = await findByLabelText('email');
-      const telephone = await findByLabelText('telephone');
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
       const name = await findByLabelText(
         'client-form.client-details.name.label',
       );
@@ -194,12 +194,12 @@ describe('AddClient', () => {
     const { findAllByRole, findByLabelText, findByTestId } = component;
 
     await act(async () => {
-      const line1 = await findByLabelText('line1');
-      const line3 = await findByLabelText('line3');
-      const line4 = await findByLabelText('line4');
-      const line5 = await findByLabelText('line5');
-      const email = await findByLabelText('email');
-      const telephone = await findByLabelText('telephone');
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
       const name = await findByLabelText(
         'client-form.client-details.name.label',
       );

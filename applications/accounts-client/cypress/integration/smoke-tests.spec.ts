@@ -25,41 +25,65 @@ describe('Smoke tests', () => {
 
     it('should create a VAT registered company', () => {
       cy.fixture('data/company.json').then(res => {
-        const company = res[0];
+        const data = res[0];
 
-        cy.get('input[id="name"]')
+        cy.get('input[id="company.name"]')
           .focus()
-          .type(company.name);
-        cy.get('input[id="companyNumber"]')
+          .type(data.company.name);
+
+        cy.get('input[id="company.companyNumber"]')
           .focus()
-          .type(company.companyNumber);
-        cy.get('input[id="vatRegistration"]')
+          .type(data.company.companyNumber);
+
+        cy.get('input[id="company.vatRegistration"]')
           .focus()
-          .type(company.vatRegistration);
-        cy.get('input[id="bank.accountNumber"]')
+          .type(data.company.vatRegistration);
+
+        cy.get('input[id="company.bank.accountNumber"]')
           .focus()
-          .type(company.bank.accountNumber);
-        cy.get('input[id="bank.sortCode"]')
+          .type(data.company.bank.accountNumber);
+
+        cy.get('input[id="company.bank.sortCode"]')
           .focus()
-          .type(company.bank.sortCode);
-        cy.get('input[id="address.line1"]')
+          .type(data.company.bank.sortCode);
+
+        cy.get('input[id="company.address.line1"]')
           .focus()
-          .type(company.address.line1);
-        cy.get('input[id="address.line2"]')
+          .type(data.company.address.line1);
+
+        cy.get('input[id="company.address.line2"]')
           .focus()
-          .type(company.address.line2);
-        cy.get('input[id="address.line3"]')
+          .type(data.company.address.line2);
+
+        cy.get('input[id="company.address.line3"]')
           .focus()
-          .type(company.address.line3);
-        cy.get('input[id="address.line5"]')
+          .type(data.company.address.line3);
+
+        cy.get('input[id="company.address.line5"]')
           .focus()
-          .type(company.address.line5);
-        cy.get('input[id="contact.email"]')
+          .type(data.company.address.line5);
+
+        cy.get('input[id="company.contact.email"]')
           .focus()
-          .type(company.contact.email);
-        cy.get('input[id="contact.telephone"]')
+          .type(data.company.contact.email);
+
+        cy.get('input[id="company.contact.telephone"]')
           .focus()
-          .type(company.contact.telephone);
+          .type(data.company.contact.telephone);
+
+        cy.get('button:contains("Settings")').click();
+
+        cy.get('input[id="balance.balance"]')
+          .clear()
+          .type(data.balance.balance);
+
+        cy.get('input[id="balance.vat.owed"]')
+          .clear()
+          .type(data.balance.vat.owed);
+
+        cy.get('input[id="balance.vat.paid"]')
+          .clear()
+          .type(data.balance.vat.paid);
 
         cy.get('button[type="submit"]').click();
       });
@@ -67,38 +91,57 @@ describe('Smoke tests', () => {
 
     it('should create a non-VAT registered company', () => {
       cy.fixture('data/company.json').then(res => {
-        const company = res[1];
+        const data = res[1];
 
-        cy.get('input[id="name"]')
+        cy.get('input[id="company.name"]')
           .focus()
-          .type(company.name);
-        cy.get('input[id="companyNumber"]')
+          .type(data.company.name);
+
+        cy.get('input[id="company.companyNumber"]')
           .focus()
-          .type(company.companyNumber);
-        cy.get('input[id="bank.accountNumber"]')
+          .type(data.company.companyNumber);
+
+        cy.get('input[id="company.bank.accountNumber"]')
           .focus()
-          .type(company.bank.accountNumber);
-        cy.get('input[id="bank.sortCode"]')
+          .type(data.company.bank.accountNumber);
+
+        cy.get('input[id="company.bank.sortCode"]')
           .focus()
-          .type(company.bank.sortCode);
-        cy.get('input[id="address.line1"]')
+          .type(data.company.bank.sortCode);
+
+        cy.get('input[id="company.address.line1"]')
           .focus()
-          .type(company.address.line1);
-        cy.get('input[id="address.line3"]')
+          .type(data.company.address.line1);
+
+        cy.get('input[id="company.address.line3"]')
           .focus()
-          .type(company.address.line3);
-        cy.get('input[id="address.line4"]')
+          .type(data.company.address.line3);
+
+        cy.get('input[id="company.address.line4"]')
           .focus()
-          .type(company.address.line4);
-        cy.get('input[id="address.line5"]')
+          .type(data.company.address.line4);
+
+        cy.get('input[id="company.address.line5"]')
           .focus()
-          .type(company.address.line5);
-        cy.get('input[id="contact.email"]')
+          .type(data.company.address.line5);
+
+        cy.get('input[id="company.contact.email"]')
           .focus()
-          .type(company.contact.email);
-        cy.get('input[id="contact.telephone"]')
+          .type(data.company.contact.email);
+
+        cy.get('input[id="company.contact.telephone"]')
           .focus()
-          .type(company.contact.telephone);
+          .type(data.company.contact.telephone);
+
+        cy.get('button:contains("Settings")').click();
+
+        cy.get('input[id="vat.charge"]')
+          .clear()
+          .type(data.vat.charge);
+
+        cy.get('input[id="vat.pay"]')
+          .clear()
+          .type(data.vat.pay);
 
         cy.get('button[type="submit"]').click();
       });
@@ -115,8 +158,8 @@ describe('Smoke tests', () => {
 
     it('should update company details', () => {
       cy.fixture('data/company.json').then(res => {
-        const company = res[0];
-        const updated = res[2];
+        const { company } = res[0];
+        const updated = res[2].company;
 
         cy.get('a:contains("Select company")')
           .eq(1)
@@ -835,11 +878,11 @@ describe('Smoke tests', () => {
       });
 
       it('should show correct balance details', () => {
-        cy.contains('Balance: £1790.40').should('be.visible');
+        cy.contains('Balance: £2790.40').should('be.visible');
 
-        cy.contains('VAT owed: £310.00').should('be.visible');
+        cy.contains('VAT owed: £410.00').should('be.visible');
 
-        cy.contains('VAT paid: £16.27').should('be.visible');
+        cy.contains('VAT paid: £26.27').should('be.visible');
       });
 
       it('should update a transaction', () => {
@@ -903,9 +946,9 @@ describe('Smoke tests', () => {
 
             cy.wait(1000);
 
-            cy.contains('Balance: £2290.40').should('be.visible');
+            cy.contains('Balance: £3290.40').should('be.visible');
 
-            cy.contains('VAT owed: £387.50').should('be.visible');
+            cy.contains('VAT owed: £487.50').should('be.visible');
           });
         });
       });
@@ -926,9 +969,9 @@ describe('Smoke tests', () => {
 
           cy.get('button[type="submit"]').click();
 
-          cy.contains('Balance: -£209.60').should('be.visible');
+          cy.contains('Balance: £790.40').should('be.visible');
 
-          cy.contains('VAT owed: £0.00').should('be.visible');
+          cy.contains('VAT owed: £100.00').should('be.visible');
         });
       });
     });
@@ -1222,7 +1265,7 @@ describe('Smoke tests', () => {
 
     it('should remove VAT registered company', () => {
       cy.fixture('data/company.json').then(res => {
-        const company = res[0];
+        const { company } = res[0];
 
         cy.get('a:contains("Select company")')
           .eq(1)
@@ -1250,7 +1293,7 @@ describe('Smoke tests', () => {
 
     it('should remove non-VAT registered company', () => {
       cy.fixture('data/company.json').then(res => {
-        const company = res[1];
+        const { company } = res[1];
 
         cy.get('a:contains("Select company")')
           .eq(0)

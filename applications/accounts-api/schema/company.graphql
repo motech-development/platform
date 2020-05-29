@@ -23,3 +23,9 @@ input CompanyInput {
   name: String!
   vatRegistration: String
 }
+
+input CreateCompanyInput {
+  balance: BalanceInput!
+  company: CompanyInput!
+  vat: VatSettingsInput!
+}
