@@ -19,11 +19,18 @@ describe('SettingsForm', () => {
     initialValues = {
       categories: [
         {
+          name: 'Salary',
+          protect: true,
+          vatRate: 0,
+        },
+        {
           name: 'Sustenance',
+          protect: false,
           vatRate: 20,
         },
         {
           name: 'Travel',
+          protect: false,
           vatRate: 0,
         },
       ],
@@ -93,7 +100,13 @@ describe('SettingsForm', () => {
         ...initialValues,
         categories: [
           {
+            name: 'Salary',
+            protect: true,
+            vatRate: 0,
+          },
+          {
             name: 'Travel',
+            protect: false,
             vatRate: 0,
           },
         ],
@@ -114,10 +127,10 @@ describe('SettingsForm', () => {
 
         fireEvent.click(add);
 
-        const [, , name] = await findAllByLabelText(
+        const [, , , name] = await findAllByLabelText(
           'settings-form.expense-categories.name.label',
         );
-        const [, , vatRate] = await findAllByLabelText(
+        const [, , , vatRate] = await findAllByLabelText(
           'settings-form.expense-categories.vat-rate.label',
         );
 
@@ -147,6 +160,7 @@ describe('SettingsForm', () => {
           {
             __typename: 'ExpenseCategory',
             name: 'Utilities',
+            protect: false,
             vatRate: 5,
           },
         ],

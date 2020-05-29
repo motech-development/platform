@@ -10,13 +10,14 @@ import {
 import { FieldArray, Form, Formik } from 'formik';
 import React, { FC, Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { array, object, string } from 'yup';
+import { array, boolean, object, string } from 'yup';
 import { useVatSettings } from '../hooks/schema';
 import { VatSettingsFields } from './CommonFields';
 
 export type FormSchema = {
   categories: {
     name: string;
+    protect: boolean;
     vatRate: number;
   }[];
   id: string;
@@ -56,11 +57,13 @@ const SettingsForm: FC<ISettingsFormProps> = ({
         name: string().required(
           t('settings-form.expense-categories.name.required'),
         ),
+        protect: boolean().required(),
         vatRate: string().required(
           t('settings-form.expense-categories.vat-rate.required'),
         ),
       }),
     ),
+    id: string().required(),
     vat,
   });
 
@@ -86,7 +89,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
                     <Row>
                       <Col>
                         <Row>
-                          {values.categories.map((_, index) => (
+                          {values.categories.map(({ protect }, index) => (
                             // eslint-disable-next-line react/no-array-index-key
                             <Fragment key={index}>
                               <Col xs={7} sm={5} md={6}>
@@ -96,10 +99,20 @@ const SettingsForm: FC<ISettingsFormProps> = ({
                                   label={t(
                                     'settings-form.expense-categories.name.label',
                                   )}
+                                  readOnly={protect}
+                                />
+
+                                <input
+                                  type="hidden"
+                                  name={`categories.${index}.protect`}
                                 />
                               </Col>
 
-                              <Col xs={5} sm={4}>
+                              <Col
+                                xs={5}
+                                sm={protect ? 7 : 4}
+                                md={protect ? 6 : 4}
+                              >
                                 <TextBox
                                   suffix="%"
                                   spacing="sm"
@@ -107,21 +120,24 @@ const SettingsForm: FC<ISettingsFormProps> = ({
                                   label={t(
                                     'settings-form.expense-categories.vat-rate.label',
                                   )}
+                                  readOnly={protect}
                                 />
                               </Col>
 
-                              <Col sm={3} md={2}>
-                                <Button
-                                  block
-                                  size="lg"
-                                  colour="danger"
-                                  onClick={() => arrayHelpers.remove(index)}
-                                >
-                                  {t(
-                                    'settings-form.expense-categories.remove-category',
-                                  )}
-                                </Button>
-                              </Col>
+                              {!protect && (
+                                <Col sm={3} md={2}>
+                                  <Button
+                                    block
+                                    size="lg"
+                                    colour="danger"
+                                    onClick={() => arrayHelpers.remove(index)}
+                                  >
+                                    {t(
+                                      'settings-form.expense-categories.remove-category',
+                                    )}
+                                  </Button>
+                                </Col>
+                              )}
                             </Fragment>
                           ))}
                         </Row>
@@ -135,6 +151,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
                             arrayHelpers.push({
                               __typename: 'ExpenseCategory',
                               name: '',
+                              protect: false,
                               vatRate: 20,
                             })
                           }

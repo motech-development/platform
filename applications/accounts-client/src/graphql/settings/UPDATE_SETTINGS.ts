@@ -4,6 +4,7 @@ export interface IUpdateSettingsInput {
   input: {
     categories: {
       name: string;
+      protect: boolean;
       vatRate: number;
     }[];
     id: string;
@@ -18,6 +19,7 @@ export interface IUpdateSettingsOutput {
   updateSettings: {
     categories: {
       name: string;
+      protect: boolean;
       vatRate: number;
     }[];
     id: string;
@@ -33,6 +35,7 @@ const UPDATE_SETTINGS = gql`
     updateSettings(input: $input) {
       categories {
         name
+        protect
         vatRate
       }
       id
