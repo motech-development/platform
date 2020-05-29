@@ -5,7 +5,28 @@
 #set($defaultGroups = ["Admin"])
 #set($currency = "GBP")
 #set($items = {})
-#set($categories = [])
+#set($categories = [
+{
+    "name": "Corporation tax",
+    "protect": true,
+    "vatRate": 0
+  },
+  {
+    "name": "Dividend",
+    "protect": true,
+    "vatRate": 0
+  },
+  {
+    "name": "Salary",
+    "protect": true,
+    "vatRate": 0
+  },
+  {
+    "name": "VAT payment",
+    "protect": true,
+    "vatRate": 0
+  }
+])
 #set($balance = $ctx.args.input.balance)
 #set($balanceData = "$owner:$id:Balance")
 #set($bankSettingsData = "$owner:$id:BankSettings")

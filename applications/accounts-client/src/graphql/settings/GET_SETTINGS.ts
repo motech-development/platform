@@ -18,6 +18,7 @@ export interface IGetSettingsOutput {
   getSettings: {
     categories: {
       name: string;
+      protect: boolean;
       vatRate: number;
     }[];
     id: string;
@@ -43,6 +44,7 @@ const GET_SETTINGS = gql`
     getSettings(id: $id) {
       categories {
         name
+        protect
         vatRate
       }
       id
