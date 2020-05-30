@@ -1,4 +1,9 @@
-import { Modal, Typography } from '@motech-development/breeze-ui';
+import {
+  Loader,
+  Modal,
+  Overlay,
+  Typography,
+} from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import ConfirmDelete from './ConfirmDelete';
 
@@ -20,23 +25,28 @@ const DeleteItem: FC<IDeleteItemProps> = ({
   onDismiss,
   title,
   warning,
-}) => (
-  <Modal isOpen={display} onDismiss={onDismiss}>
-    <Typography rule component="h3" variant="h3" margin="lg">
-      {title}
-    </Typography>
+}) =>
+  loading ? (
+    <Overlay>
+      <Loader />
+    </Overlay>
+  ) : (
+    <Modal isOpen={display} onDismiss={onDismiss}>
+      <Typography rule component="h3" variant="h3" margin="lg">
+        {title}
+      </Typography>
 
-    <Typography component="p" variant="p">
-      {warning}
-    </Typography>
+      <Typography component="p" variant="p">
+        {warning}
+      </Typography>
 
-    <ConfirmDelete
-      loading={loading}
-      name={name}
-      onCancel={onDismiss}
-      onDelete={onDelete}
-    />
-  </Modal>
-);
+      <ConfirmDelete
+        loading={loading}
+        name={name}
+        onCancel={onDismiss}
+        onDelete={onDelete}
+      />
+    </Modal>
+  );
 
 export default memo(DeleteItem);
