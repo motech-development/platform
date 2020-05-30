@@ -175,6 +175,7 @@ describe('RecordTransaction', () => {
                     vatRate: 20,
                   },
                 ],
+                id: 'company-id',
                 vat: {
                   __typename: 'VatSettings',
                   pay: 20,
@@ -664,6 +665,7 @@ describe('RecordTransaction', () => {
                     vatRate: 20,
                   },
                 ],
+                id: 'company-id',
                 vat: {
                   __typename: 'VatSettings',
                   pay: 20,
