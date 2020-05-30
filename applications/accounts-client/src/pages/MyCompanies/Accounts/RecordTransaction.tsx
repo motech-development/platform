@@ -53,6 +53,7 @@ export const RECORD_TRANSACTION = gql`
         name
         vatRate
       }
+      id
       vat {
         pay
       }
