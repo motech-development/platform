@@ -79,7 +79,6 @@
       "!src/{history,index,i18n}.{ts,tsx}",
       "!src/**/*/index.{ts,tsx}"
     ],
-    "globalSetup": "<rootDir>/globalSetup.js",
     "moduleDirectories": [
       "../../node_modules",
       "<rootDir>/node_modules"
