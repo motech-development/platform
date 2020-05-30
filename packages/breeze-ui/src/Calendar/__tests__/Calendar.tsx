@@ -107,13 +107,13 @@ describe('Calendar', () => {
         fireEvent.click(button);
       });
 
-      expect(onDateChange).toHaveBeenCalledWith('2020-04-03T05:00:00+00:00');
+      expect(onDateChange).toHaveBeenCalledWith('2020-04-03T05:00:00Z');
     });
   });
 
   describe('with no date selected', () => {
     beforeAll(() => {
-      advanceTo('2015-06-06T19:45:00+00:00');
+      advanceTo('2015-06-06T19:45:00Z');
     });
 
     beforeEach(() => {
@@ -205,7 +205,7 @@ describe('Calendar', () => {
         fireEvent.click(button);
       });
 
-      expect(onDateChange).toHaveBeenCalledWith('2015-06-03T19:45:00+00:00');
+      expect(onDateChange).toHaveBeenCalledWith('2015-06-03T19:45:00Z');
     });
   });
 });

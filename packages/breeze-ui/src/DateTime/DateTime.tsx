@@ -4,7 +4,7 @@ import React, { FC, memo } from 'react';
 const defaultFormat = 'DD/MM/YYYY';
 
 export const formatDateTime = (value: string, format = defaultFormat) => {
-  const date = moment(value);
+  const date = moment.utc(value);
 
   return {
     ISOString: date.toISOString(),

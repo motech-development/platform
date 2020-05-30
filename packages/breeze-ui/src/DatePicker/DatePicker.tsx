@@ -75,7 +75,9 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
   const { name, value } = field;
   const [date, setDate] = useState(() => {
     if (value === '') {
-      return moment().format();
+      return moment()
+        .utc()
+        .format();
     }
 
     return value;

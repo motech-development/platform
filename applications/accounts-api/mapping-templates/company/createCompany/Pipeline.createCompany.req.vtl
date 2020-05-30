@@ -77,6 +77,7 @@
           "balance": $util.dynamodb.toDynamoDBJson($balance.balance),
           "currency": $util.dynamodb.toDynamoDBJson($currency),
           "items": $util.dynamodb.toDynamoDBJson($items),
+          "openingBalance": $util.dynamodb.toDynamoDBJson($balance.balance),
           "vat": $util.dynamodb.toDynamoDBJson($balance.vat)
         },
         "condition": {

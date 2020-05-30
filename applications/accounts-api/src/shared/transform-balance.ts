@@ -14,6 +14,7 @@ export interface IBalanceItem {
   items: {
     [name: string]: number;
   };
+  openingBalance: number;
   owner: string;
   vat: {
     owed: number;
@@ -45,10 +46,21 @@ const transformBalance = (
     throw new Error('No transactions returned');
   }
 
-  const { balance, currency, id, items, owner, vat } = balanceItem;
+  const {
+    balance,
+    currency,
+    id,
+    items,
+    openingBalance,
+    owner,
+    vat,
+  } = balanceItem;
   const transactions = Object.keys(items)
-    .map(key => ({
-      balance: items[key],
+    .map((key, i) => ({
+      balance:
+        i === 0
+          ? new Decimal(items[key]).add(openingBalance).toNumber()
+          : items[key],
       currency,
       date: key,
     }))

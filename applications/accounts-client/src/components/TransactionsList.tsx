@@ -70,13 +70,15 @@ const TransactionsList: FC<ITransactionsListProps> = ({
         {transactions.map(({ balance, currency, date, items }) => (
           <TableBody key={date}>
             <TableRow colour="primary">
-              <TableCell as="th" colSpan={2}>
+              <TableCell as="th" align="left" colSpan={2}>
                 <DateTime value={date} format="dddd, DD MMMM" />
               </TableCell>
               <TableCell as="th" align="right">
                 <Currency currency={currency} value={balance} />
               </TableCell>
-              <TableCell as="th">{t('transactions-list.actions')}</TableCell>
+              <TableCell as="th" align="left">
+                {t('transactions-list.actions')}
+              </TableCell>
             </TableRow>
 
             {items.map(item => (
