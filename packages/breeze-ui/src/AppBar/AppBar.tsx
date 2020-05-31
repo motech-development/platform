@@ -6,7 +6,6 @@ const AppBarInner = styled.div`
   display: flex;
   min-height: 64px;
   padding: 0 1rem;
-  position: relative;
 `;
 
 interface IAppBarToolbarBase {
@@ -45,23 +44,38 @@ const appBarTheme: IAppBarTheme = {
   },
 };
 
-const AppBarBase = styled.div`
-  flex-grow: 1;
+interface IAppBarBase {
+  $fixed: boolean;
+}
+
+const AppBarBase = styled.div<IAppBarBase>`
+  ${({ $fixed }) => `
+    box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px 0 rgba(0, 0, 0, 0.14),
+      0 1px 14px 0 rgba(0, 0, 0, 0.12);
+    flex-grow: 1;
+    left: 0;
+    position: ${$fixed ? 'fixed' : 'relative'};
+    top: 0;
+    width: 100%;
+    z-index: 10;
+  `}
 `;
 
 export interface IAppBarProps {
   children: ReactNode;
   colour?: keyof typeof appBarTheme;
   element?: 'header' | 'div';
+  fixed?: boolean;
 }
 
 const AppBar: FC<IAppBarProps> = ({
   children,
   colour = 'primary',
   element = 'header',
+  fixed = false,
 }) => (
   <ThemeProvider theme={appBarTheme}>
-    <AppBarBase>
+    <AppBarBase $fixed={fixed}>
       <AppBarToolbar as={element} $colour={colour}>
         <AppBarInner>{children}</AppBarInner>
       </AppBarToolbar>
