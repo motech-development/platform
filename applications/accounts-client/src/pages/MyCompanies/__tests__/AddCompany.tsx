@@ -264,9 +264,11 @@ describe('AddCompany', () => {
       await findByTestId('next-page');
     });
 
-    expect(add).toHaveBeenCalledWith({
-      colour: 'success',
-      message: 'add-company.success',
-    });
+    await wait(() =>
+      expect(add).toHaveBeenCalledWith({
+        colour: 'success',
+        message: 'add-company.success',
+      }),
+    );
   });
 });

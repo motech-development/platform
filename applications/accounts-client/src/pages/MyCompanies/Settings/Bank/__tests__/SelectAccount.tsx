@@ -1,5 +1,15 @@
-import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import {
+  MockedProvider,
+  MockedResponse,
+  wait as apolloWait,
+} from '@apollo/react-testing';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  wait,
+} from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import GET_BANK_ACCOUNTS from '../../../../../graphql/bank/GET_BANK_ACCOUNTS';
@@ -109,7 +119,7 @@ describe('SelectAccount', () => {
 
         fireEvent.click(button);
 
-        await wait(0);
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -129,15 +139,17 @@ describe('SelectAccount', () => {
 
         fireEvent.click(button);
 
-        await wait(0);
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'select-account.success',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'select-account.success',
+        }),
+      );
     });
   });
 
@@ -172,7 +184,7 @@ describe('SelectAccount', () => {
     it('should display an error card', async () => {
       const { findByText } = component;
 
-      await wait(0);
+      await apolloWait(0);
 
       await expect(
         findByText('select-account.error'),
@@ -182,7 +194,7 @@ describe('SelectAccount', () => {
     it('should have the correct back link', async () => {
       const { findByText } = component;
 
-      await wait(0);
+      await apolloWait(0);
 
       await expect(findByText('go-back')).resolves.toHaveAttribute(
         'href',

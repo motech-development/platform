@@ -238,10 +238,12 @@ describe('UpdateDetails', () => {
         await findByTestId('next-page');
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'update-details.success',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'update-details.success',
+        }),
+      );
     });
 
     it('should display delete confirmation modal', async () => {
@@ -337,10 +339,12 @@ describe('UpdateDetails', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'delete-company.success',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'delete-company.success',
+        }),
+      );
     });
   });
 
@@ -429,10 +433,12 @@ describe('UpdateDetails', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'delete-company.error',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'delete-company.error',
+        }),
+      );
     });
   });
 });

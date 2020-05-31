@@ -286,13 +286,13 @@ describe('Accounts', () => {
     it('should display a success toast when deleting a transaction', async () => {
       const { findAllByRole, findByLabelText, findByText } = component;
 
-      await findByText('accounts.title');
-
-      const [, button] = await findAllByRole('button');
-
-      fireEvent.click(button);
-
       await act(async () => {
+        await findByText('accounts.title');
+
+        const [, button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
         const input = await findByLabelText('confirm-delete');
 
         fireEvent.change(input, {
@@ -313,10 +313,12 @@ describe('Accounts', () => {
         await apolloWait(0);
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'delete-transaction.success',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'delete-transaction.success',
+        }),
+      );
     });
   });
 
@@ -471,10 +473,12 @@ describe('Accounts', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'delete-transaction.error',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'delete-transaction.error',
+        }),
+      );
     });
   });
 });
