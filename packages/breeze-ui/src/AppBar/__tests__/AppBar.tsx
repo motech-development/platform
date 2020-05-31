@@ -13,6 +13,7 @@ describe('AppBar', () => {
 
     expect(header).toHaveStyle(`
       background-color: #161616;
+      border-bottom: 1px solid #222;
       color: #fff;
     `);
   });
@@ -27,6 +28,7 @@ describe('AppBar', () => {
 
     expect(header).toHaveStyle(`
       background-color: #161616;
+      border-bottom: 1px solid #222;
       color: #fff;
     `);
   });
@@ -41,6 +43,7 @@ describe('AppBar', () => {
 
     expect(header).toHaveStyle(`
       background-color: #f6f9fc;
+      border-bottom: 1px solid #ccc;
       color: #333;
     `);
   });
@@ -75,5 +78,27 @@ describe('AppBar', () => {
     const div = container.querySelector('div[class]');
 
     expect(div).toBeInTheDocument();
+  });
+
+  it('should be relative positioned by default', () => {
+    const { container } = render(
+      <AppBar>
+        <div data-testid="content">Hello</div>
+      </AppBar>,
+    );
+    const div = container.querySelector('div[class]');
+
+    expect(div).toHaveStyleRule('position', 'relative');
+  });
+
+  it('should be fixed position', () => {
+    const { container } = render(
+      <AppBar fixed>
+        <div data-testid="content">Hello</div>
+      </AppBar>,
+    );
+    const div = container.querySelector('div[class]');
+
+    expect(div).toHaveStyleRule('position', 'fixed');
   });
 });

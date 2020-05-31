@@ -1,4 +1,4 @@
-import { select, withKnobs } from '@storybook/addon-knobs';
+import { boolean, select, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
 import styled from 'styled-components';
@@ -31,6 +31,7 @@ stories.add('Basic app bar', () => (
     <AppBar
       colour={select('Colour', colours, 'primary')}
       element={select('Element', elements, 'header') as 'header' | 'div'}
+      fixed={boolean('Fixed', false)}
     >
       <Title component="h1" variant="h5">
         Motech Development

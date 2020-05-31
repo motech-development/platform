@@ -34,7 +34,7 @@ const ModalContent = styled.div`
 const ModalDialog = styled.div`
   box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px 0 rgba(0, 0, 0, 0.14),
     0 1px 14px 0 rgba(0, 0, 0, 0.12);
-  margin: 1.75rem auto;
+  margin: 5rem auto;
   max-width: 500px;
   pointer-events: none;
   position: relative;

@@ -21,6 +21,7 @@ const AppName = styled(Typography)`
 `;
 
 const Container = styled.main`
+  margin: 64px 0 0;
   padding: 1rem;
 `;
 
@@ -53,7 +54,7 @@ const withLayout = (Component: ComponentType) =>
 
     return (
       <>
-        <AppBar>
+        <AppBar fixed>
           <AppName component="h1" variant="h4">
             {t('app-name')}
           </AppName>
