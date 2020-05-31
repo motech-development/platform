@@ -132,12 +132,12 @@ const RecordTransaction: FC = () => {
               />
             }
             backTo={backTo(companyId)}
-            categories={data.getSettings.categories
-              .map(({ name, vatRate }) => ({
+            categories={data.getSettings.categories.map(
+              ({ name, vatRate }) => ({
                 name,
                 value: vatRate.toFixed(2),
-              }))
-              .sort((a, b) => a.name.localeCompare(b.name))}
+              }),
+            )}
             clients={data.getClients.items.map(({ name }) => ({
               name,
               value: name,

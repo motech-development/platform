@@ -136,7 +136,8 @@ const TransactionForm: FC<ITransactionForm> = ({
     .map((name, i) => ({
       name,
       value: i.toString(),
-    }));
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
   const transactionTypeOptions = [
     {
       name: t(

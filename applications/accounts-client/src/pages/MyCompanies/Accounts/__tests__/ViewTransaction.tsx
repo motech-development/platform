@@ -116,6 +116,10 @@ describe('ViewTransaction', () => {
                       name: 'Equipment',
                       vatRate: 20,
                     },
+                    {
+                      name: 'Accommodation',
+                      vatRate: 20,
+                    },
                   ],
                   id: 'company-id',
                   vat: {
@@ -387,6 +391,10 @@ describe('ViewTransaction', () => {
                   categories: [
                     {
                       name: 'Equipment',
+                      vatRate: 20,
+                    },
+                    {
+                      name: 'Accommodation',
                       vatRate: 20,
                     },
                   ],
@@ -682,6 +690,10 @@ describe('ViewTransaction', () => {
                 categories: [
                   {
                     name: 'Equipment',
+                    vatRate: 20,
+                  },
+                  {
+                    name: 'Accommodation',
                     vatRate: 20,
                   },
                 ],
