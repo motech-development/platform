@@ -274,11 +274,15 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(button);
 
+          await wait();
+
           await findByRole('dialog');
 
           const [, , , , , cancelButton] = await findAllByRole('button');
 
           fireEvent.click(cancelButton);
+
+          await wait();
         });
 
         expect(queryByRole('dialog')).not.toBeInTheDocument();
@@ -351,9 +355,9 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(deleteButton);
 
-          await apolloWait(0);
-
           await wait();
+
+          await apolloWait(0);
         });
 
         expect(add).toHaveBeenCalledWith({

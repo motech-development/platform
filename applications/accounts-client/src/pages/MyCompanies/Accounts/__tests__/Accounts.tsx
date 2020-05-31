@@ -308,9 +308,9 @@ describe('Accounts', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
-
         await wait();
+
+        await apolloWait(0);
       });
 
       expect(add).toHaveBeenCalledWith({
