@@ -12,7 +12,7 @@
     "supplier": "Airport hotel",
     "description": "Business trip",
     "status": "confirmed",
-    "category": "4",
+    "category": "0",
     "amount": "97.6",
     "vat": "16.27"
   },
@@ -21,7 +21,7 @@
     "supplier": "Low Cost Air",
     "description": "Return flight to London",
     "status": "confirmed",
-    "category": "5",
+    "category": "4",
     "amount": "112",
     "vat": "0"
   },
@@ -38,7 +38,7 @@
     "supplier": "Airport hotel",
     "description": "Business trip",
     "status": "pending",
-    "category": "4",
+    "category": "0",
     "amount": "97.6",
     "vat": "16.27"
   },
@@ -47,7 +47,7 @@
     "supplier": "Low Cost Air",
     "description": "Return flight to London",
     "status": "pending",
-    "category": "5",
+    "category": "4",
     "amount": "112",
     "vat": "0"
   },
