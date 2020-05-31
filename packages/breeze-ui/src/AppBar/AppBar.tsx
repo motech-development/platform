@@ -15,6 +15,7 @@ interface IAppBarToolbarBase {
 const AppBarToolbar = styled.header<IAppBarToolbarBase>`
   ${({ $colour, theme }) => `
     background-color: ${theme[$colour].background};
+    border-bottom: 1px solid ${theme[$colour].border};
     box-sizing: border-box;
     color: ${theme[$colour].colour};
     display: flex;
@@ -29,6 +30,7 @@ const AppBarToolbar = styled.header<IAppBarToolbarBase>`
 interface IAppBarTheme {
   [name: string]: {
     background: string;
+    border: string;
     colour: string;
   };
 }
@@ -36,10 +38,12 @@ interface IAppBarTheme {
 const appBarTheme: IAppBarTheme = {
   primary: {
     background: '#161616',
+    border: '#222',
     colour: '#fff',
   },
   secondary: {
     background: '#f6f9fc',
+    border: '#ccc',
     colour: '#333',
   },
 };
