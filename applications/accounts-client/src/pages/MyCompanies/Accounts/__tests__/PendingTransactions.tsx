@@ -197,10 +197,12 @@ describe('PendingTransactions', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'delete-transaction.success',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'delete-transaction.success',
+        }),
+      );
     });
   });
 
@@ -301,10 +303,12 @@ describe('PendingTransactions', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'delete-transaction.error',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'delete-transaction.error',
+        }),
+      );
     });
   });
 

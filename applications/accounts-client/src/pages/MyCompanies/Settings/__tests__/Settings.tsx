@@ -1,5 +1,15 @@
-import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import {
+  MockedProvider,
+  MockedResponse,
+  wait as apolloWait,
+} from '@apollo/react-testing';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  wait,
+} from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import DELETE_BANK_CONNECTION from '../../../../graphql/bank/DELETE_BANK_CONNECTION';
@@ -122,7 +132,7 @@ describe('Settings', () => {
 
         fireEvent.click(button);
 
-        await wait(0);
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -142,15 +152,17 @@ describe('Settings', () => {
 
         fireEvent.click(button);
 
-        await wait(0);
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'settings.success',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'settings.success',
+        }),
+      );
     });
 
     it('should display success toast when bank account is unlinked', async () => {
@@ -163,13 +175,15 @@ describe('Settings', () => {
 
         fireEvent.click(button);
 
-        await wait(0);
+        await apolloWait(0);
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'settings.bank-disconnected',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'settings.bank-disconnected',
+        }),
+      );
     });
   });
 
@@ -265,13 +279,15 @@ describe('Settings', () => {
 
         fireEvent.click(button);
 
-        await wait(0);
+        await apolloWait(0);
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'settings.bank-disconnected-error',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'settings.bank-disconnected-error',
+        }),
+      );
     });
   });
 });

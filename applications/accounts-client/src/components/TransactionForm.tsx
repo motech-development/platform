@@ -301,7 +301,9 @@ const TransactionForm: FC<ITransactionForm> = ({
                           )}
                           name="category"
                           onChange={onCategoryChange}
-                          options={dropdown}
+                          options={dropdown.sort((a, b) =>
+                            a.name.localeCompare(b.name),
+                          )}
                           placeholder={t(
                             'transaction-form.transaction-amount.category.placeholder',
                           )}

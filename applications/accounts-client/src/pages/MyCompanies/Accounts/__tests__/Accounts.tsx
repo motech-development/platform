@@ -308,15 +308,17 @@ describe('Accounts', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
-
         await wait();
+
+        await apolloWait(0);
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'delete-transaction.success',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'delete-transaction.success',
+        }),
+      );
     });
   });
 
@@ -471,10 +473,12 @@ describe('Accounts', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'delete-transaction.error',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'delete-transaction.error',
+        }),
+      );
     });
   });
 });

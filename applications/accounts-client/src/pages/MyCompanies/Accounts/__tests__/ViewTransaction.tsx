@@ -116,6 +116,10 @@ describe('ViewTransaction', () => {
                       name: 'Equipment',
                       vatRate: 20,
                     },
+                    {
+                      name: 'Accommodation',
+                      vatRate: 20,
+                    },
                   ],
                   id: 'company-id',
                   vat: {
@@ -244,10 +248,12 @@ describe('ViewTransaction', () => {
           await findByTestId('next-page');
         });
 
-        expect(add).toHaveBeenCalledWith({
-          colour: 'success',
-          message: 'view-transaction.success',
-        });
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'success',
+            message: 'view-transaction.success',
+          }),
+        );
       });
 
       it('should display delete confirmation modal', async () => {
@@ -356,10 +362,12 @@ describe('ViewTransaction', () => {
           await wait();
         });
 
-        expect(add).toHaveBeenCalledWith({
-          colour: 'success',
-          message: 'delete-transaction.success',
-        });
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'success',
+            message: 'delete-transaction.success',
+          }),
+        );
       });
     });
 
@@ -383,6 +391,10 @@ describe('ViewTransaction', () => {
                   categories: [
                     {
                       name: 'Equipment',
+                      vatRate: 20,
+                    },
+                    {
+                      name: 'Accommodation',
                       vatRate: 20,
                     },
                   ],
@@ -524,10 +536,12 @@ describe('ViewTransaction', () => {
           await wait();
         });
 
-        expect(add).toHaveBeenCalledWith({
-          colour: 'success',
-          message: 'uploads.delete.success',
-        });
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'success',
+            message: 'uploads.delete.success',
+          }),
+        );
       });
 
       it('should download the attachment', async () => {
@@ -563,10 +577,12 @@ describe('ViewTransaction', () => {
           await wait();
         });
 
-        expect(add).toHaveBeenCalledWith({
-          colour: 'success',
-          message: 'uploads.download.success',
-        });
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'success',
+            message: 'uploads.download.success',
+          }),
+        );
       });
 
       it('should display an error toast if file fails to download', async () => {
@@ -588,10 +604,12 @@ describe('ViewTransaction', () => {
           await wait();
         });
 
-        expect(add).toHaveBeenCalledWith({
-          colour: 'danger',
-          message: 'uploads.download.error',
-        });
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'uploads.download.error',
+          }),
+        );
       });
     });
   });
@@ -672,6 +690,10 @@ describe('ViewTransaction', () => {
                 categories: [
                   {
                     name: 'Equipment',
+                    vatRate: 20,
+                  },
+                  {
+                    name: 'Accommodation',
                     vatRate: 20,
                   },
                 ],
@@ -814,10 +836,12 @@ describe('ViewTransaction', () => {
         await findByTestId('next-page');
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'view-transaction.success',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'view-transaction.success',
+        }),
+      );
     });
 
     it('should display an error toast when deleting a transaction', async () => {
@@ -850,10 +874,12 @@ describe('ViewTransaction', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'delete-transaction.error',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'delete-transaction.error',
+        }),
+      );
     });
 
     it('should display an error toast if file fails to download', async () => {
@@ -871,10 +897,12 @@ describe('ViewTransaction', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'uploads.download.error',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'uploads.download.error',
+        }),
+      );
     });
 
     it('should display an error toast if file fails to delete', async () => {
@@ -892,10 +920,12 @@ describe('ViewTransaction', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'uploads.delete.error',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'uploads.delete.error',
+        }),
+      );
     });
   });
 });

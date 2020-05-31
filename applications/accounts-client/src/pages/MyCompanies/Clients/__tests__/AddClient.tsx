@@ -264,9 +264,11 @@ describe('AddClient', () => {
       await findByTestId('next-page');
     });
 
-    expect(add).toHaveBeenCalledWith({
-      colour: 'success',
-      message: 'add-client.success',
-    });
+    await wait(() =>
+      expect(add).toHaveBeenCalledWith({
+        colour: 'success',
+        message: 'add-client.success',
+      }),
+    );
   });
 });

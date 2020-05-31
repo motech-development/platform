@@ -416,10 +416,12 @@ describe('RecordTransaction', () => {
         await findByTestId('next-page');
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'record-transaction.success',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'record-transaction.success',
+        }),
+      );
     });
 
     it('should display an success toast if upload is successful', async () => {
@@ -491,10 +493,12 @@ describe('RecordTransaction', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'uploads.add.success',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'uploads.add.success',
+        }),
+      );
     });
 
     it('should display an error toast if upload is unsuccessful', async () => {
@@ -570,10 +574,12 @@ describe('RecordTransaction', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'uploads.add.error',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'uploads.add.error',
+        }),
+      );
     });
   });
 
@@ -863,10 +869,12 @@ describe('RecordTransaction', () => {
         await wait();
       });
 
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'uploads.add.error',
-      });
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'uploads.add.error',
+        }),
+      );
     });
   });
 });
