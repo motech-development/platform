@@ -45,9 +45,9 @@ const Apollo: FC<IApolloProps> = ({ children }) => {
 
   const auth = {
     jwtToken: async () => {
-      const token = (await getTokenSilently()) as string;
+      const token = await getTokenSilently();
 
-      return token;
+      return token as string;
     },
     type: 'OPENID_CONNECT' as const,
   };
