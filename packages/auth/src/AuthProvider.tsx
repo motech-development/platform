@@ -75,17 +75,23 @@ const AuthProvider: FC<IAuthProviderProps> = ({
         const client = await createAuth0Client(config);
 
         setAuth0Client(client);
+      }
+    })();
+  }, []);
 
+  useEffect(() => {
+    (async () => {
+      if (auth0Client) {
         if (search.includes('code=')) {
-          const { appState } = await client.handleRedirectCallback();
+          const { appState } = await auth0Client.handleRedirectCallback();
 
           onRedirectCallback(appState);
         }
 
-        const authenticated = await client.isAuthenticated();
+        const authenticated = await auth0Client.isAuthenticated();
 
         if (authenticated) {
-          const retrievedUser = await client.getUser();
+          const retrievedUser = await auth0Client.getUser();
 
           setIsAuthenticated(authenticated);
           setUser(retrievedUser);
@@ -94,7 +100,7 @@ const AuthProvider: FC<IAuthProviderProps> = ({
         setIsLoading(false);
       }
     })();
-  }, [onRedirectCallback, pathname, search]);
+  }, [auth0Client, onRedirectCallback, pathname, search]);
 
   const getIdTokenClaims = (options?: getIdTokenClaimsOptions) =>
     auth0Client!.getIdTokenClaims(options);
