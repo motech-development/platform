@@ -19,7 +19,7 @@ import Typography from '../Typography/Typography';
 
 const Toolbar = styled.div`
   align-items: stretch;
-  background-color: #2e9dc8;
+  background-color: #007fa8;
   color: #fff;
   display: flex;
   flex-direction: row;

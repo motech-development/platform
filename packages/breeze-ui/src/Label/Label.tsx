@@ -16,7 +16,7 @@ const Label = styled('label').withConfig({
       }
 
       if (active) {
-        return '#2e9dc8';
+        return '#007fa8';
       }
 
       return '#aaa';

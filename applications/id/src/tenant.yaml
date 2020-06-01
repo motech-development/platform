@@ -162,7 +162,7 @@ tenant:
   universal_login:
     colors:
       page_background: '#161616'
-      primary: '#2e9dc8'
+      primary: '#007fa8'
 emailProvider: {}
 emailTemplates: []
 clientGrants:
@@ -186,6 +186,6 @@ roles: []
 branding:
   colors:
     page_background: '#161616'
-    primary: '#2e9dc8'
+    primary: '#007fa8'
   logo_url: null
 prompts: {}

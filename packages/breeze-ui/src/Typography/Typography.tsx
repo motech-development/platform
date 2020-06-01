@@ -82,7 +82,7 @@ interface ILineProps {
 const Line = styled.hr<ILineProps>`
   ${({ $margin }) => `
     border: 0;
-    border-top: 2.5px solid #2e9dc8;
+    border-top: 2.5px solid #007fa8;
     margin: ${margins[$margin] ? `${margins[$margin]}rem 0` : '0'};
     padding: 0;
 

@@ -3,7 +3,7 @@ import { Link as RouterLink, LinkProps } from 'react-router-dom';
 import styled from 'styled-components';
 
 const BaseLink = styled(RouterLink)<LinkProps>`
-  color: #2e9dc8;
+  color: #007fa8;
   font-weight: 600;
 
   :hover {

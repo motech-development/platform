@@ -8,7 +8,7 @@ interface ICircle {
 const Circle = styled.circle<ICircle>`
   ${({ $colour }) => `
     animation: dash 1.5s ease-in-out infinite;
-    stroke: ${$colour === 'default' ? '#2e9dc8' : '#fff'};;
+    stroke: ${$colour === 'default' ? '#007fa8' : '#fff'};
     stroke-linecap: round;
 
     @keyframes dash {

@@ -8,7 +8,7 @@ const PageTitleTypography = styled(Typography)`
 `;
 
 const TitleInner = styled.span`
-  background-color: #2e9dc8;
+  background-color: #007fa8;
   box-decoration-break: clone;
   color: #fff;
   display: inline;

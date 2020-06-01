@@ -257,7 +257,7 @@ describe('TextBox', () => {
         });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
-          color: #2e9dc8;
+          color: #007fa8;
           transform: translate(0,4px) scale(.75);
         `);
       });
@@ -577,7 +577,7 @@ describe('TextBox', () => {
         });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
-          color: #2e9dc8;
+          color: #007fa8;
           transform: translate(0,4px) scale(.75);
         `);
       });

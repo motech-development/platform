@@ -55,7 +55,7 @@ describe('Label', () => {
         </Label>,
       );
 
-      expect(container.firstChild).toHaveStyle('color: #2e9dc8;');
+      expect(container.firstChild).toHaveStyle('color: #007fa8;');
     });
 
     it('should have the correct colour when an error is set', () => {

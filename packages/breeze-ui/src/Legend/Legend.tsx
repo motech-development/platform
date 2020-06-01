@@ -9,7 +9,7 @@ const Legend = styled('legend').withConfig({
   shouldForwardProp: prop => !['error'].includes(prop),
 })<ILegendProps>`
   ${({ error }) => `
-    color: ${error ? 'rgb(199,56,79)' : '#2e9dc8'};
+    color: ${error ? 'rgb(199,56,79)' : '#007fa8'};
     font-size: 16px;
     margin-bottom: 10px;
   `}

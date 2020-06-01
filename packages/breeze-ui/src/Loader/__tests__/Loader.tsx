@@ -7,14 +7,14 @@ describe('Loader', () => {
     const { container } = render(<Loader />);
     const loader = container.querySelector('circle');
 
-    expect(loader).toHaveStyle('stroke: #2e9dc8;');
+    expect(loader).toHaveStyle('stroke: #007fa8;');
   });
 
   it('should have a primary spinner', () => {
     const { container } = render(<Loader colour="default" />);
     const loader = container.querySelector('circle');
 
-    expect(loader).toHaveStyle('stroke: #2e9dc8;');
+    expect(loader).toHaveStyle('stroke: #007fa8;');
   });
 
   it('should have a secondary spinner', () => {
