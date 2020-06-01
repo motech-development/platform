@@ -174,6 +174,57 @@ describe('insert-transactions', () => {
           },
         },
       },
+      {
+        awsRegion: 'eu-west-1',
+        dynamodb: {
+          NewImage: {
+            __typename: {
+              S: 'Transaction',
+            },
+            amount: {
+              N: '100.25',
+            },
+            category: {
+              S: 'VAT payment',
+            },
+            companyId: {
+              S: 'company-id',
+            },
+            date: {
+              S: '2019-12-15T00:00:00.000Z',
+            },
+            status: {
+              S: 'confirmed',
+            },
+            vat: {
+              N: '0',
+            },
+          },
+          OldImage: {
+            __typename: {
+              S: 'Transaction',
+            },
+            amount: {
+              N: '200.5',
+            },
+            category: {
+              S: 'VAT payment',
+            },
+            companyId: {
+              S: 'company-id',
+            },
+            date: {
+              S: '2019-12-15T00:00:00.000Z',
+            },
+            status: {
+              S: 'confirmed',
+            },
+            vat: {
+              N: '0',
+            },
+          },
+        },
+      },
     ];
   });
 
@@ -229,11 +280,34 @@ describe('insert-transactions', () => {
       UpdateExpression:
         'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
     });
+
+    expect(documentClient.update).toHaveBeenCalledWith({
+      ExpressionAttributeNames: {
+        '#balance': 'balance',
+        '#itemProperty': '2019-12-15T00:00:00.000Z',
+        '#items': 'items',
+        '#updatedAt': 'updatedAt',
+        '#vat': 'vat',
+        '#vatProperty': 'owed',
+      },
+      ExpressionAttributeValues: {
+        ':balance': 100.25,
+        ':updatedAt': '2020-06-06T19:45:00.000Z',
+        ':vat': 100.25,
+      },
+      Key: {
+        __typename: 'Balance',
+        id: 'company-id',
+      },
+      TableName: 'test',
+      UpdateExpression:
+        'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+    });
   });
 
   it('should call update the correct number of times', () => {
     insertTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(2);
+    expect(documentClient.update).toHaveBeenCalledTimes(3);
   });
 });

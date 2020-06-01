@@ -20,8 +20,31 @@ export interface ITransaction {
   vat: number;
 }
 
+const vatUtility = (record: ITransaction) => {
+  const value = record.category === 'VAT payment' ? record.amount : record.vat;
+  const name = record.category === 'VAT payment' ? 'amount' : 'vat';
+
+  let property: string;
+
+  switch (record.category) {
+    case 'VAT payment':
+    case 'Sales':
+      property = 'owed';
+      break;
+    default:
+      property = 'paid';
+  }
+
+  return {
+    name,
+    property,
+    value,
+  };
+};
+
 const commonUpdate = (tableName: string, record: ITransaction) => {
   const now = new Date();
+  const { property, value } = vatUtility(record);
 
   return {
     ExpressionAttributeNames: {
@@ -30,12 +53,12 @@ const commonUpdate = (tableName: string, record: ITransaction) => {
       '#items': 'items',
       '#updatedAt': 'updatedAt',
       '#vat': 'vat',
-      '#vatProperty': record.category === 'Sales' ? 'owed' : 'paid',
+      '#vatProperty': property,
     },
     ExpressionAttributeValues: {
       ':balance': record.amount,
       ':updatedAt': now.toISOString(),
-      ':vat': record.vat,
+      ':vat': value,
     },
     Key: {
       __typename: 'Balance',
@@ -92,6 +115,7 @@ export const update = (
   }
 
   const now = new Date();
+  const { name, property } = vatUtility(newRecord);
   const isSameDate =
     aggregatedDay(newRecord.date) === aggregatedDay(oldRecord.date);
   const UpdateExpression = isSameDate
@@ -113,7 +137,7 @@ export const update = (
         '#items': 'items',
         '#updatedAt': 'updatedAt',
         '#vat': 'vat',
-        '#vatProperty': newRecord.category === 'Sales' ? 'owed' : 'paid',
+        '#vatProperty': property,
       },
       ExpressionAttributeValues: {
         ':balance': new Decimal(newRecord.amount)
@@ -126,7 +150,7 @@ export const update = (
               ':itemPropertyOld': oldRecord.amount,
             }),
         ':updatedAt': now.toISOString(),
-        ':vat': new Decimal(newRecord.vat).minus(oldRecord.vat).toNumber(),
+        ':vat': new Decimal(newRecord[name]).minus(oldRecord[name]).toNumber(),
       },
       Key: {
         __typename: 'Balance',

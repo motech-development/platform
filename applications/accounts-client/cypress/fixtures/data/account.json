@@ -58,5 +58,14 @@
     "status": "confirmed",
     "amount": "2500",
     "vat": "387.50"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "HMRC",
+    "description": "VAT quarterly payment",
+    "status": "confirmed",
+    "category": "3",
+    "amount": "100",
+    "vat": "0"
   }
 ]

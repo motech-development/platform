@@ -974,6 +974,48 @@ describe('Smoke tests', () => {
           cy.contains('VAT owed: £100.00').should('be.visible');
         });
       });
+
+      it('should make a VAT payment', () => {
+        cy.fixture('data/account.json').then(res => {
+          const transaction = res[7];
+
+          cy.get('a:contains("Record a new transaction")').click();
+
+          cy.wait(1000);
+
+          cy.get('input[type="radio"]').check(transaction.type);
+
+          cy.get('input[id="name"]')
+            .focus()
+            .type(transaction.supplier);
+
+          cy.get('input[id="description"]')
+            .focus()
+            .type(transaction.description);
+
+          cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('select[id="category"]')
+            .focus()
+            .select(transaction.category);
+
+          cy.get('input[id="amount"]')
+            .focus()
+            .type(transaction.amount);
+
+          cy.format('currency', transaction.vat).then(value => {
+            cy.get('input[id="vat"]').should('have.value', value);
+          });
+
+          cy.get('button[type="submit"]').click();
+        });
+      });
+
+      it('should show correct balance details after VAT is paid', () => {
+        cy.contains('Balance: £690.40').should('be.visible');
+
+        cy.contains('VAT owed: £0').should('be.visible');
+      });
     });
 
     describe('Non-VAT registered company', () => {
