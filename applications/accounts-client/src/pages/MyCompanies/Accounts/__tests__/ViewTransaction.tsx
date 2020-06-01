@@ -163,7 +163,7 @@ describe('ViewTransaction', () => {
         await act(async () => {
           await findByText('view-transaction.title');
 
-          const [, , , button] = await findAllByRole('button');
+          const [, , button] = await findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -185,7 +185,7 @@ describe('ViewTransaction', () => {
         await act(async () => {
           await findByText('view-transaction.title');
 
-          const [, , , button] = await findAllByRole('button');
+          const [, , button] = await findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -224,13 +224,13 @@ describe('ViewTransaction', () => {
         await act(async () => {
           await findByText('view-transaction.title');
 
-          const [, , , , button] = await findAllByRole('button');
+          const [, , , button] = await findAllByRole('button');
 
           fireEvent.click(button);
 
           await findByRole('dialog');
 
-          const [, , , , , cancelButton] = await findAllByRole('button');
+          const [, , , , cancelButton] = await findAllByRole('button');
 
           fireEvent.click(cancelButton);
         });
@@ -249,7 +249,7 @@ describe('ViewTransaction', () => {
         await act(async () => {
           await findByText('view-transaction.title');
 
-          const [, , , , button] = await findAllByRole('button');
+          const [, , , button] = await findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -264,7 +264,7 @@ describe('ViewTransaction', () => {
 
           await wait();
 
-          const [, , , , , , deleteButton] = await findAllByRole('button');
+          const [, , , , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
@@ -286,7 +286,7 @@ describe('ViewTransaction', () => {
         await act(async () => {
           await findByText('view-transaction.title');
 
-          const [, , , , button] = await findAllByRole('button');
+          const [, , , button] = await findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -301,7 +301,7 @@ describe('ViewTransaction', () => {
 
           await wait();
 
-          const [, , , , , , deleteButton] = await findAllByRole('button');
+          const [, , , , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
@@ -700,7 +700,7 @@ describe('ViewTransaction', () => {
       await act(async () => {
         await findByText('view-transaction.title');
 
-        const [, , , , button] = await findAllByRole('button');
+        const [, , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -722,7 +722,7 @@ describe('ViewTransaction', () => {
       await act(async () => {
         await findByText('view-transaction.title');
 
-        const [, , , , button] = await findAllByRole('button');
+        const [, , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -747,7 +747,7 @@ describe('ViewTransaction', () => {
       await act(async () => {
         await findByText('view-transaction.title');
 
-        const [, , , , , button] = await findAllByRole('button');
+        const [, , , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -762,7 +762,7 @@ describe('ViewTransaction', () => {
 
         await wait();
 
-        const [, , , , , , , deleteButton] = await findAllByRole('button');
+        const [, , , , , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 

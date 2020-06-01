@@ -179,11 +179,11 @@ describe('AddCompany', () => {
 
       await wait();
 
-      const [, next] = await findAllByRole('button');
+      const [next] = await findAllByRole('button');
 
       fireEvent.click(next);
 
-      const [, , submit] = await findAllByRole('button');
+      const [, submit] = await findAllByRole('button');
 
       fireEvent.click(submit);
 
@@ -251,11 +251,11 @@ describe('AddCompany', () => {
 
       await wait();
 
-      const [, next] = await findAllByRole('button');
+      const [next] = await findAllByRole('button');
 
       fireEvent.click(next);
 
-      const [, , submit] = await findAllByRole('button');
+      const [, submit] = await findAllByRole('button');
 
       fireEvent.click(submit);
 

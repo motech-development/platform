@@ -209,7 +209,7 @@ describe('UpdateDetails', () => {
       await act(async () => {
         await findByText('New company');
 
-        const [, button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -229,7 +229,7 @@ describe('UpdateDetails', () => {
       await act(async () => {
         await findByText('New company');
 
-        const [, button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -261,13 +261,13 @@ describe('UpdateDetails', () => {
       await act(async () => {
         await findByText('New company');
 
-        const [, , button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
         await findByRole('dialog');
 
-        const [, , , cancelButton] = await findAllByRole('button');
+        const [, , cancelButton] = await findAllByRole('button');
 
         fireEvent.click(cancelButton);
       });
@@ -286,7 +286,7 @@ describe('UpdateDetails', () => {
       await act(async () => {
         await findByText('New company');
 
-        const [, , button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -298,7 +298,7 @@ describe('UpdateDetails', () => {
 
         await wait();
 
-        const [, , , , deleteButton] = await findAllByRole('button');
+        const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
@@ -318,7 +318,7 @@ describe('UpdateDetails', () => {
       await act(async () => {
         await findByText('New company');
 
-        const [, , button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -330,7 +330,7 @@ describe('UpdateDetails', () => {
 
         await wait();
 
-        const [, , , , deleteButton] = await findAllByRole('button');
+        const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
@@ -412,7 +412,7 @@ describe('UpdateDetails', () => {
       await act(async () => {
         await findByText('New company');
 
-        const [, , button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -424,7 +424,7 @@ describe('UpdateDetails', () => {
 
         await wait();
 
-        const [, , , , deleteButton] = await findAllByRole('button');
+        const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 

@@ -128,7 +128,7 @@ describe('Settings', () => {
       await act(async () => {
         await findByText('Company name');
 
-        const [, , , button] = await findAllByRole('button');
+        const [, , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -148,7 +148,7 @@ describe('Settings', () => {
       await act(async () => {
         await findByText('Company name');
 
-        const [, , , button] = await findAllByRole('button');
+        const [, , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -171,7 +171,7 @@ describe('Settings', () => {
       await act(async () => {
         await findByText('Company name');
 
-        const [, , button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -275,7 +275,7 @@ describe('Settings', () => {
       await act(async () => {
         await findByText('Company name');
 
-        const [, , button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
 

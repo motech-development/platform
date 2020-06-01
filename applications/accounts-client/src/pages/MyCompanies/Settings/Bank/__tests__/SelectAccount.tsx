@@ -115,7 +115,7 @@ describe('SelectAccount', () => {
       await act(async () => {
         await findByText('select-account.title');
 
-        const [, button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -135,7 +135,7 @@ describe('SelectAccount', () => {
       await act(async () => {
         await findByText('select-account.title');
 
-        const [, button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
