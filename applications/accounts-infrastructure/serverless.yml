@@ -74,6 +74,7 @@ resources:
               - GET
               - HEAD
               - OPTIONS
+            Compress: true
             TargetOriginId: ${self:custom.prefix}-app
             ForwardedValues:
               QueryString: false
