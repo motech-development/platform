@@ -128,7 +128,7 @@ describe('FileUpload', () => {
 
         await expect(findByText('Test')).resolves.toHaveStyleRule(
           'color',
-          '#2e9dc8',
+          '#007fa8',
         );
       });
     });

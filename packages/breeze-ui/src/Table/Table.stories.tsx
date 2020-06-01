@@ -1,3 +1,4 @@
+import { withA11y } from '@storybook/addon-a11y';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
 import BaseStyles from '../BaseStyles/BaseStyles';
@@ -46,6 +47,8 @@ const data = [
 ];
 
 const stories = storiesOf('Table', module);
+
+stories.addDecorator(withA11y);
 
 stories.add('Basic table', () => (
   <>

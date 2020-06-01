@@ -90,7 +90,7 @@ describe('LinkButton', () => {
       );
 
       expect(container.firstChild).toHaveStyle(`
-        background-color: #2e9dc8;
+        background-color: #007fa8;
         color: #fff;
       `);
     });

@@ -51,7 +51,7 @@ describe('Button', () => {
       const { container } = render(<Button colour="primary">Hello</Button>);
 
       expect(container.firstChild).toHaveStyle(`
-        background-color: #2e9dc8;
+        background-color: #007fa8;
         color: #fff;
       `);
     });

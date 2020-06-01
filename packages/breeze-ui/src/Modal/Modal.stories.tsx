@@ -1,3 +1,4 @@
+import { withA11y } from '@storybook/addon-a11y';
 import { boolean, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
@@ -9,6 +10,7 @@ import Modal from './Modal';
 const stories = storiesOf('Modal', module);
 const onDismiss = () => {};
 
+stories.addDecorator(withA11y);
 stories.addDecorator(withKnobs);
 
 stories.add('Basic modal', () => (

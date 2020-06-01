@@ -9,8 +9,8 @@ const tableRowTheme = {
     colour: '#000',
   },
   primary: {
-    background: '#2e9dc8',
-    border: darken(0.02, '#2e9dc8'),
+    background: '#007fa8',
+    border: darken(0.02, '#007fa8'),
     colour: '#fff',
   },
   secondary: {

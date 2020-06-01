@@ -8,7 +8,7 @@ export const buttonTheme = {
     colour: '#fff',
   },
   primary: {
-    background: '#2e9dc8',
+    background: '#007fa8',
     colour: '#fff',
   },
   secondary: {

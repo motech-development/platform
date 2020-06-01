@@ -123,7 +123,7 @@ describe('Tooltip', () => {
 
     it('should have the correct styles', () => {
       expect(tooltip).toHaveStyle(`
-        background-color: #2e9dc8;
+        background-color: #007fa8;
         color: #fff;
       `);
     });
@@ -196,7 +196,7 @@ describe('Tooltip', () => {
       expect(tooltip.firstElementChild).toHaveStyle(`
         border-left: 5px solid transparent;
         border-right: 5px solid transparent;
-        border-top: 5px solid #2e9dc8;
+        border-top: 5px solid #007fa8;
         bottom: -5px;
       `);
     });
@@ -226,7 +226,7 @@ describe('Tooltip', () => {
 
     it('should have an arrow pointing the correct way', () => {
       expect(tooltip.firstElementChild).toHaveStyle(`
-        border-bottom: 5px solid #2e9dc8;
+        border-bottom: 5px solid #007fa8;
         border-left: 5px solid transparent;
         border-right: 5px solid transparent;
         top: -5px;
@@ -259,7 +259,7 @@ describe('Tooltip', () => {
     it('should have an arrow pointing the correct way', () => {
       expect(tooltip.firstElementChild).toHaveStyle(`
         border-bottom: 5px solid transparent;
-        border-left: 5px solid #2e9dc8;
+        border-left: 5px solid #007fa8;
         border-top: 5px solid transparent;
         right: -5px;
       `);
@@ -291,7 +291,7 @@ describe('Tooltip', () => {
     it('should have an arrow pointing the correct way', () => {
       expect(tooltip.firstElementChild).toHaveStyle(`
         border-bottom: 5px solid transparent;
-        border-right: 5px solid #2e9dc8;
+        border-right: 5px solid #007fa8;
         border-top: 5px solid transparent;
         left: -5px;
       `);

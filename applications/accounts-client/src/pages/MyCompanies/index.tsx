@@ -1,6 +1,7 @@
 import { ProtectedRoute } from '@motech-development/auth';
 import React, { FC, lazy, memo } from 'react';
 import { Route, Switch } from 'react-router-dom';
+import Apollo from '../../components/Apollo';
 
 const Accounts = lazy(() => import('./Accounts'));
 const AddCompany = lazy(() => import('./AddCompany'));
@@ -11,27 +12,29 @@ const Settings = lazy(() => import('./Settings'));
 const UpdateDetails = lazy(() => import('./UpdateDetails'));
 
 const Routes: FC = () => (
-  <Switch>
-    <ProtectedRoute exact component={MyCompanies} path="/my-companies" />
-    <ProtectedRoute
-      exact
-      component={AddCompany}
-      path="/my-companies/add-company"
-    />
-    <ProtectedRoute
-      exact
-      component={Dashboard}
-      path="/my-companies/dashboard/:companyId"
-    />
-    <Route component={Accounts} path="/my-companies/accounts/:companyId" />
-    <Route component={Clients} path="/my-companies/clients/:companyId" />
-    <Route component={Settings} path="/my-companies/settings/:companyId" />
-    <ProtectedRoute
-      exact
-      component={UpdateDetails}
-      path="/my-companies/update-details/:companyId"
-    />
-  </Switch>
+  <Apollo>
+    <Switch>
+      <ProtectedRoute exact component={MyCompanies} path="/my-companies" />
+      <ProtectedRoute
+        exact
+        component={AddCompany}
+        path="/my-companies/add-company"
+      />
+      <ProtectedRoute
+        exact
+        component={Dashboard}
+        path="/my-companies/dashboard/:companyId"
+      />
+      <Route component={Accounts} path="/my-companies/accounts/:companyId" />
+      <Route component={Clients} path="/my-companies/clients/:companyId" />
+      <Route component={Settings} path="/my-companies/settings/:companyId" />
+      <ProtectedRoute
+        exact
+        component={UpdateDetails}
+        path="/my-companies/update-details/:companyId"
+      />
+    </Switch>
+  </Apollo>
 );
 
 export default memo(Routes);

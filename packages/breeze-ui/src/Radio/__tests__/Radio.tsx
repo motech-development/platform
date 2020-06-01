@@ -113,8 +113,8 @@ describe('Radio', () => {
       `);
 
       expect(selected).toHaveStyle(`
-        background: #2e9dc8;
-        border-bottom: 2px solid #2c96c0;
+        background: #007fa8;
+        border-bottom: 2px solid #00779e;
         color: #fff;
       `);
     });
@@ -155,7 +155,7 @@ describe('Radio', () => {
       });
 
       await expect(findByText('Test')).resolves.toHaveStyle(`
-        color: #2e9dc8;
+        color: #007aa3;
         font-size: 16px;
         margin-bottom: 10px;
       `);

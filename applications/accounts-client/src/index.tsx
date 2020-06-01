@@ -8,7 +8,6 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Router } from 'react-router-dom';
 import App from './App';
-import Apollo from './components/Apollo';
 import history from './history';
 import './i18n';
 
@@ -27,11 +26,9 @@ render(
 
       <ScrollToTop />
 
-      <Apollo>
-        <ToastProvider>
-          <App />
-        </ToastProvider>
-      </Apollo>
+      <ToastProvider>
+        <App />
+      </ToastProvider>
     </AuthProvider>
   </Router>,
   document.getElementById('root'),

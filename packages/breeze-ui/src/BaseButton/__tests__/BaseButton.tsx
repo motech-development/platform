@@ -13,7 +13,7 @@ describe('BaseButton', () => {
 
     await expect(findByRole('button')).resolves.toHaveStyle(`
       appearance: none;
-      background-color: #2e9dc8;
+      background-color: #007fa8;
       border: 0;
       color: #fff;
       cursor: pointer;
