@@ -155,7 +155,7 @@ describe('Radio', () => {
       });
 
       await expect(findByText('Test')).resolves.toHaveStyle(`
-        color: #007fa8;
+        color: #007aa3;
         font-size: 16px;
         margin-bottom: 10px;
       `);
