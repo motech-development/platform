@@ -10,10 +10,6 @@ import React, { FC, memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import ErrorCard from './ErrorCard';
 
-const { REACT_APP_APPSYNC_URL, REACT_APP_AWS_REGION } = process.env;
-const url = REACT_APP_APPSYNC_URL;
-const region = REACT_APP_AWS_REGION;
-
 export interface IApolloProps {
   children: ReactNode;
 }
@@ -21,6 +17,9 @@ export interface IApolloProps {
 const Apollo: FC<IApolloProps> = ({ children }) => {
   const { getTokenSilently, isAuthenticated, isLoading } = useAuth();
   const { t } = useTranslation('apollo');
+  const { REACT_APP_APPSYNC_URL, REACT_APP_AWS_REGION } = process.env;
+  const url = REACT_APP_APPSYNC_URL;
+  const region = REACT_APP_AWS_REGION;
 
   if (!url || !region) {
     return (
