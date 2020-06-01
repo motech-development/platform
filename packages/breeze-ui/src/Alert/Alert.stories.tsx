@@ -1,5 +1,6 @@
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { withA11y } from '@storybook/addon-a11y';
 import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
@@ -23,6 +24,7 @@ const colour = () => select('Colour', colours, 'primary') as AlertTheme;
 const spacing = () => select('Spacing', margins, 'md') as 'sm' | 'md' | 'lg';
 const dismissable = () => boolean('Dismissable', false);
 
+stories.addDecorator(withA11y);
 stories.addDecorator(withKnobs);
 
 stories.add('Various alerts', () => (

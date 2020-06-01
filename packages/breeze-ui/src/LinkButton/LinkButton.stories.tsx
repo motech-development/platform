@@ -1,3 +1,4 @@
+import { withA11y } from '@storybook/addon-a11y';
 import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
@@ -18,6 +19,7 @@ const size = {
   Small: 'sm',
 };
 
+stories.addDecorator(withA11y);
 stories.addDecorator(withKnobs);
 
 stories.add('Basic link button', () => (
@@ -25,7 +27,13 @@ stories.add('Basic link button', () => (
     <BaseStyles />
     <LinkButton
       block={boolean('Block display', false)}
-      colour={select('Colour', colour, 'primary')}
+      colour={
+        select('Colour', colour, 'primary') as
+          | 'danger'
+          | 'primary'
+          | 'secondary'
+          | 'success'
+      }
       size={select('Size', size, 'md') as 'sm' | 'md' | 'lg'}
       to={text('To', '/home')}
     >

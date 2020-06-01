@@ -1,3 +1,4 @@
+import { withA11y } from '@storybook/addon-a11y';
 import { boolean, select, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
@@ -22,6 +23,7 @@ const colours = {
   Secondary: 'secondary',
 };
 
+stories.addDecorator(withA11y);
 stories.addDecorator(withKnobs);
 
 stories.add('Basic app bar', () => (

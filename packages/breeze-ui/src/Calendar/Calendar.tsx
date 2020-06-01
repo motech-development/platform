@@ -231,7 +231,7 @@ const Calendar: FC<ICalendarProps> = ({
         </CalendarButton>
       </Toolbar>
 
-      <Dates id={label} date={date} onSelect={setDay} />
+      <Dates id={id} date={date} onSelect={setDay} />
     </>
   );
 };
