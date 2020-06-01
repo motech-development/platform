@@ -114,7 +114,7 @@ describe('Radio', () => {
 
       expect(selected).toHaveStyle(`
         background: #007fa8;
-        border-bottom: 2px solid #2c96c0;
+        border-bottom: 2px solid #00779e;
         color: #fff;
       `);
     });

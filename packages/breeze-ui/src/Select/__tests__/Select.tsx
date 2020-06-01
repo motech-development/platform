@@ -350,7 +350,7 @@ describe('Select', () => {
       });
 
       await expect(findByText('Test')).resolves.toHaveStyle(`
-        color: rgb(46, 157, 200);
+        color: rgb(0, 127, 168);
         transform: translate(0,4px) scale(.75);
       `);
     });

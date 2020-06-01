@@ -130,7 +130,7 @@ describe('Table', () => {
 
       await expect(findByTestId('primary-row')).resolves.toHaveStyle(`
         background-color: #007fa8;
-        border-bottom: 2px solid 2px solid #2c96c0;
+        border-bottom: 2px solid 2px solid #00779e;
         color: #fff;
       `);
     });
