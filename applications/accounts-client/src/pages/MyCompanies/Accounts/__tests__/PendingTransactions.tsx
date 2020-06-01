@@ -153,13 +153,13 @@ describe('PendingTransactions', () => {
       const { findAllByRole, findByRole, queryByRole } = component;
 
       await act(async () => {
-        const [, button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
         await findByRole('dialog');
 
-        const [, , , cancelButton] = await findAllByRole('button');
+        const [, , cancelButton] = await findAllByRole('button');
 
         fireEvent.click(cancelButton);
       });
@@ -173,7 +173,7 @@ describe('PendingTransactions', () => {
       await act(async () => {
         await findByText('pending-transactions.title');
 
-        const [, button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -188,7 +188,7 @@ describe('PendingTransactions', () => {
 
         await wait();
 
-        const [, , , , deleteButton] = await findAllByRole('button');
+        const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
@@ -279,7 +279,7 @@ describe('PendingTransactions', () => {
       await act(async () => {
         await findByText('pending-transactions.title');
 
-        const [, button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -294,7 +294,7 @@ describe('PendingTransactions', () => {
 
         await wait();
 
-        const [, , , , deleteButton] = await findAllByRole('button');
+        const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 

@@ -121,14 +121,14 @@ describe('Bank', () => {
       await act(async () => {
         await findByText('select-bank.title');
 
-        const [, button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
         await wait(0);
       });
 
-      const [, button, other] = await findAllByRole('button');
+      const [button, other] = await findAllByRole('button');
 
       expect(button).toBeDisabled();
       expect(other).toBeDisabled();

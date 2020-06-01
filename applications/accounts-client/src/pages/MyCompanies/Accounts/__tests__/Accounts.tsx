@@ -159,14 +159,14 @@ describe('Accounts', () => {
 
     it('should show the correct page title', async () => {
       const { findAllByRole } = component;
-      const [, title] = await findAllByRole('heading');
+      const [title] = await findAllByRole('heading');
 
       expect(title).toHaveTextContent('accounts.title');
     });
 
     it('should show the overview card', async () => {
       const { findAllByRole } = component;
-      const [, , title] = await findAllByRole('heading');
+      const [, title] = await findAllByRole('heading');
 
       expect(title).toHaveTextContent('accounts.overview.title');
     });
@@ -197,7 +197,7 @@ describe('Accounts', () => {
 
     it('should show the add transaction card', async () => {
       const { findAllByRole } = component;
-      const [, , , title] = await findAllByRole('heading');
+      const [, , title] = await findAllByRole('heading');
 
       expect(title).toHaveTextContent('accounts.record-transaction.title');
     });
@@ -214,7 +214,7 @@ describe('Accounts', () => {
 
     it('should show the pending transactions card', async () => {
       const { findAllByRole } = component;
-      const [, , , , title] = await findAllByRole('heading');
+      const [, , , title] = await findAllByRole('heading');
 
       expect(title).toHaveTextContent('accounts.pending-transactions.title');
     });
@@ -231,7 +231,7 @@ describe('Accounts', () => {
 
     it('should show the dashboard card', async () => {
       const { findAllByRole } = component;
-      const [, , , , , title] = await findAllByRole('heading');
+      const [, , , , title] = await findAllByRole('heading');
 
       expect(title).toHaveTextContent('accounts.dashboard.title');
     });
@@ -267,7 +267,7 @@ describe('Accounts', () => {
       await act(async () => {
         await findByText('accounts.title');
 
-        const [, button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -275,7 +275,7 @@ describe('Accounts', () => {
 
         await findByRole('dialog');
 
-        const [, , , cancelButton] = await findAllByRole('button');
+        const [, , cancelButton] = await findAllByRole('button');
 
         fireEvent.click(cancelButton);
       });
@@ -289,7 +289,7 @@ describe('Accounts', () => {
       await act(async () => {
         await findByText('accounts.title');
 
-        const [, button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -304,7 +304,7 @@ describe('Accounts', () => {
 
         await wait();
 
-        const [, , , , deleteButton] = await findAllByRole('button');
+        const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
@@ -449,7 +449,7 @@ describe('Accounts', () => {
       await act(async () => {
         await findByText('accounts.title');
 
-        const [, button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
@@ -464,7 +464,7 @@ describe('Accounts', () => {
 
         await wait();
 
-        const [, , , , deleteButton] = await findAllByRole('button');
+        const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
