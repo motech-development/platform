@@ -48,7 +48,7 @@ const BaseSelectInput = styled.select<IBaseSelectInput>`
     `
         : `
       :disabled {
-        color: ${$active ? '#aaa' : '#fff'};
+        color: ${$active ? '#767676' : '#fff'};
       }
     `
     }
@@ -88,7 +88,7 @@ const IconOuter = styled.div`
 `;
 
 const IconInner = styled.div`
-  color: #aaa;
+  color: #767676;
   cursor: pointer;
   display: block;
   height: 42px;

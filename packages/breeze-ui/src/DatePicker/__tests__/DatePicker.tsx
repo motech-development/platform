@@ -284,7 +284,7 @@ describe('DatePicker', () => {
       const { container } = component;
       const [, , likeInput] = container.querySelectorAll('div');
 
-      expect(likeInput).toHaveStyle('color: #aaa;');
+      expect(likeInput).toHaveStyle('color: #767676;');
     });
 
     it('should disable the button', async () => {

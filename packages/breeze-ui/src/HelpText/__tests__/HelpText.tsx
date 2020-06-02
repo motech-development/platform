@@ -50,7 +50,7 @@ describe('HelpText', () => {
     );
 
     await expect(findByText('Hello world')).resolves.toHaveStyle(`
-      color: #999;
+      color: #727272;
       font-size: 0.75rem;
     `);
   });

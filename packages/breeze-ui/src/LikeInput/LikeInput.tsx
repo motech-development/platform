@@ -9,7 +9,7 @@ const LikeInput = styled.div<ILikeInputProps>`
   ${({ $disabled }) => `
     background: #fff;
     border: none;
-    color: ${$disabled ? '#aaa' : '#333'};
+    color: ${$disabled ? '#767676' : '#333'};
     font-size: 16px;
     line-height: 18px;
     outline: 0;
