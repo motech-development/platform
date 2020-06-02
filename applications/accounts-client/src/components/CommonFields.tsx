@@ -16,6 +16,7 @@ export interface IAddressFieldsProps {
 
 export const AddressFields: FC<IAddressFieldsProps> = memo(({ prefix }) => {
   const { t } = useTranslation('common-fields');
+  const postcode = name('address.line5', prefix);
 
   return (
     <>
@@ -40,8 +41,13 @@ export const AddressFields: FC<IAddressFieldsProps> = memo(({ prefix }) => {
       />
 
       <TextBox
-        name={name('address.line5', prefix)}
+        name={postcode}
         label={t('address.line5')}
+        onChange={(e, form) => {
+          const transformed = e.target.value.toUpperCase();
+
+          form.setFieldValue(postcode, transformed);
+        }}
       />
     </>
   );

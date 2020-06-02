@@ -20,6 +20,7 @@
     },
     "expense-categories": {
       "title": "Expense categories",
+      "lead": "Add and remove your expenses categories when managing your accounts",
       "add-category": "Add a new category",
       "remove-category": "Remove",
       "name": {

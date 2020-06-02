@@ -8,7 +8,7 @@
     },
     "line5": {
       "required": "Postcode is required",
-      "invalid": "Postcode is invalid"
+      "invalid": "Postcode is not a valid UK postcode"
     }
   },
   "bank": {
@@ -40,7 +40,7 @@
     },
     "telephone": {
       "required": "Telephone number is required",
-      "invalid": "Telephone number is invalid"
+      "invalid": "Telephone number is not a valid UK telephone number"
     }
   },
   "vat-settings": {

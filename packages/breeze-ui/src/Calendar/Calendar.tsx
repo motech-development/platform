@@ -75,10 +75,19 @@ const Dates: FC<IDates> = ({ date, id, onSelect }) => {
   const currentDay = parseInt(clone.format('D'), 10);
   const daysInMonth = clone.daysInMonth();
   const firstDayOfMonth = parseInt(clone.startOf('month').format('d'), 10);
+  const previousMonth = date.clone().subtract(1, 'months');
+  const lastDayOfPreviousMonth = parseInt(
+    previousMonth.endOf('month').format('D'),
+    10,
+  );
 
-  const blanks = [...Array(firstDayOfMonth)].map((_, i) => (
-    <TableCell key={0 - i} />
-  ));
+  const blanks = [...Array(firstDayOfMonth)]
+    .map((_, i) => (
+      <TableCell key={0 - i} align="center">
+        {lastDayOfPreviousMonth - i}
+      </TableCell>
+    ))
+    .reverse();
   const days = [...Array(daysInMonth)].map((_, i) => {
     const day = i + 1;
     const colour = day === currentDay ? 'primary' : 'secondary';
@@ -109,8 +118,19 @@ const Dates: FC<IDates> = ({ date, id, onSelect }) => {
       cells = [];
       cells.push(row);
     }
+
     if (i === totalSlots.length - 1) {
-      rows.push(cells);
+      const filler = [...Array(7 - cells.length)].map((_, fillerIndex) => {
+        const key = daysInMonth + fillerIndex + 1;
+
+        return (
+          <TableCell key={key} align="center">
+            {1 + fillerIndex}
+          </TableCell>
+        );
+      });
+
+      rows.push([...cells, ...filler]);
     }
   });
 
@@ -129,6 +149,9 @@ const Dates: FC<IDates> = ({ date, id, onSelect }) => {
 
 type JumpUnits = 'month' | 'year';
 
+const selectMoment = (start: moment.Moment, date?: moment.Moment) =>
+  date || start;
+
 export interface ICalendarProps {
   selectedDate?: string;
   id: string;
@@ -140,32 +163,35 @@ const Calendar: FC<ICalendarProps> = ({
   id,
   selectedDate = '',
 }) => {
-  const [date, setDate] = useState(() => {
+  const [startDate] = useState(() => {
     if (selectedDate !== '') {
       return moment.utc(selectedDate);
     }
 
     return moment.utc();
   });
+  const [date, setDate] = useState<moment.Moment>();
   const [currentMonth, setCurrentMonth] = useState('');
   const [currentYear, setCurrentYear] = useState(0);
+  const selected = selectMoment(startDate, date);
+  const grid = `${id}-calendar`;
   const label = `${id}-dialog-label`;
   const setDay = (day: number) => {
-    const updated = date.clone();
+    const updated = selected.clone();
 
     updated.set('date', day);
 
     setDate(updated);
   };
   const next = (unit: JumpUnits) => {
-    const updated = date.clone();
+    const updated = selected.clone();
 
     updated.add(1, unit);
 
     setDate(updated);
   };
   const previous = (unit: JumpUnits) => {
-    const updated = date.clone();
+    const updated = selected.clone();
 
     updated.subtract(1, unit);
 
@@ -173,13 +199,18 @@ const Calendar: FC<ICalendarProps> = ({
   };
 
   useEffect(() => {
-    const clone = date.clone();
+    const clone = selected.clone();
 
     setCurrentMonth(clone.format('MMMM'));
     setCurrentYear(parseInt(clone.format('Y'), 10));
+  }, [selected]);
 
-    onDateChange(date.format());
-  }, [date, onDateChange]);
+  useEffect(() => {
+    if (date) {
+      onDateChange(date.format());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date]);
 
   return (
     <>
@@ -231,7 +262,7 @@ const Calendar: FC<ICalendarProps> = ({
         </CalendarButton>
       </Toolbar>
 
-      <Dates id={id} date={date} onSelect={setDay} />
+      <Dates id={grid} date={selected} onSelect={setDay} />
     </>
   );
 };

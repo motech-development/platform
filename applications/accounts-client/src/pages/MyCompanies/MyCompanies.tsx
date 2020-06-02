@@ -6,14 +6,13 @@ import {
   PageTitle,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, Fragment } from 'react';
+import React, { FC, Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Connected from '../../components/Connected';
 import GET_COMPANIES, {
   IGetCompaniesInput,
   IGetCompaniesOutput,
 } from '../../graphql/company/GET_COMPANIES';
-import withLayout from '../../hoc/withLayout';
 
 const MyCompanies: FC = () => {
   const { t } = useTranslation('my-companies');
@@ -106,4 +105,4 @@ const MyCompanies: FC = () => {
   );
 };
 
-export default withLayout(MyCompanies);
+export default memo(MyCompanies);

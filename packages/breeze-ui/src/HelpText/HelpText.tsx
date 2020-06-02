@@ -16,7 +16,7 @@ const HelpText = styled('p').withConfig({
   shouldForwardProp: prop => !['error', 'spacing'].includes(prop),
 })<IHelpTextProps>`
   ${({ error, spacing }) => `
-    color: ${error ? 'rgb(199,56,79)' : '#999'};
+    color: ${error ? 'rgb(199,56,79)' : '#727272'};
     font-size: 0.75rem;
     margin-bottom: ${helpTextSpacing[spacing]};
   `}

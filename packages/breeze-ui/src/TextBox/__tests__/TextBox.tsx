@@ -209,7 +209,7 @@ describe('TextBox', () => {
         );
 
         await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
-          'color: #aaa;',
+          'color: #767676;',
         );
       });
     });
@@ -328,7 +328,7 @@ describe('TextBox', () => {
         );
 
         await expect(findByPlaceholderText('Test')).resolves.toHaveStyle(
-          'color: #aaa;',
+          'color: #767676;',
         );
       });
     });

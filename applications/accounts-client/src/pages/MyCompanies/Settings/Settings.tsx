@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -17,7 +17,6 @@ import UPDATE_SETTINGS, {
   IUpdateSettingsInput,
   IUpdateSettingsOutput,
 } from '../../../graphql/settings/UPDATE_SETTINGS';
-import withLayout from '../../../hoc/withLayout';
 
 interface ISettingsParams {
   companyId: string;
@@ -126,4 +125,4 @@ const Settings: FC = () => {
   );
 };
 
-export default withLayout(Settings);
+export default memo(Settings);

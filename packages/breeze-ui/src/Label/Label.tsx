@@ -19,7 +19,7 @@ const Label = styled('label').withConfig({
         return '#007fa8';
       }
 
-      return '#aaa';
+      return '#767676';
     })()};
     font-size: 16px;
     pointer-events: none;

@@ -8,7 +8,7 @@ import {
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import React, { FC, useState } from 'react';
+import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
@@ -23,7 +23,6 @@ import UPDATE_BANK_SETTINGS, {
   IUpdateBankSettingsInput,
   IUpdateBankSettingsOutput,
 } from '../../../../graphql/bank/UPDATE_BANK_SETTINGS';
-import withLayout from '../../../../hoc/withLayout';
 
 interface ISelectAccountParams {
   companyId: string;
@@ -143,4 +142,4 @@ const SelectAccount: FC = () => {
   );
 };
 
-export default withLayout(SelectAccount);
+export default memo(SelectAccount);

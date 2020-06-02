@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { gql } from 'apollo-boost';
-import React, { FC, useState } from 'react';
+import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -13,7 +13,6 @@ import ADD_TRANSACTION, {
   IAddTransactionOutput,
   updateCache,
 } from '../../../graphql/transaction/ADD_TRANSACTION';
-import withLayout from '../../../hoc/withLayout';
 import UploadAttachment from './shared/UploadAttachment';
 import ViewAttachment from './shared/ViewAttachment';
 
@@ -150,4 +149,4 @@ const RecordTransaction: FC = () => {
   );
 };
 
-export default withLayout(RecordTransaction);
+export default memo(RecordTransaction);

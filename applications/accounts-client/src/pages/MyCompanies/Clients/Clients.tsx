@@ -6,7 +6,7 @@ import {
   PageTitle,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, Fragment } from 'react';
+import React, { FC, Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -14,7 +14,6 @@ import GET_CLIENTS, {
   IGetClientsInput,
   IGetClientsOutput,
 } from '../../../graphql/client/GET_CLIENTS';
-import withLayout from '../../../hoc/withLayout';
 
 interface IClientsParams {
   companyId: string;
@@ -140,4 +139,4 @@ const Clients: FC = () => {
   );
 };
 
-export default withLayout(Clients);
+export default memo(Clients);

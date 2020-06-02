@@ -156,6 +156,10 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
                         {t('company-form.bank.heading')}
                       </Typography>
 
+                      <Typography component="p" variant="lead">
+                        {t('company-form.bank.description')}
+                      </Typography>
+
                       <BankFields prefix="company" />
                     </Card>
                   </Col>

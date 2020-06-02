@@ -429,7 +429,7 @@ describe('Select', () => {
       );
 
       await expect(findByLabelText('Test')).resolves.toHaveStyle(
-        'color: #aaa;',
+        'color: #767676;',
       );
     });
 

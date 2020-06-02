@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/react-hooks';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import CompanyWizard, { FormSchema } from '../../components/CompanyWizard';
@@ -10,7 +10,6 @@ import ADD_COMPANY, {
   IAddCompanyOutput,
   updateCache,
 } from '../../graphql/company/ADD_COMPANY';
-import withLayout from '../../hoc/withLayout';
 
 const AddCompany: FC = () => {
   const history = useHistory();
@@ -56,4 +55,4 @@ const AddCompany: FC = () => {
   );
 };
 
-export default withLayout(AddCompany);
+export default memo(AddCompany);

@@ -20,7 +20,7 @@ const BaseOptionLabel = styled.label<IBaseOptionLabel>`
         ? `
       background: #fff;
       border-bottom: 2px solid #eee;
-      color: #aaa;
+      color: #767676;
     `
         : `
       background: ${$selected ? '#007fa8' : '#fff'};

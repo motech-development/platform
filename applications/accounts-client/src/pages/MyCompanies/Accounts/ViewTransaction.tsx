@@ -7,7 +7,7 @@ import {
   useToast,
 } from '@motech-development/breeze-ui';
 import { gql } from 'apollo-boost';
-import React, { FC, useState } from 'react';
+import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -25,7 +25,6 @@ import UPDATE_TRANSACTION, {
   IUpdateTransactionOutput,
   updateCache as updateTransactionCache,
 } from '../../../graphql/transaction/UPDATE_TRANSACTION';
-import withLayout from '../../../hoc/withLayout';
 import UploadAttachment from './shared/UploadAttachment';
 import ViewAttachment from './shared/ViewAttachment';
 
@@ -257,4 +256,4 @@ const ViewTransaction: FC = () => {
   );
 };
 
-export default withLayout(ViewTransaction);
+export default memo(ViewTransaction);

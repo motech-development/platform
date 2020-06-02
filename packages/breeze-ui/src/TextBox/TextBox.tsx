@@ -32,19 +32,19 @@ const BaseTextBox = styled.input<IBaseTextBox>`
     width: 100%;
 
     :disabled {
-      color: #aaa;
+      color: #767676;
     }
 
     ::placeholder {
-      color: ${$active ? '#aaa' : '#fff'};
+      color: ${$active ? '#767676' : '#fff'};
     }
 
     :-ms-input-placeholder {
-      color: ${$active ? '#aaa' : '#fff'};
+      color: ${$active ? '#767676' : '#fff'};
     }
 
     ::-ms-input-placeholder {
-      color: ${$active ? '#aaa' : '#fff'};
+      color: ${$active ? '#767676' : '#fff'};
     }
 
     ::-webkit-outer-spin-button,

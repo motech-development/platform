@@ -25,7 +25,7 @@ const IconButton = styled.button`
   appearance: none;
   background-color: #fff;
   border: 0;
-  color: #aaa;
+  color: #767676;
   cursor: pointer;
   display: block;
   height: 42px;
@@ -92,6 +92,7 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
 
   useEffect(() => {
     setFieldValue(name, date);
+    setVisible(false);
 
     const err = getIn(errors, name);
 

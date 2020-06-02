@@ -107,7 +107,7 @@ describe('DatePicker', () => {
     });
 
     it('should update the date value', async () => {
-      const { findByLabelText, findByRole, findByText } = component;
+      const { findAllByText, findByLabelText, findByRole } = component;
 
       await act(async () => {
         const button = await findByRole('button');
@@ -116,7 +116,7 @@ describe('DatePicker', () => {
 
         await findByRole('grid');
 
-        const date = await findByText('3');
+        const [date] = await findAllByText('3');
 
         fireEvent.click(date);
       });
@@ -127,7 +127,7 @@ describe('DatePicker', () => {
     });
 
     it('should display validation error', async () => {
-      const { findByRole, findByText } = component;
+      const { findAllByText, findByRole } = component;
 
       await act(async () => {
         const button = await findByRole('button');
@@ -136,7 +136,7 @@ describe('DatePicker', () => {
 
         await findByRole('grid');
 
-        const date = await findByText('1');
+        const [date] = await findAllByText('1');
 
         fireEvent.click(date);
       });
@@ -239,7 +239,7 @@ describe('DatePicker', () => {
     });
 
     it('should display validation error', async () => {
-      const { findByRole, findByText } = component;
+      const { findAllByText, findByRole } = component;
 
       await act(async () => {
         const button = await findByRole('button');
@@ -248,7 +248,7 @@ describe('DatePicker', () => {
 
         await findByRole('grid');
 
-        const date = await findByText('1');
+        const [date] = await findAllByText('1');
 
         fireEvent.click(date);
       });
@@ -284,7 +284,7 @@ describe('DatePicker', () => {
       const { container } = component;
       const [, , likeInput] = container.querySelectorAll('div');
 
-      expect(likeInput).toHaveStyle('color: #aaa;');
+      expect(likeInput).toHaveStyle('color: #767676;');
     });
 
     it('should disable the button', async () => {

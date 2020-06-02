@@ -72,7 +72,7 @@ describe('Radio', () => {
       expect(label).toHaveStyle(`
         background: #fff;
         border-bottom: 2px solid #eee;
-        color: #aaa;
+        color: #767676;
       `);
     });
   });
