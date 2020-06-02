@@ -92,15 +92,13 @@ const UpdateDetails: FC = () => {
   const onDismiss = () => {
     setModal(false);
   };
-  const onDelete = () => {
-    (async () => {
-      await deleteMutation({
-        update: updateCache,
-        variables: {
-          id: clientId,
-        },
-      });
-    })();
+  const onDelete = async () => {
+    await deleteMutation({
+      update: updateCache,
+      variables: {
+        id: clientId,
+      },
+    });
   };
   const save = async (input: FormSchema) => {
     await mutation({

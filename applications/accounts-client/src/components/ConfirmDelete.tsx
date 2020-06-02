@@ -14,7 +14,7 @@ export interface IConfirmDeleteProps {
   loading: boolean;
   name: string;
   onCancel(): void;
-  onDelete(input: FormSchema): void;
+  onDelete(input: FormSchema): Promise<void>;
 }
 
 const ConfirmDelete: FC<IConfirmDeleteProps> = ({

@@ -13,7 +13,7 @@ export interface IDeleteItemProps {
   name: string;
   title: string;
   warning: string;
-  onDelete(): void;
+  onDelete(): Promise<void>;
   onDismiss(): void;
 }
 

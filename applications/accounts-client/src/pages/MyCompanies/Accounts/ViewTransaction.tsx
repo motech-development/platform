@@ -162,15 +162,13 @@ const ViewTransaction: FC = () => {
   const onDismiss = () => {
     setModal(false);
   };
-  const onDelete = () => {
-    (async () => {
-      await deleteMutation({
-        update: deleteTransactionCache,
-        variables: {
-          id: transactionId,
-        },
-      });
-    })();
+  const onDelete = async () => {
+    await deleteMutation({
+      update: deleteTransactionCache,
+      variables: {
+        id: transactionId,
+      },
+    });
   };
   const save = async (input: FormSchema) => {
     await mutation({
