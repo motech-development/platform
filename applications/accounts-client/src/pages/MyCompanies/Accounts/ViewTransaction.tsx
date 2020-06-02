@@ -172,15 +172,13 @@ const ViewTransaction: FC = () => {
       });
     })();
   };
-  const save = (input: FormSchema) => {
-    (async () => {
-      await mutation({
-        update: updateTransactionCache,
-        variables: {
-          input,
-        },
-      });
-    })();
+  const save = async (input: FormSchema) => {
+    await mutation({
+      update: updateTransactionCache,
+      variables: {
+        input,
+      },
+    });
   };
 
   return (

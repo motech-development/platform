@@ -53,7 +53,7 @@ export interface ITransactionForm {
   loading: boolean;
   uploader: ReactNode;
   vat: number;
-  onSave(value: FormSchema): void;
+  onSave(value: FormSchema): Promise<void>;
 }
 
 interface IFormValues extends FormSchema {

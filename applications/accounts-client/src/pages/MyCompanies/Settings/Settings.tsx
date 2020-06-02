@@ -72,14 +72,12 @@ const Settings: FC = () => {
       });
     },
   });
-  const save = (input: FormSchema) => {
-    (async () => {
-      await mutation({
-        variables: {
-          input,
-        },
-      });
-    })();
+  const save = async (input: FormSchema) => {
+    await mutation({
+      variables: {
+        input,
+      },
+    });
   };
   const onDisconnect = (id: string) => {
     (async () => {

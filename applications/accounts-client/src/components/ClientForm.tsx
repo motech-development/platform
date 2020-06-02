@@ -37,7 +37,7 @@ export interface IClientFormProps {
   companyId?: string;
   initialValues?: FormSchema;
   loading: boolean;
-  onSave(value: FormSchema): void;
+  onSave(value: FormSchema): Promise<void>;
 }
 
 const ClientForm: FC<IClientFormProps> = ({

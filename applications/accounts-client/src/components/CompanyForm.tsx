@@ -50,7 +50,7 @@ export interface ICompanyFormProps {
   backTo: string;
   initialValues?: FormSchema;
   loading: boolean;
-  onSave(value: FormSchema): void;
+  onSave(value: FormSchema): Promise<void>;
 }
 
 const CompanyForm: FC<ICompanyFormProps> = ({

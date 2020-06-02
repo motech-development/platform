@@ -102,14 +102,12 @@ const UpdateDetails: FC = () => {
       });
     })();
   };
-  const save = (input: FormSchema) => {
-    (async () => {
-      await mutation({
-        variables: {
-          input,
-        },
-      });
-    })();
+  const save = async (input: FormSchema) => {
+    await mutation({
+      variables: {
+        input,
+      },
+    });
   };
 
   return (

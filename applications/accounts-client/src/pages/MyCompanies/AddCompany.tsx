@@ -32,15 +32,13 @@ const AddCompany: FC = () => {
       history.push(`/my-companies/dashboard/${id}`);
     },
   });
-  const save = (input: FormSchema) => {
-    (async () => {
-      await addCompany({
-        update: updateCache,
-        variables: {
-          input,
-        },
-      });
-    })();
+  const save = async (input: FormSchema) => {
+    await addCompany({
+      update: updateCache,
+      variables: {
+        input,
+      },
+    });
   };
 
   return (

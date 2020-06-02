@@ -41,8 +41,8 @@ export interface IFormProps {
   cancel?: ReactNode;
   initialValues: FormikValues;
   loading?: boolean;
-  onPreSubmit?(values: FormikValues): FormikValues;
-  onSubmit(values: FormikValues): void;
+  onPreSubmit?(values: FormikValues): FormikValues | Promise<FormikValues>;
+  onSubmit(values: FormikValues): void | Promise<void>;
   submitLabel: string;
   validationSchema: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
@@ -57,10 +57,10 @@ const Form: FC<IFormProps> = ({
   submitLabel,
   validationSchema,
 }) => {
-  const doSubmit = (values: FormikValues) => {
-    const payload = onPreSubmit ? onPreSubmit(values) : values;
+  const doSubmit = async (values: FormikValues) => {
+    const payload = onPreSubmit ? await onPreSubmit(values) : values;
 
-    onSubmit(payload);
+    await onSubmit(payload);
   };
 
   return (

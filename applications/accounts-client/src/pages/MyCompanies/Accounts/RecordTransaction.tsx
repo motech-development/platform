@@ -91,15 +91,13 @@ const RecordTransaction: FC = () => {
     },
   });
   const backTo = (id: string) => `/my-companies/accounts/${id}`;
-  const save = (input: FormSchema) => {
-    (async () => {
-      await mutation({
-        update: updateCache,
-        variables: {
-          input,
-        },
-      });
-    })();
+  const save = async (input: FormSchema) => {
+    await mutation({
+      update: updateCache,
+      variables: {
+        input,
+      },
+    });
   };
 
   return (

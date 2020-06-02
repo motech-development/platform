@@ -38,7 +38,7 @@ export interface ISettingsFormProps {
   };
   initialValues: FormSchema;
   loading: boolean;
-  onSave(value: FormSchema): void;
+  onSave(value: FormSchema): Promise<void>;
 }
 
 const SettingsForm: FC<ISettingsFormProps> = ({
