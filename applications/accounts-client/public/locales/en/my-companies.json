@@ -35,7 +35,8 @@
       "heading": "Address"
     },
     "bank": {
-      "heading": "Bank details"
+      "heading": "Bank details",
+      "description": "These bank details will be printed on any invoices you generate"
     },
     "company-details": {
       "heading": "Company details"
