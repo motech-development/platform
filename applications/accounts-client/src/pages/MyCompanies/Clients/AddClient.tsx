@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/react-hooks';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import ClientForm, { FormSchema } from '../../../components/ClientForm';
@@ -10,7 +10,6 @@ import ADD_CLIENT, {
   IAddClientOutput,
   updateCache,
 } from '../../../graphql/client/ADD_CLIENT';
-import withLayout from '../../../hoc/withLayout';
 
 interface IAddClientParams {
   companyId: string;
@@ -67,4 +66,4 @@ const AddClient: FC = () => {
   );
 };
 
-export default withLayout(AddClient);
+export default memo(AddClient);

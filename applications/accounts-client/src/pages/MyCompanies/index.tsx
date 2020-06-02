@@ -3,6 +3,7 @@ import { Loader } from '@motech-development/breeze-ui';
 import React, { FC, lazy, memo, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Apollo from '../../components/Apollo';
+import Container from '../../components/Container';
 import UserBar from '../../components/UserBar';
 
 const Accounts = lazy(() => import('./Accounts'));
@@ -28,40 +29,42 @@ const Routes: FC = () => {
 
       <Suspense fallback={<Loader />}>
         <Apollo>
-          <Switch>
-            <ProtectedRoute
-              exact
-              component={MyCompanies}
-              path="/my-companies"
-            />
-            <ProtectedRoute
-              exact
-              component={AddCompany}
-              path="/my-companies/add-company"
-            />
-            <ProtectedRoute
-              exact
-              component={Dashboard}
-              path="/my-companies/dashboard/:companyId"
-            />
-            <Route
-              component={Accounts}
-              path="/my-companies/accounts/:companyId"
-            />
-            <Route
-              component={Clients}
-              path="/my-companies/clients/:companyId"
-            />
-            <Route
-              component={Settings}
-              path="/my-companies/settings/:companyId"
-            />
-            <ProtectedRoute
-              exact
-              component={UpdateDetails}
-              path="/my-companies/update-details/:companyId"
-            />
-          </Switch>
+          <Container>
+            <Switch>
+              <ProtectedRoute
+                exact
+                component={MyCompanies}
+                path="/my-companies"
+              />
+              <ProtectedRoute
+                exact
+                component={AddCompany}
+                path="/my-companies/add-company"
+              />
+              <ProtectedRoute
+                exact
+                component={Dashboard}
+                path="/my-companies/dashboard/:companyId"
+              />
+              <Route
+                component={Accounts}
+                path="/my-companies/accounts/:companyId"
+              />
+              <Route
+                component={Clients}
+                path="/my-companies/clients/:companyId"
+              />
+              <Route
+                component={Settings}
+                path="/my-companies/settings/:companyId"
+              />
+              <ProtectedRoute
+                exact
+                component={UpdateDetails}
+                path="/my-companies/update-details/:companyId"
+              />
+            </Switch>
+          </Container>
         </Apollo>
       </Suspense>
     </>

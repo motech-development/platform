@@ -8,7 +8,7 @@ import {
   Row,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
@@ -24,7 +24,6 @@ import GET_BANKS, {
 import ON_BANK_CALLBACK, {
   IOnBankCallbackOutput,
 } from '../../../../graphql/bank/ON_BANK_CALLBACK';
-import withLayout from '../../../../hoc/withLayout';
 
 interface ISelectBankParams {
   companyId: string;
@@ -136,4 +135,4 @@ const Bank: FC = () => {
   );
 };
 
-export default withLayout(Bank);
+export default memo(Bank);

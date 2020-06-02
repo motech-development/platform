@@ -6,7 +6,7 @@ import {
   Row,
   useToast,
 } from '@motech-development/breeze-ui';
-import React, { FC, useState } from 'react';
+import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import ClientForm, { FormSchema } from '../../../components/ClientForm';
@@ -25,7 +25,6 @@ import UPDATE_CLIENT, {
   IUpdateClientInput,
   IUpdateClientOutput,
 } from '../../../graphql/client/UPDATE_CLIENT';
-import withLayout from '../../../hoc/withLayout';
 
 interface IUpdateDetailsParams {
   clientId: string;
@@ -163,4 +162,4 @@ const UpdateDetails: FC = () => {
   );
 };
 
-export default withLayout(UpdateDetails);
+export default memo(UpdateDetails);

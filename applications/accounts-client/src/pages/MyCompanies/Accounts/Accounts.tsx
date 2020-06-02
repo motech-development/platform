@@ -7,7 +7,7 @@ import {
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import TransactionsList from '../../../components/TransactionsList';
@@ -22,7 +22,6 @@ import DELETE_TRANSACTION, {
   IDeleteTransactionOutput,
   updateCache,
 } from '../../../graphql/transaction/DELETE_TRANSACTION';
-import withLayout from '../../../hoc/withLayout';
 
 interface IAccountsParams {
   companyId: string;
@@ -191,4 +190,4 @@ const Accounts: FC = () => {
   );
 };
 
-export default withLayout(Accounts);
+export default memo(Accounts);

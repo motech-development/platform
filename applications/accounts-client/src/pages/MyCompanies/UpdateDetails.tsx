@@ -6,7 +6,7 @@ import {
   Row,
   useToast,
 } from '@motech-development/breeze-ui';
-import React, { FC, useState } from 'react';
+import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import CompanyForm, { FormSchema } from '../../components/CompanyForm';
@@ -25,7 +25,6 @@ import UPDATE_COMPANY, {
   IUpdateCompanyInput,
   IUpdateCompanyOutput,
 } from '../../graphql/company/UPDATE_COMPANY';
-import withLayout from '../../hoc/withLayout';
 
 interface IUpdateDetailsParams {
   companyId: string;
@@ -162,4 +161,4 @@ const UpdateDetails: FC = () => {
   );
 };
 
-export default withLayout(UpdateDetails);
+export default memo(UpdateDetails);

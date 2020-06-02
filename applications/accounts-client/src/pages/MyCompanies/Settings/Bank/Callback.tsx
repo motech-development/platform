@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/react-hooks';
 import { Loader } from '@motech-development/breeze-ui';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import ErrorCard from '../../../../components/ErrorCard';
@@ -9,7 +9,6 @@ import UPDATE_BANK_SETTINGS, {
   IUpdateBankSettingsOutput,
 } from '../../../../graphql/bank/UPDATE_BANK_SETTINGS';
 import useQuery from '../../../../hooks/useQuery';
-import withLayout from '../../../../hoc/withLayout';
 
 interface ICallbackParams {
   companyId: string;
@@ -69,4 +68,4 @@ const Callback: FC = () => {
   return <Loader />;
 };
 
-export default withLayout(Callback);
+export default memo(Callback);
