@@ -83,10 +83,6 @@ const SettingsForm: FC<ISettingsFormProps> = ({
                   {t('settings-form.expense-categories.title')}
                 </Typography>
 
-                <Typography component="p" variant="lead">
-                  {t('settings-form.expense-categories.lead')}
-                </Typography>
-
                 <FieldArray
                   name="categories"
                   render={arrayHelpers => (
