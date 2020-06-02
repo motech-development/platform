@@ -71,48 +71,42 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
       label={t('transaction-form.upload.upload.label')}
       loading={mutationLoading || putLoading}
       name={name}
-      onSelect={(file, form) => {
-        (async () => {
-          try {
-            const extIndex = file.name.lastIndexOf('.');
+      onSelect={async (file, form) => {
+        try {
+          const extIndex = file.name.lastIndexOf('.');
 
-            if (extIndex > 0) {
-              const extension = file.name.substring(extIndex + 1).toLowerCase();
+          if (extIndex > 0) {
+            const extension = file.name.substring(extIndex + 1).toLowerCase();
 
-              const result = await mutation({
-                variables: {
-                  id,
-                  input: {
-                    contentType: file.type,
-                    extension,
-                  },
+            const result = await mutation({
+              variables: {
+                id,
+                input: {
+                  contentType: file.type,
+                  extension,
                 },
-              });
+              },
+            });
 
-              if (result?.data) {
-                const { requestUpload } = result.data;
-                const headers = {
-                  'Content-Type': file.type,
-                };
+            if (result?.data) {
+              const { requestUpload } = result.data;
+              const headers = {
+                'Content-Type': file.type,
+              };
 
-                const uploadResult = await put(
-                  requestUpload.url,
-                  file,
-                  headers,
-                );
+              const uploadResult = await put(requestUpload.url, file, headers);
 
-                if (uploadResult !== undefined) {
-                  const attachment = `${id}/${requestUpload.id}.${extension}`;
+              if (uploadResult !== undefined) {
+                const attachment = `${id}/${requestUpload.id}.${extension}`;
 
-                  form.setFieldValue('attachment', attachment);
+                form.setFieldValue('attachment', attachment);
 
-                  onUpload(attachment);
-                }
+                onUpload(attachment);
               }
             }
-            // eslint-disable-next-line no-empty
-          } catch (e) {}
-        })();
+          }
+          // eslint-disable-next-line no-empty
+        } catch (e) {}
       }}
     />
   );
