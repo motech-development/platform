@@ -99,10 +99,10 @@ describe('Calendar', () => {
     });
 
     it('should select the correct date', async () => {
-      const { findByText } = component;
+      const { findAllByText } = component;
 
       await act(async () => {
-        const button = await findByText('3');
+        const [button] = await findAllByText('3');
 
         fireEvent.click(button);
       });
@@ -197,10 +197,10 @@ describe('Calendar', () => {
     });
 
     it('should select the correct date', async () => {
-      const { findByText } = component;
+      const { findAllByText } = component;
 
       await act(async () => {
-        const button = await findByText('3');
+        const [button] = await findAllByText('3');
 
         fireEvent.click(button);
       });

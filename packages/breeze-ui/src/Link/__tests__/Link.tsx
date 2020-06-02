@@ -18,7 +18,7 @@ describe('Link', () => {
     const { findByText } = component;
 
     await expect(findByText('Hello')).resolves.toHaveStyle(`
-      color: #007fa8;
+      color: #007aa3;
       font-weight: 600;
     `);
   });
