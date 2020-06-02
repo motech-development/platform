@@ -149,6 +149,9 @@ const Dates: FC<IDates> = ({ date, id, onSelect }) => {
 
 type JumpUnits = 'month' | 'year';
 
+const selectMoment = (start: moment.Moment, date?: moment.Moment) =>
+  date || start;
+
 export interface ICalendarProps {
   selectedDate?: string;
   id: string;
@@ -160,33 +163,35 @@ const Calendar: FC<ICalendarProps> = ({
   id,
   selectedDate = '',
 }) => {
-  const [date, setDate] = useState(() => {
+  const [startDate] = useState(() => {
     if (selectedDate !== '') {
       return moment.utc(selectedDate);
     }
 
     return moment.utc();
   });
+  const [date, setDate] = useState<moment.Moment>();
   const [currentMonth, setCurrentMonth] = useState('');
   const [currentYear, setCurrentYear] = useState(0);
+  const selected = selectMoment(startDate, date);
   const grid = `${id}-calendar`;
   const label = `${id}-dialog-label`;
   const setDay = (day: number) => {
-    const updated = date.clone();
+    const updated = selected.clone();
 
     updated.set('date', day);
 
     setDate(updated);
   };
   const next = (unit: JumpUnits) => {
-    const updated = date.clone();
+    const updated = selected.clone();
 
     updated.add(1, unit);
 
     setDate(updated);
   };
   const previous = (unit: JumpUnits) => {
-    const updated = date.clone();
+    const updated = selected.clone();
 
     updated.subtract(1, unit);
 
@@ -194,13 +199,18 @@ const Calendar: FC<ICalendarProps> = ({
   };
 
   useEffect(() => {
-    const clone = date.clone();
+    const clone = selected.clone();
 
     setCurrentMonth(clone.format('MMMM'));
     setCurrentYear(parseInt(clone.format('Y'), 10));
+  }, [selected]);
 
-    onDateChange(date.format());
-  }, [date, onDateChange]);
+  useEffect(() => {
+    if (date) {
+      onDateChange(date.format());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date]);
 
   return (
     <>
@@ -252,7 +262,7 @@ const Calendar: FC<ICalendarProps> = ({
         </CalendarButton>
       </Toolbar>
 
-      <Dates id={grid} date={date} onSelect={setDay} />
+      <Dates id={grid} date={selected} onSelect={setDay} />
     </>
   );
 };

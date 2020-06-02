@@ -88,12 +88,11 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
   const { formatted } = formatDateTime(value);
   const selectDate = (d: string) => {
     setDate(d);
-
-    console.log('Select date', d);
   };
 
   useEffect(() => {
     setFieldValue(name, date);
+    setVisible(false);
 
     const err = getIn(errors, name);
 
