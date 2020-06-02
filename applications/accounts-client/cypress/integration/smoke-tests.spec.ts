@@ -246,27 +246,27 @@ describe('Smoke tests', () => {
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.4.name"]')
+        cy.get('input[id="categories.5.name"]')
           .focus()
           .type(settings.categories[0].name);
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.5.name"]')
+        cy.get('input[id="categories.6.name"]')
           .focus()
           .type(settings.categories[1].name);
 
-        cy.get('input[id="categories.5.vatRate"]')
+        cy.get('input[id="categories.6.vatRate"]')
           .clear()
           .type(settings.categories[1].vatRate);
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.6.name"]')
+        cy.get('input[id="categories.7.name"]')
           .focus()
           .type(settings.categories[2].name);
 
-        cy.get('input[id="categories.6.vatRate"]')
+        cy.get('input[id="categories.7.vatRate"]')
           .clear()
           .type(settings.categories[2].vatRate);
 
@@ -295,24 +295,12 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
-        cy.get('input[id="categories.4.name"]').should(
+        cy.get('input[id="categories.5.name"]').should(
           'have.value',
           settings.categories[0].name,
         );
 
         cy.format('percentage', settings.categories[0].vatRate).then(value => {
-          cy.get('input[id="categories.4.vatRate"]').should(
-            'have.value',
-            value,
-          );
-        });
-
-        cy.get('input[id="categories.5.name"]').should(
-          'have.value',
-          settings.categories[1].name,
-        );
-
-        cy.format('percentage', settings.categories[1].vatRate).then(value => {
           cy.get('input[id="categories.5.vatRate"]').should(
             'have.value',
             value,
@@ -321,11 +309,23 @@ describe('Smoke tests', () => {
 
         cy.get('input[id="categories.6.name"]').should(
           'have.value',
+          settings.categories[1].name,
+        );
+
+        cy.format('percentage', settings.categories[1].vatRate).then(value => {
+          cy.get('input[id="categories.6.vatRate"]').should(
+            'have.value',
+            value,
+          );
+        });
+
+        cy.get('input[id="categories.7.name"]').should(
+          'have.value',
           settings.categories[2].name,
         );
 
         cy.format('percentage', settings.categories[2].vatRate).then(value => {
-          cy.get('input[id="categories.6.vatRate"]').should(
+          cy.get('input[id="categories.7.vatRate"]').should(
             'have.value',
             value,
           );
@@ -371,17 +371,17 @@ describe('Smoke tests', () => {
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.4.name"]')
+        cy.get('input[id="categories.5.name"]')
           .focus()
           .type(settings.categories[0].name);
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.5.name"]')
+        cy.get('input[id="categories.6.name"]')
           .focus()
           .type(settings.categories[1].name);
 
-        cy.get('input[id="categories.5.vatRate"]')
+        cy.get('input[id="categories.6.vatRate"]')
           .clear()
           .type(settings.categories[1].vatRate);
 
@@ -431,17 +431,17 @@ describe('Smoke tests', () => {
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.4.name"]')
+        cy.get('input[id="categories.5.name"]')
           .focus()
           .type(settings.categories[0].name);
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.5.name"]')
+        cy.get('input[id="categories.6.name"]')
           .focus()
           .type(settings.categories[1].name);
 
-        cy.get('input[id="categories.5.vatRate"]')
+        cy.get('input[id="categories.6.vatRate"]')
           .clear()
           .type(settings.categories[1].vatRate);
 
