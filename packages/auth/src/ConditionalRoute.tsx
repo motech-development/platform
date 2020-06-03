@@ -6,11 +6,11 @@ export interface IConditionalRouteProps extends RouteProps {
   redirect: string;
 }
 
-// eslint-disable-next-line react/jsx-props-no-spreading
 const ConditionalRoute: FC<IConditionalRouteProps> = ({
   condition,
   redirect,
   ...rest
+  // eslint-disable-next-line react/jsx-props-no-spreading
 }) => (condition ? <Route {...rest} /> : <Redirect to={redirect} />);
 
 export default memo(ConditionalRoute);
