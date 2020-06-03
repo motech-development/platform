@@ -1,6 +1,7 @@
 import React, {
   createContext,
   FC,
+  memo,
   ReactNode,
   useContext,
   useEffect,
@@ -130,4 +131,4 @@ const AuthProvider: FC<IAuthProviderProps> = ({
   );
 };
 
-export default AuthProvider;
+export default memo(AuthProvider);
