@@ -14,7 +14,7 @@ import styled from 'styled-components';
 const AppName = styled(Typography)`
   && {
     flex-grow: 1;
-    margin: 0 0.5rem 0 0;
+    margin: 0 1rem 0 0;
     padding: 0;
   }
 `;
