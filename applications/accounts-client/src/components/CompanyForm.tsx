@@ -50,7 +50,7 @@ export interface ICompanyFormProps {
   backTo: string;
   initialValues?: FormSchema;
   loading: boolean;
-  onSave(value: FormSchema): Promise<void>;
+  onSave(value: FormSchema): void;
 }
 
 const CompanyForm: FC<ICompanyFormProps> = ({
@@ -64,7 +64,7 @@ const CompanyForm: FC<ICompanyFormProps> = ({
   const bank = useBank();
   const company = useCompanyDetails();
   const contact = useContactDetails();
-  const validationSchema = object()
+  const validationSchema = object<FormSchema>()
     .concat(company)
     .shape({
       address,

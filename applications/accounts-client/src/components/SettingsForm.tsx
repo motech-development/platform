@@ -38,7 +38,7 @@ export interface ISettingsFormProps {
   };
   initialValues: FormSchema;
   loading: boolean;
-  onSave(value: FormSchema): Promise<void>;
+  onSave(value: FormSchema): void;
 }
 
 const SettingsForm: FC<ISettingsFormProps> = ({
@@ -51,7 +51,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
   const { t } = useTranslation('settings');
   const { connected, disconnectLoading, link, name, onDisconnect } = bank;
   const vat = useVatSettings();
-  const validationSchema = object().shape({
+  const validationSchema = object<FormSchema>().shape({
     categories: array().of(
       object().shape({
         name: string().required(

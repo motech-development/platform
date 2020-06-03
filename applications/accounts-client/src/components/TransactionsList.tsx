@@ -31,7 +31,7 @@ export interface ITransactionsListProps {
       name: string;
     }[];
   }[];
-  onDelete(id: string): Promise<void>;
+  onDelete(id: string): void;
 }
 
 const TransactionsList: FC<ITransactionsListProps> = ({

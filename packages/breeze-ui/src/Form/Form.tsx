@@ -1,5 +1,6 @@
 import { Form as FormikForm, Formik, FormikValues } from 'formik';
 import React, { FC, memo, ReactNode } from 'react';
+import { ObjectSchema } from 'yup';
 import Button from '../Button/Button';
 import Col from '../Col/Col';
 import Row from '../Row/Row';
@@ -44,7 +45,7 @@ export interface IFormProps {
   onPreSubmit?(values: FormikValues): FormikValues | Promise<FormikValues>;
   onSubmit(values: FormikValues): void | Promise<void>;
   submitLabel: string;
-  validationSchema: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  validationSchema: ObjectSchema<FormikValues>;
 }
 
 const Form: FC<IFormProps> = ({

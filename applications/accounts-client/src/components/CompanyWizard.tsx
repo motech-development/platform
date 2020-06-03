@@ -67,7 +67,7 @@ export type FormSchema = typeof formSchema;
 export interface ICompanyWizardProps {
   backTo: string;
   loading: boolean;
-  onSave(value: FormSchema): Promise<void>;
+  onSave(value: FormSchema): void;
 }
 
 const CompanyWizard: FC<ICompanyWizardProps> = ({
@@ -82,7 +82,7 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
   const company = useCompanyDetails();
   const contact = useContactDetails();
   const vat = useVatSettings();
-  const validationSchema = object().shape({
+  const validationSchema = object<FormSchema>().shape({
     balance: object().shape({
       balance: number().required(
         t('company-form.accounts-settings.balance.required'),

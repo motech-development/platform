@@ -37,7 +37,7 @@ export interface IClientFormProps {
   companyId?: string;
   initialValues?: FormSchema;
   loading: boolean;
-  onSave(value: FormSchema): Promise<void>;
+  onSave(value: FormSchema): void;
 }
 
 const ClientForm: FC<IClientFormProps> = ({
@@ -53,7 +53,7 @@ const ClientForm: FC<IClientFormProps> = ({
   const { t } = useTranslation('clients');
   const address = useAddress();
   const contact = useContactDetails();
-  const validationSchema = object().shape({
+  const validationSchema = object<FormSchema>().shape({
     address,
     companyId: string().required(),
     contact,

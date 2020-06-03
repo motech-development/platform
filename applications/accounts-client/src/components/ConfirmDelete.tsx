@@ -14,7 +14,7 @@ export interface IConfirmDeleteProps {
   loading: boolean;
   name: string;
   onCancel(): void;
-  onDelete(input: FormSchema): Promise<void>;
+  onDelete(input: FormSchema): void;
 }
 
 const ConfirmDelete: FC<IConfirmDeleteProps> = ({
@@ -24,7 +24,7 @@ const ConfirmDelete: FC<IConfirmDeleteProps> = ({
   onDelete,
 }) => {
   const { t } = useTranslation('confirm-delete');
-  const validationSchema = object().shape({
+  const validationSchema = object<FormSchema>().shape({
     confirmation: string()
       .oneOf(
         [name],
