@@ -34,7 +34,7 @@ export const handler = apiGatewayHandler(async event => {
         items: data.data.map(
           ({ accountIdentifications, balance, currency, id, type }) => ({
             accountIdentifications,
-            balance: parseFloat(parseFloat(balance).toFixed(2)),
+            balance: Math.round(parseFloat(balance) * 1e2) / 1e2,
             currency,
             id,
             type,
