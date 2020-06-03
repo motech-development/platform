@@ -1,10 +1,12 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   Button,
-  Card,
   Col,
+  DataTable,
+  LinkButton,
   PageTitle,
   Row,
+  TableCell,
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
@@ -13,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
 import Currency from '../../../../components/Currency';
-import DataList from '../../../../components/DataList';
 import ErrorCard from '../../../../components/ErrorCard';
 import GET_BANK_ACCOUNTS, {
   IGetBankAccountsInput,
@@ -77,8 +78,8 @@ const SelectAccount: FC = () => {
     return (
       <ErrorCard
         backTo={`/my-companies/settings/${companyId}`}
-        title={t('select-account.error')}
-        description={t('select-account.error-lead')}
+        title={t('select-account.errors.failure.title')}
+        description={t('select-account.errors.failure.description')}
       />
     );
   }
@@ -92,50 +93,75 @@ const SelectAccount: FC = () => {
             subTitle={t('select-account.sub-title')}
           />
 
-          <DataList
-            items={data.getBankAccounts.items}
-            render={items => (
-              <Row>
-                {items.map(({ balance, currency, id, type }) => (
-                  <Col key={id}>
-                    <Card>
-                      <Row>
-                        <Col sm={6} verticalAlign="middle">
-                          <Typography
-                            component="h3"
-                            variant="h4"
-                            margin={balance ? 'md' : 'none'}
-                          >
-                            {type}
-                          </Typography>
+          <Row>
+            <Col>
+              <DataTable
+                items={data.getBankAccounts.items}
+                header={
+                  <TableCell align="left" as="th" colSpan={2}>
+                    {t('select-account.accounts')}
+                  </TableCell>
+                }
+                row={({ balance, currency, id, type }) => (
+                  <>
+                    <TableCell>
+                      <Typography
+                        component="p"
+                        variant="h6"
+                        margin={balance ? 'md' : 'none'}
+                      >
+                        {type}
+                      </Typography>
 
-                          {balance && (
-                            <Typography
-                              component="p"
-                              variant="lead"
-                              margin="none"
-                            >
-                              {t('select-account.balance')}:{' '}
-                              <Currency currency={currency} value={balance} />
-                            </Typography>
-                          )}
-                        </Col>
-                        <Col sm={6} align="right" verticalAlign="middle">
-                          <Button
-                            loading={selected === id}
-                            disabled={selected !== ''}
-                            onClick={() => selectAccount(id)}
-                          >
-                            {t('select-account.link-account')}
-                          </Button>
-                        </Col>
-                      </Row>
-                    </Card>
+                      {balance && (
+                        <Typography component="p" variant="p" margin="none">
+                          {t('select-account.balance')}:{' '}
+                          <Currency currency={currency} value={balance} />
+                        </Typography>
+                      )}
+                    </TableCell>
+
+                    <TableCell>
+                      <Button
+                        loading={selected === id}
+                        disabled={selected !== ''}
+                        onClick={() => selectAccount(id)}
+                        size="sm"
+                      >
+                        {t('select-account.link-account')}
+                      </Button>
+                    </TableCell>
+                  </>
+                )}
+                noResults={
+                  <ErrorCard
+                    backTo={`/my-companies/settings/${companyId}`}
+                    title={t('select-account.errors.no-accounts.title')}
+                    description={t(
+                      'select-account.errors.no-accounts.description',
+                    )}
+                  />
+                }
+              />
+            </Col>
+
+            {data.getBankAccounts.items.length > 0 && (
+              <Col>
+                <Row>
+                  <Col xs={12} md={3} mdOffset={10}>
+                    <LinkButton
+                      block
+                      to={`/my-companies/settings/${companyId}`}
+                      colour="secondary"
+                      size="lg"
+                    >
+                      {t('select-accounts.cancel')}
+                    </LinkButton>
                   </Col>
-                ))}
-              </Row>
+                </Row>
+              </Col>
             )}
-          />
+          </Row>
         </>
       )}
     </Connected>

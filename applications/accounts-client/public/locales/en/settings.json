@@ -36,16 +36,33 @@
     "title": "Select bank",
     "sub-title": "Pick your bank form the list below",
     "connect": "Connect",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "name": "Name",
+    "errors": {
+      "no-banks": {
+        "title": "No banks found",
+        "description": "We are unable to find any banks."
+      }
+    }
   },
   "select-account": {
     "title": "Select account",
     "sub-title": "Choose an account to link",
+    "cancel": "Cancel",
     "balance": "Balance",
     "link-account": "Link account",
     "success": "Bank account linked",
-    "error": "Error",
-    "error-lead": "Unable to connect to retrieve accounts. Please try again."
+    "accounts": "Accounts",
+    "errors": {
+      "failure": {
+        "title": "Error",
+        "description": "Unable to connect to retrieve accounts. Please try again."
+      },
+      "no-accounts": {
+        "title": "No accounts found",
+        "description": "There are no accounts to link."
+      }
+    }
   },
   "callback": {
     "error": "Error",

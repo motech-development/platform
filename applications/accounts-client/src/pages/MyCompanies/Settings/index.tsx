@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks';
-import { ProtectedRoute } from '@motech-development/auth';
+import { ConditionalRoute, ProtectedRoute } from '@motech-development/auth';
 import React, { FC, lazy, memo } from 'react';
-import { Route, Switch, useParams } from 'react-router-dom';
+import { Switch, useParams } from 'react-router-dom';
 import GET_BANK_SETTINGS, {
   IGetBankSettingsInput,
   IGetBankSettingsOutput,
@@ -30,12 +30,12 @@ const Routes: FC = () => {
     <Connected error={error} loading={loading}>
       {data && (
         <Switch>
-          {!data.getBankSettings.account && (
-            <Route
-              component={Bank}
-              path="/my-companies/settings/:companyId/bank"
-            />
-          )}
+          <ConditionalRoute
+            component={Bank}
+            path="/my-companies/settings/:companyId/bank"
+            condition={!data.getBankSettings.account}
+            redirect="/not-found"
+          />
           <ProtectedRoute
             exact
             component={Settings}
