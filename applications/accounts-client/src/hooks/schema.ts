@@ -37,10 +37,6 @@ export const useCompanyDetails = () => {
       .matches(regex.companyNumber, t('company-details.company-number.invalid'))
       .required(t('company-details.company-number.required')),
     name: string().required(t('company-details.name.required')),
-    vatRegistration: string().matches(
-      regex.vatRegistration,
-      t('company-details.vat-registration.invalid'),
-    ),
   });
 };
 
@@ -63,5 +59,21 @@ export const useVatSettings = () => {
   return object().shape({
     charge: number().required(t('vat-settings.charge.required')),
     pay: number().required(t('vat-settings.pay.required')),
+    registration: string().matches(
+      regex.vatRegistration,
+      t('vat-settings.registration.invalid'),
+    ),
+    scheme: string()
+      .oneOf(['flatRate', 'none', 'standard'])
+      .required(t('vat-settings.scheme.invalid')),
+  });
+};
+
+export const useYearEnd = () => {
+  const { t } = useTranslation('schema');
+
+  return object().shape({
+    day: number().required(t('year-end.day.required')),
+    month: number().required(t('year-end.month.required')),
   });
 };

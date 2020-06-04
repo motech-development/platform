@@ -12,6 +12,10 @@ export interface IUpdateSettingsInput {
       charge: number;
       pay: number;
     };
+    yearEnd: {
+      day: number;
+      month: number;
+    };
   };
 }
 
@@ -26,6 +30,10 @@ export interface IUpdateSettingsOutput {
     vat: {
       charge: number;
       pay: number;
+    };
+    yearEnd: {
+      day: number;
+      month: number;
     };
   };
 }
@@ -42,6 +50,10 @@ const UPDATE_SETTINGS = gql`
       vat {
         charge
         pay
+      }
+      yearEnd {
+        day
+        month
       }
     }
   }

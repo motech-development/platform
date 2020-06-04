@@ -61,6 +61,9 @@
         "label": "VAT paid",
         "required": "You must set the VAT paid"
       }
+    },
+    "year-end-settings": {
+      "heading": "Year end settings"
     }
   }
 }

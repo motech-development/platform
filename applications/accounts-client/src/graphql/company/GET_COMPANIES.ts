@@ -26,7 +26,6 @@ export interface IGetCompaniesOutput {
       };
       id: string;
       name: string;
-      vatRegistration: string;
     }[];
   };
 }
@@ -53,7 +52,6 @@ const GET_COMPANIES = gql`
         }
         id
         name
-        vatRegistration
       }
     }
   }

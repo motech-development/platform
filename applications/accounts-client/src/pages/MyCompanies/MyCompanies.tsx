@@ -46,60 +46,38 @@ const MyCompanies: FC = () => {
         </>
 
         {data &&
-          data.getCompanies.items.map(
-            ({ companyNumber, id, name, vatRegistration }) => (
-              <Fragment key={id}>
-                <Card padding="lg">
-                  <Typography
-                    rule
-                    component="h3"
-                    variant="h3"
-                    align="center"
-                    margin="lg"
-                  >
-                    {name}
-                  </Typography>
-
-                  <Typography component="h4" variant="h5" align="center">
-                    {t('my-companies.company-number')}
-                  </Typography>
-
-                  <Typography
-                    component="p"
-                    variant="p"
-                    align="center"
-                    margin={vatRegistration ? 'lg' : 'none'}
-                  >
-                    {companyNumber}
-                  </Typography>
-
-                  {vatRegistration && (
-                    <>
-                      <Typography component="h4" variant="h5" align="center">
-                        {t('my-companies.vat-registration')}
-                      </Typography>
-                      <Typography
-                        component="p"
-                        variant="p"
-                        align="center"
-                        margin="none"
-                      >
-                        {vatRegistration}
-                      </Typography>
-                    </>
-                  )}
-                </Card>
-
-                <LinkButton
-                  block
-                  to={`/my-companies/dashboard/${id}`}
-                  size="lg"
+          data.getCompanies.items.map(({ companyNumber, id, name }) => (
+            <Fragment key={id}>
+              <Card padding="lg">
+                <Typography
+                  rule
+                  component="h3"
+                  variant="h3"
+                  align="center"
+                  margin="lg"
                 >
-                  {t('my-companies.select-company')}
-                </LinkButton>
-              </Fragment>
-            ),
-          )}
+                  {name}
+                </Typography>
+
+                <Typography component="h4" variant="h5" align="center">
+                  {t('my-companies.company-number')}
+                </Typography>
+
+                <Typography
+                  component="p"
+                  variant="p"
+                  align="center"
+                  margin="none"
+                >
+                  {companyNumber}
+                </Typography>
+              </Card>
+
+              <LinkButton block to={`/my-companies/dashboard/${id}`} size="lg">
+                {t('my-companies.select-company')}
+              </LinkButton>
+            </Fragment>
+          ))}
       </Masonry>
     </Connected>
   );

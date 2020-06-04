@@ -38,7 +38,6 @@ describe('MyCompanies', () => {
                   },
                   id: '1',
                   name: 'Company with VAT',
-                  vatRegistration: 'GB123456789',
                 },
                 {
                   address: {
@@ -59,7 +58,6 @@ describe('MyCompanies', () => {
                   },
                   id: '2',
                   name: 'Company without VAT',
-                  vatRegistration: null,
                 },
               ],
             },
@@ -89,20 +87,6 @@ describe('MyCompanies', () => {
     const { findByText } = component;
 
     await expect(findByText('87654321')).resolves.toBeInTheDocument();
-  });
-
-  it('should show the company VAT reg number', async () => {
-    const { findByText } = component;
-
-    await expect(findByText('GB123456789')).resolves.toBeInTheDocument();
-  });
-
-  it('should show the correct number of VAT reg numbers', async () => {
-    const { findAllByText } = component;
-
-    const heading = await findAllByText('my-companies.vat-registration');
-
-    expect(heading.length).toEqual(1);
   });
 
   it('should show a link to the dashboard location', async () => {

@@ -10,7 +10,6 @@ type Company {
   contact: Contact
   id: ID
   name: String
-  vatRegistration: String
 }
 
 input CompanyInput {
@@ -21,11 +20,11 @@ input CompanyInput {
   contact: ContactInput!
   id: ID!
   name: String!
-  vatRegistration: String
 }
 
 input CreateCompanyInput {
   balance: BalanceInput!
   company: CompanyInput!
   vat: VatSettingsInput!
+  yearEnd: SettingsYearEndInput!
 }

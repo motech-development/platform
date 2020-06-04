@@ -1,10 +1,20 @@
+enum VatScheme {
+  flatRate
+  none
+  standard
+}
+
 type VatSettings {
   charge: Float
   pay: Float
+  registration: String
+  scheme: VatScheme
 }
 
 input VatSettingsInput {
   __typename: String
   charge: Float!
   pay: Float!
+  registration: String
+  scheme: VatScheme!
 }

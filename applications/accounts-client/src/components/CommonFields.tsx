@@ -1,4 +1,11 @@
-import { TextBox } from '@motech-development/breeze-ui';
+import {
+  Col,
+  Radio,
+  Row,
+  Select,
+  TextBox,
+} from '@motech-development/breeze-ui';
+import moment from 'moment';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -97,12 +104,6 @@ export const CompanyDetailsFields: FC<ICompanyDetailsFieldsProps> = memo(
           label={t('company-details.company-number')}
           format="########"
         />
-
-        <TextBox
-          name={name('vatRegistration', prefix)}
-          label={t('company-details.vat-registration')}
-          format="GB#########"
-        />
       </>
     );
   },
@@ -138,9 +139,35 @@ export interface IVatSettingsFieldsProps {
 
 export const VatSettingsFields: FC<IVatSettingsFieldsProps> = ({ prefix }) => {
   const { t } = useTranslation('common-fields');
+  const schemes = [
+    {
+      name: t('vat-settings.scheme.none'),
+      value: 'none',
+    },
+    {
+      name: t('vat-settings.scheme.standard'),
+      value: 'standard',
+    },
+    {
+      name: t('vat-settings.scheme.flatRate'),
+      value: 'flatRate',
+    },
+  ];
 
   return (
     <>
+      <Radio
+        label={t('vat-settings.scheme.label')}
+        name={name('scheme', prefix)}
+        options={schemes}
+      />
+
+      <TextBox
+        name={name('registration', prefix)}
+        label={t('vat-settings.registration')}
+        format="GB#########"
+      />
+
       <TextBox
         suffix="%"
         name={name('charge', prefix)}
@@ -153,5 +180,47 @@ export const VatSettingsFields: FC<IVatSettingsFieldsProps> = ({ prefix }) => {
         label={t('vat-settings.pay')}
       />
     </>
+  );
+};
+
+export interface IYearEndFieldsProps {
+  prefix?: string;
+}
+
+export const YearEndFields: FC<IYearEndFieldsProps> = ({ prefix }) => {
+  const { t } = useTranslation('common-fields');
+  const days = [...Array(31)].map((_, i) => {
+    const day = (i + 1).toString();
+
+    return {
+      name: day,
+      value: day,
+    };
+  });
+  const months = moment.months().map((month, value) => ({
+    name: month,
+    value: value.toString(),
+  }));
+
+  return (
+    <Row>
+      <Col xs={4}>
+        <Select
+          name={name('day', prefix)}
+          label={t('year-end.day.label')}
+          placeholder={t('year-end.day.placeholder')}
+          options={days}
+        />
+      </Col>
+
+      <Col xs={8}>
+        <Select
+          name={name('month', prefix)}
+          label={t('year-end.month.label')}
+          placeholder={t('year-end.month.placeholder')}
+          options={months}
+        />
+      </Col>
+    </Row>
   );
 };

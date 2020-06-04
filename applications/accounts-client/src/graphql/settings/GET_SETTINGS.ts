@@ -25,6 +25,12 @@ export interface IGetSettingsOutput {
     vat: {
       charge: number;
       pay: number;
+      registration: string;
+      scheme: string;
+    };
+    yearEnd: {
+      day: number;
+      month: number;
     };
   };
 }
@@ -51,6 +57,12 @@ const GET_SETTINGS = gql`
       vat {
         charge
         pay
+        registration
+        scheme
+      }
+      yearEnd {
+        day
+        month
       }
     }
   }

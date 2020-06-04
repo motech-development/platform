@@ -28,9 +28,6 @@
     "company-number": {
       "required": "Company number is required",
       "invalid": "Company number is invalid"
-    },
-    "vat-registration": {
-      "invalid": "VAT registration number is invalid"
     }
   },
   "contact-details": {
@@ -49,6 +46,20 @@
     },
     "pay": {
       "required": "Please enter a value. Set to 0 if not needed"
+    },
+    "registration": {
+      "invalid": "VAT registration number is invalid"
+    },
+    "scheme": {
+      "required": "Please select a scheme"
+    }
+  },
+  "year-end": {
+    "day": {
+      "required": "Day is required"
+    },
+    "month": {
+      "required": "Month is required"
     }
   }
 }

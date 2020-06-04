@@ -18,6 +18,7 @@ import {
   useCompanyDetails,
   useContactDetails,
   useVatSettings,
+  useYearEnd,
 } from '../hooks/schema';
 import {
   AddressFields,
@@ -25,7 +26,10 @@ import {
   CompanyDetailsFields,
   ContactDetailsFields,
   VatSettingsFields,
+  YearEndFields,
 } from './CommonFields';
+
+const today = new Date();
 
 const formSchema = {
   balance: {
@@ -54,11 +58,14 @@ const formSchema = {
     },
     id: '',
     name: '',
-    vatRegistration: '',
   },
   vat: {
     charge: 20,
     pay: 20,
+  },
+  yearEnd: {
+    day: today.getDate(),
+    month: today.getMonth(),
   },
 };
 
@@ -82,6 +89,7 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
   const company = useCompanyDetails();
   const contact = useContactDetails();
   const vat = useVatSettings();
+  const yearEnd = useYearEnd();
   const validationSchema = object<FormSchema>().shape({
     balance: object().shape({
       balance: number().required(
@@ -104,6 +112,7 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
         contact,
       }),
     vat,
+    yearEnd,
   });
 
   return (
@@ -203,32 +212,52 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
               </Col>
 
               <Col xs={12} md={6}>
-                <Card padding="lg">
-                  <Typography rule component="h3" variant="h3">
-                    {t('company-form.accounts-settings.heading')}
-                  </Typography>
+                <Row>
+                  <Col>
+                    <Card padding="lg">
+                      <Typography rule component="h3" variant="h3">
+                        {t('company-form.year-end-settings.heading')}
+                      </Typography>
 
-                  <TextBox
-                    decimalScale={2}
-                    name="balance.balance"
-                    label={t('company-form.accounts-settings.balance.label')}
-                    prefix={currency}
-                  />
+                      <YearEndFields prefix="yearEnd" />
+                    </Card>
+                  </Col>
 
-                  <TextBox
-                    decimalScale={2}
-                    name="balance.vat.owed"
-                    label={t('company-form.accounts-settings.vat-owed.label')}
-                    prefix={currency}
-                  />
+                  <Col>
+                    <Card padding="lg">
+                      <Typography rule component="h3" variant="h3">
+                        {t('company-form.accounts-settings.heading')}
+                      </Typography>
 
-                  <TextBox
-                    decimalScale={2}
-                    name="balance.vat.paid"
-                    label={t('company-form.accounts-settings.vat-paid.label')}
-                    prefix={currency}
-                  />
-                </Card>
+                      <TextBox
+                        decimalScale={2}
+                        name="balance.balance"
+                        label={t(
+                          'company-form.accounts-settings.balance.label',
+                        )}
+                        prefix={currency}
+                      />
+
+                      <TextBox
+                        decimalScale={2}
+                        name="balance.vat.owed"
+                        label={t(
+                          'company-form.accounts-settings.vat-owed.label',
+                        )}
+                        prefix={currency}
+                      />
+
+                      <TextBox
+                        decimalScale={2}
+                        name="balance.vat.paid"
+                        label={t(
+                          'company-form.accounts-settings.vat-paid.label',
+                        )}
+                        prefix={currency}
+                      />
+                    </Card>
+                  </Col>
+                </Row>
               </Col>
             </Row>
           </Stepper>

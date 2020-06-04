@@ -39,6 +39,7 @@
 #set($companyData = "$owner:$company.name")
 #set($settingsData = "$owner:$id:Settings")
 #set($vat = $ctx.args.input.vat)
+#set($yearEnd = $ctx.args.input.yearEnd)
 #set($input = $company.put("address", $ctx.stash.address))
 
 {
@@ -124,6 +125,7 @@
           "owner": $util.dynamodb.toDynamoDBJson($owner),
           "categories": $util.dynamodb.toDynamoDBJson($categories),
           "vat": $util.dynamodb.toDynamoDBJson($vat),
+          "yearEnd": $util.dynamodb.toDynamoDBJson($yearEnd)
         },
         "condition": {
           "expression": "attribute_not_exists(id)"

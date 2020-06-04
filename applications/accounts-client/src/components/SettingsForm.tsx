@@ -11,8 +11,8 @@ import { FieldArray, Form, Formik } from 'formik';
 import React, { FC, Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { array, boolean, object, string } from 'yup';
-import { useVatSettings } from '../hooks/schema';
-import { VatSettingsFields } from './CommonFields';
+import { useVatSettings, useYearEnd } from '../hooks/schema';
+import { VatSettingsFields, YearEndFields } from './CommonFields';
 
 export type FormSchema = {
   categories: {
@@ -24,6 +24,12 @@ export type FormSchema = {
   vat: {
     charge: number;
     pay: number;
+    registration: string;
+    scheme: string;
+  };
+  yearEnd: {
+    day: number;
+    month: number;
   };
 };
 
@@ -51,6 +57,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
   const { t } = useTranslation('settings');
   const { connected, disconnectLoading, link, name, onDisconnect } = bank;
   const vat = useVatSettings();
+  const yearEnd = useYearEnd();
   const validationSchema = object<FormSchema>().shape({
     categories: array().of(
       object().shape({
@@ -65,6 +72,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
     ),
     id: string().required(),
     vat,
+    yearEnd,
   });
 
   return (
@@ -166,39 +174,53 @@ const SettingsForm: FC<ISettingsFormProps> = ({
             </Col>
 
             <Col xs={12} md={6}>
-              <Card padding="lg">
-                <Typography rule component="h3" variant="h3">
-                  {t('settings-form.bank.title')}
-                </Typography>
+              <Row>
+                <Col>
+                  <Card padding="lg">
+                    <Typography rule component="h3" variant="h3">
+                      {t('settings-form.year-end.title')}
+                    </Typography>
 
-                {connected ? (
-                  <Typography component="p" variant="lead" margin="none">
-                    {t('settings-form.bank.lead-connected', {
-                      name,
-                    })}
-                  </Typography>
-                ) : (
-                  <Typography component="p" variant="lead" margin="none">
-                    {t('settings-form.bank.lead-connect')}
-                  </Typography>
-                )}
-              </Card>
+                    <YearEndFields prefix="yearEnd" />
+                  </Card>
+                </Col>
 
-              {connected ? (
-                <Button
-                  block
-                  size="lg"
-                  colour="danger"
-                  loading={disconnectLoading}
-                  onClick={onDisconnect}
-                >
-                  {t('settings-form.bank.disconnect')}
-                </Button>
-              ) : (
-                <LinkButton block size="lg" to={link}>
-                  {t('settings-form.bank.connect')}
-                </LinkButton>
-              )}
+                <Col>
+                  <Card padding="lg">
+                    <Typography rule component="h3" variant="h3">
+                      {t('settings-form.bank.title')}
+                    </Typography>
+
+                    {connected ? (
+                      <Typography component="p" variant="lead" margin="none">
+                        {t('settings-form.bank.lead-connected', {
+                          name,
+                        })}
+                      </Typography>
+                    ) : (
+                      <Typography component="p" variant="lead" margin="none">
+                        {t('settings-form.bank.lead-connect')}
+                      </Typography>
+                    )}
+                  </Card>
+
+                  {connected ? (
+                    <Button
+                      block
+                      size="lg"
+                      colour="danger"
+                      loading={disconnectLoading}
+                      onClick={onDisconnect}
+                    >
+                      {t('settings-form.bank.disconnect')}
+                    </Button>
+                  ) : (
+                    <LinkButton block size="lg" to={link}>
+                      {t('settings-form.bank.connect')}
+                    </LinkButton>
+                  )}
+                </Col>
+              </Row>
             </Col>
 
             <Col xs={12} md={6}>

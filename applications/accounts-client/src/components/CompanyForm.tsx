@@ -41,7 +41,6 @@ const formSchema = {
   },
   id: '',
   name: '',
-  vatRegistration: '',
 };
 
 export type FormSchema = typeof formSchema;

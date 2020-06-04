@@ -18,6 +18,9 @@
       "connect": "Connect",
       "disconnect": "Disconnect from bank"
     },
+    "year-end": {
+      "title": "Year end settings"
+    },
     "expense-categories": {
       "title": "Expense categories",
       "add-category": "Add a new category",

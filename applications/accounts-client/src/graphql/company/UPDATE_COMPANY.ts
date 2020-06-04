@@ -20,7 +20,6 @@ export interface IUpdateCompanyInput {
     };
     id: string;
     name: string;
-    vatRegistration: string;
   };
 }
 
@@ -44,7 +43,6 @@ export interface IUpdateCompanyOutput {
     };
     id: string;
     name: string;
-    vatRegistration: string;
   };
 }
 
@@ -69,7 +67,6 @@ const UPDATE_COMPANY = gql`
       }
       id
       name
-      vatRegistration
     }
   }
 `;

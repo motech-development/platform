@@ -12,8 +12,7 @@
   },
   "company-details": {
     "name": "Name*",
-    "company-number": "Company number*",
-    "vat-registration": "VAT registration number"
+    "company-number": "Company number*"
   },
   "contact-details": {
     "email": "Email address*",
@@ -21,6 +20,23 @@
   },
   "vat-settings": {
     "charge": "VAT to charge",
-    "pay": "VAT to pay"
+    "pay": "VAT to pay",
+    "registration": "VAT registration number",
+    "scheme": {
+      "label": "VAT scheme",
+      "none": "None",
+      "standard": "Standard",
+      "flatRate": "Flat rate"
+    }
+  },
+  "year-end": {
+    "day": {
+      "label": "Day",
+      "placeholder": "Select day"
+    },
+    "month": {
+      "label": "Month",
+      "placeholder": "Select month"
+    }
   }
 }
