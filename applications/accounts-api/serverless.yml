@@ -157,7 +157,6 @@ custom:
             - bank
             - companyNumber
             - telephone
-            - vatRegistration
             - updateCompany
           request: company/updateCompany/Mutation.updateCompany.req.vtl
           response: company/updateCompany/Mutation.updateCompany.res.vtl

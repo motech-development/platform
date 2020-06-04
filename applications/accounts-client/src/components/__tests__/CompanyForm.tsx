@@ -32,66 +32,45 @@ describe('CompanyForm', () => {
       },
       id: 'company-uuid',
       name: 'New company',
-      vatRegistration: 'GB123456789',
     };
     onSave = jest.fn();
   });
 
-  describe('without pre-populated data', () => {
-    it('should render the form', async () => {
-      const { findByRole } = render(
-        <TestProvider>
-          <CompanyForm
-            backTo="/test"
-            loading={false}
-            onSave={value => onSave(value)}
-          />
-        </TestProvider>,
-      );
+  it('should render the form', async () => {
+    const { findByRole } = render(
+      <TestProvider>
+        <CompanyForm
+          initialValues={initialValues}
+          loading={false}
+          backTo="/test"
+          onSave={value => onSave(value)}
+        />
+      </TestProvider>,
+    );
 
-      const form = await waitForElement(() => findByRole('form'));
+    const form = await waitForElement(() => findByRole('form'));
 
-      expect(form).toBeInTheDocument();
-    });
+    expect(form).toBeInTheDocument();
   });
 
-  describe('with pre-populated data', () => {
-    it('should render the form', async () => {
-      const { findByRole } = render(
-        <TestProvider>
-          <CompanyForm
-            initialValues={initialValues}
-            loading={false}
-            backTo="/test"
-            onSave={value => onSave(value)}
-          />
-        </TestProvider>,
-      );
+  it('should submit the form with the correct data', async () => {
+    const { findByRole } = render(
+      <TestProvider>
+        <CompanyForm
+          initialValues={initialValues}
+          loading={false}
+          backTo="/test"
+          onSave={value => onSave(value)}
+        />
+      </TestProvider>,
+    );
 
-      const form = await waitForElement(() => findByRole('form'));
+    await wait(async () => {
+      const button = await findByRole('button');
 
-      expect(form).toBeInTheDocument();
+      fireEvent.click(button);
     });
 
-    it('should submit the form with the correct data', async () => {
-      const { findByRole } = render(
-        <TestProvider>
-          <CompanyForm
-            initialValues={initialValues}
-            loading={false}
-            backTo="/test"
-            onSave={value => onSave(value)}
-          />
-        </TestProvider>,
-      );
-
-      await wait(async () => {
-        const button = await findByRole('button');
-
-        fireEvent.click(button);
-      });
-
-      expect(onSave).toHaveBeenCalledWith(initialValues);
-    });
+    expect(onSave).toHaveBeenCalledWith(initialValues);
   });
 });

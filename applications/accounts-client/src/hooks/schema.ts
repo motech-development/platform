@@ -65,7 +65,7 @@ export const useVatSettings = () => {
     ),
     scheme: string()
       .oneOf(['flatRate', 'none', 'standard'])
-      .required(t('vat-settings.scheme.invalid')),
+      .required(t('vat-settings.scheme.required')),
   });
 };
 

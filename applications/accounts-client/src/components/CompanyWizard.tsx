@@ -62,6 +62,8 @@ const formSchema = {
   vat: {
     charge: 20,
     pay: 20,
+    registration: '',
+    scheme: '',
   },
   yearEnd: {
     day: today.getDate(),

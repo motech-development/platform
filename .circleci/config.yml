@@ -91,39 +91,39 @@ jobs:
           path: reports/junit
       - sonarcloud/scan
 
-  # smoke-test-accounts-client:
-  #   docker:
-  #     - image: cypress/base:12.14.0
-  #       environment:
-  #         TERM: xterm
-  #   working_directory: ~/repo
-  #   steps:
-  #     - checkout
-  #     - <<: *attach_workspace
-  #     - <<: *restore_dependencies
-  #     - <<: *restore_cache
-  #     - run:
-  #         command: mv -v /home/circleci/repo/node_modules .
-  #         name: Move node modules
-  #     - run:
-  #         command: mv -v /home/circleci/.cache ~/
-  #         name: Move Cypress cache
-  #     - run:
-  #         background: true
-  #         command: npx serve -s ./applications/accounts-client/build --listen 3000
-  #         name: Start application
-  #     - run:
-  #         command: npx wait-on http://localhost:3000
-  #         name: Wait for application to start
-  #     - run:
-  #         command: npm run e2e:ci -- --scope=@motech-development/accounts-client
-  #         name: Smoke tests
-  #     - store_test_results:
-  #         path: reports/junit
-  #     - store_artifacts:
-  #         path: applications/accounts-client/cypress/videos
-  #     - store_artifacts:
-  #         path: applications/accounts-client/cypress/screenshots
+  smoke-test-accounts-client:
+    docker:
+      - image: cypress/base:12.14.0
+        environment:
+          TERM: xterm
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - <<: *restore_cache
+      - run:
+          command: mv -v /home/circleci/repo/node_modules .
+          name: Move node modules
+      - run:
+          command: mv -v /home/circleci/.cache ~/
+          name: Move Cypress cache
+      - run:
+          background: true
+          command: npx serve -s ./applications/accounts-client/build --listen 3000
+          name: Start application
+      - run:
+          command: npx wait-on http://localhost:3000
+          name: Wait for application to start
+      - run:
+          command: npm run e2e:ci -- --scope=@motech-development/accounts-client
+          name: Smoke tests
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: applications/accounts-client/cypress/videos
+      - store_artifacts:
+          path: applications/accounts-client/cypress/screenshots
 
   build-accounts-client-develop:
     docker:
@@ -424,15 +424,15 @@ workflows:
           requires:
             - setup
 
-      # - smoke-test-accounts-client:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - /bugfix\/.*/
-      #           - /feature\/.*/
-      #           - /hotfix\/.*/
-      #     requires:
-      #       - build-accounts-client-develop
+      - smoke-test-accounts-client:
+          filters:
+            branches:
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
+          requires:
+            - build-accounts-client-develop
 
       - build-accounts-client-production:
           filters:

@@ -47,14 +47,14 @@ export type FormSchema = typeof formSchema;
 
 export interface ICompanyFormProps {
   backTo: string;
-  initialValues?: FormSchema;
+  initialValues: FormSchema;
   loading: boolean;
   onSave(value: FormSchema): void;
 }
 
 const CompanyForm: FC<ICompanyFormProps> = ({
   backTo,
-  initialValues = formSchema,
+  initialValues,
   loading,
   onSave,
 }) => {
