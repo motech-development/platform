@@ -102,7 +102,7 @@ const TransactionForm: FC<ITransactionForm> = ({
   const [disableInput, setDisableInput] = useState(formValues.category === '');
   const { t } = useTranslation('accounts');
   const currency = t('transaction-form.currency');
-  const validationSchema = object().shape({
+  const validationSchema = object<FormSchema>().shape({
     amount: number().required(
       t('transaction-form.transaction-amount.amount.required'),
     ),

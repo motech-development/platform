@@ -1,18 +1,19 @@
 import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks';
 import {
   Button,
-  Card,
   Col,
+  DataTable,
   LinkButton,
   PageTitle,
   Row,
+  TableCell,
   Typography,
 } from '@motech-development/breeze-ui';
 import React, { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
-import DataList from '../../../../components/DataList';
+import ErrorCard from '../../../../components/ErrorCard';
 import CREATE_BANK_CONNECTION, {
   ICreateBankConnectionInput,
   ICreateBankConnectionOutput,
@@ -83,52 +84,61 @@ const Bank: FC = () => {
             subTitle={t('select-bank.sub-title')}
           />
 
-          <DataList
-            items={data.getBanks.items}
-            render={items => (
-              <Row>
-                {items.map(({ id, name }) => (
-                  <Col key={id}>
-                    <Card>
-                      <Row>
-                        <Col xs={6} verticalAlign="middle">
-                          <Typography component="h3" variant="h4" margin="none">
-                            {name}
-                          </Typography>
-                        </Col>
-                        <Col xs={6} align="right">
-                          <Button
-                            loading={selected === id}
-                            disabled={selected !== ''}
-                            onClick={() =>
-                              connect(id, data.getBankSettings.user)
-                            }
-                          >
-                            {t('select-bank.connect')}
-                          </Button>
-                        </Col>
-                      </Row>
-                    </Card>
-                  </Col>
-                ))}
-
-                <Col>
-                  <Row>
-                    <Col xs={12} md={3} mdOffset={10}>
-                      <LinkButton
-                        block
-                        to={`/my-companies/settings/${companyId}`}
-                        colour="secondary"
-                        size="lg"
+          <Row>
+            <Col>
+              <DataTable
+                items={data.getBanks.items}
+                header={
+                  <TableCell align="left" as="th" colSpan={2}>
+                    {t('select-bank.name')}
+                  </TableCell>
+                }
+                row={({ id, name }) => (
+                  <>
+                    <TableCell>
+                      <Typography component="p" variant="h5" margin="none">
+                        {name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        loading={selected === id}
+                        disabled={selected !== ''}
+                        onClick={() => connect(id, data.getBankSettings.user)}
+                        size="sm"
                       >
-                        {t('select-bank.cancel')}
-                      </LinkButton>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
+                        {t('select-bank.connect')}
+                      </Button>
+                    </TableCell>
+                  </>
+                )}
+                noResults={
+                  <ErrorCard
+                    backTo={`/my-companies/settings/${companyId}`}
+                    title={t('select-bank.errors.no-banks.title')}
+                    description={t('select-bank.errors.no-banks.description')}
+                  />
+                }
+              />
+            </Col>
+
+            {data.getBanks.items.length > 0 && (
+              <Col>
+                <Row>
+                  <Col xs={12} md={3} mdOffset={10}>
+                    <LinkButton
+                      block
+                      to={`/my-companies/settings/${companyId}`}
+                      colour="secondary"
+                      size="lg"
+                    >
+                      {t('select-bank.cancel')}
+                    </LinkButton>
+                  </Col>
+                </Row>
+              </Col>
             )}
-          />
+          </Row>
         </>
       )}
     </Connected>

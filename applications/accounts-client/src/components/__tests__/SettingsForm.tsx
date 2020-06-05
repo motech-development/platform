@@ -38,6 +38,12 @@ describe('SettingsForm', () => {
       vat: {
         charge: 20,
         pay: 15.5,
+        registration: '',
+        scheme: 'flatRate',
+      },
+      yearEnd: {
+        day: 5,
+        month: 3,
       },
     };
 

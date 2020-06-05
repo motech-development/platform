@@ -35,10 +35,6 @@ describe('Smoke tests', () => {
           .focus()
           .type(data.company.companyNumber);
 
-        cy.get('input[id="company.vatRegistration"]')
-          .focus()
-          .type(data.company.vatRegistration);
-
         cy.get('input[id="company.bank.accountNumber"]')
           .focus()
           .type(data.company.bank.accountNumber);
@@ -72,6 +68,20 @@ describe('Smoke tests', () => {
           .type(data.company.contact.telephone);
 
         cy.get('button:contains("Settings")').click();
+
+        cy.get('input[id="vat.registration"]')
+          .focus()
+          .type(data.vat.registration);
+
+        cy.get('input[type="radio"]').check(data.vat.scheme);
+
+        cy.get('select[id="yearEnd.day"]')
+          .focus()
+          .select(data.yearEnd.day);
+
+        cy.get('select[id="yearEnd.month"]')
+          .focus()
+          .select(data.yearEnd.month);
 
         cy.get('input[id="balance.balance"]')
           .clear()
@@ -135,6 +145,16 @@ describe('Smoke tests', () => {
 
         cy.get('button:contains("Settings")').click();
 
+        cy.get('input[type="radio"]').check(data.vat.scheme);
+
+        cy.get('select[id="yearEnd.day"]')
+          .focus()
+          .select(data.yearEnd.day);
+
+        cy.get('select[id="yearEnd.month"]')
+          .focus()
+          .select(data.yearEnd.month);
+
         cy.get('input[id="vat.charge"]')
           .clear()
           .type(data.vat.charge);
@@ -176,10 +196,6 @@ describe('Smoke tests', () => {
           'have.value',
           company.companyNumber,
         );
-
-        cy.format('VAT registration', company.vatRegistration).then(value => {
-          cy.get('input[id="vatRegistration"]').should('have.value', value);
-        });
 
         cy.get('input[id="bank.accountNumber"]')
           .should('have.value', company.bank.accountNumber)
@@ -232,52 +248,84 @@ describe('Smoke tests', () => {
 
     it('should update VAT registered company settings', () => {
       cy.fixture('data/settings.json').then(res => {
-        const settings = res[0];
+        cy.fixture('data/company.json').then(companies => {
+          const settings = res[0];
+          const company = companies[0];
 
-        cy.get('a:contains("Select company")')
-          .eq(1)
-          .click();
+          cy.get('a:contains("Select company")')
+            .eq(1)
+            .click();
 
-        cy.wait(1000);
+          cy.wait(1000);
 
-        cy.get('a:contains("Manage settings")').click();
+          cy.get('a:contains("Manage settings")').click();
 
-        cy.wait(1000);
+          cy.wait(1000);
 
-        cy.get('button:contains("Add a new category")').click();
+          cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.4.name"]')
-          .focus()
-          .type(settings.categories[0].name);
+          cy.get('input[id="categories.5.name"]')
+            .focus()
+            .type(settings.categories[0].name);
 
-        cy.get('button:contains("Add a new category")').click();
+          cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.5.name"]')
-          .focus()
-          .type(settings.categories[1].name);
+          cy.get('input[id="categories.6.name"]')
+            .focus()
+            .type(settings.categories[1].name);
 
-        cy.get('input[id="categories.5.vatRate"]')
-          .clear()
-          .type(settings.categories[1].vatRate);
-
-        cy.get('button:contains("Add a new category")').click();
-
-        cy.get('input[id="categories.6.name"]')
-          .focus()
-          .type(settings.categories[2].name);
-
-        cy.get('input[id="categories.6.vatRate"]')
-          .clear()
-          .type(settings.categories[2].vatRate);
-
-        cy.format('percentage', '20').then(value => {
-          cy.get('input[id="vat.pay"]')
-            .should('have.value', value)
+          cy.get('input[id="categories.6.vatRate"]')
             .clear()
-            .type(settings.vat.pay);
-        });
+            .type(settings.categories[1].vatRate);
 
-        cy.get('button[type="submit"]').click();
+          cy.get('button:contains("Add a new category")').click();
+
+          cy.get('input[id="categories.7.name"]')
+            .focus()
+            .type(settings.categories[2].name);
+
+          cy.get('input[id="categories.7.vatRate"]')
+            .clear()
+            .type(settings.categories[2].vatRate);
+
+          cy.format('percentage', '20').then(value => {
+            cy.get('input[id="vat.pay"]')
+              .should('have.value', value)
+              .clear()
+              .type(settings.vat.pay);
+          });
+
+          cy.format('VAT registration', company.vat.registration).then(
+            value => {
+              cy.get('input[id="vat.registration"]').should(
+                'have.value',
+                value,
+              );
+            },
+          );
+
+          cy.get('input[id="vat.registration"]')
+            .clear()
+            .type(settings.vat.registration);
+
+          cy.get(`input[type="radio"][value="${company.vat.scheme}"]`).should(
+            'be.checked',
+          );
+
+          cy.get('input[type="radio"]').check(settings.vat.scheme);
+
+          cy.get('select[id="yearEnd.day"]').should(
+            'have.value',
+            company.yearEnd.day,
+          );
+
+          cy.get('select[id="yearEnd.month"]').should(
+            'have.value',
+            company.yearEnd.month,
+          );
+
+          cy.get('button[type="submit"]').click();
+        });
       });
     });
 
@@ -295,24 +343,12 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
-        cy.get('input[id="categories.4.name"]').should(
+        cy.get('input[id="categories.5.name"]').should(
           'have.value',
           settings.categories[0].name,
         );
 
         cy.format('percentage', settings.categories[0].vatRate).then(value => {
-          cy.get('input[id="categories.4.vatRate"]').should(
-            'have.value',
-            value,
-          );
-        });
-
-        cy.get('input[id="categories.5.name"]').should(
-          'have.value',
-          settings.categories[1].name,
-        );
-
-        cy.format('percentage', settings.categories[1].vatRate).then(value => {
           cy.get('input[id="categories.5.vatRate"]').should(
             'have.value',
             value,
@@ -321,11 +357,23 @@ describe('Smoke tests', () => {
 
         cy.get('input[id="categories.6.name"]').should(
           'have.value',
+          settings.categories[1].name,
+        );
+
+        cy.format('percentage', settings.categories[1].vatRate).then(value => {
+          cy.get('input[id="categories.6.vatRate"]').should(
+            'have.value',
+            value,
+          );
+        });
+
+        cy.get('input[id="categories.7.name"]').should(
+          'have.value',
           settings.categories[2].name,
         );
 
         cy.format('percentage', settings.categories[2].vatRate).then(value => {
-          cy.get('input[id="categories.6.vatRate"]').should(
+          cy.get('input[id="categories.7.vatRate"]').should(
             'have.value',
             value,
           );
@@ -338,6 +386,14 @@ describe('Smoke tests', () => {
         cy.format('percentage', settings.vat.pay).then(value => {
           cy.get('input[id="vat.pay"]').should('have.value', value);
         });
+
+        cy.format('VAT registration', settings.vat.registration).then(value => {
+          cy.get('input[id="vat.registration"]').should('have.value', value);
+        });
+
+        cy.get(`input[type="radio"][value="${settings.vat.scheme}"]`).should(
+          'be.checked',
+        );
 
         cy.get('button:contains("Remove")')
           .eq(0)
@@ -371,17 +427,17 @@ describe('Smoke tests', () => {
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.4.name"]')
+        cy.get('input[id="categories.5.name"]')
           .focus()
           .type(settings.categories[0].name);
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.5.name"]')
+        cy.get('input[id="categories.6.name"]')
           .focus()
           .type(settings.categories[1].name);
 
-        cy.get('input[id="categories.5.vatRate"]')
+        cy.get('input[id="categories.6.vatRate"]')
           .clear()
           .type(settings.categories[1].vatRate);
 
@@ -391,27 +447,57 @@ describe('Smoke tests', () => {
 
     it('should have correct defaults for non-VAT registered company', () => {
       cy.fixture('data/settings.json').then(res => {
-        const settings = res[1];
+        cy.fixture('data/company.json').then(companies => {
+          const company = companies[1];
+          const settings = res[1];
 
-        cy.get('a:contains("Select company")')
-          .eq(0)
-          .click();
+          cy.get('a:contains("Select company")')
+            .eq(0)
+            .click();
 
-        cy.wait(1000);
+          cy.wait(1000);
 
-        cy.get('a:contains("Manage settings")').click();
+          cy.get('a:contains("Manage settings")').click();
 
-        cy.wait(1000);
+          cy.wait(1000);
 
-        cy.format('percentage', settings.vat.charge).then(value => {
-          cy.get('input[id="vat.charge"]').should('have.value', value);
+          cy.format('percentage', settings.vat.charge).then(value => {
+            cy.get('input[id="vat.charge"]').should('have.value', value);
+          });
+
+          cy.format('percentage', settings.vat.pay).then(value => {
+            cy.get('input[id="vat.pay"]').should('have.value', value);
+          });
+
+          cy.get('input[id="vat.registration"]').should(
+            'have.value',
+            company.vat.registration,
+          );
+
+          cy.get(`input[type="radio"][value="${company.vat.scheme}"]`).should(
+            'be.checked',
+          );
+
+          cy.get('select[id="yearEnd.day"]').should(
+            'have.value',
+            company.yearEnd.day,
+          );
+
+          cy.get('select[id="yearEnd.day"]')
+            .focus()
+            .select(settings.yearEnd.day);
+
+          cy.get('select[id="yearEnd.month"]').should(
+            'have.value',
+            company.yearEnd.month,
+          );
+
+          cy.get('select[id="yearEnd.month"]')
+            .focus()
+            .select(settings.yearEnd.month);
+
+          cy.get('button[type="submit"]').click();
         });
-
-        cy.format('percentage', settings.vat.pay).then(value => {
-          cy.get('input[id="vat.pay"]').should('have.value', value);
-        });
-
-        cy.get('button[type="submit"]').click();
       });
     });
 
@@ -431,19 +517,29 @@ describe('Smoke tests', () => {
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.4.name"]')
+        cy.get('input[id="categories.5.name"]')
           .focus()
           .type(settings.categories[0].name);
 
         cy.get('button:contains("Add a new category")').click();
 
-        cy.get('input[id="categories.5.name"]')
+        cy.get('input[id="categories.6.name"]')
           .focus()
           .type(settings.categories[1].name);
 
-        cy.get('input[id="categories.5.vatRate"]')
+        cy.get('input[id="categories.6.vatRate"]')
           .clear()
           .type(settings.categories[1].vatRate);
+
+        cy.get('select[id="yearEnd.day"]').should(
+          'have.value',
+          settings.yearEnd.day,
+        );
+
+        cy.get('select[id="yearEnd.month"]').should(
+          'have.value',
+          settings.yearEnd.month,
+        );
 
         cy.get('button[type="submit"]').click();
       });

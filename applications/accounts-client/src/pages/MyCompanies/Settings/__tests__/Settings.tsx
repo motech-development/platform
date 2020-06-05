@@ -77,6 +77,12 @@ describe('Settings', () => {
                 vat: {
                   charge: 20,
                   pay: 20,
+                  registration: 'GB123456789',
+                  scheme: 'standard',
+                },
+                yearEnd: {
+                  day: 5,
+                  month: 3,
                 },
               },
             },
@@ -92,6 +98,12 @@ describe('Settings', () => {
                 vat: {
                   charge: 20,
                   pay: 20,
+                  registration: 'GB123456789',
+                  scheme: 'standard',
+                },
+                yearEnd: {
+                  day: 5,
+                  month: 3,
                 },
               },
             },
@@ -104,6 +116,12 @@ describe('Settings', () => {
                 vat: {
                   charge: 20,
                   pay: 20,
+                  registration: 'GB123456789',
+                  scheme: 'standard',
+                },
+                yearEnd: {
+                  day: 5,
+                  month: 3,
                 },
               },
             },
@@ -222,8 +240,14 @@ describe('Settings', () => {
                 categories: [],
                 id: 'company-uuid',
                 vat: {
-                  charge: 20,
-                  pay: 20,
+                  charge: 0,
+                  pay: 0,
+                  registration: null,
+                  scheme: 'none',
+                },
+                yearEnd: {
+                  day: 5,
+                  month: 3,
                 },
               },
             },
@@ -237,8 +261,14 @@ describe('Settings', () => {
                 categories: [],
                 id: 'company-uuid',
                 vat: {
-                  charge: 20,
-                  pay: 20,
+                  charge: 0,
+                  pay: 0,
+                  registration: null,
+                  scheme: 'none',
+                },
+                yearEnd: {
+                  day: 5,
+                  month: 3,
                 },
               },
             },
@@ -249,8 +279,14 @@ describe('Settings', () => {
                 categories: [],
                 id: 'company-uuid',
                 vat: {
-                  charge: 20,
-                  pay: 20,
+                  charge: 0,
+                  pay: 0,
+                  registration: null,
+                  scheme: 'none',
+                },
+                yearEnd: {
+                  day: 5,
+                  month: 3,
                 },
               },
             },

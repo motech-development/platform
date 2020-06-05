@@ -83,6 +83,7 @@ const InternalRadio: FC<IInternalRadio> = ({
           <BaseRadio
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...field}
+            checked={field.value === value}
             disabled={markAsDisabled}
             readOnly={readOnly}
             type="radio"

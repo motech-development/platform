@@ -187,7 +187,7 @@ describe('SelectAccount', () => {
       await apolloWait(0);
 
       await expect(
-        findByText('select-account.error'),
+        findByText('select-account.errors.failure.title'),
       ).resolves.toBeInTheDocument();
     });
 

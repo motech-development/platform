@@ -22,6 +22,8 @@ const Wrapper = styled.div<IWrapperProps>`
     display: inline-block;
     overflow: hidden;
     width: ${$width ? `${$width}px` : 'auto'};
+
+    ${$width ? `min-width: ${$width}px` : ''}
   `}
 `;
 

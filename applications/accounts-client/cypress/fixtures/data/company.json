@@ -23,8 +23,15 @@
         "email": "vat-registered@motechdevelopment.co.uk",
         "telephone": "02083895728"
       },
-      "name": "VAT registered co.",
-      "vatRegistration": "216506516"
+      "name": "VAT registered co."
+    },
+    "vat": {
+      "registration": "216506516",
+      "scheme": "standard"
+    },
+    "yearEnd": {
+      "day": "5",
+      "month": "3"
     }
   },
   {
@@ -48,7 +55,13 @@
     },
     "vat": {
       "charge": "0",
-      "pay": "0"
+      "pay": "0",
+      "registration": "",
+      "scheme": "none"
+    },
+    "yearEnd": {
+      "day": "5",
+      "month": "3"
     }
   },
   {

@@ -29,11 +29,14 @@ export interface IAddCompanyInput {
       };
       id: string;
       name: string;
-      vatRegistration: string;
     };
     vat: {
       charge: number;
       pay: number;
+    };
+    yearEnd: {
+      day: number;
+      month: number;
     };
   };
 }
@@ -58,7 +61,6 @@ export interface IAddCompanyOutput {
     };
     id: string;
     name: string;
-    vatRegistration: string;
   };
 }
 
@@ -111,7 +113,6 @@ const ADD_COMPANY = gql`
       }
       id
       name
-      vatRegistration
     }
   }
 `;

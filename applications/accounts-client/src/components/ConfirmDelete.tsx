@@ -24,7 +24,7 @@ const ConfirmDelete: FC<IConfirmDeleteProps> = ({
   onDelete,
 }) => {
   const { t } = useTranslation('confirm-delete');
-  const validationSchema = object().shape({
+  const validationSchema = object<FormSchema>().shape({
     confirmation: string()
       .oneOf(
         [name],

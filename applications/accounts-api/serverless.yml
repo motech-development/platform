@@ -157,7 +157,6 @@ custom:
             - bank
             - companyNumber
             - telephone
-            - vatRegistration
             - updateCompany
           request: company/updateCompany/Mutation.updateCompany.req.vtl
           response: company/updateCompany/Mutation.updateCompany.res.vtl
@@ -174,9 +173,12 @@ custom:
           request: company/getCompany/Query.getCompany.req.vtl
           response: company/getCompany/Query.getCompany.res.vtl
 
-        - dataSource: Data
+        - kind: PIPELINE
           type: Mutation
           field: updateSettings
+          functions:
+            - vatRegistration
+            - updateSettings
           request: settings/updateSettings/Mutation.updateSettings.req.vtl
           response: settings/updateSettings/Mutation.updateSettings.res.vtl
         - dataSource: Data
@@ -330,6 +332,12 @@ custom:
           name: updateCompany
           request: company/updateCompany/Pipeline.updateCompany.req.vtl
           response: company/updateCompany/Pipeline.updateCompany.res.vtl
+
+        # Settings
+        - dataSource: Data
+          name: updateSettings
+          request: settings/updateSettings/Pipeline.updateSettings.req.vtl
+          response: settings/updateSettings/Pipeline.updateSettings.res.vtl
 
         # Storage
         - dataSource: Queue

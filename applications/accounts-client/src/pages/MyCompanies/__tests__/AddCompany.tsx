@@ -73,11 +73,16 @@ describe('AddCompany', () => {
                 },
                 id: '',
                 name: 'New company',
-                vatRegistration: 'GB123456789',
               },
               vat: {
                 charge: 20,
                 pay: 20,
+                registration: 'GB123456789',
+                scheme: 'flatRate',
+              },
+              yearEnd: {
+                day: '5',
+                month: '3',
               },
             },
           },
@@ -107,7 +112,6 @@ describe('AddCompany', () => {
               },
               id: 'company-uuid',
               name: 'New company',
-              vatRegistration: 'GB123456789',
             },
           },
         },
@@ -141,9 +145,6 @@ describe('AddCompany', () => {
       const email = await findByLabelText('contact-details.email');
       const telephone = await findByLabelText('contact-details.telephone');
       const name = await findByLabelText('company-details.name');
-      const vatRegistration = await findByLabelText(
-        'company-details.vat-registration',
-      );
 
       fireEvent.change(line1, {
         target: { focus: () => {}, value: '1 Street' },
@@ -173,15 +174,37 @@ describe('AddCompany', () => {
       fireEvent.change(name, {
         target: { focus: () => {}, value: 'New company' },
       });
-      fireEvent.change(vatRegistration, {
-        target: { focus: () => {}, value: 'GB123456789' },
-      });
-
-      await wait();
 
       const [next] = await findAllByRole('button');
 
       fireEvent.click(next);
+
+      const vatRegistration = await findByLabelText(
+        'vat-settings.registration',
+      );
+      const vatScheme = await findByLabelText('vat-settings.scheme.flatRate');
+      const yearEndDay = await findByLabelText('year-end.day.label');
+      const yearEndMonth = await findByLabelText('year-end.month.label');
+
+      fireEvent.change(vatRegistration, {
+        target: { focus: () => {}, value: 'GB123456789' },
+      });
+
+      fireEvent.change(yearEndDay, {
+        target: {
+          value: '5',
+        },
+      });
+
+      fireEvent.change(yearEndMonth, {
+        target: {
+          value: '3',
+        },
+      });
+
+      fireEvent.click(vatScheme);
+
+      await wait();
 
       const [, submit] = await findAllByRole('button');
 
@@ -213,9 +236,6 @@ describe('AddCompany', () => {
       const email = await findByLabelText('contact-details.email');
       const telephone = await findByLabelText('contact-details.telephone');
       const name = await findByLabelText('company-details.name');
-      const vatRegistration = await findByLabelText(
-        'company-details.vat-registration',
-      );
 
       fireEvent.change(line1, {
         target: { focus: () => {}, value: '1 Street' },
@@ -245,15 +265,37 @@ describe('AddCompany', () => {
       fireEvent.change(name, {
         target: { focus: () => {}, value: 'New company' },
       });
-      fireEvent.change(vatRegistration, {
-        target: { focus: () => {}, value: 'GB123456789' },
-      });
-
-      await wait();
 
       const [next] = await findAllByRole('button');
 
       fireEvent.click(next);
+
+      const vatRegistration = await findByLabelText(
+        'vat-settings.registration',
+      );
+      const vatScheme = await findByLabelText('vat-settings.scheme.flatRate');
+      const yearEndDay = await findByLabelText('year-end.day.label');
+      const yearEndMonth = await findByLabelText('year-end.month.label');
+
+      fireEvent.change(vatRegistration, {
+        target: { focus: () => {}, value: 'GB123456789' },
+      });
+
+      fireEvent.change(yearEndDay, {
+        target: {
+          value: '5',
+        },
+      });
+
+      fireEvent.change(yearEndMonth, {
+        target: {
+          value: '3',
+        },
+      });
+
+      fireEvent.click(vatScheme);
+
+      await wait();
 
       const [, submit] = await findAllByRole('button');
 

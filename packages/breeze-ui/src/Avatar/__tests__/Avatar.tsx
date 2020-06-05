@@ -55,6 +55,7 @@ describe('Avatar', () => {
       expect(wrapper).toHaveStyle(`
         border-radius: 50%;
         display: inline-block;
+        min-width: 100px;
         overflow: hidden;
         width: 100px;
       `);

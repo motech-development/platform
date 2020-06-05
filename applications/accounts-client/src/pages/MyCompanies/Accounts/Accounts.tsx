@@ -65,15 +65,13 @@ const Accounts: FC = () => {
       },
     ],
   });
-  const onDelete = (id: string) => {
-    (async () => {
-      await deleteMutation({
-        update: updateCache,
-        variables: {
-          id,
-        },
-      });
-    })();
+  const onDelete = async (id: string) => {
+    await deleteMutation({
+      update: updateCache,
+      variables: {
+        id,
+      },
+    });
   };
 
   return (
