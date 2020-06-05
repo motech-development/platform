@@ -11,6 +11,8 @@ export interface IUpdateSettingsInput {
     vat: {
       charge: number;
       pay: number;
+      registration: string;
+      scheme: string;
     };
     yearEnd: {
       day: number;
@@ -30,6 +32,8 @@ export interface IUpdateSettingsOutput {
     vat: {
       charge: number;
       pay: number;
+      registration: string;
+      scheme: string;
     };
     yearEnd: {
       day: number;
@@ -50,6 +54,8 @@ const UPDATE_SETTINGS = gql`
       vat {
         charge
         pay
+        registration
+        scheme
       }
       yearEnd {
         day
