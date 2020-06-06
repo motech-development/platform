@@ -98,7 +98,7 @@ commands:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=<< parameters.stage >> -- -- --stage << parameters.stage >>
+          command: npm run deploy -- --scope=<< parameters.scope >> -- -- --stage << parameters.stage >>
           name: Deploying service
 
   deploy-anti-virus:
