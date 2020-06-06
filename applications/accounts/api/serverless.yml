@@ -23,7 +23,7 @@ custom:
 
   outputs:
     files:
-      - ../accounts/client/.env.production
+      - ../client/.env.production
     env:
       AccountsdevelopGraphQlApiUrl: REACT_APP_APPSYNC_URL
       AccountsproductionGraphQlApiUrl: REACT_APP_APPSYNC_URL
