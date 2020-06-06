@@ -52,7 +52,14 @@ module.exports = {
     }),
     new ConditionalPlugin(
       condition,
-      new CopyPlugin([resolve('./src/freshclam.conf'), resolve('./bin')]),
+      new CopyPlugin({
+        patterns: [
+          {
+            from: resolve('./src/freshclam.conf'),
+            to: resolve('./bin'),
+          },
+        ],
+      }),
     ),
     new ConditionalPlugin(
       condition,
