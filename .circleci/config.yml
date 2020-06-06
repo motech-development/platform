@@ -33,6 +33,27 @@ executors:
       - image: circleci/node:12.13
     working_directory: ~/repo
 
+commands:
+  build-accounts-client:
+    parameters:
+      clientId:
+        type: string
+      domain:
+        type: string
+    steps:
+      - run:
+          command: |
+            echo "export REACT_APP_AUTH0_CLIENT_ID=$<< parameters.message >>" >> $BASH_ENV
+            echo "export REACT_APP_AUTH0_DOMAIN=$<< parameters.domain >>" >> $BASH_ENV
+          name: Setup environment variables
+      - run:
+          command: npm run build -- --scope=@accounts/client
+          name: Build client
+      - persist_to_workspace:
+          paths:
+            - ./applications/accounts/client/build
+          root: .
+
 jobs:
   setup:
     executor: node
@@ -126,24 +147,17 @@ jobs:
   #         path: applications/accounts/client/cypress/videos
   #     - store_artifacts:
   #         path: applications/accounts/client/cypress/screenshots
-  # build-accounts-client-develop:
-  #   executor: node
-  #   steps:
-  #     - checkout
-  #     - <<: *attach_workspace
-  #     - <<: *restore_dependencies
-  #     - run:
-  #         command: |
-  #           echo "export REACT_APP_AUTH0_CLIENT_ID=$ACCOUNTS_APP_CLIENT_ID_DEV" >> $BASH_ENV
-  #           echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV" >> $BASH_ENV
-  #         name: Setup environment variables
-  #     - run:
-  #         command: npm run build -- --scope=@accounts/client
-  #         name: Build client
-  #     - persist_to_workspace:
-  #         paths:
-  #           - ./applications/accounts/client/build
-  #         root: .
+
+  build-accounts-client-develop:
+    executor: node
+    steps:
+      - checkout
+      - <<: *attach_workspace
+      - <<: *restore_dependencies
+      - build-accounts-client:
+          clientId: ACCOUNTS_APP_CLIENT_ID_DEV
+          domain: AUTH0_DOMAIN_DEV
+
   # build-accounts-client-production:
   #   executor: node
   #   steps:
@@ -365,6 +379,7 @@ workflows:
           context: SonarCloud
           requires:
             - setup
+
       # - smoke-test-accounts-client:
       #     filters:
       #       branches:
@@ -374,21 +389,25 @@ workflows:
       #           - /hotfix\/.*/
       #     requires:
       #       - build-accounts-client-develop
+
       # - build-accounts-client-production:
       #     filters:
       #       branches:
       #         only: master
       #     requires:
       #       - deploy-accounts-api-production
-      # - build-accounts-client-develop:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - /bugfix\/.*/
-      #           - /feature\/.*/
-      #           - /hotfix\/.*/
-      #     requires:
-      #       - deploy-accounts-api-develop
+
+      - build-accounts-client-develop:
+          filters:
+            branches:
+              only:
+                - /bugfix\/.*/
+                - /feature\/.*/
+                - /hotfix\/.*/
+          requires:
+            - unit-test
+            # TODO: Revert
+            # - deploy-accounts-api-develop
       # - deploy-infrastructure:
       #     filters:
       #       branches:
