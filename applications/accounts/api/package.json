@@ -1,19 +1,20 @@
 {
-  "name": "@motech-development/webpack-conditional-plugin",
+  "name": "@accounts/api",
   "version": "0.0.0",
-  "description": "A Webpack plugin to conditionally apply plugins",
-  "main": "lib/webpack-conditional-plugin.cjs.js",
-  "module": "lib/webpack-conditional-plugin.esm.js",
-  "types": "lib/webpack-conditional-plugin.d.ts",
+  "description": "Motech Development accounts API",
+  "private": true,
   "scripts": {
-    "build": "rollup -c",
+    "deploy": "serverless deploy --verbose",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
-    "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
-    "prepare": "npm run build",
-    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "teardown": "serverless remove --verbose",
     "test": "jest --watch",
     "test:ci": "jest --coverage --runInBand --reporters=default --reporters=jest-junit"
+  },
+  "devDependencies": {
+    "@motech-development/serverless-outputs-env": "^0.0.0",
+    "assert": "^2.0.0",
+    "tomlify-j0.4": "^3.0.0"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -28,6 +29,9 @@
   },
   "jest-junit": {
     "outputDirectory": "../../reports/junit",
-    "outputName": "webpack-conditional-plugin.xml"
+    "outputName": "accounts-api.xml"
+  },
+  "dependencies": {
+    "decimal.js": "^10.2.0"
   }
 }

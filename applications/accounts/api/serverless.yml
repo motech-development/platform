@@ -1,0 +1,613 @@
+service:
+  name: ${opt:appName, 'accounts'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-api
+
+package:
+  individually: true
+
+plugins:
+  - serverless-appsync-plugin
+  - serverless-webpack
+  - '@motech-development/serverless-outputs-env'
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+  oidc:
+    issuer: https://${opt:issuer}/
+
+  outputs:
+    files:
+      - ../client/.env.production
+    env:
+      AccountsdevelopGraphQlApiUrl: REACT_APP_APPSYNC_URL
+      AccountsproductionGraphQlApiUrl: REACT_APP_APPSYNC_URL
+      AWS_REGION: REACT_APP_AWS_REGION
+
+  appSync:
+    - name: ${self:custom.prefix}
+      authenticationType: OPENID_CONNECT
+      openIdConnectConfig:
+        issuer: ${self:custom.oidc.issuer}
+      logConfig:
+        loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
+        level: ERROR
+      mappingTemplates:
+        - dataSource: Lambda
+          type: Query
+          field: getBalance
+          request: balance/getBalance/Query.getBalance.req.vtl
+          response: balance/getBalance/Query.getBalance.res.vtl
+
+        - dataSource: OpenBanking
+          type: Query
+          field: getBanks
+          request: bank/getBanks/Query.getBanks.req.vtl
+          response: bank/getBanks/Query.getBanks.res.vtl
+        - kind: PIPELINE
+          type: Query
+          field: getBankAccounts
+          functions:
+            - bankSettings
+            - getBankAccounts
+          request: bank/getBankAccounts/Query.getBankAccounts.req.vtl
+          response: bank/getBankAccounts/Query.getBankAccounts.res.vtl
+        - dataSource: Resolver
+          type: Mutation
+          field: bankCallback
+          request: bank/bankCallback/Mutation.bankCallback.req.vtl
+          response: bank/bankCallback/Mutation.bankCallback.res.vtl
+        - dataSource: OpenBanking
+          type: Mutation
+          field: createBankConnection
+          request: bank/createBankConnection/Mutation.createBankConnection.req.vtl
+          response: bank/createBankConnection/Mutation.createBankConnection.res.vtl
+        - kind: PIPELINE
+          type: Mutation
+          field: deleteBankConnection
+          functions:
+            - bankSettings
+            - unlinkBank
+            - resetBankSettings
+          request: bank/deleteBankConnection/Mutation.deleteBankConnection.req.vtl
+          response: bank/deleteBankConnection/Mutation.deleteBankConnection.res.vtl
+        - kind: PIPELINE
+          type: Query
+          field: getBankSettings
+          functions:
+            - bankSettings
+          request: bank/getBankSettings/Query.getBankSettings.req.vtl
+          response: bank/getBankSettings/Query.getBankSettings.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: updateBankSettings
+          request: bank/updateBankSettings/Mutation.updateBankSettings.req.vtl
+          response: bank/updateBankSettings/Mutation.updateBankSettings.res.vtl
+
+        - kind: PIPELINE
+          type: Mutation
+          field: createClient
+          functions:
+            - address
+            - addressFiltering
+            - telephone
+            - getClientCompanyId
+            - createClient
+          request: client/createClient/Mutation.createClient.req.vtl
+          response: client/createClient/Mutation.createClient.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: deleteClient
+          request: client/deleteClient/Mutation.deleteClient.req.vtl
+          response: client/deleteClient/Mutation.deleteClient.res.vtl
+        - kind: PIPELINE
+          type: Mutation
+          field: updateClient
+          functions:
+            - address
+            - addressFiltering
+            - telephone
+            - getClientCompanyId
+            - updateClient
+          request: client/updateClient/Mutation.updateClient.req.vtl
+          response: client/updateClient/Mutation.updateClient.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getClient
+          request: client/getClient/Query.getClient.req.vtl
+          response: client/getClient/Query.getClient.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getClients
+          request: client/getClients/Query.getClients.req.vtl
+          response: client/getClients/Query.getClients.res.vtl
+
+        - kind: PIPELINE
+          type: Mutation
+          field: createCompany
+          functions:
+            - address
+            - addressFiltering
+            - bank
+            - companyNumber
+            - telephone
+            - vatRegistration
+            - createCompany
+          request: company/createCompany/Mutation.createCompany.req.vtl
+          response: company/createCompany/Mutation.createCompany.res.vtl
+        - kind: PIPELINE
+          type: Mutation
+          field: deleteCompany
+          functions:
+            - deleteCompany
+            - queueCompanyDelete
+          request: company/deleteCompany/Mutation.deleteCompany.req.vtl
+          response: company/deleteCompany/Mutation.deleteCompany.res.vtl
+        - kind: PIPELINE
+          type: Mutation
+          field: updateCompany
+          functions:
+            - address
+            - addressFiltering
+            - bank
+            - companyNumber
+            - telephone
+            - updateCompany
+          request: company/updateCompany/Mutation.updateCompany.req.vtl
+          response: company/updateCompany/Mutation.updateCompany.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getCompanies
+          request: company/getCompanies/Query.getCompanies.req.vtl
+          response: company/getCompanies/Query.getCompanies.res.vtl
+        - kind: PIPELINE
+          type: Query
+          field: getCompany
+          functions:
+            - getCompany
+          request: company/getCompany/Query.getCompany.req.vtl
+          response: company/getCompany/Query.getCompany.res.vtl
+
+        - kind: PIPELINE
+          type: Mutation
+          field: updateSettings
+          functions:
+            - vatRegistration
+            - updateSettings
+          request: settings/updateSettings/Mutation.updateSettings.req.vtl
+          response: settings/updateSettings/Mutation.updateSettings.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getSettings
+          request: settings/getSettings/Query.getSettings.req.vtl
+          response: settings/getSettings/Query.getSettings.res.vtl
+
+        - dataSource: Data
+          type: Mutation
+          field: addTransaction
+          request: transaction/addTransaction/Mutation.addTransaction.req.vtl
+          response: transaction/addTransaction/Mutation.addTransaction.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: deleteTransaction
+          request: transaction/deleteTransaction/Mutation.deleteTransaction.req.vtl
+          response: transaction/deleteTransaction/Mutation.deleteTransaction.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getTransaction
+          request: transaction/getTransaction/Query.getTransaction.req.vtl
+          response: transaction/getTransaction/Query.getTransaction.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getTransactions
+          request: transaction/getTransactions/Query.getTransactions.req.vtl
+          response: transaction/getTransactions/Query.getTransactions.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: updateTransaction
+          request: transaction/updateTransaction/Mutation.updateTransaction.req.vtl
+          response: transaction/updateTransaction/Mutation.updateTransaction.res.vtl
+
+        - kind: PIPELINE
+          type: Mutation
+          field: deleteFile
+          functions:
+            - getCompany
+            - deleteFile
+          request: storage/deleteFile/Mutation.deleteFile.req.vtl
+          response: storage/deleteFile/Mutation.deleteFile.res.vtl
+        - kind: PIPELINE
+          type: Query
+          field: requestDownload
+          functions:
+            - getCompany
+            - requestDownload
+          request: storage/requestDownload/Query.requestDownload.req.vtl
+          response: storage/requestDownload/Query.requestDownload.res.vtl
+        - kind: PIPELINE
+          type: Mutation
+          field: requestUpload
+          functions:
+            - getCompany
+            - requestUpload
+          request: storage/requestUpload/Mutation.requestUpload.req.vtl
+          response: storage/requestUpload/Mutation.requestUpload.res.vtl
+      schema:
+        - schema/address.graphql
+        - schema/balance.graphql
+        - schema/bank.graphql
+        - schema/client.graphql
+        - schema/company.graphql
+        - schema/contact.graphql
+        - schema/expense-category.graphql
+        - schema/schema.graphql
+        - schema/settings.graphql
+        - schema/storage.graphql
+        - schema/transaction.graphql
+        - schema/vat-settings.graphql
+      functionConfigurations:
+        # Validation
+        - dataSource: Resolver
+          name: address
+          request: shared/address/Pipeline.address.req.vtl
+          response: shared/address/Pipeline.address.res.vtl
+        - dataSource: Resolver
+          name: bank
+          request: shared/bank/Pipeline.bank.req.vtl
+          response: shared/bank/Pipeline.bank.res.vtl
+        - dataSource: Resolver
+          name: companyNumber
+          request: shared/companyNumber/Pipeline.companyNumber.req.vtl
+          response: shared/companyNumber/Pipeline.companyNumber.res.vtl
+        - dataSource: Resolver
+          name: telephone
+          request: shared/telephone/Pipeline.telephone.req.vtl
+          response: shared/telephone/Pipeline.telephone.res.vtl
+        - dataSource: Resolver
+          name: vatRegistration
+          request: shared/vatRegistration/Pipeline.vatRegistration.req.vtl
+          response: shared/vatRegistration/Pipeline.vatRegistration.res.vtl
+
+        # Utilities
+        - dataSource: Resolver
+          name: addressFiltering
+          request: shared/addressFiltering/Pipeline.addressFiltering.req.vtl
+          response: shared/addressFiltering/Pipeline.addressFiltering.res.vtl
+        - dataSource: Data
+          name: bankSettings
+          request: shared/bankSettings/Pipeline.bankSettings.req.vtl
+          response: shared/bankSettings/Pipeline.bankSettings.res.vtl
+        - dataSource: Data
+          name: getCompany
+          request: shared/getCompany/Pipeline.getCompany.req.vtl
+          response: shared/getCompany/Pipeline.getCompany.res.vtl
+
+        # Bank
+        - dataSource: OpenBanking
+          name: getBankAccounts
+          request: bank/getBankAccounts/Pipeline.getBankAccounts.req.vtl
+          response: bank/getBankAccounts/Pipeline.getBankAccounts.res.vtl
+        - dataSource: Data
+          name: resetBankSettings
+          request: bank/deleteBankConnection/Pipeline.resetBankSettings.req.vtl
+          response: bank/deleteBankConnection/Pipeline.resetBankSettings.res.vtl
+        - dataSource: OpenBanking
+          name: unlinkBank
+          request: bank/deleteBankConnection/Pipeline.unlinkBank.req.vtl
+          response: bank/deleteBankConnection/Pipeline.unlinkBank.res.vtl
+
+        # Clients
+        - dataSource: Data
+          name: createClient
+          request: client/createClient/Pipeline.createClient.req.vtl
+          response: client/createClient/Pipeline.createClient.res.vtl
+        - dataSource: Data
+          name: getClientCompanyId
+          request: client/shared/getClientCompanyId/Pipeline.getClientCompanyId.req.vtl
+          response: client/shared/getClientCompanyId/Pipeline.getClientCompanyId.res.vtl
+        - dataSource: Data
+          name: updateClient
+          request: client/updateClient/Pipeline.updateClient.req.vtl
+          response: client/updateClient/Pipeline.updateClient.res.vtl
+
+        # Companies
+        - dataSource: Data
+          name: createCompany
+          request: company/createCompany/Pipeline.createCompany.req.vtl
+          response: company/createCompany/Pipeline.createCompany.res.vtl
+        - dataSource: Data
+          name: deleteCompany
+          request: company/deleteCompany/Pipeline.deleteCompany.req.vtl
+          response: company/deleteCompany/Pipeline.deleteCompany.res.vtl
+        - dataSource: Queue
+          name: queueCompanyDelete
+          request: company/deleteCompany/Pipeline.queueCompanyDelete.req.vtl
+          response: company/deleteCompany/Pipeline.queueCompanyDelete.res.vtl
+        - dataSource: Data
+          name: updateCompany
+          request: company/updateCompany/Pipeline.updateCompany.req.vtl
+          response: company/updateCompany/Pipeline.updateCompany.res.vtl
+
+        # Settings
+        - dataSource: Data
+          name: updateSettings
+          request: settings/updateSettings/Pipeline.updateSettings.req.vtl
+          response: settings/updateSettings/Pipeline.updateSettings.res.vtl
+
+        # Storage
+        - dataSource: Queue
+          name: deleteFile
+          request: storage/deleteFile/Pipeline.deleteFile.req.vtl
+          response: storage/deleteFile/Pipeline.deleteFile.res.vtl
+        - dataSource: StorageUpload
+          name: requestDownload
+          request: storage/requestDownload/Pipeline.requestDownload.req.vtl
+          response: storage/requestDownload/Pipeline.requestDownload.res.vtl
+        - dataSource: StorageUpload
+          name: requestUpload
+          request: storage/requestUpload/Pipeline.requestUpload.req.vtl
+          response: storage/requestUpload/Pipeline.requestUpload.res.vtl
+      dataSources:
+        - type: NONE
+          name: Resolver
+        - type: AMAZON_DYNAMODB
+          name: Data
+          description: Application table
+          config:
+            tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+            serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
+        - type: AWS_LAMBDA
+          name: Lambda
+          config:
+            lambdaFunctionArn: !GetAtt LambdaDataSourceLambdaFunction.Arn
+            serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
+        - type: HTTP
+          name: OpenBanking
+          config:
+            endpoint: !ImportValue ${self:provider.stage}-OpenBankingApiEndpoint
+            authorizationConfig:
+              authorizationType: AWS_IAM
+              awsIamConfig:
+                signingRegion: !Ref AWS::Region
+                signingServiceName: execute-api
+            serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
+        - type: HTTP
+          name: StorageUpload
+          config:
+            endpoint: !ImportValue ${self:provider.stage}-StorageUploadApiEndpoint
+            authorizationConfig:
+              authorizationType: AWS_IAM
+              awsIamConfig:
+                signingRegion: !Ref AWS::Region
+                signingServiceName: execute-api
+            serviceRoleArn: !GetAtt AppSyncStorageUploadServiceRole.Arn
+        - type: HTTP
+          name: Queue
+          config:
+            endpoint: !Join
+              - ''
+              - - 'https://sqs.'
+                - !Ref AWS::Region
+                - '.amazonaws.com/'
+            authorizationConfig:
+              authorizationType: AWS_IAM
+              awsIamConfig:
+                signingRegion: !Ref AWS::Region
+                signingServiceName: sqs
+            serviceRoleArn: !GetAtt AppSyncQueueServiceRole.Arn
+      substitutions:
+        appTable: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+        deleteFileQueue: !ImportValue ${self:provider.stage}-DeleteFileQueueUrlPath
+        queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
+        stage: ${self:provider.stage}
+
+  webpack:
+    includeModules: true
+
+functions:
+  LambdaDataSource:
+    handler: src/lambda.handler
+    role: LambdaDataSourceRole
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+
+resources:
+  Resources:
+    AppSyncOpenBankingServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-open-banking-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-open-banking-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - execute-api:Invoke
+                  Resource: !ImportValue ${self:provider.stage}-OpenBankingApiArn
+
+    AppSyncStorageUploadServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-storage-upload-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-storage-upload-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - execute-api:Invoke
+                  Resource: !ImportValue ${self:provider.stage}-StorageUploadApiArn
+
+    AppSyncLoggingServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-logging-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-logging-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource: '*'
+
+    AppSyncDynamoDbServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-dynamodb-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-dynamodb-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:DeleteItem
+                    - dynamodb:GetItem
+                    - dynamodb:PutItem
+                    - dynamodb:Query
+                    - dynamodb:Scan
+                    - dynamodb:UpdateItem
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/index/__typename-data-index'
+
+    AppSyncQueueServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-queue-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-queue-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - sqs:SendMessage
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsQueueArn
+                    - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
+
+    AppSyncLambdaServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-lambda-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-lambda-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:invokeFunction
+                  Resource:
+                    - !GetAtt LambdaDataSourceLambdaFunction.Arn
+                    - !Join
+                      - ''
+                      - - !GetAtt LambdaDataSourceLambdaFunction.Arn
+                        - ':*'
+
+    LambdaDataSourceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-lambda-data-source-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-lambda-data-source-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:GetItem
+                    - dynamodb:Query
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'

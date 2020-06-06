@@ -13,7 +13,7 @@ A diverse set of applications built by Motech Development
 
 Book keeping application to keep on top of your finances
 
-Start the application by running `npm start -- --scope=@motech-development/accounts-client`
+Start the application by running `npm start -- --scope=@accounts/client`
 
 ### ID
 
