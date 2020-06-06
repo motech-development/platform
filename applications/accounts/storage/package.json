@@ -1,0 +1,34 @@
+{
+  "name": "@accounts/storage",
+  "version": "0.0.0",
+  "description": "Motech Development accounts file storage",
+  "private": true,
+  "scripts": {
+    "deploy": "serverless deploy --verbose",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "precommit": "lint-staged",
+    "teardown": "serverless remove --verbose",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage --runInBand --reporters=default --reporters=jest-junit"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "moduleDirectories": [
+      "../../node_modules",
+      "<rootDir>/node_modules"
+    ],
+    "testEnvironment": "node"
+  },
+  "jest-junit": {
+    "outputDirectory": "../../reports/junit",
+    "outputName": "accounts-storage.xml"
+  },
+  "dependencies": {
+    "@motech-development/api-gateway-handler": "^0.0.0",
+    "uuid": "^8.0.0",
+    "yup": "^0.28.3"
+  }
+}

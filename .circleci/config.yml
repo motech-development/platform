@@ -48,16 +48,16 @@ jobs:
           name: Save dependencies
           paths:
             - node_modules
-            - applications/accounts-api/node_modules
-            - applications/accounts-client/node_modules
-            - applications/accounts-data/node_modules
-            - applications/accounts-infrastructure/node_modules
-            - applications/accounts-queue/node_modules
-            - applications/accounts-storage/node_modules
-            - applications/anti-virus/node_modules
-            - applications/id/node_modules
-            - applications/infrastructure/node_modules
-            - applications/open-banking/node_modules
+            - applications/accounts/api/node_modules
+            - applications/accounts/client/node_modules
+            - applications/accounts/data/node_modules
+            - applications/accounts/infrastructure/node_modules
+            - applications/accounts/queue/node_modules
+            - applications/accounts/storage/node_modules
+            - applications/core/anti-virus/node_modules
+            - applications/core/id/node_modules
+            - applications/core/infrastructure/node_modules
+            - applications/open-banking/api/node_modules
             - packages/api-gateway-handler/node_modules
             - packages/auth/node_modules
             - packages/axios-hooks/node_modules
@@ -110,20 +110,20 @@ jobs:
           name: Move Cypress cache
       - run:
           background: true
-          command: npx serve -s ./applications/accounts-client/build --listen 3000
+          command: npx serve -s ./applications/accounts/client/build --listen 3000
           name: Start application
       - run:
           command: npx wait-on http://localhost:3000
           name: Wait for application to start
       - run:
-          command: npm run e2e:ci -- --scope=@motech-development/accounts-client
+          command: npm run e2e:ci -- --scope=@accounts/client
           name: Smoke tests
       - store_test_results:
           path: reports/junit
       - store_artifacts:
-          path: applications/accounts-client/cypress/videos
+          path: applications/accounts/client/cypress/videos
       - store_artifacts:
-          path: applications/accounts-client/cypress/screenshots
+          path: applications/accounts/client/cypress/screenshots
 
   build-accounts-client-develop:
     docker:
@@ -139,11 +139,11 @@ jobs:
             echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV" >> $BASH_ENV
           name: Setup environment variables
       - run:
-          command: npm run build -- --scope=@motech-development/accounts-client
+          command: npm run build -- --scope=@accounts/client
           name: Build client
       - persist_to_workspace:
           paths:
-            - ./applications/accounts-client/build
+            - ./applications/accounts/client/build
           root: .
 
   build-accounts-client-production:
@@ -160,11 +160,11 @@ jobs:
             echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD" >> $BASH_ENV
           name: Setup environment variables
       - run:
-          command: npm run build -- --scope=@motech-development/accounts-client
+          command: npm run build -- --scope=@accounts/client
           name: Build client
       - persist_to_workspace:
           paths:
-            - ./applications/accounts-client/build
+            - ./applications/accounts/client/build
           root: .
 
   deploy-accounts-infrastructure:
@@ -176,7 +176,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
+          command: npm run deploy -- --scope=@accounts/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy accounts infrastructure
           no_output_timeout: 60m
 
@@ -189,7 +189,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-client -- -- --stage production --domain-name $PROD_DOMAIN
+          command: npm run deploy -- --scope=@accounts/client -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy accounts client
 
   deploy-accounts-data-develop:
@@ -201,7 +201,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-data -- -- --stage develop
+          command: npm run deploy -- --scope=@accounts/data -- -- --stage develop
           name: Deploy accounts data infrastructure
 
   deploy-accounts-data-production:
@@ -213,7 +213,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-data -- -- --stage production
+          command: npm run deploy -- --scope=@accounts/data -- -- --stage production
           name: Deploy accounts data infrastructure
 
   deploy-accounts-api-develop:
@@ -225,11 +225,11 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage develop --issuer $AUTH0_DOMAIN_DEV
+          command: npm run deploy -- --scope=@accounts/api -- -- --stage develop --issuer $AUTH0_DOMAIN_DEV
           name: Deploy accounts API
       - persist_to_workspace:
           paths:
-            - ./applications/accounts-client/.env.production
+            - ./applications/accounts/client/.env.production
           root: .
 
   deploy-accounts-api-production:
@@ -241,11 +241,11 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-api -- -- --stage production --issuer $AUTH0_DOMAIN_PROD
+          command: npm run deploy -- --scope=@accounts/api -- -- --stage production --issuer $AUTH0_DOMAIN_PROD
           name: Deploy accounts API
       - persist_to_workspace:
           paths:
-            - ./applications/accounts-client/.env.production
+            - ./applications/accounts/client/.env.production
           root: .
 
   deploy-accounts-queue-develop:
@@ -257,7 +257,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-queue -- -- --stage develop
+          command: npm run deploy -- --scope=@accounts/queue -- -- --stage develop
           name: Deploy accounts queue infrastructure
 
   deploy-accounts-queue-production:
@@ -269,7 +269,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-queue -- -- --stage production
+          command: npm run deploy -- --scope=@accounts/queue -- -- --stage production
           name: Deploy accounts queue infrastructure
 
   deploy-accounts-storage-develop:
@@ -281,7 +281,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-storage -- -- --stage develop
+          command: npm run deploy -- --scope=@accounts/storage -- -- --stage develop
           name: Deploy accounts storage infrastructure
 
   deploy-accounts-storage-production:
@@ -293,7 +293,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/accounts-storage -- -- --stage production
+          command: npm run deploy -- --scope=@accounts/storage -- -- --stage production
           name: Deploy accounts storage infrastructure
 
   deploy-anti-virus-develop:
@@ -307,7 +307,7 @@ jobs:
       - setup_remote_docker:
           version: 18.06.0-ce
       - run:
-          command: npm run deploy -- --scope=@motech-development/anti-virus -- -- --stage develop
+          command: npm run deploy -- --scope=@core/anti-virus -- -- --stage develop
           name: Deploy anti virus service
 
   deploy-anti-virus-production:
@@ -321,7 +321,7 @@ jobs:
       - setup_remote_docker:
           version: 18.06.0-ce
       - run:
-          command: npm run deploy -- --scope=@motech-development/anti-virus -- -- --stage production
+          command: npm run deploy -- --scope=@core/anti-virus -- -- --stage production
           name: Deploy anti virus service
 
   deploy-open-banking-develop:
@@ -333,7 +333,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage develop --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
+          command: npm run deploy -- --scope=@open-banking/api -- -- --stage develop --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
           name: Deploy open banking API
 
   deploy-open-banking-production:
@@ -345,7 +345,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/open-banking -- -- --stage production --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
+          command: npm run deploy -- --scope=@open-banking/api -- -- --stage production --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
           name: Deploy open banking API
 
   deploy-auth0-develop:
@@ -363,7 +363,7 @@ jobs:
             echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV" >> $BASH_ENV
           name: Setup environment variables
       - run:
-          command: npm run deploy -- --scope=@motech-development/id -- -- -c config.json
+          command: npm run deploy -- --scope=@core/id -- -- -c config.json
           name: Deploy to Auth0
 
   deploy-auth0-production:
@@ -381,7 +381,7 @@ jobs:
             echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD" >> $BASH_ENV
           name: Setup environment variables
       - run:
-          command: npm run deploy -- --scope=@motech-development/id -- -- -c config.json
+          command: npm run deploy -- --scope=@core/id -- -- -c config.json
           name: Deploy to Auth0
 
   deploy-infrastructure:
@@ -393,7 +393,7 @@ jobs:
       - <<: *attach_workspace
       - <<: *restore_dependencies
       - run:
-          command: npm run deploy -- --scope=@motech-development/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
+          command: npm run deploy -- --scope=@core/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy infrastructure
 
   deploy-storybook:

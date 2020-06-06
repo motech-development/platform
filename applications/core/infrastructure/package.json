@@ -1,0 +1,10 @@
+{
+  "name": "@core/infrastructure",
+  "version": "0.0.0",
+  "description": "Motech Development infrastructure as code",
+  "private": true,
+  "scripts": {
+    "deploy": "serverless deploy --verbose",
+    "teardown": "serverless remove --verbose"
+  }
+}

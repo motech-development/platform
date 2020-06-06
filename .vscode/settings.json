@@ -12,31 +12,31 @@
   "eslint.workingDirectories": [
     {
       "changeProcessCWD": true,
-      "directory": "./applications/accounts-api"
+      "directory": "./applications/accounts/api"
     },
     {
       "changeProcessCWD": true,
-      "directory": "./applications/accounts-client"
+      "directory": "./applications/accounts/client"
     },
     {
       "changeProcessCWD": true,
-      "directory": "./applications/accounts-data"
+      "directory": "./applications/accounts/data"
     },
     {
       "changeProcessCWD": true,
-      "directory": "./applications/accounts-queue"
+      "directory": "./applications/accounts/queue"
     },
     {
       "changeProcessCWD": true,
-      "directory": "./applications/accounts-storage"
+      "directory": "./applications/accounts/storage"
     },
     {
       "changeProcessCWD": true,
-      "directory": "./applications/anti-virus"
+      "directory": "./applications/core/anti-virus"
     },
     {
       "changeProcessCWD": true,
-      "directory": "./applications/open-banking"
+      "directory": "./applications/open-banking/api"
     },
     {
       "changeProcessCWD": true,
