@@ -2,7 +2,6 @@
   "name": "@motech-development/webpack-conditional-plugin",
   "version": "0.0.0",
   "description": "A Webpack plugin to conditionally apply plugins",
-  "private": true,
   "main": "lib/webpack-conditional-plugin.cjs.js",
   "module": "lib/webpack-conditional-plugin.esm.js",
   "types": "lib/webpack-conditional-plugin.d.ts",
