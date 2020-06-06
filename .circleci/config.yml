@@ -27,11 +27,15 @@ orbs:
   aws-cli: circleci/aws-cli@0.1.13
   sonarcloud: sonarsource/sonarcloud@1.0.1
 
-jobs:
-  setup:
+executors:
+  node:
     docker:
       - image: circleci/node:12.13
     working_directory: ~/repo
+
+jobs:
+  setup:
+    executor: node
     steps:
       - checkout
       - <<: *generate_cache_key
@@ -77,9 +81,7 @@ jobs:
           root: .
 
   unit-test:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
+    executor: node
     steps:
       - checkout
       - <<: *attach_workspace
@@ -91,322 +93,262 @@ jobs:
           path: reports/junit
       - sonarcloud/scan
 
-  smoke-test-accounts-client:
-    docker:
-      - image: cypress/base:12.14.0
-        environment:
-          TERM: xterm
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - <<: *restore_cache
-      - run:
-          command: mv -v /home/circleci/repo/node_modules .
-          name: Move node modules
-      - run:
-          command: mv -v /home/circleci/.cache ~/
-          name: Move Cypress cache
-      - run:
-          background: true
-          command: npx serve -s ./applications/accounts/client/build --listen 3000
-          name: Start application
-      - run:
-          command: npx wait-on http://localhost:3000
-          name: Wait for application to start
-      - run:
-          command: npm run e2e:ci -- --scope=@accounts/client
-          name: Smoke tests
-      - store_test_results:
-          path: reports/junit
-      - store_artifacts:
-          path: applications/accounts/client/cypress/videos
-      - store_artifacts:
-          path: applications/accounts/client/cypress/screenshots
-
-  build-accounts-client-develop:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: |
-            echo "export REACT_APP_AUTH0_CLIENT_ID=$ACCOUNTS_APP_CLIENT_ID_DEV" >> $BASH_ENV
-            echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV" >> $BASH_ENV
-          name: Setup environment variables
-      - run:
-          command: npm run build -- --scope=@accounts/client
-          name: Build client
-      - persist_to_workspace:
-          paths:
-            - ./applications/accounts/client/build
-          root: .
-
-  build-accounts-client-production:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: |
-            echo "export REACT_APP_AUTH0_CLIENT_ID=$ACCOUNTS_APP_CLIENT_ID_PROD" >> $BASH_ENV
-            echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD" >> $BASH_ENV
-          name: Setup environment variables
-      - run:
-          command: npm run build -- --scope=@accounts/client
-          name: Build client
-      - persist_to_workspace:
-          paths:
-            - ./applications/accounts/client/build
-          root: .
-
-  deploy-accounts-infrastructure:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@accounts/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
-          name: Deploy accounts infrastructure
-          no_output_timeout: 60m
-
-  deploy-accounts-client:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@accounts/client -- -- --stage production --domain-name $PROD_DOMAIN
-          name: Deploy accounts client
-
-  deploy-accounts-data-develop:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@accounts/data -- -- --stage develop
-          name: Deploy accounts data infrastructure
-
-  deploy-accounts-data-production:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@accounts/data -- -- --stage production
-          name: Deploy accounts data infrastructure
-
-  deploy-accounts-api-develop:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@accounts/api -- -- --stage develop --issuer $AUTH0_DOMAIN_DEV
-          name: Deploy accounts API
-      - persist_to_workspace:
-          paths:
-            - ./applications/accounts/client/.env.production
-          root: .
-
-  deploy-accounts-api-production:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@accounts/api -- -- --stage production --issuer $AUTH0_DOMAIN_PROD
-          name: Deploy accounts API
-      - persist_to_workspace:
-          paths:
-            - ./applications/accounts/client/.env.production
-          root: .
-
-  deploy-accounts-queue-develop:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@accounts/queue -- -- --stage develop
-          name: Deploy accounts queue infrastructure
-
-  deploy-accounts-queue-production:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@accounts/queue -- -- --stage production
-          name: Deploy accounts queue infrastructure
-
-  deploy-accounts-storage-develop:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@accounts/storage -- -- --stage develop
-          name: Deploy accounts storage infrastructure
-
-  deploy-accounts-storage-production:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@accounts/storage -- -- --stage production
-          name: Deploy accounts storage infrastructure
-
-  deploy-anti-virus-develop:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - setup_remote_docker:
-          version: 18.06.0-ce
-      - run:
-          command: npm run deploy -- --scope=@core/anti-virus -- -- --stage develop
-          name: Deploy anti virus service
-
-  deploy-anti-virus-production:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - setup_remote_docker:
-          version: 18.06.0-ce
-      - run:
-          command: npm run deploy -- --scope=@core/anti-virus -- -- --stage production
-          name: Deploy anti virus service
-
-  deploy-open-banking-develop:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@open-banking/api -- -- --stage develop --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
-          name: Deploy open banking API
-
-  deploy-open-banking-production:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@open-banking/api -- -- --stage production --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
-          name: Deploy open banking API
-
-  deploy-auth0-develop:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: |
-            echo "export AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_DEV" >> $BASH_ENV
-            echo "export AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET_DEV" >> $BASH_ENV
-            echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV" >> $BASH_ENV
-          name: Setup environment variables
-      - run:
-          command: npm run deploy -- --scope=@core/id -- -- -c config.json
-          name: Deploy to Auth0
-
-  deploy-auth0-production:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: |
-            echo "export AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_PROD" >> $BASH_ENV
-            echo "export AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET_PROD" >> $BASH_ENV
-            echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD" >> $BASH_ENV
-          name: Setup environment variables
-      - run:
-          command: npm run deploy -- --scope=@core/id -- -- -c config.json
-          name: Deploy to Auth0
-
-  deploy-infrastructure:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@core/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
-          name: Deploy infrastructure
-
-  deploy-storybook:
-    docker:
-      - image: circleci/node:12.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - <<: *attach_workspace
-      - <<: *restore_dependencies
-      - run:
-          command: npm run deploy -- --scope=@motech-development/breeze-ui
-          name: Deploy storybook
+  # smoke-test-accounts-client:
+  #   docker:
+  #     - image: cypress/base:12.14.0
+  #       environment:
+  #         TERM: xterm
+  #   working_directory: ~/repo
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - <<: *restore_cache
+  #     - run:
+  #         command: mv -v /home/circleci/repo/node_modules .
+  #         name: Move node modules
+  #     - run:
+  #         command: mv -v /home/circleci/.cache ~/
+  #         name: Move Cypress cache
+  #     - run:
+  #         background: true
+  #         command: npx serve -s ./applications/accounts/client/build --listen 3000
+  #         name: Start application
+  #     - run:
+  #         command: npx wait-on http://localhost:3000
+  #         name: Wait for application to start
+  #     - run:
+  #         command: npm run e2e:ci -- --scope=@accounts/client
+  #         name: Smoke tests
+  #     - store_test_results:
+  #         path: reports/junit
+  #     - store_artifacts:
+  #         path: applications/accounts/client/cypress/videos
+  #     - store_artifacts:
+  #         path: applications/accounts/client/cypress/screenshots
+  # build-accounts-client-develop:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: |
+  #           echo "export REACT_APP_AUTH0_CLIENT_ID=$ACCOUNTS_APP_CLIENT_ID_DEV" >> $BASH_ENV
+  #           echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV" >> $BASH_ENV
+  #         name: Setup environment variables
+  #     - run:
+  #         command: npm run build -- --scope=@accounts/client
+  #         name: Build client
+  #     - persist_to_workspace:
+  #         paths:
+  #           - ./applications/accounts/client/build
+  #         root: .
+  # build-accounts-client-production:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: |
+  #           echo "export REACT_APP_AUTH0_CLIENT_ID=$ACCOUNTS_APP_CLIENT_ID_PROD" >> $BASH_ENV
+  #           echo "export REACT_APP_AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD" >> $BASH_ENV
+  #         name: Setup environment variables
+  #     - run:
+  #         command: npm run build -- --scope=@accounts/client
+  #         name: Build client
+  #     - persist_to_workspace:
+  #         paths:
+  #           - ./applications/accounts/client/build
+  #         root: .
+  # deploy-accounts-infrastructure:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@accounts/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
+  #         name: Deploy accounts infrastructure
+  #         no_output_timeout: 60m
+  # deploy-accounts-client:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@accounts/client -- -- --stage production --domain-name $PROD_DOMAIN
+  #         name: Deploy accounts client
+  # deploy-accounts-data-develop:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@accounts/data -- -- --stage develop
+  #         name: Deploy accounts data infrastructure
+  # deploy-accounts-data-production:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@accounts/data -- -- --stage production
+  #         name: Deploy accounts data infrastructure
+  # deploy-accounts-api-develop:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@accounts/api -- -- --stage develop --issuer $AUTH0_DOMAIN_DEV
+  #         name: Deploy accounts API
+  #     - persist_to_workspace:
+  #         paths:
+  #           - ./applications/accounts/client/.env.production
+  #         root: .
+  # deploy-accounts-api-production:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@accounts/api -- -- --stage production --issuer $AUTH0_DOMAIN_PROD
+  #         name: Deploy accounts API
+  #     - persist_to_workspace:
+  #         paths:
+  #           - ./applications/accounts/client/.env.production
+  #         root: .
+  # deploy-accounts-queue-develop:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@accounts/queue -- -- --stage develop
+  #         name: Deploy accounts queue infrastructure
+  # deploy-accounts-queue-production:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@accounts/queue -- -- --stage production
+  #         name: Deploy accounts queue infrastructure
+  # deploy-accounts-storage-develop:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@accounts/storage -- -- --stage develop
+  #         name: Deploy accounts storage infrastructure
+  # deploy-accounts-storage-production:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@accounts/storage -- -- --stage production
+  #         name: Deploy accounts storage infrastructure
+  # deploy-anti-virus-develop:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - setup_remote_docker:
+  #         version: 18.06.0-ce
+  #     - run:
+  #         command: npm run deploy -- --scope=@core/anti-virus -- -- --stage develop
+  #         name: Deploy anti virus service
+  # deploy-anti-virus-production:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - setup_remote_docker:
+  #         version: 18.06.0-ce
+  #     - run:
+  #         command: npm run deploy -- --scope=@core/anti-virus -- -- --stage production
+  #         name: Deploy anti virus service
+  # deploy-open-banking-develop:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@open-banking/api -- -- --stage develop --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
+  #         name: Deploy open banking API
+  # deploy-open-banking-production:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@open-banking/api -- -- --stage production --appId $YAPILY_APPLICATION_ID --appSecret $YAPILY_APPLICATION_SECRET
+  #         name: Deploy open banking API
+  # deploy-auth0-develop:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: |
+  #           echo "export AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_DEV" >> $BASH_ENV
+  #           echo "export AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET_DEV" >> $BASH_ENV
+  #           echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_DEV" >> $BASH_ENV
+  #         name: Setup environment variables
+  #     - run:
+  #         command: npm run deploy -- --scope=@core/id -- -- -c config.json
+  #         name: Deploy to Auth0
+  # deploy-auth0-production:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: |
+  #           echo "export AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID_PROD" >> $BASH_ENV
+  #           echo "export AUTH0_CLIENT_SECRET=$AUTH0_CLIENT_SECRET_PROD" >> $BASH_ENV
+  #           echo "export AUTH0_DOMAIN=$AUTH0_DOMAIN_PROD" >> $BASH_ENV
+  #         name: Setup environment variables
+  #     - run:
+  #         command: npm run deploy -- --scope=@core/id -- -- -c config.json
+  #         name: Deploy to Auth0
+  # deploy-infrastructure:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@core/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
+  #         name: Deploy infrastructure
+  # deploy-storybook:
+  #   executor: node
+  #   steps:
+  #     - checkout
+  #     - <<: *attach_workspace
+  #     - <<: *restore_dependencies
+  #     - run:
+  #         command: npm run deploy -- --scope=@motech-development/breeze-ui
+  #         name: Deploy storybook
 
 workflows:
   version: 2
@@ -423,175 +365,154 @@ workflows:
           context: SonarCloud
           requires:
             - setup
-
-      - smoke-test-accounts-client:
-          filters:
-            branches:
-              only:
-                - /bugfix\/.*/
-                - /feature\/.*/
-                - /hotfix\/.*/
-          requires:
-            - build-accounts-client-develop
-
-      - build-accounts-client-production:
-          filters:
-            branches:
-              only: master
-          requires:
-            - deploy-accounts-api-production
-
-      - build-accounts-client-develop:
-          filters:
-            branches:
-              only:
-                - /bugfix\/.*/
-                - /feature\/.*/
-                - /hotfix\/.*/
-          requires:
-            - deploy-accounts-api-develop
-
-      - deploy-infrastructure:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
-
-      - deploy-accounts-infrastructure:
-          filters:
-            branches:
-              only: master
-          requires:
-            - deploy-infrastructure
-
-      - deploy-accounts-data-production:
-          filters:
-            branches:
-              only: master
-          requires:
-            - deploy-accounts-storage-production
-
-      - deploy-accounts-data-develop:
-          filters:
-            branches:
-              only:
-                - /bugfix\/.*/
-                - /feature\/.*/
-                - /hotfix\/.*/
-          requires:
-            - deploy-accounts-storage-develop
-
-      - deploy-accounts-queue-production:
-          filters:
-            branches:
-              only: master
-          requires:
-            - deploy-open-banking-production
-
-      - deploy-accounts-queue-develop:
-          filters:
-            branches:
-              only:
-                - /bugfix\/.*/
-                - /feature\/.*/
-                - /hotfix\/.*/
-          requires:
-            - deploy-open-banking-develop
-
-      - deploy-accounts-storage-production:
-          filters:
-            branches:
-              only: master
-          requires:
-            - deploy-anti-virus-production
-
-      - deploy-accounts-storage-develop:
-          filters:
-            branches:
-              only:
-                - /bugfix\/.*/
-                - /feature\/.*/
-                - /hotfix\/.*/
-          requires:
-            - deploy-anti-virus-develop
-
-      - deploy-anti-virus-production:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
-
-      - deploy-anti-virus-develop:
-          filters:
-            branches:
-              only:
-                - /bugfix\/.*/
-                - /feature\/.*/
-                - /hotfix\/.*/
-          requires:
-            - unit-test
-
-      - deploy-open-banking-production:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
-
-      - deploy-open-banking-develop:
-          filters:
-            branches:
-              only:
-                - /bugfix\/.*/
-                - /feature\/.*/
-                - /hotfix\/.*/
-          requires:
-            - unit-test
-
-      - deploy-accounts-api-production:
-          requires:
-            - deploy-accounts-data-production
-            - deploy-accounts-queue-production
-            - deploy-accounts-storage-production
-            - deploy-open-banking-production
-
-      - deploy-accounts-api-develop:
-          requires:
-            - deploy-accounts-data-develop
-            - deploy-accounts-queue-develop
-            - deploy-accounts-storage-develop
-            - deploy-open-banking-develop
-
-      - deploy-auth0-production:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
-
-      - deploy-auth0-develop:
-          filters:
-            branches:
-              only:
-                - /bugfix\/.*/
-                - /feature\/.*/
-                - /hotfix\/.*/
-          requires:
-            - unit-test
-
-      - deploy-accounts-client:
-          filters:
-            branches:
-              only: master
-          requires:
-            - deploy-accounts-infrastructure
-            - build-accounts-client-production
-
-      - deploy-storybook:
-          filters:
-            branches:
-              only: master
-          requires:
-            - unit-test
+      # - smoke-test-accounts-client:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     requires:
+      #       - build-accounts-client-develop
+      # - build-accounts-client-production:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - deploy-accounts-api-production
+      # - build-accounts-client-develop:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     requires:
+      #       - deploy-accounts-api-develop
+      # - deploy-infrastructure:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - unit-test
+      # - deploy-accounts-infrastructure:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - deploy-infrastructure
+      # - deploy-accounts-data-production:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - deploy-accounts-storage-production
+      # - deploy-accounts-data-develop:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     requires:
+      #       - deploy-accounts-storage-develop
+      # - deploy-accounts-queue-production:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - deploy-open-banking-production
+      # - deploy-accounts-queue-develop:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     requires:
+      #       - deploy-open-banking-develop
+      # - deploy-accounts-storage-production:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - deploy-anti-virus-production
+      # - deploy-accounts-storage-develop:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     requires:
+      #       - deploy-anti-virus-develop
+      # - deploy-anti-virus-production:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - unit-test
+      # - deploy-anti-virus-develop:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     requires:
+      #       - unit-test
+      # - deploy-open-banking-production:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - unit-test
+      # - deploy-open-banking-develop:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     requires:
+      #       - unit-test
+      # - deploy-accounts-api-production:
+      #     requires:
+      #       - deploy-accounts-data-production
+      #       - deploy-accounts-queue-production
+      #       - deploy-accounts-storage-production
+      #       - deploy-open-banking-production
+      # - deploy-accounts-api-develop:
+      #     requires:
+      #       - deploy-accounts-data-develop
+      #       - deploy-accounts-queue-develop
+      #       - deploy-accounts-storage-develop
+      #       - deploy-open-banking-develop
+      # - deploy-auth0-production:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - unit-test
+      # - deploy-auth0-develop:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /bugfix\/.*/
+      #           - /feature\/.*/
+      #           - /hotfix\/.*/
+      #     requires:
+      #       - unit-test
+      # - deploy-accounts-client:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - deploy-accounts-infrastructure
+      #       - build-accounts-client-production
+      # - deploy-storybook:
+      #     filters:
+      #       branches:
+      #         only: master
+      #     requires:
+      #       - unit-test
