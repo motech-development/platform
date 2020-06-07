@@ -14,59 +14,18 @@
     />
 
     <title>Motech Development ID</title>
-
-    <style type="text/css">
-      html,
-      body {
-        background: #161616;
-        color: #fff;
-      }
-
-      .loader-svg {
-        animation: rotate 2s linear infinite;
-        height: 50px;
-        left: 50%;
-        margin: -25px 0 0 -25px;
-        position: absolute;
-        top: 50%;
-        width: 50px;
-
-        @keyframes rotate {
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-      }
-
-      .loader-spinner {
-        animation: dash 1.5s ease-in-out infinite;
-        stroke: #007fa8;
-        stroke-linecap: round;
-
-        @keyframes dash {
-          0% {
-            stroke-dasharray: 1, 150;
-            stroke-dashoffset: 0;
-          }
-          50% {
-            stroke-dasharray: 90, 150;
-            stroke-dashoffset: -35;
-          }
-          100% {
-            stroke-dasharray: 90, 150;
-            stroke-dashoffset: -124;
-          }
-        }
-      }
-    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
 
-    <div id="root">
-      <svg class="loader-svg" viewBox="0 0 50 50">
-        <circle class="loader-spinner"></circle>
-      </svg>
-    </div>
+    <div id="root"></div>
+
+    <script>
+      try {
+        window.config = JSON.parse(
+          decodeURIComponent(escape(window.atob('@@config@@'))),
+        );
+      } catch {}
+    </script>
   </body>
 </html>

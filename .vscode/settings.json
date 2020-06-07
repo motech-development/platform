@@ -36,6 +36,10 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./applications/core/id"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./applications/open-banking/api"
     },
     {
