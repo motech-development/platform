@@ -86,7 +86,7 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
     },
     onError,
   });
-  const [upload, { loading: uploadLoading }] = useMutation<
+  const [deleteFile, { loading: deleteFileLoading }] = useMutation<
     IDeleteFileOutput,
     IDeleteFileInput
   >(DELETE_FILE, {
@@ -129,10 +129,10 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
         <Button
           block
           colour="danger"
-          loading={uploadLoading}
+          loading={deleteFileLoading}
           onClick={() => {
             (async () => {
-              await upload({
+              await deleteFile({
                 variables: {
                   id,
                   path,

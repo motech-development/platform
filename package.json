@@ -25,6 +25,7 @@
     "teardown:infrastructure": "lerna run teardown:infrastructure --stream",
     "test": "lerna run test --stream",
     "test:ci": "lerna run test:ci",
+    "update:lerna": "lerna exec ncu",
     "update:wizard": "lernaupdate"
   },
   "repository": {
@@ -86,6 +87,7 @@
     "lerna": "^3.22.0",
     "lerna-update-wizard": "^0.17.8",
     "lint-staged": "^10.2.9",
+    "npm-check-updates": "^6.0.1",
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1",
     "react-app-rewired": "^2.1.6",

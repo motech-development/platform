@@ -8,14 +8,19 @@ import React, {
   useState,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import createAuth0Client from '@auth0/auth0-spa-js';
-// eslint-disable-next-line import/no-unresolved
-import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
+import createAuth0Client, {
+  Auth0Client,
+  GetIdTokenClaimsOptions,
+  GetTokenSilentlyOptions,
+  IdToken,
+  LogoutOptions,
+  RedirectLoginOptions,
+} from '@auth0/auth0-spa-js';
 
 export interface AuthUser extends Omit<IdToken, '__raw'> {}
 
 export interface IAuthContext {
-  getIdTokenClaims(o?: getIdTokenClaimsOptions): Promise<IdToken>;
+  getIdTokenClaims(o?: GetIdTokenClaimsOptions): Promise<IdToken>;
   getTokenSilently(o?: GetTokenSilentlyOptions): Promise<string | undefined>;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -103,7 +108,7 @@ const AuthProvider: FC<IAuthProviderProps> = ({
     })();
   }, [auth0Client, onRedirectCallback, pathname, search]);
 
-  const getIdTokenClaims = (options?: getIdTokenClaimsOptions) =>
+  const getIdTokenClaims = (options?: GetIdTokenClaimsOptions) =>
     auth0Client!.getIdTokenClaims(options);
 
   const getTokenSilently = (options?: GetTokenSilentlyOptions) =>
