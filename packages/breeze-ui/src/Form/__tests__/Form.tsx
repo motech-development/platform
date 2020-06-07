@@ -6,10 +6,10 @@ import TextBox from '../../TextBox/TextBox';
 import Form from '../Form';
 
 interface IInitialValues {
-  empty: string | null;
+  empty?: string | null;
   obj: {
-    empty: string | null;
-    test: string;
+    empty?: string | null;
+    test?: string;
   };
   test: string;
 }
@@ -30,14 +30,18 @@ describe('Form', () => {
       },
       test: '',
     };
-    validationSchema = object().shape({
-      empty: string(),
-      obj: object().shape({
+    validationSchema = object()
+      .shape({
         empty: string(),
-        test: string(),
-      }),
-      test: string().required(),
-    });
+        obj: object()
+          .shape({
+            empty: string(),
+            test: string(),
+          })
+          .required(),
+        test: string().required(),
+      })
+      .required();
   });
 
   describe('without a cancel option', () => {

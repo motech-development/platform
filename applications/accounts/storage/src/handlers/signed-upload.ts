@@ -9,15 +9,17 @@ import { object, string } from 'yup';
 
 const whitelist = ['gif', 'jpeg', 'jpg', 'pdf', 'png'];
 const s3 = new S3();
-const schema = object().shape({
-  companyId: string().required(),
-  contentType: string().required(),
-  extension: string()
-    .lowercase()
-    .oneOf(whitelist)
-    .required(),
-  owner: string().required(),
-});
+const schema = object()
+  .shape({
+    companyId: string().required(),
+    contentType: string().required(),
+    extension: string()
+      .lowercase()
+      .oneOf(whitelist)
+      .required(),
+    owner: string().required(),
+  })
+  .required();
 
 export const handler = apiGatewayHandler(async event => {
   const { UPLOAD_BUCKET } = process.env;

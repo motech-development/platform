@@ -92,30 +92,32 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
   const contact = useContactDetails();
   const vat = useVatSettings();
   const yearEnd = useYearEnd();
-  const validationSchema = object<FormSchema>().shape({
-    balance: object().shape({
-      balance: number().required(
-        t('company-form.accounts-settings.balance.required'),
-      ),
-      vat: object().shape({
-        owed: number().required(
-          t('company-form.accounts-settings.vat-owed.required'),
+  const validationSchema = object<FormSchema>()
+    .shape({
+      balance: object().shape({
+        balance: number().required(
+          t('company-form.accounts-settings.balance.required'),
         ),
-        paid: number().required(
-          t('company-form.accounts-settings.vat-paid.required'),
-        ),
+        vat: object().shape({
+          owed: number().required(
+            t('company-form.accounts-settings.vat-owed.required'),
+          ),
+          paid: number().required(
+            t('company-form.accounts-settings.vat-paid.required'),
+          ),
+        }),
       }),
-    }),
-    company: object()
-      .concat(company)
-      .shape({
-        address,
-        bank,
-        contact,
-      }),
-    vat,
-    yearEnd,
-  });
+      company: object()
+        .concat(company)
+        .shape({
+          address,
+          bank,
+          contact,
+        }),
+      vat,
+      yearEnd,
+    })
+    .required();
 
   return (
     <Formik

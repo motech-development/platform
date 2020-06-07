@@ -29,21 +29,23 @@ const initialValues = {
   password: '',
   upload: '',
 };
-const validationSchema = object().shape({
-  category: string().required(),
-  choice: string().required(),
-  dob: date().required(),
-  email: string()
-    .email()
-    .required(),
-  extra: object().shape({
-    sortCode: string().required(),
-    telephone: string().required(),
-  }),
-  name: string().required(),
-  password: string().required(),
-  upload: string().required(),
-});
+const validationSchema = object()
+  .shape({
+    category: string().required(),
+    choice: string().required(),
+    dob: date().required(),
+    email: string()
+      .email()
+      .required(),
+    extra: object().shape({
+      sortCode: string().required(),
+      telephone: string().required(),
+    }),
+    name: string().required(),
+    password: string().required(),
+    upload: string().required(),
+  })
+  .required();
 const options = [
   {
     name: 'Travel',

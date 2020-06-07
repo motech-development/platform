@@ -53,12 +53,14 @@ const ClientForm: FC<IClientFormProps> = ({
   const { t } = useTranslation('clients');
   const address = useAddress();
   const contact = useContactDetails();
-  const validationSchema = object<FormSchema>().shape({
-    address,
-    companyId: string().required(),
-    contact,
-    name: string().required(t('client-form.client-details.name.required')),
-  });
+  const validationSchema = object<FormSchema>()
+    .shape({
+      address,
+      companyId: string().required(),
+      contact,
+      name: string().required(t('client-form.client-details.name.required')),
+    })
+    .required();
 
   return (
     <Form

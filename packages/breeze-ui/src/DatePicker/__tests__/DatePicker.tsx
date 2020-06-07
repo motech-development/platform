@@ -22,11 +22,13 @@ describe('DatePicker', () => {
   beforeEach(() => {
     onSubmit = jest.fn();
 
-    validationSchema = Yup.object().shape({
-      test: Yup.date()
-        .min('2015-06-03T19:45:00+00:00')
-        .required(),
-    });
+    validationSchema = Yup.object()
+      .shape({
+        test: Yup.date()
+          .min('2015-06-03T19:45:00+00:00')
+          .required(),
+      })
+      .required();
   });
 
   afterAll(() => {

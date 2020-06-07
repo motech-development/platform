@@ -58,22 +58,26 @@ const SettingsForm: FC<ISettingsFormProps> = ({
   const { connected, disconnectLoading, link, name, onDisconnect } = bank;
   const vat = useVatSettings();
   const yearEnd = useYearEnd();
-  const validationSchema = object<FormSchema>().shape({
-    categories: array().of(
-      object().shape({
-        name: string().required(
-          t('settings-form.expense-categories.name.required'),
-        ),
-        protect: boolean().required(),
-        vatRate: string().required(
-          t('settings-form.expense-categories.vat-rate.required'),
-        ),
-      }),
-    ),
-    id: string().required(),
-    vat,
-    yearEnd,
-  });
+  const validationSchema = object<FormSchema>()
+    .shape({
+      categories: array().of(
+        object()
+          .shape({
+            name: string().required(
+              t('settings-form.expense-categories.name.required'),
+            ),
+            protect: boolean().required(),
+            vatRate: string().required(
+              t('settings-form.expense-categories.vat-rate.required'),
+            ),
+          })
+          .required(),
+      ),
+      id: string().required(),
+      vat,
+      yearEnd,
+    })
+    .required();
 
   return (
     <Formik

@@ -69,7 +69,8 @@ const CompanyForm: FC<ICompanyFormProps> = ({
       address,
       bank,
       contact,
-    });
+    })
+    .required();
 
   return (
     <Form
