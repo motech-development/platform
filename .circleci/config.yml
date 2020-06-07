@@ -146,7 +146,7 @@ commands:
             echo "export AUTH0_DOMAIN=$<< parameters.domain >>" >> $BASH_ENV
           name: Setup environment variables
       - run:
-          command: npm run deploy -- --scope=@core/id -- -- -c config.json
+          command: npm run deploy -- --scope=@id/tenant -- -- -c config.json
           name: Deploy to Auth0
 
 jobs:
