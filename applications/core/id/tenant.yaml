@@ -46,8 +46,8 @@ clients:
         enabled: false
     oidc_conformant: true
     refresh_token:
-      rotation_type: non-rotating
       expiration_type: non-expiring
+      rotation_type: non-rotating
     sso_disabled: false
     token_endpoint_auth_method: none
     web_origins:
@@ -68,6 +68,9 @@ clients:
       lifetime_in_seconds: 36000
       secret_encoded: false
     oidc_conformant: true
+    refresh_token:
+      expiration_type: non-expiring
+      rotation_type: non-rotating
     sso_disabled: false
   - name: Default App
     callbacks: []
@@ -85,6 +88,9 @@ clients:
       lifetime_in_seconds: 36000
       secret_encoded: false
     oidc_conformant: true
+    refresh_token:
+      expiration_type: non-expiring
+      rotation_type: non-rotating
     sso_disabled: false
   - name: auth0-deploy-cli-extension
     allowed_clients: []
@@ -155,6 +161,8 @@ tenant:
     universal_login: false
     disable_clickjack_protection_headers: false
     enable_mgmt_api_v1: true
+    include_email_in_reset_pwd_redirect: true
+    include_email_in_verify_email_redirect: true
   friendly_name: Motech Development
   picture_url: ''
   support_email: info@motechdevelopment.co.uk
@@ -187,5 +195,5 @@ branding:
   colors:
     page_background: '#161616'
     primary: '#007fa8'
-  logo_url: null
+  logo_url: ''
 prompts: {}

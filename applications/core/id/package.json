@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "deploy": "a0deploy import -i ./tenant.yaml",
-    "import": "a0deploy export -c config.local.json -f yaml"
+    "import": "a0deploy export -c config.local.json -f yaml -o ./"
   },
   "devDependencies": {
     "auth0-deploy-cli": "^4.3.1"
