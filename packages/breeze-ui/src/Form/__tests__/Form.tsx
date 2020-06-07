@@ -6,10 +6,10 @@ import TextBox from '../../TextBox/TextBox';
 import Form from '../Form';
 
 interface IInitialValues {
-  empty: string | null;
+  empty?: string | null;
   obj: {
-    empty: string | null;
-    test: string;
+    empty?: string | null;
+    test?: string;
   };
   test: string;
 }
@@ -32,15 +32,11 @@ describe('Form', () => {
     };
     validationSchema = object()
       .shape({
-        empty: string()
-          .nullable()
-          .required(),
+        empty: string(),
         obj: object()
           .shape({
-            empty: string()
-              .nullable()
-              .required(),
-            test: string().required(),
+            empty: string(),
+            test: string(),
           })
           .required(),
         test: string().required(),

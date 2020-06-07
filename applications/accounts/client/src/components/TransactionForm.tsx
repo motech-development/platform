@@ -102,35 +102,37 @@ const TransactionForm: FC<ITransactionForm> = ({
   const [disableInput, setDisableInput] = useState(formValues.category === '');
   const { t } = useTranslation('accounts');
   const currency = t('transaction-form.currency');
-  const validationSchema = object<FormSchema>().shape({
-    amount: number().required(
-      t('transaction-form.transaction-amount.amount.required'),
-    ),
-    attachment: string(),
-    category: string().required(
-      t('transaction-form.transaction-amount.category.required'),
-    ),
-    companyId: string().required(),
-    date: date().required(
-      t('transaction-form.transaction-details.date.required'),
-    ),
-    description: string().required(
-      t('transaction-form.transaction-details.description.required'),
-    ),
-    id: string(),
-    name: string().required(
-      t('transaction-form.transaction-details.name.required'),
-    ),
-    status: string().required(
-      t('transaction-form.transaction-amount.status.required'),
-    ),
-    transaction: string().required(
-      t('transaction-form.transaction-details.transaction.required'),
-    ),
-    vat: number().required(
-      t('transaction-form.transaction-amount.vat.required'),
-    ),
-  });
+  const validationSchema = object<FormSchema>()
+    .shape({
+      amount: number().required(
+        t('transaction-form.transaction-amount.amount.required'),
+      ),
+      attachment: string(),
+      category: string().required(
+        t('transaction-form.transaction-amount.category.required'),
+      ),
+      companyId: string().required(),
+      date: date().required(
+        t('transaction-form.transaction-details.date.required'),
+      ),
+      description: string().required(
+        t('transaction-form.transaction-details.description.required'),
+      ),
+      id: string(),
+      name: string().required(
+        t('transaction-form.transaction-details.name.required'),
+      ),
+      status: string().required(
+        t('transaction-form.transaction-amount.status.required'),
+      ),
+      transaction: string().required(
+        t('transaction-form.transaction-details.transaction.required'),
+      ),
+      vat: number().required(
+        t('transaction-form.transaction-amount.vat.required'),
+      ),
+    })
+    .required();
   const dropdown = categories
     .map(({ name }) => name)
     .map((name, i) => ({

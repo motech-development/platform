@@ -24,16 +24,18 @@ const ConfirmDelete: FC<IConfirmDeleteProps> = ({
   onDelete,
 }) => {
   const { t } = useTranslation('confirm-delete');
-  const validationSchema = object<FormSchema>().shape({
-    confirmation: string()
-      .oneOf(
-        [name],
-        t('does-not-match', {
-          name,
-        }),
-      )
-      .required(t('required')),
-  });
+  const validationSchema = object<FormSchema>()
+    .shape({
+      confirmation: string()
+        .oneOf(
+          [name],
+          t('does-not-match', {
+            name,
+          }),
+        )
+        .required(t('required')),
+    })
+    .required();
 
   return (
     <Formik
