@@ -8,10 +8,12 @@ import { join } from 'path';
 import { object, string } from 'yup';
 
 const s3 = new S3();
-const schema = object().shape({
-  owner: string().required(),
-  path: string().required(),
-});
+const schema = object()
+  .shape({
+    owner: string().required(),
+    path: string().required(),
+  })
+  .required();
 
 export const handler = apiGatewayHandler(async event => {
   const { DOWNLOAD_BUCKET } = process.env;

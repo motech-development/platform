@@ -28,9 +28,11 @@ describe('Select', () => {
         value: 'option 2',
       },
     ];
-    validationSchema = Yup.object().shape({
-      test: Yup.string().required(),
-    });
+    validationSchema = Yup.object()
+      .shape({
+        test: Yup.string().required(),
+      })
+      .required();
   });
 
   describe('when there are no initial values', () => {

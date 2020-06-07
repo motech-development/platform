@@ -18,9 +18,11 @@ describe('TextBox', () => {
     onChange = jest.fn();
     onSubmit = jest.fn();
 
-    validationSchema = Yup.object().shape({
-      test: Yup.string().required(),
-    });
+    validationSchema = Yup.object()
+      .shape({
+        test: Yup.string().required(),
+      })
+      .required();
   });
 
   describe('with no format is set', () => {

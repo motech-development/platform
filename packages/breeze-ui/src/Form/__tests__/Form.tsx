@@ -30,14 +30,22 @@ describe('Form', () => {
       },
       test: '',
     };
-    validationSchema = object().shape({
-      empty: string(),
-      obj: object().shape({
-        empty: string(),
-        test: string(),
-      }),
-      test: string().required(),
-    });
+    validationSchema = object()
+      .shape({
+        empty: string()
+          .nullable()
+          .required(),
+        obj: object()
+          .shape({
+            empty: string()
+              .nullable()
+              .required(),
+            test: string().required(),
+          })
+          .required(),
+        test: string().required(),
+      })
+      .required();
   });
 
   describe('without a cancel option', () => {

@@ -24,9 +24,11 @@ describe('FileUpload', () => {
   beforeEach(() => {
     onSubmit = jest.fn();
     onSelect = jest.fn();
-    validationSchema = Yup.object().shape({
-      test: Yup.string().required(),
-    });
+    validationSchema = Yup.object()
+      .shape({
+        test: Yup.string().required(),
+      })
+      .required();
   });
 
   describe('disabled', () => {
