@@ -92,6 +92,7 @@
     "pretty-quick": "^2.0.1",
     "react-app-rewired": "^2.1.6",
     "react-scripts": "^3.4.0",
+    "react-snap": "^1.23.0",
     "react-test-renderer": "^16.13.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.13.1",
