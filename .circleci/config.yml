@@ -154,7 +154,7 @@ commands:
           name: Setup environment variables
       - run:
           command: npm run deploy -- --scope=@id/infrastructure -- -- --stage << parameters.stage >> --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
-          name: Deploy ID
+          name: Deploy ID infrastructure
       - run:
           command: npm run build -- --scope=@id/tenant
           name: Build ID client
@@ -191,8 +191,9 @@ jobs:
             - applications/accounts/queue/node_modules
             - applications/accounts/storage/node_modules
             - applications/core/anti-virus/node_modules
-            - applications/core/id/node_modules
             - applications/core/infrastructure/node_modules
+            - applications/id/infrastructure/node_modules
+            - applications/id/tenant/node_modules
             - applications/open-banking/api/node_modules
             - packages/api-gateway-handler/node_modules
             - packages/auth/node_modules
@@ -380,7 +381,7 @@ jobs:
           clientId: AUTH0_CLIENT_ID_DEV
           clientSecret: AUTH0_CLIENT_SECRET_DEV
           domainName: PROD_DOMAIN
-          prefix: id-dev
+          prefix: id-develop
           stage: develop
 
   deploy-auth0-production:
