@@ -137,6 +137,8 @@ commands:
         type: string
       domainName:
         type: string
+      stage:
+        type: string
       prefix:
         type: string
     steps:
@@ -151,12 +153,16 @@ commands:
             echo "export PUBLIC_URL=https://$$<< parameters.prefix >>.$<< parameters.domainName >>" >> $BASH_ENV
           name: Setup environment variables
       - run:
-          command: npm run deploy -- --scope=@id/infrastructure -- -- --stage develop --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
+          command: npm run deploy -- --scope=@id/infrastructure -- -- --stage << parameters.stage >> --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
           name: Deploy ID
       - run:
           command: npm run build -- --scope=@id/tenant
+          name: Build ID client
       - run:
-          command: npm run deploy -- --scope=@id/tenant -- -- -c config.json
+          command: npm run execute deploy:client -- --scope=@id/tenant -- -- --stage << parameters.stage >> --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
+          name: Deploy client
+      - run:
+          command: npm run execute deploy:tenant -- --scope=@id/tenant -- -- -c config.json
           name: Deploy to Auth0
 
 jobs:
@@ -375,6 +381,7 @@ jobs:
           clientSecret: AUTH0_CLIENT_SECRET_DEV
           domainName: PROD_DOMAIN
           prefix: id-dev
+          stage: develop
 
   deploy-auth0-production:
     executor: node
@@ -385,6 +392,7 @@ jobs:
           clientSecret: AUTH0_CLIENT_SECRET_PROD
           domainName: PROD_DOMAIN
           prefix: id
+          stage: production
 
   deploy-infrastructure:
     executor: node

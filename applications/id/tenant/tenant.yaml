@@ -195,5 +195,4 @@ branding:
   colors:
     page_background: '#161616'
     primary: '#007fa8'
-  logo_url: ''
 prompts: {}
