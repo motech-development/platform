@@ -4,6 +4,7 @@ hooks: []
 pages:
   - name: login
     html: build/index.html
+    enabled: true
 resourceServers:
   - name: Accounts API
     identifier: accounts-api
