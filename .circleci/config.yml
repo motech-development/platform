@@ -129,11 +129,15 @@ commands:
 
   deploy-auth0:
     parameters:
+      auth0Domain:
+        type: string
       clientId:
         type: string
       clientSecret:
         type: string
-      domain:
+      domainName:
+        type: string
+      prefix:
         type: string
     steps:
       - checkout
@@ -143,8 +147,14 @@ commands:
           command: |
             echo "export AUTH0_CLIENT_ID=$<< parameters.clientId >>" >> $BASH_ENV
             echo "export AUTH0_CLIENT_SECRET=$<< parameters.clientSecret >>" >> $BASH_ENV
-            echo "export AUTH0_DOMAIN=$<< parameters.domain >>" >> $BASH_ENV
+            echo "export AUTH0_DOMAIN=$<< parameters.auth0Domain >>" >> $BASH_ENV
+            echo "export PUBLIC_URL=https://$$<< parameters.prefix >>.$<< parameters.domainName >>" >> $BASH_ENV
           name: Setup environment variables
+      - run:
+          command: npm run deploy -- --scope=@id/infrastructure -- -- --stage develop --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
+          name: Deploy ID
+      - run:
+          command: npm run build -- --scope=@id/tenant
       - run:
           command: npm run deploy -- --scope=@id/tenant -- -- -c config.json
           name: Deploy to Auth0
@@ -360,17 +370,21 @@ jobs:
     executor: node
     steps:
       - deploy-auth0:
+          auth0Domain: AUTH0_DOMAIN_DEV
           clientId: AUTH0_CLIENT_ID_DEV
           clientSecret: AUTH0_CLIENT_SECRET_DEV
-          domain: AUTH0_DOMAIN_DEV
+          domainName: PROD_DOMAIN
+          prefix: id-dev
 
   deploy-auth0-production:
     executor: node
     steps:
       - deploy-auth0:
+          auth0Domain: AUTH0_DOMAIN_PROD
           clientId: AUTH0_CLIENT_ID_PROD
           clientSecret: AUTH0_CLIENT_SECRET_PROD
-          domain: AUTH0_DOMAIN_PROD
+          domainName: PROD_DOMAIN
+          prefix: id
 
   deploy-infrastructure:
     executor: node

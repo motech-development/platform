@@ -10,8 +10,10 @@
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "postbuild": "react-snap",
     "precommit": "lint-staged",
+    "predeploy": "serverless client deploy --verbose --no-confirm",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
     "start": "react-app-rewired start",
+    "teardown": "serverless client remove --verbose --no-confirm",
     "test": "react-app-rewired test",
     "test:ci": "react-app-rewired test --coverage --runInBand --reporters=default --reporters=jest-junit"
   },
