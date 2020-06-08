@@ -32,6 +32,10 @@ executors:
     docker:
       - image: circleci/node:12.13
     working_directory: ~/repo
+  node-browsers:
+    docker:
+      - image: circleci/node:12.13-browsers
+    working_directory: ~/repo
 
 commands:
   build-accounts-client:
@@ -150,7 +154,7 @@ commands:
             echo "export AUTH0_CLIENT_ID=$<< parameters.clientId >>" >> $BASH_ENV
             echo "export AUTH0_CLIENT_SECRET=$<< parameters.clientSecret >>" >> $BASH_ENV
             echo "export AUTH0_DOMAIN=$<< parameters.auth0Domain >>" >> $BASH_ENV
-            echo "export PUBLIC_URL=https://$$<< parameters.prefix >>.$<< parameters.domainName >>" >> $BASH_ENV
+            echo "export PUBLIC_URL=https://$<< parameters.prefix >>.$<< parameters.domainName >>" >> $BASH_ENV
           name: Setup environment variables
       - run:
           command: npm run deploy -- --scope=@id/infrastructure -- -- --stage << parameters.stage >> --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
@@ -374,7 +378,7 @@ jobs:
           stage: production
 
   deploy-auth0-develop:
-    executor: node
+    executor: node-browsers
     steps:
       - deploy-auth0:
           auth0Domain: AUTH0_DOMAIN_DEV
@@ -385,7 +389,7 @@ jobs:
           stage: develop
 
   deploy-auth0-production:
-    executor: node
+    executor: node-browsers
     steps:
       - deploy-auth0:
           auth0Domain: AUTH0_DOMAIN_PROD
