@@ -1,7 +1,9 @@
 rules: []
 rulesConfigs: []
 hooks: []
-pages: []
+pages:
+  - name: login
+    html: build/index.html
 resourceServers:
   - name: Accounts API
     identifier: accounts-api
