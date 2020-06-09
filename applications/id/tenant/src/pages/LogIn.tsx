@@ -1,6 +1,7 @@
 import { useToast } from '@motech-development/breeze-ui';
 import { Auth0Error } from 'auth0-js';
 import React, { FC, memo, useState } from 'react';
+import AppTitle from '../components/AppTitle';
 import AuthForm, { FormSchema } from '../components/AuthForm';
 import Window from '../components/Window';
 import useAuth from '../hooks/auth';
@@ -54,6 +55,8 @@ const LogIn: FC = () => {
 
   return (
     <Window>
+      <AppTitle />
+
       {view === 'logIn' && (
         <AuthForm
           loading={loading}

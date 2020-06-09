@@ -1,17 +1,6 @@
 import { WebAuth } from 'auth0-js';
 import { useEffect, useState } from 'react';
 
-declare global {
-  interface Window {
-    config: {
-      auth0Domain: string;
-      callbackURL: string;
-      clientID: string;
-      internalOptions: object;
-    };
-  }
-}
-
 const useAuth = () => {
   const [client, setClient] = useState<WebAuth>();
 
