@@ -1,18 +1,19 @@
 import { Typography } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
+import styled from 'styled-components';
+
+const Text = styled(Typography)`
+  white-space: pre-wrap;
+`;
 
 const AppTitle: FC = () => {
-  if (window.config) {
-    const { title } = window.config.dict.signin;
+  const title = window.config?.dict?.signin?.title || ' ';
 
-    return (
-      <Typography align="center" component="h2" variant="h1" margin="lg">
-        {title}
-      </Typography>
-    );
-  }
-
-  return null;
+  return (
+    <Text align="center" component="h2" variant="h1" margin="lg">
+      {title}
+    </Text>
+  );
 };
 
 export default memo(AppTitle);

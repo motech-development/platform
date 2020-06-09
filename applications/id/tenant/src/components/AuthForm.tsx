@@ -1,4 +1,11 @@
-import { Button, Card, Col, Row, TextBox } from '@motech-development/breeze-ui';
+import {
+  Button,
+  Card,
+  Col,
+  Row,
+  TextBox,
+  Typography,
+} from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
 import React, { FC, memo } from 'react';
 import { object, string } from 'yup';
@@ -12,6 +19,7 @@ export type FormSchema = typeof formSchema;
 
 export interface IAuthFormProps {
   change: string;
+  helpText?: string;
   loading: boolean;
   submit: string;
   onChange(): void;
@@ -29,6 +37,7 @@ const validationSchema = object<FormSchema>()
 
 const AuthForm: FC<IAuthFormProps> = ({
   change,
+  helpText,
   loading,
   onChange,
   onSubmit,
@@ -46,6 +55,12 @@ const AuthForm: FC<IAuthFormProps> = ({
           <TextBox type="email" name="username" label="Email address" />
 
           <TextBox type="password" name="password" label="Password" />
+
+          {helpText && (
+            <Typography component="p" variant="p" margin="none">
+              {helpText}
+            </Typography>
+          )}
         </Card>
 
         <Row gutter="0">

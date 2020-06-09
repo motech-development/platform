@@ -5,29 +5,38 @@ import {
   ToastProvider,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo, Suspense } from 'react';
+import React, { FC, lazy, memo, Suspense } from 'react';
 import { Route, Router, Switch } from 'react-router-dom';
 import history from './history';
-import LogIn from './pages/LogIn';
+import AppTitle from './components/AppTitle';
+import Window from './components/Window';
+
+const Index = lazy(() => import('./pages/Index'));
 
 const App: FC = () => (
-  <Suspense fallback={<Loader />}>
+  <>
     <AppBar>
       <Typography component="h1" variant="h4" margin="none">
         ID
       </Typography>
     </AppBar>
 
-    <ToastProvider>
-      <Router history={history}>
-        <Switch>
-          <Route path="/" component={LogIn} />
-        </Switch>
-      </Router>
-    </ToastProvider>
+    <Suspense fallback={<Loader />}>
+      <ToastProvider>
+        <Router history={history}>
+          <Window>
+            <AppTitle />
+
+            <Switch>
+              <Route path="/" component={Index} />
+            </Switch>
+          </Window>
+        </Router>
+      </ToastProvider>
+    </Suspense>
 
     <BaseStyles />
-  </Suspense>
+  </>
 );
 
 export default memo(App);
