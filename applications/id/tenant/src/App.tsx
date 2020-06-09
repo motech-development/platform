@@ -15,7 +15,7 @@ const Index = lazy(() => import('./pages/Index'));
 
 const App: FC = () => (
   <>
-    <AppBar>
+    <AppBar fixed>
       <Typography component="h1" variant="h4" margin="none">
         ID
       </Typography>

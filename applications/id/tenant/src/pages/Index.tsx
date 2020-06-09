@@ -10,6 +10,9 @@ const Index: FC = () => {
   const [view, setView] = useState('logIn');
   const handleError = (e: Auth0Error | null) => {
     if (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
+
       add({
         colour: 'danger',
         message: e.description || 'Something has gone wrong',
