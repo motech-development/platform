@@ -36,7 +36,7 @@
     },
     {
       "changeProcessCWD": true,
-      "directory": "./applications/core/id"
+      "directory": "./applications/id/tenant"
     },
     {
       "changeProcessCWD": true,

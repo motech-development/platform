@@ -1,4 +1,4 @@
-import { Button, Card, TextBox } from '@motech-development/breeze-ui';
+import { Button, Card, Col, Row, TextBox } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
 import React, { FC, memo } from 'react';
 import { object, string } from 'yup';
@@ -10,8 +10,11 @@ const formSchema = {
 
 export type FormSchema = typeof formSchema;
 
-export interface ILogInFormProps {
+export interface IAuthFormProps {
+  change: string;
   loading: boolean;
+  submit: string;
+  onChange(): void;
   onSubmit(value: FormSchema): void;
 }
 
@@ -24,7 +27,13 @@ const validationSchema = object<FormSchema>()
   })
   .required();
 
-const LogInForm: FC<ILogInFormProps> = ({ loading, onSubmit }) => (
+const AuthForm: FC<IAuthFormProps> = ({
+  change,
+  loading,
+  onChange,
+  onSubmit,
+  submit,
+}) => (
   <Formik
     validateOnMount
     initialValues={formSchema}
@@ -39,18 +48,29 @@ const LogInForm: FC<ILogInFormProps> = ({ loading, onSubmit }) => (
           <TextBox type="password" name="password" label="Password" />
         </Card>
 
-        <Button
-          block
-          type="submit"
-          size="lg"
-          disabled={!isValid}
-          loading={loading}
-        >
-          Log in
-        </Button>
+        <Row gutter="0">
+          <Col xs={6}>
+            <Button
+              block
+              colour="success"
+              type="submit"
+              size="lg"
+              disabled={!isValid}
+              loading={loading}
+            >
+              {submit}
+            </Button>
+          </Col>
+
+          <Col xs={6}>
+            <Button block size="lg" onClick={onChange}>
+              {change}
+            </Button>
+          </Col>
+        </Row>
       </Form>
     )}
   </Formik>
 );
 
-export default memo(LogInForm);
+export default memo(AuthForm);

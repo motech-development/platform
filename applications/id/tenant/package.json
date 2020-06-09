@@ -9,7 +9,7 @@
     "deploy:tenant": "a0deploy import -i ./tenant.yaml",
     "import": "a0deploy export -c config.local.json -f yaml -o ./",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
-    "postbuild": "react-snap",
+    "postdeploy:client": "react-snap",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
     "start": "react-app-rewired start",
