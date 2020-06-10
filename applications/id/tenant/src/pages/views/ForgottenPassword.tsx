@@ -30,7 +30,7 @@ const ForgottenPassword: FC<IForgottenPasswordProps> = ({ setView }) => {
           setView('log-in');
 
           add({
-            colour: 'primary',
+            colour: 'success',
             message: t('success'),
           });
         },

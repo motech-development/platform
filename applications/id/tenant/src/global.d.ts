@@ -11,6 +11,13 @@ declare global {
       };
       internalOptions: object;
     };
+    passwordReset?: {
+      csrfToken: string;
+      email: string;
+      passwordComplexityOptions: object;
+      passwordPolicy: string;
+      ticket: string;
+    };
   }
 }
 

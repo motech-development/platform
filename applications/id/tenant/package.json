@@ -76,6 +76,10 @@
     "outputName": "id-tenant.xml"
   },
   "reactSnap": {
+    "include": [
+      "/",
+      "/password-reset"
+    ],
     "minifyHtml": {
       "collapseWhitespace": false
     }

@@ -13,6 +13,7 @@ import history from './history';
 import AppTitle from './components/AppTitle';
 
 const Index = lazy(() => import('./pages/Index'));
+const PasswordReset = lazy(() => import('./pages/PasswordReset'));
 
 const App: FC = () => {
   const { t } = useTranslation();
@@ -27,15 +28,16 @@ const App: FC = () => {
 
       <Suspense fallback={<Loader />}>
         <ToastProvider>
-          <Router history={history}>
-            <Window>
-              <AppTitle />
+          <Window>
+            <AppTitle />
 
+            <Router history={history}>
               <Switch>
-                <Route path="/" component={Index} />
+                <Route exact path="/" component={Index} />
+                <Route exact path="/password-reset" component={PasswordReset} />
               </Switch>
-            </Window>
-          </Router>
+            </Router>
+          </Window>
         </ToastProvider>
       </Suspense>
 
