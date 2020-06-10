@@ -1,11 +1,10 @@
-// TODO: Titles for views
-// TODO: Reset password form
 import { useToast } from '@motech-development/breeze-ui';
 import { Auth0Error } from 'auth0-js';
 import React, { FC, lazy, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import getErrorMessage from '../utils/getErrorMessage';
 
+const ForgottenPassword = lazy(() => import('./views/ForgottenPassword'));
 const LogIn = lazy(() => import('./views/LogIn'));
 const SignUp = lazy(() => import('./views/SignUp'));
 
@@ -23,6 +22,10 @@ const Index: FC = () => {
       });
     }
   };
+
+  if (view === 'forgotten-password') {
+    return <ForgottenPassword handleError={handleError} setView={setView} />;
+  }
 
   if (view === 'sign-up') {
     return <SignUp handleError={handleError} setView={setView} />;

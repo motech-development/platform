@@ -12,13 +12,12 @@ import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 
 const formSchema = {
-  password: '',
-  username: '',
+  email: '',
 };
 
 export type FormSchema = typeof formSchema;
 
-export interface IAuthFormProps {
+export interface IForgottenPasswordFormProps {
   change: string;
   helpText?: ReactNode;
   loading: boolean;
@@ -27,7 +26,7 @@ export interface IAuthFormProps {
   onSubmit(value: FormSchema): void;
 }
 
-const AuthForm: FC<IAuthFormProps> = ({
+const ForgottenPasswordForm: FC<IForgottenPasswordFormProps> = ({
   change,
   helpText,
   loading,
@@ -38,8 +37,7 @@ const AuthForm: FC<IAuthFormProps> = ({
   const { t } = useTranslation('forms');
   const validationSchema = object<FormSchema>()
     .shape({
-      password: string().required(t('password.required')),
-      username: string()
+      email: string()
         .email(t('username.invalid'))
         .required(t('username.required')),
     })
@@ -55,24 +53,13 @@ const AuthForm: FC<IAuthFormProps> = ({
       {({ isValid }) => (
         <Form>
           <Card padding="lg">
-            <TextBox type="email" name="username" label={t('username.label')} />
-
-            <TextBox
-              type="password"
-              name="password"
-              label={t('password.label')}
-            />
-
             {helpText && (
-              <Typography
-                component="p"
-                variant="p"
-                align="center"
-                margin="none"
-              >
+              <Typography component="p" variant="p" align="center" margin="lg">
                 {helpText}
               </Typography>
             )}
+
+            <TextBox type="email" name="email" label={t('username.label')} />
           </Card>
 
           <Row gutter="0">
@@ -101,4 +88,4 @@ const AuthForm: FC<IAuthFormProps> = ({
   );
 };
 
-export default memo(AuthForm);
+export default memo(ForgottenPasswordForm);
