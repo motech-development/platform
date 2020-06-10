@@ -14,11 +14,9 @@ const LogIn: FC<ILogInProps> = ({ handleError, setView }) => {
   const client = useAuth();
   const { t } = useTranslation('log-in');
   const [loading, setLoading] = useState(false);
-  const logIn = (values: FormSchema) => {
+  const logIn = ({ password, username }: FormSchema) => {
     if (client) {
       setLoading(true);
-
-      const { password, username } = values;
 
       client.login(
         {

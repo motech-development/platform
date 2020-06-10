@@ -13,11 +13,9 @@ const SignUp: FC<ISignUpProps> = ({ handleError, setView }) => {
   const client = useAuth();
   const { t } = useTranslation('sign-up');
   const [loading, setLoading] = useState(false);
-  const signUp = (values: FormSchema) => {
+  const signUp = ({ password, username: email }: FormSchema) => {
     if (client) {
       setLoading(true);
-
-      const { password, username: email } = values;
 
       client.redirect.signupAndLogin(
         {

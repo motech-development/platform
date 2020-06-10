@@ -1,5 +1,4 @@
-// TODO: Error handling messages
-import { Auth0Error } from 'auth0-js';
+import { useToast } from '@motech-development/breeze-ui';
 import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ForgottenPasswordForm, {
@@ -8,15 +7,12 @@ import ForgottenPasswordForm, {
 import useAuth from '../../hooks/auth';
 
 export interface IForgottenPasswordProps {
-  handleError(e: Auth0Error | null): void;
   setView(view: string): void;
 }
 
-const ForgottenPassword: FC<IForgottenPasswordProps> = ({
-  handleError,
-  setView,
-}) => {
+const ForgottenPassword: FC<IForgottenPasswordProps> = ({ setView }) => {
   const client = useAuth();
+  const { add } = useToast();
   const { t } = useTranslation('forgotten-password');
   const [loading, setLoading] = useState(false);
   const sendEmail = ({ email }: FormSchema) => {
@@ -28,10 +24,15 @@ const ForgottenPassword: FC<IForgottenPasswordProps> = ({
           connection: 'Username-Password-Authentication',
           email,
         },
-        e => {
-          handleError(e);
-
+        () => {
           setLoading(false);
+
+          setView('log-in');
+
+          add({
+            colour: 'primary',
+            message: t('success'),
+          });
         },
       );
     }

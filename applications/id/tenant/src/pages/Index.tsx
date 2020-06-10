@@ -24,7 +24,7 @@ const Index: FC = () => {
   };
 
   if (view === 'forgotten-password') {
-    return <ForgottenPassword handleError={handleError} setView={setView} />;
+    return <ForgottenPassword setView={setView} />;
   }
 
   if (view === 'sign-up') {
