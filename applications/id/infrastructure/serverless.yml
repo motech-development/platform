@@ -90,11 +90,6 @@ resources:
               Cookies:
                 Forward: none
             ViewerProtocolPolicy: redirect-to-https
-          # TODO: Logging
-          # Logging:
-          #   IncludeCookies: 'false'
-          #   Bucket: ''
-          #   Prefix: ''
 
     DnsRecord:
       Type: AWS::Route53::RecordSet
