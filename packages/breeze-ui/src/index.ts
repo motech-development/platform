@@ -43,3 +43,4 @@ export {
   default as Typography,
   ITypographyProps,
 } from './Typography/Typography';
+export { default as Window } from './Window/Window';
