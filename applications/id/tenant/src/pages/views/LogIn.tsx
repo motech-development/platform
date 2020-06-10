@@ -1,3 +1,4 @@
+import { ButtonLink } from '@motech-development/breeze-ui';
 import { Auth0Error } from 'auth0-js';
 import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -38,6 +39,11 @@ const LogIn: FC<ILogInProps> = ({ handleError, setView }) => {
     <AuthForm
       loading={loading}
       change={t('sign-up')}
+      helpText={
+        <ButtonLink type="button" onClick={() => setView('forgotten-password')}>
+          {t('forgotten-password')}
+        </ButtonLink>
+      }
       submit={t('log-in')}
       onChange={() => setView('sign-up')}
       onSubmit={logIn}

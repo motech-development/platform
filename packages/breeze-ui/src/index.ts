@@ -3,6 +3,7 @@ export { default as AppBar } from './AppBar/AppBar';
 export { default as Avatar } from './Avatar/Avatar';
 export { default as BaseStyles } from './BaseStyles/BaseStyles';
 export { default as Button } from './Button/Button';
+export { default as ButtonLink } from './ButtonLink/ButtonLink';
 export { default as Calendar } from './Calendar/Calendar';
 export { default as Card } from './Card/Card';
 export { default as Col } from './Col/Col';

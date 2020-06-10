@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
-import React, { FC, memo } from 'react';
+import React, { FC, memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 
@@ -20,7 +20,7 @@ export type FormSchema = typeof formSchema;
 
 export interface IAuthFormProps {
   change: string;
-  helpText?: string;
+  helpText?: ReactNode;
   loading: boolean;
   submit: string;
   onChange(): void;
