@@ -19,6 +19,15 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.subDomain}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+              AllowedOrigins:
+                - '*'
+              MaxAge: 3000
 
     BucketPolicy:
       Type: AWS::S3::BucketPolicy
