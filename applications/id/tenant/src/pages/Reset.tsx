@@ -1,6 +1,6 @@
 import React, { FC, memo, useEffect } from 'react';
 
-const ChangePassword: FC = () => {
+const Reset: FC = () => {
   useEffect(() => {
     if (!window.passwordReset) {
       const script = document.createElement('script');
@@ -25,4 +25,4 @@ const ChangePassword: FC = () => {
   return <div>Hello world</div>;
 };
 
-export default memo(ChangePassword);
+export default memo(Reset);

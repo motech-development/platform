@@ -6,7 +6,7 @@ pages:
     html: build/login/index.html
     enabled: true
   - name: password_reset
-    html: build/change-password/index.html
+    html: build/lo/reset/index.html
     enabled: true
 resourceServers:
   - name: Accounts API
