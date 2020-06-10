@@ -1,5 +1,6 @@
 import { Auth0Error } from 'auth0-js';
 import React, { FC, memo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import AuthForm, { FormSchema } from '../../components/AuthForm';
 import useAuth from '../../hooks/auth';
 
@@ -10,6 +11,7 @@ export interface ILogInProps {
 
 const LogIn: FC<ILogInProps> = ({ handleError, setView }) => {
   const client = useAuth();
+  const { t } = useTranslation('log-in');
   const [loading, setLoading] = useState(false);
   const logIn = (values: FormSchema) => {
     if (client) {
@@ -35,9 +37,9 @@ const LogIn: FC<ILogInProps> = ({ handleError, setView }) => {
   return (
     <AuthForm
       loading={loading}
-      change="Sign up"
-      submit="Log in"
-      onChange={() => setView('signUp')}
+      change={t('sign-up')}
+      submit={t('log-in')}
+      onChange={() => setView('sign-up')}
       onSubmit={logIn}
     />
   );

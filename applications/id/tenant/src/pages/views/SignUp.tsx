@@ -1,5 +1,6 @@
 import { Auth0Error } from 'auth0-js';
 import React, { FC, memo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import AuthForm, { FormSchema } from '../../components/AuthForm';
 import useAuth from '../../hooks/auth';
 
@@ -10,6 +11,7 @@ export interface ISignUpProps {
 
 const SignUp: FC<ISignUpProps> = ({ handleError, setView }) => {
   const client = useAuth();
+  const { t } = useTranslation('sign-up');
   const [loading, setLoading] = useState(false);
   const signUp = (values: FormSchema) => {
     if (client) {
@@ -35,10 +37,10 @@ const SignUp: FC<ISignUpProps> = ({ handleError, setView }) => {
   return (
     <AuthForm
       loading={loading}
-      change="Go back"
-      helpText="By signing up, you agree to our terms of service and privacy policy."
-      submit="Sign up"
-      onChange={() => setView('logIn')}
+      change={t('go-back')}
+      helpText={t('help-text')}
+      submit={t('sign-up')}
+      onChange={() => setView('log-in')}
       onSubmit={signUp}
     />
   );

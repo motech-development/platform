@@ -1,0 +1,11 @@
+{
+  "username": {
+    "label": "Email address",
+    "invalid": "Email address is invalid",
+    "required": "Email address is required"
+  },
+  "password": {
+    "label": "Password",
+    "required": "Password is required"
+  }
+}
