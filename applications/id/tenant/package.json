@@ -77,8 +77,8 @@
   },
   "reactSnap": {
     "include": [
-      "/",
-      "/password-reset"
+      "/login",
+      "/change-password"
     ],
     "minifyHtml": {
       "collapseWhitespace": false

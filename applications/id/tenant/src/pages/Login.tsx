@@ -8,7 +8,7 @@ const ForgottenPassword = lazy(() => import('./views/ForgottenPassword'));
 const LogIn = lazy(() => import('./views/LogIn'));
 const SignUp = lazy(() => import('./views/SignUp'));
 
-const Index: FC = () => {
+const Login: FC = () => {
   const { add } = useToast();
   const { t } = useTranslation('validation');
   const [view, setView] = useState('log-in');
@@ -34,4 +34,4 @@ const Index: FC = () => {
   return <LogIn handleError={handleError} setView={setView} />;
 };
 
-export default memo(Index);
+export default memo(Login);

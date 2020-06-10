@@ -3,10 +3,10 @@ rulesConfigs: []
 hooks: []
 pages:
   - name: login
-    html: build/index.html
+    html: build/login/index.html
     enabled: true
   - name: password_reset
-    html: build/password-reset/index.html
+    html: build/change-password/index.html
     enabled: true
 resourceServers:
   - name: Accounts API

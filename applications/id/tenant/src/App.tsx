@@ -12,8 +12,8 @@ import { Route, Router, Switch } from 'react-router-dom';
 import history from './history';
 import AppTitle from './components/AppTitle';
 
-const Index = lazy(() => import('./pages/Index'));
-const PasswordReset = lazy(() => import('./pages/PasswordReset'));
+const Login = lazy(() => import('./pages/Login'));
+const ChangePassword = lazy(() => import('./pages/ChangePassword'));
 
 const App: FC = () => {
   const { t } = useTranslation();
@@ -33,8 +33,12 @@ const App: FC = () => {
 
             <Router history={history}>
               <Switch>
-                <Route exact path="/" component={Index} />
-                <Route exact path="/password-reset" component={PasswordReset} />
+                <Route exact path="/login" component={Login} />
+                <Route
+                  exact
+                  path="/change-password"
+                  component={ChangePassword}
+                />
               </Switch>
             </Router>
           </Window>
