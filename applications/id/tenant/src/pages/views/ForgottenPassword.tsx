@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import ForgottenPasswordForm, {
   FormSchema,
 } from '../../components/ForgottenPasswordForm';
-import useAuth from '../../hooks/auth';
+import useAuth from '../../hooks/useAuth';
 
 export interface IForgottenPasswordProps {
   setView(view: string): void;

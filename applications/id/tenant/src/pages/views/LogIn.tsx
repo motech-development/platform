@@ -3,7 +3,7 @@ import { Auth0Error } from 'auth0-js';
 import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AuthForm, { FormSchema } from '../../components/AuthForm';
-import useAuth from '../../hooks/auth';
+import useAuth from '../../hooks/useAuth';
 
 export interface ILogInProps {
   handleError(e: Auth0Error | null): void;
