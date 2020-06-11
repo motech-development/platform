@@ -14,7 +14,6 @@ declare global {
     passwordReset?: {
       csrfToken: string;
       email: string;
-      passwordComplexityOptions: object;
       passwordPolicy: string;
       ticket: string;
     };

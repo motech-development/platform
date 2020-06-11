@@ -1,23 +1,10 @@
-import { usePost } from '@motech-development/axios-hooks';
-import React, { FC, memo, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import ResetPasswordForm, { FormSchema } from '../components/ResetPasswordForm';
+import React, { FC, lazy, memo, useEffect, useState } from 'react';
+
+const ResetPassword = lazy(() => import('./views/ResetPassword'));
+const Success = lazy(() => import('./views/Success'));
 
 const Reset: FC = () => {
-  const { t } = useTranslation('reset');
-  const [reset, { loading }] = usePost({
-    onCompleted: res => {
-      // eslint-disable-next-line no-console
-      console.log(res);
-    },
-    onError: err => {
-      // eslint-disable-next-line no-console
-      console.log(err);
-    },
-  });
-  const resetPassword = async (value: FormSchema) => {
-    await reset('/lo/reset', value);
-  };
+  const [view, setView] = useState('reset');
 
   useEffect(() => {
     if (!window.passwordReset) {
@@ -27,7 +14,6 @@ const Reset: FC = () => {
           window.passwordReset = {
             csrfToken: '{{csrf_token}}',
             email: '{{email | escape}}',
-            passwordComplexityOptions: '{{password_complexity_options}}',
             passwordPolicy: '{{password_policy}}',
             ticket: '{{ticket}}',
           };
@@ -40,13 +26,11 @@ const Reset: FC = () => {
     }
   }, []);
 
-  return (
-    <ResetPasswordForm
-      loading={loading}
-      submit={t('reset-password')}
-      onSubmit={resetPassword}
-    />
-  );
+  if (view === 'success') {
+    return <Success />;
+  }
+
+  return <ResetPassword setView={setView} />;
 };
 
 export default memo(Reset);
