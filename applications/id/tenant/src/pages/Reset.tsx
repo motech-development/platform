@@ -1,13 +1,22 @@
-import React, { FC, memo, useEffect, useState } from 'react';
+import { usePost } from '@motech-development/axios-hooks';
+import React, { FC, memo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import ResetPasswordForm, { FormSchema } from '../components/ResetPasswordForm';
 
 const Reset: FC = () => {
-  const [loading] = useState(false);
   const { t } = useTranslation('reset');
-  const resetPassword = (values: FormSchema) => {
-    // eslint-disable-next-line no-console
-    console.log(values);
+  const [reset, { loading }] = usePost({
+    onCompleted: res => {
+      // eslint-disable-next-line no-console
+      console.log(res);
+    },
+    onError: err => {
+      // eslint-disable-next-line no-console
+      console.log(err);
+    },
+  });
+  const resetPassword = async (values: FormSchema) => {
+    await reset('/lo/reset', values);
   };
 
   useEffect(() => {
