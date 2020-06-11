@@ -9,7 +9,7 @@ const formSchema = {
   confirmPassword: '',
   email: window.passwordReset?.email,
   password: '',
-  password_policy: window.passwordReset?.passwordPolicy,
+  'password-policy': window.passwordReset?.passwordPolicy,
   ticket: window.passwordReset?.ticket,
 };
 
@@ -37,6 +37,7 @@ const ResetPasswordForm: FC<IResetPasswordFormProps> = ({
         .email()
         .required(),
       password: string().required(t('password.required')),
+      'password-policy': string().required(),
       ticket: string().required(),
     })
     .required();
