@@ -30,7 +30,7 @@ const ResetPasswordForm: FC<IResetPasswordFormProps> = ({
     .shape({
       _csrf: string().required(),
       confirmNewPassword: string()
-        .oneOf([ref('password')], t('confirm-password.invalid'))
+        .oneOf([ref('newPassword')], t('confirm-password.invalid'))
         .required(t('confirm-password.required')),
       newPassword: string().required(t('password.required')),
       'password-policy': string().required(),
