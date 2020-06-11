@@ -7,5 +7,10 @@
   "password": {
     "label": "Password",
     "required": "Password is required"
+  },
+  "confirm-password": {
+    "label": "Confirm password",
+    "required": "Please confirm your password",
+    "invalid": "Passwords do not match"
   }
 }

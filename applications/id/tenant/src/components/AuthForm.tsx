@@ -1,15 +1,9 @@
-import {
-  Button,
-  Card,
-  Col,
-  Row,
-  TextBox,
-  Typography,
-} from '@motech-development/breeze-ui';
+import { Card, TextBox, Typography } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
 import React, { FC, memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
+import FormFooter from './FormFooter';
 
 const formSchema = {
   password: '',
@@ -75,26 +69,13 @@ const AuthForm: FC<IAuthFormProps> = ({
             )}
           </Card>
 
-          <Row gutter="0">
-            <Col xs={6}>
-              <Button
-                block
-                colour="success"
-                type="submit"
-                size="lg"
-                disabled={!isValid}
-                loading={loading}
-              >
-                {submit}
-              </Button>
-            </Col>
-
-            <Col xs={6}>
-              <Button block size="lg" onClick={onChange}>
-                {change}
-              </Button>
-            </Col>
-          </Row>
+          <FormFooter
+            change={change}
+            isValid={isValid}
+            loading={loading}
+            submit={submit}
+            onChange={onChange}
+          />
         </Form>
       )}
     </Formik>
