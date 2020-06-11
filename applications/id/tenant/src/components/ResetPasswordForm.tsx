@@ -6,9 +6,8 @@ import { object, ref, string } from 'yup';
 
 const formSchema = {
   _csrf: window.passwordReset?.csrfToken,
-  confirmPassword: '',
-  email: window.passwordReset?.email,
-  password: '',
+  confirmNewPassword: '',
+  newPassword: '',
   'password-policy': window.passwordReset?.passwordPolicy,
   ticket: window.passwordReset?.ticket,
 };
@@ -30,13 +29,10 @@ const ResetPasswordForm: FC<IResetPasswordFormProps> = ({
   const validationSchema = object<FormSchema>()
     .shape({
       _csrf: string().required(),
-      confirmPassword: string()
+      confirmNewPassword: string()
         .oneOf([ref('password')], t('confirm-password.invalid'))
         .required(t('confirm-password.required')),
-      email: string()
-        .email()
-        .required(),
-      password: string().required(t('password.required')),
+      newPassword: string().required(t('password.required')),
       'password-policy': string().required(),
       ticket: string().required(),
     })
@@ -54,13 +50,13 @@ const ResetPasswordForm: FC<IResetPasswordFormProps> = ({
           <Card padding="lg">
             <TextBox
               type="password"
-              name="password"
+              name="newPassword"
               label={t('password.label')}
             />
 
             <TextBox
               type="password"
-              name="confirmPassword"
+              name="confirmNewPassword"
               label={t('confirm-password.label')}
             />
           </Card>

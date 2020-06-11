@@ -15,8 +15,8 @@ const Reset: FC = () => {
       console.log(err);
     },
   });
-  const resetPassword = async ({ confirmPassword, ...rest }: FormSchema) => {
-    await reset('/lo/reset', rest);
+  const resetPassword = async (value: FormSchema) => {
+    await reset('/lo/reset', value);
   };
 
   useEffect(() => {
