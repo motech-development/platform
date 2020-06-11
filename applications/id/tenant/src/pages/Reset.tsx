@@ -28,6 +28,7 @@ const Reset: FC = () => {
             csrfToken: '{{csrf_token}}',
             email: '{{email | escape}}',
             passwordComplexityOptions: '{{password_complexity_options}}',
+            passwordPolicy: '{{password_policy}}',
             ticket: '{{ticket}}',
           };
         } catch (e) {}

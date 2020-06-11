@@ -9,6 +9,7 @@ const formSchema = {
   confirmPassword: '',
   email: window.passwordReset?.email,
   password: '',
+  password_policy: window.passwordReset?.passwordPolicy,
   ticket: window.passwordReset?.ticket,
 };
 
