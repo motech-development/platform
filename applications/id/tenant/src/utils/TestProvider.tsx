@@ -1,6 +1,6 @@
 import { ToastContext, ToastProvider } from '@motech-development/breeze-ui';
 import i18n from 'i18next';
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactNode, Suspense } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 export const add = jest.fn();
@@ -33,7 +33,9 @@ const TestProvider: FC<ITestProviderProps> = ({ children }) => {
           remove,
         }}
       >
-        <I18nextProvider i18n={testI18n}>{children}</I18nextProvider>
+        <I18nextProvider i18n={testI18n}>
+          <Suspense fallback={<div />}>{children}</Suspense>
+        </I18nextProvider>
       </ToastContext.Provider>
     </ToastProvider>
   );
