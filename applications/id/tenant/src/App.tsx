@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Route, Router, Switch } from 'react-router-dom';
 import history from './history';
 import AppTitle from './components/AppTitle';
+import Wrapper from './components/Wrapper';
 
 const Login = lazy(() => import('./pages/Login'));
 const Reset = lazy(() => import('./pages/Reset'));
@@ -19,7 +20,7 @@ const App: FC = () => {
   const { t } = useTranslation();
 
   return (
-    <>
+    <Wrapper>
       <AppBar fixed>
         <Typography component="h1" variant="h4" margin="none">
           {t('app-name')}
@@ -42,7 +43,7 @@ const App: FC = () => {
       </Suspense>
 
       <BaseStyles />
-    </>
+    </Wrapper>
   );
 };
 

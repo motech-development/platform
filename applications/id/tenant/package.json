@@ -26,6 +26,7 @@
     "@popperjs/core": "^2.4.0",
     "auth0-js": "^9.13.2",
     "axios": "^0.19.2",
+    "body-scroll-lock": "^3.0.3",
     "formik": "^2.1.4",
     "history": "^4.10.1",
     "i18next": "^19.4.5",
