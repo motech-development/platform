@@ -132,7 +132,8 @@ describe('Login', () => {
         (WebAuth.prototype.redirect
           .signupAndLogin as jest.Mock).mockImplementationOnce((_, cb) =>
           cb({
-            error: 'invalid_signup',
+            description: 'test',
+            error: 'invalid_user_password',
           }),
         );
 
@@ -168,7 +169,7 @@ describe('Login', () => {
         await wait(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
-            message: 'sign-up.fallback',
+            message: 'test',
           }),
         );
       });
@@ -332,6 +333,26 @@ describe('Login', () => {
           expect.any(Function),
         );
       });
+    });
+
+    it('should go back to log in page', async () => {
+      const { findAllByRole, findByText, findByLabelText } = component;
+
+      await act(async () => {
+        const [forgottenPassword] = await findAllByRole('button');
+
+        fireEvent.click(forgottenPassword);
+
+        await findByLabelText('username.label');
+
+        const [, goBack] = await findAllByRole('button');
+
+        fireEvent.click(goBack);
+      });
+
+      await expect(
+        findByText('forgotten-password'),
+      ).resolves.toBeInTheDocument();
     });
   });
 });
