@@ -13,8 +13,9 @@ describe('getErrorMessage', () => {
 
   it('should use the local string', () => {
     const error: Auth0Error = {
+      code: 'access_denied',
       description: 'Hello world',
-      error: 'access_denied',
+      error: 'error',
     };
     const message = getErrorMessage(error);
 

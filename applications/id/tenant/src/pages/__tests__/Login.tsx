@@ -55,7 +55,7 @@ describe('Login', () => {
 
         (WebAuth.prototype.login as jest.Mock).mockImplementationOnce((_, cb) =>
           cb({
-            error: 'invalid_signup',
+            code: 'invalid_signup',
           }),
         );
 
@@ -132,8 +132,8 @@ describe('Login', () => {
         (WebAuth.prototype.redirect
           .signupAndLogin as jest.Mock).mockImplementationOnce((_, cb) =>
           cb({
+            code: 'invalid_user_password',
             description: 'test',
-            error: 'invalid_user_password',
           }),
         );
 
@@ -180,7 +180,7 @@ describe('Login', () => {
         (WebAuth.prototype.redirect
           .signupAndLogin as jest.Mock).mockImplementationOnce((_, cb) =>
           cb({
-            error: 'invalid_signup',
+            code: 'invalid_signup',
           }),
         );
 
