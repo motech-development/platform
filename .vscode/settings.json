@@ -36,6 +36,10 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./applications/id/tenant"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./applications/open-banking/api"
     },
     {

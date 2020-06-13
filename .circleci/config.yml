@@ -32,6 +32,10 @@ executors:
     docker:
       - image: circleci/node:12.13
     working_directory: ~/repo
+  node-browsers:
+    docker:
+      - image: circleci/node:12.13-browsers
+    working_directory: ~/repo
 
 commands:
   build-accounts-client:
@@ -129,11 +133,17 @@ commands:
 
   deploy-auth0:
     parameters:
+      auth0Domain:
+        type: string
       clientId:
         type: string
       clientSecret:
         type: string
-      domain:
+      domainName:
+        type: string
+      stage:
+        type: string
+      prefix:
         type: string
     steps:
       - checkout
@@ -143,10 +153,20 @@ commands:
           command: |
             echo "export AUTH0_CLIENT_ID=$<< parameters.clientId >>" >> $BASH_ENV
             echo "export AUTH0_CLIENT_SECRET=$<< parameters.clientSecret >>" >> $BASH_ENV
-            echo "export AUTH0_DOMAIN=$<< parameters.domain >>" >> $BASH_ENV
+            echo "export AUTH0_DOMAIN=$<< parameters.auth0Domain >>" >> $BASH_ENV
+            echo "export PUBLIC_URL=https://<< parameters.prefix >>.$<< parameters.domainName >>" >> $BASH_ENV
           name: Setup environment variables
       - run:
-          command: npm run deploy -- --scope=@core/id -- -- -c config.json
+          command: npm run deploy -- --scope=@id/infrastructure -- -- --stage << parameters.stage >> --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
+          name: Deploy ID infrastructure
+      - run:
+          command: npm run build -- --scope=@id/tenant
+          name: Build ID client
+      - run:
+          command: npm run execute deploy:client -- --scope=@id/tenant -- -- --stage << parameters.stage >> --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
+          name: Deploy client
+      - run:
+          command: npm run execute deploy:tenant -- --scope=@id/tenant -- -- -c config.json
           name: Deploy to Auth0
 
 jobs:
@@ -175,8 +195,9 @@ jobs:
             - applications/accounts/queue/node_modules
             - applications/accounts/storage/node_modules
             - applications/core/anti-virus/node_modules
-            - applications/core/id/node_modules
             - applications/core/infrastructure/node_modules
+            - applications/id/infrastructure/node_modules
+            - applications/id/tenant/node_modules
             - applications/open-banking/api/node_modules
             - packages/api-gateway-handler/node_modules
             - packages/auth/node_modules
@@ -357,20 +378,26 @@ jobs:
           stage: production
 
   deploy-auth0-develop:
-    executor: node
+    executor: node-browsers
     steps:
       - deploy-auth0:
+          auth0Domain: AUTH0_DOMAIN_DEV
           clientId: AUTH0_CLIENT_ID_DEV
           clientSecret: AUTH0_CLIENT_SECRET_DEV
-          domain: AUTH0_DOMAIN_DEV
+          domainName: PROD_DOMAIN
+          prefix: id-develop
+          stage: develop
 
   deploy-auth0-production:
-    executor: node
+    executor: node-browsers
     steps:
       - deploy-auth0:
+          auth0Domain: AUTH0_DOMAIN_PROD
           clientId: AUTH0_CLIENT_ID_PROD
           clientSecret: AUTH0_CLIENT_SECRET_PROD
-          domain: AUTH0_DOMAIN_PROD
+          domainName: PROD_DOMAIN
+          prefix: id
+          stage: production
 
   deploy-infrastructure:
     executor: node

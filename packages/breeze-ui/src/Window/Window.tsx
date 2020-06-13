@@ -1,6 +1,7 @@
-import { Col, Row } from '@motech-development/breeze-ui';
 import React, { FC, memo, ReactNode } from 'react';
 import styled from 'styled-components';
+import Col from '../Col/Col';
+import Row from '../Row/Row';
 
 const Wrapper = styled.div`
   margin: 100px 0;

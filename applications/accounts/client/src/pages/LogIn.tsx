@@ -1,8 +1,12 @@
 import { useAuth } from '@motech-development/auth';
-import { Button, Card, Typography } from '@motech-development/breeze-ui';
+import {
+  Button,
+  Card,
+  Typography,
+  Window,
+} from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import Window from '../components/Window';
 
 const LogIn: FC = () => {
   const { loginWithRedirect } = useAuth();
