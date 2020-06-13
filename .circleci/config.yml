@@ -159,6 +159,7 @@ commands:
       - run:
           command: npm run deploy -- --scope=@id/infrastructure -- -- --stage << parameters.stage >> --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
           name: Deploy ID infrastructure
+          no_output_timeout: 60m
       - run:
           command: npm run build -- --scope=@id/tenant
           name: Build ID client
