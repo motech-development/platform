@@ -15,7 +15,7 @@ describe('Calendar', () => {
     let selectedDate: string;
 
     beforeEach(() => {
-      selectedDate = '2020-04-20 05:00:00';
+      selectedDate = '2020-04-30 05:00:00';
 
       component = render(
         <Calendar

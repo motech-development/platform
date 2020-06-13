@@ -21,9 +21,11 @@ export const buttonTheme = {
   },
 };
 
+export type ButtonColour = keyof typeof buttonTheme;
+
 export interface IBaseButtonProps {
   block?: boolean;
-  colour?: keyof typeof buttonTheme;
+  colour?: ButtonColour;
   size?: 'sm' | 'md' | 'lg';
 }
 

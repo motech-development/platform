@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
 import React, { FC, memo, ReactNode, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { ButtonColour } from '../BaseButton/BaseButton';
 import Button from '../Button/Button';
 import Table from '../Table/Table';
 import TableBody from '../TableBody/TableBody';
@@ -67,30 +68,58 @@ const Weekdays: FC = () => {
 interface IDates {
   date: moment.Moment;
   id: string;
-  onSelect(day: number): void;
+  view: moment.Moment;
+  onSelect(day: number, month: number, year: number): void;
 }
 
-const Dates: FC<IDates> = ({ date, id, onSelect }) => {
-  const clone = date.clone();
-  const currentDay = parseInt(clone.format('D'), 10);
+const Dates: FC<IDates> = ({ date, id, onSelect, view }) => {
+  const clone = view.clone();
+  const selectedClone = date.clone();
+  const currentDay = parseInt(selectedClone.format('D'), 10);
   const daysInMonth = clone.daysInMonth();
   const firstDayOfMonth = parseInt(clone.startOf('month').format('d'), 10);
-  const previousMonth = date.clone().subtract(1, 'months');
+  const previousMonth = view.clone().subtract(1, 'months');
   const lastDayOfPreviousMonth = parseInt(
     previousMonth.endOf('month').format('D'),
     10,
   );
+  const nextMonth = view.clone().add(1, 'months');
 
   const blanks = [...Array(firstDayOfMonth)]
-    .map((_, i) => (
-      <TableCell key={0 - i} align="center">
-        {lastDayOfPreviousMonth - i}
-      </TableCell>
-    ))
+    .map((_, i) => {
+      const day = lastDayOfPreviousMonth - i;
+      const thisMonth = date.isSame(previousMonth, 'month');
+
+      let colour: ButtonColour;
+
+      if (thisMonth) {
+        colour = day === currentDay ? 'primary' : 'secondary';
+      } else {
+        colour = 'secondary';
+      }
+
+      return (
+        <TableCell key={0 - i} align="center">
+          <CalendarButton block disabled colour={colour}>
+            {day}
+          </CalendarButton>
+        </TableCell>
+      );
+    })
     .reverse();
   const days = [...Array(daysInMonth)].map((_, i) => {
     const day = i + 1;
-    const colour = day === currentDay ? 'primary' : 'secondary';
+    const month = view.get('month');
+    const year = view.get('year');
+    const thisMonth = date.isSame(view, 'month');
+
+    let colour: ButtonColour;
+
+    if (thisMonth) {
+      colour = day === currentDay ? 'primary' : 'secondary';
+    } else {
+      colour = 'secondary';
+    }
 
     return (
       <TableCell key={day} align="center">
@@ -98,7 +127,7 @@ const Dates: FC<IDates> = ({ date, id, onSelect }) => {
           block
           colour={colour}
           tabIndex={-1}
-          onClick={() => onSelect(day)}
+          onClick={() => onSelect(day, month, year)}
         >
           {day}
         </CalendarButton>
@@ -123,9 +152,22 @@ const Dates: FC<IDates> = ({ date, id, onSelect }) => {
       const filler = [...Array(7 - cells.length)].map((_, fillerIndex) => {
         const key = daysInMonth + fillerIndex + 1;
 
+        const day = 1 + fillerIndex;
+        const thisMonth = date.isSame(nextMonth, 'month');
+
+        let colour: ButtonColour;
+
+        if (thisMonth) {
+          colour = day === currentDay ? 'primary' : 'secondary';
+        } else {
+          colour = 'secondary';
+        }
+
         return (
           <TableCell key={key} align="center">
-            {1 + fillerIndex}
+            <CalendarButton block disabled colour={colour}>
+              {day}
+            </CalendarButton>
           </TableCell>
         );
       });
@@ -171,39 +213,43 @@ const Calendar: FC<ICalendarProps> = ({
     return moment.utc();
   });
   const [date, setDate] = useState<moment.Moment>();
+  const [view, setView] = useState<moment.Moment>();
   const [currentMonth, setCurrentMonth] = useState('');
   const [currentYear, setCurrentYear] = useState(0);
   const selected = selectMoment(startDate, date);
+  const selectedView = selectMoment(startDate, view);
   const grid = `${id}-calendar`;
   const label = `${id}-dialog-label`;
-  const setDay = (day: number) => {
+  const setDay = (day: number, month: number, year: number) => {
     const updated = selected.clone();
 
     updated.set('date', day);
+    updated.set('month', month);
+    updated.set('year', year);
 
     setDate(updated);
   };
   const next = (unit: JumpUnits) => {
-    const updated = selected.clone();
+    const updated = selectedView.clone();
 
     updated.add(1, unit);
 
-    setDate(updated);
+    setView(updated);
   };
   const previous = (unit: JumpUnits) => {
-    const updated = selected.clone();
+    const updated = selectedView.clone();
 
     updated.subtract(1, unit);
 
-    setDate(updated);
+    setView(updated);
   };
 
   useEffect(() => {
-    const clone = selected.clone();
+    const clone = selectedView.clone();
 
     setCurrentMonth(clone.format('MMMM'));
     setCurrentYear(parseInt(clone.format('Y'), 10));
-  }, [selected]);
+  }, [selectedView]);
 
   useEffect(() => {
     if (date) {
@@ -262,7 +308,7 @@ const Calendar: FC<ICalendarProps> = ({
         </CalendarButton>
       </Toolbar>
 
-      <Dates id={grid} date={selected} onSelect={setDay} />
+      <Dates id={grid} date={selected} view={selectedView} onSelect={setDay} />
     </>
   );
 };
