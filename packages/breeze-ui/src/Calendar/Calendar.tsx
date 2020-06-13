@@ -69,7 +69,7 @@ interface IDates {
   date: moment.Moment;
   id: string;
   view: moment.Moment;
-  onSelect(day: number, month: number): void;
+  onSelect(day: number, month: number, year: number): void;
 }
 
 const Dates: FC<IDates> = ({ date, id, onSelect, view }) => {
@@ -110,6 +110,7 @@ const Dates: FC<IDates> = ({ date, id, onSelect, view }) => {
   const days = [...Array(daysInMonth)].map((_, i) => {
     const day = i + 1;
     const month = view.get('month');
+    const year = view.get('year');
     const thisMonth = date.isSame(view, 'month');
 
     let colour: ButtonColour;
@@ -126,7 +127,7 @@ const Dates: FC<IDates> = ({ date, id, onSelect, view }) => {
           block
           colour={colour}
           tabIndex={-1}
-          onClick={() => onSelect(day, month)}
+          onClick={() => onSelect(day, month, year)}
         >
           {day}
         </CalendarButton>
@@ -219,11 +220,12 @@ const Calendar: FC<ICalendarProps> = ({
   const selectedView = selectMoment(startDate, view);
   const grid = `${id}-calendar`;
   const label = `${id}-dialog-label`;
-  const setDay = (day: number, month: number) => {
+  const setDay = (day: number, month: number, year: number) => {
     const updated = selected.clone();
 
     updated.set('date', day);
     updated.set('month', month);
+    updated.set('year', year);
 
     setDate(updated);
   };
