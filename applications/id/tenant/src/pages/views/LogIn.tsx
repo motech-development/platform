@@ -1,36 +1,33 @@
 import { ButtonLink } from '@motech-development/breeze-ui';
-import { Auth0Error } from 'auth0-js';
+import { Auth0Error, WebAuth } from 'auth0-js';
 import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AuthForm, { FormSchema } from '../../components/AuthForm';
-import useAuth from '../../hooks/useAuth';
 
 export interface ILogInProps {
+  client: WebAuth;
   handleError(e: Auth0Error | null): void;
   setView(view: string): void;
 }
 
-const LogIn: FC<ILogInProps> = ({ handleError, setView }) => {
-  const client = useAuth();
+const LogIn: FC<ILogInProps> = ({ client, handleError, setView }) => {
   const { t } = useTranslation('log-in');
   const [loading, setLoading] = useState(false);
   const logIn = ({ password, username }: FormSchema) => {
-    if (client) {
-      setLoading(true);
+    setLoading(true);
 
-      client.login(
-        {
-          password,
-          realm: 'Username-Password-Authentication',
-          username,
-        },
-        e => {
-          handleError(e);
+    client.login(
+      {
+        password,
+        realm: 'Username-Password-Authentication',
+        username,
+      },
+      e => {
+        handleError(e);
 
-          setLoading(false);
-        },
-      );
-    }
+        setLoading(false);
+      },
+    );
   };
 
   return (

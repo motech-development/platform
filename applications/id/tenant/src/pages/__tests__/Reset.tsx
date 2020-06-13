@@ -19,8 +19,6 @@ describe('Reset', () => {
         <Reset />
       </TextProvider>,
     );
-
-    // axios.request = jest.fn();
   });
 
   describe('when successful', () => {

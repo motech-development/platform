@@ -1,35 +1,32 @@
-import { Auth0Error } from 'auth0-js';
+import { Auth0Error, WebAuth } from 'auth0-js';
 import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AuthForm, { FormSchema } from '../../components/AuthForm';
-import useAuth from '../../hooks/useAuth';
 
 export interface ISignUpProps {
+  client: WebAuth;
   handleError(e: Auth0Error | null): void;
   setView(view: string): void;
 }
 
-const SignUp: FC<ISignUpProps> = ({ handleError, setView }) => {
-  const client = useAuth();
+const SignUp: FC<ISignUpProps> = ({ client, handleError, setView }) => {
   const { t } = useTranslation('sign-up');
   const [loading, setLoading] = useState(false);
   const signUp = ({ password, username: email }: FormSchema) => {
-    if (client) {
-      setLoading(true);
+    setLoading(true);
 
-      client.redirect.signupAndLogin(
-        {
-          connection: 'Username-Password-Authentication',
-          email,
-          password,
-        },
-        e => {
-          handleError(e);
+    client.redirect.signupAndLogin(
+      {
+        connection: 'Username-Password-Authentication',
+        email,
+        password,
+      },
+      e => {
+        handleError(e);
 
-          setLoading(false);
-        },
-      );
-    }
+        setLoading(false);
+      },
+    );
   };
 
   return (
