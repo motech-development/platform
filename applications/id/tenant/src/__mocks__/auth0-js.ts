@@ -9,4 +9,10 @@ auth0.WebAuth.prototype.changePassword.mockImplementation(
   (_: unknown, cb: Function) => cb(),
 );
 
+auth0.WebAuth.prototype.login.mockImplementation((_: unknown, cb: Function) =>
+  cb(),
+);
+
 module.exports = auth0;
+
+export {};
