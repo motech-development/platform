@@ -18,6 +18,7 @@ const Reset = lazy(() => import('./pages/Reset'));
 
 const App: FC = () => {
   const { t } = useTranslation();
+  const showContent = window.passwordReset || window.config;
 
   return (
     <Wrapper>
@@ -29,16 +30,20 @@ const App: FC = () => {
 
       <Suspense fallback={<Loader />}>
         <ToastProvider>
-          <Window>
-            <AppTitle />
+          {showContent ? (
+            <Window>
+              <AppTitle />
 
-            <Router history={history}>
-              <Switch>
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/lo/reset" component={Reset} />
-              </Switch>
-            </Router>
-          </Window>
+              <Router history={history}>
+                <Switch>
+                  <Route exact path="/login" component={Login} />
+                  <Route exact path="/lo/reset" component={Reset} />
+                </Switch>
+              </Router>
+            </Window>
+          ) : (
+            <Loader />
+          )}
         </ToastProvider>
       </Suspense>
 
