@@ -1,4 +1,6 @@
+import { Loader, Window } from '@motech-development/breeze-ui';
 import React, { FC, lazy, memo, useEffect, useState } from 'react';
+import AppTitle from '../components/AppTitle';
 
 const ResetPassword = lazy(() => import('./views/ResetPassword'));
 const Success = lazy(() => import('./views/Success'));
@@ -26,11 +28,21 @@ const Reset: FC = () => {
     }
   }, []);
 
-  if (view === 'success') {
-    return <Success />;
-  }
+  return (
+    <>
+      {window.passwordReset ? (
+        <Window>
+          <AppTitle />
 
-  return <ResetPassword setView={setView} />;
+          {view === 'success' && <Success />}
+
+          {view === 'reset' && <ResetPassword setView={setView} />}
+        </Window>
+      ) : (
+        <Loader />
+      )}
+    </>
+  );
 };
 
 export default memo(Reset);

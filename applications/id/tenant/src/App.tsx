@@ -4,13 +4,11 @@ import {
   Loader,
   ToastProvider,
   Typography,
-  Window,
 } from '@motech-development/breeze-ui';
 import React, { FC, lazy, memo, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, Router, Switch } from 'react-router-dom';
 import history from './history';
-import AppTitle from './components/AppTitle';
 import Wrapper from './components/Wrapper';
 
 const Login = lazy(() => import('./pages/Login'));
@@ -29,16 +27,12 @@ const App: FC = () => {
 
       <Suspense fallback={<Loader />}>
         <ToastProvider>
-          <Window>
-            <AppTitle />
-
-            <Router history={history}>
-              <Switch>
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/lo/reset" component={Reset} />
-              </Switch>
-            </Router>
-          </Window>
+          <Router history={history}>
+            <Switch>
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/lo/reset" component={Reset} />
+            </Switch>
+          </Router>
         </ToastProvider>
       </Suspense>
 

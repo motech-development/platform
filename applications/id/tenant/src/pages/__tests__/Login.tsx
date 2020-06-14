@@ -26,8 +26,9 @@ describe('Login', () => {
 
     it('should render component', () => {
       const { container } = component;
+      const loader = container.querySelector('circle');
 
-      expect(container).toBeInTheDocument();
+      expect(loader).toBeInTheDocument();
     });
   });
 

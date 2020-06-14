@@ -13,174 +13,200 @@ import Reset from '../Reset';
 describe('Reset', () => {
   let component: RenderResult;
 
-  beforeEach(() => {
-    component = render(
-      <TextProvider>
-        <Reset />
-      </TextProvider>,
-    );
-  });
-
-  describe('when successful', () => {
+  describe('when config is not set', () => {
     beforeEach(() => {
-      axios.request = jest.fn().mockResolvedValue({
-        data: 'success',
-      });
-    });
-
-    it('should call the correct endpoint', async () => {
-      const { findByLabelText, findByRole } = component;
-
-      await act(async () => {
-        const password = await findByLabelText('password.label');
-        const confirmation = await findByLabelText('confirm-password.label');
-
-        fireEvent.change(password, {
-          target: {
-            value: 'Test',
-          },
-        });
-
-        fireEvent.change(confirmation, {
-          target: {
-            value: 'Test',
-          },
-        });
-
-        await wait();
-
-        const button = await findByRole('button');
-
-        fireEvent.click(button);
-      });
-
-      expect(axios.request).toHaveBeenCalledWith({
-        data: {
-          _csrf: '{{csrf_token}}',
-          confirmNewPassword: 'Test',
-          newPassword: 'Test',
-          'password-policy': '{{password_policy}}',
-          ticket: '{{ticket}}',
-        },
-        headers: {},
-        method: 'POST',
-        url: '/lo/reset',
-      });
-    });
-
-    it('should display the succes screen when password is reset', async () => {
-      const { findByLabelText, findByRole, findByText } = component;
-
-      await act(async () => {
-        const password = await findByLabelText('password.label');
-        const confirmation = await findByLabelText('confirm-password.label');
-
-        fireEvent.change(password, {
-          target: {
-            value: 'Test',
-          },
-        });
-
-        fireEvent.change(confirmation, {
-          target: {
-            value: 'Test',
-          },
-        });
-
-        await wait();
-
-        const button = await findByRole('button');
-
-        fireEvent.click(button);
-      });
-
-      await wait(() =>
-        expect(findByText('success')).resolves.toBeInTheDocument(),
+      component = render(
+        <TextProvider>
+          <Reset />
+        </TextProvider>,
       );
     });
+
+    it('should render component', () => {
+      const { container } = component;
+      const loader = container.querySelector('circle');
+
+      expect(loader).toBeInTheDocument();
+    });
   });
 
-  describe('when unsuccessful', () => {
+  describe('when config is set', () => {
     beforeEach(() => {
-      axios.request = jest.fn();
+      window.passwordReset = {
+        csrfToken: 'token',
+        email: 'text@example.com',
+        passwordPolicy: 'good',
+        ticket: 'ticket',
+      };
+
+      component = render(
+        <TextProvider>
+          <Reset />
+        </TextProvider>,
+      );
     });
 
-    it('should display an error toast with the supplied error message', async () => {
-      (axios.request as jest.Mock).mockRejectedValueOnce({
-        response: {
+    describe('when successful', () => {
+      beforeEach(() => {
+        axios.request = jest.fn().mockResolvedValue({
+          data: 'success',
+        });
+      });
+
+      it('should call the correct endpoint', async () => {
+        const { findByLabelText, findByRole } = component;
+
+        await act(async () => {
+          const password = await findByLabelText('password.label');
+          const confirmation = await findByLabelText('confirm-password.label');
+
+          fireEvent.change(password, {
+            target: {
+              value: 'Test',
+            },
+          });
+
+          fireEvent.change(confirmation, {
+            target: {
+              value: 'Test',
+            },
+          });
+
+          await wait();
+
+          const button = await findByRole('button');
+
+          fireEvent.click(button);
+        });
+
+        expect(axios.request).toHaveBeenCalledWith({
           data: {
-            message: 'Ooops',
+            _csrf: 'token',
+            confirmNewPassword: 'Test',
+            newPassword: 'Test',
+            'password-policy': 'good',
+            ticket: 'ticket',
           },
-        },
+          headers: {},
+          method: 'POST',
+          url: '/lo/reset',
+        });
       });
 
-      const { findByLabelText, findByRole } = component;
+      it('should display the succes screen when password is reset', async () => {
+        const { findByLabelText, findByRole, findByText } = component;
 
-      await act(async () => {
-        const password = await findByLabelText('password.label');
-        const confirmation = await findByLabelText('confirm-password.label');
+        await act(async () => {
+          const password = await findByLabelText('password.label');
+          const confirmation = await findByLabelText('confirm-password.label');
 
-        fireEvent.change(password, {
-          target: {
-            value: 'Test',
-          },
+          fireEvent.change(password, {
+            target: {
+              value: 'Test',
+            },
+          });
+
+          fireEvent.change(confirmation, {
+            target: {
+              value: 'Test',
+            },
+          });
+
+          await wait();
+
+          const button = await findByRole('button');
+
+          fireEvent.click(button);
         });
 
-        fireEvent.change(confirmation, {
-          target: {
-            value: 'Test',
-          },
-        });
-
-        await wait();
-
-        const button = await findByRole('button');
-
-        fireEvent.click(button);
+        await wait(() =>
+          expect(findByText('success')).resolves.toBeInTheDocument(),
+        );
       });
-
-      await wait(() =>
-        expect(add).toHaveBeenCalledWith({
-          colour: 'danger',
-          message: 'Ooops',
-        }),
-      );
     });
 
-    it('should display an error toast with the supplied error message', async () => {
-      (axios.request as jest.Mock).mockRejectedValueOnce(new Error());
-
-      const { findByLabelText, findByRole } = component;
-
-      await act(async () => {
-        const password = await findByLabelText('password.label');
-        const confirmation = await findByLabelText('confirm-password.label');
-
-        fireEvent.change(password, {
-          target: {
-            value: 'Test',
-          },
-        });
-
-        fireEvent.change(confirmation, {
-          target: {
-            value: 'Test',
-          },
-        });
-
-        await wait();
-
-        const button = await findByRole('button');
-
-        fireEvent.click(button);
+    describe('when unsuccessful', () => {
+      beforeEach(() => {
+        axios.request = jest.fn();
       });
 
-      await wait(() =>
-        expect(add).toHaveBeenCalledWith({
-          colour: 'danger',
-          message: 'error',
-        }),
-      );
+      it('should display an error toast with the supplied error message', async () => {
+        (axios.request as jest.Mock).mockRejectedValueOnce({
+          response: {
+            data: {
+              message: 'Ooops',
+            },
+          },
+        });
+
+        const { findByLabelText, findByRole } = component;
+
+        await act(async () => {
+          const password = await findByLabelText('password.label');
+          const confirmation = await findByLabelText('confirm-password.label');
+
+          fireEvent.change(password, {
+            target: {
+              value: 'Test',
+            },
+          });
+
+          fireEvent.change(confirmation, {
+            target: {
+              value: 'Test',
+            },
+          });
+
+          await wait();
+
+          const button = await findByRole('button');
+
+          fireEvent.click(button);
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'Ooops',
+          }),
+        );
+      });
+
+      it('should display an error toast with the supplied error message', async () => {
+        (axios.request as jest.Mock).mockRejectedValueOnce(new Error());
+
+        const { findByLabelText, findByRole } = component;
+
+        await act(async () => {
+          const password = await findByLabelText('password.label');
+          const confirmation = await findByLabelText('confirm-password.label');
+
+          fireEvent.change(password, {
+            target: {
+              value: 'Test',
+            },
+          });
+
+          fireEvent.change(confirmation, {
+            target: {
+              value: 'Test',
+            },
+          });
+
+          await wait();
+
+          const button = await findByRole('button');
+
+          fireEvent.click(button);
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'error',
+          }),
+        );
+      });
     });
   });
 });

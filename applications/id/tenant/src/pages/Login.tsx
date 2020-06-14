@@ -1,7 +1,8 @@
-import { useToast } from '@motech-development/breeze-ui';
+import { Loader, useToast, Window } from '@motech-development/breeze-ui';
 import { Auth0Error } from 'auth0-js';
 import React, { FC, lazy, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import AppTitle from '../components/AppTitle';
 import useAuth from '../hooks/useAuth';
 import getErrorMessage from '../utils/getErrorMessage';
 
@@ -42,17 +43,37 @@ const Login: FC = () => {
     }
   }, []);
 
-  if (view === 'forgotten-password') {
-    return <ForgottenPassword client={client} setView={setView} />;
-  }
+  return (
+    <>
+      {window.config ? (
+        <Window>
+          <AppTitle />
 
-  if (view === 'sign-up') {
-    return (
-      <SignUp client={client} handleError={handleError} setView={setView} />
-    );
-  }
+          {view === 'forgotten-password' && (
+            <ForgottenPassword client={client} setView={setView} />
+          )}
 
-  return <LogIn client={client} handleError={handleError} setView={setView} />;
+          {view === 'sign-up' && (
+            <SignUp
+              client={client}
+              handleError={handleError}
+              setView={setView}
+            />
+          )}
+
+          {view === 'log-in' && (
+            <LogIn
+              client={client}
+              handleError={handleError}
+              setView={setView}
+            />
+          )}
+        </Window>
+      ) : (
+        <Loader />
+      )}
+    </>
+  );
 };
 
 export default memo(Login);
