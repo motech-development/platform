@@ -355,4 +355,66 @@ describe('transform-balance', () => {
       },
     });
   });
+
+  it('should return the correct balance when the first item is 0', () => {
+    const balance = {
+      balance: 3060.91,
+      currency: 'GBP',
+      id: 'company-id',
+      items: {
+        '2019-11-25T00:00:00.000Z': 0,
+        '2019-12-31T00:00:00.000Z': 2960.91,
+      },
+      openingBalance: 100,
+      owner: 'owner',
+      vat: {
+        owed: 493.48,
+        paid: 0,
+      },
+    };
+    const transactions = [
+      {
+        amount: 2960.91,
+        category: 'Sales',
+        companyId: 'company-id',
+        date: '2019-12-31T00:00:00.000Z',
+        description: 'Invoice #1',
+        id: 'transaction-1',
+        name: 'Client',
+        status: 'confirmed',
+        vat: 493.48,
+      },
+    ];
+
+    expect(transformBalance(balance, transactions)).toEqual({
+      balance: 3060.91,
+      currency: 'GBP',
+      id: 'company-id',
+      owner: 'owner',
+      transactions: [
+        {
+          balance: 3060.91,
+          currency: 'GBP',
+          date: '2019-12-31T00:00:00.000Z',
+          items: [
+            {
+              amount: 2960.91,
+              category: 'Sales',
+              companyId: 'company-id',
+              date: '2019-12-31T00:00:00.000Z',
+              description: 'Invoice #1',
+              id: 'transaction-1',
+              name: 'Client',
+              status: 'confirmed',
+              vat: 493.48,
+            },
+          ],
+        },
+      ],
+      vat: {
+        owed: 493.48,
+        paid: 0,
+      },
+    });
+  });
 });
