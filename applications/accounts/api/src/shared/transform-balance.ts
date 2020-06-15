@@ -56,6 +56,7 @@ const transformBalance = (
     vat,
   } = balanceItem;
   const transactions = Object.keys(items)
+    .filter(key => items[key] !== 0)
     .map((key, i) => ({
       balance:
         i === 0
@@ -64,7 +65,6 @@ const transformBalance = (
       currency,
       date: key,
     }))
-    .filter(transaction => transaction.balance !== 0)
     .sort((a, b) => a.date.localeCompare(b.date))
     .reduce<IBalance[]>((acc, current, i) => {
       const update = {
