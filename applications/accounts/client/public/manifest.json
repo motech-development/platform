@@ -6,13 +6,13 @@
       "src": "manifest-icon-192.jpg",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "maskable any"
+      "purpose": "any"
     },
     {
       "src": "manifest-icon-512.jpg",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "maskable any"
+      "purpose": "any"
     }
   ],
   "start_url": ".",

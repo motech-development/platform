@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "react-app-rewired build",
+    "build:icons": "pwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --padding '20%' --maskable false",
     "deploy:client": "serverless client deploy --verbose --no-confirm",
     "deploy:tenant": "a0deploy import -i ./tenant.yaml",
     "import": "a0deploy export -c config.local.json -f yaml -o ./",
