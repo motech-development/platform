@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="210px" height="86px" viewBox="0 0 210 86" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>splash</title>
+    <g id="splash" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Product">
+            <rect id="Rectangle" fill="#007FA8" x="0" y="0" width="210" height="58"></rect>
+            <text id="Accounts" fill-rule="nonzero" font-family="Cabin-Bold, Cabin" font-size="48" font-weight="bold" fill="#FFFFFF">
+                <tspan x="10" y="46">Accounts</tspan>
+            </text>
+        </g>
+        <g id="Motech" transform="translate(0.000000, 58.000000)">
+            <rect id="Rectangle" fill="#FFFFFF" x="0" y="0" width="187" height="28"></rect>
+            <text id="By-Motech-Developmen" font-family="HelveticaNeue, Helvetica Neue" font-size="16" font-weight="normal" fill="#000000">
+                <tspan x="5" y="20">By Motech Development</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

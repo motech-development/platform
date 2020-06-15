@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "build": "react-app-rewired build",
-    "build:icons": "pwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --padding '20%' --maskable false",
+    "build:icons": "pwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --type png --padding '20%' --maskable false",
+    "build:splash:portrait": "pwa-asset-generator ./assets/splash.svg ./public --splash-only --background '#161616' --type png --portrait-only",
     "deploy": "serverless client deploy --verbose --no-confirm",
     "e2e": "cypress open",
     "e2e:ci": "cypress run --reporter junit --reporter-options 'mochaFile=../../reports/junit/accounts-client.xml'",

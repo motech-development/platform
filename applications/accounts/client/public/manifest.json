@@ -3,13 +3,13 @@
   "name": "Accounts by Motech Development",
   "icons": [
     {
-      "src": "manifest-icon-192.jpg",
+      "src": "manifest-icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
     },
     {
-      "src": "manifest-icon-512.jpg",
+      "src": "manifest-icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
