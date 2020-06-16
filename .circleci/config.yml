@@ -52,7 +52,7 @@ commands:
           command: |
             echo "export REACT_APP_AUTH0_CLIENT_ID=$<< parameters.clientId >>" >> $BASH_ENV
             echo "export REACT_APP_AUTH0_DOMAIN=$<< parameters.domain >>" >> $BASH_ENV
-            echo "export REACT_APP_AUTH0_DOMAIN=$GA_ACCOUNTS_PROD" >> $BASH_ENV
+            echo "export REACT_APP_GA=$GA_ACCOUNTS_PROD" >> $BASH_ENV
           name: Setup environment variables
       - run:
           command: npm run build -- --scope=@accounts/client
