@@ -108,7 +108,16 @@ const ViewTransaction: FC = () => {
   const [modal, setModal] = useState(false);
   const { t } = useTranslation('accounts');
   const { add } = useToast();
-  const backTo = (id: string) => `/my-companies/accounts/${id}`;
+  const backTo = (id: string, status: string) => {
+    const pending = status === 'pending';
+    const location = `/my-companies/accounts/${id}`;
+
+    if (pending) {
+      return `${location}/pending-transactions`;
+    }
+
+    return location;
+  };
   const { data, error, loading } = useQuery<
     IViewTransactionOutput,
     IViewTransactionInput
@@ -133,7 +142,9 @@ const ViewTransaction: FC = () => {
           message: t('view-transaction.success'),
         });
 
-        history.push(backTo(updateTransaction.companyId));
+        history.push(
+          backTo(updateTransaction.companyId, updateTransaction.status),
+        );
       },
     },
   );
@@ -147,7 +158,9 @@ const ViewTransaction: FC = () => {
         message: t('delete-transaction.success'),
       });
 
-      history.push(backTo(deleteTransaction.companyId));
+      history.push(
+        backTo(deleteTransaction.companyId, deleteTransaction.status),
+      );
     },
     onError: () => {
       add({
@@ -199,7 +212,7 @@ const ViewTransaction: FC = () => {
                     onDelete={setAttachment}
                   />
                 }
-                backTo={backTo(companyId)}
+                backTo={backTo(companyId, data.getTransaction.status)}
                 categories={data.getSettings.categories.map(
                   ({ name, vatRate }) => ({
                     name,

@@ -33,6 +33,7 @@
     "title": "Pending transactions",
     "sub-title": "Manage transactions awaiting your approval",
     "go-back": "Go back to accounts",
+    "record-transaction": "Record a new transaction",
     "transactions": {
       "name": "Name",
       "date": "Date",

@@ -178,15 +178,28 @@ const PendingTransaction: FC = () => {
               />
             </Col>
 
-            <Col xs={12} md={3}>
-              <LinkButton
-                block
-                to={`/my-companies/accounts/${companyId}`}
-                colour="secondary"
-                size="lg"
-              >
-                {t('pending-transactions.go-back')}
-              </LinkButton>
+            <Col>
+              <Row>
+                <Col xs={12} md={4} mdOffset={5} lg={3} lgOffset={7}>
+                  <LinkButton
+                    block
+                    to={`/my-companies/accounts/${companyId}/record-transaction`}
+                    size="lg"
+                  >
+                    {t('pending-transactions.record-transaction')}
+                  </LinkButton>
+                </Col>
+                <Col xs={12} md={4} lg={3}>
+                  <LinkButton
+                    block
+                    to={`/my-companies/accounts/${companyId}`}
+                    colour="secondary"
+                    size="lg"
+                  >
+                    {t('pending-transactions.go-back')}
+                  </LinkButton>
+                </Col>
+              </Row>
             </Col>
           </Row>
 

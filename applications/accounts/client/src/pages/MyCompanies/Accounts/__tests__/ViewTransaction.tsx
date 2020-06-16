@@ -83,7 +83,7 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
-                  status: 'confirmed',
+                  status: 'pending',
                   vat: 166.66,
                 },
               },
@@ -102,7 +102,7 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
-                  status: 'confirmed',
+                  status: 'pending',
                   vat: 166.66,
                 },
               },
@@ -118,7 +118,7 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
-                  status: 'confirmed',
+                  status: 'pending',
                   vat: 166.66,
                 },
               },
@@ -136,7 +136,7 @@ describe('ViewTransaction', () => {
                 deleteTransaction: {
                   companyId: 'company-id',
                   id: 'transaction-id',
-                  status: 'confirmed',
+                  status: 'pending',
                 },
               },
             },
@@ -175,7 +175,7 @@ describe('ViewTransaction', () => {
         });
 
         expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/accounts/company-id',
+          '/my-companies/accounts/company-id/pending-transactions',
         );
       });
 
@@ -276,7 +276,7 @@ describe('ViewTransaction', () => {
         });
 
         expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/accounts/company-id',
+          '/my-companies/accounts/company-id/pending-transactions',
         );
       });
 
