@@ -208,6 +208,7 @@ jobs:
             - packages/auth/node_modules
             - packages/axios-hooks/node_modules
             - packages/breeze-ui/node_modules
+            - packages/ga-web-vitals/node_modules
             - packages/serverless-outputs-env/node_modules
             - packages/webpack-conditional-plugin/node_modules
             - packages/webpack-permissions-plugin/node_modules

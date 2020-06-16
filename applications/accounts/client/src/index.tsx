@@ -4,6 +4,7 @@ import {
   ScrollToTop,
   ToastProvider,
 } from '@motech-development/breeze-ui';
+import sendToAnalytics from '@motech-development/ga-web-vitals';
 import React, { StrictMode } from 'react';
 import { render } from 'react-dom';
 import { initialize } from 'react-ga';
@@ -45,4 +46,4 @@ render(
 
 serviceWorker.unregister();
 
-reportWebVitals();
+reportWebVitals(sendToAnalytics);
