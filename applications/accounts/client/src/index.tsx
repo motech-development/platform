@@ -4,12 +4,19 @@ import {
   ScrollToTop,
   ToastProvider,
 } from '@motech-development/breeze-ui';
-import React from 'react';
+import React, { StrictMode } from 'react';
 import { render } from 'react-dom';
+import { initialize } from 'react-ga';
 import { Router } from 'react-router-dom';
 import App from './App';
 import history from './history';
 import './i18n';
+import reportWebVitals from './reportWebVitals';
+import * as serviceWorker from './serviceWorker';
+
+if (process.env.REACT_APP_GA) {
+  initialize(process.env.REACT_APP_GA);
+}
 
 const onRedirectCallback = (appState: IAppState) => {
   history.push(
@@ -20,16 +27,22 @@ const onRedirectCallback = (appState: IAppState) => {
 };
 
 render(
-  <Router history={history}>
-    <AuthProvider onRedirectCallback={onRedirectCallback}>
-      <BaseStyles />
+  <StrictMode>
+    <Router history={history}>
+      <AuthProvider onRedirectCallback={onRedirectCallback}>
+        <BaseStyles />
 
-      <ScrollToTop />
+        <ScrollToTop />
 
-      <ToastProvider>
-        <App />
-      </ToastProvider>
-    </AuthProvider>
-  </Router>,
+        <ToastProvider>
+          <App />
+        </ToastProvider>
+      </AuthProvider>
+    </Router>
+  </StrictMode>,
   document.getElementById('root'),
 );
+
+serviceWorker.unregister();
+
+reportWebVitals();

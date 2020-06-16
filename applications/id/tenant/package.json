@@ -37,6 +37,7 @@
     "polished": "^3.6.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-ga": "^3.0.0",
     "react-i18next": "^11.5.0",
     "react-number-format": "^4.4.1",
     "react-popper": "^2.2.3",

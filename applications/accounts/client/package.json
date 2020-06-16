@@ -49,6 +49,7 @@
     "react": "^16.13.1",
     "react-apollo": "^3.1.5",
     "react-dom": "^16.13.1",
+    "react-ga": "^3.0.0",
     "react-i18next": "^11.5.0",
     "react-idle-timer": "^4.2.12",
     "react-number-format": "^4.4.1",
@@ -56,6 +57,7 @@
     "react-router-dom": "^5.2.0",
     "styled-components": "^5.1.1",
     "styled-reset": "^4.1.5",
+    "web-vitals": "^0.2.2",
     "yup": "^0.29.1"
   },
   "devDependencies": {

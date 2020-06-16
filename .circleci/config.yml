@@ -52,6 +52,7 @@ commands:
           command: |
             echo "export REACT_APP_AUTH0_CLIENT_ID=$<< parameters.clientId >>" >> $BASH_ENV
             echo "export REACT_APP_AUTH0_DOMAIN=$<< parameters.domain >>" >> $BASH_ENV
+            echo "export REACT_APP_AUTH0_DOMAIN=$GA_ACCOUNTS_PROD" >> $BASH_ENV
           name: Setup environment variables
       - run:
           command: npm run build -- --scope=@accounts/client
@@ -133,6 +134,8 @@ commands:
 
   deploy-auth0:
     parameters:
+      analytics:
+        type: string
       auth0Domain:
         type: string
       clientId:
@@ -155,6 +158,7 @@ commands:
             echo "export AUTH0_CLIENT_SECRET=$<< parameters.clientSecret >>" >> $BASH_ENV
             echo "export AUTH0_DOMAIN=$<< parameters.auth0Domain >>" >> $BASH_ENV
             echo "export PUBLIC_URL=https://<< parameters.prefix >>.$<< parameters.domainName >>" >> $BASH_ENV
+            echo "export REACT_APP_GA=https://<< parameters.analytics >>" >> $BASH_ENV
           name: Setup environment variables
       - run:
           command: npm run deploy -- --scope=@id/infrastructure -- -- --stage << parameters.stage >> --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
@@ -382,6 +386,7 @@ jobs:
     executor: node-browsers
     steps:
       - deploy-auth0:
+          analytics: GA_ID_DEV
           auth0Domain: AUTH0_DOMAIN_DEV
           clientId: AUTH0_CLIENT_ID_DEV
           clientSecret: AUTH0_CLIENT_SECRET_DEV
@@ -393,6 +398,7 @@ jobs:
     executor: node-browsers
     steps:
       - deploy-auth0:
+          analytics: GA_ID_PROD
           auth0Domain: AUTH0_DOMAIN_PROD
           clientId: AUTH0_CLIENT_ID_PROD
           clientSecret: AUTH0_CLIENT_SECRET_PROD
