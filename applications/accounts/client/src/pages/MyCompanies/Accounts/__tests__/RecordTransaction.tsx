@@ -578,7 +578,7 @@ describe('RecordTransaction', () => {
                 description: 'Invoice #1',
                 id: '',
                 name: 'Motech Development',
-                status: 'confirmed',
+                status: 'pending',
                 vat: 200,
               },
             },
@@ -595,7 +595,7 @@ describe('RecordTransaction', () => {
                 description: 'Invoice #1',
                 id: 'transaction-id',
                 name: 'Motech Development',
-                status: 'confirmed',
+                status: 'pending',
                 vat: 200,
               },
             },
@@ -649,7 +649,7 @@ describe('RecordTransaction', () => {
           'transaction-form.transaction-details.description.label',
         );
         const status = await findByLabelText(
-          'transaction-form.transaction-amount.status.options.confirmed',
+          'transaction-form.transaction-amount.status.options.pending',
         );
         const amount = await findByLabelText(
           'transaction-form.transaction-amount.amount.label',
@@ -690,7 +690,7 @@ describe('RecordTransaction', () => {
       });
 
       expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/accounts/company-id',
+        '/my-companies/accounts/company-id/pending-transactions',
       );
     });
 
@@ -713,7 +713,7 @@ describe('RecordTransaction', () => {
           'transaction-form.transaction-details.description.label',
         );
         const status = await findByLabelText(
-          'transaction-form.transaction-amount.status.options.confirmed',
+          'transaction-form.transaction-amount.status.options.pending',
         );
         const amount = await findByLabelText(
           'transaction-form.transaction-amount.amount.label',

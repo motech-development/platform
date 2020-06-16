@@ -69,6 +69,16 @@ const RecordTransaction: FC = () => {
   const [attachment, setAttachment] = useState('');
   const { t } = useTranslation('accounts');
   const { add } = useToast();
+  const backTo = (id: string, status?: string) => {
+    const pending = status === 'pending';
+    const location = `/my-companies/accounts/${id}`;
+
+    if (pending) {
+      return `${location}/pending-transactions`;
+    }
+
+    return location;
+  };
   const { data, error, loading } = useQuery<
     IRecordTransactionOutput,
     IRecordTransactionInput
@@ -87,10 +97,9 @@ const RecordTransaction: FC = () => {
         message: t('record-transaction.success'),
       });
 
-      history.push(backTo(addTransaction.companyId));
+      history.push(backTo(addTransaction.companyId, addTransaction.status));
     },
   });
-  const backTo = (id: string) => `/my-companies/accounts/${id}`;
   const save = async (input: FormSchema) => {
     await mutation({
       update: updateCache,
