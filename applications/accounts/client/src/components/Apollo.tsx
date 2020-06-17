@@ -8,6 +8,7 @@ import { createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
 import React, { FC, memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import Container from './Container';
 import ErrorCard from './ErrorCard';
 
 export interface IApolloProps {
@@ -23,10 +24,12 @@ const Apollo: FC<IApolloProps> = ({ children }) => {
 
   if (!url || !region) {
     return (
-      <ErrorCard
-        title={t('error.title')}
-        description={t('error.description')}
-      />
+      <Container>
+        <ErrorCard
+          title={t('error.title')}
+          description={t('error.description')}
+        />
+      </Container>
     );
   }
 
@@ -36,10 +39,12 @@ const Apollo: FC<IApolloProps> = ({ children }) => {
 
   if (!isAuthenticated) {
     return (
-      <ErrorCard
-        title={t('unauthorised.title')}
-        description={t('unauthorised.description')}
-      />
+      <Container>
+        <ErrorCard
+          title={t('unauthorised.title')}
+          description={t('unauthorised.description')}
+        />
+      </Container>
     );
   }
 
