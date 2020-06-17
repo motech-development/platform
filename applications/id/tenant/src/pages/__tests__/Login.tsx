@@ -10,6 +10,8 @@ import React from 'react';
 import TestProvider, { add } from '../../utils/TestProvider';
 import Login from '../Login';
 
+jest.mock('react-ga');
+
 describe('Login', () => {
   let component: RenderResult;
 

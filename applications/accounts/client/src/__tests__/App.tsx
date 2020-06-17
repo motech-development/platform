@@ -3,6 +3,8 @@ import React from 'react';
 import TestProvider, { logout } from '../utils/TestProvider';
 import App from '../App';
 
+jest.mock('react-ga');
+
 describe('App', () => {
   it('should render when loaded', async () => {
     const { container } = render(

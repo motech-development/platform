@@ -10,6 +10,8 @@ import React from 'react';
 import TextProvider, { add } from '../../utils/TestProvider';
 import Reset from '../Reset';
 
+jest.mock('react-ga');
+
 describe('Reset', () => {
   let component: RenderResult;
 

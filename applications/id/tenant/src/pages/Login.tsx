@@ -1,6 +1,7 @@
 import { Loader, useToast, Window } from '@motech-development/breeze-ui';
 import { Auth0Error } from 'auth0-js';
 import React, { FC, lazy, memo, useEffect, useState } from 'react';
+import { pageview } from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import AppTitle from '../components/AppTitle';
 import useAuth from '../hooks/useAuth';
@@ -42,6 +43,10 @@ const Login: FC = () => {
       document.body.appendChild(script);
     }
   }, []);
+
+  useEffect(() => {
+    pageview(view);
+  }, [view]);
 
   return (
     <>
