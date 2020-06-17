@@ -58,8 +58,6 @@ render(
 serviceWorker.register({
   onUpdate: async registration => {
     await registration.update();
-
-    window.location.reload();
   },
 });
 
