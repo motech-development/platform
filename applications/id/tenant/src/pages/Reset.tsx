@@ -1,5 +1,6 @@
 import { Loader, Window } from '@motech-development/breeze-ui';
 import React, { FC, lazy, memo, useEffect, useState } from 'react';
+import { pageview } from 'react-ga';
 import AppTitle from '../components/AppTitle';
 
 const ResetPassword = lazy(() => import('./views/ResetPassword'));
@@ -27,6 +28,10 @@ const Reset: FC = () => {
       document.body.appendChild(script);
     }
   }, []);
+
+  useEffect(() => {
+    pageview(view);
+  }, [view]);
 
   return (
     <>
