@@ -7,9 +7,13 @@ import App from './App';
 import './i18n';
 import reportWebVitals from './reportWebVitals';
 
-if (process.env.REACT_APP_GA) {
-  initialize(process.env.REACT_APP_GA);
+const { REACT_APP_GA } = process.env;
+
+if (!REACT_APP_GA) {
+  throw new Error('Reporting error');
 }
+
+initialize(REACT_APP_GA);
 
 const rootElement = document.getElementById('root');
 

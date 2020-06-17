@@ -3,6 +3,8 @@ import React from 'react';
 import TestProvider from '../utils/TestProvider';
 import App from '../App';
 
+jest.mock('react-ga');
+
 describe('App', () => {
   it('should show the name of the app in the bar', async () => {
     const { findByText } = render(
