@@ -60,6 +60,13 @@ Start storybook by running `npm start -- --scope=@motech-development/breeze-ui`\
 Build the package by running `npm run build -- --scope=@motech-development/breeze-ui`\
 Test the package by running `npm test -- --scope=@motech-development/breeze-ui`
 
+### GA Web Vitals
+
+Google Analytics Web Vitals reporter
+
+Build the package by running `npm run build -- --scope=@motech-development/ga-web-vitals`\
+Test the package by running `npm test -- --scope=@motech-development/ga-web-vitals`
+
 ### Serverless outputs env
 
 Serverless plugin to take AWS outputs and write them into `.env` files
