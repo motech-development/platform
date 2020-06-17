@@ -55,6 +55,12 @@ render(
   document.getElementById('root'),
 );
 
-serviceWorker.register();
+serviceWorker.register({
+  onUpdate: async registration => {
+    await registration.update();
+
+    window.location.reload();
+  },
+});
 
 reportWebVitals(sendToAnalytics);

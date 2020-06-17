@@ -1,5 +1,15 @@
 describe('Smoke tests', () => {
   beforeEach(() => {
+    if (window.navigator && navigator.serviceWorker) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => {
+          registration.unregister();
+        });
+      });
+    }
+  });
+
+  beforeEach(() => {
     cy.login().then(() => {
       cy.url().should('eq', 'http://localhost:3000/my-companies');
 
