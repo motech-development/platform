@@ -24,6 +24,8 @@ export const handler: CloudFormationCustomResourceHandler = async (
   try {
     const { RequestType, ResourceProperties, StackId } = event;
     const { Domain, TTL } = await schema.validate(ResourceProperties);
+    const [, , , , account] = StackId.split(':');
+    const Arn = `arn:aws:ses:${process.env.AWS_REGION}:${account}:identity/${Domain}`;
 
     switch (RequestType) {
       case 'Create':
@@ -55,8 +57,6 @@ export const handler: CloudFormationCustomResourceHandler = async (
           },
           ...dkim,
         ];
-        const [, , , , account] = StackId.split(':');
-        const Arn = `arn:aws:ses:${process.env.AWS_REGION}:${account}:identity/${Domain}`;
 
         await send(
           event,
@@ -79,9 +79,16 @@ export const handler: CloudFormationCustomResourceHandler = async (
           })
           .promise();
 
-        await send(event, context, SUCCESS, {
-          Domain,
-        });
+        await send(
+          event,
+          context,
+          SUCCESS,
+          {
+            Arn,
+            Domain,
+          },
+          Arn,
+        );
 
         break;
       }
