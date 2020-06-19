@@ -202,6 +202,7 @@ jobs:
             - applications/accounts/queue/node_modules
             - applications/accounts/storage/node_modules
             - applications/core/anti-virus/node_modules
+            - applications/core/comms/node_modules
             - applications/core/infrastructure/node_modules
             - applications/id/infrastructure/node_modules
             - applications/id/tenant/node_modules
@@ -420,6 +421,9 @@ jobs:
       - run:
           command: npm run deploy -- --scope=@core/infrastructure -- -- --stage production --domain-name $PROD_DOMAIN
           name: Deploy infrastructure
+      - run:
+          command: npm run deploy -- --scope=@core/comms -- -- --stage production --domain-name $PROD_DOMAIN
+          name: Deploy communications infrastructure
 
   deploy-storybook:
     executor: node

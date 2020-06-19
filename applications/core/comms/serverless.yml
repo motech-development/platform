@@ -1,0 +1,77 @@
+service:
+  name: ${opt:appName, 'platform'}
+  publish: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-comms
+
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+  domainName: ${opt:domain-name}
+
+  webpack:
+    includeModules: true
+
+functions:
+  VerifyDomain:
+    handler: src/verify-domain.handler
+    role: LambdaFunctionRole
+
+resources:
+  Resources:
+    VerifyDomain:
+      Type: Custom::VerifyDomain
+      Properties:
+        ServiceToken: !GetAtt VerifyDomainLambdaFunction.Arn
+        Domain: ${self:custom.domainName}
+        Region: eu-west-1
+        TTL: 1800
+
+    EmailVerificationRecords:
+      Type: AWS::Route53::RecordSetGroup
+      Properties:
+        HostedZoneId: !ImportValue HostedZoneId
+        RecordSets: !GetAtt VerifyDomain.Route53RecordSets
+
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-comms-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-comms-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - ses:DeleteIdentity
+                    - ses:VerifyDomainIdentity
+                    - ses:VerifyDomainDkim
+                  Resource:
+                    - '*'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
