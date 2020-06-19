@@ -3,16 +3,16 @@ import { SES } from 'aws-sdk';
 import { FAILED, SUCCESS, send } from 'cfn-response-async';
 import { number, object, string } from 'yup';
 
-const ses = new SES();
-
 interface IEvent {
   Domain: string;
+  Region: string;
   TTL: number;
 }
 
 const schema = object<IEvent>()
   .shape({
     Domain: string().required(),
+    Region: string().required(),
     TTL: number().required(),
   })
   .required();
@@ -23,9 +23,12 @@ export const handler: CloudFormationCustomResourceHandler = async (
 ) => {
   try {
     const { RequestType, ResourceProperties, StackId } = event;
-    const { Domain, TTL } = await schema.validate(ResourceProperties);
+    const { Domain, Region, TTL } = await schema.validate(ResourceProperties);
+    const ses = new SES({
+      region: Region,
+    });
     const [, , , , account] = StackId.split(':');
-    const Arn = `arn:aws:ses:${process.env.AWS_REGION}:${account}:identity/${Domain}`;
+    const Arn = `arn:aws:ses:${Region}:${account}:identity/${Domain}`;
 
     switch (RequestType) {
       case 'Create':

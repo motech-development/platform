@@ -4,7 +4,7 @@ service:
 
 provider:
   name: aws
-  region: ${opt:region, 'eu-west-1'}
+  region: ${opt:region, 'us-east-1'}
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-comms
 
@@ -33,6 +33,7 @@ resources:
       Properties:
         ServiceToken: !GetAtt VerifyDomainLambdaFunction.Arn
         Domain: ${self:custom.domainName}
+        Region: eu-west-1
         TTL: 1800
 
     EmailVerificationRecords:
@@ -44,7 +45,7 @@ resources:
     LambdaFunctionRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-lambda-function-role
+        RoleName: ${self:custom.prefix}-comms-lambda-function-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -55,7 +56,7 @@ resources:
               Action:
                 - sts:AssumeRole
         Policies:
-          - PolicyName: ${self:custom.prefix}-lambda-function-role-policy
+          - PolicyName: ${self:custom.prefix}-comms-lambda-function-role-policy
             PolicyDocument:
               Version: '2012-10-17'
               Statement:

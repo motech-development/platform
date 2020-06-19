@@ -7,7 +7,6 @@ import { handler } from '../verify-domain';
 jest.mock('cfn-response-async');
 
 describe('verify-domain', () => {
-  let env: NodeJS.ProcessEnv;
   let callback: jest.Mock;
   let context: Context;
   let event: CloudFormationCustomResourceEvent;
@@ -18,16 +17,6 @@ describe('verify-domain', () => {
     context.done();
 
     callback = jest.fn();
-
-    env = {
-      ...process.env,
-    };
-
-    process.env.AWS_REGION = 'eu-west-2';
-  });
-
-  afterEach(() => {
-    process.env = env;
   });
 
   describe('with an invalid event', () => {
@@ -35,6 +24,7 @@ describe('verify-domain', () => {
       event = ({
         ResourceProperties: {
           Domain: 'domain.com',
+          Region: 'eu-west-2',
           TTL: 1000,
         },
       } as unknown) as CloudFormationCustomResourceEvent;
@@ -52,6 +42,7 @@ describe('verify-domain', () => {
       event = ({
         ResourceProperties: {
           Domain: 'domain.com',
+          Region: 'eu-west-2',
           TTL: '1000',
         },
         StackId:
