@@ -189,6 +189,26 @@ emailProvider:
   default_from_address: no-reply@motechdevelopment.co.uk
   enabled: true
 emailTemplates:
+  - template: blocked_account
+    body: ./emailTemplates/blocked_account.html
+    enabled: true
+    from: ''
+    subject: ''
+    syntax: liquid
+    urlLifetimeInSeconds: 432000
+  - template: reset_email
+    body: ./emailTemplates/reset_email.html
+    enabled: true
+    from: ''
+    subject: ''
+    syntax: liquid
+    urlLifetimeInSeconds: 432000
+  - template: stolen_credentials
+    body: ./emailTemplates/stolen_credentials.html
+    enabled: true
+    from: ''
+    subject: ''
+    syntax: liquid
   - template: verify_email
     body: ./emailTemplates/verify_email.html
     enabled: true
