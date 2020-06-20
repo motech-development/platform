@@ -41,6 +41,7 @@ describe('verify-domain', () => {
     beforeEach(() => {
       event = ({
         ResourceProperties: {
+          DMARC: 'v=DMARC1; p=none; pct=100; sp=none; aspf=r;',
           Domain: 'domain.com',
           Region: 'eu-west-2',
           TTL: '1000',
@@ -79,6 +80,14 @@ describe('verify-domain', () => {
               {
                 Name: '_amazonses.domain.com.',
                 ResourceRecords: ['"VERIFICATION_CODE"'],
+                TTL: '1000',
+                Type: 'TXT',
+              },
+              {
+                Name: '_dmarc.domain.com.',
+                ResourceRecords: [
+                  '"v=DMARC1; p=none; pct=100; sp=none; aspf=r;"',
+                ],
                 TTL: '1000',
                 Type: 'TXT',
               },
@@ -142,6 +151,14 @@ describe('verify-domain', () => {
               {
                 Name: '_amazonses.domain.com.',
                 ResourceRecords: ['"VERIFICATION_CODE"'],
+                TTL: '1000',
+                Type: 'TXT',
+              },
+              {
+                Name: '_dmarc.domain.com.',
+                ResourceRecords: [
+                  '"v=DMARC1; p=none; pct=100; sp=none; aspf=r;"',
+                ],
                 TTL: '1000',
                 Type: 'TXT',
               },

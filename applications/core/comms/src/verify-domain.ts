@@ -4,6 +4,7 @@ import { FAILED, SUCCESS, send } from 'cfn-response-async';
 import { number, object, string } from 'yup';
 
 interface IEvent {
+  DMARC: string;
   Domain: string;
   Region: string;
   TTL: number;
@@ -11,6 +12,7 @@ interface IEvent {
 
 const schema = object<IEvent>()
   .shape({
+    DMARC: string().required(),
     Domain: string().required(),
     Region: string().required(),
     TTL: number().required(),
@@ -23,7 +25,9 @@ export const handler: CloudFormationCustomResourceHandler = async (
 ) => {
   try {
     const { RequestType, ResourceProperties, StackId } = event;
-    const { Domain, Region, TTL } = await schema.validate(ResourceProperties);
+    const { DMARC, Domain, Region, TTL } = await schema.validate(
+      ResourceProperties,
+    );
     const ses = new SES({
       region: Region,
     });
@@ -55,6 +59,12 @@ export const handler: CloudFormationCustomResourceHandler = async (
           {
             Name: `_amazonses.${Domain}.`,
             ResourceRecords: [`"${VerificationToken}"`],
+            TTL: TTL.toString(),
+            Type: 'TXT',
+          },
+          {
+            Name: `_dmarc.${Domain}.`,
+            ResourceRecords: [`"${DMARC}"`],
             TTL: TTL.toString(),
             Type: 'TXT',
           },
