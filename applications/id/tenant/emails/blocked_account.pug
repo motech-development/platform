@@ -3,7 +3,7 @@ extends layout.pug
 block content
   table
     tr
-      td(class="typography") Hi {{ user.name }}
+      td(class="typography") Hi {{ user.name }},
     tr
       td(class="typography") We detected suspicious activity from the ip: #[strong {{ user.source_ip }}] from #[strong {{ user.city }}], #[strong {{ user.country }}].
     tr
@@ -15,7 +15,7 @@ block content
             td(bgcolor="#007FA8" class="button")
               a(href="{{ url }}" class="button__link fallback-text") Unblock my IP address
     tr
-      td(class="typography") or copy the link below into your browser:
+      td(class="typography") Or copy the link below into your browser:
     tr
       td(class="typography")
         a(href="{{ url }}" class="link") {{ url }}
