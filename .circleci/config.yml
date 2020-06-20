@@ -170,6 +170,9 @@ commands:
           command: npm run build -- --scope=@id/tenant
           name: Build ID client
       - run:
+          command: npm run execute build:emails -- --scope=@id/tenant
+          name: Build ID emails
+      - run:
           command: npm run execute deploy:client -- --scope=@id/tenant -- -- --stage << parameters.stage >> --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
           name: Deploy client
       - run:

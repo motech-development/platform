@@ -24,4 +24,4 @@ yarn-error.log*
 
 # auth0
 config.local.json
-/emails
+/emailTemplates
