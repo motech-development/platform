@@ -15,11 +15,15 @@ const SignUp: FC<ISignUpProps> = ({ client, handleError, setView }) => {
   const signUp = ({ password, username: email }: FormSchema) => {
     setLoading(true);
 
-    client.redirect.signupAndLogin(
+    client.signupAndAuthorize(
       {
         connection: 'Username-Password-Authentication',
         email,
         password,
+        userMetadata: {
+          family_name: 'Gusbi',
+          given_name: 'Mo',
+        },
       },
       e => {
         handleError(e);

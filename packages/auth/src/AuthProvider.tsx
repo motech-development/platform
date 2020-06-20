@@ -17,7 +17,7 @@ import createAuth0Client, {
   RedirectLoginOptions,
 } from '@auth0/auth0-spa-js';
 
-export interface AuthUser extends Omit<IdToken, '__raw'> {}
+export type AuthUser = Omit<IdToken, '__raw'>;
 
 export interface IAuthContext {
   getIdTokenClaims(o?: GetIdTokenClaimsOptions): Promise<IdToken>;

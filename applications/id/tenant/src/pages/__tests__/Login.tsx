@@ -130,7 +130,7 @@ describe('Login', () => {
       });
     });
 
-    describe('when signing up', () => {
+    describe.skip('when signing up', () => {
       it('should display a toast when request is unsuccessful', async () => {
         (WebAuth.prototype.redirect
           .signupAndLogin as jest.Mock).mockImplementationOnce((_, cb) =>
