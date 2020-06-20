@@ -16,6 +16,11 @@ overrides:
       - '**/*.tsx'
     rules:
       react/prop-types: off
+  - files:
+      - 'rules/*.js'
+    rules:
+      no-undef: off
+      no-unused-vars: off
 
 parser: '@typescript-eslint/parser'
 

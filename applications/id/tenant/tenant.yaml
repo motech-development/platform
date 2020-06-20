@@ -1,4 +1,9 @@
-rules: []
+rules:
+  - name: Force email verification
+    script: ./rules/force-email-verification.js
+    stage: login_success
+    enabled: true
+    order: 1
 rulesConfigs: []
 hooks: []
 pages:
