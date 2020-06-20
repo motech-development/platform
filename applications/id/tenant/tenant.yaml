@@ -185,7 +185,7 @@ emailProvider:
   credentials:
     accessKeyId: '##AUTH0_SES_ACCESS_KEY_ID##'
     secretAccessKey: '##AUTH0_SES_ACCESS_SECRET_KEY##'
-    region: eu-west-1
+    region: '##AUTH0_SES_REGION##'
   default_from_address: no-reply@motechdevelopment.co.uk
   enabled: true
 emailTemplates: []
