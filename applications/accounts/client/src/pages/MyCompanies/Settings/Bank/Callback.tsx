@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/react-hooks';
 import { Loader } from '@motech-development/breeze-ui';
+import useQueryString from '@motech-development/query-string-hook';
 import React, { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
@@ -8,7 +9,6 @@ import UPDATE_BANK_SETTINGS, {
   IUpdateBankSettingsInput,
   IUpdateBankSettingsOutput,
 } from '../../../../graphql/bank/UPDATE_BANK_SETTINGS';
-import useQuery from '../../../../hooks/useQuery';
 
 interface ICallbackParams {
   companyId: string;
@@ -19,7 +19,7 @@ const Callback: FC = () => {
   const { companyId } = useParams<ICallbackParams>();
   const { t } = useTranslation('settings');
   const [error, setError] = useState(false);
-  const query = useQuery();
+  const query = useQueryString();
   const [mutation] = useMutation<
     IUpdateBankSettingsOutput,
     IUpdateBankSettingsInput

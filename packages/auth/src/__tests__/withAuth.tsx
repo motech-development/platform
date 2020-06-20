@@ -1,9 +1,12 @@
+import { ToastContext, ToastProvider } from '@motech-development/breeze-ui';
 import { render } from '@testing-library/react';
 import React, { FC } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
 import withAuth from '../withAuth';
 
+const add = jest.fn();
+const remove = jest.fn();
 const TestComponent: FC = () => <div data-testid="content">Loaded</div>;
 const WrappedComponent = withAuth(TestComponent);
 
@@ -44,7 +47,16 @@ describe('withAuth', () => {
               user,
             }}
           >
-            <WrappedComponent />
+            <ToastProvider>
+              <ToastContext.Provider
+                value={{
+                  add,
+                  remove,
+                }}
+              >
+                <WrappedComponent />
+              </ToastContext.Provider>
+            </ToastProvider>
           </AuthContext.Provider>
         </AuthProvider>
       </MemoryRouter>,
@@ -71,7 +83,16 @@ describe('withAuth', () => {
               user,
             }}
           >
-            <WrappedComponent />
+            <ToastProvider>
+              <ToastContext.Provider
+                value={{
+                  add,
+                  remove,
+                }}
+              >
+                <WrappedComponent />
+              </ToastContext.Provider>
+            </ToastProvider>
           </AuthContext.Provider>
         </AuthProvider>
       </MemoryRouter>,

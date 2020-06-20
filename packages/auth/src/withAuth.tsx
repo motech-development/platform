@@ -1,10 +1,30 @@
-import { Loader } from '@motech-development/breeze-ui';
-import React, { ComponentType, memo } from 'react';
+import { Loader, useToast } from '@motech-development/breeze-ui';
+import useQueryString from '@motech-development/query-string-hook';
+import React, { ComponentType, memo, useEffect } from 'react';
 import { useAuth } from './AuthProvider';
 
 const withAuth = (Component: ComponentType) =>
   memo(() => {
+    const query = useQueryString();
     const { isLoading } = useAuth();
+    const { add } = useToast();
+
+    useEffect(() => {
+      if (!isLoading) {
+        const error = query.get('error');
+        const message = query.get('error_description');
+
+        if (error && message) {
+          add({
+            colour: 'danger',
+            message,
+          });
+
+          // TODO: Sign out
+        }
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading]);
 
     if (isLoading) {
       return <Loader />;

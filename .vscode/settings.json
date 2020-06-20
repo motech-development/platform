@@ -64,6 +64,14 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./packages/ga-web-vitals"
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./packages/query-string-hook"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./packages/serverless-outputs-env"
     },
     {

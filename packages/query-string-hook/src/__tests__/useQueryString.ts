@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks';
-import useQuery from '../useQuery';
+import useQueryString from '../useQueryString';
 
 jest.mock('react-router-dom', () => ({
   useLocation: () => ({
@@ -9,9 +9,9 @@ jest.mock('react-router-dom', () => ({
   }),
 }));
 
-describe('useQuery', () => {
+describe('useQueryString', () => {
   it('should return value from query string', () => {
-    const { result } = renderHook(() => useQuery());
+    const { result } = renderHook(() => useQueryString());
 
     expect(result.current.get('test')).toEqual('hello');
   });
