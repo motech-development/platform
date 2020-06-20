@@ -1,0 +1,64 @@
+body {
+  background: #161616;
+  margin: 0;
+  padding: 0;
+}
+
+.layout-table {
+  border-collapse: collapse;
+}
+
+.title {
+  color: #ffffff;
+  font-family: Cabin, sans-serif;
+  font-size: 40px;
+  font-weight: 600;
+  padding: 16px 0 16px 0;
+}
+
+.card {
+  background: #ffffff;
+  padding: 20px 20px 20px 20px;
+}
+
+.typography {
+  color: #000000;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  padding: 0 0 10px 0;
+}
+
+.typography--lg-spacing {
+  color: #000000;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  padding: 0 0 20px 0;
+}
+
+.typography--no-spacing {
+  color: #000000;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  padding: 0 0 0 0;
+}
+
+.button {
+  background: #007fa8;
+  padding: 10px 16px 10px 16px;
+}
+
+.button__link {
+  color: #ffffff;
+  font-family: Cabin, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link {
+  color: #007fa8;
+}
+
+.footer {
+  padding: 8px 0 8px 0;
+}

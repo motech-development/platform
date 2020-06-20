@@ -92,6 +92,7 @@
     "npm-check-updates": "^7.0.1",
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1",
+    "pug-cli": "^1.0.0-alpha6",
     "pwa-asset-generator": "^3.1.1",
     "react-app-rewired": "^2.1.6",
     "react-scripts": "^3.4.0",

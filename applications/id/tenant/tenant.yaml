@@ -52,8 +52,8 @@ clients:
         enabled: false
     oidc_conformant: true
     refresh_token:
-      expiration_type: non-expiring
       rotation_type: non-rotating
+      expiration_type: non-expiring
     sso_disabled: false
     token_endpoint_auth_method: none
     web_origins:
@@ -75,8 +75,8 @@ clients:
       secret_encoded: false
     oidc_conformant: true
     refresh_token:
-      expiration_type: non-expiring
       rotation_type: non-rotating
+      expiration_type: non-expiring
     sso_disabled: false
   - name: Default App
     callbacks: []
@@ -95,8 +95,8 @@ clients:
       secret_encoded: false
     oidc_conformant: true
     refresh_token:
-      expiration_type: non-expiring
       rotation_type: non-rotating
+      expiration_type: non-expiring
     sso_disabled: false
   - name: auth0-deploy-cli-extension
     allowed_clients: []
@@ -122,6 +122,9 @@ clients:
       facebook:
         enabled: false
     oidc_conformant: true
+    refresh_token:
+      rotation_type: non-rotating
+      expiration_type: non-expiring
     sso_disabled: false
     token_endpoint_auth_method: none
 databases:
@@ -177,8 +180,42 @@ tenant:
     colors:
       page_background: '#161616'
       primary: '#007fa8'
-emailProvider: {}
-emailTemplates: []
+emailProvider:
+  name: ses
+  credentials:
+    accessKeyId: '##AUTH0_SES_ACCESS_KEY_ID##'
+    secretAccessKey: '##AUTH0_SES_ACCESS_SECRET_KEY##'
+    region: '##AUTH0_SES_REGION##'
+  default_from_address: no-reply@motechdevelopment.co.uk
+  enabled: true
+emailTemplates:
+  - template: blocked_account
+    body: ./emailTemplates/blocked_account.html
+    enabled: true
+    from: ''
+    subject: ''
+    syntax: liquid
+    urlLifetimeInSeconds: 432000
+  - template: reset_email
+    body: ./emailTemplates/reset_email.html
+    enabled: true
+    from: ''
+    subject: ''
+    syntax: liquid
+    urlLifetimeInSeconds: 432000
+  - template: stolen_credentials
+    body: ./emailTemplates/stolen_credentials.html
+    enabled: true
+    from: ''
+    subject: ''
+    syntax: liquid
+  - template: verify_email
+    body: ./emailTemplates/verify_email.html
+    enabled: true
+    from: ''
+    subject: ''
+    syntax: liquid
+    urlLifetimeInSeconds: 432000
 clientGrants:
   - client_id: Accounts API (Test Application)
     audience: accounts-api
