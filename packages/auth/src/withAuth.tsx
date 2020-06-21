@@ -6,7 +6,7 @@ import { useAuth } from './AuthProvider';
 const withAuth = (Component: ComponentType) =>
   memo(() => {
     const query = useQueryString();
-    const { isLoading } = useAuth();
+    const { isLoading, logout } = useAuth();
     const { add } = useToast();
 
     useEffect(() => {
@@ -18,9 +18,11 @@ const withAuth = (Component: ComponentType) =>
           add({
             colour: 'danger',
             message,
+            onDismiss: () =>
+              logout({
+                returnTo: window.location.origin,
+              }),
           });
-
-          // TODO: Sign out
         }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
