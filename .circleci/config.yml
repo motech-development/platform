@@ -167,16 +167,16 @@ commands:
           name: Deploy ID infrastructure
           no_output_timeout: 60m
       - run:
-          command: npm run build -- --scope=@id/tenant
+          command: npm run build -- --scope=@id/client
           name: Build ID client
       - run:
-          command: npm run execute build:emails -- --scope=@id/tenant
+          command: npm run build -- --scope=@id/emails
           name: Build ID emails
       - run:
-          command: npm run execute deploy:client -- --scope=@id/tenant -- -- --stage << parameters.stage >> --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
+          command: npm run deploy -- --scope=@id/client -- -- --stage << parameters.stage >> --domain-name $<< parameters.domainName >> --prefix << parameters.prefix >>
           name: Deploy client
       - run:
-          command: npm run execute deploy:tenant -- --scope=@id/tenant -- -- -c config.json
+          command: npm run deploy -- --scope=@id/tenant -- -- -c config.json
           name: Deploy to Auth0
 
 jobs:
@@ -207,6 +207,8 @@ jobs:
             - applications/core/anti-virus/node_modules
             - applications/core/comms/node_modules
             - applications/core/infrastructure/node_modules
+            - applications/id/client/node_modules
+            - applications/id/emails/node_modules
             - applications/id/infrastructure/node_modules
             - applications/id/tenant/node_modules
             - applications/open-banking/api/node_modules

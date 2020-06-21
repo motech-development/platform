@@ -14,10 +14,10 @@ hooks:
     triggerId: pre-user-registration
 pages:
   - name: login
-    html: build/login/index.html
+    html: ../client/build/login/index.html
     enabled: true
   - name: password_reset
-    html: build/lo/reset/index.html
+    html: ../client/build/lo/reset/index.html
     enabled: true
 resourceServers:
   - name: Accounts API
@@ -201,27 +201,27 @@ emailProvider:
   enabled: true
 emailTemplates:
   - template: blocked_account
-    body: ./emailTemplates/blocked_account.html
+    body: ../emails/build/blocked_account.html
     enabled: true
     from: ''
     subject: ''
     syntax: liquid
     urlLifetimeInSeconds: 432000
   - template: reset_email
-    body: ./emailTemplates/reset_email.html
+    body: ../emails/build/reset_email.html
     enabled: true
     from: ''
     subject: ''
     syntax: liquid
     urlLifetimeInSeconds: 432000
   - template: stolen_credentials
-    body: ./emailTemplates/stolen_credentials.html
+    body: ../emails/build/stolen_credentials.html
     enabled: true
     from: ''
     subject: ''
     syntax: liquid
   - template: verify_email
-    body: ./emailTemplates/verify_email.html
+    body: ../emails/build/verify_email.html
     enabled: true
     from: ''
     subject: ''
