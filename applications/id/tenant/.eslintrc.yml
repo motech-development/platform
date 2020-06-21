@@ -19,6 +19,11 @@ overrides:
   - files:
       - 'rules/*.js'
     rules:
+      global-require: off
+      import/no-extraneous-dependencies: off
+      import/no-unresolved: off
+      no-console: off
+      no-param-reassign: off
       no-undef: off
       no-unused-vars: off
 

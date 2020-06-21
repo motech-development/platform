@@ -5,7 +5,13 @@ rules:
     enabled: true
     order: 1
 rulesConfigs: []
-hooks: []
+hooks:
+  - name: set-email-verification-sent-date
+    script: ./hooks/set-email-verification-sent-date.js
+    dependencies: {}
+    enabled: true
+    secrets: {}
+    triggerId: pre-user-registration
 pages:
   - name: login
     html: build/login/index.html

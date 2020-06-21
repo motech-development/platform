@@ -69,6 +69,8 @@
   },
   "jest": {
     "collectCoverageFrom": [
+      "hooks/**/*.js",
+      "rules/**/*.js",
       "src/**/*.{ts,tsx}",
       "!src/{history,index,i18n}.{ts,tsx}",
       "!src/**/*/index.{ts,tsx}"
