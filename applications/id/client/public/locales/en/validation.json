@@ -1,0 +1,20 @@
+{
+  "log-in": {
+    "mfa_invalid_code": "Wrong code. Please try again",
+    "mfa_registration_required": "Multifactor authentication is required but your device is not enrolled. Please enroll it before moving on",
+    "password_leaked": "We have detected a potential security issue with this account. To protect your account, we have blocked this login. An email was sent with instruction on how to unblock your account",
+    "PasswordStrengthError": "Password is too weak",
+    "too_many_attempts": "Your account has been blocked after multiple consecutive login attempts",
+    "unauthorized": "Permissions were not granted. Try again",
+    "fallback": "We're sorry, something went wrong when attempting to log in"
+  },
+  "sign-up": {
+    "invalid_password": "Password is invalid",
+    "password_dictionary_error": "Password is too common",
+    "password_no_user_info_error": "Password is based on user information",
+    "password_strength_error": "Password is too weak",
+    "user_exists": "The user already exists",
+    "username_exists": "The username already exists",
+    "fallback": "We're sorry, something went wrong when attempting to sign up"
+  }
+}
