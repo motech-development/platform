@@ -76,7 +76,7 @@
   },
   "jest-junit": {
     "outputDirectory": "../../reports/junit",
-    "outputName": "id-tenant.xml"
+    "outputName": "id-client.xml"
   },
   "reactSnap": {
     "include": [

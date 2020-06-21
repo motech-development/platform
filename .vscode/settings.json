@@ -40,6 +40,10 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./applications/id/client"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./applications/id/tenant"
     },
     {

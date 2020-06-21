@@ -1,13 +1,13 @@
 rules:
   - name: Force email verification
-    script: ./rules/force-email-verification.js
+    script: ./src/rules/force-email-verification.js
     stage: login_success
     enabled: true
     order: 1
 rulesConfigs: []
 hooks:
   - name: set-email-verification-sent-date
-    script: ./hooks/set-email-verification-sent-date.js
+    script: ./src/hooks/set-email-verification-sent-date.js
     dependencies: {}
     enabled: true
     secrets: {}

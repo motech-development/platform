@@ -1,0 +1,2 @@
+src/**/*.js:
+  - eslint -c .eslintrc.yml --fix
