@@ -12,6 +12,12 @@ hooks:
     enabled: true
     secrets: {}
     triggerId: pre-user-registration
+  - name: set-name
+    script: ./src/hooks/set-name.js
+    dependencies: {}
+    enabled: true
+    secrets: {}
+    triggerId: pre-user-registration
 pages:
   - name: login
     html: ../client/build/login/index.html
