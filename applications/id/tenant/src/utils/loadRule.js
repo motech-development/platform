@@ -39,7 +39,7 @@ const instrumentAsync = (content, location) =>
 
     instrumenter.instrument(execute, fullPath, (err, instrumentedSource) => {
       if (err) {
-        rej(err);
+        rej(new Error(err));
       } else {
         res(instrumentedSource);
       }
@@ -52,6 +52,7 @@ const requireWithVersionSupport = moduleName => {
   return require(name);
 };
 
+// istanbul ignore next
 // eslint-disable-next-line no-undef
 const coverage = global.__coverage__ ? __coverage__ : {};
 
