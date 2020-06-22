@@ -31,5 +31,9 @@
   "jest-junit": {
     "outputDirectory": "../../reports/junit",
     "outputName": "id-tenant.xml"
+  },
+  "dependencies": {
+    "auth0": "2.23.0",
+    "rewire": "3.0.2"
   }
 }
