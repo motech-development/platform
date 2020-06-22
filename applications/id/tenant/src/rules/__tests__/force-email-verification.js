@@ -18,6 +18,12 @@ describe('force-email-verification', () => {
     user = {
       user_id: 'user-id',
     };
+
+    console.log = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('when user is verified', () => {
@@ -48,6 +54,20 @@ describe('force-email-verification', () => {
         },
         {},
       );
+    });
+
+    it('should log an error if meta data cannot be updated', async () => {
+      ManagementClient.prototype.updateUserMetadata.mockRejectedValueOnce(
+        new Error('Something has gone wrong'),
+      );
+
+      user.user_metadata = {
+        emailVerificationSentDate: new Date().valueOf(),
+      };
+
+      await rule(user, context, callback);
+
+      expect(console.log).toHaveBeenCalledWith('Something has gone wrong');
     });
 
     it('should call the callback with the correct params', async () => {
@@ -83,6 +103,20 @@ describe('force-email-verification', () => {
     });
 
     it('should resend the verification email if it has not been sent today', async () => {
+      await rule(user, context, callback);
+
+      expect(
+        ManagementClient.prototype.sendEmailVerification,
+      ).toHaveBeenCalledWith({
+        user_id: 'user-id',
+      });
+    });
+
+    it('should log an error if meta data something cannot be completed', async () => {
+      ManagementClient.prototype.updateUserMetadata.mockRejectedValueOnce(
+        new Error('Something has gone wrong'),
+      );
+
       await rule(user, context, callback);
 
       expect(

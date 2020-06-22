@@ -2,7 +2,6 @@
 const { readFileSync } = require('fs');
 const { createInstrumenter } = require('istanbul-lib-instrument');
 const { resolve } = require('path');
-const { promisify } = require('util');
 const { createContext, runInNewContext } = require('vm');
 
 const instrumenter = createInstrumenter({
@@ -63,11 +62,11 @@ const loadRule = async (location, auth0) => {
     location,
   );
 
-  const execute = `(() => ${instrumentedSource})();`;
   const context = createContext({
     UnauthorizedError: Error,
     __coverage__: coverage,
     auth0,
+    console,
     require: requireWithVersionSupport,
   });
 
