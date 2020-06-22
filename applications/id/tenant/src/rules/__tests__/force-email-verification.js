@@ -1,19 +1,18 @@
 const { ManagementClient } = require('auth0');
 const loadRule = require('../../utils/loadRule');
 
-const load = loadRule('../rules/force-email-verification.js', {
-  accessToken: 'access-token',
-  domain: 'https://test.com',
-});
-
 describe('force-email-verification', () => {
   let rule;
   let callback;
   let context;
   let user;
 
-  beforeEach(() => {
-    rule = load('emailVerified');
+  beforeEach(async () => {
+    rule = await loadRule('./src/rules/force-email-verification.js', {
+      accessToken: 'access-token',
+      domain: 'https://test.com',
+    });
+
     callback = jest.fn();
     context = {};
     user = {

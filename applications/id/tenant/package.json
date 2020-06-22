@@ -34,6 +34,6 @@
   },
   "devDependencies": {
     "auth0-deploy-cli": "^5.0.0",
-    "rewire": "2.5.2"
+    "istanbul-lib-instrument": "^4.0.3"
   }
 }

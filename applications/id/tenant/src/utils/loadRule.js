@@ -1,5 +1,51 @@
 /* eslint-disable no-underscore-dangle, import/no-dynamic-require */
-const rewire = require('rewire');
+const { readFileSync } = require('fs');
+const { createInstrumenter } = require('istanbul-lib-instrument');
+const { resolve } = require('path');
+const { promisify } = require('util');
+const { createContext, runInNewContext } = require('vm');
+
+const instrumenter = createInstrumenter({
+  additionalProperties: true,
+  properties: {
+    autoWrap: {
+      type: 'boolean',
+    },
+    compact: {
+      type: 'boolean',
+    },
+    coverageVariable: {
+      type: 'string',
+    },
+    debug: {
+      type: 'boolean',
+    },
+    esModules: {
+      type: 'boolean',
+    },
+    preserveComments: {
+      type: 'boolean',
+    },
+    produceSourceMap: {
+      type: 'boolean',
+    },
+  },
+  type: 'object',
+});
+
+const instrumentAsync = (content, location) =>
+  new Promise((res, rej) => {
+    const execute = `(() => ${content})();`;
+    const fullPath = resolve(location);
+
+    instrumenter.instrument(execute, fullPath, (err, instrumentedSource) => {
+      if (err) {
+        rej(err);
+      } else {
+        res(instrumentedSource);
+      }
+    });
+  });
 
 const requireWithVersionSupport = moduleName => {
   const name = moduleName.split('@')[0];
@@ -7,16 +53,25 @@ const requireWithVersionSupport = moduleName => {
   return require(name);
 };
 
-const loadRule = (location, auth0 = {}) => {
-  const module = rewire(location);
+// eslint-disable-next-line no-undef
+const coverage = global.__coverage__ ? __coverage__ : {};
 
-  module.__set__({
+const loadRule = async (location, auth0) => {
+  const content = readFileSync(location);
+  const instrumentedSource = await instrumentAsync(
+    content.toString(),
+    location,
+  );
+
+  const execute = `(() => ${instrumentedSource})();`;
+  const context = createContext({
     UnauthorizedError: Error,
+    __coverage__: coverage,
     auth0,
     require: requireWithVersionSupport,
   });
 
-  return module.__get__;
+  return runInNewContext(instrumentedSource, context, location);
 };
 
 module.exports = loadRule;
