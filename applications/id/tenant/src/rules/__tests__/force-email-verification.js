@@ -93,6 +93,8 @@ describe('force-email-verification', () => {
         emailVerificationSentDate: new Date().valueOf(),
       };
 
+      await rule(user, context, callback);
+
       expect(
         ManagementClient.prototype.sendEmailVerification,
       ).not.toHaveBeenCalled();
@@ -123,11 +125,7 @@ describe('force-email-verification', () => {
 
       await rule(user, context, callback);
 
-      expect(
-        ManagementClient.prototype.sendEmailVerification,
-      ).toHaveBeenCalledWith({
-        user_id: 'user-id',
-      });
+      expect(console.log).toHaveBeenCalledWith('Something has gone wrong');
     });
 
     it('should update the emailVerificationSentDate to today', async () => {
