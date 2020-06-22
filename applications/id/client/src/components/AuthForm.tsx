@@ -7,6 +7,10 @@ import FormFooter from './FormFooter';
 
 const formSchema = {
   password: '',
+  userMetadata: {
+    family_name: '',
+    given_name: '',
+  },
   username: '',
 };
 
@@ -16,6 +20,7 @@ export interface IAuthFormProps {
   change: string;
   helpText?: ReactNode;
   loading: boolean;
+  name?: boolean;
   submit: string;
   onChange(): void;
   onSubmit(value: FormSchema): void;
@@ -25,6 +30,7 @@ const AuthForm: FC<IAuthFormProps> = ({
   change,
   helpText,
   loading,
+  name = false,
   onChange,
   onSubmit,
   submit,
@@ -32,6 +38,16 @@ const AuthForm: FC<IAuthFormProps> = ({
   const { t } = useTranslation('forms');
   const validationSchema = object<FormSchema>()
     .shape({
+      ...(name
+        ? {
+            userMetadata: object()
+              .shape({
+                family_name: string().required(t('family-name.required')),
+                given_name: string().required(t('given-name.required')),
+              })
+              .required(),
+          }
+        : {}),
       password: string().required(t('password.required')),
       username: string()
         .email(t('username.invalid'))
@@ -49,6 +65,22 @@ const AuthForm: FC<IAuthFormProps> = ({
       {({ isValid }) => (
         <Form>
           <Card padding="lg">
+            {name && (
+              <>
+                <TextBox
+                  type="text"
+                  name="userMetadata.given_name"
+                  label={t('given-name.label')}
+                />
+
+                <TextBox
+                  type="text"
+                  name="userMetadata.family_name"
+                  label={t('family-name.label')}
+                />
+              </>
+            )}
+
             <TextBox type="email" name="username" label={t('username.label')} />
 
             <TextBox

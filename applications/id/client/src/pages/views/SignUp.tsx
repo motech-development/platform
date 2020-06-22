@@ -14,7 +14,7 @@ const SignUp: FC<ISignUpProps> = ({ client, handleError, setView }) => {
   const { t } = useTranslation('sign-up');
   const [loading, setLoading] = useState(false);
   const { add } = useToast();
-  const signUp = ({ password, username: email }: FormSchema) => {
+  const signUp = ({ password, userMetadata, username: email }: FormSchema) => {
     setLoading(true);
 
     client.signup(
@@ -22,11 +22,7 @@ const SignUp: FC<ISignUpProps> = ({ client, handleError, setView }) => {
         connection: 'Username-Password-Authentication',
         email,
         password,
-        userMetadata: {
-          // TODO: Fill with real data
-          family_name: 'Gusbi',
-          given_name: 'Mo',
-        },
+        userMetadata,
       },
       e => {
         handleError(e);
@@ -47,6 +43,7 @@ const SignUp: FC<ISignUpProps> = ({ client, handleError, setView }) => {
 
   return (
     <AuthForm
+      name
       loading={loading}
       change={t('go-back')}
       helpText={t('help-text')}

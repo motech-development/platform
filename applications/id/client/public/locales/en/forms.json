@@ -12,5 +12,13 @@
     "label": "Confirm password",
     "required": "Please confirm your password",
     "invalid": "Passwords do not match"
+  },
+  "family-name": {
+    "label": "Last name",
+    "required": "Last name is required"
+  },
+  "given-name": {
+    "label": "First name",
+    "required": "First name is required"
   }
 }

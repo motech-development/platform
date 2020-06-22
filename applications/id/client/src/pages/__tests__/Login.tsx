@@ -130,14 +130,14 @@ describe('Login', () => {
       });
     });
 
-    describe.skip('when signing up', () => {
+    describe('when signing up', () => {
       it('should display a toast when request is unsuccessful', async () => {
-        (WebAuth.prototype.redirect
-          .signupAndLogin as jest.Mock).mockImplementationOnce((_, cb) =>
-          cb({
-            code: 'invalid_user_password',
-            description: 'test',
-          }),
+        (WebAuth.prototype.signup as jest.Mock).mockImplementationOnce(
+          (_, cb) =>
+            cb({
+              code: 'invalid_user_password',
+              description: 'test',
+            }),
         );
 
         const { findAllByRole, findByLabelText } = component;
@@ -147,8 +147,22 @@ describe('Login', () => {
 
           fireEvent.click(signUp);
 
+          const givenName = await findByLabelText('given-name.label');
+          const familyName = await findByLabelText('family-name.label');
           const email = await findByLabelText('username.label');
           const password = await findByLabelText('password.label');
+
+          fireEvent.change(givenName, {
+            target: {
+              value: 'Test',
+            },
+          });
+
+          fireEvent.change(familyName, {
+            target: {
+              value: 'User',
+            },
+          });
 
           fireEvent.change(email, {
             target: {
@@ -180,11 +194,11 @@ describe('Login', () => {
       it('should call signupAndLogin with the correct params', async () => {
         const { findAllByRole, findByLabelText } = component;
 
-        (WebAuth.prototype.redirect
-          .signupAndLogin as jest.Mock).mockImplementationOnce((_, cb) =>
-          cb({
-            code: 'invalid_signup',
-          }),
+        (WebAuth.prototype.signup as jest.Mock).mockImplementationOnce(
+          (_, cb) =>
+            cb({
+              code: 'invalid_signup',
+            }),
         );
 
         await act(async () => {
@@ -192,8 +206,22 @@ describe('Login', () => {
 
           fireEvent.click(signUp);
 
+          const givenName = await findByLabelText('given-name.label');
+          const familyName = await findByLabelText('family-name.label');
           const email = await findByLabelText('username.label');
           const password = await findByLabelText('password.label');
+
+          fireEvent.change(givenName, {
+            target: {
+              value: 'Test',
+            },
+          });
+
+          fireEvent.change(familyName, {
+            target: {
+              value: 'User',
+            },
+          });
 
           fireEvent.change(email, {
             target: {
@@ -214,11 +242,15 @@ describe('Login', () => {
           fireEvent.click(button);
         });
 
-        expect(WebAuth.prototype.redirect.signupAndLogin).toHaveBeenCalledWith(
+        expect(WebAuth.prototype.signup).toHaveBeenCalledWith(
           {
             connection: 'Username-Password-Authentication',
             email: 'test@example.com',
             password: 'Password',
+            userMetadata: {
+              family_name: 'User',
+              given_name: 'Test',
+            },
           },
           expect.any(Function),
         );
