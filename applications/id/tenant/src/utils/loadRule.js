@@ -1,10 +1,9 @@
-/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-underscore-dangle, import/no-dynamic-require */
 const rewire = require('rewire');
 
 const requireWithVersionSupport = moduleName => {
   const name = moduleName.split('@')[0];
 
-  // eslint-disable-next-line import/no-dynamic-require
   return require(name);
 };
 

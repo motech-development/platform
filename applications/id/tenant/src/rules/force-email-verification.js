@@ -59,5 +59,12 @@ async function emailVerified(user, context, callback) {
     }
   }
 
-  return callback(null, user, context);
+  const updated = {
+    ...user,
+    user_metadata: {
+      ...metadata,
+    },
+  };
+
+  return callback(null, updated, context);
 }

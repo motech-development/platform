@@ -52,9 +52,15 @@ describe('force-email-verification', () => {
     });
 
     it('should call the callback with the correct params', async () => {
+      const result = {
+        email_verified: true,
+        user_id: 'user-id',
+        user_metadata: {},
+      };
+
       await rule(user, context, callback);
 
-      expect(callback).toHaveBeenCalledWith(null, user, context);
+      expect(callback).toHaveBeenCalledWith(null, result, context);
     });
   });
 
