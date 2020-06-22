@@ -12,6 +12,7 @@ const loadRule = (location, auth0 = {}) => {
   const module = rewire(location);
 
   module.__set__({
+    UnauthorizedError: Error,
     auth0,
     require: requireWithVersionSupport,
   });

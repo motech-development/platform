@@ -12,9 +12,6 @@
     "test": "jest --watch",
     "test:ci": "jest --coverage --runInBand --reporters=default --reporters=jest-junit"
   },
-  "devDependencies": {
-    "auth0-deploy-cli": "^5.0.0"
-  },
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.js"
@@ -33,7 +30,10 @@
     "outputName": "id-tenant.xml"
   },
   "dependencies": {
-    "auth0": "2.23.0",
-    "rewire": "3.0.2"
+    "auth0": "2.23.0"
+  },
+  "devDependencies": {
+    "auth0-deploy-cli": "^5.0.0",
+    "rewire": "2.5.2"
   }
 }

@@ -1,3 +1,4 @@
+const { ManagementClient } = require('auth0');
 const loadRule = require('../../utils/loadRule');
 
 const load = loadRule('../rules/force-email-verification.js', {
@@ -15,7 +16,9 @@ describe('force-email-verification', () => {
     rule = load('emailVerified');
     callback = jest.fn();
     context = {};
-    user = {};
+    user = {
+      user_id: 'user-id',
+    };
   });
 
   describe('when user is verified', () => {
@@ -23,30 +26,80 @@ describe('force-email-verification', () => {
       user.email_verified = true;
     });
 
-    it.todo('should remove emailVerificationSentDate if it exists');
+    it('should not update meta data if emailVerificationSentDate does not exist', async () => {
+      await rule(user, context, callback);
 
-    it.todo(
-      'should not update meta data if emailVerificationSentDate does not exist',
-    );
+      expect(
+        ManagementClient.prototype.updateUserMetadata,
+      ).not.toHaveBeenCalled();
+    });
 
-    it('should call the callback with the correct params', () => {
-      rule(user, context, callback);
+    it('should remove emailVerificationSentDate if it exists', async () => {
+      user.user_metadata = {
+        emailVerificationSentDate: new Date().valueOf(),
+      };
+
+      await rule(user, context, callback);
+
+      expect(
+        ManagementClient.prototype.updateUserMetadata,
+      ).toHaveBeenCalledWith(
+        {
+          id: 'user-id',
+        },
+        {},
+      );
+    });
+
+    it('should call the callback with the correct params', async () => {
+      await rule(user, context, callback);
 
       expect(callback).toHaveBeenCalledWith(null, user, context);
     });
   });
 
   describe('when user is not verified', () => {
-    it.todo('should throw an UnauthorizedError');
+    it('should not resend the verification email if it was already sent today', async () => {
+      user.user_metadata = {
+        emailVerificationSentDate: new Date().valueOf(),
+      };
 
-    it.todo(
-      'should not resend the verification email if it was already sent today',
-    );
+      expect(
+        ManagementClient.prototype.sendEmailVerification,
+      ).not.toHaveBeenCalled();
+    });
 
-    it.todo(
-      'should resend the verification email if it has not been sent today',
-    );
+    it('should throw an UnauthorizedError', async () => {
+      await rule(user, context, callback);
 
-    it.todo('should update the emailVerificationSentDate to today');
+      expect(callback).toHaveBeenCalledWith(
+        new Error('Please verify your email before logging in.'),
+      );
+    });
+
+    it('should resend the verification email if it has not been sent today', async () => {
+      await rule(user, context, callback);
+
+      expect(
+        ManagementClient.prototype.sendEmailVerification,
+      ).toHaveBeenCalledWith({
+        user_id: 'user-id',
+      });
+    });
+
+    it('should update the emailVerificationSentDate to today', async () => {
+      await rule(user, context, callback);
+
+      expect(
+        ManagementClient.prototype.updateUserMetadata,
+      ).toHaveBeenCalledWith(
+        {
+          id: 'user-id',
+        },
+        {
+          emailVerificationSentDate: expect.any(Number),
+        },
+      );
+    });
   });
 });
