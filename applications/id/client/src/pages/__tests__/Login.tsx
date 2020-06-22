@@ -256,6 +256,62 @@ describe('Login', () => {
         );
       });
 
+      it('should display a toast when sign up is successful and go to the log in view', async () => {
+        const { findAllByRole, findByLabelText, findByText } = component;
+
+        await act(async () => {
+          const [, , signUp] = await findAllByRole('button');
+
+          fireEvent.click(signUp);
+
+          const givenName = await findByLabelText('given-name.label');
+          const familyName = await findByLabelText('family-name.label');
+          const email = await findByLabelText('username.label');
+          const password = await findByLabelText('password.label');
+
+          fireEvent.change(givenName, {
+            target: {
+              value: 'Test',
+            },
+          });
+
+          fireEvent.change(familyName, {
+            target: {
+              value: 'User',
+            },
+          });
+
+          fireEvent.change(email, {
+            target: {
+              value: 'test@example.com',
+            },
+          });
+
+          fireEvent.change(password, {
+            target: {
+              value: 'Password',
+            },
+          });
+
+          await wait();
+
+          const [button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'success',
+            message: 'success',
+          }),
+        );
+
+        await expect(
+          findByText('forgotten-password'),
+        ).resolves.toBeInTheDocument();
+      });
+
       it('should go back to log in page', async () => {
         const { findAllByRole, findByText, findByLabelText } = component;
 
