@@ -84,6 +84,10 @@ describe('force-email-verification', () => {
   });
 
   describe('when user is not verified', () => {
+    beforeEach(() => {
+      user.email_verified = false;
+    });
+
     it('should not resend the verification email if it was already sent today', async () => {
       user.user_metadata = {
         emailVerificationSentDate: new Date().valueOf(),
