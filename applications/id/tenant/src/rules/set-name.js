@@ -4,15 +4,15 @@ async function setName(user, context, callback) {
     domain: auth0.domain,
     token: auth0.accessToken,
   });
-  const updated = {
-    ...user,
-  };
 
   if (
     user.user_metadata &&
     user.user_metadata.family_name &&
     user.user_metadata.given_name
   ) {
+    const updated = {
+      ...user,
+    };
     const {
       family_name: familyName,
       given_name: givenName,
@@ -32,10 +32,12 @@ async function setName(user, context, callback) {
         },
         updated,
       );
+
+      return callback(null, updated, context);
     } catch (e) {
       callback(e);
     }
   }
 
-  return callback(null, updated, context);
+  return callback(null, user, context);
 }
