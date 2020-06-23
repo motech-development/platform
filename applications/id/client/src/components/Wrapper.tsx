@@ -9,6 +9,7 @@ const Wrapper: FC<IWrapperProps> = ({ children }) => {
   const parentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // istanbul ignore next
     if (parentRef.current) {
       disableBodyScroll(parentRef.current);
     }

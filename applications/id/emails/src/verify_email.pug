@@ -3,7 +3,12 @@ extends layout.pug
 block content
   table
     tr
-      td(class="typography") Hi {{ user.name }},
+      td(class="typography")
+        | {% if user.given_name %}
+        |   Hi {{ user.given_name }},
+        | {% else %}
+        |   Hi {{ user.user_metadata.given_name }},
+        | {% endif %}
     tr
       td(class="typography") Thank you for signing up to {{ application.name}} by Motech Development.
     tr
