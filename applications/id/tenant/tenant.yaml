@@ -4,16 +4,15 @@ rules:
     stage: login_success
     enabled: true
     order: 1
+  - name: Set name
+    script: ./src/rules/set-name.js
+    stage: login_success
+    enabled: true
+    order: 2
 rulesConfigs: []
 hooks:
   - name: set-email-verification-sent-date
     script: ./src/hooks/set-email-verification-sent-date.js
-    dependencies: {}
-    enabled: true
-    secrets: {}
-    triggerId: pre-user-registration
-  - name: set-name
-    script: ./src/hooks/set-name.js
     dependencies: {}
     enabled: true
     secrets: {}
