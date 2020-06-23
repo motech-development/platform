@@ -1,2 +1,2 @@
-src/**/*.{ts,tsx}:
+src/**/*.js:
   - eslint -c .eslintrc.yml --fix

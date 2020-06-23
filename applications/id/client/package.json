@@ -1,0 +1,90 @@
+{
+  "name": "@id/client",
+  "version": "0.0.0",
+  "description": "Motech Development universal login client",
+  "private": true,
+  "scripts": {
+    "build": "react-app-rewired build",
+    "build:icons": "pwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --type png --padding '20%' --maskable false",
+    "deploy": "serverless client deploy --verbose --no-confirm",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
+    "postdeploy": "react-snap",
+    "precommit": "lint-staged",
+    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "start": "react-app-rewired start",
+    "teardown": "serverless client remove --verbose --no-confirm",
+    "test": "react-app-rewired test",
+    "test:ci": "react-app-rewired test --coverage --runInBand --reporters=default --reporters=jest-junit"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.28",
+    "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "@fortawesome/react-fontawesome": "^0.1.11",
+    "@motech-development/axios-hooks": "^0.0.0",
+    "@motech-development/breeze-ui": "^0.0.0",
+    "@motech-development/ga-web-vitals": "^0.0.0",
+    "@popperjs/core": "^2.4.2",
+    "auth0-js": "^9.13.2",
+    "axios": "^0.19.2",
+    "body-scroll-lock": "^3.0.3",
+    "formik": "^2.1.4",
+    "history": "^4.10.1",
+    "i18next": "^19.4.5",
+    "i18next-browser-languagedetector": "^4.3.1",
+    "i18next-http-backend": "^1.0.15",
+    "moment": "^2.26.0",
+    "polished": "^3.6.5",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-ga": "^3.0.0",
+    "react-i18next": "^11.6.0",
+    "react-number-format": "^4.4.1",
+    "react-popper": "^2.2.3",
+    "react-router-dom": "^5.2.0",
+    "styled-components": "^5.1.1",
+    "styled-reset": "^4.1.6",
+    "web-vitals": "^0.2.2",
+    "yup": "^0.29.1"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "hooks/**/*.js",
+      "rules/**/*.js",
+      "src/**/*.{ts,tsx}",
+      "!src/{history,index,i18n}.{ts,tsx}",
+      "!src/**/*/index.{ts,tsx}"
+    ],
+    "moduleDirectories": [
+      "../../node_modules",
+      "<rootDir>/node_modules"
+    ]
+  },
+  "jest-junit": {
+    "outputDirectory": "../../reports/junit",
+    "outputName": "id-client.xml"
+  },
+  "reactSnap": {
+    "include": [
+      "/login",
+      "/lo/reset"
+    ],
+    "minifyHtml": {
+      "collapseWhitespace": false
+    }
+  }
+}

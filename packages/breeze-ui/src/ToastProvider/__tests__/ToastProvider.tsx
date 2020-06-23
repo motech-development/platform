@@ -1,14 +1,20 @@
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import React, { FC } from 'react';
 import { AlertTheme } from '../../Alert/Alert';
 import ToastProvider, { useToast } from '../ToastProvider';
 
+const onDismiss = jest.fn();
 const TestComponent: FC = () => {
   const { add } = useToast();
-  const addAlert = (colour: AlertTheme) => {
+  const addAlert = (colour: AlertTheme, dismiss = false) => {
     add({
       colour,
       message: colour,
+      ...(dismiss
+        ? {
+            onDismiss,
+          }
+        : {}),
     });
   };
 
@@ -42,17 +48,30 @@ const TestComponent: FC = () => {
       >
         Success
       </button>
+      <button
+        type="button"
+        data-testid="onDismiss"
+        onClick={() => addAlert('success', true)}
+      >
+        On dismiss
+      </button>
     </>
   );
 };
 
 describe('ToastProvider', () => {
-  it('should display a danger toast', async () => {
-    const { findByRole, findByTestId } = render(
+  let component: RenderResult;
+
+  beforeEach(() => {
+    component = render(
       <ToastProvider>
         <TestComponent />
       </ToastProvider>,
     );
+  });
+
+  it('should display a danger toast', async () => {
+    const { findByRole, findByTestId } = component;
 
     const button = await findByTestId('danger');
 
@@ -64,11 +83,7 @@ describe('ToastProvider', () => {
   });
 
   it('should display a primary toast', async () => {
-    const { findByRole, findByTestId } = render(
-      <ToastProvider>
-        <TestComponent />
-      </ToastProvider>,
-    );
+    const { findByRole, findByTestId } = component;
 
     const button = await findByTestId('primary');
 
@@ -80,11 +95,7 @@ describe('ToastProvider', () => {
   });
 
   it('should display a secondary toast', async () => {
-    const { findByRole, findByTestId } = render(
-      <ToastProvider>
-        <TestComponent />
-      </ToastProvider>,
-    );
+    const { findByRole, findByTestId } = component;
 
     const button = await findByTestId('secondary');
 
@@ -96,11 +107,7 @@ describe('ToastProvider', () => {
   });
 
   it('should display a success toast', async () => {
-    const { findByRole, findByTestId } = render(
-      <ToastProvider>
-        <TestComponent />
-      </ToastProvider>,
-    );
+    const { findByRole, findByTestId } = component;
 
     const button = await findByTestId('success');
 
@@ -114,11 +121,7 @@ describe('ToastProvider', () => {
   it('should dismiss toast', async () => {
     jest.useFakeTimers();
 
-    const { findByTestId, queryByRole } = render(
-      <ToastProvider>
-        <TestComponent />
-      </ToastProvider>,
-    );
+    const { findByTestId, queryByRole } = component;
 
     const button = await findByTestId('success');
 
@@ -131,5 +134,21 @@ describe('ToastProvider', () => {
     const alert = queryByRole('alert');
 
     expect(alert).not.toBeInTheDocument();
+  });
+
+  it('should call the onDismiss callback', async () => {
+    jest.useFakeTimers();
+
+    const { findByTestId } = component;
+
+    const button = await findByTestId('onDismiss');
+
+    fireEvent.click(button);
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(onDismiss).toHaveBeenCalled();
   });
 });

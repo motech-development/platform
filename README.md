@@ -67,6 +67,13 @@ Google Analytics Web Vitals reporter
 Build the package by running `npm run build -- --scope=@motech-development/ga-web-vitals`\
 Test the package by running `npm test -- --scope=@motech-development/ga-web-vitals`
 
+### Query string hook
+
+A hook to access query strings
+
+Build the package by running `npm run build -- --scope=@motech-development/query-string-hook`\
+Test the package by running `npm test -- --scope=@motech-development/query-string-hook`
+
 ### Serverless outputs env
 
 Serverless plugin to take AWS outputs and write them into `.env` files

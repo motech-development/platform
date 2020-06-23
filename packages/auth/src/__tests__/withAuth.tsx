@@ -1,9 +1,12 @@
-import { render } from '@testing-library/react';
+import { ToastContext, ToastProvider } from '@motech-development/breeze-ui';
+import { act, render, wait } from '@testing-library/react';
 import React, { FC } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
 import withAuth from '../withAuth';
 
+const add = jest.fn(({ onDismiss }) => onDismiss());
+const remove = jest.fn();
 const TestComponent: FC = () => <div data-testid="content">Loaded</div>;
 const WrappedComponent = withAuth(TestComponent);
 
@@ -27,56 +30,131 @@ describe('withAuth', () => {
     };
   });
 
-  it('should show the loader when Auth0 is loading', () => {
-    isLoading = true;
+  describe('when loaded', () => {
+    beforeEach(() => {
+      isLoading = false;
+    });
 
-    const { container } = render(
-      <MemoryRouter>
-        <AuthProvider>
-          <AuthContext.Provider
-            value={{
-              getIdTokenClaims,
-              getTokenSilently,
-              isAuthenticated,
-              isLoading,
-              loginWithRedirect,
-              logout,
-              user,
-            }}
-          >
-            <WrappedComponent />
-          </AuthContext.Provider>
-        </AuthProvider>
-      </MemoryRouter>,
-    );
-    const loader = container.querySelector('circle');
+    it('should show component', async () => {
+      const { findByTestId } = render(
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthContext.Provider
+              value={{
+                getIdTokenClaims,
+                getTokenSilently,
+                isAuthenticated,
+                isLoading,
+                loginWithRedirect,
+                logout,
+                user,
+              }}
+            >
+              <ToastProvider>
+                <ToastContext.Provider
+                  value={{
+                    add,
+                    remove,
+                  }}
+                >
+                  <WrappedComponent />
+                </ToastContext.Provider>
+              </ToastProvider>
+            </AuthContext.Provider>
+          </AuthProvider>
+        </MemoryRouter>,
+      );
 
-    expect(loader).toBeInTheDocument();
+      await expect(findByTestId('content')).resolves.toBeInTheDocument();
+    });
+
+    it('should show a toast and log out if an error occurs', async () => {
+      render(
+        <MemoryRouter
+          initialEntries={['?error=Error&error_description=Message']}
+        >
+          <AuthProvider>
+            <AuthContext.Provider
+              value={{
+                getIdTokenClaims,
+                getTokenSilently,
+                isAuthenticated,
+                isLoading,
+                loginWithRedirect,
+                logout,
+                user,
+              }}
+            >
+              <ToastProvider>
+                <ToastContext.Provider
+                  value={{
+                    add,
+                    remove,
+                  }}
+                >
+                  <WrappedComponent />
+                </ToastContext.Provider>
+              </ToastProvider>
+            </AuthContext.Provider>
+          </AuthProvider>
+        </MemoryRouter>,
+      );
+
+      jest.useFakeTimers();
+
+      act(() => {
+        jest.runAllTimers();
+      });
+
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'Message',
+          onDismiss: expect.any(Function),
+        }),
+      );
+
+      expect(logout).toHaveBeenCalledWith({
+        returnTo: window.location.origin,
+      });
+    });
   });
 
-  it('should show component when Auth0 has loaded', async () => {
-    isLoading = false;
+  describe('when not loaded', () => {
+    it('should show the loader', () => {
+      isLoading = true;
 
-    const { findByTestId } = render(
-      <MemoryRouter>
-        <AuthProvider>
-          <AuthContext.Provider
-            value={{
-              getIdTokenClaims,
-              getTokenSilently,
-              isAuthenticated,
-              isLoading,
-              loginWithRedirect,
-              logout,
-              user,
-            }}
-          >
-            <WrappedComponent />
-          </AuthContext.Provider>
-        </AuthProvider>
-      </MemoryRouter>,
-    );
+      const { container } = render(
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthContext.Provider
+              value={{
+                getIdTokenClaims,
+                getTokenSilently,
+                isAuthenticated,
+                isLoading,
+                loginWithRedirect,
+                logout,
+                user,
+              }}
+            >
+              <ToastProvider>
+                <ToastContext.Provider
+                  value={{
+                    add,
+                    remove,
+                  }}
+                >
+                  <WrappedComponent />
+                </ToastContext.Provider>
+              </ToastProvider>
+            </AuthContext.Provider>
+          </AuthProvider>
+        </MemoryRouter>,
+      );
+      const loader = container.querySelector('circle');
 
-    await expect(findByTestId('content')).resolves.toBeInTheDocument();
+      expect(loader).toBeInTheDocument();
+    });
   });
 });

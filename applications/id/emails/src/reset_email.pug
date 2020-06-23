@@ -1,0 +1,28 @@
+extends layout.pug
+
+block content
+  table
+    tr
+      td(class="typography")
+        | {% if user.given_name %}
+        |   Hi {{ user.given_name }},
+        | {% else %}
+        |   Hi {{ user.user_metadata.given_name }},
+        | {% endif %}
+    tr
+      td(class="typography") You have submitted a password change request.
+    tr
+      td(class="typography") If it wasn't you please disregard this email and make sure you can still login to your account.
+    tr
+      td(class="typography--lg-spacing") If it was you, then please click the button below:
+    tr
+      td(class="typography--lg-spacing")
+        table
+          tr
+            td(bgcolor="#007FA8" class="button")
+              a(href="{{ url }}" class="button__link fallback-text") Reset my password
+    tr
+      td(class="typography") Or copy the link below into your browser:
+    tr
+      td(class="typography--no-spacing")
+        a(href="{{ url }}" class="link") {{ url }}

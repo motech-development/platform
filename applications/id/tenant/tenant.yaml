@@ -1,12 +1,28 @@
-rules: []
+rules:
+  - name: Force email verification
+    script: ./src/rules/force-email-verification.js
+    stage: login_success
+    enabled: true
+    order: 1
+  - name: Set name
+    script: ./src/rules/set-name.js
+    stage: login_success
+    enabled: true
+    order: 2
 rulesConfigs: []
-hooks: []
+hooks:
+  - name: set-email-verification-sent-date
+    script: ./src/hooks/set-email-verification-sent-date.js
+    dependencies: {}
+    enabled: true
+    secrets: {}
+    triggerId: pre-user-registration
 pages:
   - name: login
-    html: build/login/index.html
+    html: ../client/build/login/index.html
     enabled: true
   - name: password_reset
-    html: build/lo/reset/index.html
+    html: ../client/build/lo/reset/index.html
     enabled: true
 resourceServers:
   - name: Accounts API
@@ -190,27 +206,27 @@ emailProvider:
   enabled: true
 emailTemplates:
   - template: blocked_account
-    body: ./emailTemplates/blocked_account.html
+    body: ../emails/build/blocked_account.html
     enabled: true
     from: ''
     subject: ''
     syntax: liquid
     urlLifetimeInSeconds: 432000
   - template: reset_email
-    body: ./emailTemplates/reset_email.html
+    body: ../emails/build/reset_email.html
     enabled: true
     from: ''
     subject: ''
     syntax: liquid
     urlLifetimeInSeconds: 432000
   - template: stolen_credentials
-    body: ./emailTemplates/stolen_credentials.html
+    body: ../emails/build/stolen_credentials.html
     enabled: true
     from: ''
     subject: ''
     syntax: liquid
   - template: verify_email
-    body: ./emailTemplates/verify_email.html
+    body: ../emails/build/verify_email.html
     enabled: true
     from: ''
     subject: ''

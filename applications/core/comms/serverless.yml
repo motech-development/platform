@@ -32,6 +32,7 @@ resources:
       Type: Custom::VerifyDomain
       Properties:
         ServiceToken: !GetAtt VerifyDomainLambdaFunction.Arn
+        DMARC: 'v=DMARC1; p=none; pct=100; sp=none; aspf=r;'
         Domain: ${self:custom.domainName}
         Region: eu-west-1
         TTL: 1800

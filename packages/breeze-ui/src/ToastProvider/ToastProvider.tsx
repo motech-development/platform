@@ -27,6 +27,7 @@ const ToastContainer = styled.div`
 interface IAddToast {
   colour: AlertTheme;
   message: string;
+  onDismiss?(): void;
 }
 
 interface IToast extends IAddToast {
@@ -72,7 +73,7 @@ export interface IToastProviderProps {
 const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
   const output = document.createElement('div');
   const [toasts, setToasts] = useState<IToast[]>([]);
-  const add = ({ colour, message }: IAddToast) => {
+  const add = ({ colour, message, onDismiss }: IAddToast) => {
     const id = generateId();
 
     setToasts([
@@ -81,10 +82,20 @@ const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
         colour,
         id,
         message,
+        onDismiss,
       },
     ]);
   };
-  const remove = (id: string) => setToasts(toasts.filter(t => t.id !== id));
+  const remove = (id: string) =>
+    setToasts(
+      toasts.filter(t => {
+        if (t.id === id && t.onDismiss) {
+          t.onDismiss();
+        }
+
+        return t.id !== id;
+      }),
+    );
   const alerts = toasts.length > 0 && (
     <ToastContainer>
       {toasts.map(({ colour, id, message }) => (
