@@ -84,7 +84,6 @@ describe('set-name', () => {
           family_name: 'User',
           given_name: 'Test',
           name: 'Test User',
-          user_id: 'user-id',
           user_metadata: {
             anotherRandomField: 'Hello world',
           },

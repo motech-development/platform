@@ -11,7 +11,9 @@ async function setName(user, context, callback) {
     user.user_metadata.given_name
   ) {
     const updated = {
-      ...user,
+      user_metadata: {
+        ...user.user_metadata,
+      },
     };
     const {
       family_name: familyName,
@@ -33,7 +35,12 @@ async function setName(user, context, callback) {
         updated,
       );
 
-      return callback(null, updated, context);
+      const mergedUser = {
+        ...user,
+        ...updated,
+      };
+
+      return callback(null, mergedUser, context);
     } catch (e) {
       callback(e);
     }
