@@ -86,6 +86,10 @@ describe('ViewTransaction', () => {
                   status: 'pending',
                   vat: 166.66,
                 },
+                getTypeahead: {
+                  descriptions: ['Test description 1', 'Test description 2'],
+                  suppliers: ['Test suppliers 1', 'Test suppliers 2'],
+                },
               },
             },
           },
@@ -363,6 +367,10 @@ describe('ViewTransaction', () => {
                   status: 'confirmed',
                   vat: 166.66,
                 },
+                getTypeahead: {
+                  descriptions: ['Test description 1', 'Test description 2'],
+                  suppliers: ['Test suppliers 1', 'Test suppliers 2'],
+                },
               },
             },
           },
@@ -610,6 +618,10 @@ describe('ViewTransaction', () => {
                 name: 'Motech Development',
                 status: 'confirmed',
                 vat: 200,
+              },
+              getTypeahead: {
+                descriptions: ['Test description 1', 'Test description 2'],
+                suppliers: ['Test suppliers 1', 'Test suppliers 2'],
               },
             },
           },

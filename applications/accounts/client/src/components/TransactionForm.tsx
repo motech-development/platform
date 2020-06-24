@@ -9,6 +9,7 @@ import {
   Row,
   Select,
   TextBox,
+  Typeahead,
   Typography,
 } from '@motech-development/breeze-ui';
 import { FormikProps, FormikValues, getIn } from 'formik';
@@ -49,8 +50,10 @@ export interface ITransactionForm {
   categories: ISelectOption[];
   clients: ISelectOption[];
   companyId: string;
+  descriptions: string[];
   initialValues?: FormSchema;
   loading: boolean;
+  suppliers: string[];
   uploader: ReactNode;
   vat: number;
   onSave(value: FormSchema): void;
@@ -67,12 +70,14 @@ const TransactionForm: FC<ITransactionForm> = ({
   categories,
   clients,
   companyId,
+  descriptions,
   initialValues = {
     ...formSchema,
     companyId,
   },
   loading,
   onSave,
+  suppliers,
   uploader,
   vat,
 }) => {
@@ -257,17 +262,25 @@ const TransactionForm: FC<ITransactionForm> = ({
                     )}
                   />
                 ) : (
-                  <TextBox
+                  <Typeahead
                     label={t('transaction-form.transaction-details.name.label')}
                     name="name"
+                    suggestions={suppliers.map(supplier => ({
+                      name: supplier,
+                      value: supplier,
+                    }))}
                   />
                 )}
 
-                <TextBox
+                <Typeahead
                   label={t(
                     'transaction-form.transaction-details.description.label',
                   )}
                   name="description"
+                  suggestions={descriptions.map(description => ({
+                    name: description,
+                    value: description,
+                  }))}
                 />
 
                 <DatePicker

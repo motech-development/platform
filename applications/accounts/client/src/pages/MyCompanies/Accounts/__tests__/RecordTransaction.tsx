@@ -123,6 +123,11 @@ describe('RecordTransaction', () => {
                   pay: 20,
                 },
               },
+              getTypeahead: {
+                __typename: 'Typeahead',
+                descriptions: ['Test description 1', 'Test description 2'],
+                suppliers: ['Test suppliers 1', 'Test suppliers 2'],
+              },
             },
           },
         },
@@ -561,6 +566,11 @@ describe('RecordTransaction', () => {
                   __typename: 'VatSettings',
                   pay: 20,
                 },
+              },
+              getTypeahead: {
+                __typename: 'Typeahead',
+                descriptions: ['Test description 1', 'Test description 2'],
+                suppliers: ['Test suppliers 1', 'Test suppliers 2'],
               },
             },
           },

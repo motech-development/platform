@@ -36,6 +36,10 @@ interface IRecordTransactionOutput {
       pay: number;
     };
   };
+  getTypeahead: {
+    descriptions: string[];
+    suppliers: string[];
+  };
 }
 
 export const RECORD_TRANSACTION = gql`
@@ -55,6 +59,10 @@ export const RECORD_TRANSACTION = gql`
       vat {
         pay
       }
+    }
+    getTypeahead(id: $id) {
+      descriptions
+      suppliers
     }
   }
 `;
@@ -139,7 +147,9 @@ const RecordTransaction: FC = () => {
               value: name,
             }))}
             companyId={companyId}
+            descriptions={data.getTypeahead.descriptions}
             loading={addLoading}
+            suppliers={data.getTypeahead.suppliers}
             uploader={
               <UploadAttachment
                 id={companyId}
