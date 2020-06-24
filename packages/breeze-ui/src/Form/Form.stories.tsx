@@ -11,6 +11,7 @@ import DatePicker from '../DatePicker/DatePicker';
 import FileUpload from '../FileUpload/FileUpload';
 import Row from '../Row/Row';
 import TextBox from '../TextBox/TextBox';
+import Typeahead from '../Typeahead/Typeahead';
 import Radio from '../Radio/Radio';
 import Select from '../Select/Select';
 import Form from './Form';
@@ -27,6 +28,7 @@ const initialValues = {
   },
   name: 'Mo Gusbi',
   password: '',
+  typeahead: '',
   upload: '',
 };
 const validationSchema = object()
@@ -43,6 +45,7 @@ const validationSchema = object()
     }),
     name: string().required(),
     password: string().required(),
+    typeahead: string().required(),
     upload: string().required(),
   })
   .required();
@@ -81,6 +84,15 @@ stories.add('Basic form', () => (
               </Button>
             }
           >
+            <Typeahead
+              disabled={disabled()}
+              readOnly={readOnly()}
+              name="typeahead"
+              label="Typeahead"
+              placeholder="Begin typing something..."
+              suggestions={['ABC', 'DEF', '123']}
+            />
+
             <TextBox
               disabled={disabled()}
               readOnly={readOnly()}
