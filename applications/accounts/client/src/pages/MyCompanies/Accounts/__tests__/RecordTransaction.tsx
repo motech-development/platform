@@ -15,6 +15,7 @@ import axios from 'axios';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { advanceTo, clear } from 'jest-date-mock';
 import React from 'react';
+import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
 import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
@@ -95,6 +96,63 @@ describe('RecordTransaction', () => {
   describe('purchase', () => {
     beforeEach(async () => {
       mocks = [
+        {
+          request: {
+            query: GET_BALANCE,
+            variables: {
+              id: 'company-id',
+            },
+          },
+          result: {
+            data: {
+              getBalance: {
+                __typename: 'Balance',
+                balance: 180,
+                currency: 'GBP',
+                id: 'company-id',
+                transactions: [
+                  {
+                    __typename: 'BalanceTransaction',
+                    balance: 180,
+                    currency: 'GBP',
+                    date: '2020-04-15T14:07:18Z',
+                    items: [
+                      {
+                        __typename: 'Transaction',
+                        amount: -20,
+                        attachment: '',
+                        description: 'Lunch',
+                        id: 'transaction-2',
+                        name: 'KFC',
+                      },
+                    ],
+                  },
+                  {
+                    __typename: 'BalanceTransaction',
+                    balance: 200,
+                    currency: 'GBP',
+                    date: '2020-04-13T14:07:18Z',
+                    items: [
+                      {
+                        __typename: 'Transaction',
+                        amount: 200,
+                        attachment: '',
+                        description: 'Invoice #1',
+                        id: 'transaction-1',
+                        name: 'Client',
+                      },
+                    ],
+                  },
+                ],
+                vat: {
+                  __typename: 'BalanceVat',
+                  owed: 100,
+                  paid: 99.9,
+                },
+              },
+            },
+          },
+        },
         {
           request: {
             query: RECORD_TRANSACTION,
@@ -533,6 +591,63 @@ describe('RecordTransaction', () => {
   describe('sale', () => {
     beforeEach(async () => {
       mocks = [
+        {
+          request: {
+            query: GET_BALANCE,
+            variables: {
+              id: 'company-id',
+            },
+          },
+          result: {
+            data: {
+              getBalance: {
+                __typename: 'Balance',
+                balance: 180,
+                currency: 'GBP',
+                id: 'company-id',
+                transactions: [
+                  {
+                    __typename: 'BalanceTransaction',
+                    balance: 180,
+                    currency: 'GBP',
+                    date: '2020-04-15T14:07:18Z',
+                    items: [
+                      {
+                        __typename: 'Transaction',
+                        amount: -20,
+                        attachment: '',
+                        description: 'Lunch',
+                        id: 'transaction-2',
+                        name: 'KFC',
+                      },
+                    ],
+                  },
+                  {
+                    __typename: 'BalanceTransaction',
+                    balance: 200,
+                    currency: 'GBP',
+                    date: '2020-04-13T14:07:18Z',
+                    items: [
+                      {
+                        __typename: 'Transaction',
+                        amount: 200,
+                        attachment: '',
+                        description: 'Invoice #1',
+                        id: 'transaction-1',
+                        name: 'Client',
+                      },
+                    ],
+                  },
+                ],
+                vat: {
+                  __typename: 'BalanceVat',
+                  owed: 100,
+                  paid: 99.9,
+                },
+              },
+            },
+          },
+        },
         {
           request: {
             query: RECORD_TRANSACTION,

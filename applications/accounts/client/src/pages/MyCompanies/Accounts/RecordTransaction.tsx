@@ -8,6 +8,7 @@ import Connected from '../../../components/Connected';
 import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
+import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
 import ADD_TRANSACTION, {
   IAddTransactionInput,
   IAddTransactionOutput,
@@ -99,6 +100,7 @@ const RecordTransaction: FC = () => {
     IAddTransactionOutput,
     IAddTransactionInput
   >(ADD_TRANSACTION, {
+    awaitRefetchQueries: true,
     onCompleted: ({ addTransaction }) => {
       add({
         colour: 'success',
@@ -107,6 +109,14 @@ const RecordTransaction: FC = () => {
 
       history.push(backTo(addTransaction.companyId, addTransaction.status));
     },
+    refetchQueries: () => [
+      {
+        query: GET_BALANCE,
+        variables: {
+          id: companyId,
+        },
+      },
+    ],
   });
   const save = async (input: FormSchema) => {
     await mutation({

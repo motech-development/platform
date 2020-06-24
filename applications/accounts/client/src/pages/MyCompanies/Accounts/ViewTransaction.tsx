@@ -15,6 +15,7 @@ import DeleteItem from '../../../components/DeleteItem';
 import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
+import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION, {
   IDeleteTransactionInput,
   IDeleteTransactionOutput,
@@ -144,6 +145,7 @@ const ViewTransaction: FC = () => {
   ] = useMutation<IUpdateTransactionOutput, IUpdateTransactionInput>(
     UPDATE_TRANSACTION,
     {
+      awaitRefetchQueries: true,
       onCompleted: ({ updateTransaction }) => {
         add({
           colour: 'success',
@@ -154,12 +156,21 @@ const ViewTransaction: FC = () => {
           backTo(updateTransaction.companyId, updateTransaction.status),
         );
       },
+      refetchQueries: () => [
+        {
+          query: GET_BALANCE,
+          variables: {
+            id: companyId,
+          },
+        },
+      ],
     },
   );
   const [deleteMutation, { loading: deleteLoading }] = useMutation<
     IDeleteTransactionOutput,
     IDeleteTransactionInput
   >(DELETE_TRANSACTION, {
+    awaitRefetchQueries: true,
     onCompleted: ({ deleteTransaction }) => {
       add({
         colour: 'success',
@@ -176,6 +187,14 @@ const ViewTransaction: FC = () => {
         message: t('delete-transaction.error'),
       });
     },
+    refetchQueries: () => [
+      {
+        query: GET_BALANCE,
+        variables: {
+          id: companyId,
+        },
+      },
+    ],
   });
   const launchDeleteModal = () => {
     setModal(true);
