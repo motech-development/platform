@@ -90,7 +90,20 @@ stories.add('Basic form', () => (
               name="typeahead"
               label="Typeahead"
               placeholder="Begin typing something..."
-              suggestions={['ABC', 'DEF', '123']}
+              suggestions={[
+                {
+                  name: 'ABC',
+                  value: 'ABC',
+                },
+                {
+                  name: 'DEF',
+                  value: 'DEF',
+                },
+                {
+                  name: '123 (sets XYZ)',
+                  value: 'XYZ',
+                },
+              ]}
             />
 
             <TextBox

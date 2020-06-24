@@ -41,6 +41,11 @@ export {
 } from './ToastProvider/ToastProvider';
 export { default as Tooltip } from './Tooltip/Tooltip';
 export {
+  default as Typeahead,
+  ITypeaheadProps,
+  ITypeaheadSuggestion,
+} from './Typeahead/Typeahead';
+export {
   default as Typography,
   ITypographyProps,
 } from './Typography/Typography';

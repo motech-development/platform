@@ -21,9 +21,14 @@ const Suggestion = styled(Button)`
   text-align: left;
 `;
 
+export interface ITypeaheadSuggestion {
+  name: string;
+  value: string;
+}
+
 export interface ITypeaheadProps
   extends Omit<ITextBoxProps, 'type' | 'onChange'> {
-  suggestions: string[];
+  suggestions: ITypeaheadSuggestion[];
 }
 
 const Typeahead: FC<ITypeaheadProps> = ({ suggestions, ...rest }) => {
@@ -64,7 +69,7 @@ const Typeahead: FC<ITypeaheadProps> = ({ suggestions, ...rest }) => {
 
           const input = e.currentTarget.value;
           const filter = suggestions.filter(
-            suggestion =>
+            ({ name: suggestion }) =>
               suggestion.toLowerCase().indexOf(input.toLowerCase()) > -1,
           );
 
@@ -87,13 +92,13 @@ const Typeahead: FC<ITypeaheadProps> = ({ suggestions, ...rest }) => {
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...attributes.popper}
         >
-          {filteredSuggestions.map(suggestion => (
+          {filteredSuggestions.map(({ name: suggestion, value }) => (
             <Suggestion
               block
-              key={suggestion}
+              key={value}
               colour="secondary"
               size="sm"
-              onClick={() => setValue(suggestion)}
+              onClick={() => setValue(value)}
             >
               {suggestion}
             </Suggestion>
