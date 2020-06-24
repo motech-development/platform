@@ -160,6 +160,102 @@ describe('Typeahead', () => {
     });
   });
 
+  it('should be able to change the value after one has been set', async () => {
+    const { findAllByRole, findByPlaceholderText } = component;
+
+    await act(async () => {
+      const input = await findByPlaceholderText('Test');
+
+      fireEvent.change(input, {
+        target: {
+          focus: () => {},
+          value: 'Opt',
+        },
+      });
+
+      const [option, submit] = await findAllByRole('button');
+
+      fireEvent.click(option);
+
+      await wait();
+
+      fireEvent.click(submit);
+    });
+
+    await act(async () => {
+      const input = await findByPlaceholderText('Test');
+
+      fireEvent.change(input, {
+        target: {
+          focus: () => {},
+          value: 'Ran',
+        },
+      });
+
+      const [option, submit] = await findAllByRole('button');
+
+      fireEvent.click(option);
+
+      await wait();
+
+      fireEvent.click(submit);
+    });
+
+    expect(onSubmit).toHaveBeenCalledWith({
+      test: 'Result!',
+    });
+  });
+
+  it('should hide the suggestions if the user clicks elsewhere', async () => {
+    const { container, findAllByRole, findByPlaceholderText } = component;
+
+    await act(async () => {
+      const input = await findByPlaceholderText('Test');
+      const body = container.firstChild as ChildNode;
+
+      fireEvent.change(input, {
+        target: {
+          focus: () => {},
+          value: 'Opt',
+        },
+      });
+
+      await wait();
+
+      fireEvent.mouseDown(body);
+    });
+
+    await expect(findAllByRole('button')).resolves.toHaveLength(1);
+  });
+
+  it('should hide the suggestions if no value is set', async () => {
+    const { findAllByRole, findByPlaceholderText } = component;
+
+    await act(async () => {
+      const input = await findByPlaceholderText('Test');
+
+      fireEvent.change(input, {
+        target: {
+          focus: () => {},
+          value: 'Opt',
+        },
+      });
+
+      await wait();
+
+      fireEvent.change(input, {
+        target: {
+          focus: () => {},
+          value: '',
+        },
+      });
+
+      await wait();
+    });
+
+    await expect(findAllByRole('button')).resolves.toHaveLength(1);
+  });
+
   it('should set a custom value', async () => {
     const { findByPlaceholderText, findByRole } = component;
 

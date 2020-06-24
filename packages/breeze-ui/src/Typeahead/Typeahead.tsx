@@ -47,9 +47,7 @@ const Typeahead: FC<ITypeaheadProps> = ({ suggestions, ...rest }) => {
     placement: 'bottom',
   });
   const setValue = (value: string) => {
-    if (form) {
-      form.setFieldValue(name, value);
-    }
+    form!.setFieldValue(name, value);
 
     setVisible(false);
   };
