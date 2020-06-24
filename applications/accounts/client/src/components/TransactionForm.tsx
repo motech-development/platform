@@ -50,10 +50,10 @@ export interface ITransactionForm {
   categories: ISelectOption[];
   clients: ISelectOption[];
   companyId: string;
-  descriptions: string[];
+  descriptions: string[] | null;
   initialValues?: FormSchema;
   loading: boolean;
-  suppliers: string[];
+  suppliers: string[] | null;
   uploader: ReactNode;
   vat: number;
   onSave(value: FormSchema): void;
@@ -100,7 +100,6 @@ const TransactionForm: FC<ITransactionForm> = ({
           transaction: initialTransaction,
         }),
   };
-
   const [transactionType, setTransactionType] = useState(
     formValues.transaction,
   );
@@ -166,6 +165,10 @@ const TransactionForm: FC<ITransactionForm> = ({
       value: 'pending',
     },
   ];
+  const typeahead = {
+    descriptions: descriptions === null ? [] : descriptions,
+    suppliers: suppliers === null ? [] : suppliers,
+  };
   const onTransactionTypeChange = (
     event: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
@@ -265,7 +268,7 @@ const TransactionForm: FC<ITransactionForm> = ({
                   <Typeahead
                     label={t('transaction-form.transaction-details.name.label')}
                     name="name"
-                    suggestions={suppliers.map(supplier => ({
+                    suggestions={typeahead.suppliers.map(supplier => ({
                       name: supplier,
                       value: supplier,
                     }))}
@@ -277,7 +280,7 @@ const TransactionForm: FC<ITransactionForm> = ({
                     'transaction-form.transaction-details.description.label',
                   )}
                   name="description"
-                  suggestions={descriptions.map(description => ({
+                  suggestions={typeahead.descriptions.map(description => ({
                     name: description,
                     value: description,
                   }))}
