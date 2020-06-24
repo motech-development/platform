@@ -4,6 +4,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import deleteAttachments from './handlers/delete-attachments';
 import removeTransactions from './handlers/remove-transactions';
 import insertTransactions from './handlers/insert-transactions';
+import typeahead from './handlers/typeahead';
 import updateTransactions from './handlers/update-transactions';
 
 const documentClient = new DocumentClient();
@@ -35,6 +36,7 @@ export const handler: DynamoDBStreamHandler = async event => {
       ...insertTransactions(documentClient, TABLE, inserts),
       ...updateTransactions(documentClient, TABLE, updates),
       ...removeTransactions(documentClient, TABLE, removals),
+      ...typeahead(documentClient, TABLE, inserts),
       deleteAttachments(sqs, ATTACHMENT_QUEUE, removals),
     ]);
   } catch (e) {

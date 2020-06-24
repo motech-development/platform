@@ -14,7 +14,9 @@ export interface ITransaction {
   category: string;
   companyId: string;
   date: string;
+  description: string;
   id: string;
+  name: string;
   owner: string;
   status: TransactionStatus;
   vat: number;
