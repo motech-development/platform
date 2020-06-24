@@ -97,7 +97,7 @@ export const VIEW_TRANSACTION = gql`
       status
       vat
     }
-    getTypeahead(id: $id) {
+    getTypeahead(id: $companyId) {
       descriptions
       suppliers
     }
