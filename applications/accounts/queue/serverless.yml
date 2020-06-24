@@ -118,7 +118,7 @@ stepFunctions:
 
               - StartAt: DeleteTypeahead
                 States:
-                  DeleteSettings:
+                  DeleteTypeahead:
                     Type: Task
                     Resource: !GetAtt DeleteTypeaheadLambdaFunction.Arn
                     End: true
