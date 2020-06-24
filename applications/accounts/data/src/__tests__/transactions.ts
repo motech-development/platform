@@ -103,6 +103,12 @@ describe('transactions', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  description: {
+                    S: 'Description 1',
+                  },
+                  name: {
+                    S: 'Transaction 1',
+                  },
                   owner: {
                     S: 'owner',
                   },
@@ -131,6 +137,12 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  description: {
+                    S: 'Description 1',
+                  },
+                  name: {
+                    S: 'Transaction 1',
                   },
                   owner: {
                     S: 'owner',
@@ -166,6 +178,12 @@ describe('transactions', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  description: {
+                    S: 'Description 2',
+                  },
+                  name: {
+                    S: 'Transaction 2',
+                  },
                   owner: {
                     S: 'owner',
                   },
@@ -194,6 +212,12 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  description: {
+                    S: 'Description 2',
+                  },
+                  name: {
+                    S: 'Transaction 2',
                   },
                   owner: {
                     S: 'owner',
@@ -229,6 +253,12 @@ describe('transactions', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  description: {
+                    S: 'Description 3',
+                  },
+                  name: {
+                    S: 'Transaction 3',
+                  },
                   owner: {
                     S: 'owner',
                   },
@@ -258,6 +288,12 @@ describe('transactions', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  description: {
+                    S: 'Description 3',
+                  },
+                  name: {
+                    S: 'Transaction 3',
+                  },
                   owner: {
                     S: 'owner',
                   },
@@ -276,7 +312,7 @@ describe('transactions', () => {
 
         await handler(event, context, callback);
 
-        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(3);
+        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(4);
         expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledTimes(1);
       });
     });
@@ -313,6 +349,12 @@ describe('transactions', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  description: {
+                    S: 'Description 1',
+                  },
+                  name: {
+                    S: 'Transaction 1',
+                  },
                   owner: {
                     S: 'owner',
                   },
@@ -338,6 +380,12 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  description: {
+                    S: 'Description 1',
+                  },
+                  name: {
+                    S: 'Transaction 1',
                   },
                   owner: {
                     S: 'owner',
@@ -370,6 +418,12 @@ describe('transactions', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  description: {
+                    S: 'Description 2',
+                  },
+                  name: {
+                    S: 'Transaction 2',
+                  },
                   owner: {
                     S: 'owner',
                   },
@@ -395,6 +449,12 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  description: {
+                    S: 'Description 2',
+                  },
+                  name: {
+                    S: 'Transaction 2',
                   },
                   owner: {
                     S: 'owner',
@@ -427,6 +487,12 @@ describe('transactions', () => {
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
                   },
+                  description: {
+                    S: 'Description 3',
+                  },
+                  name: {
+                    S: 'Transaction 3',
+                  },
                   owner: {
                     S: 'owner',
                   },
@@ -452,6 +518,12 @@ describe('transactions', () => {
                   },
                   date: {
                     S: '2019-12-15T00:00:00.000Z',
+                  },
+                  description: {
+                    S: 'Description 3',
+                  },
+                  name: {
+                    S: 'Transaction 3',
                   },
                   owner: {
                     S: 'owner',

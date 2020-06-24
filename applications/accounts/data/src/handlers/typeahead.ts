@@ -3,7 +3,6 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { TransactionStatus } from '../shared/transaction';
 import { unmarshallNewRecords } from '../shared/unmarshall-records';
 
-// groupsCanAccess
 const typeahead = (
   documentClient: DocumentClient,
   tableName: string,
