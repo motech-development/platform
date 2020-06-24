@@ -37,6 +37,7 @@ export const handler: DynamoDBStreamHandler = async event => {
       ...updateTransactions(documentClient, TABLE, updates),
       ...removeTransactions(documentClient, TABLE, removals),
       ...typeahead(documentClient, TABLE, inserts),
+      ...typeahead(documentClient, TABLE, updates),
       deleteAttachments(sqs, ATTACHMENT_QUEUE, removals),
     ]);
   } catch (e) {
