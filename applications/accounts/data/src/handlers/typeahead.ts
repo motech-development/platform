@@ -3,6 +3,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { TransactionStatus } from '../shared/transaction';
 import { unmarshallNewRecords } from '../shared/unmarshall-records';
 
+// groupsCanAccess
 const typeahead = (
   documentClient: DocumentClient,
   tableName: string,
@@ -23,13 +24,17 @@ const typeahead = (
             '#createdAt': 'createdAt',
             '#data': 'data',
             '#descriptions': 'descriptions',
+            '#groupsCanAccess': 'groupsCanAccess',
+            '#owner': 'owner',
             '#suppliers': 'suppliers',
             '#updatedAt': 'updatedAt',
           },
           ExpressionAttributeValues: {
             ':data': `${NewImage.owner}:${NewImage.companyId}:Typeahead`,
             ':descriptions': documentClient.createSet([NewImage.description]),
+            ':groupsCanAccess': ['Admin'],
             ':now': now.toISOString(),
+            ':owner': NewImage.owner,
             ':suppliers': documentClient.createSet([NewImage.name]),
           },
           Key: {
@@ -38,7 +43,7 @@ const typeahead = (
           },
           TableName: tableName,
           UpdateExpression:
-            'ADD #descriptions :descriptions, #suppliers :suppliers SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #updatedAt = :now',
+            'ADD #descriptions :descriptions, #suppliers :suppliers SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
         })
         .promise(),
     );

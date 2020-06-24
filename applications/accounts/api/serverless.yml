@@ -237,6 +237,12 @@ custom:
             - requestUpload
           request: storage/requestUpload/Mutation.requestUpload.req.vtl
           response: storage/requestUpload/Mutation.requestUpload.res.vtl
+
+        - dataSource: Data
+          type: Query
+          field: getTypeahead
+          request: typeahead/getTypeahead/Query.getTypeahead.req.vtl
+          response: typeahead/getTypeahead/Query.getTypeahead.res.vtl
       schema:
         - schema/address.graphql
         - schema/balance.graphql
@@ -249,6 +255,7 @@ custom:
         - schema/settings.graphql
         - schema/storage.graphql
         - schema/transaction.graphql
+        - schema/typeahead.graphql
         - schema/vat-settings.graphql
       functionConfigurations:
         # Validation

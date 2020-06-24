@@ -1,0 +1,4 @@
+type Typeahead {
+  descriptions: [String]
+  suppliers: [String]
+}

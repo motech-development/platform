@@ -38,6 +38,7 @@
 #set($company = $ctx.args.input.company)
 #set($companyData = "$owner:$company.name")
 #set($settingsData = "$owner:$id:Settings")
+#set($typeaheadData = "$owner:$id:Typeahead")
 #set($vat = $ctx.args.input.vat)
 #set($yearEnd = $ctx.args.input.yearEnd)
 #set($input = $company.put("address", $ctx.stash.address))
@@ -126,6 +127,23 @@
           "categories": $util.dynamodb.toDynamoDBJson($categories),
           "vat": $util.dynamodb.toDynamoDBJson($vat),
           "yearEnd": $util.dynamodb.toDynamoDBJson($yearEnd)
+        },
+        "condition": {
+          "expression": "attribute_not_exists(id)"
+        }
+      },
+      {
+       "table": $util.toJson($table),
+        "operation": "PutItem",
+        "key" : {
+          "id": $util.dynamodb.toDynamoDBJson($id),
+          "__typename": $util.dynamodb.toDynamoDBJson("Typeahead")
+        },
+        "attributeValues": {
+          "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
+          "data": $util.dynamodb.toDynamoDBJson($typeaheadData),
+          "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
+          "owner": $util.dynamodb.toDynamoDBJson($owner)
         },
         "condition": {
           "expression": "attribute_not_exists(id)"
