@@ -63,6 +63,7 @@ export const RECORD_TRANSACTION = gql`
     }
     getTypeahead(id: $id) {
       descriptions
+      id
       suppliers
     }
   }

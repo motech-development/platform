@@ -184,6 +184,7 @@ describe('RecordTransaction', () => {
               getTypeahead: {
                 __typename: 'Typeahead',
                 descriptions: ['Test description 1', 'Test description 2'],
+                id: 'company-id',
                 suppliers: ['Test suppliers 1', 'Test suppliers 2'],
               },
             },
@@ -685,6 +686,7 @@ describe('RecordTransaction', () => {
               getTypeahead: {
                 __typename: 'Typeahead',
                 descriptions: null,
+                id: 'company-id',
                 suppliers: null,
               },
             },

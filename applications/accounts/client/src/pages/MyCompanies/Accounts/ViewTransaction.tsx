@@ -100,6 +100,7 @@ export const VIEW_TRANSACTION = gql`
     }
     getTypeahead(id: $companyId) {
       descriptions
+      id
       suppliers
     }
   }

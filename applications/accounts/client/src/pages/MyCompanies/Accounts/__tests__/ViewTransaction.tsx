@@ -140,6 +140,7 @@ describe('ViewTransaction', () => {
                 },
                 getTypeahead: {
                   descriptions: ['Test description 1', 'Test description 2'],
+                  id: 'company-id',
                   suppliers: ['Test suppliers 1', 'Test suppliers 2'],
                 },
               },
@@ -421,6 +422,7 @@ describe('ViewTransaction', () => {
                 },
                 getTypeahead: {
                   descriptions: ['Test description 1', 'Test description 2'],
+                  id: 'company-id',
                   suppliers: ['Test suppliers 1', 'Test suppliers 2'],
                 },
               },
@@ -724,6 +726,7 @@ describe('ViewTransaction', () => {
               },
               getTypeahead: {
                 descriptions: ['Test description 1', 'Test description 2'],
+                id: 'company-id',
                 suppliers: ['Test suppliers 1', 'Test suppliers 2'],
               },
             },

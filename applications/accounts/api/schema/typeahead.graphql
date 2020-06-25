@@ -1,4 +1,5 @@
 type Typeahead {
   descriptions: [String]
+  id: ID
   suppliers: [String]
 }
