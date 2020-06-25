@@ -61,7 +61,9 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
 
       if (cache) {
         cache.getTransactions.items = [
-          ...cache.getTransactions.items,
+          ...cache.getTransactions.items.filter(
+            ({ id }) => id !== updateTransaction.id,
+          ),
           updateTransaction,
         ].sort((a, b) => a.date.localeCompare(b.date));
 
