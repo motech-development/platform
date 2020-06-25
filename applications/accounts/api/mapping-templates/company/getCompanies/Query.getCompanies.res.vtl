@@ -3,6 +3,7 @@
 #end
 
 {
+  "id": $utils.toJson($ctx.identity.sub),
   "items": $utils.toJson($ctx.result.items)
   #if($ctx.result.nextToken)
     ,"nextToken": "$ctx.result.nextToken"

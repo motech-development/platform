@@ -51,6 +51,12 @@ functions:
     environment:
       TYPENAME: Settings
 
+  DeleteTypeahead:
+    handler: src/handlers/delete-record.handler
+    role: LambdaFunctionRole
+    environment:
+      TYPENAME: Typeahead
+
   DeleteClients:
     handler: src/handlers/delete-records.handler
     role: LambdaFunctionRole
@@ -108,6 +114,13 @@ stepFunctions:
                   DeleteSettings:
                     Type: Task
                     Resource: !GetAtt DeleteSettingsLambdaFunction.Arn
+                    End: true
+
+              - StartAt: DeleteTypeahead
+                States:
+                  DeleteTypeahead:
+                    Type: Task
+                    Resource: !GetAtt DeleteTypeaheadLambdaFunction.Arn
                     End: true
 
               - StartAt: UnlinkBank

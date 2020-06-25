@@ -14,6 +14,7 @@ import axios from 'axios';
 import { saveAs } from 'file-saver';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
+import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import UPDATE_TRANSACTION from '../../../../graphql/transaction/UPDATE_TRANSACTION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
@@ -47,6 +48,57 @@ describe('ViewTransaction', () => {
         mocks = [
           {
             request: {
+              query: GET_BALANCE,
+              variables: {
+                id: 'company-id',
+              },
+            },
+            result: {
+              data: {
+                getBalance: {
+                  balance: 180,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  transactions: [
+                    {
+                      balance: 180,
+                      currency: 'GBP',
+                      date: '2020-04-15T14:07:18+0000',
+                      items: [
+                        {
+                          amount: -20,
+                          attachment: '',
+                          description: 'Lunch',
+                          id: 'transaction-2',
+                          name: 'KFC',
+                        },
+                      ],
+                    },
+                    {
+                      balance: 200,
+                      currency: 'GBP',
+                      date: '2020-04-13T14:07:18+0000',
+                      items: [
+                        {
+                          amount: 200,
+                          attachment: '',
+                          description: 'Invoice #1',
+                          id: 'transaction-1',
+                          name: 'Client',
+                        },
+                      ],
+                    },
+                  ],
+                  vat: {
+                    owed: 100,
+                    paid: 99.9,
+                  },
+                },
+              },
+            },
+          },
+          {
+            request: {
               query: VIEW_TRANSACTION,
               variables: {
                 companyId: 'company-id',
@@ -56,6 +108,7 @@ describe('ViewTransaction', () => {
             result: {
               data: {
                 getClients: {
+                  id: 'company-id',
                   items: [],
                 },
                 getSettings: {
@@ -85,6 +138,12 @@ describe('ViewTransaction', () => {
                   name: 'Apple',
                   status: 'pending',
                   vat: 166.66,
+                },
+                getTypeahead: {
+                  id: 'company-id',
+                  purchases: ['Test purchase 1', 'Test purchase 2'],
+                  sales: ['Test sale 1', 'Test sale 2'],
+                  suppliers: ['Test suppliers 1', 'Test suppliers 2'],
                 },
               },
             },
@@ -333,6 +392,7 @@ describe('ViewTransaction', () => {
             result: {
               data: {
                 getClients: {
+                  id: 'company-id',
                   items: [],
                 },
                 getSettings: {
@@ -362,6 +422,12 @@ describe('ViewTransaction', () => {
                   name: 'Apple',
                   status: 'confirmed',
                   vat: 166.66,
+                },
+                getTypeahead: {
+                  id: 'company-id',
+                  purchases: ['Test purchase 1', 'Test purchase 2'],
+                  sales: ['Test sale 1', 'Test sale 2'],
+                  suppliers: ['Test suppliers 1', 'Test suppliers 2'],
                 },
               },
             },
@@ -567,6 +633,57 @@ describe('ViewTransaction', () => {
       mocks = [
         {
           request: {
+            query: GET_BALANCE,
+            variables: {
+              id: 'company-id',
+            },
+          },
+          result: {
+            data: {
+              getBalance: {
+                balance: 180,
+                currency: 'GBP',
+                id: 'company-id',
+                transactions: [
+                  {
+                    balance: 180,
+                    currency: 'GBP',
+                    date: '2020-04-15T14:07:18+0000',
+                    items: [
+                      {
+                        amount: -20,
+                        attachment: '',
+                        description: 'Lunch',
+                        id: 'transaction-2',
+                        name: 'KFC',
+                      },
+                    ],
+                  },
+                  {
+                    balance: 200,
+                    currency: 'GBP',
+                    date: '2020-04-13T14:07:18+0000',
+                    items: [
+                      {
+                        amount: 200,
+                        attachment: '',
+                        description: 'Invoice #1',
+                        id: 'transaction-1',
+                        name: 'Client',
+                      },
+                    ],
+                  },
+                ],
+                vat: {
+                  owed: 100,
+                  paid: 99.9,
+                },
+              },
+            },
+          },
+        },
+        {
+          request: {
             query: VIEW_TRANSACTION,
             variables: {
               companyId: 'company-id',
@@ -576,6 +693,7 @@ describe('ViewTransaction', () => {
           result: {
             data: {
               getClients: {
+                id: 'company-id',
                 items: [
                   {
                     id: 'client-id',
@@ -610,6 +728,12 @@ describe('ViewTransaction', () => {
                 name: 'Motech Development',
                 status: 'confirmed',
                 vat: 200,
+              },
+              getTypeahead: {
+                id: 'company-id',
+                purchases: ['Test purchase 1', 'Test purchase 2'],
+                sales: ['Test sale 1', 'Test sale 2'],
+                suppliers: ['Test suppliers 1', 'Test suppliers 2'],
               },
             },
           },

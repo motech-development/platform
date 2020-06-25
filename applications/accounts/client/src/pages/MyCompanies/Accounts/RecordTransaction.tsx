@@ -8,6 +8,7 @@ import Connected from '../../../components/Connected';
 import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
+import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
 import ADD_TRANSACTION, {
   IAddTransactionInput,
   IAddTransactionOutput,
@@ -36,11 +37,17 @@ interface IRecordTransactionOutput {
       pay: number;
     };
   };
+  getTypeahead: {
+    purchases: string[];
+    sales: string[];
+    suppliers: string[];
+  };
 }
 
 export const RECORD_TRANSACTION = gql`
   query RecordTransaction($id: ID!) {
     getClients(companyId: $id) {
+      id
       items {
         id
         name
@@ -55,6 +62,12 @@ export const RECORD_TRANSACTION = gql`
       vat {
         pay
       }
+    }
+    getTypeahead(id: $id) {
+      id
+      purchases
+      sales
+      suppliers
     }
   }
 `;
@@ -91,6 +104,7 @@ const RecordTransaction: FC = () => {
     IAddTransactionOutput,
     IAddTransactionInput
   >(ADD_TRANSACTION, {
+    awaitRefetchQueries: true,
     onCompleted: ({ addTransaction }) => {
       add({
         colour: 'success',
@@ -99,6 +113,14 @@ const RecordTransaction: FC = () => {
 
       history.push(backTo(addTransaction.companyId, addTransaction.status));
     },
+    refetchQueries: () => [
+      {
+        query: GET_BALANCE,
+        variables: {
+          id: companyId,
+        },
+      },
+    ],
   });
   const save = async (input: FormSchema) => {
     await mutation({
@@ -140,6 +162,9 @@ const RecordTransaction: FC = () => {
             }))}
             companyId={companyId}
             loading={addLoading}
+            purchases={data.getTypeahead.purchases}
+            sales={data.getTypeahead.sales}
+            suppliers={data.getTypeahead.suppliers}
             uploader={
               <UploadAttachment
                 id={companyId}

@@ -1,0 +1,6 @@
+type Typeahead {
+  id: ID
+  purchases: [String]
+  sales: [String]
+  suppliers: [String]
+}

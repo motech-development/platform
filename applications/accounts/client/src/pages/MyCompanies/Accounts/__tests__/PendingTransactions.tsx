@@ -46,6 +46,7 @@ describe('PendingTransactions', () => {
                 id: 'company-id',
               },
               getTransactions: {
+                id: 'company-id',
                 items: [
                   {
                     amount: -20,
@@ -224,6 +225,7 @@ describe('PendingTransactions', () => {
                 id: 'company-id',
               },
               getTransactions: {
+                id: 'company-id',
                 items: [
                   {
                     amount: -20,
@@ -330,6 +332,7 @@ describe('PendingTransactions', () => {
                 id: 'company-id',
               },
               getTransactions: {
+                id: 'company-id',
                 items: [],
               },
             },

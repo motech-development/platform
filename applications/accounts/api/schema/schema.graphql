@@ -34,6 +34,7 @@ type Query {
     count: Int
     nextToken: String
   ): Transactions!
+  getTypeahead(id: ID!): Typeahead!
   requestDownload(id: ID!, path: String!): StorageDownload!
 }
 

@@ -18,6 +18,7 @@ describe('MyCompanies', () => {
         result: {
           data: {
             getCompanies: {
+              id: 'user-id',
               items: [
                 {
                   address: {

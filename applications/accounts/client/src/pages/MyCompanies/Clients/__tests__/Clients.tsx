@@ -27,6 +27,7 @@ describe('Clients', () => {
         result: {
           data: {
             getClients: {
+              id: 'company-id',
               items: [
                 {
                   address: {

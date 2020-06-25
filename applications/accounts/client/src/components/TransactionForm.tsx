@@ -9,10 +9,18 @@ import {
   Row,
   Select,
   TextBox,
+  Typeahead,
   Typography,
 } from '@motech-development/breeze-ui';
 import { FormikProps, FormikValues, getIn } from 'formik';
-import React, { ChangeEvent, FC, memo, ReactNode, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FC,
+  memo,
+  ReactNode,
+  useEffect,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { date, number, object, string } from 'yup';
 
@@ -51,6 +59,9 @@ export interface ITransactionForm {
   companyId: string;
   initialValues?: FormSchema;
   loading: boolean;
+  purchases: string[] | null;
+  sales: string[] | null;
+  suppliers: string[] | null;
   uploader: ReactNode;
   vat: number;
   onSave(value: FormSchema): void;
@@ -73,6 +84,9 @@ const TransactionForm: FC<ITransactionForm> = ({
   },
   loading,
   onSave,
+  purchases,
+  sales,
+  suppliers,
   uploader,
   vat,
 }) => {
@@ -95,11 +109,14 @@ const TransactionForm: FC<ITransactionForm> = ({
           transaction: initialTransaction,
         }),
   };
-
   const [transactionType, setTransactionType] = useState(
     formValues.transaction,
   );
   const [disableInput, setDisableInput] = useState(formValues.category === '');
+  const [typeahead, setTypeahead] = useState({
+    descriptions: [] as string[],
+    suppliers: [] as string[],
+  });
   const { t } = useTranslation('accounts');
   const currency = t('transaction-form.currency');
   const validationSchema = object<FormSchema>()
@@ -214,6 +231,15 @@ const TransactionForm: FC<ITransactionForm> = ({
     };
   };
 
+  useEffect(() => {
+    const descriptions = transactionType === 'Sales' ? sales : purchases;
+
+    setTypeahead({
+      descriptions: descriptions === null ? [] : descriptions,
+      suppliers: suppliers === null ? [] : suppliers,
+    });
+  }, [purchases, sales, suppliers, transactionType]);
+
   return (
     <Form
       initialValues={formValues}
@@ -257,17 +283,25 @@ const TransactionForm: FC<ITransactionForm> = ({
                     )}
                   />
                 ) : (
-                  <TextBox
+                  <Typeahead
                     label={t('transaction-form.transaction-details.name.label')}
                     name="name"
+                    suggestions={typeahead.suppliers.map(supplier => ({
+                      name: supplier,
+                      value: supplier,
+                    }))}
                   />
                 )}
 
-                <TextBox
+                <Typeahead
                   label={t(
                     'transaction-form.transaction-details.description.label',
                   )}
                   name="description"
+                  suggestions={typeahead.descriptions.map(description => ({
+                    name: description,
+                    value: description,
+                  }))}
                 />
 
                 <DatePicker

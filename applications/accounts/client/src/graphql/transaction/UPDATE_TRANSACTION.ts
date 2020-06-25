@@ -1,4 +1,8 @@
 import { gql, MutationUpdaterFn } from 'apollo-boost';
+import GET_TYPEAHEAD, {
+  IGetTypeaheadInput,
+  IGetTypeaheadOutput,
+} from '../typeahead/GET_TYPEAHEAD';
 import GET_TRANSACTIONS, {
   IGetTransactionsInput,
   IGetTransactionsOutput,
@@ -96,6 +100,53 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
           variables: {
             companyId: updateTransaction.companyId,
             status: otherStatus,
+          },
+        });
+      }
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+
+    try {
+      const cache = client.readQuery<IGetTypeaheadOutput, IGetTypeaheadInput>({
+        query: GET_TYPEAHEAD,
+        variables: {
+          id: updateTransaction.companyId,
+        },
+      });
+
+      if (cache) {
+        if (updateTransaction.category === 'Sales') {
+          const descriptions = new Set([
+            ...(cache.getTypeahead.sales === null
+              ? []
+              : cache.getTypeahead.sales),
+            updateTransaction.description,
+          ]);
+
+          cache.getTypeahead.sales = [...descriptions];
+        } else {
+          const suppliers = new Set([
+            ...(cache.getTypeahead.suppliers === null
+              ? []
+              : cache.getTypeahead.suppliers),
+            updateTransaction.name,
+          ]);
+          const descriptions = new Set([
+            ...(cache.getTypeahead.purchases === null
+              ? []
+              : cache.getTypeahead.purchases),
+            updateTransaction.description,
+          ]);
+
+          cache.getTypeahead.purchases = [...descriptions];
+          cache.getTypeahead.suppliers = [...suppliers];
+        }
+
+        client.writeQuery<IGetTypeaheadOutput, IGetTypeaheadInput>({
+          data: cache,
+          query: GET_TYPEAHEAD,
+          variables: {
+            id: updateTransaction.companyId,
           },
         });
       }

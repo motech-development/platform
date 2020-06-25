@@ -15,6 +15,7 @@ import DeleteItem from '../../../components/DeleteItem';
 import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
+import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION, {
   IDeleteTransactionInput,
   IDeleteTransactionOutput,
@@ -61,11 +62,17 @@ interface IViewTransactionOutput {
     status: string;
     vat: number;
   };
+  getTypeahead: {
+    purchases: string[];
+    sales: string[];
+    suppliers: string[];
+  };
 }
 
 export const VIEW_TRANSACTION = gql`
   query ViewTransaction($companyId: ID!, $transactionId: ID!) {
     getClients(companyId: $companyId) {
+      id
       items {
         id
         name
@@ -92,6 +99,12 @@ export const VIEW_TRANSACTION = gql`
       name
       status
       vat
+    }
+    getTypeahead(id: $companyId) {
+      id
+      purchases
+      sales
+      suppliers
     }
   }
 `;
@@ -136,6 +149,7 @@ const ViewTransaction: FC = () => {
   ] = useMutation<IUpdateTransactionOutput, IUpdateTransactionInput>(
     UPDATE_TRANSACTION,
     {
+      awaitRefetchQueries: true,
       onCompleted: ({ updateTransaction }) => {
         add({
           colour: 'success',
@@ -146,12 +160,21 @@ const ViewTransaction: FC = () => {
           backTo(updateTransaction.companyId, updateTransaction.status),
         );
       },
+      refetchQueries: () => [
+        {
+          query: GET_BALANCE,
+          variables: {
+            id: companyId,
+          },
+        },
+      ],
     },
   );
   const [deleteMutation, { loading: deleteLoading }] = useMutation<
     IDeleteTransactionOutput,
     IDeleteTransactionInput
   >(DELETE_TRANSACTION, {
+    awaitRefetchQueries: true,
     onCompleted: ({ deleteTransaction }) => {
       add({
         colour: 'success',
@@ -168,6 +191,14 @@ const ViewTransaction: FC = () => {
         message: t('delete-transaction.error'),
       });
     },
+    refetchQueries: () => [
+      {
+        query: GET_BALANCE,
+        variables: {
+          id: companyId,
+        },
+      },
+    ],
   });
   const launchDeleteModal = () => {
     setModal(true);
@@ -226,6 +257,9 @@ const ViewTransaction: FC = () => {
                 companyId={companyId}
                 initialValues={data.getTransaction}
                 loading={mutationLoading}
+                purchases={data.getTypeahead.purchases}
+                sales={data.getTypeahead.sales}
+                suppliers={data.getTypeahead.suppliers}
                 uploader={
                   <UploadAttachment
                     id={companyId}

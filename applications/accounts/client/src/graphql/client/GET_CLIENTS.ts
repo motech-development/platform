@@ -8,6 +8,7 @@ export interface IGetClientsInput {
 
 export interface IGetClientsOutput {
   getClients: {
+    id: string;
     items: {
       address: {
         line1: string;
@@ -34,6 +35,7 @@ export interface IGetClientsOutput {
 const GET_CLIENTS = gql`
   query GetClients($id: ID!) {
     getClients(companyId: $id) {
+      id
       items {
         address {
           line1

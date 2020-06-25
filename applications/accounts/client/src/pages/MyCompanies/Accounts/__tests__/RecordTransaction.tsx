@@ -15,6 +15,7 @@ import axios from 'axios';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { advanceTo, clear } from 'jest-date-mock';
 import React from 'react';
+import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
 import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
@@ -50,6 +51,7 @@ describe('RecordTransaction', () => {
         },
         getTransactions: {
           __typename: 'Transactions',
+          id: 'company-id',
           items: [],
         },
       },
@@ -69,6 +71,7 @@ describe('RecordTransaction', () => {
         },
         getTransactions: {
           __typename: 'Transactions',
+          id: 'company-id',
           items: [],
         },
       },
@@ -97,6 +100,63 @@ describe('RecordTransaction', () => {
       mocks = [
         {
           request: {
+            query: GET_BALANCE,
+            variables: {
+              id: 'company-id',
+            },
+          },
+          result: {
+            data: {
+              getBalance: {
+                __typename: 'Balance',
+                balance: 180,
+                currency: 'GBP',
+                id: 'company-id',
+                transactions: [
+                  {
+                    __typename: 'BalanceTransaction',
+                    balance: 180,
+                    currency: 'GBP',
+                    date: '2020-04-15T14:07:18Z',
+                    items: [
+                      {
+                        __typename: 'Transaction',
+                        amount: -20,
+                        attachment: '',
+                        description: 'Lunch',
+                        id: 'transaction-2',
+                        name: 'KFC',
+                      },
+                    ],
+                  },
+                  {
+                    __typename: 'BalanceTransaction',
+                    balance: 200,
+                    currency: 'GBP',
+                    date: '2020-04-13T14:07:18Z',
+                    items: [
+                      {
+                        __typename: 'Transaction',
+                        amount: 200,
+                        attachment: '',
+                        description: 'Invoice #1',
+                        id: 'transaction-1',
+                        name: 'Client',
+                      },
+                    ],
+                  },
+                ],
+                vat: {
+                  __typename: 'BalanceVat',
+                  owed: 100,
+                  paid: 99.9,
+                },
+              },
+            },
+          },
+        },
+        {
+          request: {
             query: RECORD_TRANSACTION,
             variables: {
               id: 'company-id',
@@ -106,6 +166,7 @@ describe('RecordTransaction', () => {
             data: {
               getClients: {
                 __typename: 'Clients',
+                id: 'company-id',
                 items: [],
               },
               getSettings: {
@@ -122,6 +183,13 @@ describe('RecordTransaction', () => {
                   __typename: 'VatSettings',
                   pay: 20,
                 },
+              },
+              getTypeahead: {
+                __typename: 'Typeahead',
+                id: 'company-id',
+                purchases: ['Test purchase 1', 'Test purchase 2'],
+                sales: ['Test sale 1', 'Test sale 2'],
+                suppliers: ['Test suppliers 1', 'Test suppliers 2'],
               },
             },
           },
@@ -530,6 +598,63 @@ describe('RecordTransaction', () => {
       mocks = [
         {
           request: {
+            query: GET_BALANCE,
+            variables: {
+              id: 'company-id',
+            },
+          },
+          result: {
+            data: {
+              getBalance: {
+                __typename: 'Balance',
+                balance: 180,
+                currency: 'GBP',
+                id: 'company-id',
+                transactions: [
+                  {
+                    __typename: 'BalanceTransaction',
+                    balance: 180,
+                    currency: 'GBP',
+                    date: '2020-04-15T14:07:18Z',
+                    items: [
+                      {
+                        __typename: 'Transaction',
+                        amount: -20,
+                        attachment: '',
+                        description: 'Lunch',
+                        id: 'transaction-2',
+                        name: 'KFC',
+                      },
+                    ],
+                  },
+                  {
+                    __typename: 'BalanceTransaction',
+                    balance: 200,
+                    currency: 'GBP',
+                    date: '2020-04-13T14:07:18Z',
+                    items: [
+                      {
+                        __typename: 'Transaction',
+                        amount: 200,
+                        attachment: '',
+                        description: 'Invoice #1',
+                        id: 'transaction-1',
+                        name: 'Client',
+                      },
+                    ],
+                  },
+                ],
+                vat: {
+                  __typename: 'BalanceVat',
+                  owed: 100,
+                  paid: 99.9,
+                },
+              },
+            },
+          },
+        },
+        {
+          request: {
             query: RECORD_TRANSACTION,
             variables: {
               id: 'company-id',
@@ -539,6 +664,7 @@ describe('RecordTransaction', () => {
             data: {
               getClients: {
                 __typename: 'Clients',
+                id: 'company-id',
                 items: [
                   {
                     __typename: 'Client',
@@ -561,6 +687,13 @@ describe('RecordTransaction', () => {
                   __typename: 'VatSettings',
                   pay: 20,
                 },
+              },
+              getTypeahead: {
+                __typename: 'Typeahead',
+                id: 'company-id',
+                purchases: null,
+                sales: null,
+                suppliers: null,
               },
             },
           },
