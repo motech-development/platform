@@ -1,5 +1,6 @@
 type Typeahead {
-  descriptions: [String]
   id: ID
+  purchases: [String]
+  sales: [String]
   suppliers: [String]
 }

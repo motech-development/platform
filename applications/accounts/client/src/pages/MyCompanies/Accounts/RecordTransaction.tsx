@@ -38,7 +38,8 @@ interface IRecordTransactionOutput {
     };
   };
   getTypeahead: {
-    descriptions: string[];
+    purchases: string[];
+    sales: string[];
     suppliers: string[];
   };
 }
@@ -63,8 +64,9 @@ export const RECORD_TRANSACTION = gql`
       }
     }
     getTypeahead(id: $id) {
-      descriptions
       id
+      purchases
+      sales
       suppliers
     }
   }
@@ -159,8 +161,9 @@ const RecordTransaction: FC = () => {
               value: name,
             }))}
             companyId={companyId}
-            descriptions={data.getTypeahead.descriptions}
             loading={addLoading}
+            purchases={data.getTypeahead.purchases}
+            sales={data.getTypeahead.sales}
             suppliers={data.getTypeahead.suppliers}
             uploader={
               <UploadAttachment

@@ -63,7 +63,8 @@ interface IViewTransactionOutput {
     vat: number;
   };
   getTypeahead: {
-    descriptions: string[];
+    purchases: string[];
+    sales: string[];
     suppliers: string[];
   };
 }
@@ -100,8 +101,9 @@ export const VIEW_TRANSACTION = gql`
       vat
     }
     getTypeahead(id: $companyId) {
-      descriptions
       id
+      purchases
+      sales
       suppliers
     }
   }
@@ -253,9 +255,10 @@ const ViewTransaction: FC = () => {
                   value: name,
                 }))}
                 companyId={companyId}
-                descriptions={data.getTypeahead.descriptions}
                 initialValues={data.getTransaction}
                 loading={mutationLoading}
+                purchases={data.getTypeahead.purchases}
+                sales={data.getTypeahead.sales}
                 suppliers={data.getTypeahead.suppliers}
                 uploader={
                   <UploadAttachment

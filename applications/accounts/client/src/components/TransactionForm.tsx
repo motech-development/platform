@@ -13,7 +13,14 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { FormikProps, FormikValues, getIn } from 'formik';
-import React, { ChangeEvent, FC, memo, ReactNode, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FC,
+  memo,
+  ReactNode,
+  useEffect,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { date, number, object, string } from 'yup';
 
@@ -50,9 +57,10 @@ export interface ITransactionForm {
   categories: ISelectOption[];
   clients: ISelectOption[];
   companyId: string;
-  descriptions: string[] | null;
   initialValues?: FormSchema;
   loading: boolean;
+  purchases: string[] | null;
+  sales: string[] | null;
   suppliers: string[] | null;
   uploader: ReactNode;
   vat: number;
@@ -70,13 +78,14 @@ const TransactionForm: FC<ITransactionForm> = ({
   categories,
   clients,
   companyId,
-  descriptions,
   initialValues = {
     ...formSchema,
     companyId,
   },
   loading,
   onSave,
+  purchases,
+  sales,
   suppliers,
   uploader,
   vat,
@@ -104,6 +113,10 @@ const TransactionForm: FC<ITransactionForm> = ({
     formValues.transaction,
   );
   const [disableInput, setDisableInput] = useState(formValues.category === '');
+  const [typeahead, setTypeahead] = useState({
+    descriptions: [] as string[],
+    suppliers: [] as string[],
+  });
   const { t } = useTranslation('accounts');
   const currency = t('transaction-form.currency');
   const validationSchema = object<FormSchema>()
@@ -165,10 +178,6 @@ const TransactionForm: FC<ITransactionForm> = ({
       value: 'pending',
     },
   ];
-  const typeahead = {
-    descriptions: descriptions === null ? [] : descriptions,
-    suppliers: suppliers === null ? [] : suppliers,
-  };
   const onTransactionTypeChange = (
     event: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
@@ -221,6 +230,15 @@ const TransactionForm: FC<ITransactionForm> = ({
       category,
     };
   };
+
+  useEffect(() => {
+    const descriptions = transactionType === 'Sales' ? sales : purchases;
+
+    setTypeahead({
+      descriptions: descriptions === null ? [] : descriptions,
+      suppliers: suppliers === null ? [] : suppliers,
+    });
+  }, [purchases, sales, suppliers, transactionType]);
 
   return (
     <Form

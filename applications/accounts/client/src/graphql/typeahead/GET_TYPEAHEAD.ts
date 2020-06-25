@@ -6,17 +6,19 @@ export interface IGetTypeaheadInput {
 
 export interface IGetTypeaheadOutput {
   getTypeahead: {
-    descriptions: string[];
     id: string;
-    suppliers: string[];
+    purchases: string[] | null;
+    sales: string[] | null;
+    suppliers: string[] | null;
   };
 }
 
 const GET_TYPEAHEAD = gql`
   query GetTypeahead($id: ID!) {
     getTypeahead(id: $id) {
-      descriptions
       id
+      purchases
+      sales
       suppliers
     }
   }

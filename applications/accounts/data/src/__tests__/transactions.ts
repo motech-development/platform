@@ -312,7 +312,7 @@ describe('transactions', () => {
 
         await handler(event, context, callback);
 
-        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(4);
+        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(5);
         expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledTimes(1);
       });
     });

@@ -115,17 +115,32 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
       });
 
       if (cache) {
-        const descriptions = new Set([
-          ...cache.getTypeahead.descriptions,
-          updateTransaction.description,
-        ]);
-        const suppliers = new Set([
-          ...cache.getTypeahead.suppliers,
-          updateTransaction.name,
-        ]);
+        if (updateTransaction.category === 'Sales') {
+          const descriptions = new Set([
+            ...(cache.getTypeahead.sales === null
+              ? []
+              : cache.getTypeahead.sales),
+            updateTransaction.description,
+          ]);
 
-        cache.getTypeahead.descriptions = [...descriptions];
-        cache.getTypeahead.suppliers = [...suppliers];
+          cache.getTypeahead.sales = [...descriptions];
+        } else {
+          const suppliers = new Set([
+            ...(cache.getTypeahead.suppliers === null
+              ? []
+              : cache.getTypeahead.suppliers),
+            updateTransaction.name,
+          ]);
+          const descriptions = new Set([
+            ...(cache.getTypeahead.purchases === null
+              ? []
+              : cache.getTypeahead.purchases),
+            updateTransaction.description,
+          ]);
+
+          cache.getTypeahead.purchases = [...descriptions];
+          cache.getTypeahead.suppliers = [...suppliers];
+        }
 
         client.writeQuery<IGetTypeaheadOutput, IGetTypeaheadInput>({
           data: cache,

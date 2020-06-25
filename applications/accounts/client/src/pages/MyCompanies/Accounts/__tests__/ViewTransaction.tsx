@@ -140,8 +140,9 @@ describe('ViewTransaction', () => {
                   vat: 166.66,
                 },
                 getTypeahead: {
-                  descriptions: ['Test description 1', 'Test description 2'],
                   id: 'company-id',
+                  purchases: ['Test purchase 1', 'Test purchase 2'],
+                  sales: ['Test sale 1', 'Test sale 2'],
                   suppliers: ['Test suppliers 1', 'Test suppliers 2'],
                 },
               },
@@ -423,8 +424,9 @@ describe('ViewTransaction', () => {
                   vat: 166.66,
                 },
                 getTypeahead: {
-                  descriptions: ['Test description 1', 'Test description 2'],
                   id: 'company-id',
+                  purchases: ['Test purchase 1', 'Test purchase 2'],
+                  sales: ['Test sale 1', 'Test sale 2'],
                   suppliers: ['Test suppliers 1', 'Test suppliers 2'],
                 },
               },
@@ -728,8 +730,9 @@ describe('ViewTransaction', () => {
                 vat: 200,
               },
               getTypeahead: {
-                descriptions: ['Test description 1', 'Test description 2'],
                 id: 'company-id',
+                purchases: ['Test purchase 1', 'Test purchase 2'],
+                sales: ['Test sale 1', 'Test sale 2'],
                 suppliers: ['Test suppliers 1', 'Test suppliers 2'],
               },
             },

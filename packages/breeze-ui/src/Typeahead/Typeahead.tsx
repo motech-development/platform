@@ -31,6 +31,7 @@ export interface ITypeaheadProps
   suggestions: ITypeaheadSuggestion[];
 }
 
+// TODO: Order suggestions in alphabetical order
 const Typeahead: FC<ITypeaheadProps> = ({ suggestions, ...rest }) => {
   const { name } = rest;
   const [filteredSuggestions, setFilteredSuggestions] = useState(suggestions);
