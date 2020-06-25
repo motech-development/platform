@@ -51,6 +51,7 @@ describe('RecordTransaction', () => {
         },
         getTransactions: {
           __typename: 'Transactions',
+          id: 'company-id',
           items: [],
         },
       },
@@ -70,6 +71,7 @@ describe('RecordTransaction', () => {
         },
         getTransactions: {
           __typename: 'Transactions',
+          id: 'company-id',
           items: [],
         },
       },
@@ -164,6 +166,7 @@ describe('RecordTransaction', () => {
             data: {
               getClients: {
                 __typename: 'Clients',
+                id: 'company-id',
                 items: [],
               },
               getSettings: {
@@ -660,6 +663,7 @@ describe('RecordTransaction', () => {
             data: {
               getClients: {
                 __typename: 'Clients',
+                id: 'company-id',
                 items: [
                   {
                     __typename: 'Client',

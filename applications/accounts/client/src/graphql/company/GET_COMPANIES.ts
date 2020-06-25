@@ -7,6 +7,7 @@ export interface IGetCompaniesInput {
 
 export interface IGetCompaniesOutput {
   getCompanies: {
+    id: string;
     items: {
       address: {
         line1: string;
@@ -33,6 +34,7 @@ export interface IGetCompaniesOutput {
 const GET_COMPANIES = gql`
   query GetCompanies {
     getCompanies {
+      id
       items {
         address {
           line1

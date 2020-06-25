@@ -31,6 +31,7 @@ describe('AddClient', () => {
       data: {
         getClients: {
           __typename: 'Clients',
+          id: 'company-id',
           items: [],
         },
         getCompany: {

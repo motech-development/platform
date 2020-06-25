@@ -108,6 +108,7 @@ describe('ViewTransaction', () => {
             result: {
               data: {
                 getClients: {
+                  id: 'company-id',
                   items: [],
                 },
                 getSettings: {
@@ -390,6 +391,7 @@ describe('ViewTransaction', () => {
             result: {
               data: {
                 getClients: {
+                  id: 'company-id',
                   items: [],
                 },
                 getSettings: {
@@ -689,6 +691,7 @@ describe('ViewTransaction', () => {
           result: {
             data: {
               getClients: {
+                id: 'company-id',
                 items: [
                   {
                     id: 'client-id',

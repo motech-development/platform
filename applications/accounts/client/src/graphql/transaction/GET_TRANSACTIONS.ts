@@ -11,6 +11,7 @@ export interface IGetTransactionsOutput {
     id: string;
   };
   getTransactions: {
+    id: string;
     items: {
       amount: number;
       attachment: string;
@@ -29,6 +30,7 @@ const GET_TRANSACTIONS = gql`
       id
     }
     getTransactions(companyId: $companyId, status: $status) {
+      id
       items {
         amount
         attachment

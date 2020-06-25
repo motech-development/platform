@@ -1,4 +1,5 @@
 type Companies {
+  id: ID
   items: [Company]
   nextToken: String
 }

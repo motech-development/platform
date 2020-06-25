@@ -42,6 +42,7 @@ describe('UpdateDetails', () => {
         data: {
           getCompanies: {
             __typename: 'Companies',
+            id: 'company-uuid',
             items: [
               {
                 __typename: 'Company',

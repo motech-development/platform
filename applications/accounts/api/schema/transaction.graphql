@@ -4,6 +4,7 @@ enum TransactionStatus {
 }
 
 type Transactions {
+  id: ID
   items: [Transaction]
   nextToken: String
 }
