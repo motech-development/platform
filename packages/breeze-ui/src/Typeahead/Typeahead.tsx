@@ -31,7 +31,6 @@ export interface ITypeaheadProps
   suggestions: ITypeaheadSuggestion[];
 }
 
-// TODO: Order suggestions in alphabetical order
 const Typeahead: FC<ITypeaheadProps> = ({ suggestions, ...rest }) => {
   const { name } = rest;
   const [filteredSuggestions, setFilteredSuggestions] = useState(suggestions);
@@ -91,17 +90,19 @@ const Typeahead: FC<ITypeaheadProps> = ({ suggestions, ...rest }) => {
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...attributes.popper}
         >
-          {filteredSuggestions.map(({ name: suggestion, value }) => (
-            <Suggestion
-              block
-              key={value}
-              colour="secondary"
-              size="sm"
-              onClick={() => setValue(value)}
-            >
-              {suggestion}
-            </Suggestion>
-          ))}
+          {filteredSuggestions
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map(({ name: suggestion, value }) => (
+              <Suggestion
+                block
+                key={value}
+                colour="secondary"
+                size="sm"
+                onClick={() => setValue(value)}
+              >
+                {suggestion}
+              </Suggestion>
+            ))}
         </Suggestions>
       )}
     </TypeaheadWrapper>
