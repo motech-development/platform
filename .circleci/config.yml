@@ -191,6 +191,9 @@ jobs:
           command: npm i
           name: Install dependencies
       - run:
+          command: npm run package
+          name: Build packages
+      - run:
           command: npm run lint
           name: Lint code
       - save_cache:
