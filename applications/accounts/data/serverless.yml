@@ -64,6 +64,9 @@ resources:
           PointInTimeRecoveryEnabled: true
         StreamSpecification:
           StreamViewType: NEW_AND_OLD_IMAGES
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
 
     DataLambdaFunctionRole:
       Type: AWS::IAM::Role
