@@ -1,13 +1,16 @@
 import { DynamoDBRecord, StreamRecord } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
-import { ITransaction } from './transaction';
+
+interface IRecord {
+  __typename: string;
+}
 
 const getRecords = (records: DynamoDBRecord[]) =>
   records
     .filter(record => record.dynamodb !== undefined)
     .map(record => record.dynamodb as StreamRecord);
 
-export const unmarshallAllRecords = (
+export const unmarshallAllRecords = <T extends IRecord>(
   records: DynamoDBRecord[],
   typename: string,
 ) =>
@@ -23,10 +26,10 @@ export const unmarshallAllRecords = (
       return {
         NewImage: DynamoDB.Converter.unmarshall(
           NewImage as DynamoDB.AttributeMap,
-        ) as ITransaction,
+        ) as T,
         OldImage: DynamoDB.Converter.unmarshall(
           OldImage as DynamoDB.AttributeMap,
-        ) as ITransaction,
+        ) as T,
       };
     })
     .filter(
@@ -35,7 +38,7 @@ export const unmarshallAllRecords = (
         NewImage.__typename === typename && OldImage.__typename === typename,
     );
 
-export const unmarshallNewRecords = (
+export const unmarshallNewRecords = <T extends IRecord>(
   records: DynamoDBRecord[],
   typename: string,
 ) =>
@@ -51,7 +54,7 @@ export const unmarshallNewRecords = (
       return {
         NewImage: DynamoDB.Converter.unmarshall(
           NewImage as DynamoDB.AttributeMap,
-        ) as ITransaction,
+        ) as T,
       };
     })
     .filter(
@@ -60,7 +63,7 @@ export const unmarshallNewRecords = (
         NewImage.__typename === typename,
     );
 
-export const unmarshallOldRecords = (
+export const unmarshallOldRecords = <T extends IRecord>(
   records: DynamoDBRecord[],
   typename: string,
 ) =>
@@ -76,7 +79,7 @@ export const unmarshallOldRecords = (
       return {
         OldImage: DynamoDB.Converter.unmarshall(
           OldImage as DynamoDB.AttributeMap,
-        ) as ITransaction,
+        ) as T,
       };
     })
     .filter(

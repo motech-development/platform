@@ -1,6 +1,6 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { TransactionStatus } from '../shared/transaction';
+import { ITransaction, TransactionStatus } from '../shared/transaction';
 import { unmarshallNewRecords } from '../shared/unmarshall-records';
 
 const insertTypeahead = (
@@ -8,7 +8,10 @@ const insertTypeahead = (
   tableName: string,
   records: DynamoDBRecord[],
 ) => {
-  const unmarshalledRecords = unmarshallNewRecords(records, 'Transaction');
+  const unmarshalledRecords = unmarshallNewRecords<ITransaction>(
+    records,
+    'Transaction',
+  );
   const now = new Date();
   const insert = unmarshalledRecords
     .filter(({ NewImage }) => NewImage.status === TransactionStatus.Confirmed)

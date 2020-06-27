@@ -1,6 +1,6 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { remove, TransactionStatus } from '../shared/transaction';
+import { ITransaction, remove, TransactionStatus } from '../shared/transaction';
 import { unmarshallOldRecords } from '../shared/unmarshall-records';
 
 const removeTransactions = (
@@ -8,7 +8,10 @@ const removeTransactions = (
   tableName: string,
   records: DynamoDBRecord[],
 ) => {
-  const unmarshalledRecords = unmarshallOldRecords(records, 'Transaction');
+  const unmarshalledRecords = unmarshallOldRecords<ITransaction>(
+    records,
+    'Transaction',
+  );
   const transactionItems = unmarshalledRecords
     .filter(({ OldImage }) => OldImage.status === TransactionStatus.Confirmed)
     .map(({ OldImage }) => remove(documentClient, tableName, OldImage));

@@ -18,6 +18,7 @@ export interface ITransaction {
   id: string;
   name: string;
   owner: string;
+  scheduled: boolean;
   status: TransactionStatus;
   vat: number;
 }
