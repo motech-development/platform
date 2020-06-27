@@ -31,6 +31,16 @@ functions:
     environment:
       ATTACHMENT_QUEUE: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
 
+  ScheduleTransactions:
+    handler: src/schedule-transactions.handler
+    role: DataLambdaFunctionRole
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
+    environment:
+      TABLE: !Ref ApplicationTable
+
   Transactions:
     handler: src/transactions.handler
     role: DataLambdaFunctionRole

@@ -1,9 +1,9 @@
 import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { SQS } from 'aws-sdk';
-import { handler } from '../attachments';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { handler } from '../schedule-transaction';
 
-describe('attachments', () => {
+describe('schedule-transaction', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: DynamoDBStreamEvent;
@@ -41,11 +41,17 @@ describe('attachments', () => {
               description: {
                 S: 'Description 1',
               },
+              id: {
+                S: 'transaction-2',
+              },
               name: {
                 S: 'Transaction 1',
               },
               owner: {
                 S: 'owner',
+              },
+              scheduled: {
+                BOOL: true,
               },
               status: {
                 S: 'confirmed',
@@ -81,6 +87,9 @@ describe('attachments', () => {
               },
               owner: {
                 S: 'owner',
+              },
+              scheduled: {
+                BOOL: true,
               },
               status: {
                 S: 'confirmed',
@@ -122,6 +131,9 @@ describe('attachments', () => {
               owner: {
                 S: 'owner',
               },
+              scheduled: {
+                BOOL: true,
+              },
               status: {
                 S: 'confirmed',
               },
@@ -156,6 +168,9 @@ describe('attachments', () => {
               },
               owner: {
                 S: 'owner',
+              },
+              scheduled: {
+                BOOL: true,
               },
               status: {
                 S: 'confirmed',
@@ -197,6 +212,9 @@ describe('attachments', () => {
               owner: {
                 S: 'owner',
               },
+              scheduled: {
+                BOOL: true,
+              },
               status: {
                 S: 'confirmed',
               },
@@ -232,6 +250,9 @@ describe('attachments', () => {
               owner: {
                 S: 'owner',
               },
+              scheduled: {
+                BOOL: true,
+              },
               status: {
                 S: 'confirmed',
               },
@@ -246,17 +267,17 @@ describe('attachments', () => {
     };
   });
 
-  it('should throw an error if no queue is set', async () => {
+  it('should throw an error if no table is set', async () => {
     event = {
       Records: [],
     };
 
     await expect(handler(event, context, callback)).rejects.toThrow(
-      'No attachment queue set',
+      'No table set',
     );
   });
 
-  describe('with queue set', () => {
+  describe('with table set', () => {
     let env: NodeJS.ProcessEnv;
 
     beforeEach(() => {
@@ -264,14 +285,14 @@ describe('attachments', () => {
         ...process.env,
       };
 
-      process.env.ATTACHMENT_QUEUE = 'app-queue';
+      process.env.TABLE = 'app-table';
     });
 
     afterEach(() => {
       process.env = env;
     });
 
-    describe('when there are no errors thrown by SQS', () => {
+    describe('when there are no errors thrown by DynamoDB', () => {
       it('should do nothing if there is nothing to process', async () => {
         event = {
           Records: [],
@@ -279,19 +300,19 @@ describe('attachments', () => {
 
         await handler(event, context, callback);
 
-        expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledTimes(0);
+        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(0);
       });
 
       it('should update the correct number of records', async () => {
         await handler(event, context, callback);
 
-        expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledTimes(1);
+        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(3);
       });
     });
 
-    describe('when SQS throws an error', () => {
+    describe('when DyanmoDB throws an error', () => {
       beforeEach(() => {
-        (SQS.prototype.sendMessageBatch as jest.Mock).mockReturnValue({
+        (DocumentClient.prototype.update as jest.Mock).mockReturnValue({
           promise: jest
             .fn()
             .mockRejectedValue(new Error('Something has gone wrong')),

@@ -119,7 +119,7 @@ describe('update-scheduled-transactions', () => {
               BOOL: true,
             },
             status: {
-              S: 'confirmed',
+              S: 'pending',
             },
             vat: {
               N: '1.2',
@@ -151,7 +151,7 @@ describe('update-scheduled-transactions', () => {
               BOOL: false,
             },
             status: {
-              S: 'confirmed',
+              S: 'pending',
             },
             vat: {
               N: '2.4',
@@ -257,7 +257,7 @@ describe('update-scheduled-transactions', () => {
               BOOL: true,
             },
             status: {
-              S: 'confirmed',
+              S: 'pending',
             },
             vat: {
               N: '0',
@@ -289,7 +289,7 @@ describe('update-scheduled-transactions', () => {
               BOOL: true,
             },
             status: {
-              S: 'confirmed',
+              S: 'pending',
             },
             vat: {
               N: '0',
@@ -367,6 +367,24 @@ describe('update-scheduled-transactions', () => {
       },
       Key: {
         _typename: 'Typeahead',
+        id: 'transaction-1',
+      },
+      TableName: tableName,
+      UpdateExpression: 'SET #active = :active, #updatedAt = :updatedAt',
+    });
+
+    expect(documentClient.update).toHaveBeenCalledWith({
+      ConditionExpression: 'attribute_exists(id)',
+      ExpressionAttributeNames: {
+        '#active': 'active',
+        '#updatedAt': 'updatedAt',
+      },
+      ExpressionAttributeValues: {
+        ':active': false,
+        ':updatedAt': '2020-06-06T19:45:00.000Z',
+      },
+      Key: {
+        _typename: 'Typeahead',
         id: 'transaction-3',
       },
       TableName: tableName,
@@ -377,6 +395,6 @@ describe('update-scheduled-transactions', () => {
   it('should call update the correct number of times', () => {
     updateScheduledTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(3);
+    expect(documentClient.update).toHaveBeenCalledTimes(4);
   });
 });

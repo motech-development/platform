@@ -1,6 +1,6 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import aggregatedDay from './aggregated-day';
-import { ITransaction } from './transaction';
+import { ITransaction, TransactionStatus } from './transaction';
 
 const commonUpdate = (tableName: string, record: ITransaction) => {
   const { id } = record;
@@ -80,6 +80,10 @@ export const update = (
   oldRecord: ITransaction,
   newRecord: ITransaction,
 ) => {
+  if (newRecord.status === TransactionStatus.Confirmed) {
+    return remove(documentClient, tableName, newRecord);
+  }
+
   if (newRecord.scheduled) {
     return insert(documentClient, tableName, newRecord);
   }

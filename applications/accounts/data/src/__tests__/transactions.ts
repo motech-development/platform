@@ -1,12 +1,12 @@
-import { Context } from 'aws-lambda';
+import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-// import { SQS } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { handler } from '../transactions';
 
 describe('transactions', () => {
   let callback: jest.Mock;
   let context: Context;
+  let event: DynamoDBStreamEvent;
 
   beforeEach(() => {
     context = ctx();
@@ -14,10 +14,240 @@ describe('transactions', () => {
     context.done();
 
     callback = jest.fn();
+
+    event = {
+      Records: [
+        {
+          dynamodb: {
+            NewImage: {
+              __typename: {
+                S: 'Transaction',
+              },
+              amount: {
+                N: '100.25',
+              },
+              attachment: {
+                S: '',
+              },
+              category: {
+                S: 'Sales',
+              },
+              companyId: {
+                S: 'company-id',
+              },
+              date: {
+                S: '2019-12-15T00:00:00.000Z',
+              },
+              description: {
+                S: 'Description 1',
+              },
+              name: {
+                S: 'Transaction 1',
+              },
+              owner: {
+                S: 'owner',
+              },
+              status: {
+                S: 'confirmed',
+              },
+              vat: {
+                N: '1.2',
+              },
+            },
+            OldImage: {
+              __typename: {
+                S: 'Transaction',
+              },
+              amount: {
+                N: '200.5',
+              },
+              attachment: {
+                S: '',
+              },
+              category: {
+                S: 'Sales',
+              },
+              companyId: {
+                S: 'company-id',
+              },
+              date: {
+                S: '2019-12-15T00:00:00.000Z',
+              },
+              description: {
+                S: 'Description 1',
+              },
+              name: {
+                S: 'Transaction 1',
+              },
+              owner: {
+                S: 'owner',
+              },
+              status: {
+                S: 'confirmed',
+              },
+              vat: {
+                N: '2.4',
+              },
+            },
+          },
+          eventName: 'INSERT' as const,
+        },
+        {
+          dynamodb: {
+            NewImage: {
+              __typename: {
+                S: 'Transaction',
+              },
+              amount: {
+                N: '100.25',
+              },
+              attachment: {
+                S: '',
+              },
+              category: {
+                S: 'Expenses',
+              },
+              companyId: {
+                S: 'company-id',
+              },
+              date: {
+                S: '2019-12-15T00:00:00.000Z',
+              },
+              description: {
+                S: 'Description 2',
+              },
+              name: {
+                S: 'Transaction 2',
+              },
+              owner: {
+                S: 'owner',
+              },
+              status: {
+                S: 'confirmed',
+              },
+              vat: {
+                N: '1.2',
+              },
+            },
+            OldImage: {
+              __typename: {
+                S: 'Transaction',
+              },
+              amount: {
+                N: '200.5',
+              },
+              attachment: {
+                S: '',
+              },
+              category: {
+                S: 'Expenses',
+              },
+              companyId: {
+                S: 'company-id',
+              },
+              date: {
+                S: '2019-12-15T00:00:00.000Z',
+              },
+              description: {
+                S: 'Description 2',
+              },
+              name: {
+                S: 'Transaction 2',
+              },
+              owner: {
+                S: 'owner',
+              },
+              status: {
+                S: 'confirmed',
+              },
+              vat: {
+                N: '2.4',
+              },
+            },
+          },
+          eventName: 'MODIFY' as const,
+        },
+        {
+          dynamodb: {
+            NewImage: {
+              __typename: {
+                S: 'Transaction',
+              },
+              amount: {
+                N: '100.25',
+              },
+              attachment: {
+                S: 'path/to/file.pdf',
+              },
+              category: {
+                S: 'Sales',
+              },
+              companyId: {
+                S: 'company-id',
+              },
+              date: {
+                S: '2019-12-15T00:00:00.000Z',
+              },
+              description: {
+                S: 'Description 3',
+              },
+              name: {
+                S: 'Transaction 3',
+              },
+              owner: {
+                S: 'owner',
+              },
+              status: {
+                S: 'confirmed',
+              },
+              vat: {
+                N: '1.2',
+              },
+            },
+            OldImage: {
+              __typename: {
+                S: 'Transaction',
+              },
+              amount: {
+                N: '200.5',
+              },
+              attachment: {
+                S: 'path/to/file.pdf',
+              },
+              category: {
+                S: 'Sales',
+              },
+              companyId: {
+                S: 'company-id',
+              },
+              date: {
+                S: '2019-12-15T00:00:00.000Z',
+              },
+              description: {
+                S: 'Description 3',
+              },
+              name: {
+                S: 'Transaction 3',
+              },
+              owner: {
+                S: 'owner',
+              },
+              status: {
+                S: 'confirmed',
+              },
+              vat: {
+                N: '2.4',
+              },
+            },
+          },
+          eventName: 'REMOVE' as const,
+        },
+      ],
+    };
   });
 
   it('should throw an error if no table is set', async () => {
-    const event = {
+    event = {
       Records: [],
     };
 
@@ -43,7 +273,7 @@ describe('transactions', () => {
 
     describe('when there are no errors thrown by DynamoDB', () => {
       it('should do nothing if there is nothing to process', async () => {
-        const event = {
+        event = {
           Records: [],
         };
 
@@ -53,240 +283,9 @@ describe('transactions', () => {
       });
 
       it('should update the correct number of records', async () => {
-        const event = {
-          Records: [
-            {
-              dynamodb: {
-                NewImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '100.25',
-                  },
-                  attachment: {
-                    S: '',
-                  },
-                  category: {
-                    S: 'Sales',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 1',
-                  },
-                  name: {
-                    S: 'Transaction 1',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '1.2',
-                  },
-                },
-                OldImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '200.5',
-                  },
-                  attachment: {
-                    S: '',
-                  },
-                  category: {
-                    S: 'Sales',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 1',
-                  },
-                  name: {
-                    S: 'Transaction 1',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '2.4',
-                  },
-                },
-              },
-              eventName: 'INSERT' as const,
-            },
-            {
-              dynamodb: {
-                NewImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '100.25',
-                  },
-                  attachment: {
-                    S: '',
-                  },
-                  category: {
-                    S: 'Expenses',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 2',
-                  },
-                  name: {
-                    S: 'Transaction 2',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '1.2',
-                  },
-                },
-                OldImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '200.5',
-                  },
-                  attachment: {
-                    S: '',
-                  },
-                  category: {
-                    S: 'Expenses',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 2',
-                  },
-                  name: {
-                    S: 'Transaction 2',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '2.4',
-                  },
-                },
-              },
-              eventName: 'MODIFY' as const,
-            },
-            {
-              dynamodb: {
-                NewImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '100.25',
-                  },
-                  attachment: {
-                    S: 'path/to/file.pdf',
-                  },
-                  category: {
-                    S: 'Sales',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 3',
-                  },
-                  name: {
-                    S: 'Transaction 3',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '1.2',
-                  },
-                },
-                OldImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '200.5',
-                  },
-                  attachment: {
-                    S: 'path/to/file.pdf',
-                  },
-                  category: {
-                    S: 'Sales',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 3',
-                  },
-                  name: {
-                    S: 'Transaction 3',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '2.4',
-                  },
-                },
-              },
-              eventName: 'REMOVE' as const,
-            },
-          ],
-        };
-
         await handler(event, context, callback);
 
         expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(3);
-        // expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledTimes(1);
       });
     });
 
@@ -302,218 +301,6 @@ describe('transactions', () => {
       });
 
       it('should swallow the error', async () => {
-        const event = {
-          Records: [
-            {
-              dynamodb: {
-                NewImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '100.25',
-                  },
-                  category: {
-                    S: 'Sales',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 1',
-                  },
-                  name: {
-                    S: 'Transaction 1',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '1.2',
-                  },
-                },
-                OldImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '200.5',
-                  },
-                  category: {
-                    S: 'Sales',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 1',
-                  },
-                  name: {
-                    S: 'Transaction 1',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '2.4',
-                  },
-                },
-              },
-              eventName: 'INSERT' as const,
-            },
-            {
-              dynamodb: {
-                NewImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '100.25',
-                  },
-                  category: {
-                    S: 'Expenses',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 2',
-                  },
-                  name: {
-                    S: 'Transaction 2',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '1.2',
-                  },
-                },
-                OldImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '200.5',
-                  },
-                  category: {
-                    S: 'Expenses',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 2',
-                  },
-                  name: {
-                    S: 'Transaction 2',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '2.4',
-                  },
-                },
-              },
-              eventName: 'MODIFY' as const,
-            },
-            {
-              dynamodb: {
-                NewImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '100.25',
-                  },
-                  category: {
-                    S: 'Sales',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 3',
-                  },
-                  name: {
-                    S: 'Transaction 3',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '1.2',
-                  },
-                },
-                OldImage: {
-                  __typename: {
-                    S: 'Transaction',
-                  },
-                  amount: {
-                    N: '200.5',
-                  },
-                  category: {
-                    S: 'Sales',
-                  },
-                  companyId: {
-                    S: 'company-id',
-                  },
-                  date: {
-                    S: '2019-12-15T00:00:00.000Z',
-                  },
-                  description: {
-                    S: 'Description 3',
-                  },
-                  name: {
-                    S: 'Transaction 3',
-                  },
-                  owner: {
-                    S: 'owner',
-                  },
-                  status: {
-                    S: 'confirmed',
-                  },
-                  vat: {
-                    N: '2.4',
-                  },
-                },
-              },
-              eventName: 'REMOVE' as const,
-            },
-          ],
-        };
-
         await handler(event, context, callback);
 
         expect(console.error).toHaveBeenCalledWith('Something has gone wrong');
