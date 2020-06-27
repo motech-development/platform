@@ -1,9 +1,9 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { advanceTo, clear } from 'jest-date-mock';
-import typeahead from '../typeahead';
+import insertTypeahead from '../insert-typeahead';
 
-describe('typeahead', () => {
+describe('insert-typeahead', () => {
   let documentClient: DocumentClient;
   let tableName: string;
   let records: DynamoDBRecord[];
@@ -305,7 +305,7 @@ describe('typeahead', () => {
   });
 
   it('should return update with the correct params', () => {
-    typeahead(documentClient, tableName, records);
+    insertTypeahead(documentClient, tableName, records);
 
     expect(documentClient.update).toHaveBeenCalledWith({
       ExpressionAttributeNames: {
@@ -388,7 +388,7 @@ describe('typeahead', () => {
   });
 
   it('should call update the correct number of times', () => {
-    typeahead(documentClient, tableName, records);
+    insertTypeahead(documentClient, tableName, records);
 
     expect(documentClient.update).toHaveBeenCalledTimes(3);
   });

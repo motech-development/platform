@@ -1,8 +1,6 @@
 import { DynamoDBStreamHandler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import removeTransactions from './handlers/remove-transactions';
-import insertTransactions from './handlers/insert-transactions';
-import updateTransactions from './handlers/update-transactions';
+import insertTypeahead from './handlers/insert-typeahead';
 
 const documentClient = new DocumentClient();
 
@@ -19,15 +17,11 @@ export const handler: DynamoDBStreamHandler = async event => {
   const updates = event.Records.filter(
     ({ eventName }) => eventName === 'MODIFY',
   );
-  const removals = event.Records.filter(
-    ({ eventName }) => eventName === 'REMOVE',
-  );
 
   try {
     await Promise.all([
-      ...insertTransactions(documentClient, TABLE, inserts),
-      ...updateTransactions(documentClient, TABLE, updates),
-      ...removeTransactions(documentClient, TABLE, removals),
+      ...insertTypeahead(documentClient, TABLE, inserts),
+      ...insertTypeahead(documentClient, TABLE, updates),
     ]);
   } catch (e) {
     console.error(e.message);

@@ -7,9 +7,6 @@ provider:
   region: ${opt:region, 'eu-west-1'}
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-data
-  environment:
-    ATTACHMENT_QUEUE: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
-    TABLE: !Ref ApplicationTable
 
 package:
   individually: true
@@ -24,6 +21,16 @@ custom:
     includeModules: true
 
 functions:
+  Attachments:
+    handler: src/attachments.handler
+    role: DataLambdaFunctionRole
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
+    environment:
+      ATTACHMENT_QUEUE: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
+
   Transactions:
     handler: src/transactions.handler
     role: DataLambdaFunctionRole
@@ -31,6 +38,18 @@ functions:
       - stream:
           type: dynamodb
           arn: !GetAtt ApplicationTable.StreamArn
+    environment:
+      TABLE: !Ref ApplicationTable
+
+  Typeahead:
+    handler: src/typeahead.handler
+    role: DataLambdaFunctionRole
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
+    environment:
+      TABLE: !Ref ApplicationTable
 
 resources:
   Resources:

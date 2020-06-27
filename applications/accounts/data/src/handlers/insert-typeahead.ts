@@ -3,7 +3,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { TransactionStatus } from '../shared/transaction';
 import { unmarshallNewRecords } from '../shared/unmarshall-records';
 
-const typeahead = (
+const insertTypeahead = (
   documentClient: DocumentClient,
   tableName: string,
   records: DynamoDBRecord[],
@@ -59,4 +59,4 @@ const typeahead = (
   return insert;
 };
 
-export default typeahead;
+export default insertTypeahead;

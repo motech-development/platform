@@ -1,10 +1,9 @@
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-// import { SQS } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { handler } from '../transactions';
+import { handler } from '../typeahead';
 
-describe('transactions', () => {
+describe('typeahead', () => {
   let callback: jest.Mock;
   let context: Context;
 
@@ -285,8 +284,7 @@ describe('transactions', () => {
 
         await handler(event, context, callback);
 
-        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(3);
-        // expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledTimes(1);
+        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(2);
       });
     });
 
