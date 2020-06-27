@@ -1,7 +1,7 @@
 import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { handler } from '../schedule-transaction';
+import { handler } from '../schedule-transactions';
 
 describe('schedule-transaction', () => {
   let callback: jest.Mock;
