@@ -1,6 +1,7 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { ITransaction, TransactionStatus, update } from '../shared/transaction';
+import { update } from '../shared/balance';
+import { ITransaction, TransactionStatus } from '../shared/transaction';
 import { unmarshallAllRecords } from '../shared/unmarshall-records';
 
 const updateTransactions = (

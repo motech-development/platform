@@ -1,6 +1,7 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { ITransaction, remove, TransactionStatus } from '../shared/transaction';
+import { remove } from '../shared/balance';
+import { ITransaction, TransactionStatus } from '../shared/transaction';
 import { unmarshallOldRecords } from '../shared/unmarshall-records';
 
 const removeTransactions = (
