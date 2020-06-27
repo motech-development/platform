@@ -25,7 +25,6 @@ export const insert = (
   return documentClient
     .update({
       ...commonUpdate(tableName, record),
-      ConditionExpression: 'attribute_not_exists(id)',
       ExpressionAttributeNames: {
         '#active': 'active',
         '#createdAt': 'createdAt',
@@ -41,7 +40,7 @@ export const insert = (
         ':updatedAt': now.toISOString(),
       },
       UpdateExpression:
-        'SET #active = :active, #createdAt = :createdAt, #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
+        'SET #active = :active, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
     })
     .promise();
 };
@@ -73,4 +72,21 @@ export const remove = (
       UpdateExpression: 'SET #active = :active, #updatedAt = :updatedAt',
     })
     .promise();
+};
+
+export const update = (
+  documentClient: DocumentClient,
+  tableName: string,
+  oldRecord: ITransaction,
+  newRecord: ITransaction,
+) => {
+  if (newRecord.scheduled) {
+    return insert(documentClient, tableName, newRecord);
+  }
+
+  if (oldRecord.scheduled) {
+    return remove(documentClient, tableName, newRecord);
+  }
+
+  return Promise.resolve();
 };

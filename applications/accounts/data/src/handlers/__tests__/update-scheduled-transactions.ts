@@ -1,9 +1,9 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { advanceTo, clear } from 'jest-date-mock';
-import insertScheduledTransactions from '../insert-scheduled-transactions';
+import updateScheduledTransactions from '../update-scheduled-transactions';
 
-describe('insert-scheduled-transactions', () => {
+describe('update-scheduled-transactions', () => {
   let documentClient: DocumentClient;
   let tableName: string;
   let records: DynamoDBRecord[];
@@ -305,7 +305,7 @@ describe('insert-scheduled-transactions', () => {
   });
 
   it('should return update with the correct params', () => {
-    insertScheduledTransactions(documentClient, tableName, records);
+    updateScheduledTransactions(documentClient, tableName, records);
 
     expect(documentClient.update).toHaveBeenCalledWith({
       ExpressionAttributeNames: {
@@ -354,11 +354,29 @@ describe('insert-scheduled-transactions', () => {
       UpdateExpression:
         'SET #active = :active, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
     });
+
+    expect(documentClient.update).toHaveBeenCalledWith({
+      ConditionExpression: 'attribute_exists(id)',
+      ExpressionAttributeNames: {
+        '#active': 'active',
+        '#updatedAt': 'updatedAt',
+      },
+      ExpressionAttributeValues: {
+        ':active': false,
+        ':updatedAt': '2020-06-06T19:45:00.000Z',
+      },
+      Key: {
+        _typename: 'Typeahead',
+        id: 'transaction-3',
+      },
+      TableName: tableName,
+      UpdateExpression: 'SET #active = :active, #updatedAt = :updatedAt',
+    });
   });
 
   it('should call update the correct number of times', () => {
-    insertScheduledTransactions(documentClient, tableName, records);
+    updateScheduledTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(2);
+    expect(documentClient.update).toHaveBeenCalledTimes(3);
   });
 });
