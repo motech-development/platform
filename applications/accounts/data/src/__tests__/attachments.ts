@@ -311,6 +311,9 @@ describe('attachments', () => {
                   amount: {
                     N: '100.25',
                   },
+                  attachment: {
+                    S: 'path/to/file.pdf',
+                  },
                   category: {
                     S: 'Sales',
                   },
@@ -342,6 +345,9 @@ describe('attachments', () => {
                   },
                   amount: {
                     N: '200.5',
+                  },
+                  attachment: {
+                    S: 'path/to/file.pdf',
                   },
                   category: {
                     S: 'Sales',
@@ -380,6 +386,9 @@ describe('attachments', () => {
                   amount: {
                     N: '100.25',
                   },
+                  attachment: {
+                    S: 'path/to/file.pdf',
+                  },
                   category: {
                     S: 'Expenses',
                   },
@@ -411,6 +420,9 @@ describe('attachments', () => {
                   },
                   amount: {
                     N: '200.5',
+                  },
+                  attachment: {
+                    S: 'path/to/file.pdf',
                   },
                   category: {
                     S: 'Expenses',
