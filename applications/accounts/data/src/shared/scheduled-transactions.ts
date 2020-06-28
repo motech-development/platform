@@ -21,6 +21,8 @@ export const insert = (
 ) => {
   const now = new Date();
   const { companyId, date, owner } = record;
+  const startOfDay = aggregatedDay(date);
+  const timestamp = Math.floor(new Date(startOfDay).getTime() / 1000);
 
   return documentClient
     .update({
@@ -35,8 +37,8 @@ export const insert = (
       ExpressionAttributeValues: {
         ':active': true,
         ':createdAt': now.toISOString(),
-        ':data': `${owner}:${companyId}:active:${date}`,
-        ':ttl': aggregatedDay(date),
+        ':data': `${owner}:${companyId}:active:${timestamp}`,
+        ':ttl': timestamp,
         ':updatedAt': now.toISOString(),
       },
       UpdateExpression:

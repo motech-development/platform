@@ -336,8 +336,8 @@ describe('update-scheduled-transactions', () => {
       ExpressionAttributeValues: {
         ':active': true,
         ':createdAt': '2020-06-06T19:45:00.000Z',
-        ':data': 'owner:company-id:active:2019-12-15T00:00:00.000Z',
-        ':ttl': '2019-12-15T00:00:00.000Z',
+        ':data': 'owner:company-id:active:1576368000',
+        ':ttl': 1576368000,
         ':updatedAt': '2020-06-06T19:45:00.000Z',
       },
       Key: {
