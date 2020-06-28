@@ -6,7 +6,7 @@ import {
 } from '../shared/scheduled-transactions';
 import { unmarshallOldRecords } from '../shared/unmarshall-records';
 
-const confirmTransaction = (
+const confirmTransactions = (
   documentClient: DocumentClient,
   tableName: string,
   records: DynamoDBRecord[],
@@ -22,4 +22,4 @@ const confirmTransaction = (
   return transactionItems;
 };
 
-export default confirmTransaction;
+export default confirmTransactions;

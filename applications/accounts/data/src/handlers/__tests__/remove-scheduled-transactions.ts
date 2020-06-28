@@ -311,10 +311,14 @@ describe('remove-scheduled-transactions', () => {
       ConditionExpression: 'attribute_exists(id)',
       ExpressionAttributeNames: {
         '#active': 'active',
+        '#data': 'data',
+        '#ttl': 'ttl',
         '#updatedAt': 'updatedAt',
       },
       ExpressionAttributeValues: {
         ':active': false,
+        ':data': 'owner:company-id:active:1591472700',
+        ':ttl': 1591472700,
         ':updatedAt': '2020-06-06T19:45:00.000Z',
       },
       Key: {
@@ -322,17 +326,22 @@ describe('remove-scheduled-transactions', () => {
         id: 'transaction-3',
       },
       TableName: tableName,
-      UpdateExpression: 'SET #active = :active, #updatedAt = :updatedAt',
+      UpdateExpression:
+        'SET #active = :active, #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
     });
 
     expect(documentClient.update).toHaveBeenCalledWith({
       ConditionExpression: 'attribute_exists(id)',
       ExpressionAttributeNames: {
         '#active': 'active',
+        '#data': 'data',
+        '#ttl': 'ttl',
         '#updatedAt': 'updatedAt',
       },
       ExpressionAttributeValues: {
         ':active': false,
+        ':data': 'owner:company-id:active:1591472700',
+        ':ttl': 1591472700,
         ':updatedAt': '2020-06-06T19:45:00.000Z',
       },
       Key: {
@@ -340,7 +349,8 @@ describe('remove-scheduled-transactions', () => {
         id: 'transaction-4',
       },
       TableName: tableName,
-      UpdateExpression: 'SET #active = :active, #updatedAt = :updatedAt',
+      UpdateExpression:
+        'SET #active = :active, #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
     });
   });
 

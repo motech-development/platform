@@ -89,7 +89,9 @@ export const remove = (
   tableName: string,
   record: ITransaction,
 ) => {
+  const { companyId, owner } = record;
   const now = new Date();
+  const timestamp = Math.floor(now.getTime() / 1000);
 
   return documentClient
     .update({
@@ -97,13 +99,18 @@ export const remove = (
       ConditionExpression: 'attribute_exists(id)',
       ExpressionAttributeNames: {
         '#active': 'active',
+        '#data': 'data',
+        '#ttl': 'ttl',
         '#updatedAt': 'updatedAt',
       },
       ExpressionAttributeValues: {
         ':active': false,
+        ':data': `${owner}:${companyId}:active:${timestamp}`,
+        ':ttl': timestamp,
         ':updatedAt': now.toISOString(),
       },
-      UpdateExpression: 'SET #active = :active, #updatedAt = :updatedAt',
+      UpdateExpression:
+        'SET #active = :active, #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
     })
     .promise();
 };
