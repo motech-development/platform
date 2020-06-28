@@ -318,7 +318,7 @@ describe('update-scheduled-transactions', () => {
         ':updatedAt': '2020-06-06T19:45:00.000Z',
       },
       Key: {
-        _typename: 'Typeahead',
+        __typename: 'ScheduledTransaction',
         id: 'transaction-1',
       },
       TableName: tableName,
@@ -341,7 +341,7 @@ describe('update-scheduled-transactions', () => {
         ':updatedAt': '2020-06-06T19:45:00.000Z',
       },
       Key: {
-        _typename: 'Typeahead',
+        __typename: 'ScheduledTransaction',
         id: 'transaction-2',
       },
       TableName: tableName,
@@ -360,7 +360,7 @@ describe('update-scheduled-transactions', () => {
         ':updatedAt': '2020-06-06T19:45:00.000Z',
       },
       Key: {
-        _typename: 'Typeahead',
+        __typename: 'ScheduledTransaction',
         id: 'transaction-3',
       },
       TableName: tableName,

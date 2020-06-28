@@ -318,7 +318,7 @@ describe('remove-scheduled-transactions', () => {
         ':updatedAt': '2020-06-06T19:45:00.000Z',
       },
       Key: {
-        _typename: 'Typeahead',
+        __typename: 'ScheduledTransaction',
         id: 'transaction-3',
       },
       TableName: tableName,
@@ -336,7 +336,7 @@ describe('remove-scheduled-transactions', () => {
         ':updatedAt': '2020-06-06T19:45:00.000Z',
       },
       Key: {
-        _typename: 'Typeahead',
+        __typename: 'ScheduledTransaction',
         id: 'transaction-4',
       },
       TableName: tableName,
