@@ -3,25 +3,12 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import insertScheduledTransactions from './handlers/insert-scheduled-transactions';
 import removeScheduledTransactions from './handlers/remove-scheduled-transactions';
 import updateScheduledTransactions from './handlers/update-scheduled-transactions';
+import extractStream from './shared/extract-stream';
 
 const documentClient = new DocumentClient();
 
 export const handler: DynamoDBStreamHandler = async event => {
-  const { TABLE } = process.env;
-
-  if (!TABLE) {
-    throw new Error('No table set');
-  }
-
-  const inserts = event.Records.filter(
-    ({ eventName }) => eventName === 'INSERT',
-  );
-  const updates = event.Records.filter(
-    ({ eventName }) => eventName === 'MODIFY',
-  );
-  const removals = event.Records.filter(
-    ({ eventName }) => eventName === 'REMOVE',
-  );
+  const { TABLE, inserts, removals, updates } = extractStream(event);
 
   try {
     await Promise.all<unknown>([

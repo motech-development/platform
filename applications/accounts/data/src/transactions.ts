@@ -3,25 +3,12 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import removeTransactions from './handlers/remove-transactions';
 import insertTransactions from './handlers/insert-transactions';
 import updateTransactions from './handlers/update-transactions';
+import extractStream from './shared/extract-stream';
 
 const documentClient = new DocumentClient();
 
 export const handler: DynamoDBStreamHandler = async event => {
-  const { TABLE } = process.env;
-
-  if (!TABLE) {
-    throw new Error('No table set');
-  }
-
-  const inserts = event.Records.filter(
-    ({ eventName }) => eventName === 'INSERT',
-  );
-  const updates = event.Records.filter(
-    ({ eventName }) => eventName === 'MODIFY',
-  );
-  const removals = event.Records.filter(
-    ({ eventName }) => eventName === 'REMOVE',
-  );
+  const { TABLE, inserts, removals, updates } = extractStream(event);
 
   try {
     await Promise.all([

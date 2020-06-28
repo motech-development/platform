@@ -1,22 +1,12 @@
 import { DynamoDBStreamHandler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import insertTypeahead from './handlers/insert-typeahead';
+import extractStream from './shared/extract-stream';
 
 const documentClient = new DocumentClient();
 
 export const handler: DynamoDBStreamHandler = async event => {
-  const { TABLE } = process.env;
-
-  if (!TABLE) {
-    throw new Error('No table set');
-  }
-
-  const inserts = event.Records.filter(
-    ({ eventName }) => eventName === 'INSERT',
-  );
-  const updates = event.Records.filter(
-    ({ eventName }) => eventName === 'MODIFY',
-  );
+  const { TABLE, inserts, updates } = extractStream(event);
 
   try {
     await Promise.all([
