@@ -254,7 +254,7 @@ describe('update-scheduled-transactions', () => {
               S: 'owner',
             },
             scheduled: {
-              BOOL: true,
+              BOOL: false,
             },
             status: {
               S: 'pending',
@@ -286,7 +286,7 @@ describe('update-scheduled-transactions', () => {
               S: 'owner',
             },
             scheduled: {
-              BOOL: true,
+              BOOL: false,
             },
             status: {
               S: 'pending',
@@ -306,6 +306,24 @@ describe('update-scheduled-transactions', () => {
 
   it('should return update with the correct params', () => {
     updateScheduledTransactions(documentClient, tableName, records);
+
+    expect(documentClient.update).toHaveBeenCalledWith({
+      ConditionExpression: 'attribute_exists(id)',
+      ExpressionAttributeNames: {
+        '#active': 'active',
+        '#updatedAt': 'updatedAt',
+      },
+      ExpressionAttributeValues: {
+        ':active': false,
+        ':updatedAt': '2020-06-06T19:45:00.000Z',
+      },
+      Key: {
+        _typename: 'Typeahead',
+        id: 'transaction-1',
+      },
+      TableName: tableName,
+      UpdateExpression: 'SET #active = :active, #updatedAt = :updatedAt',
+    });
 
     expect(documentClient.update).toHaveBeenCalledWith({
       ExpressionAttributeNames: {
@@ -332,48 +350,6 @@ describe('update-scheduled-transactions', () => {
     });
 
     expect(documentClient.update).toHaveBeenCalledWith({
-      ExpressionAttributeNames: {
-        '#active': 'active',
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#ttl': 'ttl',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':active': true,
-        ':createdAt': '2020-06-06T19:45:00.000Z',
-        ':data': 'owner:company-id:active:2019-12-15T00:00:00.000Z',
-        ':ttl': '2019-12-15T00:00:00.000Z',
-        ':updatedAt': '2020-06-06T19:45:00.000Z',
-      },
-      Key: {
-        _typename: 'Typeahead',
-        id: 'transaction-4',
-      },
-      TableName: tableName,
-      UpdateExpression:
-        'SET #active = :active, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
-    });
-
-    expect(documentClient.update).toHaveBeenCalledWith({
-      ConditionExpression: 'attribute_exists(id)',
-      ExpressionAttributeNames: {
-        '#active': 'active',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':active': false,
-        ':updatedAt': '2020-06-06T19:45:00.000Z',
-      },
-      Key: {
-        _typename: 'Typeahead',
-        id: 'transaction-1',
-      },
-      TableName: tableName,
-      UpdateExpression: 'SET #active = :active, #updatedAt = :updatedAt',
-    });
-
-    expect(documentClient.update).toHaveBeenCalledWith({
       ConditionExpression: 'attribute_exists(id)',
       ExpressionAttributeNames: {
         '#active': 'active',
@@ -395,6 +371,6 @@ describe('update-scheduled-transactions', () => {
   it('should call update the correct number of times', () => {
     updateScheduledTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(4);
+    expect(documentClient.update).toHaveBeenCalledTimes(3);
   });
 });
