@@ -22,7 +22,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { date, number, object, string } from 'yup';
+import { boolean, date, number, object, string } from 'yup';
 
 const formSchema = {
   amount: '',
@@ -33,6 +33,7 @@ const formSchema = {
   description: '',
   id: '',
   name: '',
+  scheduled: false,
   status: '',
   vat: '',
 };
@@ -46,6 +47,7 @@ export type FormSchema = {
   description: string;
   id: string;
   name: string;
+  scheduled: boolean;
   status: string;
   vat: number;
 };
@@ -139,6 +141,7 @@ const TransactionForm: FC<ITransactionForm> = ({
       name: string().required(
         t('transaction-form.transaction-details.name.required'),
       ),
+      scheduled: boolean(),
       status: string().required(
         t('transaction-form.transaction-amount.status.required'),
       ),

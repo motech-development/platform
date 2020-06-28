@@ -18,6 +18,7 @@ type Transaction {
   description: String
   id: ID
   name: String
+  scheduled: Boolean
   status: TransactionStatus
   vat: Float
 }
@@ -32,6 +33,7 @@ input TransactionInput {
   description: String!
   id: ID!
   name: String!
+  scheduled: Boolean!
   status: TransactionStatus!
   vat: Float!
 }
