@@ -713,7 +713,7 @@ describe('RecordTransaction', () => {
                 description: 'Invoice #1',
                 id: '',
                 name: 'Motech Development',
-                scheduled: false,
+                scheduled: true,
                 status: 'pending',
                 vat: 200,
               },
@@ -731,7 +731,7 @@ describe('RecordTransaction', () => {
                 description: 'Invoice #1',
                 id: 'transaction-id',
                 name: 'Motech Development',
-                scheduled: false,
+                scheduled: true,
                 status: 'pending',
                 vat: 200,
               },
@@ -788,9 +788,6 @@ describe('RecordTransaction', () => {
         const status = await findByLabelText(
           'transaction-form.transaction-amount.status.options.pending',
         );
-        const amount = await findByLabelText(
-          'transaction-form.transaction-amount.amount.label',
-        );
 
         fireEvent.change(supplier, {
           target: {
@@ -807,6 +804,17 @@ describe('RecordTransaction', () => {
         });
 
         fireEvent.click(status);
+
+        await wait();
+
+        const schedule = await findByLabelText(
+          'transaction-form.transaction-amount.schedule.options.yes',
+        );
+        const amount = await findByLabelText(
+          'transaction-form.transaction-amount.amount.label',
+        );
+
+        fireEvent.click(schedule);
 
         fireEvent.change(amount, {
           target: {
@@ -852,12 +860,6 @@ describe('RecordTransaction', () => {
         const status = await findByLabelText(
           'transaction-form.transaction-amount.status.options.pending',
         );
-        const amount = await findByLabelText(
-          'transaction-form.transaction-amount.amount.label',
-        );
-        const fileUpload = await findByLabelText(
-          'transaction-form.upload.upload.label',
-        );
 
         fireEvent.change(supplier, {
           target: {
@@ -874,6 +876,20 @@ describe('RecordTransaction', () => {
         });
 
         fireEvent.click(status);
+
+        await wait();
+
+        const schedule = await findByLabelText(
+          'transaction-form.transaction-amount.schedule.options.yes',
+        );
+        const amount = await findByLabelText(
+          'transaction-form.transaction-amount.amount.label',
+        );
+        const fileUpload = await findByLabelText(
+          'transaction-form.upload.upload.label',
+        );
+
+        fireEvent.click(schedule);
 
         fireEvent.change(amount, {
           target: {

@@ -112,6 +112,13 @@
       "vat": {
         "label": "VAT",
         "required": "VAT is required"
+      },
+      "schedule": {
+        "label": "Automatically confirm transaction on set date?",
+        "options": {
+          "yes": "Yes",
+          "no": "No"
+        }
       }
     },
     "upload": {

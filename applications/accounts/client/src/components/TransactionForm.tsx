@@ -3,6 +3,7 @@ import {
   Col,
   DatePicker,
   Form,
+  IRadioOption,
   ISelectOption,
   LinkButton,
   Radio,
@@ -110,6 +111,8 @@ const TransactionForm: FC<ITransactionForm> = ({
       : {
           transaction: initialTransaction,
         }),
+    scheduled:
+      initialValues.scheduled === null ? false : initialValues.scheduled,
   };
   const [transactionType, setTransactionType] = useState(
     formValues.transaction,
@@ -119,6 +122,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     descriptions: [] as string[],
     suppliers: [] as string[],
   });
+  const [pending, setPending] = useState(initialValues.status === 'pending');
   const { t } = useTranslation('accounts');
   const currency = t('transaction-form.currency');
   const validationSchema = object<FormSchema>()
@@ -141,7 +145,9 @@ const TransactionForm: FC<ITransactionForm> = ({
       name: string().required(
         t('transaction-form.transaction-details.name.required'),
       ),
-      scheduled: boolean(),
+      scheduled: boolean()
+        .oneOf([false, true])
+        .required(),
       status: string().required(
         t('transaction-form.transaction-amount.status.required'),
       ),
@@ -171,6 +177,16 @@ const TransactionForm: FC<ITransactionForm> = ({
       value: 'Sales',
     },
   ];
+  const scheduleOptions = ([
+    {
+      name: t('transaction-form.transaction-amount.schedule.options.yes'),
+      value: true,
+    },
+    {
+      name: t('transaction-form.transaction-amount.schedule.options.no'),
+      value: false,
+    },
+  ] as unknown) as IRadioOption[];
   const statusOptions = [
     {
       name: t('transaction-form.transaction-amount.status.options.confirmed'),
@@ -220,6 +236,30 @@ const TransactionForm: FC<ITransactionForm> = ({
     const calculated = (value - value / rate).toFixed(2);
 
     setFieldValue('vat', calculated);
+  };
+  const onStatusChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    form: FormikProps<FormikValues>,
+  ) => {
+    const { value } = event.target;
+    const { setFieldValue } = form;
+    const isPending = value === 'pending';
+
+    setPending(isPending);
+    setFieldValue('status', value);
+
+    if (!isPending) {
+      setFieldValue('scheduled', false);
+    }
+  };
+  const onScheduledChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    form: FormikProps<FormikValues>,
+  ) => {
+    const { value } = event.target;
+    const { setFieldValue } = form;
+
+    setFieldValue('scheduled', value === 'true');
   };
   const onPreSubmit = ({ transaction, ...value }: IFormValues) => {
     const isPurchase = transaction === 'Purchase';
@@ -328,6 +368,7 @@ const TransactionForm: FC<ITransactionForm> = ({
                   name="status"
                   label={t('transaction-form.transaction-amount.status.label')}
                   options={statusOptions}
+                  onChange={onStatusChange}
                 />
 
                 {transactionType && (
@@ -392,6 +433,17 @@ const TransactionForm: FC<ITransactionForm> = ({
                       </>
                     )}
                   </>
+                )}
+
+                {pending && (
+                  <Radio
+                    name="scheduled"
+                    label={t(
+                      'transaction-form.transaction-amount.schedule.label',
+                    )}
+                    options={scheduleOptions}
+                    onChange={onScheduledChange}
+                  />
                 )}
               </Card>
             </Col>
