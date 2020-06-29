@@ -754,7 +754,7 @@ describe('ViewTransaction', () => {
                 description: 'Invoice #1',
                 id: 'transaction-id',
                 name: 'Motech Development',
-                scheduled: false,
+                scheduled: null,
                 status: 'confirmed',
                 vat: 200,
               },

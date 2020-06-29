@@ -48,7 +48,7 @@
     "type": "Purchase",
     "supplier": "Low Cost Air",
     "description": "Return flight to London",
-    "scheduled": "true",
+    "scheduled": "false",
     "status": "pending",
     "category": "6",
     "amount": "112",
