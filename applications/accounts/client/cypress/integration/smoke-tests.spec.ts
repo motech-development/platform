@@ -1294,6 +1294,8 @@ describe('Smoke tests', () => {
 
           cy.get('input[type="radio"]').check(transaction.status);
 
+          cy.get('input[type="radio"]').check(transaction.scheduled);
+
           cy.get('input[id="amount"]')
             .focus()
             .type(transaction.amount);
@@ -1325,6 +1327,8 @@ describe('Smoke tests', () => {
             .type(transaction.description);
 
           cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('input[type="radio"]').check(transaction.scheduled);
 
           cy.get('select[id="category"]')
             .focus()
@@ -1361,6 +1365,8 @@ describe('Smoke tests', () => {
             .type(transaction.description);
 
           cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('input[type="radio"]').check(transaction.scheduled);
 
           cy.get('select[id="category"]')
             .focus()
