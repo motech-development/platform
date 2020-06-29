@@ -2,10 +2,11 @@ import { withA11y } from '@storybook/addon-a11y';
 import { boolean, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import React from 'react';
-import { date, object, string } from 'yup';
+import { bool, date, object, string } from 'yup';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
+import CheckBox from '../CheckBox/CheckBox';
 import Col from '../Col/Col';
 import DatePicker from '../DatePicker/DatePicker';
 import FileUpload from '../FileUpload/FileUpload';
@@ -28,6 +29,7 @@ const initialValues = {
   },
   name: 'Mo Gusbi',
   password: '',
+  terms: false,
   typeahead: '',
   upload: '',
 };
@@ -45,6 +47,9 @@ const validationSchema = object()
     }),
     name: string().required(),
     password: string().required(),
+    terms: bool()
+      .oneOf([true])
+      .required(),
     typeahead: string().required(),
     upload: string().required(),
   })
@@ -84,28 +89,6 @@ stories.add('Basic form', () => (
               </Button>
             }
           >
-            <Typeahead
-              disabled={disabled()}
-              readOnly={readOnly()}
-              name="typeahead"
-              label="Typeahead"
-              placeholder="Begin typing something..."
-              suggestions={[
-                {
-                  name: 'ABC',
-                  value: 'ABC',
-                },
-                {
-                  name: 'DEF',
-                  value: 'DEF',
-                },
-                {
-                  name: '123 (sets XYZ)',
-                  value: 'XYZ',
-                },
-              ]}
-            />
-
             <TextBox
               disabled={disabled()}
               readOnly={readOnly()}
@@ -151,6 +134,14 @@ stories.add('Basic form', () => (
               label="Choice"
             />
 
+            <CheckBox
+              disabled={disabled()}
+              readOnly={readOnly()}
+              name="terms"
+              label="I agree"
+              legend="Do you agree to the Ts &amp; Cs?"
+            />
+
             <TextBox
               disabled={disabled()}
               readOnly={readOnly()}
@@ -166,6 +157,28 @@ stories.add('Basic form', () => (
               type="text"
               label="Sort code"
               format="##-##-##"
+            />
+
+            <Typeahead
+              disabled={disabled()}
+              readOnly={readOnly()}
+              name="typeahead"
+              label="Typeahead"
+              placeholder="Begin typing something..."
+              suggestions={[
+                {
+                  name: 'ABC',
+                  value: 'ABC',
+                },
+                {
+                  name: 'DEF',
+                  value: 'DEF',
+                },
+                {
+                  name: '123 (sets XYZ)',
+                  value: 'XYZ',
+                },
+              ]}
             />
 
             <DatePicker

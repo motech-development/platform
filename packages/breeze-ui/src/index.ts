@@ -6,6 +6,7 @@ export { default as Button } from './Button/Button';
 export { default as ButtonLink } from './ButtonLink/ButtonLink';
 export { default as Calendar } from './Calendar/Calendar';
 export { default as Card } from './Card/Card';
+export { default as CheckBox } from './CheckBox/CheckBox';
 export { default as Col } from './Col/Col';
 export { default as Content } from './Content/Content';
 export { default as DataTable } from './DataTable/DataTable';
