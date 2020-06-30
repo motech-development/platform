@@ -1,0 +1,79 @@
+import { act, render, RenderResult } from '@testing-library/react';
+import React from 'react';
+import Scheduled from '../Scheduled';
+
+describe('Scheduled', () => {
+  let value: string;
+
+  beforeEach(() => {
+    value = new Date().toISOString();
+  });
+
+  it('should show no clock', () => {
+    const { container } = render(
+      <Scheduled
+        id="test"
+        message="Test"
+        placement="left"
+        show={false}
+        value={value}
+      />,
+    );
+    const arrow = container.querySelector(
+      'svg[data-icon="exclamation-triangle"]',
+    );
+
+    expect(arrow).not.toBeInTheDocument();
+  });
+
+  describe('when aligned to the left', () => {
+    let component: RenderResult;
+
+    beforeEach(async () => {
+      await act(async () => {
+        component = render(
+          <Scheduled
+            id="test"
+            message="Test"
+            placement="left"
+            show
+            value={value}
+          />,
+        );
+      });
+    });
+
+    it('should show clock', () => {
+      const { container } = component;
+      const arrow = container.querySelector('svg[data-icon="clock"]');
+
+      expect(arrow).toBeInTheDocument();
+    });
+  });
+
+  describe('when aligned to the right', () => {
+    let component: RenderResult;
+
+    beforeEach(async () => {
+      await act(async () => {
+        component = render(
+          <Scheduled
+            format="dd/mm/yyyy"
+            id="test"
+            message="Test"
+            placement="right"
+            show
+            value={value}
+          />,
+        );
+      });
+    });
+
+    it('should show clock', async () => {
+      const { container } = component;
+      const arrow = container.querySelector('svg[data-icon="clock"]');
+
+      expect(arrow).toBeInTheDocument();
+    });
+  });
+});

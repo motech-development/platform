@@ -8,13 +8,14 @@ import {
 import React, { FC, memo } from 'react';
 import styled from 'styled-components';
 
-interface IArrow {
+interface IWarningTriangle {
   $placement: 'left' | 'right';
 }
 
-const Arrow = styled(FontAwesomeIcon)<IArrow>`
+const WarningTriangle = styled(FontAwesomeIcon)<IWarningTriangle>`
   ${({ $placement }) => `
     color: rgb(199,56,79);
+    cursor: pointer;
     margin: 0 ${$placement === 'left' ? '0.5rem 0 0' : '0 0 0.5rem'};
   `}
 `;
@@ -45,13 +46,19 @@ const Warning: FC<IWarningProps> = ({
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <Typography {...rest}>
               {placement === 'left' && (
-                <Arrow icon={faExclamationTriangle} $placement={placement} />
+                <WarningTriangle
+                  icon={faExclamationTriangle}
+                  $placement={placement}
+                />
               )}
 
               {children}
 
               {placement === 'right' && (
-                <Arrow icon={faExclamationTriangle} $placement={placement} />
+                <WarningTriangle
+                  icon={faExclamationTriangle}
+                  $placement={placement}
+                />
               )}
             </Typography>
           </>

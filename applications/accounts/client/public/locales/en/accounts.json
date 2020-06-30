@@ -39,6 +39,7 @@
       "date": "Date",
       "amount": "Amount",
       "no-attachment": "No invoice or receipt",
+      "scheduled": "Scheduled transaction",
       "actions": "Actions",
       "view": "View",
       "delete": "Delete"
