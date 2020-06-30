@@ -5,7 +5,9 @@ import { ITransaction, TransactionStatus } from './transaction';
 export interface IScheduledTransaction {
   __typename: string;
   active: boolean;
+  date: string;
   id: string;
+  owner: string;
 }
 
 const commonUpdate = (tableName: string, record: ITransaction) => {
@@ -26,16 +28,18 @@ export const confirm = (
   record: IScheduledTransaction,
 ) => {
   const now = new Date();
-  const { id } = record;
+  const { date, id, owner } = record;
 
   return documentClient
     .update({
       ExpressionAttributeNames: {
+        '#data': 'data',
         '#scheduled': 'scheduled',
         '#status': 'status',
         '#updatedAt': 'updatedAt',
       },
       ExpressionAttributeValues: {
+        ':data': `${owner}:${id}:confirmed:${date}`,
         ':scheduled': false,
         ':status': 'confirmed',
         ':updatedAt': now.toISOString(),
@@ -46,7 +50,7 @@ export const confirm = (
       },
       TableName: tableName,
       UpdateExpression:
-        'SET #scheduled = :scheduled, #status = :status, #updatedAt = :updatedAt',
+        'SET #data = :data, #scheduled = :scheduled, #status = :status, #updatedAt = :updatedAt',
     })
     .promise();
 };
@@ -68,6 +72,8 @@ export const insert = (
         '#active': 'active',
         '#createdAt': 'createdAt',
         '#data': 'data',
+        '#date': 'date',
+        '#owner': 'owner',
         '#ttl': 'ttl',
         '#updatedAt': 'updatedAt',
       },
@@ -75,11 +81,13 @@ export const insert = (
         ':active': true,
         ':createdAt': now.toISOString(),
         ':data': `${owner}:${companyId}:active:${timestamp}`,
+        ':date': date,
+        ':owner': owner,
         ':ttl': timestamp,
         ':updatedAt': now.toISOString(),
       },
       UpdateExpression:
-        'SET #active = :active, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
+        'SET #active = :active, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #date = :date, #owner = :owner, #ttl = :ttl, #updatedAt = :updatedAt',
     })
     .promise();
 };

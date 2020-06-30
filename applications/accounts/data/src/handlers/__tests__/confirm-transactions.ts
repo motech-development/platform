@@ -31,8 +31,14 @@ describe('confirm-transactions', () => {
             active: {
               BOOL: true,
             },
+            date: {
+              S: '2019-12-15T00:00:00.000Z',
+            },
             id: {
               S: 'transaction-1',
+            },
+            owner: {
+              S: 'owner',
             },
           },
         },
@@ -47,8 +53,14 @@ describe('confirm-transactions', () => {
             active: {
               BOOL: false,
             },
+            date: {
+              S: '2019-12-15T00:00:00.000Z',
+            },
             id: {
               S: 'transaction-2',
+            },
+            owner: {
+              S: 'owner',
             },
           },
         },
@@ -65,11 +77,13 @@ describe('confirm-transactions', () => {
 
     expect(documentClient.update).toHaveBeenCalledWith({
       ExpressionAttributeNames: {
+        '#data': 'data',
         '#scheduled': 'scheduled',
         '#status': 'status',
         '#updatedAt': 'updatedAt',
       },
       ExpressionAttributeValues: {
+        ':data': 'owner:transaction-1:confirmed:2019-12-15T00:00:00.000Z',
         ':scheduled': false,
         ':status': 'confirmed',
         ':updatedAt': '2020-06-06T19:45:00.000Z',
@@ -80,7 +94,7 @@ describe('confirm-transactions', () => {
       },
       TableName: tableName,
       UpdateExpression:
-        'SET #scheduled = :scheduled, #status = :status, #updatedAt = :updatedAt',
+        'SET #data = :data, #scheduled = :scheduled, #status = :status, #updatedAt = :updatedAt',
     });
   });
 

@@ -335,6 +335,8 @@ describe('update-scheduled-transactions', () => {
         '#active': 'active',
         '#createdAt': 'createdAt',
         '#data': 'data',
+        '#date': 'date',
+        '#owner': 'owner',
         '#ttl': 'ttl',
         '#updatedAt': 'updatedAt',
       },
@@ -342,6 +344,8 @@ describe('update-scheduled-transactions', () => {
         ':active': true,
         ':createdAt': '2020-06-06T19:45:00.000Z',
         ':data': 'owner:company-id:active:1576368000',
+        ':date': '2019-12-15T00:00:00.000Z',
+        ':owner': 'owner',
         ':ttl': 1576368000,
         ':updatedAt': '2020-06-06T19:45:00.000Z',
       },
@@ -351,7 +355,7 @@ describe('update-scheduled-transactions', () => {
       },
       TableName: tableName,
       UpdateExpression:
-        'SET #active = :active, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
+        'SET #active = :active, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #date = :date, #owner = :owner, #ttl = :ttl, #updatedAt = :updatedAt',
     });
 
     expect(documentClient.update).toHaveBeenCalledWith({
