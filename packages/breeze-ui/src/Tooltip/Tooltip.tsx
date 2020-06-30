@@ -103,6 +103,7 @@ const TooltipContent = styled.div<ITooltipContent>`
     line-height: 22px;
     padding: 0 5px;
     visibility: ${$visible ? 'visible' : 'hidden'};
+    z-index: 10;
   `}
 `;
 
