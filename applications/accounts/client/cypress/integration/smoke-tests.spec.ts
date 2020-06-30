@@ -1393,7 +1393,7 @@ describe('Smoke tests', () => {
           cy.wait(1000);
 
           cy.get('button:contains("Delete")')
-            .eq(2)
+            .eq(1)
             .click();
 
           cy.wait(1000);
@@ -1404,8 +1404,16 @@ describe('Smoke tests', () => {
 
           cy.get('button[type="submit"]').click();
 
-          cy.get('button:contains("Delete")').should('have.length', 2);
+          cy.get('button:contains("Delete")').should('have.length', 1);
         });
+      });
+
+      it('should have published the scheduled transaction', () => {
+        cy.contains('Balance: £3902.40').should('be.visible');
+
+        cy.contains('VAT owed: £0.00').should('be.visible');
+
+        cy.contains('VAT paid: £16.27').should('be.visible');
       });
     });
   });
