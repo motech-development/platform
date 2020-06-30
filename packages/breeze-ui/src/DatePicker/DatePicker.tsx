@@ -158,7 +158,7 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
   );
 };
 
-export interface IDatePicker {
+export interface IDatePickerProps {
   disabled?: boolean;
   helpText?: string;
   label: string;
@@ -167,7 +167,7 @@ export interface IDatePicker {
   spacing?: InputSpacing;
 }
 
-const DatePicker: FC<IDatePicker> = ({
+const DatePicker: FC<IDatePickerProps> = ({
   disabled = false,
   helpText = null,
   label,

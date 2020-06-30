@@ -5,7 +5,7 @@ import Col from '../Col/Col';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import Row from '../Row/Row';
 
-export interface IStepper {
+export interface IStepperProps {
   children: ReactNode[];
   nextLabel: string;
   onComplete?: ReactNode;
@@ -15,7 +15,7 @@ export interface IStepper {
   enableNext?(step: number): boolean;
 }
 
-const Stepper: FC<IStepper> = ({
+const Stepper: FC<IStepperProps> = ({
   children,
   enableNext = () => true,
   nextLabel,

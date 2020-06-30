@@ -170,6 +170,76 @@ describe('Tooltip', () => {
     });
   });
 
+  describe('secondary', () => {
+    beforeEach(async () => {
+      const { findByRole, findByTestId } = render(
+        <Tooltip
+          id="test"
+          parent={
+            <button type="button" data-testid="button">
+              Hello world
+            </button>
+          }
+          placement="top"
+          message="Hello"
+          colour="secondary"
+        />,
+      );
+
+      button = await findByTestId('button');
+
+      fireEvent.focus(button);
+
+      tooltip = await findByRole('tooltip');
+    });
+
+    it('should show the tooltip on hover', () => {
+      expect(tooltip).toBeDefined();
+    });
+
+    it('should have the correct styles', () => {
+      expect(tooltip).toHaveStyle(`
+        background-color: #f6f9fc;
+        color: #333;
+      `);
+    });
+  });
+
+  describe('success', () => {
+    beforeEach(async () => {
+      const { findByRole, findByTestId } = render(
+        <Tooltip
+          id="test"
+          parent={
+            <button type="button" data-testid="button">
+              Hello world
+            </button>
+          }
+          placement="top"
+          message="Hello"
+          colour="success"
+        />,
+      );
+
+      button = await findByTestId('button');
+
+      fireEvent.focus(button);
+
+      tooltip = await findByRole('tooltip');
+    });
+
+    it('should show the tooltip on hover', () => {
+      expect(tooltip).toBeDefined();
+    });
+
+    it('should have the correct styles', () => {
+      expect(tooltip).toHaveStyle(`
+        background-color: rgb(0,128,93);
+        color: #fff;
+      `);
+    });
+  });
+
   describe('top', () => {
     beforeEach(async () => {
       const { findByRole, findByTestId } = render(

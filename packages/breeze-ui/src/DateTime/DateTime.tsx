@@ -12,12 +12,12 @@ export const formatDateTime = (value: string, format = defaultFormat) => {
   };
 };
 
-export interface IDateTime {
+export interface IDateTimeProps {
   format?: string;
   value: string;
 }
 
-const DateTime: FC<IDateTime> = ({ format = defaultFormat, value }) => {
+const DateTime: FC<IDateTimeProps> = ({ format = defaultFormat, value }) => {
   const { ISOString, formatted } = formatDateTime(value, format);
 
   return <time dateTime={ISOString}>{formatted}</time>;
