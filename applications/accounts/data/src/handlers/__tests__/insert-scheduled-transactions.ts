@@ -310,6 +310,7 @@ describe('insert-scheduled-transactions', () => {
     expect(documentClient.update).toHaveBeenCalledWith({
       ExpressionAttributeNames: {
         '#active': 'active',
+        '#companyId': 'companyId',
         '#createdAt': 'createdAt',
         '#data': 'data',
         '#date': 'date',
@@ -319,6 +320,7 @@ describe('insert-scheduled-transactions', () => {
       },
       ExpressionAttributeValues: {
         ':active': true,
+        ':companyId': 'company-id',
         ':createdAt': '2020-06-06T19:45:00.000Z',
         ':data': 'owner:company-id:active:1576368000',
         ':date': '2019-12-15T00:00:00.000Z',
@@ -332,12 +334,13 @@ describe('insert-scheduled-transactions', () => {
       },
       TableName: tableName,
       UpdateExpression:
-        'SET #active = :active, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #date = :date, #owner = :owner, #ttl = :ttl, #updatedAt = :updatedAt',
+        'SET #active = :active, #companyId = :companyId, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #date = :date, #owner = :owner, #ttl = :ttl, #updatedAt = :updatedAt',
     });
 
     expect(documentClient.update).toHaveBeenCalledWith({
       ExpressionAttributeNames: {
         '#active': 'active',
+        '#companyId': 'companyId',
         '#createdAt': 'createdAt',
         '#data': 'data',
         '#date': 'date',
@@ -347,6 +350,7 @@ describe('insert-scheduled-transactions', () => {
       },
       ExpressionAttributeValues: {
         ':active': true,
+        ':companyId': 'company-id',
         ':createdAt': '2020-06-06T19:45:00.000Z',
         ':data': 'owner:company-id:active:1576368000',
         ':date': '2019-12-15T00:00:00.000Z',
@@ -360,7 +364,7 @@ describe('insert-scheduled-transactions', () => {
       },
       TableName: tableName,
       UpdateExpression:
-        'SET #active = :active, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #date = :date, #owner = :owner, #ttl = :ttl, #updatedAt = :updatedAt',
+        'SET #active = :active, #companyId = :companyId, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #date = :date, #owner = :owner, #ttl = :ttl, #updatedAt = :updatedAt',
     });
   });
 

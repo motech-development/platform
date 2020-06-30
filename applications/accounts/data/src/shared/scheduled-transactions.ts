@@ -5,6 +5,7 @@ import { ITransaction, TransactionStatus } from './transaction';
 export interface IScheduledTransaction {
   __typename: string;
   active: boolean;
+  companyId: string;
   date: string;
   id: string;
   owner: string;
@@ -28,7 +29,7 @@ export const confirm = (
   record: IScheduledTransaction,
 ) => {
   const now = new Date();
-  const { date, id, owner } = record;
+  const { companyId, date, id, owner } = record;
 
   return documentClient
     .update({
@@ -39,7 +40,7 @@ export const confirm = (
         '#updatedAt': 'updatedAt',
       },
       ExpressionAttributeValues: {
-        ':data': `${owner}:${id}:confirmed:${date}`,
+        ':data': `${owner}:${companyId}:confirmed:${date}`,
         ':scheduled': false,
         ':status': 'confirmed',
         ':updatedAt': now.toISOString(),
@@ -70,6 +71,7 @@ export const insert = (
       ...commonUpdate(tableName, record),
       ExpressionAttributeNames: {
         '#active': 'active',
+        '#companyId': 'companyId',
         '#createdAt': 'createdAt',
         '#data': 'data',
         '#date': 'date',
@@ -79,6 +81,7 @@ export const insert = (
       },
       ExpressionAttributeValues: {
         ':active': true,
+        ':companyId': companyId,
         ':createdAt': now.toISOString(),
         ':data': `${owner}:${companyId}:active:${timestamp}`,
         ':date': date,
@@ -87,7 +90,7 @@ export const insert = (
         ':updatedAt': now.toISOString(),
       },
       UpdateExpression:
-        'SET #active = :active, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #date = :date, #owner = :owner, #ttl = :ttl, #updatedAt = :updatedAt',
+        'SET #active = :active, #companyId = :companyId, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #date = :date, #owner = :owner, #ttl = :ttl, #updatedAt = :updatedAt',
     })
     .promise();
 };

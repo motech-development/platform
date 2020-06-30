@@ -31,6 +31,9 @@ describe('confirm-transactions', () => {
             active: {
               BOOL: true,
             },
+            companyId: {
+              S: 'company-id',
+            },
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
@@ -52,6 +55,9 @@ describe('confirm-transactions', () => {
             },
             active: {
               BOOL: false,
+            },
+            companyId: {
+              S: 'company-id',
             },
             date: {
               S: '2019-12-15T00:00:00.000Z',
@@ -83,7 +89,7 @@ describe('confirm-transactions', () => {
         '#updatedAt': 'updatedAt',
       },
       ExpressionAttributeValues: {
-        ':data': 'owner:transaction-1:confirmed:2019-12-15T00:00:00.000Z',
+        ':data': 'owner:company-id:confirmed:2019-12-15T00:00:00.000Z',
         ':scheduled': false,
         ':status': 'confirmed',
         ':updatedAt': '2020-06-06T19:45:00.000Z',
