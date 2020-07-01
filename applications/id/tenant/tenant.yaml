@@ -68,8 +68,10 @@ clients:
         enabled: false
     oidc_conformant: true
     refresh_token:
-      rotation_type: non-rotating
-      expiration_type: non-expiring
+      leeway: 4
+      token_lifetime: 5
+      rotation_type: rotating
+      expiration_type: expiring
     sso_disabled: false
     token_endpoint_auth_method: none
     web_origins:
