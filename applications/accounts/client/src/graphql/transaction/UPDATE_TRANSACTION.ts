@@ -18,6 +18,7 @@ export interface IUpdateTransactionInput {
     description: string;
     id: string;
     name: string;
+    scheduled: boolean;
     status: string;
     vat: number;
   };
@@ -33,6 +34,7 @@ export interface IUpdateTransactionOutput {
     description: string;
     id: string;
     name: string;
+    scheduled: boolean;
     status: string;
     vat: number;
   };
@@ -168,6 +170,7 @@ const UPDATE_TRANSACTION = gql`
       description
       id
       name
+      scheduled
       status
       vat
     }

@@ -3,7 +3,6 @@ import {
   Button,
   Col,
   DataTable,
-  DateTime,
   LinkButton,
   PageTitle,
   Row,
@@ -18,6 +17,7 @@ import Connected from '../../../components/Connected';
 import Currency from '../../../components/Currency';
 import DeleteItem from '../../../components/DeleteItem';
 import NoTransactions from '../../../components/NoTransactions';
+import Scheduled from '../../../components/Scheduled';
 import TransactionArrow from '../../../components/TransactionArrow';
 import WarningText from '../../../components/WarningText';
 import DELETE_TRANSACTION, {
@@ -120,7 +120,15 @@ const PendingTransaction: FC = () => {
                     </TableCell>
                   </>
                 }
-                row={({ amount, attachment, date, description, id, name }) => (
+                row={({
+                  amount,
+                  attachment,
+                  date,
+                  description,
+                  id,
+                  name,
+                  scheduled,
+                }) => (
                   <>
                     <TableCell align="center">
                       <TransactionArrow value={amount} />
@@ -147,7 +155,15 @@ const PendingTransaction: FC = () => {
                     </TableCell>
 
                     <TableCell>
-                      <DateTime value={date} />
+                      <Scheduled
+                        id={id}
+                        message={t(
+                          'pending-transactions.transactions.scheduled',
+                        )}
+                        placement="right"
+                        show={scheduled}
+                        value={date}
+                      />
                     </TableCell>
 
                     <TableCell align="right">

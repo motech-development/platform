@@ -1,24 +1,25 @@
 import { act, render, RenderResult } from '@testing-library/react';
 import React from 'react';
-import WarningText from '../WarningText';
+import Scheduled from '../Scheduled';
 
-describe('WarningText', () => {
-  it('should show no warning', () => {
+describe('Scheduled', () => {
+  let value: string;
+
+  beforeEach(() => {
+    value = new Date().toISOString();
+  });
+
+  it('should show no clock', () => {
     const { container } = render(
-      <WarningText
+      <Scheduled
         id="test"
-        component="p"
         message="Test"
         placement="left"
         show={false}
-        variant="p"
-      >
-        Hello world
-      </WarningText>,
+        value={value}
+      />,
     );
-    const icon = container.querySelector(
-      'svg[data-icon="exclamation-triangle"]',
-    );
+    const icon = container.querySelector('svg[data-icon="clock"]');
 
     expect(icon).not.toBeInTheDocument();
   });
@@ -29,25 +30,20 @@ describe('WarningText', () => {
     beforeEach(async () => {
       await act(async () => {
         component = render(
-          <WarningText
+          <Scheduled
             id="test"
-            component="p"
             message="Test"
             placement="left"
             show
-            variant="p"
-          >
-            Hello world
-          </WarningText>,
+            value={value}
+          />,
         );
       });
     });
 
-    it('should show warning icon', () => {
+    it('should show clock', () => {
       const { container } = component;
-      const icon = container.querySelector(
-        'svg[data-icon="exclamation-triangle"]',
-      );
+      const icon = container.querySelector('svg[data-icon="clock"]');
 
       expect(icon).toBeInTheDocument();
     });
@@ -59,25 +55,21 @@ describe('WarningText', () => {
     beforeEach(async () => {
       await act(async () => {
         component = render(
-          <WarningText
+          <Scheduled
+            format="dd/mm/yyyy"
             id="test"
-            component="p"
             message="Test"
             placement="right"
             show
-            variant="p"
-          >
-            Hello world
-          </WarningText>,
+            value={value}
+          />,
         );
       });
     });
 
-    it('should show warning icon', async () => {
+    it('should show clock', async () => {
       const { container } = component;
-      const icon = container.querySelector(
-        'svg[data-icon="exclamation-triangle"]',
-      );
+      const icon = container.querySelector('svg[data-icon="clock"]');
 
       expect(icon).toBeInTheDocument();
     });

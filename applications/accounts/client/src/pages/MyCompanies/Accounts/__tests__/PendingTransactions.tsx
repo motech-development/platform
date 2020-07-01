@@ -55,6 +55,7 @@ describe('PendingTransactions', () => {
                     description: 'Lunch',
                     id: 'transaction-2',
                     name: 'KFC',
+                    scheduled: true,
                   },
                   {
                     amount: 200,
@@ -63,6 +64,7 @@ describe('PendingTransactions', () => {
                     description: 'Invoice #1',
                     id: 'transaction-1',
                     name: 'Client',
+                    scheduled: false,
                   },
                 ],
               },
@@ -234,6 +236,7 @@ describe('PendingTransactions', () => {
                     description: 'Lunch',
                     id: 'transaction-2',
                     name: 'KFC',
+                    scheduled: true,
                   },
                   {
                     amount: 200,
@@ -242,6 +245,7 @@ describe('PendingTransactions', () => {
                     description: 'Invoice #1',
                     id: 'transaction-1',
                     name: 'Client',
+                    scheduled: false,
                   },
                 ],
               },

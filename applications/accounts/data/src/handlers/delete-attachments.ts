@@ -1,6 +1,7 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { SQS } from 'aws-sdk';
 import { join } from 'path';
+import { ITransaction } from '../shared/transaction';
 import { unmarshallOldRecords } from '../shared/unmarshall-records';
 
 const deleteAttachments = (
@@ -8,7 +9,10 @@ const deleteAttachments = (
   queueUrl: string,
   records: DynamoDBRecord[],
 ) => {
-  const unmarshalledRecords = unmarshallOldRecords(records, 'Transaction');
+  const unmarshalledRecords = unmarshallOldRecords<ITransaction>(
+    records,
+    'Transaction',
+  );
   const entries = unmarshalledRecords
     .filter(({ OldImage }) => !!OldImage.attachment)
     .map(({ OldImage }) => ({

@@ -1294,6 +1294,8 @@ describe('Smoke tests', () => {
 
           cy.get('input[type="radio"]').check(transaction.status);
 
+          cy.get('input[type="radio"]').check(transaction.scheduled);
+
           cy.get('input[id="amount"]')
             .focus()
             .type(transaction.amount);
@@ -1325,6 +1327,8 @@ describe('Smoke tests', () => {
             .type(transaction.description);
 
           cy.get('input[type="radio"]').check(transaction.status);
+
+          cy.get('input[type="radio"]').check(transaction.scheduled);
 
           cy.get('select[id="category"]')
             .focus()
@@ -1362,6 +1366,8 @@ describe('Smoke tests', () => {
 
           cy.get('input[type="radio"]').check(transaction.status);
 
+          cy.get('input[type="radio"]').check(transaction.scheduled);
+
           cy.get('select[id="category"]')
             .focus()
             .select(transaction.category);
@@ -1387,7 +1393,7 @@ describe('Smoke tests', () => {
           cy.wait(1000);
 
           cy.get('button:contains("Delete")')
-            .eq(2)
+            .eq(1)
             .click();
 
           cy.wait(1000);
@@ -1398,8 +1404,16 @@ describe('Smoke tests', () => {
 
           cy.get('button[type="submit"]').click();
 
-          cy.get('button:contains("Delete")').should('have.length', 2);
+          cy.get('button:contains("Delete")').should('have.length', 1);
         });
+      });
+
+      it('should have published the scheduled transaction', () => {
+        cy.contains('Balance: £3902.40').should('be.visible');
+
+        cy.contains('VAT owed: £0.00').should('be.visible');
+
+        cy.contains('VAT paid: £16.27').should('be.visible');
       });
     });
   });

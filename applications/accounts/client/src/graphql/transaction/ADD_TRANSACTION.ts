@@ -18,6 +18,7 @@ export interface IAddTransactionInput {
     description: string;
     id: string;
     name: string;
+    scheduled: boolean;
     status: string;
     vat: number;
   };
@@ -33,6 +34,7 @@ export interface IAddTransactionOutput {
     description: string;
     id: string;
     name: string;
+    scheduled: boolean;
     status: string;
     vat: number;
   };
@@ -135,6 +137,7 @@ const ADD_TRANSACTION = gql`
       description
       id
       name
+      scheduled
       status
       vat
     }

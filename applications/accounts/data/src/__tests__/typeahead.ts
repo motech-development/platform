@@ -1,9 +1,9 @@
 import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { handler } from '../transactions';
+import { handler } from '../typeahead';
 
-describe('transactions', () => {
+describe('typeahead', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: DynamoDBStreamEvent;
@@ -285,7 +285,7 @@ describe('transactions', () => {
       it('should update the correct number of records', async () => {
         await handler(event, context, callback);
 
-        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(3);
+        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(2);
       });
     });
 

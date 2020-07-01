@@ -1,9 +1,9 @@
 import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { handler } from '../transactions';
+import { handler } from '../schedule-transactions';
 
-describe('transactions', () => {
+describe('schedule-transaction', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: DynamoDBStreamEvent;
@@ -41,11 +41,17 @@ describe('transactions', () => {
               description: {
                 S: 'Description 1',
               },
+              id: {
+                S: 'transaction-2',
+              },
               name: {
                 S: 'Transaction 1',
               },
               owner: {
                 S: 'owner',
+              },
+              scheduled: {
+                BOOL: true,
               },
               status: {
                 S: 'confirmed',
@@ -81,6 +87,9 @@ describe('transactions', () => {
               },
               owner: {
                 S: 'owner',
+              },
+              scheduled: {
+                BOOL: true,
               },
               status: {
                 S: 'confirmed',
@@ -122,6 +131,9 @@ describe('transactions', () => {
               owner: {
                 S: 'owner',
               },
+              scheduled: {
+                BOOL: true,
+              },
               status: {
                 S: 'confirmed',
               },
@@ -156,6 +168,9 @@ describe('transactions', () => {
               },
               owner: {
                 S: 'owner',
+              },
+              scheduled: {
+                BOOL: true,
               },
               status: {
                 S: 'confirmed',
@@ -197,6 +212,9 @@ describe('transactions', () => {
               owner: {
                 S: 'owner',
               },
+              scheduled: {
+                BOOL: true,
+              },
               status: {
                 S: 'confirmed',
               },
@@ -231,6 +249,9 @@ describe('transactions', () => {
               },
               owner: {
                 S: 'owner',
+              },
+              scheduled: {
+                BOOL: true,
               },
               status: {
                 S: 'confirmed',

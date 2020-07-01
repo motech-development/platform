@@ -136,6 +136,7 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
+                  scheduled: true,
                   status: 'pending',
                   vat: 166.66,
                 },
@@ -161,7 +162,8 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
-                  status: 'pending',
+                  scheduled: false,
+                  status: 'confirmed',
                   vat: 166.66,
                 },
               },
@@ -177,7 +179,8 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
-                  status: 'pending',
+                  scheduled: false,
+                  status: 'confirmed',
                   vat: 166.66,
                 },
               },
@@ -217,10 +220,21 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page on complete', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const {
+          findAllByRole,
+          findByLabelText,
+          findByTestId,
+          findByText,
+        } = component;
 
         await act(async () => {
           await findByText('view-transaction.title');
+
+          const status = await findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+
+          fireEvent.click(status);
 
           const [, , button] = await findAllByRole('button');
 
@@ -234,15 +248,26 @@ describe('ViewTransaction', () => {
         });
 
         expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/accounts/company-id/pending-transactions',
+          '/my-companies/accounts/company-id',
         );
       });
 
       it('should display a success toast', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const {
+          findAllByRole,
+          findByLabelText,
+          findByTestId,
+          findByText,
+        } = component;
 
         await act(async () => {
           await findByText('view-transaction.title');
+
+          const status = await findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+
+          fireEvent.click(status);
 
           const [, , button] = await findAllByRole('button');
 
@@ -420,6 +445,7 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
+                  scheduled: false,
                   status: 'confirmed',
                   vat: 166.66,
                 },
@@ -445,6 +471,7 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
+                  scheduled: false,
                   status: 'confirmed',
                   vat: 166.66,
                 },
@@ -461,6 +488,7 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
+                  scheduled: false,
                   status: 'confirmed',
                   vat: 166.66,
                 },
@@ -726,6 +754,7 @@ describe('ViewTransaction', () => {
                 description: 'Invoice #1',
                 id: 'transaction-id',
                 name: 'Motech Development',
+                scheduled: null,
                 status: 'confirmed',
                 vat: 200,
               },
@@ -751,6 +780,7 @@ describe('ViewTransaction', () => {
                 description: 'Invoice #1',
                 id: 'transaction-id',
                 name: 'Motech Development',
+                scheduled: false,
                 status: 'confirmed',
                 vat: 200,
               },
@@ -767,6 +797,7 @@ describe('ViewTransaction', () => {
                 description: 'Invoice #1',
                 id: 'transaction-id',
                 name: 'Motech Development',
+                scheduled: false,
                 status: 'confirmed',
                 vat: 200,
               },

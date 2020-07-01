@@ -1,9 +1,9 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { advanceTo, clear } from 'jest-date-mock';
-import typeahead from '../typeahead';
+import removeScheduledTransactions from '../remove-scheduled-transactions';
 
-describe('typeahead', () => {
+describe('remove-scheduled-transactions', () => {
   let documentClient: DocumentClient;
   let tableName: string;
   let records: DynamoDBRecord[];
@@ -40,14 +40,14 @@ describe('typeahead', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            description: {
-              S: 'Description 1',
-            },
-            name: {
-              S: 'Transaction 1',
+            id: {
+              S: 'transaction-1',
             },
             owner: {
-              S: 'owner-id',
+              S: 'owner',
+            },
+            scheduled: {
+              BOOL: false,
             },
             status: {
               S: 'confirmed',
@@ -72,14 +72,14 @@ describe('typeahead', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            description: {
-              S: 'Description 1',
-            },
-            name: {
-              S: 'Transaction 1',
+            id: {
+              S: 'transaction-1',
             },
             owner: {
-              S: 'owner-id',
+              S: 'owner',
+            },
+            scheduled: {
+              BOOL: false,
             },
             status: {
               S: 'confirmed',
@@ -109,14 +109,14 @@ describe('typeahead', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            description: {
-              S: 'Description 2',
-            },
-            name: {
-              S: 'Transaction 2',
+            id: {
+              S: 'transaction-2',
             },
             owner: {
-              S: 'owner-id',
+              S: 'owner',
+            },
+            scheduled: {
+              BOOL: true,
             },
             status: {
               S: 'confirmed',
@@ -141,14 +141,14 @@ describe('typeahead', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            description: {
-              S: 'Description 2',
-            },
-            name: {
-              S: 'Transaction 2',
+            id: {
+              S: 'transaction-2',
             },
             owner: {
-              S: 'owner-id',
+              S: 'owner',
+            },
+            scheduled: {
+              BOOL: false,
             },
             status: {
               S: 'confirmed',
@@ -178,14 +178,14 @@ describe('typeahead', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            description: {
-              S: 'Description 3',
-            },
-            name: {
-              S: 'Transaction 3',
+            id: {
+              S: 'transaction-3',
             },
             owner: {
-              S: 'owner-id',
+              S: 'owner',
+            },
+            scheduled: {
+              BOOL: false,
             },
             status: {
               S: 'pending',
@@ -210,14 +210,14 @@ describe('typeahead', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            description: {
-              S: 'Description 3',
-            },
-            name: {
-              S: 'Transaction 3',
+            id: {
+              S: 'transaction-3',
             },
             owner: {
-              S: 'owner-id',
+              S: 'owner',
+            },
+            scheduled: {
+              BOOL: true,
             },
             status: {
               S: 'pending',
@@ -247,14 +247,14 @@ describe('typeahead', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            description: {
-              S: 'Description 4',
-            },
-            name: {
-              S: 'Transaction 4',
+            id: {
+              S: 'transaction-4',
             },
             owner: {
-              S: 'owner-id',
+              S: 'owner',
+            },
+            scheduled: {
+              BOOL: true,
             },
             status: {
               S: 'confirmed',
@@ -279,14 +279,14 @@ describe('typeahead', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            description: {
-              S: 'Description 4',
-            },
-            name: {
-              S: 'Transaction 4',
+            id: {
+              S: 'transaction-4',
             },
             owner: {
-              S: 'owner-id',
+              S: 'owner',
+            },
+            scheduled: {
+              BOOL: true,
             },
             status: {
               S: 'confirmed',
@@ -305,91 +305,58 @@ describe('typeahead', () => {
   });
 
   it('should return update with the correct params', () => {
-    typeahead(documentClient, tableName, records);
+    removeScheduledTransactions(documentClient, tableName, records);
 
     expect(documentClient.update).toHaveBeenCalledWith({
+      ConditionExpression: 'attribute_exists(id)',
       ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
+        '#active': 'active',
         '#data': 'data',
-        '#descriptions': 'purchases',
-        '#groupsCanAccess': 'groupsCanAccess',
-        '#owner': 'owner',
-        '#suppliers': 'suppliers',
+        '#ttl': 'ttl',
         '#updatedAt': 'updatedAt',
       },
       ExpressionAttributeValues: {
-        ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': documentClient.createSet(['Description 1']),
-        ':groupsCanAccess': ['Admin'],
-        ':now': '2020-06-06T19:45:00.000Z',
-        ':owner': 'owner-id',
-        ':suppliers': documentClient.createSet(['Transaction 1']),
+        ':active': false,
+        ':data': 'owner:company-id:active:1591472700',
+        ':ttl': 1591472700,
+        ':updatedAt': '2020-06-06T19:45:00.000Z',
       },
       Key: {
-        __typename: 'Typeahead',
-        id: 'company-id',
+        __typename: 'ScheduledTransaction',
+        id: 'transaction-3',
       },
       TableName: tableName,
       UpdateExpression:
-        'ADD #descriptions :descriptions, #suppliers :suppliers SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
+        'SET #active = :active, #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
     });
 
     expect(documentClient.update).toHaveBeenCalledWith({
+      ConditionExpression: 'attribute_exists(id)',
       ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
+        '#active': 'active',
         '#data': 'data',
-        '#descriptions': 'purchases',
-        '#groupsCanAccess': 'groupsCanAccess',
-        '#owner': 'owner',
-        '#suppliers': 'suppliers',
+        '#ttl': 'ttl',
         '#updatedAt': 'updatedAt',
       },
       ExpressionAttributeValues: {
-        ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': documentClient.createSet(['Description 4']),
-        ':groupsCanAccess': ['Admin'],
-        ':now': '2020-06-06T19:45:00.000Z',
-        ':owner': 'owner-id',
-        ':suppliers': documentClient.createSet(['Transaction 4']),
+        ':active': false,
+        ':data': 'owner:company-id:active:1591472700',
+        ':ttl': 1591472700,
+        ':updatedAt': '2020-06-06T19:45:00.000Z',
       },
       Key: {
-        __typename: 'Typeahead',
-        id: 'company-id',
+        __typename: 'ScheduledTransaction',
+        id: 'transaction-4',
       },
       TableName: tableName,
       UpdateExpression:
-        'ADD #descriptions :descriptions, #suppliers :suppliers SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
-    });
-
-    expect(documentClient.update).toHaveBeenCalledWith({
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#descriptions': 'sales',
-        '#groupsCanAccess': 'groupsCanAccess',
-        '#owner': 'owner',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': documentClient.createSet(['Description 2']),
-        ':groupsCanAccess': ['Admin'],
-        ':now': '2020-06-06T19:45:00.000Z',
-        ':owner': 'owner-id',
-      },
-      Key: {
-        __typename: 'Typeahead',
-        id: 'company-id',
-      },
-      TableName: tableName,
-      UpdateExpression:
-        'ADD #descriptions :descriptions SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
+        'SET #active = :active, #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
     });
   });
 
   it('should call update the correct number of times', () => {
-    typeahead(documentClient, tableName, records);
+    removeScheduledTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(3);
+    expect(documentClient.update).toHaveBeenCalledTimes(2);
   });
 });

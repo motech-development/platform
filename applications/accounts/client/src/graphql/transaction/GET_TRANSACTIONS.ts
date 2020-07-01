@@ -19,6 +19,7 @@ export interface IGetTransactionsOutput {
       description: string;
       id: string;
       name: string;
+      scheduled: boolean;
     }[];
   };
 }
@@ -38,6 +39,7 @@ const GET_TRANSACTIONS = gql`
         description
         id
         name
+        scheduled
       }
     }
   }

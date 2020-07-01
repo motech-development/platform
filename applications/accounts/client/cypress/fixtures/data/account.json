@@ -29,6 +29,7 @@
     "type": "Sales",
     "supplier": "Motech Development",
     "description": "Pending invoice",
+    "scheduled": "true",
     "status": "pending",
     "amount": "2000",
     "vat": "310"
@@ -37,6 +38,7 @@
     "type": "Purchase",
     "supplier": "Airport hotel",
     "description": "Business trip",
+    "scheduled": "false",
     "status": "pending",
     "category": "5",
     "amount": "97.6",
@@ -46,6 +48,7 @@
     "type": "Purchase",
     "supplier": "Low Cost Air",
     "description": "Return flight to London",
+    "scheduled": "false",
     "status": "pending",
     "category": "6",
     "amount": "112",

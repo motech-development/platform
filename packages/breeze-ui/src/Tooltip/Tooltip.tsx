@@ -2,20 +2,21 @@ import React, { FC, memo, ReactNode, useEffect, useRef, useState } from 'react';
 import { Manager, Popper, Reference } from 'react-popper';
 import styled, { ThemeProvider } from 'styled-components';
 
-interface ITooltipTheme {
-  [name: string]: {
-    background: string;
-    colour: string;
-  };
-}
-
-const tooltipTheme: ITooltipTheme = {
+const tooltipTheme = {
   danger: {
     background: 'rgb(199,56,79)',
     colour: '#fff',
   },
   primary: {
     background: '#007fa8',
+    colour: '#fff',
+  },
+  secondary: {
+    background: '#f6f9fc',
+    colour: '#333',
+  },
+  success: {
+    background: 'rgb(0,128,93)',
     colour: '#fff',
   },
 };
@@ -102,6 +103,7 @@ const TooltipContent = styled.div<ITooltipContent>`
     line-height: 22px;
     padding: 0 5px;
     visibility: ${$visible ? 'visible' : 'hidden'};
+    z-index: 10;
   `}
 `;
 

@@ -39,6 +39,7 @@
       "date": "Date",
       "amount": "Amount",
       "no-attachment": "No invoice or receipt",
+      "scheduled": "Scheduled transaction",
       "actions": "Actions",
       "view": "View",
       "delete": "Delete"
@@ -112,6 +113,13 @@
       "vat": {
         "label": "VAT",
         "required": "VAT is required"
+      },
+      "schedule": {
+        "label": "Automatically confirm transaction on set date?",
+        "options": {
+          "yes": "Yes",
+          "no": "No"
+        }
       }
     },
     "upload": {

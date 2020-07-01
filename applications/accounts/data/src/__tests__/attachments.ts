@@ -1,9 +1,9 @@
 import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { handler } from '../transactions';
+import { SQS } from 'aws-sdk';
+import { handler } from '../attachments';
 
-describe('transactions', () => {
+describe('attachments', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: DynamoDBStreamEvent;
@@ -246,17 +246,17 @@ describe('transactions', () => {
     };
   });
 
-  it('should throw an error if no table is set', async () => {
+  it('should throw an error if no queue is set', async () => {
     event = {
       Records: [],
     };
 
     await expect(handler(event, context, callback)).rejects.toThrow(
-      'No table set',
+      'No attachment queue set',
     );
   });
 
-  describe('with table set', () => {
+  describe('with queue set', () => {
     let env: NodeJS.ProcessEnv;
 
     beforeEach(() => {
@@ -264,14 +264,14 @@ describe('transactions', () => {
         ...process.env,
       };
 
-      process.env.TABLE = 'app-table';
+      process.env.ATTACHMENT_QUEUE = 'app-queue';
     });
 
     afterEach(() => {
       process.env = env;
     });
 
-    describe('when there are no errors thrown by DynamoDB', () => {
+    describe('when there are no errors thrown by SQS', () => {
       it('should do nothing if there is nothing to process', async () => {
         event = {
           Records: [],
@@ -279,19 +279,19 @@ describe('transactions', () => {
 
         await handler(event, context, callback);
 
-        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(0);
+        expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledTimes(0);
       });
 
       it('should update the correct number of records', async () => {
         await handler(event, context, callback);
 
-        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(3);
+        expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledTimes(1);
       });
     });
 
-    describe('when DyanmoDB throws an error', () => {
+    describe('when SQS throws an error', () => {
       beforeEach(() => {
-        (DocumentClient.prototype.update as jest.Mock).mockReturnValue({
+        (SQS.prototype.sendMessageBatch as jest.Mock).mockReturnValue({
           promise: jest
             .fn()
             .mockRejectedValue(new Error('Something has gone wrong')),

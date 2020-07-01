@@ -7,44 +7,37 @@ import Legend from '../Legend/Legend';
 import OptionLabel from '../OptionLabel/OptionLabel';
 import OptionLabelText from '../OptionLabelText/OptionLabelText';
 
-type RadioSpacing = 'sm' | 'md' | 'lg';
+type CheckBoxSpacing = 'sm' | 'md' | 'lg';
 
-export interface IRadioOption {
-  name: string;
-  value: string;
-}
-
-interface IInternalRadio extends FieldProps {
+interface IInternalCheckBox extends FieldProps {
   disabled: boolean;
   helpText: string;
   label: string;
-  options: IRadioOption[];
+  legend: string;
   readOnly: boolean;
-  spacing: RadioSpacing;
+  spacing: CheckBoxSpacing;
   onChange(
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
   ): void;
 }
 
-const InternalRadio: FC<IInternalRadio> = ({
+const InternalCheckBox: FC<IInternalCheckBox> = ({
   disabled,
   field,
   form,
   helpText,
   label,
+  legend,
   onChange,
-  options,
   readOnly,
   spacing,
 }) => {
-  const { errors, handleChange, setFieldValue, touched } = form;
+  const { errors, handleChange, touched } = form;
   const error = useInputValidation(field.name, errors, touched);
   const markAsDisabled = disabled || readOnly;
-  const doChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
+  const doChange = (e: ChangeEvent<HTMLInputElement>) => {
     handleChange(e);
-
-    setFieldValue(field.name, value);
 
     if (onChange) {
       onChange(e, form);
@@ -59,28 +52,21 @@ const InternalRadio: FC<IInternalRadio> = ({
       name={field.name}
       spacing={spacing}
     >
-      <Legend error={error}>{label}</Legend>
+      <Legend error={error}>{legend}</Legend>
 
-      {options.map(({ name, value }) => (
-        <OptionLabel
-          key={value}
-          disabled={disabled}
-          selected={field.value === value}
-        >
-          <CheckableInput
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...field}
-            checked={field.value === value}
-            disabled={markAsDisabled}
-            readOnly={readOnly}
-            type="radio"
-            value={value}
-            onChange={e => doChange(e, value)}
-          />
+      <OptionLabel disabled={disabled} selected={field.value}>
+        <CheckableInput
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...field}
+          checked={field.value}
+          disabled={markAsDisabled}
+          readOnly={readOnly}
+          type="checkbox"
+          onChange={doChange}
+        />
 
-          <OptionLabelText>{name}</OptionLabelText>
-        </OptionLabel>
-      ))}
+        <OptionLabelText>{label}</OptionLabelText>
+      </OptionLabel>
 
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       {readOnly && <input type="hidden" {...field} />}
@@ -88,42 +74,42 @@ const InternalRadio: FC<IInternalRadio> = ({
   );
 };
 
-export interface IRadioProps {
+export interface ICheckBoxProps {
   disabled?: boolean;
   helpText?: string;
   label: string;
+  legend: string;
   name: string;
-  options: IRadioOption[];
   readOnly?: boolean;
-  spacing?: RadioSpacing;
+  spacing?: CheckBoxSpacing;
   onChange?(
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
   ): void;
 }
 
-const Radio: FC<IRadioProps> = ({
+const CheckBox: FC<ICheckBoxProps> = ({
   disabled = false,
   helpText = null,
   label,
+  legend,
   name,
   onChange = undefined,
-  options,
   readOnly = false,
   spacing = 'md',
 }) => (
   <Field
     id={name}
-    component={InternalRadio}
+    component={InternalCheckBox}
     disabled={disabled}
     helpText={helpText}
+    label={label}
+    legend={legend}
     name={name}
     onChange={onChange}
-    options={options}
     readOnly={readOnly}
-    label={label}
     spacing={spacing}
   />
 );
 
-export default memo(Radio);
+export default memo(CheckBox);

@@ -10,6 +10,8 @@ const stories = storiesOf('Tooltip', module);
 const colour = {
   Danger: 'danger',
   Primary: 'primary',
+  Secondary: 'secondary',
+  Success: 'success',
 };
 const placement = {
   Bottom: 'bottom',
@@ -39,7 +41,13 @@ stories.add('Basic tooltip', () => (
           | 'right'
           | 'top'
       }
-      colour={select('Colour', colour, 'primary')}
+      colour={
+        select('Colour', colour, 'primary') as
+          | 'danger'
+          | 'primary'
+          | 'secondary'
+          | 'success'
+      }
       message={text('Text', 'This is a tooltip!')}
     />
   </>

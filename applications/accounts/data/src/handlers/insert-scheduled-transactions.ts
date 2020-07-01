@@ -1,10 +1,10 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { insert } from '../shared/balance';
-import { ITransaction, TransactionStatus } from '../shared/transaction';
+import { ITransaction } from '../shared/transaction';
+import { insert } from '../shared/scheduled-transactions';
 import { unmarshallNewRecords } from '../shared/unmarshall-records';
 
-const insertTransactions = (
+const insertScheduledTransactions = (
   documentClient: DocumentClient,
   tableName: string,
   records: DynamoDBRecord[],
@@ -14,10 +14,10 @@ const insertTransactions = (
     'Transaction',
   );
   const transactionItems = unmarshalledRecords
-    .filter(({ NewImage }) => NewImage.status === TransactionStatus.Confirmed)
+    .filter(({ NewImage }) => NewImage.scheduled)
     .map(({ NewImage }) => insert(documentClient, tableName, NewImage));
 
   return transactionItems;
 };
 
-export default insertTransactions;
+export default insertScheduledTransactions;

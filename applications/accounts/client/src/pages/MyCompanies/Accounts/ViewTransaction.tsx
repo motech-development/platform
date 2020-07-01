@@ -59,6 +59,7 @@ interface IViewTransactionOutput {
     description: string;
     id: string;
     name: string;
+    scheduled: boolean;
     status: string;
     vat: number;
   };
@@ -97,6 +98,7 @@ export const VIEW_TRANSACTION = gql`
       description
       id
       name
+      scheduled
       status
       vat
     }
