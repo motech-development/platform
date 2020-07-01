@@ -19,11 +19,9 @@ describe('Scheduled', () => {
         value={value}
       />,
     );
-    const arrow = container.querySelector(
-      'svg[data-icon="exclamation-triangle"]',
-    );
+    const icon = container.querySelector('svg[data-icon="clock"]');
 
-    expect(arrow).not.toBeInTheDocument();
+    expect(icon).not.toBeInTheDocument();
   });
 
   describe('when aligned to the left', () => {
@@ -45,9 +43,9 @@ describe('Scheduled', () => {
 
     it('should show clock', () => {
       const { container } = component;
-      const arrow = container.querySelector('svg[data-icon="clock"]');
+      const icon = container.querySelector('svg[data-icon="clock"]');
 
-      expect(arrow).toBeInTheDocument();
+      expect(icon).toBeInTheDocument();
     });
   });
 
@@ -71,9 +69,9 @@ describe('Scheduled', () => {
 
     it('should show clock', async () => {
       const { container } = component;
-      const arrow = container.querySelector('svg[data-icon="clock"]');
+      const icon = container.querySelector('svg[data-icon="clock"]');
 
-      expect(arrow).toBeInTheDocument();
+      expect(icon).toBeInTheDocument();
     });
   });
 });

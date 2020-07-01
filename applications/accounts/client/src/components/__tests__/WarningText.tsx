@@ -16,11 +16,11 @@ describe('WarningText', () => {
         Hello world
       </WarningText>,
     );
-    const arrow = container.querySelector(
+    const icon = container.querySelector(
       'svg[data-icon="exclamation-triangle"]',
     );
 
-    expect(arrow).not.toBeInTheDocument();
+    expect(icon).not.toBeInTheDocument();
   });
 
   describe('when aligned to the left', () => {
@@ -43,13 +43,13 @@ describe('WarningText', () => {
       });
     });
 
-    it('should show warning arrow', () => {
+    it('should show warning icon', () => {
       const { container } = component;
-      const arrow = container.querySelector(
+      const icon = container.querySelector(
         'svg[data-icon="exclamation-triangle"]',
       );
 
-      expect(arrow).toBeInTheDocument();
+      expect(icon).toBeInTheDocument();
     });
   });
 
@@ -73,13 +73,13 @@ describe('WarningText', () => {
       });
     });
 
-    it('should show warning arrow', async () => {
+    it('should show warning icon', async () => {
       const { container } = component;
-      const arrow = container.querySelector(
+      const icon = container.querySelector(
         'svg[data-icon="exclamation-triangle"]',
       );
 
-      expect(arrow).toBeInTheDocument();
+      expect(icon).toBeInTheDocument();
     });
   });
 });
