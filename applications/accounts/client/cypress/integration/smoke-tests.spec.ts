@@ -11,19 +11,13 @@ describe('Smoke tests', () => {
     cy.login().then(() => {
       cy.url().should('eq', 'http://localhost:3000/my-companies');
 
+      cy.injectAxe();
+
       cy.wait(1000);
     });
   });
 
   describe('Register company', () => {
-    beforeEach(() => {
-      cy.get('a:contains("Add a new company")').click();
-
-      cy.url().should('eq', 'http://localhost:3000/my-companies/add-company');
-
-      cy.wait(1000);
-    });
-
     afterEach(() => {
       cy.url().should(
         'include',
@@ -34,6 +28,14 @@ describe('Smoke tests', () => {
     it('should create a VAT registered company', () => {
       cy.fixture('data/company.json').then(res => {
         const data = res[0];
+
+        cy.checkA11y();
+
+        cy.get('a:contains("Add a new company")').click();
+
+        cy.wait(1000);
+
+        cy.checkA11y();
 
         cy.get('input[id="company.name"]')
           .focus()
@@ -110,6 +112,10 @@ describe('Smoke tests', () => {
     it('should create a non-VAT registered company', () => {
       cy.fixture('data/company.json').then(res => {
         const data = res[1];
+
+        cy.get('a:contains("Add a new company")').click();
+
+        cy.wait(1000);
 
         cy.get('input[id="company.name"]')
           .focus()
@@ -195,9 +201,13 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
+        cy.checkA11y();
+
         cy.get('a:contains("Manage company details")').click();
 
         cy.wait(1000);
+
+        cy.checkA11y();
 
         cy.get('input[id="name"]').should('have.value', company.name);
         cy.get('input[id="companyNumber"]').should(
@@ -269,6 +279,8 @@ describe('Smoke tests', () => {
           cy.get('a:contains("Manage settings")').click();
 
           cy.wait(1000);
+
+          cy.checkA11y();
 
           cy.get('button:contains("Add a new category")').click();
 
@@ -581,11 +593,15 @@ describe('Smoke tests', () => {
 
       it('should add client 1', () => {
         cy.fixture('data/client.json').then(res => {
+          cy.checkA11y();
+
           const client = res[0];
 
           cy.get('a:contains("Add a new client")').click();
 
           cy.wait(1000);
+
+          cy.checkA11y();
 
           cy.get('input[id="name"]')
             .focus()
@@ -838,11 +854,15 @@ describe('Smoke tests', () => {
       it('should add a confirmed sale', () => {
         cy.fixture('data/account.json').then(res => {
           cy.fixture('upload/invoice.pdf').then(file => {
+            cy.checkA11y();
+
             const transaction = res[0];
 
             cy.get('a:contains("Record a new transaction")').click();
 
             cy.wait(1000);
+
+            cy.checkA11y();
 
             cy.get('input[type="radio"]').check(transaction.type);
 
@@ -1000,6 +1020,8 @@ describe('Smoke tests', () => {
 
             cy.wait(1000);
 
+            cy.checkA11y();
+
             cy.get('input[name="transaction"][type="hidden"]').should(
               'have.value',
               transaction.type,
@@ -1066,6 +1088,8 @@ describe('Smoke tests', () => {
             .click();
 
           cy.wait(1000);
+
+          cy.checkA11y();
 
           cy.get('input[id="confirmation"]')
             .focus()
@@ -1391,6 +1415,8 @@ describe('Smoke tests', () => {
           cy.get('a:contains("View pending transactions")').click();
 
           cy.wait(1000);
+
+          cy.checkA11y();
 
           cy.get('button:contains("Delete")')
             .eq(1)
