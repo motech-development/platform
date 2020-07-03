@@ -118,6 +118,8 @@ describe('Smoke tests', () => {
           .type(data.balance.vat.paid);
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('h2').should('contain.text', data.company.name);
       });
     });
 
@@ -190,6 +192,8 @@ describe('Smoke tests', () => {
           .type(data.vat.pay);
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('h2').should('contain.text', data.company.name);
       });
     });
   });
@@ -264,6 +268,8 @@ describe('Smoke tests', () => {
         );
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('h2').should('contain.text', company.name);
       });
     });
   });
@@ -357,6 +363,8 @@ describe('Smoke tests', () => {
           );
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('p:contains("Dashboard")').should('be.visible');
         });
       });
     });
@@ -440,6 +448,8 @@ describe('Smoke tests', () => {
           .click();
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('p:contains("Dashboard")').should('be.visible');
       });
     });
 
@@ -474,6 +484,8 @@ describe('Smoke tests', () => {
           .type(settings.categories[1].vatRate);
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('p:contains("Dashboard")').should('be.visible');
       });
     });
 
@@ -529,6 +541,8 @@ describe('Smoke tests', () => {
             .select(settings.yearEnd.month);
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('p:contains("Dashboard")').should('be.visible');
         });
       });
     });
@@ -574,6 +588,8 @@ describe('Smoke tests', () => {
         );
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('p:contains("Dashboard")').should('be.visible');
       });
     });
   });
@@ -635,6 +651,8 @@ describe('Smoke tests', () => {
             .type(client.contact.telephone);
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
     });
@@ -687,6 +705,8 @@ describe('Smoke tests', () => {
             .type(client.contact.telephone);
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
 
@@ -724,6 +744,8 @@ describe('Smoke tests', () => {
             .type(client.contact.telephone);
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
 
@@ -758,6 +780,8 @@ describe('Smoke tests', () => {
             .type(client.contact.telephone);
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
 
@@ -806,6 +830,8 @@ describe('Smoke tests', () => {
           );
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
 
@@ -830,6 +856,8 @@ describe('Smoke tests', () => {
           cy.get('button[type="submit"]')
             .eq(1)
             .click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
     });
@@ -909,6 +937,8 @@ describe('Smoke tests', () => {
             }).should('not.be.visible');
 
             cy.get('button[type="submit"]').click();
+
+            cy.get('h2').should('contain.text', 'Accounts');
           });
         });
       });
@@ -959,6 +989,8 @@ describe('Smoke tests', () => {
             }).should('not.be.visible');
 
             cy.get('button[type="submit"]').click();
+
+            cy.get('h2').should('contain.text', 'Accounts');
           });
         });
       });
@@ -1009,6 +1041,8 @@ describe('Smoke tests', () => {
             }).should('not.be.visible');
 
             cy.get('button[type="submit"]').click();
+
+            cy.get('h2').should('contain.text', 'Accounts');
           });
         });
       });
@@ -1148,6 +1182,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Accounts');
         });
       });
 
@@ -1207,6 +1243,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Accounts');
         });
       });
 
@@ -1243,6 +1281,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Accounts');
         });
       });
 
@@ -1279,6 +1319,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Accounts');
         });
       });
 
@@ -1341,6 +1383,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Pending transactions');
         });
       });
 
@@ -1379,6 +1423,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Pending transactions');
         });
       });
 
@@ -1417,6 +1463,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Pending transactions');
         });
       });
 
@@ -1486,6 +1534,8 @@ describe('Smoke tests', () => {
         cy.get('button[type="submit"]')
           .eq(1)
           .click();
+
+        cy.get('h2').should('contain.text', 'My companies');
       });
     });
 
@@ -1514,6 +1564,8 @@ describe('Smoke tests', () => {
         cy.get('button[type="submit"]')
           .eq(1)
           .click();
+
+        cy.get('h2').should('contain.text', 'My companies');
       });
     });
   });
