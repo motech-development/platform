@@ -1,7 +1,6 @@
 # TODO: Cache Cypress?
 name: Setup
 on:
-  - pull_request
   - push
 
 jobs:
