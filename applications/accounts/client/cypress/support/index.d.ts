@@ -13,5 +13,17 @@ declare namespace Cypress {
      * @example cy.format('sort code', '123456')
      */
     format(type: string, value: string): Chainable<string>;
+
+    /**
+     * Injects Axe for a11y testing
+     * @example cy.injectAxe()
+     */
+    injectAxe(): Chainable<EventEmitter>;
+
+    /**
+     * Runs a11y checking
+     * @example cy.checkA11y()
+     */
+    checkA11y(): Chainable<EventEmitter>;
   }
 }

@@ -73,9 +73,11 @@ const AuthProvider: FC<IAuthProviderProps> = ({
       ) {
         const config = {
           audience: REACT_APP_AUTH0_AUDIENCE,
+          cacheLocation: 'localstorage' as const,
           client_id: REACT_APP_AUTH0_CLIENT_ID,
           domain: REACT_APP_AUTH0_DOMAIN,
           redirect_uri: window.location.origin,
+          useRefreshTokens: true,
         };
 
         const client = await createAuth0Client(config);

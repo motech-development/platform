@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import 'cypress-file-upload';
+import 'cypress-localstorage-commands';
 
 Cypress.Commands.add(
   'login',
@@ -10,7 +11,7 @@ Cypress.Commands.add(
         client_id: Cypress.env('CLIENT_ID'),
         grant_type: 'password',
         password,
-        scope: 'openid profile email',
+        scope: 'openid profile email offline_access',
         username,
       },
       method: 'POST',
@@ -29,7 +30,7 @@ Cypress.Commands.add(
           access_token,
           expires_in,
           id_token,
-          scope: 'openid profile email',
+          scope: 'openid profile email offline_access',
           token_type: 'Bearer',
         },
         url: 'oauth/token',
@@ -46,7 +47,7 @@ Cypress.Commands.add(
             },
             audience: Cypress.env('AUDIENCE'),
             redirect_uri: 'http://localhost:3000/my-companies',
-            scope: 'openid profile email',
+            scope: 'openid profile email offline_access',
           }),
         ),
       ).then(() => {

@@ -1,4 +1,14 @@
 describe('Smoke tests', () => {
+  before(() => {
+    cy.clearLocalStorageSnapshot().then(() => {
+      cy.login().then(() => {
+        cy.url().should('eq', 'http://localhost:3000/my-companies');
+
+        cy.saveLocalStorage();
+      });
+    });
+  });
+
   beforeEach(() => {
     if (window.navigator && navigator.serviceWorker) {
       navigator.serviceWorker.getRegistrations().then(registrations => {
@@ -8,22 +18,18 @@ describe('Smoke tests', () => {
       });
     }
 
-    cy.login().then(() => {
-      cy.url().should('eq', 'http://localhost:3000/my-companies');
+    cy.restoreLocalStorage().then(() => {
+      cy.visit('/my-companies').then(() => {
+        cy.url().should('eq', 'http://localhost:3000/my-companies');
 
-      cy.wait(1000);
+        cy.injectAxe();
+
+        cy.wait(1000);
+      });
     });
   });
 
   describe('Register company', () => {
-    beforeEach(() => {
-      cy.get('a:contains("Add a new company")').click();
-
-      cy.url().should('eq', 'http://localhost:3000/my-companies/add-company');
-
-      cy.wait(1000);
-    });
-
     afterEach(() => {
       cy.url().should(
         'include',
@@ -34,6 +40,14 @@ describe('Smoke tests', () => {
     it('should create a VAT registered company', () => {
       cy.fixture('data/company.json').then(res => {
         const data = res[0];
+
+        cy.checkA11y();
+
+        cy.get('a:contains("Add a new company")').click();
+
+        cy.wait(1000);
+
+        cy.checkA11y();
 
         cy.get('input[id="company.name"]')
           .focus()
@@ -104,12 +118,18 @@ describe('Smoke tests', () => {
           .type(data.balance.vat.paid);
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('h2').should('contain.text', data.company.name);
       });
     });
 
     it('should create a non-VAT registered company', () => {
       cy.fixture('data/company.json').then(res => {
         const data = res[1];
+
+        cy.get('a:contains("Add a new company")').click();
+
+        cy.wait(1000);
 
         cy.get('input[id="company.name"]')
           .focus()
@@ -172,6 +192,8 @@ describe('Smoke tests', () => {
           .type(data.vat.pay);
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('h2').should('contain.text', data.company.name);
       });
     });
   });
@@ -195,9 +217,13 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
+        cy.checkA11y();
+
         cy.get('a:contains("Manage company details")').click();
 
         cy.wait(1000);
+
+        cy.checkA11y();
 
         cy.get('input[id="name"]').should('have.value', company.name);
         cy.get('input[id="companyNumber"]').should(
@@ -242,6 +268,8 @@ describe('Smoke tests', () => {
         );
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('h2').should('contain.text', company.name);
       });
     });
   });
@@ -269,6 +297,8 @@ describe('Smoke tests', () => {
           cy.get('a:contains("Manage settings")').click();
 
           cy.wait(1000);
+
+          cy.checkA11y();
 
           cy.get('button:contains("Add a new category")').click();
 
@@ -333,6 +363,8 @@ describe('Smoke tests', () => {
           );
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('p:contains("Dashboard")').should('be.visible');
         });
       });
     });
@@ -416,6 +448,8 @@ describe('Smoke tests', () => {
           .click();
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('p:contains("Dashboard")').should('be.visible');
       });
     });
 
@@ -450,6 +484,8 @@ describe('Smoke tests', () => {
           .type(settings.categories[1].vatRate);
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('p:contains("Dashboard")').should('be.visible');
       });
     });
 
@@ -505,6 +541,8 @@ describe('Smoke tests', () => {
             .select(settings.yearEnd.month);
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('p:contains("Dashboard")').should('be.visible');
         });
       });
     });
@@ -550,6 +588,8 @@ describe('Smoke tests', () => {
         );
 
         cy.get('button[type="submit"]').click();
+
+        cy.get('p:contains("Dashboard")').should('be.visible');
       });
     });
   });
@@ -581,11 +621,15 @@ describe('Smoke tests', () => {
 
       it('should add client 1', () => {
         cy.fixture('data/client.json').then(res => {
+          cy.checkA11y();
+
           const client = res[0];
 
           cy.get('a:contains("Add a new client")').click();
 
           cy.wait(1000);
+
+          cy.checkA11y();
 
           cy.get('input[id="name"]')
             .focus()
@@ -607,6 +651,8 @@ describe('Smoke tests', () => {
             .type(client.contact.telephone);
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
     });
@@ -659,6 +705,8 @@ describe('Smoke tests', () => {
             .type(client.contact.telephone);
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
 
@@ -696,6 +744,8 @@ describe('Smoke tests', () => {
             .type(client.contact.telephone);
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
 
@@ -730,6 +780,8 @@ describe('Smoke tests', () => {
             .type(client.contact.telephone);
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
 
@@ -778,6 +830,8 @@ describe('Smoke tests', () => {
           );
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
 
@@ -802,6 +856,8 @@ describe('Smoke tests', () => {
           cy.get('button[type="submit"]')
             .eq(1)
             .click();
+
+          cy.get('h2').should('contain.text', 'Clients');
         });
       });
     });
@@ -838,11 +894,15 @@ describe('Smoke tests', () => {
       it('should add a confirmed sale', () => {
         cy.fixture('data/account.json').then(res => {
           cy.fixture('upload/invoice.pdf').then(file => {
+            cy.checkA11y();
+
             const transaction = res[0];
 
             cy.get('a:contains("Record a new transaction")').click();
 
             cy.wait(1000);
+
+            cy.checkA11y();
 
             cy.get('input[type="radio"]').check(transaction.type);
 
@@ -877,6 +937,8 @@ describe('Smoke tests', () => {
             }).should('not.be.visible');
 
             cy.get('button[type="submit"]').click();
+
+            cy.get('h2').should('contain.text', 'Accounts');
           });
         });
       });
@@ -927,6 +989,8 @@ describe('Smoke tests', () => {
             }).should('not.be.visible');
 
             cy.get('button[type="submit"]').click();
+
+            cy.get('h2').should('contain.text', 'Accounts');
           });
         });
       });
@@ -977,6 +1041,8 @@ describe('Smoke tests', () => {
             }).should('not.be.visible');
 
             cy.get('button[type="submit"]').click();
+
+            cy.get('h2').should('contain.text', 'Accounts');
           });
         });
       });
@@ -999,6 +1065,8 @@ describe('Smoke tests', () => {
               .click();
 
             cy.wait(1000);
+
+            cy.checkA11y();
 
             cy.get('input[name="transaction"][type="hidden"]').should(
               'have.value',
@@ -1067,6 +1135,8 @@ describe('Smoke tests', () => {
 
           cy.wait(1000);
 
+          cy.checkA11y();
+
           cy.get('input[id="confirmation"]')
             .focus()
             .type(transaction.supplier);
@@ -1112,6 +1182,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Accounts');
         });
       });
 
@@ -1171,6 +1243,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Accounts');
         });
       });
 
@@ -1207,6 +1281,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Accounts');
         });
       });
 
@@ -1243,6 +1319,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Accounts');
         });
       });
 
@@ -1305,6 +1383,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Pending transactions');
         });
       });
 
@@ -1343,6 +1423,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Pending transactions');
         });
       });
 
@@ -1381,6 +1463,8 @@ describe('Smoke tests', () => {
           });
 
           cy.get('button[type="submit"]').click();
+
+          cy.get('h2').should('contain.text', 'Pending transactions');
         });
       });
 
@@ -1391,6 +1475,8 @@ describe('Smoke tests', () => {
           cy.get('a:contains("View pending transactions")').click();
 
           cy.wait(1000);
+
+          cy.checkA11y();
 
           cy.get('button:contains("Delete")')
             .eq(1)
@@ -1448,6 +1534,8 @@ describe('Smoke tests', () => {
         cy.get('button[type="submit"]')
           .eq(1)
           .click();
+
+        cy.get('h2').should('contain.text', 'My companies');
       });
     });
 
@@ -1476,6 +1564,8 @@ describe('Smoke tests', () => {
         cy.get('button[type="submit"]')
           .eq(1)
           .click();
+
+        cy.get('h2').should('contain.text', 'My companies');
       });
     });
   });
