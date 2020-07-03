@@ -1,3 +1,6 @@
+repo:
+  - ./*
+
 applications:
   - applications/*
   - applications/**/*
