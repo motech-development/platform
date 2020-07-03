@@ -25,9 +25,9 @@ jobs:
             node_modules
             applications/*/*/node_modules
             packages/*/node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm i
