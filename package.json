@@ -73,6 +73,7 @@
     "cypress": "^4.9.0",
     "cypress-axe": "^0.8.1",
     "cypress-file-upload": "^3.5.3",
+    "cypress-localstorage-commands": "^1.2.1",
     "cz-lerna-changelog": "^2.0.3",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^18.0.1",

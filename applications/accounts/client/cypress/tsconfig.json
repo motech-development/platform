@@ -4,7 +4,7 @@
     "lib": ["es5", "dom"],
     "strict": true,
     "target": "es5",
-    "types": ["cypress", "cypress-file-upload"]
+    "types": ["cypress", "cypress-file-upload", "cypress-localstorage-commands"]
   },
   "include": ["**/*.ts"]
 }

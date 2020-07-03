@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import 'cypress-file-upload';
+import 'cypress-localstorage-commands';
 
 Cypress.Commands.add(
   'login',

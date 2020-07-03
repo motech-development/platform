@@ -1,4 +1,14 @@
 describe('Smoke tests', () => {
+  before(() => {
+    cy.clearLocalStorageSnapshot().then(() => {
+      cy.login().then(() => {
+        cy.url().should('eq', 'http://localhost:3000/my-companies');
+
+        cy.saveLocalStorage();
+      });
+    });
+  });
+
   beforeEach(() => {
     if (window.navigator && navigator.serviceWorker) {
       navigator.serviceWorker.getRegistrations().then(registrations => {
@@ -8,12 +18,14 @@ describe('Smoke tests', () => {
       });
     }
 
-    cy.login().then(() => {
-      cy.url().should('eq', 'http://localhost:3000/my-companies');
+    cy.restoreLocalStorage().then(() => {
+      cy.visit('/my-companies').then(() => {
+        cy.url().should('eq', 'http://localhost:3000/my-companies');
 
-      cy.injectAxe();
+        cy.injectAxe();
 
-      cy.wait(1000);
+        cy.wait(1000);
+      });
     });
   });
 
