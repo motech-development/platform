@@ -1,0 +1,88 @@
+# TODO: Cache Cypress?
+name: Develop
+on:
+  - push
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Node version
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Generate cache key
+        run: ./scripts/checksum.sh ./checksum.txt
+
+      - name: Restore Node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            applications/*/*/node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Build packages
+        run: npm run package
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Upload checksum
+        uses: actions/upload-artifact@v2
+        with:
+          name: Checksum
+          path: ./checksum.txt
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v2
+        with:
+          name: Packages
+          path: ./packages/*/lib/*
+
+  unit-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Node version
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Restore checksum
+        uses: actions/download-artifact@v2
+        with:
+          name: Checksum
+
+      - name: Restore packages
+        uses: actions/download-artifact@v2
+        with:
+          name: Packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            applications/*/*/node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Unit test
+        run: npm run test:ci
