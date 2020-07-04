@@ -23,11 +23,18 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.cache/Cypress
             ~/.npm
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/Cypress
           key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
@@ -493,11 +500,18 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.cache/Cypress
             ~/.npm
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/Cypress
           key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
