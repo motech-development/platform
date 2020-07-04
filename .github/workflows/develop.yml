@@ -23,11 +23,11 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.cache/Cypress
+            ~/.cache
             ~/.npm
-            node_modules
-            applications/*/*/node_modules
-            packages/*/node_modules
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
