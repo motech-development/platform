@@ -4,7 +4,7 @@ on:
   - push
 
 jobs:
-  Setup:
+  setup:
     runs-on: ubuntu-latest
 
     steps:
@@ -52,7 +52,7 @@ jobs:
           name: Packages
           path: ./packages/*/lib/*
 
-  Unit test:
+  unit-test:
     runs-on: ubuntu-latest
 
     needs: setup
@@ -99,10 +99,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  Deploy Auth0 tenant:
+  deploy-auth0-tenant:
     runs-on: ubuntu-latest
 
-    needs: Unit test
+    needs: unit-test
 
     env:
       AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_DEV }}
