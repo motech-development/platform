@@ -542,7 +542,7 @@ jobs:
           name: cypress-screenshots
           path: applications/accounts/client/cypress/screenshots
 
-      - name: Upload smoke test v
+      - name: Upload smoke test video
         if: always()
         uses: actions/upload-artifact@v2
         with:
