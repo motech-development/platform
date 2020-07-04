@@ -386,3 +386,102 @@ jobs:
 
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/data -- -- --stage $STAGE
+
+  deploy-accounts-api:
+    runs-on: ubuntu-latest
+
+    needs:
+      - deploy-accounts-data
+      - deploy-accounts-queue
+      - deploy-accounts-storage
+      - deploy-open-banking
+
+    env:
+      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      STAGE: develop
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Node version
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Restore checksum
+        uses: actions/download-artifact@v2
+        with:
+          name: Checksum
+
+      - name: Restore packages
+        uses: actions/download-artifact@v2
+        with:
+          name: Packages
+          path: ./packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            applications/*/*/node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Deploy
+        run: npm run deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
+
+      - name: Upload env vars
+        uses: actions/upload-artifact@v2
+        with:
+          name: Env vars
+          path: ./applications/accounts/client/.env.production
+
+  build-accounts-client:
+    runs-on: ubuntu-latest
+
+    needs: deploy-accounts-api
+
+    env:
+      REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
+      REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+      REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_DEV }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Node version
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Restore checksum
+        uses: actions/download-artifact@v2
+        with:
+          name: Checksum
+
+      - name: Restore packages
+        uses: actions/download-artifact@v2
+        with:
+          name: Packages
+          path: ./packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            applications/*/*/node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Build client
+        run: npm run build -- --scope=@accounts/client
