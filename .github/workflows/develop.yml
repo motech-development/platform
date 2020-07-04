@@ -252,8 +252,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Docker setup
-        uses: docker/build-push-action@v1
-
       - name: Deploy anti virus service
         run: npm run deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
