@@ -1,5 +1,5 @@
-# TODO: Cache Cypress?
 name: Develop
+
 on:
   - push
 
@@ -20,6 +20,7 @@ jobs:
         run: ./scripts/checksum.sh ./checksum.txt
 
       - name: Restore Node modules
+        id: node-modules
         uses: actions/cache@v2
         with:
           path: |
@@ -40,6 +41,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Install dependencies
+        if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Build packages
@@ -533,16 +535,16 @@ jobs:
           start: npx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000
 
-      - name: Screenshots
-        uses: actions/upload-artifact@v2
+      - name: Upload error screenshots
         if: failure()
+        uses: actions/upload-artifact@v2
         with:
           name: cypress-screenshots
           path: applications/accounts/client/cypress/screenshots
 
-      - name: Video
-        uses: actions/upload-artifact@v2
+      - name: Upload smoke test v
         if: always()
+        uses: actions/upload-artifact@v2
         with:
           name: cypress-videos
           path: applications/accounts/client/cypress/videos
