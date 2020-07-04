@@ -23,6 +23,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            ~/.cache/Cypress
             ~/.npm
             node_modules
             applications/*/*/node_modules
@@ -498,5 +499,20 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           command: npm run e2e:ci -- --scope=@accounts/client
+          install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000
+
+      - name: Screenshots
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: applications/accounts/client/cypress/screenshots
+
+      - name: Video
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: cypress-videos
+          path: applications/accounts/client/cypress/videos
