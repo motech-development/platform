@@ -1,7 +1,11 @@
-name: Develop
+name: Checks
 
 on:
-  - push
+  push:
+    branches:
+      - bugfix/**
+      - feature/**
+      - hotfix/**
 
 jobs:
   setup:
@@ -480,9 +484,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-env-vars
+          key: ${{ runner.os }}-accounts-client-env-vars
           restore-keys: |
-            ${{ runner.os }}-env-vars
+            ${{ runner.os }}-accounts-client-env-vars
 
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
@@ -497,6 +501,7 @@ jobs:
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
       CYPRESS_CLIENT_ID: ${{ secrets.CYPRESS_CLIENT_ID }}
       CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
       REACT_APP_AUTH0_AUDIENCE: ${{ secrets.REACT_APP_AUTH0_AUDIENCE }}
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
@@ -550,9 +555,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-env-vars
+          key: ${{ runner.os }}-accounts-client-env-vars
           restore-keys: |
-            ${{ runner.os }}-env-vars
+            ${{ runner.os }}-accounts-client-env-vars
 
       - name: Build client
         run: npm run build -- --scope=@accounts/client

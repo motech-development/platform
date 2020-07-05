@@ -179,9 +179,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-env-vars
+          key: ${{ runner.os }}-accounts-client-env-vars
           restore-keys: |
-            ${{ runner.os }}-env-vars
+            ${{ runner.os }}-accounts-client-env-vars
 
       - name: Build client
         run: npm run build -- --scope=@accounts/client

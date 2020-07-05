@@ -572,9 +572,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-env-vars
+          key: ${{ runner.os }}-accounts-client-env-vars
           restore-keys: |
-            ${{ runner.os }}-env-vars
+            ${{ runner.os }}-accounts-client-env-vars
 
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
@@ -680,21 +680,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
-      - name: Restore cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/modules.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-
-
       - name: Restore env vars
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-env-vars
+          key: ${{ runner.os }}-accounts-client-env-vars
           restore-keys: |
-            ${{ runner.os }}-env-vars
+            ${{ runner.os }}-accounts-client-env-vars
 
       - name: Build client
         run: npm run build -- --scope=@accounts/client
