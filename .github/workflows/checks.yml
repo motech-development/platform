@@ -124,7 +124,7 @@ jobs:
     needs: unit-test
 
     env:
-      AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
+      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_DEV }}
       AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET_DEV }}
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       AUTH0_SES_ACCESS_KEY_ID: ${{ secrets.AUTH0_SES_ACCESS_KEY_ID }}
