@@ -179,9 +179,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-env-vars-$GITHUB_REF
+          key: ${{ runner.os }}-env-vars
           restore-keys: |
-            ${{ runner.os }}-env-vars-
+            ${{ runner.os }}-env-vars
 
       - name: Build client
         run: npm run build -- --scope=@accounts/client

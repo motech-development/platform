@@ -46,14 +46,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
-      - name: Restore cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/modules.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-
-
       - name: Install dependencies
         if: steps.node-modules.outputs.cache-hit != 'true'
         run: npm ci
@@ -580,9 +572,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-env-vars-$GITHUB_REF
+          key: ${{ runner.os }}-env-vars
           restore-keys: |
-            ${{ runner.os }}-env-vars-
+            ${{ runner.os }}-env-vars
 
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
@@ -635,3 +627,75 @@ jobs:
 
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN
+
+  build-accounts-client:
+    runs-on: ubuntu-latest
+
+    needs:
+      - deploy-accounts-api
+      - deploy-accounts-infrastructure
+
+    env:
+      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      REACT_APP_AUTH0_AUDIENCE: ${{ secrets.REACT_APP_AUTH0_AUDIENCE }}
+      REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_PROD }}
+      REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
+      REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_PROD }}
+      STAGE: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Node version
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Generate modules cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
+
+      - name: Restore env vars
+        uses: actions/cache@v2
+        with:
+          path: ./applications/accounts/client/.env.production
+          key: ${{ runner.os }}-env-vars
+          restore-keys: |
+            ${{ runner.os }}-env-vars
+
+      - name: Build client
+        run: npm run build -- --scope=@accounts/client
+
+      - name: Deploy
+        run: npm run deploy -- --scope=@accounts/client -- -- --stage $STAGE --domain-name $PROD_DOMAIN
