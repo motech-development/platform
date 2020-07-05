@@ -636,6 +636,8 @@ jobs:
       - deploy-accounts-infrastructure
 
     env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       REACT_APP_AUTH0_AUDIENCE: ${{ secrets.REACT_APP_AUTH0_AUDIENCE }}
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_PROD }}
