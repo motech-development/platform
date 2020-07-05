@@ -1,7 +1,9 @@
-name: Develop
+name: Deploy
 
 on:
-  - push
+  push:
+    branches:
+      - master
 
 jobs:
   setup:
@@ -114,25 +116,71 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+  deploy-storybook:
+    runs-on: ubuntu-latest
+
+    needs: unit-test
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Node version
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Generate modules cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Deploy
+        run: npm run deploy -- --scope=@motech-development/breeze-ui
+
   deploy-auth0-tenant:
     runs-on: ubuntu-latest
 
     needs: unit-test
 
     env:
-      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_DEV }}
-      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET_DEV }}
-      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_PROD }}
+      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET_PROD }}
+      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
       AUTH0_SES_ACCESS_KEY_ID: ${{ secrets.AUTH0_SES_ACCESS_KEY_ID }}
       AUTH0_SES_ACCESS_SECRET_KEY: ${{ secrets.AUTH0_SES_ACCESS_SECRET_KEY }}
       AUTH0_SES_REGION: ${{ secrets.AUTH0_SES_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      PREFIX: id-develop
+      PREFIX: id
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
-      PUBLIC_URL: https://id-develop.${{ secrets.PROD_DOMAIN }}
-      REACT_APP_GA: ${{ secrets.GA_ID_DEV }}
-      STAGE: develop
+      PUBLIC_URL: https://id.${{ secrets.PROD_DOMAIN }}
+      REACT_APP_GA: ${{ secrets.GA_ID_PROD }}
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -192,7 +240,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: develop
+      STAGE: production
       YAPILY_APPLICATION_KEY: ${{ secrets.YAPILY_APPLICATION_KEY }}
       YAPILY_APPLICATION_SECRET: ${{ secrets.YAPILY_APPLICATION_SECRET }}
 
@@ -242,7 +290,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: develop
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -282,6 +330,58 @@ jobs:
       - name: Deploy
         run: npm run deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
 
+  deploy-infrastructure:
+    runs-on: ubuntu-latest
+
+    needs: unit-test
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      STAGE: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Node version
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Generate modules cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Deploy core infrastructure
+        run: npm run deploy -- --scope=@core/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN
+
+      - name: Deploy comms infrastructure
+        run: npm run deploy -- --scope=@core/comms -- -- --stage $STAGE --domain-name $PROD_DOMAIN
+
   deploy-accounts-storage:
     runs-on: ubuntu-latest
 
@@ -290,7 +390,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: develop
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -338,7 +438,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: develop
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -386,7 +486,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: develop
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -436,10 +536,10 @@ jobs:
       - deploy-open-banking
 
     env:
-      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: develop
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -487,21 +587,16 @@ jobs:
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
 
-  build-accounts-client:
+  deploy-accounts-infrastructure:
     runs-on: ubuntu-latest
 
-    needs: deploy-accounts-api
+    needs: deploy-infrastructure
 
     env:
-      CYPRESS_AUDIENCE: ${{ secrets.CYPRESS_AUDIENCE }}
-      CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
-      CYPRESS_CLIENT_ID: ${{ secrets.CYPRESS_CLIENT_ID }}
-      CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
-      CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
-      REACT_APP_AUTH0_AUDIENCE: ${{ secrets.REACT_APP_AUTH0_AUDIENCE }}
-      REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
-      REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
-      REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_DEV }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -538,43 +633,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
-      - name: Restore cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/modules.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-
-
-      - name: Restore env vars
-        uses: actions/cache@v2
-        with:
-          path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-env-vars-$GITHUB_REF
-          restore-keys: |
-            ${{ runner.os }}-env-vars-
-
-      - name: Build client
-        run: npm run build -- --scope=@accounts/client
-
-      - name: Smoke tests
-        uses: cypress-io/github-action@v2
-        with:
-          command: npm run e2e:ci -- --scope=@accounts/client
-          install: false
-          start: npx serve -s ./applications/accounts/client/build --listen 3000
-          wait-on: http://localhost:3000
-
-      - name: Upload error screenshots
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-screenshots
-          path: applications/accounts/client/cypress/screenshots
-
-      - name: Upload smoke test video
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-videos
-          path: applications/accounts/client/cypress/videos
+      - name: Deploy
+        run: npm run deploy -- --scope=@accounts/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN

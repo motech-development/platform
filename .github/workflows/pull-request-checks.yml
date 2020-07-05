@@ -115,3 +115,95 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  smoke-test:
+    runs-on: ubuntu-latest
+
+    needs: setup
+
+    env:
+      CYPRESS_AUDIENCE: ${{ secrets.CYPRESS_AUDIENCE }}
+      CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
+      CYPRESS_CLIENT_ID: ${{ secrets.CYPRESS_CLIENT_ID }}
+      CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+      CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+      REACT_APP_AUTH0_AUDIENCE: ${{ secrets.REACT_APP_AUTH0_AUDIENCE }}
+      REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
+      REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+      REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_DEV }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Node version
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Generate modules cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
+
+      - name: Restore env vars
+        uses: actions/cache@v2
+        with:
+          path: ./applications/accounts/client/.env.production
+          key: ${{ runner.os }}-env-vars-$GITHUB_REF
+          restore-keys: |
+            ${{ runner.os }}-env-vars-
+
+      - name: Build client
+        run: npm run build -- --scope=@accounts/client
+
+      - name: Smoke tests
+        uses: cypress-io/github-action@v2
+        with:
+          command: npm run e2e:ci -- --scope=@accounts/client
+          install: false
+          start: npx serve -s ./applications/accounts/client/build --listen 3000
+          wait-on: http://localhost:3000
+
+      - name: Upload error screenshots
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-screenshots
+          path: applications/accounts/client/cypress/screenshots
+
+      - name: Upload smoke test video
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-videos
+          path: applications/accounts/client/cypress/videos
