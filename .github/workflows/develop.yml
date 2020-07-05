@@ -480,7 +480,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-env-vars-${{ GITHUB_REF }}
+          key: ${{ runner.os }}-env-vars-$GITHUB_REF
           restore-keys: |
             ${{ runner.os }}-env-vars-
 
@@ -550,7 +550,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-env-vars-${{ GITHUB_REF }}
+          key: ${{ runner.os }}-env-vars-$GITHUB_REF
           restore-keys: |
             ${{ runner.os }}-env-vars-
 
