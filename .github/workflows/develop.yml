@@ -16,8 +16,11 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Generate cache key
-        run: ./scripts/checksum.sh ./checksum.txt
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
+
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
         id: node-modules
@@ -28,7 +31,16 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        id: packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -36,7 +48,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -45,22 +57,11 @@ jobs:
         run: npm ci
 
       - name: Build packages
+        if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
         run: npm run package
 
       - name: Lint code
         run: npm run lint
-
-      - name: Upload checksum
-        uses: actions/upload-artifact@v2
-        with:
-          name: Checksum
-          path: ./checksum.txt
-
-      - name: Upload packages
-        uses: actions/upload-artifact@v2
-        with:
-          name: Packages
-          path: ./packages/*/lib/*
 
   unit-test:
     runs-on: ubuntu-latest
@@ -78,16 +79,11 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Restore checksum
-        uses: actions/download-artifact@v2
-        with:
-          name: Checksum
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Restore packages
-        uses: actions/download-artifact@v2
-        with:
-          name: Packages
-          path: ./packages
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
         uses: actions/cache@v2
@@ -97,7 +93,15 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -139,16 +143,11 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Restore checksum
-        uses: actions/download-artifact@v2
-        with:
-          name: Checksum
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Restore packages
-        uses: actions/download-artifact@v2
-        with:
-          name: Packages
-          path: ./packages
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
         uses: actions/cache@v2
@@ -158,7 +157,15 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -198,16 +205,11 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Restore checksum
-        uses: actions/download-artifact@v2
-        with:
-          name: Checksum
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Restore packages
-        uses: actions/download-artifact@v2
-        with:
-          name: Packages
-          path: ./packages
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
         uses: actions/cache@v2
@@ -217,7 +219,15 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -243,16 +253,11 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Restore checksum
-        uses: actions/download-artifact@v2
-        with:
-          name: Checksum
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Restore packages
-        uses: actions/download-artifact@v2
-        with:
-          name: Packages
-          path: ./packages
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
         uses: actions/cache@v2
@@ -262,7 +267,15 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -288,16 +301,11 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Restore checksum
-        uses: actions/download-artifact@v2
-        with:
-          name: Checksum
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Restore packages
-        uses: actions/download-artifact@v2
-        with:
-          name: Packages
-          path: ./packages
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
         uses: actions/cache@v2
@@ -307,7 +315,15 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -333,16 +349,11 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Restore checksum
-        uses: actions/download-artifact@v2
-        with:
-          name: Checksum
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Restore packages
-        uses: actions/download-artifact@v2
-        with:
-          name: Packages
-          path: ./packages
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
         uses: actions/cache@v2
@@ -352,7 +363,15 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -378,16 +397,11 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Restore checksum
-        uses: actions/download-artifact@v2
-        with:
-          name: Checksum
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Restore packages
-        uses: actions/download-artifact@v2
-        with:
-          name: Packages
-          path: ./packages
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
         uses: actions/cache@v2
@@ -397,7 +411,15 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -428,16 +450,11 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Restore checksum
-        uses: actions/download-artifact@v2
-        with:
-          name: Checksum
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Restore packages
-        uses: actions/download-artifact@v2
-        with:
-          name: Packages
-          path: ./packages
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
         uses: actions/cache@v2
@@ -447,7 +464,15 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -485,16 +510,11 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Restore checksum
-        uses: actions/download-artifact@v2
-        with:
-          name: Checksum
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Restore packages
-        uses: actions/download-artifact@v2
-        with:
-          name: Packages
-          path: ./packages
+      - name: Generate module cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
         uses: actions/cache@v2
@@ -504,7 +524,15 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -512,7 +540,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-node-${{ hashFiles('**/checksum.txt') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
