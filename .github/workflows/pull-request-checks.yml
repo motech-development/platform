@@ -122,6 +122,7 @@ jobs:
     needs: setup
 
     env:
+      COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
       CYPRESS_AUDIENCE: ${{ secrets.CYPRESS_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
       CYPRESS_CLIENT_ID: ${{ secrets.CYPRESS_CLIENT_ID }}
@@ -190,8 +191,7 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          browser: chrome
-          command: npm run e2e:ci -- --scope=@accounts/client
+          command: npm run e2e:ci -- --scope=@accounts/client -- -- --browser chrome --group merge --tag ${{ github.event_name }}
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000
