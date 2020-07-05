@@ -1,0 +1,117 @@
+name: Pull request checks
+
+on:
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Node version
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Generate modules cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        id: node-modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        id: packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        if: steps.node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Build packages
+        if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
+        run: npm run package
+
+      - name: Lint code
+        run: npm run lint
+
+  unit-test:
+    runs-on: ubuntu-latest
+
+    needs: setup
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set Node version
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Generate modules cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Unit test
+        run: npm run test:ci
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

@@ -16,10 +16,10 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Generate module cache key
+      - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Generate module cache key
+      - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
@@ -79,10 +79,10 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Generate module cache key
+      - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Generate module cache key
+      - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
@@ -143,10 +143,10 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Generate module cache key
+      - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Generate module cache key
+      - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
@@ -205,10 +205,10 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Generate module cache key
+      - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Generate module cache key
+      - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
@@ -253,10 +253,10 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Generate module cache key
+      - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Generate module cache key
+      - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
@@ -301,10 +301,10 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Generate module cache key
+      - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Generate module cache key
+      - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
@@ -349,10 +349,10 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Generate module cache key
+      - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Generate module cache key
+      - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
@@ -397,10 +397,10 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Generate module cache key
+      - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Generate module cache key
+      - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
@@ -450,10 +450,10 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Generate module cache key
+      - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Generate module cache key
+      - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
@@ -510,10 +510,10 @@ jobs:
         with:
           node-version: '12.x'
 
-      - name: Generate module cache key
+      - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
 
-      - name: Generate module cache key
+      - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
