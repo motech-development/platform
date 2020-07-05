@@ -124,7 +124,7 @@ jobs:
     needs: unit-test
 
     env:
-      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_DEV }}
+      AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
       AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET_DEV }}
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       AUTH0_SES_ACCESS_KEY_ID: ${{ secrets.AUTH0_SES_ACCESS_KEY_ID }}
@@ -497,14 +497,14 @@ jobs:
     needs: deploy-accounts-api
 
     env:
-      CYPRESS_AUDIENCE: ${{ secrets.CYPRESS_AUDIENCE }}
+      CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
-      CYPRESS_CLIENT_ID: ${{ secrets.CYPRESS_CLIENT_ID }}
+      CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
       CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      REACT_APP_AUTH0_AUDIENCE: ${{ secrets.REACT_APP_AUTH0_AUDIENCE }}
+      REACT_APP_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
       REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_DEV }}
@@ -566,7 +566,7 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: npm run e2e:ci -- --scope=@accounts/client -- -- --browser chrome
+          command: npm run e2e:ci -- --scope=@accounts/client
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000

@@ -123,13 +123,13 @@ jobs:
 
     env:
       COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-      CYPRESS_AUDIENCE: ${{ secrets.CYPRESS_AUDIENCE }}
+      CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
-      CYPRESS_CLIENT_ID: ${{ secrets.CYPRESS_CLIENT_ID }}
+      CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
       CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
       CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      REACT_APP_AUTH0_AUDIENCE: ${{ secrets.REACT_APP_AUTH0_AUDIENCE }}
+      REACT_APP_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
       REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_DEV }}
@@ -191,7 +191,7 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: npm run e2e:ci -- --scope=@accounts/client -- -- --browser chrome --group merge --tag ${{ github.event_name }}
+          command: npm run e2e:ci -- --scope=@accounts/client -- -- --group merge --tag ${{ github.event_name }}
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000
