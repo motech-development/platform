@@ -22,7 +22,7 @@ describe('Smoke tests', () => {
       cy.visit('/my-companies').then(() => {
         cy.url().should('eq', 'http://localhost:3000/my-companies');
 
-        // cy.injectAxe();
+        cy.injectAxe();
 
         cy.wait(1000);
       });
@@ -41,13 +41,13 @@ describe('Smoke tests', () => {
       cy.fixture('data/company.json').then(res => {
         const data = res[0];
 
-        // cy.checkA11y();
+        cy.checkA11y();
 
         cy.get('a:contains("Add a new company")').click();
 
         cy.wait(1000);
 
-        // cy.checkA11y();
+        cy.checkA11y();
 
         cy.get('input[id="company.name"]')
           .focus()
@@ -217,13 +217,13 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
-        // cy.checkA11y();
+        cy.checkA11y();
 
         cy.get('a:contains("Manage company details")').click();
 
         cy.wait(1000);
 
-        // cy.checkA11y();
+        cy.checkA11y();
 
         cy.get('input[id="name"]').should('have.value', company.name);
         cy.get('input[id="companyNumber"]').should(
@@ -298,7 +298,7 @@ describe('Smoke tests', () => {
 
           cy.wait(1000);
 
-          // cy.checkA11y();
+          cy.checkA11y();
 
           cy.get('button:contains("Add a new category")').click();
 
@@ -621,7 +621,7 @@ describe('Smoke tests', () => {
 
       it('should add client 1', () => {
         cy.fixture('data/client.json').then(res => {
-          // cy.checkA11y();
+          cy.checkA11y();
 
           const client = res[0];
 
@@ -629,7 +629,7 @@ describe('Smoke tests', () => {
 
           cy.wait(1000);
 
-          // cy.checkA11y();
+          cy.checkA11y();
 
           cy.get('input[id="name"]')
             .focus()
@@ -894,7 +894,7 @@ describe('Smoke tests', () => {
       it('should add a confirmed sale', () => {
         cy.fixture('data/account.json').then(res => {
           cy.fixture('upload/invoice.pdf').then(file => {
-            // cy.checkA11y();
+            cy.checkA11y();
 
             const transaction = res[0];
 
@@ -902,7 +902,7 @@ describe('Smoke tests', () => {
 
             cy.wait(1000);
 
-            // cy.checkA11y();
+            cy.checkA11y();
 
             cy.get('input[type="radio"]').check(transaction.type);
 
@@ -1066,7 +1066,7 @@ describe('Smoke tests', () => {
 
             cy.wait(1000);
 
-            // cy.checkA11y();
+            cy.checkA11y();
 
             cy.get('input[name="transaction"][type="hidden"]').should(
               'have.value',
@@ -1135,7 +1135,7 @@ describe('Smoke tests', () => {
 
           cy.wait(1000);
 
-          // cy.checkA11y();
+          cy.checkA11y();
 
           cy.get('input[id="confirmation"]')
             .focus()
@@ -1476,7 +1476,7 @@ describe('Smoke tests', () => {
 
           cy.wait(1000);
 
-          // cy.checkA11y();
+          cy.checkA11y();
 
           cy.get('button:contains("Delete")')
             .eq(1)

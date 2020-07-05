@@ -127,6 +127,7 @@ jobs:
       CYPRESS_CLIENT_ID: ${{ secrets.CYPRESS_CLIENT_ID }}
       CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
       CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       REACT_APP_AUTH0_AUDIENCE: ${{ secrets.REACT_APP_AUTH0_AUDIENCE }}
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
       REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
@@ -179,9 +180,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars
+          key: ${{ runner.os }}-accounts-client-env-vars-checks
           restore-keys: |
-            ${{ runner.os }}-accounts-client-env-vars
+            ${{ runner.os }}-accounts-client-env-vars-
 
       - name: Build client
         run: npm run build -- --scope=@accounts/client
@@ -189,6 +190,7 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
+          browser: chrome
           command: npm run e2e:ci -- --scope=@accounts/client
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000

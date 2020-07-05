@@ -572,9 +572,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars
+          key: ${{ runner.os }}-accounts-client-env-vars-deploy
           restore-keys: |
-            ${{ runner.os }}-accounts-client-env-vars
+            ${{ runner.os }}-accounts-client-env-vars-
 
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
@@ -684,9 +684,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars
+          key: ${{ runner.os }}-accounts-client-env-vars-deploy
           restore-keys: |
-            ${{ runner.os }}-accounts-client-env-vars
+            ${{ runner.os }}-accounts-client-env-vars-
 
       - name: Build client
         run: npm run build -- --scope=@accounts/client
