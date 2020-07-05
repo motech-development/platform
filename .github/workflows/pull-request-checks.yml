@@ -33,18 +33,18 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         id: packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
 
       - name: Restore cache
         uses: actions/cache@v2
@@ -95,17 +95,17 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
 
       - name: Unit test
         run: npm run test:ci

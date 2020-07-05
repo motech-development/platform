@@ -31,26 +31,26 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         id: packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
 
       - name: Restore cache
         uses: actions/cache@v2
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-cache-
 
       - name: Install dependencies
         if: steps.node-modules.outputs.cache-hit != 'true'
@@ -93,17 +93,17 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
 
       - name: Unit test
         run: npm run test:ci
@@ -157,17 +157,17 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
 
       - name: Deploy ID infrastructure
         run: npm run deploy -- --scope=@id/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
@@ -219,17 +219,17 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
 
       - name: Deploy
         run: npm run deploy -- --scope=@open-banking/api -- -- --stage $STAGE --appId $YAPILY_APPLICATION_KEY --appSecret $YAPILY_APPLICATION_SECRET
@@ -267,17 +267,17 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
 
       - name: Deploy
         run: npm run deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
@@ -315,17 +315,17 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
 
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/storage -- -- --stage $STAGE
@@ -363,17 +363,17 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
 
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/queue -- -- --stage $STAGE
@@ -411,17 +411,17 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
 
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/data -- -- --stage $STAGE
@@ -464,26 +464,28 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
+
+      - name: Restore env vars
+        uses: actions/cache@v2
+        with:
+          path: ./applications/accounts/client/.env.production
+          key: ${{ runner.os }}-env-vars-${{ GITHUB_REF }}
+          restore-keys: |
+            ${{ runner.os }}-env-vars-
 
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
-
-      - name: Upload env vars
-        uses: actions/upload-artifact@v2
-        with:
-          name: Env vars
-          path: ./applications/accounts/client/.env.production
 
   build-accounts-client:
     runs-on: ubuntu-latest
@@ -524,31 +526,33 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-node-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-packages-
 
       - name: Restore cache
         uses: actions/cache@v2
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-cache-
 
       - name: Restore env vars
-        uses: actions/download-artifact@v2
+        uses: actions/cache@v2
         with:
-          name: Env vars
-          path: ./applications/accounts/client/
+          path: ./applications/accounts/client/.env.production
+          key: ${{ runner.os }}-env-vars-${{ GITHUB_REF }}
+          restore-keys: |
+            ${{ runner.os }}-env-vars-
 
       - name: Build client
         run: npm run build -- --scope=@accounts/client
@@ -569,7 +573,7 @@ jobs:
           path: applications/accounts/client/cypress/screenshots
 
       - name: Upload smoke test video
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v2
         with:
           name: cypress-videos
