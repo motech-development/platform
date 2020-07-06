@@ -110,6 +110,9 @@ jobs:
       - name: Unit test
         run: npm run test:ci
 
+      - name: Fix paths for SonarCloud Scan
+        run: ./scripts/sonar-scanner-path-fix.sh
+
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
