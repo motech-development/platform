@@ -9,6 +9,7 @@ docker create -i -t -v /home/docker --name s3-antivirus-builder amazonlinux
 docker start s3-antivirus-builder
 
 echo "-- Updating, downloading and unpacking clamAV and ClamAV update --"
+docker exec -t -w /home/docker s3-antivirus-builder yum clean all
 docker exec -t -w /home/docker s3-antivirus-builder yum -y install wget
 docker exec -t -w /home/docker s3-antivirus-builder wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 docker exec -t -w /home/docker s3-antivirus-builder yum -y install epel-release-latest-7.noarch.rpm
