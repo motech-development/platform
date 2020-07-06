@@ -35,7 +35,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -44,7 +44,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -53,12 +53,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-cache-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-cache-
 
       - name: Install dependencies
-        # if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
+        if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Build packages
@@ -98,7 +98,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -106,7 +106,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -158,14 +158,14 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
       - name: Deploy ID infrastructure
@@ -206,14 +206,14 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
       - name: Deploy
@@ -244,14 +244,14 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
       - name: Deploy
@@ -282,14 +282,14 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
       - name: Deploy
@@ -320,14 +320,14 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
       - name: Deploy
@@ -358,14 +358,14 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
       - name: Deploy
@@ -401,14 +401,14 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
       - name: Restore env vars
@@ -454,21 +454,21 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
       - name: Restore packages
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
       - name: Restore cache
         uses: actions/cache@v2
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-cache-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-cache-
       - name: Restore env vars
