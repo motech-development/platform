@@ -417,7 +417,7 @@ jobs:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-checks
           restore-keys: |
-            ${{ runner.os }}-accounts-client-env-vars-
+            ${{ runner.os }}-accounts-client-env-vars-checks
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
   build-accounts-client:
@@ -477,7 +477,7 @@ jobs:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-checks
           restore-keys: |
-            ${{ runner.os }}-accounts-client-env-vars-
+            ${{ runner.os }}-accounts-client-env-vars-checks
       - name: Build client
         run: npm run build -- --scope=@accounts/client
       - name: Smoke tests

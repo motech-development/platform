@@ -187,7 +187,7 @@ jobs:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-checks
           restore-keys: |
-            ${{ runner.os }}-accounts-client-env-vars-
+            ${{ runner.os }}-accounts-client-env-vars-checks
 
       - name: Build client
         run: npm run build -- --scope=@accounts/client
