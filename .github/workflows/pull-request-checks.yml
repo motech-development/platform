@@ -16,7 +16,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: 12.x
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -51,9 +51,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-node-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-cache-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-cache-
 
       - name: Install dependencies
         if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
@@ -188,6 +188,7 @@ jobs:
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
       CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
       CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       REACT_APP_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
@@ -202,7 +203,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: 12.x
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -256,17 +257,3 @@ jobs:
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000
-
-      - name: Upload error screenshots
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-screenshots
-          path: applications/accounts/client/cypress/screenshots
-
-      - name: Upload smoke test video
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-videos
-          path: applications/accounts/client/cypress/videos
