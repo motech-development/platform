@@ -10,7 +10,7 @@
     "build:splash:portrait": "pwa-asset-generator ./assets/splash.svg ./public --splash-only --background '#161616' --type png --portrait-only",
     "deploy": "serverless client deploy --verbose --no-confirm",
     "e2e": "cypress open",
-    "e2e:ci": "cypress run --reporter junit --reporter-options 'mochaFile=../../reports/junit/accounts-client.xml'",
+    "e2e:ci": "cypress run --record --browser chrome --reporter junit --reporter-options 'mochaFile=../../reports/junit/accounts-client.xml'",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",

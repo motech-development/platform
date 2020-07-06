@@ -1,0 +1,62 @@
+repo:
+  - ./*
+
+applications:
+  - applications/*
+  - applications/**/*
+
+accounts:
+  - applications/accounts/*
+  - applications/accounts/**/*
+
+core:
+  - applications/core/*
+  - applications/core/**/*
+
+id:
+  - applications/id/*
+  - applications/id/**/*
+
+open-banking:
+  - applications/open-banking/*
+  - applications/open-banking/**/*
+
+packages:
+  - packages/*
+  - packages/**/*
+
+api-gateway-handler:
+  - packages/api-gateway-handler/*
+  - packages/api-gateway-handler/**/*
+
+auth:
+  - packages/auth/*
+  - packages/auth/**/*
+
+axios-hooks:
+  - packages/axios-hooks/*
+  - packages/axios-hooks/**/*
+
+breeze-ui:
+  - packages/breeze-ui/*
+  - packages/breeze-ui/**/*
+
+ga-web-vitals:
+  - packages/ga-web-vitals/*
+  - packages/ga-web-vitals/**/*
+
+query-string-hooks:
+  - packages/query-string-hooks/*
+  - packages/query-string-hooks/**/*
+
+serverless-outputs-env:
+  - packages/serverless-outputs-env/*
+  - packages/serverless-outputs-env/**/*
+
+webpack-conditional-plugin:
+  - packages/webpack-conditional-plugin/*
+  - packages/webpack-conditional-plugin/**/*
+
+webpack-permissions-plugin:
+  - packages/webpack-permissions-plugin/*
+  - packages/webpack-permissions-plugin/**/*
