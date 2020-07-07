@@ -33,7 +33,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -87,7 +87,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -95,12 +95,15 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
       - name: Unit test
         run: npm run test:ci
+
+      - name: Fix paths for SonarCloud Scan
+        run: ./scripts/sonar-scanner-path-fix.sh
 
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
@@ -139,7 +142,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -147,7 +150,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -197,7 +200,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -205,7 +208,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -259,7 +262,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -267,7 +270,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -307,7 +310,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -315,7 +318,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -356,7 +359,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -364,7 +367,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -407,7 +410,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -415,7 +418,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -455,7 +458,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -463,7 +466,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -503,7 +506,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -511,7 +514,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -556,7 +559,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -564,7 +567,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -572,9 +575,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-deploy
+          key: ${{ runner.os }}-accounts-client-env-vars-deploy-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-accounts-client-env-vars-
+            ${{ runner.os }}-accounts-client-env-vars-deploy-
 
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
@@ -613,7 +616,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -621,7 +624,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -668,7 +671,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -676,7 +679,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -684,9 +687,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-deploy
+          key: ${{ runner.os }}-accounts-client-env-vars-deploy-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-accounts-client-env-vars-
+            ${{ runner.os }}-accounts-client-env-vars-deploy-
 
       - name: Build client
         run: npm run build -- --scope=@accounts/client
