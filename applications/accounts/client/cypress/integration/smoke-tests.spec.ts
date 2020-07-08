@@ -47,6 +47,8 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
+        cy.get('h2').should('contain.text', 'Add a new company');
+
         cy.checkA11y();
 
         cy.get('input[id="company.name"]')
@@ -223,6 +225,8 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
+        cy.get('h2').should('contain.text', company.name);
+
         cy.checkA11y();
 
         cy.get('input[id="name"]').should('have.value', company.name);
@@ -297,6 +301,8 @@ describe('Smoke tests', () => {
           cy.get('a:contains("Manage settings")').click();
 
           cy.wait(1000);
+
+          cy.get('h2').should('contain.text', 'Settings');
 
           cy.checkA11y();
 
@@ -629,6 +635,8 @@ describe('Smoke tests', () => {
 
           cy.wait(1000);
 
+          cy.get('h2').should('contain.text', 'Add a new client');
+
           cy.checkA11y();
 
           cy.get('input[id="name"]')
@@ -902,6 +910,8 @@ describe('Smoke tests', () => {
 
             cy.wait(1000);
 
+            cy.get('h2').should('contain.text', 'Record transaction');
+
             cy.checkA11y();
 
             cy.get('input[type="radio"]').check(transaction.type);
@@ -1066,6 +1076,8 @@ describe('Smoke tests', () => {
 
             cy.wait(1000);
 
+            cy.get('h2').should('contain.text', 'View transaction');
+
             cy.checkA11y();
 
             cy.get('input[name="transaction"][type="hidden"]').should(
@@ -1134,6 +1146,8 @@ describe('Smoke tests', () => {
             .click();
 
           cy.wait(1000);
+
+          cy.get('h2').should('contain.text', 'Accounts');
 
           cy.checkA11y();
 
@@ -1475,6 +1489,8 @@ describe('Smoke tests', () => {
           cy.get('a:contains("View pending transactions")').click();
 
           cy.wait(1000);
+
+          cy.get('h2').should('contain.text', 'Pending transactions');
 
           cy.checkA11y();
 
