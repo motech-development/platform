@@ -1206,6 +1206,20 @@ describe('Smoke tests', () => {
 
         cy.contains('VAT owed: £0').should('be.visible');
       });
+
+      it.skip('should download attachment', () => {
+        cy.get('a:contains("View")')
+          .eq(3)
+          .click();
+
+        cy.wait(1000);
+
+        cy.get('h2').should('contain.text', 'View transaction');
+
+        cy.get('button:contains("Download file")').click();
+
+        cy.get('div:contains("The download has started")').should('be.visible');
+      });
     });
 
     describe('Non-VAT registered company', () => {

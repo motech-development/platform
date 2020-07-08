@@ -15,6 +15,9 @@ export const scanFile = async (file: string, outDir: string) => {
 
     return true;
   } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+
     return false;
   }
 };
