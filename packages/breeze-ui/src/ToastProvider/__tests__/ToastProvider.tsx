@@ -128,7 +128,7 @@ describe('ToastProvider', () => {
     fireEvent.click(button);
 
     act(() => {
-      jest.runAllTimers();
+      jest.runOnlyPendingTimers();
     });
 
     const alert = queryByRole('alert');
@@ -146,7 +146,7 @@ describe('ToastProvider', () => {
     fireEvent.click(button);
 
     act(() => {
-      jest.runAllTimers();
+      jest.runOnlyPendingTimers();
     });
 
     expect(onDismiss).toHaveBeenCalled();
