@@ -2,6 +2,7 @@
 set -e
 
 mkdir -p clamav
+rm -rf ./bin
 
 echo "-- Downloading AmazonLinux container --"
 docker pull amazonlinux
