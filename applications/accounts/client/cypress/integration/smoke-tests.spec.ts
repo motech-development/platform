@@ -1207,7 +1207,7 @@ describe('Smoke tests', () => {
         cy.contains('VAT owed: £0').should('be.visible');
       });
 
-      it.skip('should download attachment', () => {
+      it('should download attachment', () => {
         cy.get('a:contains("View")')
           .eq(3)
           .click();
