@@ -173,6 +173,7 @@ const InternalTextBox: FC<IInternalTextBox> = ({
           decimalScale={decimalScale}
           fixedDecimalScale={!!decimalScale}
           format={format}
+          inputMode="decimal"
           prefix={prefix}
           suffix={suffix}
           active={active}

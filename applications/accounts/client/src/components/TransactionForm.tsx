@@ -401,13 +401,13 @@ const TransactionForm: FC<ITransactionForm> = ({
                         />
 
                         <TextBox
+                          decimalScale={2}
                           disabled={disableInput}
                           name="vat"
                           label={t(
                             'transaction-form.transaction-amount.vat.label',
                           )}
                           prefix={currency}
-                          decimalScale={2}
                         />
                       </>
                     ) : (

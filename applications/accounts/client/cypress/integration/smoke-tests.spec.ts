@@ -29,6 +29,10 @@ describe('Smoke tests', () => {
     });
   });
 
+  after(() => {
+    cy.task('clearDownloads');
+  });
+
   describe('Register company', () => {
     afterEach(() => {
       cy.url().should(
