@@ -34,7 +34,7 @@ functions:
 
   ScanFile:
     handler: src/handlers/scan-file.handler
-    memorySize: 1024
+    memorySize: 2048
     role: LambdaFunctionRole
     timeout: 300
 
@@ -52,7 +52,7 @@ functions:
     events:
       - schedule:
           rate: rate(1 day)
-    memorySize: 1024
+    memorySize: 2048
     role: LambdaFunctionRole
     timeout: 300
 

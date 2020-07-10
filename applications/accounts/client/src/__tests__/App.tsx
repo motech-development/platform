@@ -42,7 +42,7 @@ describe('App', () => {
 
     await wait();
 
-    jest.runAllTimers();
+    jest.runOnlyPendingTimers();
 
     expect(logout).toHaveBeenCalledWith({
       returnTo: window.location.origin,
@@ -76,7 +76,7 @@ describe('App', () => {
 
       await wait();
 
-      jest.runAllTimers();
+      jest.runOnlyPendingTimers();
 
       expect(logout).toHaveBeenCalledWith({
         returnTo: window.location.origin,

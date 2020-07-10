@@ -47,6 +47,10 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
+        cy.get('h2').should('contain.text', 'Add a new company');
+
+        cy.wait(1000);
+
         cy.checkA11y();
 
         cy.get('input[id="company.name"]')
@@ -223,6 +227,10 @@ describe('Smoke tests', () => {
 
         cy.wait(1000);
 
+        cy.get('h2').should('contain.text', company.name);
+
+        cy.wait(1000);
+
         cy.checkA11y();
 
         cy.get('input[id="name"]').should('have.value', company.name);
@@ -295,6 +303,10 @@ describe('Smoke tests', () => {
           cy.wait(1000);
 
           cy.get('a:contains("Manage settings")').click();
+
+          cy.wait(1000);
+
+          cy.get('h2').should('contain.text', 'Settings');
 
           cy.wait(1000);
 
@@ -629,6 +641,10 @@ describe('Smoke tests', () => {
 
           cy.wait(1000);
 
+          cy.get('h2').should('contain.text', 'Add a new client');
+
+          cy.wait(1000);
+
           cy.checkA11y();
 
           cy.get('input[id="name"]')
@@ -902,6 +918,10 @@ describe('Smoke tests', () => {
 
             cy.wait(1000);
 
+            cy.get('h2').should('contain.text', 'Record transaction');
+
+            cy.wait(1000);
+
             cy.checkA11y();
 
             cy.get('input[type="radio"]').check(transaction.type);
@@ -1066,6 +1086,10 @@ describe('Smoke tests', () => {
 
             cy.wait(1000);
 
+            cy.get('h2').should('contain.text', 'View transaction');
+
+            cy.wait(1000);
+
             cy.checkA11y();
 
             cy.get('input[name="transaction"][type="hidden"]').should(
@@ -1135,6 +1159,10 @@ describe('Smoke tests', () => {
 
           cy.wait(1000);
 
+          cy.get('h2').should('contain.text', 'Accounts');
+
+          cy.wait(1000);
+
           cy.checkA11y();
 
           cy.get('input[id="confirmation"]')
@@ -1191,6 +1219,20 @@ describe('Smoke tests', () => {
         cy.contains('Balance: £690.40').should('be.visible');
 
         cy.contains('VAT owed: £0').should('be.visible');
+      });
+
+      it('should download attachment', () => {
+        cy.get('a:contains("View")')
+          .eq(3)
+          .click();
+
+        cy.wait(1000);
+
+        cy.get('h2').should('contain.text', 'View transaction');
+
+        cy.get('button:contains("Download file")').click();
+
+        cy.get('div:contains("The download has started")').should('be.visible');
       });
     });
 
@@ -1473,6 +1515,10 @@ describe('Smoke tests', () => {
           const transaction = res[5];
 
           cy.get('a:contains("View pending transactions")').click();
+
+          cy.wait(1000);
+
+          cy.get('h2').should('contain.text', 'Pending transactions');
 
           cy.wait(1000);
 

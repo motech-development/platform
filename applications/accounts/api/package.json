@@ -4,7 +4,7 @@
   "description": "Motech Development accounts API",
   "private": true,
   "scripts": {
-    "deploy": "serverless deploy --verbose",
+    "deploy": "serverless deploy --verbose --force",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
     "precommit": "lint-staged",
     "teardown": "serverless remove --verbose",

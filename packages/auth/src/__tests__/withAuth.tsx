@@ -103,7 +103,7 @@ describe('withAuth', () => {
       jest.useFakeTimers();
 
       act(() => {
-        jest.runAllTimers();
+        jest.runOnlyPendingTimers();
       });
 
       await wait(() =>

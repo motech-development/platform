@@ -24,4 +24,5 @@ yarn-error.log*
 
 # cypress
 cypress.env.json
+cypress/downloads
 cypress/videos

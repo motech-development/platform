@@ -88,7 +88,7 @@ describe('Tooltip', () => {
       fireEvent.blur(button);
 
       act(() => {
-        jest.runAllTimers();
+        jest.runOnlyPendingTimers();
       });
 
       expect(queryByRole('tooltip')).toBeNull();
