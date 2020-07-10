@@ -19,14 +19,14 @@ export const handler: Handler<IEvent> = async event => {
 
   const tempDir = resolve('/tmp');
   const downloadsDir = join(tempDir, 'downloads');
-
-  await createDirectory(downloadsDir);
-
+  const downloadsDirExists = await createDirectory(downloadsDir);
   const { from, key, to } = event;
   const file = downloadFile(from, key, downloadsDir);
-  const definitions = virusDefinitions.map(definition =>
-    downloadFile(BUCKET, definition, tempDir),
-  );
+  const definitions = downloadsDirExists
+    ? []
+    : virusDefinitions.map(definition =>
+        downloadFile(BUCKET, definition, tempDir),
+      );
   const [downloadedFile] = await Promise.all([file, ...definitions]);
   const result = await scanFile(downloadedFile, tempDir);
 

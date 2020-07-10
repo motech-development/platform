@@ -17,18 +17,36 @@ describe('file-operations', () => {
       name = 'tmp';
     });
 
-    it('should not create directory if it already exists', async () => {
-      (existsSync as jest.Mock).mockReturnValueOnce(true);
+    describe('when directory exists', () => {
+      beforeEach(() => {
+        (existsSync as jest.Mock).mockReturnValueOnce(true);
+      });
 
-      await createDirectory(name);
+      it('should not create directory', async () => {
+        await createDirectory(name);
 
-      expect(mkdir).not.toHaveBeenCalled();
+        expect(mkdir).not.toHaveBeenCalled();
+      });
+
+      it('should return true', async () => {
+        await expect(createDirectory(name)).resolves.toEqual(true);
+      });
     });
 
-    it('should create directory if it exists', async () => {
-      await createDirectory(name);
+    describe('when directory does not exist', () => {
+      beforeEach(() => {
+        (existsSync as jest.Mock).mockReturnValueOnce(false);
+      });
 
-      expect(mkdir).toHaveBeenCalledWith('tmp', expect.any(Function));
+      it('should create directory', async () => {
+        await createDirectory(name);
+
+        expect(mkdir).toHaveBeenCalledWith('tmp', expect.any(Function));
+      });
+
+      it('should return false', async () => {
+        await expect(createDirectory(name)).resolves.toEqual(false);
+      });
     });
   });
 

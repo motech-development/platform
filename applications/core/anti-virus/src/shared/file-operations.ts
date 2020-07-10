@@ -12,6 +12,8 @@ export const createDirectory = async (name: string) => {
   if (!directoryExists) {
     await mkdirAsync(name);
   }
+
+  return directoryExists;
 };
 
 export const createFile = async (
