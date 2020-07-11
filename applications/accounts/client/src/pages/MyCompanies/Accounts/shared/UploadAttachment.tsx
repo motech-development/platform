@@ -10,6 +10,10 @@ interface IRequestUploadInput {
   input: {
     contentType: string;
     extension: string;
+    metadata: {
+      id?: string;
+      typename: string;
+    };
   };
 }
 
@@ -32,6 +36,7 @@ export const REQUEST_UPLOAD = gql`
 export interface IUploadAttachmentProps {
   id: string;
   name: string;
+  transactionId?: string;
   onUpload(value: string): void;
 }
 
@@ -39,6 +44,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
   id,
   name,
   onUpload,
+  transactionId,
 }) => {
   const { t } = useTranslation('accounts');
   const { add } = useToast();
@@ -84,6 +90,10 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
                 input: {
                   contentType: file.type,
                   extension,
+                  metadata: {
+                    id: transactionId,
+                    typename: 'Transaction',
+                  },
                 },
               },
             });

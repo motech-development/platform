@@ -240,6 +240,9 @@ describe('RecordTransaction', () => {
               input: {
                 contentType: 'application/pdf',
                 extension: 'pdf',
+                metadata: {
+                  typename: 'Transaction',
+                },
               },
             },
           },
