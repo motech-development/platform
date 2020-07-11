@@ -4,6 +4,7 @@ import {
   createDirectory,
   createFile,
   deleteFile,
+  getFileData,
   moveFile,
 } from '../file-operations';
 
@@ -51,7 +52,7 @@ describe('file-operations', () => {
   });
 
   describe('createFile', () => {
-    it('should putObject with the correct params', async () => {
+    it('should call putObject with the correct params', async () => {
       await createFile('bucket', 'file.txt', 'Hello world');
 
       expect(S3.prototype.putObject).toHaveBeenCalledWith({
@@ -63,7 +64,7 @@ describe('file-operations', () => {
   });
 
   describe('deleteFile', () => {
-    it('should deleteObject with the correct params', async () => {
+    it('should call deleteObject with the correct params', async () => {
       await deleteFile('bucket', 'file.txt');
 
       expect(S3.prototype.deleteObject).toHaveBeenCalledWith({
@@ -74,9 +75,20 @@ describe('file-operations', () => {
   });
 
   describe('downloadFile', () => {
-    it.todo('should getObject with the correct params');
+    it.todo('should call getObject with the correct params');
 
     it.todo('should throw an error if file cannot be downloaded');
+  });
+
+  describe('getFileData', () => {
+    it('should call headObject with the correct params', async () => {
+      await getFileData('bucket', 'file.txt');
+
+      expect(S3.prototype.headObject).toHaveBeenCalledWith({
+        Bucket: 'bucket',
+        Key: 'file.txt',
+      });
+    });
   });
 
   describe('moveFile', () => {
@@ -90,7 +102,7 @@ describe('file-operations', () => {
       key = 'test.pdf';
     });
 
-    it('should copyObject with the correct params', async () => {
+    it('should call copyObject with the correct params', async () => {
       await moveFile(from, to, key);
 
       expect(S3.prototype.copyObject).toHaveBeenCalledWith({
@@ -100,7 +112,7 @@ describe('file-operations', () => {
       });
     });
 
-    it('should deleteObject with the correct params', async () => {
+    it('should call deleteObject with the correct params', async () => {
       await moveFile(from, to, key);
 
       expect(S3.prototype.deleteObject).toHaveBeenCalledWith({

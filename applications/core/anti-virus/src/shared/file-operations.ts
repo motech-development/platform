@@ -60,6 +60,17 @@ export const downloadFile = async (bucket: string, key: string, to: string) => {
   });
 };
 
+export const getFileData = async (bucket: string, key: string) => {
+  const decodedKey = decodeURIComponent(key);
+
+  return s3
+    .headObject({
+      Bucket: bucket,
+      Key: decodedKey,
+    })
+    .promise();
+};
+
 export const moveFile = async (from: string, to: string, key: string) => {
   const decodedKey = decodeURIComponent(key);
 

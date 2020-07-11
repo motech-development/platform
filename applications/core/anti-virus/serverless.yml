@@ -24,6 +24,12 @@ custom:
     includeModules: true
 
 functions:
+  FailureNotification:
+    handler: src/handlers/failure-notification.handler
+    role: LambdaFunctionRole
+    environment:
+      QUEUE_URL: !Ref AntiVirusFailureQueue
+
   MoveFile:
     handler: src/handlers/move-file.handler
     role: LambdaFunctionRole
@@ -77,12 +83,17 @@ stepFunctions:
               - Variable: $.result
                 BooleanEquals: true
                 Next: MoveFile
-            Default: RemoveFile
+            Default: FailureNotification
 
           MoveFile:
             Type: Task
             Resource: !GetAtt MoveFileLambdaFunction.Arn
             End: true
+
+          FailureNotification:
+            Type: Task
+            Resource: !GetAtt FailureNotificationLambdaFunction.Arn
+            Next: RemoveFile
 
           RemoveFile:
             Type: Task
@@ -91,6 +102,11 @@ stepFunctions:
 
 resources:
   Resources:
+    AntiVirusFailureQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.prefix}-failure-queue
+
     AntiVirusQueue:
       Type: AWS::SQS::Queue
       Properties:
@@ -128,6 +144,11 @@ resources:
                     - S3:PutObjectTagging
                   Resource:
                     - 'arn:aws:s3:::*'
+                - Effect: Allow
+                  Action:
+                    - sqs:SendMessage
+                  Resource:
+                    - !GetAtt AntiVirusFailureQueue.Arn
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup
