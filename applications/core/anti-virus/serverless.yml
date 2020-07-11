@@ -76,6 +76,11 @@ stepFunctions:
             Type: Task
             Resource: !GetAtt ScanFileLambdaFunction.Arn
             Next: ProcessResult
+            Catch:
+              - ErrorEquals:
+                  - States.ALL
+                Next: FailureNotification
+                ResultPath: $.error
 
           ProcessResult:
             Type: Choice
