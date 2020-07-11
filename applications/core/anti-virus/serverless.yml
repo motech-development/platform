@@ -201,6 +201,12 @@ resources:
                   Resource:
                     - 'arn:aws:logs:*:*:*'
   Outputs:
+    AntiVirusFailureQueueArn:
+      Description: Anti Virus failure queue ARN
+      Value: !GetAtt AntiVirusFailureQueue.Arn
+      Export:
+        Name: ${self:provider.stage}-AntiVirusFailureQueueArn
+
     AntiVirusQueueArn:
       Description: Anti Virus queue ARN
       Value: !GetAtt AntiVirusQueue.Arn
