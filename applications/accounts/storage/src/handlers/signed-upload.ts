@@ -17,6 +17,12 @@ const schema = object()
       .lowercase()
       .oneOf(whitelist)
       .required(),
+    metadata: object()
+      .shape({
+        id: string().nullable(),
+        typename: string().required(),
+      })
+      .required(),
     owner: string().required(),
   })
   .required();
@@ -32,7 +38,7 @@ export const handler = apiGatewayHandler(async event => {
       stripUnknown: true,
     });
     const id = uuid();
-    const { companyId, contentType, extension, owner } = result;
+    const { companyId, contentType, extension, metadata, owner } = result;
     const expirationInSeconds = 30;
 
     const url = await s3.getSignedUrlPromise('putObject', {
@@ -40,6 +46,7 @@ export const handler = apiGatewayHandler(async event => {
       ContentType: contentType,
       Expires: expirationInSeconds,
       Key: `${owner}/${companyId}/${id}.${extension}`,
+      Metadata: metadata,
     });
 
     return response(
