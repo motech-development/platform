@@ -20,7 +20,7 @@ const updateAttachments = (
         return false;
       }
 
-      const { id } = JSON.parse(metadata.stringValue as string);
+      const { id } = JSON.parse(metadata.stringValue);
 
       return !!id;
     })

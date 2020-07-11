@@ -18,5 +18,9 @@ export const handler: SQSHandler = async event => {
   const { Records } = event;
   const updates = updateAttachments(documentClient, TABLE, BUCKET, Records);
 
-  await Promise.all(updates);
+  try {
+    await Promise.all(updates);
+  } catch (e) {
+    console.error(e.message);
+  }
 };

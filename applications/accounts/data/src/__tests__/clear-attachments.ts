@@ -107,10 +107,30 @@ describe('clear-attachments', () => {
       process.env = env;
     });
 
-    it('should update the correct number of records', async () => {
-      await handler(event, context, callback);
+    describe('when there are no errors thrown by DynamoDB', () => {
+      it('should update the correct number of records', async () => {
+        await handler(event, context, callback);
 
-      expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(1);
+        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('when DyanmoDB throws an error', () => {
+      beforeEach(() => {
+        (DocumentClient.prototype.update as jest.Mock).mockReturnValue({
+          promise: jest
+            .fn()
+            .mockRejectedValue(new Error('Something has gone wrong')),
+        });
+
+        jest.spyOn(console, 'error').mockReturnValue();
+      });
+
+      it('should swallow the error', async () => {
+        await handler(event, context, callback);
+
+        expect(console.error).toHaveBeenCalledWith('Something has gone wrong');
+      });
     });
   });
 });

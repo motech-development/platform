@@ -583,7 +583,7 @@ jobs:
           name: cypress-screenshots
           path: applications/accounts/client/cypress/screenshots
 
-      - name: Upload smoke test video
+      - name: Upload error video
         if: failure()
         uses: actions/upload-artifact@v2
         with:
