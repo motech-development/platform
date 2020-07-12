@@ -15,6 +15,17 @@ describe('clear-attachments', () => {
 
     callback = jest.fn();
 
+    DocumentClient.prototype.query = jest.fn().mockReturnValue({
+      promise: jest.fn().mockResolvedValueOnce({
+        Items: [
+          {
+            __typename: 'Something',
+            id: 'id-1',
+          },
+        ],
+      }),
+    });
+
     event = ({
       Records: [
         {

@@ -137,17 +137,22 @@ resources:
               Statement:
                 - Effect: Allow
                   Action:
-                    - dynamodb:UpdateItem
+                    - dynamodb:DescribeStream
                     - dynamodb:GetRecords
                     - dynamodb:GetShardIterator
-                    - dynamodb:DescribeStream
                     - dynamodb:ListStreams
+                    - dynamodb:Query
+                    - dynamodb:UpdateItem
                   Resource:
                     - !GetAtt ApplicationTable.Arn
                     - !Join
                       - ''
                       - - !GetAtt ApplicationTable.Arn
                         - '/stream/*'
+                    - !Join
+                      - ''
+                      - - !GetAtt ApplicationTable.Arn
+                        - '/index/__typename-data-index'
                 - Effect: Allow
                   Action:
                     - sqs:SendMessage
