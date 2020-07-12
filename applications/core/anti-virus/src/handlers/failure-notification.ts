@@ -21,6 +21,11 @@ export const handler: Handler<IEvent> = async event => {
 
   await sqs
     .sendMessage({
+      ...(Metadata && Metadata.id
+        ? {}
+        : {
+            DelaySeconds: 600,
+          }),
       MessageAttributes: {
         ...(Metadata
           ? {

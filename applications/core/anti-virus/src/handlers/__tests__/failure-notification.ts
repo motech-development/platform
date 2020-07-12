@@ -57,7 +57,7 @@ describe('failure-notification', () => {
         });
       });
 
-      it('should send message with the correct params', async () => {
+      it('should send message with the correct params with an id set', async () => {
         await handler(event, context, callback);
 
         expect(SQS.prototype.sendMessage).toHaveBeenCalledWith({
@@ -70,6 +70,38 @@ describe('failure-notification', () => {
               DataType: 'String',
               StringValue: JSON.stringify({
                 id: 'test-id',
+                typename: 'TestType',
+              }),
+            },
+            source: {
+              DataType: 'String',
+              StringValue: 'upload-bucket',
+            },
+          },
+          MessageBody: 'path/to/file.pdf has failed virus scan',
+          QueueUrl: 'https://queue.url',
+        });
+      });
+
+      it('should send message with the correct params with no id set', async () => {
+        (getFileData as jest.Mock).mockResolvedValue({
+          Metadata: {
+            typename: 'TestType',
+          },
+        });
+
+        await handler(event, context, callback);
+
+        expect(SQS.prototype.sendMessage).toHaveBeenCalledWith({
+          DelaySeconds: 600,
+          MessageAttributes: {
+            key: {
+              DataType: 'String',
+              StringValue: 'path/to/file.pdf',
+            },
+            metadata: {
+              DataType: 'String',
+              StringValue: JSON.stringify({
                 typename: 'TestType',
               }),
             },
@@ -100,6 +132,7 @@ describe('failure-notification', () => {
         await handler(event, context, callback);
 
         expect(SQS.prototype.sendMessage).toHaveBeenCalledWith({
+          DelaySeconds: 600,
           MessageAttributes: {
             key: {
               DataType: 'String',
