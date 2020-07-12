@@ -11,7 +11,13 @@ type StorageUpload {
   url: String
 }
 
+input MetadataInput {
+  id: ID
+  typename: String!
+}
+
 input StorageUploadInput {
   contentType: String!
   extension: String!
+  metadata: MetadataInput!
 }

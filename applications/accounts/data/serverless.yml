@@ -31,6 +31,16 @@ functions:
     environment:
       ATTACHMENT_QUEUE: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
 
+  ClearAttachments:
+    handler: src/clear-attachments.handler
+    events:
+      - sqs:
+          arn: !ImportValue ${self:provider.stage}-AntiVirusFailureQueueArn
+    role: DataLambdaFunctionRole
+    environment:
+      BUCKET: !ImportValue ${self:provider.stage}-StorageUploadBucket
+      TABLE: !Ref ApplicationTable
+
   PublishTransactions:
     handler: src/publish-transactions.handler
     role: DataLambdaFunctionRole
@@ -127,22 +137,34 @@ resources:
               Statement:
                 - Effect: Allow
                   Action:
-                    - dynamodb:UpdateItem
+                    - dynamodb:DescribeStream
                     - dynamodb:GetRecords
                     - dynamodb:GetShardIterator
-                    - dynamodb:DescribeStream
                     - dynamodb:ListStreams
+                    - dynamodb:Query
+                    - dynamodb:UpdateItem
                   Resource:
                     - !GetAtt ApplicationTable.Arn
                     - !Join
                       - ''
                       - - !GetAtt ApplicationTable.Arn
                         - '/stream/*'
+                    - !Join
+                      - ''
+                      - - !GetAtt ApplicationTable.Arn
+                        - '/index/__typename-data-index'
                 - Effect: Allow
                   Action:
                     - sqs:SendMessage
                   Resource:
                     - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
+                - Effect: Allow
+                  Action:
+                    - sqs:DeleteMessage
+                    - sqs:GetQueueAttributes
+                    - sqs:ReceiveMessage
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AntiVirusFailureQueueArn
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup

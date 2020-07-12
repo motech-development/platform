@@ -12,6 +12,8 @@ export const createDirectory = async (name: string) => {
   if (!directoryExists) {
     await mkdirAsync(name);
   }
+
+  return directoryExists;
 };
 
 export const createFile = async (
@@ -56,6 +58,17 @@ export const downloadFile = async (bucket: string, key: string, to: string) => {
       .on('error', reject)
       .pipe(fileStream);
   });
+};
+
+export const getFileData = async (bucket: string, key: string) => {
+  const decodedKey = decodeURIComponent(key);
+
+  return s3
+    .headObject({
+      Bucket: bucket,
+      Key: decodedKey,
+    })
+    .promise();
 };
 
 export const moveFile = async (from: string, to: string, key: string) => {

@@ -4,4 +4,8 @@ DocumentClient.prototype.update = jest.fn().mockReturnValue({
   promise: jest.fn(),
 });
 
+DocumentClient.prototype.query = jest.fn().mockReturnValue({
+  promise: jest.fn(),
+});
+
 module.exports = { DocumentClient };

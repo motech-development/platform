@@ -267,6 +267,7 @@ const ViewTransaction: FC = () => {
                     id={companyId}
                     name="attachment"
                     onUpload={setAttachment}
+                    transactionId={transactionId}
                   />
                 }
                 vat={data.getSettings.vat.pay}

@@ -32,6 +32,10 @@ describe('scan-files', () => {
     };
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should throw an error if bucket is not set', async () => {
     await expect(handler(event, context, callback)).rejects.toThrow(
       'No bucket set',
@@ -69,7 +73,7 @@ describe('scan-files', () => {
       );
     });
 
-    it('should download the virus definitions', async () => {
+    it('should download the virus definitions if the temporary download folder exists', async () => {
       await handler(event, context, callback);
 
       expect(downloadFile).toHaveBeenCalledWith(
@@ -83,6 +87,28 @@ describe('scan-files', () => {
         '/tmp',
       );
       expect(downloadFile).toHaveBeenCalledWith(
+        'definitions-bucket',
+        'main.cvd',
+        '/tmp',
+      );
+    });
+
+    it('should not download the virus definitions if the temporary download folder exists', async () => {
+      (createDirectory as jest.Mock).mockResolvedValueOnce(true);
+
+      await handler(event, context, callback);
+
+      expect(downloadFile).not.toHaveBeenCalledWith(
+        'definitions-bucket',
+        'bytecode.cvd',
+        '/tmp',
+      );
+      expect(downloadFile).not.toHaveBeenCalledWith(
+        'definitions-bucket',
+        'daily.cvd',
+        '/tmp',
+      );
+      expect(downloadFile).not.toHaveBeenCalledWith(
         'definitions-bucket',
         'main.cvd',
         '/tmp',

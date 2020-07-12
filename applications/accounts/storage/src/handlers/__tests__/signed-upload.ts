@@ -24,6 +24,10 @@ describe('signed-upload', () => {
         companyId: 'company-id',
         contentType: 'image/png',
         extension: 'png',
+        metadata: {
+          id: null,
+          typename: 'Test',
+        },
         owner: 'owner',
       }),
     } as APIGatewayProxyEvent;
@@ -74,6 +78,10 @@ describe('signed-upload', () => {
       event.body = JSON.stringify({
         companyId: 'company-id',
         extension: 'exe',
+        metadata: {
+          id: null,
+          typename: 'Test',
+        },
         owner: 'owner',
       });
 
@@ -93,6 +101,10 @@ describe('signed-upload', () => {
         companyId: 'company-id',
         contentType: 'image/png',
         extension: 'PDF',
+        metadata: {
+          id: 'transaction-id',
+          typename: 'Test',
+        },
         owner: 'owner',
       });
 
@@ -119,7 +131,7 @@ describe('signed-upload', () => {
       });
     });
 
-    it('should create a signed URL with the correct params', async () => {
+    it('should create a signed URL with the correct params when an ID is not sent', async () => {
       await handler(event, context, callback);
 
       expect(S3.prototype.getSignedUrlPromise).toHaveBeenLastCalledWith(
@@ -129,6 +141,38 @@ describe('signed-upload', () => {
           ContentType: 'image/png',
           Expires: 30,
           Key: 'owner/company-id/test-uuid.png',
+          Metadata: {
+            typename: 'Test',
+          },
+        },
+      );
+    });
+
+    it('should create a signed URL with the correct params when an ID is sent', async () => {
+      event.body = JSON.stringify({
+        companyId: 'company-id',
+        contentType: 'image/png',
+        extension: 'png',
+        metadata: {
+          id: 'transaction-id',
+          typename: 'Test',
+        },
+        owner: 'owner',
+      });
+
+      await handler(event, context, callback);
+
+      expect(S3.prototype.getSignedUrlPromise).toHaveBeenLastCalledWith(
+        'putObject',
+        {
+          Bucket: 'upload-bucket',
+          ContentType: 'image/png',
+          Expires: 30,
+          Key: 'owner/company-id/test-uuid.png',
+          Metadata: {
+            id: 'transaction-id',
+            typename: 'Test',
+          },
         },
       );
     });

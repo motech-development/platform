@@ -571,6 +571,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           command: npm run e2e:ci -- --scope=@accounts/client -- -- --record false
+          config: defaultCommandTimeout=10000
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000
@@ -582,7 +583,7 @@ jobs:
           name: cypress-screenshots
           path: applications/accounts/client/cypress/screenshots
 
-      - name: Upload smoke test video
+      - name: Upload error video
         if: failure()
         uses: actions/upload-artifact@v2
         with:

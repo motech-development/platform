@@ -12,6 +12,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+import { rmdirSync } from 'fs';
 import { join } from 'path';
 
 /**
@@ -20,19 +21,29 @@ import { join } from 'path';
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+  const downloads = join(__dirname, '../downloads');
+
   on('before:browser:launch', (browser = {}, launchOptions) => {
     const updatedLaunchOptions = {
       ...launchOptions,
     };
 
     if (browser.family === 'chromium') {
-      const downloads = join(__dirname, '../downloads');
-
       updatedLaunchOptions.preferences.default.download = {
         default_directory: downloads,
       };
     }
 
     return updatedLaunchOptions;
+  });
+
+  on('task', {
+    clearDownloads: () => {
+      rmdirSync(downloads, {
+        recursive: true,
+      });
+
+      return null;
+    },
   });
 };
