@@ -131,7 +131,7 @@ describe('signed-upload', () => {
       });
     });
 
-    it('should create a signed URL with the correct params', async () => {
+    it('should create a signed URL with the correct params when an ID is not sent', async () => {
       await handler(event, context, callback);
 
       expect(S3.prototype.getSignedUrlPromise).toHaveBeenLastCalledWith(
@@ -142,7 +142,35 @@ describe('signed-upload', () => {
           Expires: 30,
           Key: 'owner/company-id/test-uuid.png',
           Metadata: {
-            id: null,
+            typename: 'Test',
+          },
+        },
+      );
+    });
+
+    it('should create a signed URL with the correct params when an ID is sent', async () => {
+      event.body = JSON.stringify({
+        companyId: 'company-id',
+        contentType: 'image/png',
+        extension: 'png',
+        metadata: {
+          id: 'transaction-id',
+          typename: 'Test',
+        },
+        owner: 'owner',
+      });
+
+      await handler(event, context, callback);
+
+      expect(S3.prototype.getSignedUrlPromise).toHaveBeenLastCalledWith(
+        'putObject',
+        {
+          Bucket: 'upload-bucket',
+          ContentType: 'image/png',
+          Expires: 30,
+          Key: 'owner/company-id/test-uuid.png',
+          Metadata: {
+            id: 'transaction-id',
             typename: 'Test',
           },
         },

@@ -46,7 +46,14 @@ export const handler = apiGatewayHandler(async event => {
       ContentType: contentType,
       Expires: expirationInSeconds,
       Key: `${owner}/${companyId}/${id}.${extension}`,
-      Metadata: metadata,
+      Metadata: {
+        ...(metadata.id
+          ? {
+              id: metadata.id,
+            }
+          : {}),
+        typename: metadata.typename,
+      },
     });
 
     return response(
