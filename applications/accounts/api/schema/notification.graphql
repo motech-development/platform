@@ -1,0 +1,19 @@
+type Notification {
+  createdAt: String
+  id: ID
+  message: String
+  read: Boolean
+}
+
+type Notifications {
+  id: ID
+  items: [Notification]
+}
+
+type NotificationBeacon {
+  id: ID
+}
+
+input NotificationInput {
+  ids: [ID]!
+}
