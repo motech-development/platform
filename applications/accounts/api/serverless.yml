@@ -251,6 +251,7 @@ custom:
         - schema/company.graphql
         - schema/contact.graphql
         - schema/expense-category.graphql
+        - schema/notification.graphql
         - schema/schema.graphql
         - schema/settings.graphql
         - schema/storage.graphql
