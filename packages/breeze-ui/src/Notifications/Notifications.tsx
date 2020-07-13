@@ -1,6 +1,6 @@
 import { faAsterisk, faBell } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { memo, ReactNode, useState } from 'react';
+import React, { memo, ReactNode, useEffect, useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
 import Button from '../Button/Button';
@@ -60,23 +60,26 @@ type Placement = 'bottom' | 'bottom-end' | 'bottom-start';
 
 export interface INotificationsProps<T> {
   alert: boolean;
+  cols?: number;
   items: T[];
   label: string;
   noResults: ReactNode;
   placement?: Placement;
   row: (item: T) => ReactNode;
-  onClick(): void | Promise<void>;
+  onClose(): void | Promise<void>;
 }
 
 function Notifications<T>({
   alert,
+  cols = 1,
   items,
   label,
   noResults,
-  onClick,
+  onClose,
   placement = 'bottom',
   row,
 }: INotificationsProps<T>) {
+  const isFirstRun = useRef(true);
   const [visible, setVisible] = useState(false);
   const [
     referenceElement,
@@ -98,15 +101,27 @@ function Notifications<T>({
     placement,
     strategy: 'fixed',
   });
-  const toggleNotifications = async () => {
-    await onClick();
-
+  const toggleNotifications = () => {
     setVisible(!visible);
   };
 
   useOutsideClick(referenceElement, () => {
     setVisible(false);
   });
+
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+
+      return;
+    }
+
+    if (!visible) {
+      (async () => {
+        await onClose();
+      })();
+    }
+  }, [onClose, visible]);
 
   return (
     <NotificationWrapper ref={setReferenceElement}>
@@ -128,7 +143,11 @@ function Notifications<T>({
           {...attributes.popper}
         >
           <DataTable
-            header={<TableCell as="th">{label}</TableCell>}
+            header={
+              <TableCell as="th" colSpan={cols}>
+                {label}
+              </TableCell>
+            }
             items={items}
             noResults={noResults}
             row={row}

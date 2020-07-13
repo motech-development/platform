@@ -70,7 +70,7 @@ stories
           label="Notifications"
           noResults={<div />}
           row={({ message }) => <TableCell>{message}</TableCell>}
-          onClick={() => {}}
+          onClose={() => {}}
         />
       </AppBar>
     </>
