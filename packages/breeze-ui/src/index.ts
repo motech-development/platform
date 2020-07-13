@@ -34,6 +34,10 @@ export {
 export { default as Loader, ILoaderProps } from './Loader/Loader';
 export { default as Masonry, IMasonryProps } from './Masonry/Masonry';
 export { default as Modal, IModalProps } from './Modal/Modal';
+export {
+  default as Notifications,
+  INotificationsProps,
+} from './Notifications/Notifications';
 export { default as Overlay } from './Overlay/Overlay';
 export { default as PageTitle, IPageTitleProps } from './PageTitle/PageTitle';
 export {

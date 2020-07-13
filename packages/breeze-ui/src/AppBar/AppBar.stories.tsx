@@ -58,6 +58,7 @@ stories
         </Title>
 
         <Notifications
+          alert
           items={[
             {
               message: 'This is a notification',

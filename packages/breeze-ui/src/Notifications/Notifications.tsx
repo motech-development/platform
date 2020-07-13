@@ -56,19 +56,25 @@ const NotificationAlert = () => (
   </AlertWrapper>
 );
 
+type Placement = 'bottom' | 'bottom-end' | 'bottom-start';
+
 export interface INotificationsProps<T> {
+  alert: boolean;
   items: T[];
   label: string;
   noResults: ReactNode;
+  placement?: Placement;
   row: (item: T) => ReactNode;
   onClick(): void | Promise<void>;
 }
 
 function Notifications<T>({
+  alert,
   items,
   label,
   noResults,
   onClick,
+  placement = 'bottom',
   row,
 }: INotificationsProps<T>) {
   const [visible, setVisible] = useState(false);
@@ -89,7 +95,8 @@ function Notifications<T>({
         },
       },
     ],
-    placement: 'bottom',
+    placement,
+    strategy: 'fixed',
   });
   const toggleNotifications = async () => {
     await onClick();
@@ -103,7 +110,7 @@ function Notifications<T>({
 
   return (
     <NotificationWrapper ref={setReferenceElement}>
-      {items.length > 0 && <NotificationAlert />}
+      {alert && <NotificationAlert />}
 
       <NotificationButton
         aria-label={label}
@@ -114,10 +121,10 @@ function Notifications<T>({
       </NotificationButton>
 
       {visible && (
-        // eslint-disable-next-line react/jsx-props-no-spreading
         <NotificationContainer
           ref={setPopperElement}
           style={styles.popper}
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...attributes.popper}
         >
           <DataTable
