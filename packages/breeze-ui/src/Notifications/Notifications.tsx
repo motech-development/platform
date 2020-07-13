@@ -1,0 +1,137 @@
+import { faAsterisk, faBell } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { memo, ReactNode, useState } from 'react';
+import { usePopper } from 'react-popper';
+import styled from 'styled-components';
+import Button from '../Button/Button';
+import DataTable from '../DataTable/DataTable';
+import useOutsideClick from '../hooks/useOutsideClick';
+import TableCell from '../TableCell/TableCell';
+
+const NotificationArrow = styled.div`
+  height: 0;
+  position: absolute;
+  width: 0;
+  border-bottom: 5px solid #007fa8;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  top: -5px;
+`;
+
+const NotificationButton = styled(Button)`
+  background: none;
+  color: inherit;
+
+  :hover {
+    background: none;
+    color: inherit;
+  }
+`;
+
+const NotificationContainer = styled.div`
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px 0 rgba(0, 0, 0, 0.14),
+    0 1px 14px 0 rgba(0, 0, 0, 0.12);
+`;
+
+const NotificationWrapper = styled.div`
+  position: relative;
+`;
+
+const AlertWrapper = styled.div`
+  background-color: rgb(199, 56, 79);
+  border-radius: 50%;
+  color: #fff;
+  padding: 5px;
+  pointer-events: none;
+  position: absolute;
+  right: 5px;
+  top: -5px;
+  transform: scale(0.5);
+  z-index: 1;
+`;
+
+const NotificationAlert = () => (
+  <AlertWrapper>
+    <FontAwesomeIcon icon={faAsterisk} />
+  </AlertWrapper>
+);
+
+export interface INotificationsProps<T> {
+  items: T[];
+  label: string;
+  noResults: ReactNode;
+  row: (item: T) => ReactNode;
+  onClick(): void | Promise<void>;
+}
+
+function Notifications<T>({
+  items,
+  label,
+  noResults,
+  onClick,
+  row,
+}: INotificationsProps<T>) {
+  const [visible, setVisible] = useState(false);
+  const [
+    referenceElement,
+    setReferenceElement,
+  ] = useState<HTMLDivElement | null>(null);
+  const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null);
+  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
+    null,
+  );
+  const { attributes, styles } = usePopper(referenceElement, popperElement, {
+    modifiers: [
+      {
+        name: 'arrow',
+        options: {
+          element: arrowElement,
+        },
+      },
+    ],
+    placement: 'bottom',
+  });
+  const toggleNotifications = async () => {
+    await onClick();
+
+    setVisible(!visible);
+  };
+
+  useOutsideClick(referenceElement, () => {
+    setVisible(false);
+  });
+
+  return (
+    <NotificationWrapper ref={setReferenceElement}>
+      {items.length > 0 && <NotificationAlert />}
+
+      <NotificationButton
+        aria-label={label}
+        size="sm"
+        onClick={toggleNotifications}
+      >
+        <FontAwesomeIcon icon={faBell} />
+      </NotificationButton>
+
+      {visible && (
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        <NotificationContainer
+          ref={setPopperElement}
+          style={styles.popper}
+          {...attributes.popper}
+        >
+          <DataTable
+            header={<TableCell as="th">{label}</TableCell>}
+            items={items}
+            noResults={noResults}
+            row={row}
+          />
+
+          <NotificationArrow ref={setArrowElement} style={styles.arrow} />
+        </NotificationContainer>
+      )}
+    </NotificationWrapper>
+  );
+}
+
+export default memo(Notifications) as typeof Notifications;
