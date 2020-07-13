@@ -5,6 +5,7 @@ import { Route, Switch } from 'react-router-dom';
 import Apollo from '../../components/Apollo';
 import Container from '../../components/Container';
 import UserBar from '../../components/UserBar';
+import UserNotifications from '../../components/UserNotifications';
 
 const Accounts = lazy(() => import('./Accounts'));
 const AddCompany = lazy(() => import('./AddCompany'));
@@ -13,6 +14,29 @@ const Dashboard = lazy(() => import('./Dashboard'));
 const MyCompanies = lazy(() => import('./MyCompanies'));
 const Settings = lazy(() => import('./Settings'));
 const UpdateDetails = lazy(() => import('./UpdateDetails'));
+
+// TODO: Replace with real data
+const data = {
+  getNotifications: {
+    items: [
+      {
+        createdAt: '2020-07-01T00:00:00.000Z',
+        message: 'A transaction has been published',
+        read: false,
+      },
+      {
+        createdAt: '2020-07-01T00:00:00.000Z',
+        message: 'A transaction has been published',
+        read: false,
+      },
+      {
+        createdAt: '2020-07-01T00:00:00.000Z',
+        message: 'An upload failed a virus scan',
+        read: true,
+      },
+    ],
+  },
+};
 
 const Routes: FC = () => {
   const { logout, user } = useAuth();
@@ -23,8 +47,20 @@ const Routes: FC = () => {
 
   return (
     <>
-      {user && (
-        <UserBar name={user.name} picture={user.picture} logOut={logOut} />
+      {user && data && (
+        <UserBar
+          name={user.name}
+          notifications={
+            <UserNotifications
+              messages={data.getNotifications.items}
+              markAsRead={async () => {
+                // TODO: Mark as read
+              }}
+            />
+          }
+          picture={user.picture}
+          logOut={logOut}
+        />
       )}
 
       <Suspense fallback={<Loader />}>
