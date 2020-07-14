@@ -65,6 +65,7 @@ export const handler: DynamoDBStreamHandler = async event => {
   try {
     await Promise.all(mutations);
   } catch (e) {
-    console.log('!!ERR', JSON.stringify(e));
+    // eslint-disable-next-line no-console
+    console.error(e.message);
   }
 };
