@@ -180,6 +180,12 @@ custom:
           request: company/getCompany/Query.getCompany.req.vtl
           response: company/getCompany/Query.getCompany.res.vtl
 
+        - dataSource: Resolver
+          type: Mutation
+          field: notificationBeacon
+          request: notifications/notificationBeacon/Mutation.notificationBeacon.req.vtl
+          response: notifications/notificationBeacon/Mutation.notificationBeacon.res.vtl
+
         - kind: PIPELINE
           type: Mutation
           field: updateSettings

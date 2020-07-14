@@ -43,8 +43,8 @@ type Query {
 }
 
 type Subscription {
-  onBankCallback: BankCallback! @aws_subscribe(mutations: ["bankCallback"])
-  onNotification(id: ID!): Notifications!
+  onBankCallback: BankCallback @aws_subscribe(mutations: ["bankCallback"])
+  onNotification(id: ID!): Notifications
     @aws_subscribe(mutations: ["notificationBeacon", "markAsRead"])
 }
 
