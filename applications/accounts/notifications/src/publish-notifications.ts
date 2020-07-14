@@ -8,6 +8,12 @@ const mutation = gql`
   mutation NotificationBeacon($id: ID!, $input: NotificationInput!) {
     notificationBeacon(id: $id, input: $input) {
       id
+      items {
+        createdAt
+        id
+        message
+        read
+      }
     }
   }
 `;
