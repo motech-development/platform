@@ -32,29 +32,38 @@ export const handler: DynamoDBStreamHandler = async event => {
   const mutations = Records.filter(
     ({ dynamodb, eventName }) =>
       eventName === 'INSERT' && dynamodb && dynamodb.NewImage,
-  ).map(({ dynamodb }) => {
-    const { NewImage } = dynamodb as StreamRecord;
-    const { id } = DynamoDB.Converter.unmarshall(
-      NewImage as DynamoDB.AttributeMap,
-    );
-    const mutation = configureMutation(id);
-    const url = ENDPOINT.replace('https://', '').split('/');
-    const [host, path] = url;
-    const opts = {
-      data: JSON.stringify(mutation),
-      host,
-      method: 'POST',
-      path,
-      url,
-    };
+  )
+    .map(({ dynamodb }) => {
+      const { NewImage } = dynamodb as StreamRecord;
+      const { __typename, id } = DynamoDB.Converter.unmarshall(
+        NewImage as DynamoDB.AttributeMap,
+      );
 
-    const request = aws4.sign(opts);
+      return {
+        __typename,
+        id,
+      };
+    })
+    .filter(({ __typename }) => __typename === 'Notification')
+    .map(({ id }) => {
+      const mutation = configureMutation(id);
+      const url = ENDPOINT.replace('https://', '').split('/');
+      const [host, path] = url;
+      const opts = {
+        data: JSON.stringify(mutation),
+        host,
+        method: 'POST',
+        path,
+        url,
+      };
 
-    delete request.headers.Host;
-    delete request.headers['Content-Length'];
+      const request = aws4.sign(opts);
 
-    return axios(request);
-  });
+      delete request.headers.Host;
+      delete request.headers['Content-Length'];
+
+      return axios(request);
+    });
 
   await Promise.all(mutations);
 };
