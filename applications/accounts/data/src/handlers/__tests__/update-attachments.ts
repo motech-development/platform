@@ -132,7 +132,7 @@ describe('update-attachments', () => {
       IndexName: '__typename-data-index',
       KeyConditionExpression:
         '#typename = :typename AND begins_with(#data, :data)',
-      ProjectionExpression: 'id, #typename',
+      ProjectionExpression: 'id, #owner, #typename',
       TableName: 'test',
     });
   });
