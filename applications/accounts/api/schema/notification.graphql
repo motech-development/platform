@@ -1,11 +1,11 @@
-type Notification {
+type Notification @aws_iam @aws_oidc {
   createdAt: String
   id: ID
   message: String
   read: Boolean
 }
 
-type Notifications {
+type Notifications @aws_iam @aws_oidc {
   id: ID
   items: [Notification]
 }

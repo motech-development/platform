@@ -39,7 +39,7 @@ type Query {
   ): Transactions!
   getTypeahead(id: ID!): Typeahead!
   requestDownload(id: ID!, path: String!): StorageDownload!
-  getNotifications(id: ID!): Notifications!
+  getNotifications(id: ID!, count: Int, nextToken: String): Notifications!
 }
 
 type Subscription {

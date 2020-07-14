@@ -180,6 +180,11 @@ custom:
           request: company/getCompany/Query.getCompany.req.vtl
           response: company/getCompany/Query.getCompany.res.vtl
 
+        - dataSource: Data
+          type: Query
+          field: getNotifications
+          request: notifications/getNotifications/Query.getNotifications.req.vtl
+          response: notifications/getNotifications/Query.getNotifications.res.vtl
         - dataSource: Resolver
           type: Mutation
           field: notificationBeacon

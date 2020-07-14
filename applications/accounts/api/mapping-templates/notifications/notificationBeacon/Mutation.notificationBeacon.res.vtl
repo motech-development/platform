@@ -1,15 +1,11 @@
-#if($ctx.identity.sub == $ctx.arguments.id)
-  {
-    "id": "$ctx.arguments.id",
-    "items": [
-      {
-        "createdAt": "$ctx.arguments.input.createdAt",
-        "id": "$ctx.arguments.input.id",
-        "message": "$ctx.arguments.input.message",
-        "read": $ctx.arguments.input.read
-      }
-    ]
-  }
-#else
-  null
-#end
+{
+  "id": "$ctx.arguments.id",
+  "items": [
+    {
+      "createdAt": "$ctx.arguments.input.createdAt",
+      "id": "$ctx.arguments.input.id",
+      "message": "$ctx.arguments.input.message",
+      "read": $ctx.arguments.input.read
+    }
+  ]
+}
