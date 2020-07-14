@@ -1,12 +1,21 @@
 import { SQSRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { advanceTo, clear } from 'jest-date-mock';
 import updateAttachments from '../update-attachments';
+
+jest.mock('uuid', () => ({
+  v4: jest.fn().mockReturnValue('test-uuid'),
+}));
 
 describe('update-attachments', () => {
   let bucket: string;
   let documentClient: DocumentClient;
   let tableName: string;
   let records: SQSRecord[];
+
+  beforeAll(() => {
+    advanceTo('2020-06-06T19:45:00+00:00');
+  });
 
   beforeEach(() => {
     documentClient = new DocumentClient();
@@ -21,6 +30,7 @@ describe('update-attachments', () => {
             {
               __typename: 'Something',
               id: 'id-1',
+              owner: 'owner',
             },
           ],
         })
@@ -42,6 +52,7 @@ describe('update-attachments', () => {
           metadata: {
             stringValue: JSON.stringify({
               id: 'id-1',
+              owner: 'owner',
               typename: 'Something',
             }),
           },
@@ -58,6 +69,7 @@ describe('update-attachments', () => {
           metadata: {
             stringValue: JSON.stringify({
               id: 'id-1a',
+              owner: 'owner',
               typename: 'Something',
             }),
           },
@@ -74,6 +86,7 @@ describe('update-attachments', () => {
           metadata: {
             stringValue: JSON.stringify({
               id: 'id-2',
+              owner: 'owner',
               typename: 'Something',
             }),
           },
@@ -93,6 +106,10 @@ describe('update-attachments', () => {
         },
       },
     ] as unknown) as SQSRecord[];
+  });
+
+  afterAll(() => {
+    clear();
   });
 
   it('should query with the correct params', async () => {
@@ -136,9 +153,35 @@ describe('update-attachments', () => {
     });
   });
 
+  it('should create notification', async () => {
+    await updateAttachments(documentClient, tableName, bucket, records);
+
+    expect(documentClient.update).toHaveBeenCalledWith({
+      ExpressionAttributeNames: {
+        '#createdAt': 'createdAt',
+        '#data': 'data',
+        '#message': 'message',
+        '#owner': 'owner',
+      },
+      ExpressionAttributeValues: {
+        ':createdAt': '2020-06-06T19:45:00.000Z',
+        ':data': 'owner:Notification:2020-06-06T19:45:00.000Z',
+        ':message': 'VIRUS_SCAN_FAIL',
+        ':owner': 'owner',
+      },
+      Key: {
+        __typename: 'Notification',
+        id: 'test-uuid',
+      },
+      TableName: 'test',
+      UpdateExpression:
+        'SET #createdAt = :createdAt, #data = :data, #message = :message, #owner = :owner',
+    });
+  });
+
   it('should call update the correct number of times', async () => {
     await updateAttachments(documentClient, tableName, bucket, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(1);
+    expect(documentClient.update).toHaveBeenCalledTimes(2);
   });
 });

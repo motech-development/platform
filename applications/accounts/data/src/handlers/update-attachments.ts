@@ -1,6 +1,7 @@
 import { SQSRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { join } from 'path';
+import { v4 as uuid } from 'uuid';
 
 const updateAttachments = async (
   documentClient: DocumentClient,
@@ -8,6 +9,7 @@ const updateAttachments = async (
   bucket: string,
   records: SQSRecord[],
 ) => {
+  const now = new Date();
   const query = records
     .filter(({ messageAttributes }) => {
       const { key, metadata, source } = messageAttributes;
@@ -55,28 +57,54 @@ const updateAttachments = async (
     });
 
   const results = await Promise.all(query);
-
-  const transactionItems = results
+  const filtered = results
     .filter(({ Items }) => Items && Items.length > 0)
     .map(({ Items }) => Items as DocumentClient.ItemList)
-    .reduce((acc, items) => acc.concat(items), [])
-    .map(({ __typename, id }) =>
-      documentClient
-        .update({
-          ExpressionAttributeNames: {
-            '#attachment': 'attachment',
-          },
-          Key: {
-            __typename,
-            id,
-          },
-          TableName: tableName,
-          UpdateExpression: 'REMOVE #attachment',
-        })
-        .promise(),
-    );
+    .reduce((acc, items) => acc.concat(items), []);
 
-  return transactionItems;
+  const update = filtered.map(({ __typename, id }) =>
+    documentClient
+      .update({
+        ExpressionAttributeNames: {
+          '#attachment': 'attachment',
+        },
+        Key: {
+          __typename,
+          id,
+        },
+        TableName: tableName,
+        UpdateExpression: 'REMOVE #attachment',
+      })
+      .promise(),
+  );
+
+  const notification = filtered.map(({ owner }) =>
+    documentClient
+      .update({
+        ExpressionAttributeNames: {
+          '#createdAt': 'createdAt',
+          '#data': 'data',
+          '#message': 'message',
+          '#owner': 'owner',
+        },
+        ExpressionAttributeValues: {
+          ':createdAt': now.toISOString(),
+          ':data': `${owner}:Notification:${now.toISOString()}`,
+          ':message': 'VIRUS_SCAN_FAIL',
+          ':owner': owner,
+        },
+        Key: {
+          __typename: 'Notification',
+          id: uuid(),
+        },
+        TableName: tableName,
+        UpdateExpression:
+          'SET #createdAt = :createdAt, #data = :data, #message = :message, #owner = :owner',
+      })
+      .promise(),
+  );
+
+  return [...notification, ...update];
 };
 
 export default updateAttachments;
