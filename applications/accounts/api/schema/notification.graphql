@@ -11,5 +11,12 @@ type Notifications {
 }
 
 input NotificationInput {
+  createdAt: String!
+  id: ID!
+  message: String!
+  read: Boolean!
+}
+
+input MarkNotificationsInput {
   ids: [ID]!
 }

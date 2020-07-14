@@ -19,6 +19,10 @@ plugins:
 custom:
   prefix: ${self:service}-${self:provider.stage}
 
+  names:
+    develop: AccountsdevelopGraphQlApi
+    production: AccountsproductionGraphQlApi
+
   oidc:
     issuer: https://${opt:issuer}/
 
@@ -26,11 +30,13 @@ custom:
     files:
       - ../client/.env.production
     env:
-      ApiGraphQlApiUrl: REACT_APP_APPSYNC_URL
+      AccountsdevelopGraphQlApiUrl: REACT_APP_APPSYNC_URL
+      AccountsproductionGraphQlApiUrl: REACT_APP_APPSYNC_URL
       AWS_REGION: REACT_APP_AWS_REGION
 
   appSync:
-    - authenticationType: OPENID_CONNECT
+    - name: ${self:custom.prefix}
+      authenticationType: OPENID_CONNECT
       additionalAuthenticationProviders:
         - authenticationType: AWS_IAM
       openIdConnectConfig:
@@ -622,8 +628,17 @@ resources:
                     - 'arn:aws:logs:*:*:*'
 
   Outputs:
+    AccountsApiArn:
+      Description: Accounts API ARN
+      Value: !Ref ${self:custom.names.${self:provider.stage}}
+      Export:
+        Name: ${self:provider.stage}-AccountsApiArn
+
     AccountsApiEndpoint:
       Description: Accounts API endpoint
-      Value: !GetAtt ApiGraphQlApi.GraphQLUrl
+      Value:
+        Fn::GetAtt:
+          - ${self:custom.names.${self:provider.stage}}
+          - GraphQLUrl
       Export:
         Name: ${self:provider.stage}-AccountsApiEndpoint

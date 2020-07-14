@@ -15,8 +15,9 @@ type Mutation {
   updateTransaction(input: TransactionInput!): Transaction!
   requestUpload(id: ID!, input: StorageUploadInput!): StorageUpload!
   deleteFile(id: ID!, path: String!): Storage!
-  notificationBeacon(id: ID!): Notifications! @aws_iam
-  markAsRead(id: ID!, input: NotificationInput!): Notifications!
+  notificationBeacon(id: ID!, input: NotificationInput!): Notifications!
+    @aws_iam
+  markAsRead(id: ID!, input: MarkNotificationsInput!): Notifications!
 }
 
 type Query {
