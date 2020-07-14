@@ -8,6 +8,7 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-notifications
   environment:
+    ENDPOINT: !ImportValue ${self:provider.stage}-AccountsApiEndpoint
     TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
 package:

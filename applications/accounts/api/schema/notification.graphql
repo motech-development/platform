@@ -10,10 +10,6 @@ type Notifications {
   items: [Notification]
 }
 
-type NotificationBeacon {
-  id: ID
-}
-
 input NotificationInput {
   ids: [ID]!
 }

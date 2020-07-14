@@ -1,4 +1,4 @@
-// import aws4 from 'aws4';
+import aws4 from 'aws4';
 import { DynamoDBStreamHandler, StreamRecord } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
 import axios from 'axios';
@@ -22,6 +22,12 @@ const configureMutation = (id: string) => ({
 });
 
 export const handler: DynamoDBStreamHandler = async event => {
+  const { ENDPOINT } = process.env;
+
+  if (!ENDPOINT) {
+    throw new Error('No endpoint set');
+  }
+
   const { Records } = event;
   const mutations = Records.filter(
     ({ dynamodb, eventName }) =>
@@ -32,31 +38,23 @@ export const handler: DynamoDBStreamHandler = async event => {
       NewImage as DynamoDB.AttributeMap,
     );
     const mutation = configureMutation(id);
-
-    // TODO: Generate header from aws4
-    // const host = ENDPOINT.replace('https://', '');
-    // const path = `/${STAGE}/api/v1/users/${user}`;
-    // const url = ENDPOINT + path;
-
-    // const opts = {
-    //   host,
-    //   method: 'DELETE',
-    //   path,
-    //   url,
-    // };
-
-    // const request = aws4.sign(opts);
-
-    // delete request.headers.Host;
-    // delete request.headers['Content-Length'];
-
-    // TODO: URL env var
-    return axios({
+    const url = ENDPOINT.replace('https://', '').split('/');
+    const [host, path] = url;
+    const opts = {
       data: JSON.stringify(mutation),
+      host,
       method: 'POST',
-      url: '',
-    });
+      path,
+      url,
+    };
+
+    const request = aws4.sign(opts);
+
+    delete request.headers.Host;
+    delete request.headers['Content-Length'];
+
+    return axios(request);
   });
 
-  await Promise.all([mutations]);
+  await Promise.all(mutations);
 };
