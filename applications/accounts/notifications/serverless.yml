@@ -7,9 +7,6 @@ provider:
   region: ${opt:region, 'eu-west-1'}
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-notifications
-  environment:
-    ENDPOINT: !ImportValue ${self:provider.stage}-AccountsApiEndpoint
-    TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
 package:
   individually: true
@@ -24,13 +21,22 @@ custom:
     includeModules: true
 
 functions:
+  PublishNotifications:
+    handler: src/publish-notifications.handler
+    role: LambdaFunctionRole
+    events:
+      - stream:
+          type: dynamodb
+          arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
+    environment:
+      ENDPOINT: !ImportValue ${self:provider.stage}-AccountsApiEndpoint
 
 resources:
   Resources:
     LambdaFunctionRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-lambda-function-role
+        RoleName: ${self:custom.prefix}-notifications-lambda-function-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -41,10 +47,30 @@ resources:
               Action:
                 - sts:AssumeRole
         Policies:
-          - PolicyName: ${self:custom.prefix}-lambda-function-role-policy
+          - PolicyName: ${self:custom.prefix}-notifications-lambda-function-role-policy
             PolicyDocument:
               Version: '2012-10-17'
               Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:DescribeStream
+                    - dynamodb:GetRecords
+                    - dynamodb:GetShardIterator
+                    - dynamodb:ListStreams
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/stream/*'
+                - Effect: Allow
+                  Action:
+                    - appsync:GraphQL
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApiArn
+                        - '/types/Mutation/fields/notificationBeacon'
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup

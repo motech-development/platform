@@ -1,9 +1,10 @@
-import aws4 from 'aws4';
+import { AWSAppSyncClient } from 'aws-appsync';
 import { DynamoDBStreamHandler, StreamRecord } from 'aws-lambda';
-import { DynamoDB } from 'aws-sdk';
-import axios from 'axios';
+import { config, DynamoDB } from 'aws-sdk';
+import 'cross-fetch/polyfill';
+import gql from 'graphql-tag';
 
-const NotificationBeaconMutation = `
+const mutation = gql`
   mutation NotificationBeacon($id: ID!) {
     notificationBeacon(id: $id) {
       id
@@ -11,24 +12,31 @@ const NotificationBeaconMutation = `
   }
 `;
 
-const configureMutation = (id: string) => ({
-  operationName: 'NotificationBeacon',
-  query: NotificationBeaconMutation,
-  variables: {
-    input: {
-      id,
-    },
-  },
-});
-
 export const handler: DynamoDBStreamHandler = async event => {
-  const { ENDPOINT } = process.env;
+  const { AWS_REGION, ENDPOINT } = process.env;
+
+  if (!AWS_REGION) {
+    throw new Error('No region set');
+  }
 
   if (!ENDPOINT) {
     throw new Error('No endpoint set');
   }
 
+  if (!config.credentials) {
+    throw new Error('No AWS credentials set');
+  }
+
   const { Records } = event;
+  const client = new AWSAppSyncClient({
+    auth: {
+      credentials: config.credentials,
+      type: 'AWS_IAM',
+    },
+    disableOffline: true,
+    region: AWS_REGION,
+    url: ENDPOINT,
+  });
   const mutations = Records.filter(
     ({ dynamodb, eventName }) =>
       eventName === 'INSERT' && dynamodb && dynamodb.NewImage,
@@ -45,25 +53,18 @@ export const handler: DynamoDBStreamHandler = async event => {
       };
     })
     .filter(({ __typename }) => __typename === 'Notification')
-    .map(({ id }) => {
-      const mutation = configureMutation(id);
-      const url = ENDPOINT.replace('https://', '').split('/');
-      const [host, path] = url;
-      const opts = {
-        data: JSON.stringify(mutation),
-        host,
-        method: 'POST',
-        path,
-        url,
-      };
+    .map(({ id }) =>
+      client.mutate({
+        mutation,
+        variables: {
+          id,
+        },
+      }),
+    );
 
-      const request = aws4.sign(opts);
-
-      delete request.headers.Host;
-      delete request.headers['Content-Length'];
-
-      return axios(request);
-    });
-
-  await Promise.all(mutations);
+  try {
+    await Promise.all(mutations);
+  } catch (e) {
+    console.log('!!ERR', JSON.stringify(e));
+  }
 };
