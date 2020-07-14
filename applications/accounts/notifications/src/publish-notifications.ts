@@ -5,8 +5,8 @@ import 'cross-fetch/polyfill';
 import gql from 'graphql-tag';
 
 const mutation = gql`
-  mutation NotificationBeacon($id: ID!) {
-    notificationBeacon(id: $id) {
+  mutation NotificationBeacon($id: ID!, $input: NotificationInput!) {
+    notificationBeacon(id: $id, input: $input) {
       id
     }
   }
@@ -43,21 +43,34 @@ export const handler: DynamoDBStreamHandler = async event => {
   )
     .map(({ dynamodb }) => {
       const { NewImage } = dynamodb as StreamRecord;
-      const { __typename, id } = DynamoDB.Converter.unmarshall(
-        NewImage as DynamoDB.AttributeMap,
-      );
+      const {
+        __typename,
+        createdAt,
+        id,
+        message,
+        owner,
+      } = DynamoDB.Converter.unmarshall(NewImage as DynamoDB.AttributeMap);
 
       return {
         __typename,
+        createdAt,
         id,
+        message,
+        owner,
       };
     })
     .filter(({ __typename }) => __typename === 'Notification')
-    .map(({ id }) =>
+    .map(({ createdAt, id, owner, message }) =>
       client.mutate({
         mutation,
         variables: {
-          id,
+          id: owner,
+          input: {
+            createdAt,
+            id,
+            message,
+            read: false,
+          },
         },
       }),
     );
