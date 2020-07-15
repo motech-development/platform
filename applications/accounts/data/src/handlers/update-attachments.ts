@@ -86,12 +86,14 @@ const updateAttachments = async (
           '#data': 'data',
           '#message': 'message',
           '#owner': 'owner',
+          '#read': 'read',
         },
         ExpressionAttributeValues: {
           ':createdAt': now.toISOString(),
           ':data': `${owner}:Notification:${now.toISOString()}`,
           ':message': 'VIRUS_SCAN_FAIL',
           ':owner': owner,
+          ':read': false,
         },
         Key: {
           __typename: 'Notification',
@@ -99,7 +101,7 @@ const updateAttachments = async (
         },
         TableName: tableName,
         UpdateExpression:
-          'SET #createdAt = :createdAt, #data = :data, #message = :message, #owner = :owner',
+          'SET #createdAt = :createdAt, #data = :data, #message = :message, #owner = :owner, #read = :read',
       })
       .promise(),
   );

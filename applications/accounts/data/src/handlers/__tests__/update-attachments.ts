@@ -162,12 +162,14 @@ describe('update-attachments', () => {
         '#data': 'data',
         '#message': 'message',
         '#owner': 'owner',
+        '#read': 'read',
       },
       ExpressionAttributeValues: {
         ':createdAt': '2020-06-06T19:45:00.000Z',
         ':data': 'owner:Notification:2020-06-06T19:45:00.000Z',
         ':message': 'VIRUS_SCAN_FAIL',
         ':owner': 'owner',
+        ':read': false,
       },
       Key: {
         __typename: 'Notification',
@@ -175,7 +177,7 @@ describe('update-attachments', () => {
       },
       TableName: 'test',
       UpdateExpression:
-        'SET #createdAt = :createdAt, #data = :data, #message = :message, #owner = :owner',
+        'SET #createdAt = :createdAt, #data = :data, #message = :message, #owner = :owner, #read = :read',
     });
   });
 
