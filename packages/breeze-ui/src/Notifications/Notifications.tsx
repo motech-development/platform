@@ -121,7 +121,8 @@ function Notifications<T>({
         await onClose();
       })();
     }
-  }, [onClose, visible]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
 
   return (
     <NotificationWrapper ref={setReferenceElement}>
