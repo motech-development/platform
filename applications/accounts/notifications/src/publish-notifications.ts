@@ -7,13 +7,11 @@ import gql from 'graphql-tag';
 const mutation = gql`
   mutation NotificationBeacon($id: ID!, $input: NotificationInput!) {
     notificationBeacon(id: $id, input: $input) {
+      createdAt
       id
-      items {
-        createdAt
-        id
-        message
-        read
-      }
+      message
+      owner
+      read
     }
   }
 `;
@@ -75,6 +73,7 @@ export const handler: DynamoDBStreamHandler = async event => {
             createdAt,
             id,
             message,
+            owner,
             read: false,
           },
         },
