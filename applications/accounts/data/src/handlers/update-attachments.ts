@@ -1,7 +1,7 @@
 import { SQSRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { join } from 'path';
-import { v4 as uuid } from 'uuid';
+import publishNotification from '../shared/publish-notification';
 
 const updateAttachments = async (
   documentClient: DocumentClient,
@@ -9,7 +9,6 @@ const updateAttachments = async (
   bucket: string,
   records: SQSRecord[],
 ) => {
-  const now = new Date();
   const query = records
     .filter(({ messageAttributes }) => {
       const { key, metadata, source } = messageAttributes;
@@ -79,31 +78,7 @@ const updateAttachments = async (
   );
 
   const notification = filtered.map(({ owner }) =>
-    documentClient
-      .update({
-        ExpressionAttributeNames: {
-          '#createdAt': 'createdAt',
-          '#data': 'data',
-          '#message': 'message',
-          '#owner': 'owner',
-          '#read': 'read',
-        },
-        ExpressionAttributeValues: {
-          ':createdAt': now.toISOString(),
-          ':data': `${owner}:Notification:${now.toISOString()}`,
-          ':message': 'VIRUS_SCAN_FAIL',
-          ':owner': owner,
-          ':read': false,
-        },
-        Key: {
-          __typename: 'Notification',
-          id: uuid(),
-        },
-        TableName: tableName,
-        UpdateExpression:
-          'SET #createdAt = :createdAt, #data = :data, #message = :message, #owner = :owner, #read = :read',
-      })
-      .promise(),
+    publishNotification(documentClient, tableName, owner, 'VIRUS_SCAN_FAIL'),
   );
 
   return [...notification, ...update];

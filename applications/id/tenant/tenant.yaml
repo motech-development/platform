@@ -187,7 +187,6 @@ tenant:
     new_universal_login_experience_enabled: false
     universal_login: false
     disable_clickjack_protection_headers: false
-    enable_mgmt_api_v1: true
     include_email_in_reset_pwd_redirect: true
     include_email_in_verify_email_redirect: true
   friendly_name: Motech Development

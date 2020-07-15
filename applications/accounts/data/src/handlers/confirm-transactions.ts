@@ -1,5 +1,6 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import publishNotification from '../shared/publish-notification';
 import {
   confirm,
   IScheduledTransaction,
@@ -15,11 +16,22 @@ const confirmTransactions = (
     records,
     'ScheduledTransaction',
   );
-  const transactionItems = unmarshalledRecords
-    .filter(({ OldImage }) => OldImage.active)
-    .map(({ OldImage }) => confirm(documentClient, tableName, OldImage));
+  const filtered = unmarshalledRecords.filter(
+    ({ OldImage }) => OldImage.active,
+  );
+  const transactionItems = filtered.map(({ OldImage }) =>
+    confirm(documentClient, tableName, OldImage),
+  );
+  const notification = filtered.map(({ OldImage }) =>
+    publishNotification(
+      documentClient,
+      tableName,
+      OldImage.owner,
+      'TRANSACTION_PUBLISHED',
+    ),
+  );
 
-  return transactionItems;
+  return [...notification, ...transactionItems];
 };
 
 export default confirmTransactions;

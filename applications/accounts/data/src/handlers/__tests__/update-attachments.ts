@@ -3,10 +3,6 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { advanceTo, clear } from 'jest-date-mock';
 import updateAttachments from '../update-attachments';
 
-jest.mock('uuid', () => ({
-  v4: jest.fn().mockReturnValue('test-uuid'),
-}));
-
 describe('update-attachments', () => {
   let bucket: string;
   let documentClient: DocumentClient;
