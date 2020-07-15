@@ -4,7 +4,7 @@ import { config, DynamoDB } from 'aws-sdk';
 import 'cross-fetch/polyfill';
 import gql from 'graphql-tag';
 
-const mutation = gql`
+export const mutation = gql`
   mutation NotificationBeacon($id: ID!, $input: NotificationInput!) {
     notificationBeacon(id: $id, input: $input) {
       createdAt
