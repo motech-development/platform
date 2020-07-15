@@ -1,6 +1,6 @@
-import React, { FC, memo, ReactNode, useEffect, useState } from 'react';
+import React, { FC, memo, ReactNode } from 'react';
 import styled from 'styled-components';
-import useWindowSize from '../hooks/useWindowSize';
+import useBreakpoint from '../hooks/useBreakpoint';
 import Col from '../Col/Col';
 import Row from '../Row/Row';
 
@@ -13,26 +13,6 @@ const MasonryItem = styled.div<IMasonryItemContainerProps>`
     margin-bottom: ${$gutter};
   `}
 `;
-
-const getBreakpoint = () => {
-  const lg = window.matchMedia('(min-width: 992px)');
-  const md = window.matchMedia('(min-width: 768px)');
-  const sm = window.matchMedia('(min-width: 576px)');
-
-  if (lg.matches) {
-    return 'lg';
-  }
-
-  if (md.matches) {
-    return 'md';
-  }
-
-  if (sm.matches) {
-    return 'sm';
-  }
-
-  return 'xs';
-};
 
 const calculateCols = (cols: number) => 12 / cols;
 
@@ -59,15 +39,10 @@ const Masonry: FC<IMasonryProps> = ({
     sm,
     xs,
   };
-  const [breakpoint, setBreakpoint] = useState(getBreakpoint);
+  const breakpoint = useBreakpoint();
   const columns = breakpoints[breakpoint];
-  const { width } = useWindowSize();
   const cols: ReactNode[][] = Array.from(new Array(columns), () => []);
   const flat = Array.isArray(children) ? children.flat() : [children];
-
-  useEffect(() => {
-    setBreakpoint(getBreakpoint);
-  }, [width]);
 
   flat.forEach((child, i) => {
     const colIndex = i % columns;
