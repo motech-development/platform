@@ -13,6 +13,20 @@ describe('UserBar', () => {
     logOut = jest.fn();
     name = 'Mo';
     picture = 'https://avatar.photo';
+
+    Object.defineProperty(window, 'matchMedia', {
+      value: jest.fn().mockImplementation(query => ({
+        addEventListener: jest.fn(),
+        addListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+        matches: query === '(min-width: 992px)',
+        media: query,
+        onchange: null,
+        removeEventListener: jest.fn(),
+        removeListener: jest.fn(),
+      })),
+      writable: true,
+    });
   });
 
   describe('when no avatar is set', () => {
@@ -20,7 +34,7 @@ describe('UserBar', () => {
       await act(async () => {
         component = render(
           <TestProvider>
-            <UserBar name={name} logOut={logOut} />
+            <UserBar name={name} notifications={<div />} logOut={logOut} />
           </TestProvider>,
         );
       });
@@ -47,7 +61,12 @@ describe('UserBar', () => {
       await act(async () => {
         component = render(
           <TestProvider>
-            <UserBar name={name} picture={picture} logOut={logOut} />
+            <UserBar
+              name={name}
+              picture={picture}
+              notifications={<div />}
+              logOut={logOut}
+            />
           </TestProvider>,
         );
       });
