@@ -1,4 +1,7 @@
 {
   "notifications": "Notifications ({{number}} unread)",
-  "no-new-notifications": "You have no new notifications"
+  "no-new-notifications": "You have no new notifications",
+  "messages": {
+    "VIRUS_SCAN_FAIL": "A file you have uploaded is infected with a virus and it has been removed"
+  }
 }
