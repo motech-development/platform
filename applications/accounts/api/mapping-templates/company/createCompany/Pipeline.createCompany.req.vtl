@@ -44,110 +44,110 @@
 #set($input = $company.put("address", $ctx.stash.address))
 
 {
-    "version": "2018-05-29",
-    "operation": "TransactWriteItems",
-    "transactItems": [
-      {
-        "table": $util.toJson($table),
-        "operation": "PutItem",
-        "key" : {
-          "id": $util.dynamodb.toDynamoDBJson($id),
-          "__typename": $util.dynamodb.toDynamoDBJson("Company")
-        },
-        "attributeValues": {
-          "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
-          "data": $util.dynamodb.toDynamoDBJson($companyData),
-          "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
-          "owner": $util.dynamodb.toDynamoDBJson($owner)
-          #foreach ($key in $company.keySet())
-            #if($company.get($key) != "")
-              , "${key}": $util.dynamodb.toDynamoDBJson($company.get($key))
-            #end
+  "version": "2018-05-29",
+  "operation": "TransactWriteItems",
+  "transactItems": [
+    {
+      "table": $util.toJson($table),
+      "operation": "PutItem",
+      "key" : {
+        "id": $util.dynamodb.toDynamoDBJson($id),
+        "__typename": $util.dynamodb.toDynamoDBJson("Company")
+      },
+      "attributeValues": {
+        "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
+        "data": $util.dynamodb.toDynamoDBJson($companyData),
+        "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
+        "owner": $util.dynamodb.toDynamoDBJson($owner)
+        #foreach ($key in $company.keySet())
+          #if($company.get($key) != "")
+            , "${key}": $util.dynamodb.toDynamoDBJson($company.get($key))
           #end
-        },
-        "condition": {
-          "expression": "attribute_not_exists(id)"
-        }
+        #end
       },
-      {
-        "table": $util.toJson($table),
-        "operation": "PutItem",
-        "key" : {
-          "id": $util.dynamodb.toDynamoDBJson($id),
-          "__typename": $util.dynamodb.toDynamoDBJson("Balance")
-        },
-        "attributeValues": {
-          "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
-          "data": $util.dynamodb.toDynamoDBJson($balanceData),
-          "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
-          "owner": $util.dynamodb.toDynamoDBJson($owner),
-          "balance": $util.dynamodb.toDynamoDBJson($balance.balance),
-          "currency": $util.dynamodb.toDynamoDBJson($currency),
-          "items": $util.dynamodb.toDynamoDBJson($items),
-          "openingBalance": $util.dynamodb.toDynamoDBJson($balance.balance),
-          "vat": $util.dynamodb.toDynamoDBJson($balance.vat)
-        },
-        "condition": {
-          "expression": "attribute_not_exists(id)"
-        }
-      },
-      {
-        "table": $util.toJson($table),
-        "operation": "PutItem",
-        "key" : {
-          "id": $util.dynamodb.toDynamoDBJson($id),
-          "__typename": $util.dynamodb.toDynamoDBJson("BankSettings")
-        },
-        "attributeValues": {
-          "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
-          "data": $util.dynamodb.toDynamoDBJson($bankSettingsData),
-          "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
-          "owner": $util.dynamodb.toDynamoDBJson($owner),
-          "bank": $util.dynamodb.toDynamoDBJson(null),
-          "account": $util.dynamodb.toDynamoDBJson(null),
-          "consent": $util.dynamodb.toDynamoDBJson(null),
-          "user": $util.dynamodb.toDynamoDBJson(null)
-        },
-        "condition": {
-          "expression": "attribute_not_exists(id)"
-        }
-      },
-      {
-        "table": $util.toJson($table),
-        "operation": "PutItem",
-        "key" : {
-          "id": $util.dynamodb.toDynamoDBJson($id),
-          "__typename": $util.dynamodb.toDynamoDBJson("Settings")
-        },
-        "attributeValues": {
-          "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
-          "data": $util.dynamodb.toDynamoDBJson($settingsData),
-          "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
-          "owner": $util.dynamodb.toDynamoDBJson($owner),
-          "categories": $util.dynamodb.toDynamoDBJson($categories),
-          "vat": $util.dynamodb.toDynamoDBJson($vat),
-          "yearEnd": $util.dynamodb.toDynamoDBJson($yearEnd)
-        },
-        "condition": {
-          "expression": "attribute_not_exists(id)"
-        }
-      },
-      {
-       "table": $util.toJson($table),
-        "operation": "PutItem",
-        "key" : {
-          "id": $util.dynamodb.toDynamoDBJson($id),
-          "__typename": $util.dynamodb.toDynamoDBJson("Typeahead")
-        },
-        "attributeValues": {
-          "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
-          "data": $util.dynamodb.toDynamoDBJson($typeaheadData),
-          "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
-          "owner": $util.dynamodb.toDynamoDBJson($owner)
-        },
-        "condition": {
-          "expression": "attribute_not_exists(id)"
-        }
+      "condition": {
+        "expression": "attribute_not_exists(id)"
       }
-    ]
+    },
+    {
+      "table": $util.toJson($table),
+      "operation": "PutItem",
+      "key" : {
+        "id": $util.dynamodb.toDynamoDBJson($id),
+        "__typename": $util.dynamodb.toDynamoDBJson("Balance")
+      },
+      "attributeValues": {
+        "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
+        "data": $util.dynamodb.toDynamoDBJson($balanceData),
+        "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
+        "owner": $util.dynamodb.toDynamoDBJson($owner),
+        "balance": $util.dynamodb.toDynamoDBJson($balance.balance),
+        "currency": $util.dynamodb.toDynamoDBJson($currency),
+        "items": $util.dynamodb.toDynamoDBJson($items),
+        "openingBalance": $util.dynamodb.toDynamoDBJson($balance.balance),
+        "vat": $util.dynamodb.toDynamoDBJson($balance.vat)
+      },
+      "condition": {
+        "expression": "attribute_not_exists(id)"
+      }
+    },
+    {
+      "table": $util.toJson($table),
+      "operation": "PutItem",
+      "key" : {
+        "id": $util.dynamodb.toDynamoDBJson($id),
+        "__typename": $util.dynamodb.toDynamoDBJson("BankSettings")
+      },
+      "attributeValues": {
+        "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
+        "data": $util.dynamodb.toDynamoDBJson($bankSettingsData),
+        "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
+        "owner": $util.dynamodb.toDynamoDBJson($owner),
+        "bank": $util.dynamodb.toDynamoDBJson(null),
+        "account": $util.dynamodb.toDynamoDBJson(null),
+        "consent": $util.dynamodb.toDynamoDBJson(null),
+        "user": $util.dynamodb.toDynamoDBJson(null)
+      },
+      "condition": {
+        "expression": "attribute_not_exists(id)"
+      }
+    },
+    {
+      "table": $util.toJson($table),
+      "operation": "PutItem",
+      "key" : {
+        "id": $util.dynamodb.toDynamoDBJson($id),
+        "__typename": $util.dynamodb.toDynamoDBJson("Settings")
+      },
+      "attributeValues": {
+        "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
+        "data": $util.dynamodb.toDynamoDBJson($settingsData),
+        "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
+        "owner": $util.dynamodb.toDynamoDBJson($owner),
+        "categories": $util.dynamodb.toDynamoDBJson($categories),
+        "vat": $util.dynamodb.toDynamoDBJson($vat),
+        "yearEnd": $util.dynamodb.toDynamoDBJson($yearEnd)
+      },
+      "condition": {
+        "expression": "attribute_not_exists(id)"
+      }
+    },
+    {
+      "table": $util.toJson($table),
+      "operation": "PutItem",
+      "key" : {
+        "id": $util.dynamodb.toDynamoDBJson($id),
+        "__typename": $util.dynamodb.toDynamoDBJson("Typeahead")
+      },
+      "attributeValues": {
+        "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
+        "data": $util.dynamodb.toDynamoDBJson($typeaheadData),
+        "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
+        "owner": $util.dynamodb.toDynamoDBJson($owner)
+      },
+      "condition": {
+        "expression": "attribute_not_exists(id)"
+      }
+    }
+  ]
 }

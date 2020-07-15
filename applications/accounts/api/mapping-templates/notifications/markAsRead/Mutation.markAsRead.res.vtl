@@ -1,0 +1,23 @@
+#if($ctx.error)
+  $util.appendError($ctx.error.message, $ctx.error.type, null, $ctx.result.cancellationReasons)
+#end
+
+#if($ctx.identity.sub == $ctx.arguments.id)
+  #set($owner = $ctx.identity.sub)
+  #set($ids = $ctx.args.input.ids)
+  #set($items = [])
+
+  #foreach($id in $ids)
+    $util.qr($items.add({
+      "id": "$id",
+      "read": true
+    }))
+  #end
+
+  {
+    "id": $util.toJson($owner),
+    "items": $util.toJson($items)
+  }
+#else
+  null
+#end

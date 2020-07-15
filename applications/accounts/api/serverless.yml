@@ -185,6 +185,11 @@ custom:
           field: getNotifications
           request: notifications/getNotifications/Query.getNotifications.req.vtl
           response: notifications/getNotifications/Query.getNotifications.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: markAsRead
+          request: notifications/markAsRead/Mutation.markAsRead.req.vtl
+          response: notifications/markAsRead/Mutation.markAsRead.res.vtl
         - dataSource: Resolver
           type: Mutation
           field: notificationBeacon
