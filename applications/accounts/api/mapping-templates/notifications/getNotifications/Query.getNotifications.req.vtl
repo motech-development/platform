@@ -25,7 +25,8 @@
     "expressionValues": {
       ":owner": $util.dynamodb.toDynamoDBJson($owner)
     }
-  }
+  },
+  "scanIndexForward": false
   #if($ctx.args.count)
     ,"limit": $ctx.args.count
   #end

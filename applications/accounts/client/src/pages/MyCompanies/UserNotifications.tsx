@@ -139,8 +139,8 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
           getNotifications: {
             ...prev.getNotifications,
             items: [
-              ...prev.getNotifications.items,
               subscriptionData.data.onNotification,
+              ...prev.getNotifications.items,
             ],
           },
         };
