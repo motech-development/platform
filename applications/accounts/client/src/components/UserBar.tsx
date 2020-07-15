@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   AppBar,
   Avatar,
+  Breakpoint,
   Button,
   Tooltip,
   Typography,
@@ -63,11 +64,12 @@ const UserBar: FC<IUserBarProps> = ({
       </AppName>
 
       <Toolbar>
-        {/* TODO: Hide on mobile viewports */}
         {picture && (
-          <AppBarItem>
-            <Avatar alt="" src={picture} width={32} />
-          </AppBarItem>
+          <Breakpoint xs={false}>
+            <AppBarItem>
+              <Avatar alt="" src={picture} width={32} />
+            </AppBarItem>
+          </Breakpoint>
         )}
 
         <Username component="p" variant="p">
