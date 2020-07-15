@@ -13,7 +13,7 @@ import React, { FC, memo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-const ON_NOTIFICATION = gql`
+export const ON_NOTIFICATION = gql`
   subscription OnNotification($owner: String!) {
     onNotification(owner: $owner) {
       createdAt
@@ -39,7 +39,7 @@ interface IOnNotificationOutput {
   };
 }
 
-const GET_NOTIFICATIONS = gql`
+export const GET_NOTIFICATIONS = gql`
   query GetNotifications($id: ID!, $count: Int) {
     getNotifications(id: $id, count: $count) {
       id
@@ -70,7 +70,7 @@ interface IGetNotificationsOutput {
   };
 }
 
-const MARK_AS_READ = gql`
+export const MARK_AS_READ = gql`
   mutation MarkAsRead($id: ID!, $input: MarkNotificationsInput!) {
     markAsRead(id: $id, input: $input) {
       items {
@@ -130,21 +130,15 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
   useEffect(() => {
     subscribeToMore<IOnNotificationOutput, IOnNotificationInput>({
       document: ON_NOTIFICATION,
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) {
-          return prev;
-        }
-
-        return {
-          getNotifications: {
-            ...prev.getNotifications,
-            items: [
-              subscriptionData.data.onNotification,
-              ...prev.getNotifications.items,
-            ],
-          },
-        };
-      },
+      updateQuery: (prev, { subscriptionData }) => ({
+        getNotifications: {
+          ...prev.getNotifications,
+          items: [
+            subscriptionData.data.onNotification,
+            ...prev.getNotifications.items,
+          ],
+        },
+      }),
       variables: {
         owner: id,
       },
