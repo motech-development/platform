@@ -117,7 +117,7 @@ stepFunctions:
 
               - StartAt: DeleteNotifications
                 States:
-                  DeleteSettings:
+                  DeleteNotifications:
                     Type: Task
                     Resource: !GetAtt DeleteNotificationsLambdaFunction.Arn
                     End: true
