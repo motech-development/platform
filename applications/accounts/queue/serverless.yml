@@ -45,12 +45,6 @@ functions:
     environment:
       TYPENAME: Balance
 
-  DeleteNotifications:
-    handler: src/handlers/delete-record.handler
-    role: LambdaFunctionRole
-    environment:
-      TYPENAME: Notification
-
   DeleteSettings:
     handler: src/handlers/delete-record.handler
     role: LambdaFunctionRole
@@ -113,13 +107,6 @@ stepFunctions:
                   DeleteBalance:
                     Type: Task
                     Resource: !GetAtt DeleteBalanceLambdaFunction.Arn
-                    End: true
-
-              - StartAt: DeleteNotifications
-                States:
-                  DeleteNotifications:
-                    Type: Task
-                    Resource: !GetAtt DeleteNotificationsLambdaFunction.Arn
                     End: true
 
               - StartAt: DeleteSettings
