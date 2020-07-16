@@ -18,6 +18,11 @@ plugins:
 
 custom:
   prefix: ${self:service}-${self:provider.stage}
+
+  names:
+    develop: AccountsdevelopGraphQlApi
+    production: AccountsproductionGraphQlApi
+
   oidc:
     issuer: https://${opt:issuer}/
 
@@ -32,6 +37,8 @@ custom:
   appSync:
     - name: ${self:custom.prefix}
       authenticationType: OPENID_CONNECT
+      additionalAuthenticationProviders:
+        - authenticationType: AWS_IAM
       openIdConnectConfig:
         issuer: ${self:custom.oidc.issuer}
       logConfig:
@@ -173,6 +180,22 @@ custom:
           request: company/getCompany/Query.getCompany.req.vtl
           response: company/getCompany/Query.getCompany.res.vtl
 
+        - dataSource: Data
+          type: Query
+          field: getNotifications
+          request: notifications/getNotifications/Query.getNotifications.req.vtl
+          response: notifications/getNotifications/Query.getNotifications.res.vtl
+        - dataSource: Data
+          type: Mutation
+          field: markAsRead
+          request: notifications/markAsRead/Mutation.markAsRead.req.vtl
+          response: notifications/markAsRead/Mutation.markAsRead.res.vtl
+        - dataSource: Resolver
+          type: Mutation
+          field: notificationBeacon
+          request: notifications/notificationBeacon/Mutation.notificationBeacon.req.vtl
+          response: notifications/notificationBeacon/Mutation.notificationBeacon.res.vtl
+
         - kind: PIPELINE
           type: Mutation
           field: updateSettings
@@ -251,6 +274,7 @@ custom:
         - schema/company.graphql
         - schema/contact.graphql
         - schema/expense-category.graphql
+        - schema/notification.graphql
         - schema/schema.graphql
         - schema/settings.graphql
         - schema/storage.graphql
@@ -618,3 +642,19 @@ resources:
                     - logs:DescribeLogStreams
                   Resource:
                     - 'arn:aws:logs:*:*:*'
+
+  Outputs:
+    AccountsApiArn:
+      Description: Accounts API ARN
+      Value: !Ref ${self:custom.names.${self:provider.stage}}
+      Export:
+        Name: ${self:provider.stage}-AccountsApiArn
+
+    AccountsApiEndpoint:
+      Description: Accounts API endpoint
+      Value:
+        Fn::GetAtt:
+          - ${self:custom.names.${self:provider.stage}}
+          - GraphQLUrl
+      Export:
+        Name: ${self:provider.stage}-AccountsApiEndpoint

@@ -1,0 +1,206 @@
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { faCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  Card,
+  DateTime,
+  Notifications,
+  TableCell,
+  Typography,
+} from '@motech-development/breeze-ui';
+import { gql } from 'apollo-boost';
+import React, { FC, memo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+
+export const ON_NOTIFICATION = gql`
+  subscription OnNotification($owner: String!) {
+    onNotification(owner: $owner) {
+      createdAt
+      id
+      message
+      owner
+      read
+    }
+  }
+`;
+
+interface IOnNotificationInput {
+  owner: string;
+}
+
+interface IOnNotificationOutput {
+  onNotification: {
+    createdAt: string;
+    id: string;
+    message: string;
+    owner: string;
+    read: boolean;
+  };
+}
+
+export const GET_NOTIFICATIONS = gql`
+  query GetNotifications($id: ID!, $count: Int) {
+    getNotifications(id: $id, count: $count) {
+      id
+      items {
+        createdAt
+        id
+        message
+        read
+      }
+    }
+  }
+`;
+
+interface IGetNotificationsInput {
+  count: number;
+  id: string;
+}
+
+interface IGetNotificationsOutput {
+  getNotifications: {
+    id: string;
+    items: {
+      createdAt: string;
+      id: string;
+      message: string;
+      read: boolean;
+    }[];
+  };
+}
+
+export const MARK_AS_READ = gql`
+  mutation MarkAsRead($id: ID!, $input: MarkNotificationsInput!) {
+    markAsRead(id: $id, input: $input) {
+      items {
+        id
+        read
+      }
+    }
+  }
+`;
+
+interface IMarkAsReadInput {
+  id: string;
+  input: {
+    ids: string[];
+  };
+}
+
+interface IMarkAsReadOutput {
+  markAsRead: {
+    items: {
+      id: string;
+      read: boolean;
+    }[];
+  };
+}
+
+const SupportText = styled(Typography)`
+  && {
+    font-size: 0.9rem;
+  }
+`;
+
+const Icon = styled(FontAwesomeIcon)`
+  color: #007fa8;
+  font-size: 0.75rem;
+`;
+
+export interface IUserNotificationsProps {
+  id: string;
+}
+
+const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
+  const { t } = useTranslation('user-notifications');
+  const { data, subscribeToMore } = useQuery<
+    IGetNotificationsOutput,
+    IGetNotificationsInput
+  >(GET_NOTIFICATIONS, {
+    variables: {
+      count: 5,
+      id,
+    },
+  });
+  const [markAsRead] = useMutation<IMarkAsReadOutput, IMarkAsReadInput>(
+    MARK_AS_READ,
+  );
+
+  useEffect(() => {
+    subscribeToMore<IOnNotificationOutput, IOnNotificationInput>({
+      document: ON_NOTIFICATION,
+      updateQuery: (prev, { subscriptionData }) => ({
+        getNotifications: {
+          ...prev.getNotifications,
+          items: [
+            subscriptionData.data.onNotification,
+            ...prev.getNotifications.items,
+          ],
+        },
+      }),
+      variables: {
+        owner: id,
+      },
+    });
+  }, [id, subscribeToMore]);
+
+  if (!data) {
+    return null;
+  }
+
+  const unreadItems = data.getNotifications.items.filter(({ read }) => !read);
+  const unread = unreadItems.length;
+  const alert = unread > 0;
+
+  const onClose = async () => {
+    const ids = unreadItems.map(item => item.id);
+
+    if (ids.length > 0) {
+      await markAsRead({
+        variables: {
+          id,
+          input: {
+            ids,
+          },
+        },
+      });
+    }
+  };
+
+  return (
+    <Notifications
+      alert={alert}
+      cols={2}
+      items={data.getNotifications.items}
+      label={t('notifications', {
+        number: unread,
+      })}
+      noResults={
+        <Card padding="lg">
+          <Typography component="p" variant="p" align="center" margin="none">
+            {t('no-new-notifications')}
+          </Typography>
+        </Card>
+      }
+      placement="bottom-end"
+      row={({ createdAt, message, read }) => (
+        <>
+          <TableCell>{!read && <Icon icon={faCircle} />}</TableCell>
+          <TableCell>
+            <Typography component="p" variant="h6" margin="none">
+              {t(`messages.${message}`)}
+            </Typography>
+
+            <SupportText component="p" variant="p" margin="none">
+              <DateTime value={createdAt} format="DD/MM/YYYY HH:mm" />
+            </SupportText>
+          </TableCell>
+        </>
+      )}
+      onClose={onClose}
+    />
+  );
+};
+
+export default memo(UserNotifications);

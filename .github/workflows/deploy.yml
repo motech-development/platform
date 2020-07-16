@@ -631,11 +631,59 @@ jobs:
       - name: Deploy
         run: npm run deploy -- --scope=@accounts/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN
 
+  deploy-accounts-notifications:
+    runs-on: ubuntu-latest
+
+    needs: deploy-accounts-api
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      STAGE: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Node version
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Generate modules cache key
+        run: ./scripts/checksum.sh ./modules.txt modules
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Deploy
+        run: npm run deploy -- --scope=@accounts/notifications -- -- --stage $STAGE
+
   build-accounts-client:
     runs-on: ubuntu-latest
 
     needs:
-      - deploy-accounts-api
+      - deploy-accounts-notifications
       - deploy-accounts-infrastructure
 
     env:

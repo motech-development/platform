@@ -1,0 +1,8 @@
+{
+  "notifications": "Notifications ({{number}} unread)",
+  "no-new-notifications": "You have no new notifications",
+  "messages": {
+    "TRANSACTION_PUBLISHED": "A scheduled transaction has been published",
+    "VIRUS_SCAN_FAIL": "A file you have uploaded is infected with a virus and it has been removed"
+  }
+}

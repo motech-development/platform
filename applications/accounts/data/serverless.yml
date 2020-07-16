@@ -186,3 +186,9 @@ resources:
       Value: !GetAtt ApplicationTable.Arn
       Export:
         Name: ${self:provider.stage}-AccountsApplicationTableArn
+
+    AccountsApplicationTableStreamArn:
+      Description: Accounts application DynamoDB table stream ARN
+      Value: !GetAtt ApplicationTable.StreamArn
+      Export:
+        Name: ${self:provider.stage}-AccountsApplicationTableStreamArn

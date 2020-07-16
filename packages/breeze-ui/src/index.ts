@@ -2,6 +2,7 @@ export { default as Alert, IAlertProps } from './Alert/Alert';
 export { default as AppBar, IAppBarProps } from './AppBar/AppBar';
 export { default as Avatar, IAvatarProps } from './Avatar/Avatar';
 export { default as BaseStyles } from './BaseStyles/BaseStyles';
+export { default as Breakpoint } from './Breakpoint/Breakpoint';
 export { default as Button, IButtonProps } from './Button/Button';
 export { default as ButtonLink } from './ButtonLink/ButtonLink';
 export { default as Calendar, ICalendarProps } from './Calendar/Calendar';
@@ -24,6 +25,7 @@ export {
   IFileUploadProps,
 } from './FileUpload/FileUpload';
 export { default as Form, IFormProps } from './Form/Form';
+export { default as useBreakpoint } from './hooks/useBreakpoint';
 export { default as useOutsideClick } from './hooks/useOutsideClick';
 export { default as useWindowSize } from './hooks/useWindowSize';
 export { default as Link } from './Link/Link';
@@ -34,6 +36,10 @@ export {
 export { default as Loader, ILoaderProps } from './Loader/Loader';
 export { default as Masonry, IMasonryProps } from './Masonry/Masonry';
 export { default as Modal, IModalProps } from './Modal/Modal';
+export {
+  default as Notifications,
+  INotificationsProps,
+} from './Notifications/Notifications';
 export { default as Overlay } from './Overlay/Overlay';
 export { default as PageTitle, IPageTitleProps } from './PageTitle/PageTitle';
 export {

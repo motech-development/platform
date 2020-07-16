@@ -1,6 +1,7 @@
 import { SQSRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { join } from 'path';
+import publishNotification from '../shared/publish-notification';
 
 const updateAttachments = async (
   documentClient: DocumentClient,
@@ -48,35 +49,39 @@ const updateAttachments = async (
           IndexName: '__typename-data-index',
           KeyConditionExpression:
             '#typename = :typename AND begins_with(#data, :data)',
-          ProjectionExpression: 'id, #typename',
+          ProjectionExpression: 'id, #owner, #typename',
           TableName: tableName,
         })
         .promise();
     });
 
   const results = await Promise.all(query);
-
-  const transactionItems = results
+  const filtered = results
     .filter(({ Items }) => Items && Items.length > 0)
     .map(({ Items }) => Items as DocumentClient.ItemList)
-    .reduce((acc, items) => acc.concat(items), [])
-    .map(({ __typename, id }) =>
-      documentClient
-        .update({
-          ExpressionAttributeNames: {
-            '#attachment': 'attachment',
-          },
-          Key: {
-            __typename,
-            id,
-          },
-          TableName: tableName,
-          UpdateExpression: 'REMOVE #attachment',
-        })
-        .promise(),
-    );
+    .reduce((acc, items) => acc.concat(items), []);
 
-  return transactionItems;
+  const update = filtered.map(({ __typename, id }) =>
+    documentClient
+      .update({
+        ExpressionAttributeNames: {
+          '#attachment': 'attachment',
+        },
+        Key: {
+          __typename,
+          id,
+        },
+        TableName: tableName,
+        UpdateExpression: 'REMOVE #attachment',
+      })
+      .promise(),
+  );
+
+  const notification = filtered.map(({ owner }) =>
+    publishNotification(documentClient, tableName, owner, 'VIRUS_SCAN_FAIL'),
+  );
+
+  return [...notification, ...update];
 };
 
 export default updateAttachments;

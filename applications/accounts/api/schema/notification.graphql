@@ -1,0 +1,24 @@
+type Notification @aws_iam @aws_oidc {
+  createdAt: String
+  id: ID
+  message: String
+  owner: String
+  read: Boolean
+}
+
+type Notifications {
+  id: ID
+  items: [Notification]
+}
+
+input NotificationInput {
+  createdAt: String!
+  id: ID!
+  message: String!
+  owner: String!
+  read: Boolean!
+}
+
+input MarkNotificationsInput {
+  ids: [ID]!
+}

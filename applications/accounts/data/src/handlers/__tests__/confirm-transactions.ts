@@ -104,9 +104,37 @@ describe('confirm-transactions', () => {
     });
   });
 
+  it('should create notification', async () => {
+    confirmTransactions(documentClient, tableName, records);
+
+    expect(documentClient.update).toHaveBeenCalledWith({
+      ExpressionAttributeNames: {
+        '#createdAt': 'createdAt',
+        '#data': 'data',
+        '#message': 'message',
+        '#owner': 'owner',
+        '#read': 'read',
+      },
+      ExpressionAttributeValues: {
+        ':createdAt': '2020-06-06T19:45:00.000Z',
+        ':data': 'owner:Notification:2020-06-06T19:45:00.000Z',
+        ':message': 'TRANSACTION_PUBLISHED',
+        ':owner': 'owner',
+        ':read': false,
+      },
+      Key: {
+        __typename: 'Notification',
+        id: 'test-uuid',
+      },
+      TableName: 'test',
+      UpdateExpression:
+        'SET #createdAt = :createdAt, #data = :data, #message = :message, #owner = :owner, #read = :read',
+    });
+  });
+
   it('should call update the correct number of times', () => {
     confirmTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(1);
+    expect(documentClient.update).toHaveBeenCalledTimes(2);
   });
 });

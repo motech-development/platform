@@ -122,7 +122,7 @@ describe('clear-attachments', () => {
       it('should update the correct number of records', async () => {
         await handler(event, context, callback);
 
-        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(1);
+        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(2);
       });
     });
 

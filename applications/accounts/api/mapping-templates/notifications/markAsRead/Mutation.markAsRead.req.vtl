@@ -1,0 +1,45 @@
+#set($table = "${appTable}")
+#set($ttl = $util.time.nowEpochSeconds())
+#set($owner = $ctx.identity.sub)
+#set($ids = $ctx.args.input.ids)
+#set($typename = "Notification")
+#set($transactItems = [])
+
+#foreach($id in $ids)
+  #set($keyMap = {})
+
+  $util.qr($transactItems.add({
+    "table": "$table",
+    "operation": "UpdateItem",
+    "key" : {
+      "id": $util.dynamodb.toString($id),
+      "__typename": $util.dynamodb.toString($typename)
+    },
+    "update": {
+      "expression": "SET #read = :read, #ttl = :ttl",
+      "expressionNames": {
+        "#read": "read",
+        "#ttl": "ttl"
+      },
+      "expressionValues": {
+        ":read": $util.dynamodb.toBoolean(true),
+        ":ttl": $util.dynamodb.toNumber($ttl)
+      }
+    },
+    "condition": {
+      "expression": "#owner = :owner",
+      "expressionNames": {
+        "#owner": "owner"
+      },
+      "expressionValues": {
+        ":owner": $util.dynamodb.toString($owner)
+      }
+    }
+  }))
+#end
+
+{
+  "version": "2018-05-29",
+  "operation": "TransactWriteItems",
+  "transactItems": $util.toJson($transactItems)
+}

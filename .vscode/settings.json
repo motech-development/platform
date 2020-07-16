@@ -24,6 +24,10 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./applications/accounts/notifications"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./applications/accounts/queue"
     },
     {

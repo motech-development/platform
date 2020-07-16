@@ -3,13 +3,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   AppBar,
   Avatar,
+  Breakpoint,
   Button,
   Tooltip,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import React, { FC, memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+
+const AppBarItem = styled.div`
+  margin: 0 1rem 0 0;
+`;
 
 const AppName = styled(Typography)`
   && {
@@ -29,7 +34,7 @@ const Username = styled(Typography)`
     flex-grow: 1;
     font-weight: 500;
     line-height: 32px;
-    margin: 0 1rem;
+    margin: 0 1rem 0 0;
     overflow: hidden;
     text-align: right;
     text-overflow: ellipsis;
@@ -39,11 +44,17 @@ const Username = styled(Typography)`
 
 export interface IUserBarProps {
   name: string;
+  notifications: ReactNode;
   picture?: string;
   logOut(): void;
 }
 
-const UserBar: FC<IUserBarProps> = ({ logOut, name, picture }) => {
+const UserBar: FC<IUserBarProps> = ({
+  logOut,
+  name,
+  notifications,
+  picture,
+}) => {
   const { t } = useTranslation(['global', 'user-bar']);
 
   return (
@@ -53,11 +64,19 @@ const UserBar: FC<IUserBarProps> = ({ logOut, name, picture }) => {
       </AppName>
 
       <Toolbar>
-        {picture && <Avatar alt="" src={picture} width={32} />}
+        {picture && (
+          <Breakpoint xs={false}>
+            <AppBarItem>
+              <Avatar alt="" src={picture} width={32} />
+            </AppBarItem>
+          </Breakpoint>
+        )}
 
         <Username component="p" variant="p">
           {name}
         </Username>
+
+        <AppBarItem>{notifications}</AppBarItem>
 
         <Tooltip
           id="sign-out"

@@ -30,6 +30,7 @@
     "outputName": "accounts-data.xml"
   },
   "dependencies": {
-    "decimal.js": "^10.2.0"
+    "decimal.js": "^10.2.0",
+    "uuid": "^8.2.0"
   }
 }
