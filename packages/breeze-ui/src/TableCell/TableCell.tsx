@@ -2,23 +2,27 @@
 import React, { FC, memo, TdHTMLAttributes } from 'react';
 import styled from 'styled-components';
 
-const baseStyles = (align = 'inherit') => `
+const baseStyles = (align = 'inherit', noWrap: boolean) => `
   padding: 10px;
   text-align: ${align};
   vertical-align: middle;
-  white-space: nowrap;
+  ${noWrap ? 'white-space: nowrap;' : ''}
 `;
 
-const TableDataCell = styled.td`
-  ${({ align }) => `
-    ${baseStyles(align)}
+interface ITableCell {
+  $noWrap: boolean;
+}
+
+const TableDataCell = styled.td<ITableCell>`
+  ${({ align, $noWrap }) => `
+    ${baseStyles(align, $noWrap)}
     font-weight: 300;
   `}
 `;
 
-const TableHeadCell = styled.th`
-  ${({ align }) => `
-    ${baseStyles(align)}
+const TableHeadCell = styled.th<ITableCell>`
+  ${({ align, $noWrap }) => `
+    ${baseStyles(align, $noWrap)}
     font-family: 'Cabin', sans-serif;
     font-weight: 600;
   `}
@@ -27,9 +31,18 @@ const TableHeadCell = styled.th`
 export interface ITableCellProps
   extends TdHTMLAttributes<HTMLTableDataCellElement> {
   as?: 'td' | 'th';
+  noWrap?: boolean;
 }
 
-const TableCell: FC<ITableCellProps> = ({ as = 'td', ...rest }) =>
-  as === 'td' ? <TableDataCell {...rest} /> : <TableHeadCell {...rest} />;
+const TableCell: FC<ITableCellProps> = ({
+  as = 'td',
+  noWrap = true,
+  ...rest
+}) =>
+  as === 'td' ? (
+    <TableDataCell $noWrap={noWrap} {...rest} />
+  ) : (
+    <TableHeadCell $noWrap={noWrap} {...rest} />
+  );
 
 export default memo(TableCell);

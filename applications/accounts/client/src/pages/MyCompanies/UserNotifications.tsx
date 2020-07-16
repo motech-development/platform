@@ -187,7 +187,7 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
       row={({ createdAt, message, read }) => (
         <>
           <TableCell>{!read && <Icon icon={faCircle} />}</TableCell>
-          <TableCell>
+          <TableCell noWrap={false}>
             <Typography component="p" variant="h6" margin="none">
               {t(`messages.${message}`)}
             </Typography>
