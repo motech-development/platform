@@ -1554,6 +1554,22 @@ describe('Smoke tests', () => {
     });
   });
 
+  describe('Notifications', () => {
+    it('should display a notification', () => {
+      cy.get('button[aria-label="Notifications (1 unread)"]').click();
+
+      cy.get('p')
+        .eq(1)
+        .should('contain.text', 'A scheduled transaction has been published');
+
+      cy.get('button[aria-label="Notifications (1 unread)"]').click();
+
+      cy.get('button[aria-label="Notifications (0 unread)"]').should(
+        'be.visible',
+      );
+    });
+  });
+
   describe('Delete company', () => {
     afterEach(() => {
       cy.url().should('eq', 'http://localhost:3000/my-companies');
