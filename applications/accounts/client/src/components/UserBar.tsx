@@ -35,10 +35,7 @@ const Username = styled(Typography)`
     font-weight: 500;
     line-height: 32px;
     margin: 0 1rem 0 0;
-    overflow: hidden;
     text-align: right;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 `;
 
@@ -72,7 +69,7 @@ const UserBar: FC<IUserBarProps> = ({
           </Breakpoint>
         )}
 
-        <Username component="p" variant="p">
+        <Username truncate component="p" variant="p">
           {name}
         </Username>
 

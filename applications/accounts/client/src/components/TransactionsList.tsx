@@ -14,6 +14,7 @@ import Currency from './Currency';
 import DeleteItem from './DeleteItem';
 import NoTransactions from './NoTransactions';
 import TransactionArrow from './TransactionArrow';
+import TransactionDetailsCell from './TransactionDetailsCell';
 import WarningText from './WarningText';
 
 export interface ITransactionsListProps {
@@ -83,11 +84,9 @@ const TransactionsList: FC<ITransactionsListProps> = ({
 
             {items.map(item => (
               <TableRow key={item.id}>
-                <TableCell align="center">
-                  <TransactionArrow value={item.amount} />
-                </TableCell>
+                <TransactionArrow value={item.amount} />
 
-                <TableCell>
+                <TransactionDetailsCell>
                   <WarningText
                     id={item.id}
                     component="p"
@@ -100,10 +99,10 @@ const TransactionsList: FC<ITransactionsListProps> = ({
                     {item.name}
                   </WarningText>
 
-                  <Typography component="p" variant="p" margin="none">
+                  <Typography truncate component="p" variant="p" margin="none">
                     {item.description}
                   </Typography>
-                </TableCell>
+                </TransactionDetailsCell>
 
                 <TableCell align="right">
                   <Currency currency={currency} value={item.amount} />

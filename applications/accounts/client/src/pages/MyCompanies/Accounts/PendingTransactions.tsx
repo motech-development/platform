@@ -19,6 +19,7 @@ import DeleteItem from '../../../components/DeleteItem';
 import NoTransactions from '../../../components/NoTransactions';
 import Scheduled from '../../../components/Scheduled';
 import TransactionArrow from '../../../components/TransactionArrow';
+import TransactionDetailsCell from '../../../components/TransactionDetailsCell';
 import WarningText from '../../../components/WarningText';
 import DELETE_TRANSACTION, {
   IDeleteTransactionInput,
@@ -130,11 +131,9 @@ const PendingTransaction: FC = () => {
                   scheduled,
                 }) => (
                   <>
-                    <TableCell align="center">
-                      <TransactionArrow value={amount} />
-                    </TableCell>
+                    <TransactionArrow value={amount} />
 
-                    <TableCell>
+                    <TransactionDetailsCell>
                       <WarningText
                         id={id}
                         component="p"
@@ -149,10 +148,15 @@ const PendingTransaction: FC = () => {
                         {name}
                       </WarningText>
 
-                      <Typography component="p" variant="p" margin="none">
+                      <Typography
+                        truncate
+                        component="p"
+                        variant="p"
+                        margin="none"
+                      >
                         {description}
                       </Typography>
-                    </TableCell>
+                    </TransactionDetailsCell>
 
                     <TableCell>
                       <Scheduled

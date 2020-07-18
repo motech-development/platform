@@ -1,5 +1,6 @@
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { TableCell } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -17,6 +18,12 @@ const Arrow = styled(FontAwesomeIcon)`
   `}
 `;
 
+const TransactionArrowCell = styled(TableCell)`
+  max-width: 70px;
+  min-width: 70px;
+  width: 70px;
+`;
+
 interface ITransactionArrowProps {
   value: number;
 }
@@ -28,7 +35,9 @@ const TransactionArrow: FC<ITransactionArrowProps> = ({ value }) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Arrow icon={icon} />
+      <TransactionArrowCell align="center">
+        <Arrow icon={icon} />
+      </TransactionArrowCell>
     </ThemeProvider>
   );
 };
