@@ -145,7 +145,7 @@ function Notifications<T>({
         >
           <DataTable
             header={
-              <TableCell as="th" colSpan={cols}>
+              <TableCell as="th" align="left" colSpan={cols}>
                 {label}
               </TableCell>
             }

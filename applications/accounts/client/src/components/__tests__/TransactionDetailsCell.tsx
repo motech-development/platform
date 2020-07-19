@@ -29,9 +29,9 @@ describe('TransactionDetailsCell', () => {
     );
 
     await expect(findByText('Test')).resolves.toHaveStyle(`
-      max-width: 400px;
-      min-width: 400px;
-      width: 400px;
+      max-width: 300px;
+      min-width: 300px;
+      width: 300px;
     `);
   });
 
@@ -61,9 +61,9 @@ describe('TransactionDetailsCell', () => {
     );
 
     await expect(findByText('Test')).resolves.toHaveStyle(`
-      max-width: 400px;
-      min-width: 400px;
-      width: 400px;
+      max-width: 300px;
+      min-width: 300px;
+      width: 300px;
     `);
   });
 
@@ -93,9 +93,9 @@ describe('TransactionDetailsCell', () => {
     );
 
     await expect(findByText('Test')).resolves.not.toHaveStyle(`
-      max-width: 400px;
-      min-width: 400px;
-      width: 400px;
+      max-width: 300px;
+      min-width: 300px;
+      width: 300px;
     `);
   });
 });

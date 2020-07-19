@@ -10,9 +10,9 @@ const Cell = styled(TableCell)<ICell>`
   ${({ breakpoint }) => {
     if (['xs', 'sm'].includes(breakpoint)) {
       return `
-        max-width: 400px;
-        min-width: 400px;
-        width: 400px;
+        max-width: 300px;
+        min-width: 300px;
+        width: 300px;
       `;
     }
 
