@@ -4,7 +4,15 @@ import TransactionArrow from '../TransactionArrow';
 
 describe('TransactionArrow', () => {
   it('should display a red arrow pointing to the left when value is negative', () => {
-    const { container } = render(<TransactionArrow value={-10} />);
+    const { container } = render(
+      <table>
+        <tbody>
+          <tr>
+            <TransactionArrow value={-10} />
+          </tr>
+        </tbody>
+      </table>,
+    );
     const arrow = container.querySelector('[data-icon="arrow-left"]');
 
     expect(arrow).toHaveStyle(`
@@ -13,7 +21,15 @@ describe('TransactionArrow', () => {
   });
 
   it('should display a green arrow pointing to the right when value is positive', () => {
-    const { container } = render(<TransactionArrow value={10} />);
+    const { container } = render(
+      <table>
+        <tbody>
+          <tr>
+            <TransactionArrow value={10} />
+          </tr>
+        </tbody>
+      </table>,
+    );
     const arrow = container.querySelector('[data-icon="arrow-right"]');
 
     expect(arrow).toHaveStyle(`

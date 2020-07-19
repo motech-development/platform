@@ -418,7 +418,7 @@ describe('Typography', () => {
   });
 
   describe('break word', () => {
-    it('should set the additional word break styled', async () => {
+    it('should set the additional word break styles', async () => {
       const { findByText } = render(
         <Typography breakWord component="h1" variant="h1">
           Hello world
@@ -431,6 +431,22 @@ describe('Typography', () => {
         word-wrap: break-word;
         word-break: break-all;
         word-break: break-word;
+      `);
+    });
+  });
+
+  describe('truncate', () => {
+    it('should set the additional truncate styles', async () => {
+      const { findByText } = render(
+        <Typography truncate component="h1" variant="h1">
+          Hello world
+        </Typography>,
+      );
+
+      await expect(findByText('Hello world')).resolves.toHaveStyle(`
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       `);
     });
   });

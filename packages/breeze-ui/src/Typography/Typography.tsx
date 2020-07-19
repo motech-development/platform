@@ -7,11 +7,12 @@ interface IBaseTypographyProps {
   $align: 'left' | 'right' | 'center';
   $breakWord: boolean;
   $margin: keyof typeof margins;
+  $truncate: boolean;
   $variant: TypographyVariants | 'lead';
 }
 
 const BaseTypography = styled.p<IBaseTypographyProps>`
-  ${({ $align, $breakWord, $margin, $variant }) => `
+  ${({ $align, $breakWord, $margin, $truncate, $variant }) => `
     margin: ${margins[$margin] ? `0 0 ${margins[$margin]}rem` : '0'};
     text-align: ${$align};
 
@@ -23,6 +24,16 @@ const BaseTypography = styled.p<IBaseTypographyProps>`
       word-wrap: break-word;
       word-break: break-all;
       word-break: break-word;
+    `
+        : ''
+    }
+
+    ${
+      $truncate
+        ? `
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     `
         : ''
     }
@@ -98,6 +109,7 @@ export interface ITypographyProps {
   id?: string;
   margin?: keyof typeof margins;
   rule?: boolean;
+  truncate?: boolean;
   variant: TypographyVariants | 'lead';
 }
 
@@ -110,6 +122,7 @@ const Typography: FC<ITypographyProps> = ({
   id = undefined,
   margin = 'md',
   rule = false,
+  truncate = false,
   variant,
 }) => (
   <>
@@ -120,6 +133,7 @@ const Typography: FC<ITypographyProps> = ({
       $align={align}
       $breakWord={breakWord}
       $margin={margin}
+      $truncate={truncate}
       $variant={variant}
     >
       {children}
