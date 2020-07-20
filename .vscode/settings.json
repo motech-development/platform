@@ -32,6 +32,10 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./applications/accounts/scanner"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./applications/accounts/storage"
     },
     {

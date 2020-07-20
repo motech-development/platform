@@ -1,0 +1,55 @@
+{
+  "name": "@accounts/scanner",
+  "description": "Motech Development receipt scanner application",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "react-app-rewired build",
+    "start": "react-app-rewired start",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
+    "precommit": "lint-staged",
+    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "test": "react-app-rewired test",
+    "test:ci": "react-app-rewired test --coverage --runInBand --reporters=default --reporters=jest-junit"
+  },
+  "dependencies": {
+    "@ionic/react": "5.3.0-dev.202007171535.9c22d19",
+    "@ionic/react-router": "5.3.0-dev.202007171535.9c22d19",
+    "@motech-development/auth": "^0.0.0",
+    "history": "^4.10.1",
+    "ionicons": "^5.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/{history,index,i18n}.{ts,tsx}",
+      "!src/**/*/index.{ts,tsx}"
+    ],
+    "moduleDirectories": [
+      "../../node_modules",
+      "<rootDir>/node_modules"
+    ]
+  },
+  "jest-junit": {
+    "outputDirectory": "../../reports/junit",
+    "outputName": "accounts-client.xml"
+  }
+}
