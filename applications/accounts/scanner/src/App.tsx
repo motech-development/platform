@@ -6,7 +6,7 @@ import {
   IonTabButton,
   IonTabs,
 } from '@ionic/react';
-import { camera, list, person } from 'ionicons/icons';
+import { camera, list, personCircleOutline } from 'ionicons/icons';
 import React, { FC } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import MyCompanies from './pages/MyCompanies';
@@ -49,7 +49,7 @@ const App: FC = () => (
           <IonIcon icon={camera} />
         </IonTabButton>
         <IonTabButton tab="profile" href="/profile">
-          <IonIcon icon={person} />
+          <IonIcon icon={personCircleOutline} />
         </IonTabButton>
       </IonTabBar>
     </IonTabs>
