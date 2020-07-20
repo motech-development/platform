@@ -17,10 +17,15 @@
     "@ionic/react-router": "5.3.0-dev.202007171535.9c22d19",
     "@motech-development/auth": "^0.0.0",
     "history": "^4.10.1",
+    "i18next": "^19.5.2",
+    "i18next-browser-languagedetector": "^5.0.0",
+    "i18next-http-backend": "^1.0.16",
     "ionicons": "^5.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-router-dom": "^5.2.0"
+    "react-i18next": "^11.7.0",
+    "react-router-dom": "^5.2.0",
+    "styled-components": "^5.1.1"
   },
   "eslintConfig": {
     "extends": "react-app"
