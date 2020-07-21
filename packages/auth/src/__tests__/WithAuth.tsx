@@ -2,12 +2,10 @@ import { render, wait } from '@testing-library/react';
 import React, { FC } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
-import withAuth from '../WithAuth';
+import WithAuth from '../WithAuth';
 
-const onError = jest.fn();
 const TestComponent: FC = () => <div data-testid="content">Loaded</div>;
 const LoadingComponent: FC = () => <div data-testid="loading">Loading</div>;
-const WrappedComponent = withAuth(TestComponent, LoadingComponent, onError);
 
 describe('withAuth', () => {
   let getIdTokenClaims: jest.Mock;
@@ -16,6 +14,7 @@ describe('withAuth', () => {
   let isLoading: boolean;
   let loginWithRedirect: jest.Mock;
   let logout: jest.Mock;
+  let onError: jest.Mock;
   let user: AuthUser;
 
   beforeEach(() => {
@@ -24,6 +23,7 @@ describe('withAuth', () => {
     isAuthenticated = false;
     loginWithRedirect = jest.fn();
     logout = jest.fn();
+    onError = jest.fn();
     user = {
       name: 'Mo Gusbi',
     };
@@ -49,7 +49,9 @@ describe('withAuth', () => {
                 user,
               }}
             >
-              <WrappedComponent />
+              <WithAuth fallback={<LoadingComponent />} onError={onError}>
+                <TestComponent />
+              </WithAuth>
             </AuthContext.Provider>
           </AuthProvider>
         </MemoryRouter>,
@@ -75,7 +77,9 @@ describe('withAuth', () => {
                 user,
               }}
             >
-              <WrappedComponent />
+              <WithAuth fallback={<LoadingComponent />} onError={onError}>
+                <TestComponent />
+              </WithAuth>
             </AuthContext.Provider>
           </AuthProvider>
         </MemoryRouter>,
@@ -103,7 +107,9 @@ describe('withAuth', () => {
                 user,
               }}
             >
-              <WrappedComponent />
+              <WithAuth fallback={<LoadingComponent />} onError={onError}>
+                <TestComponent />
+              </WithAuth>
             </AuthContext.Provider>
           </AuthProvider>
         </MemoryRouter>,
