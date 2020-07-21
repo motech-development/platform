@@ -1,5 +1,4 @@
 import { AuthContext, AuthProvider } from '@motech-development/auth';
-import { ToastContext, ToastProvider } from '@motech-development/breeze-ui';
 import i18n from 'i18next';
 import React, { FC, ReactElement } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
@@ -24,7 +23,7 @@ export interface ITestProviderProps {
   isLoading?: boolean;
   history?: MemoryHistory;
   path?: string;
-  user?: object;
+  user?: object | null;
 }
 
 const TestProvider: FC<ITestProviderProps> = ({
@@ -63,29 +62,20 @@ const TestProvider: FC<ITestProviderProps> = ({
             isLoading,
             loginWithRedirect,
             logout,
-            user,
+            user: user === null ? undefined : user,
           }}
         >
-          <ToastProvider>
-            <ToastContext.Provider
-              value={{
-                add,
-                remove,
-              }}
-            >
-              <I18nextProvider i18n={testI18n}>
-                <Switch>
-                  <Route exact path={path} component={() => children} />
-                  <Route
-                    path="*"
-                    component={() => (
-                      <div data-testid="next-page">The next page</div>
-                    )}
-                  />
-                </Switch>
-              </I18nextProvider>
-            </ToastContext.Provider>
-          </ToastProvider>
+          <I18nextProvider i18n={testI18n}>
+            <Switch>
+              <Route exact path={path} component={() => children} />
+              <Route
+                path="*"
+                component={() => (
+                  <div data-testid="next-page">The next page</div>
+                )}
+              />
+            </Switch>
+          </I18nextProvider>
         </AuthContext.Provider>
       </AuthProvider>
     </Router>

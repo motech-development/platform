@@ -19,7 +19,7 @@ const Profile: FC = () => {
     });
 
   if (!user) {
-    return <IonLoading isOpen />;
+    return <IonLoading isOpen data-testid="profile-loading" />;
   }
 
   return (

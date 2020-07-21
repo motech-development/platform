@@ -13,9 +13,11 @@
     "test:ci": "react-app-rewired test --coverage --runInBand --reporters=default --reporters=jest-junit"
   },
   "dependencies": {
+    "@auth0/auth0-spa-js": "^1.10.0",
     "@ionic/react": "5.3.0-dev.202007171535.9c22d19",
     "@ionic/react-router": "5.3.0-dev.202007171535.9c22d19",
     "@motech-development/auth": "^0.0.0",
+    "@motech-development/query-string-hook": "^0.0.0",
     "history": "^4.10.1",
     "i18next": "^19.5.2",
     "i18next-browser-languagedetector": "^5.0.0",
@@ -56,5 +58,8 @@
   "jest-junit": {
     "outputDirectory": "../../reports/junit",
     "outputName": "accounts-client.xml"
+  },
+  "devDependencies": {
+    "@ionic/react-test-utils": "^0.0.3"
   }
 }

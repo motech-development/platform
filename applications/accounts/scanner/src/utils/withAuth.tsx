@@ -8,7 +8,7 @@ const withAuth = (Component: ComponentType) =>
     const { isAuthenticated, isLoading } = useAuth();
 
     if (isLoading) {
-      return <IonLoading isOpen />;
+      return <IonLoading isOpen data-testid="auth-loading" />;
     }
 
     return (
