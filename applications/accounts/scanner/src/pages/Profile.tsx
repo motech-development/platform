@@ -24,21 +24,21 @@ const Profile: FC = () => {
 
   return (
     <Page title={t('title')}>
-      <div className="ion-padding">
-        <IonItem>
-          {user.picture && (
-            <IonAvatar slot="start">
-              <img src={user.picture} alt="" />
-            </IonAvatar>
-          )}
+      <IonItem color="dark">
+        {user.picture && (
+          <IonAvatar slot="start">
+            <img src={user.picture} alt="" />
+          </IonAvatar>
+        )}
 
-          <IonLabel>
-            <h2>{user.name}</h2>
+        <IonLabel>
+          <h2>{user.name}</h2>
 
-            <p>{user.email}</p>
-          </IonLabel>
-        </IonItem>
+          <p>{user.email}</p>
+        </IonLabel>
+      </IonItem>
 
+      <div color="primary" className="ion-padding">
         <IonButton expand="full" color="danger" onClick={logOut}>
           {t('log-out')}
         </IonButton>

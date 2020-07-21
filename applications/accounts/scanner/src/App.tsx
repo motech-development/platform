@@ -41,7 +41,7 @@ const App: FC = () => (
         <Route exact path="/" render={() => <Redirect to="/my-companies" />} />
       </IonRouterOutlet>
 
-      <IonTabBar slot="bottom">
+      <IonTabBar color="dark" slot="bottom">
         <IonTabButton tab="my-companies" href="/my-companies">
           <IonIcon icon={list} />
         </IonTabButton>

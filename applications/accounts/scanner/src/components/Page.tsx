@@ -14,15 +14,15 @@ export interface IPageProps {
 
 const Page: FC<IPageProps> = ({ children, title }) => (
   <IonPage>
-    <IonHeader>
+    <IonHeader translucent>
       <IonToolbar color="dark">
         <IonTitle>{title}</IonTitle>
       </IonToolbar>
     </IonHeader>
 
-    <IonContent>
+    <IonContent fullscreen color="dark">
       <IonHeader collapse="condense">
-        <IonToolbar>
+        <IonToolbar color="dark">
           <IonTitle size="large">{title}</IonTitle>
         </IonToolbar>
       </IonHeader>
