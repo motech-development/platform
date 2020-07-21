@@ -5,20 +5,15 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonContent,
+  IonHeader,
   IonPage,
+  IonTitle,
+  IonToolbar,
 } from '@ionic/react';
 import { useAuth } from '@motech-development/auth';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-
-const Wrapper = styled.div`
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-`;
 
 const IonCardButton = styled(IonCardContent)`
   padding-top: 0;
@@ -30,28 +25,32 @@ const LogIn: FC = () => {
   const login = () =>
     loginWithRedirect({
       appState: {
-        targetUrl: '/my-companies',
+        targetUrl: '/receipts',
       },
     });
 
   return (
     <IonPage>
-      <IonContent>
-        <Wrapper>
-          <IonCard>
-            <IonCardHeader>
-              <IonCardTitle>{t('welcome')}</IonCardTitle>
-            </IonCardHeader>
+      <IonHeader>
+        <IonToolbar color="dark">
+          <IonTitle>{t('global:app-name')}</IonTitle>
+        </IonToolbar>
+      </IonHeader>
 
-            <IonCardContent>{t('intro')}</IonCardContent>
+      <IonContent color="dark">
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>{t('welcome')}</IonCardTitle>
+          </IonCardHeader>
 
-            <IonCardButton>
-              <IonButton expand="full" onClick={login}>
-                {t('log-in')}
-              </IonButton>
-            </IonCardButton>
-          </IonCard>
-        </Wrapper>
+          <IonCardContent>{t('intro')}</IonCardContent>
+
+          <IonCardButton>
+            <IonButton expand="full" onClick={login}>
+              {t('log-in')}
+            </IonButton>
+          </IonCardButton>
+        </IonCard>
       </IonContent>
     </IonPage>
   );

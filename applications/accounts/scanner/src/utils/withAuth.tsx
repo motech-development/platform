@@ -1,4 +1,4 @@
-import { IonLoading } from '@ionic/react';
+import { IonLoading, IonPage } from '@ionic/react';
 import { useAuth } from '@motech-development/auth';
 import React, { ComponentType, memo, Suspense } from 'react';
 import LogIn from '../pages/LogIn';
@@ -8,7 +8,11 @@ const withAuth = (Component: ComponentType) =>
     const { isAuthenticated, isLoading } = useAuth();
 
     if (isLoading) {
-      return <IonLoading isOpen data-testid="auth-loading" />;
+      return (
+        <IonPage color="dark">
+          <IonLoading isOpen data-testid="auth-loading" />
+        </IonPage>
+      );
     }
 
     return (
