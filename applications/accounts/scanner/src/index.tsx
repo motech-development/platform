@@ -1,3 +1,4 @@
+import { Capacitor, Plugins, StatusBarStyle } from '@capacitor/core';
 import { IonReactRouter } from '@ionic/react-router';
 import { AuthProvider, IAppState } from '@motech-development/auth';
 import React from 'react';
@@ -6,6 +7,16 @@ import App from './App';
 import history from './history';
 import './i18n';
 import * as serviceWorker from './serviceWorker';
+
+const { StatusBar } = Plugins;
+
+if (Capacitor.isPluginAvailable('StatusBar')) {
+  (async () => {
+    await StatusBar.setStyle({
+      style: StatusBarStyle.Dark,
+    });
+  })();
+}
 
 const onRedirectCallback = (appState: IAppState) => {
   history.push(

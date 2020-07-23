@@ -1,6 +1,6 @@
 // TODO: This needs work
-import { Plugins } from '@capacitor/core';
-import { IonButton, isPlatform } from '@ionic/react';
+import { Capacitor, Plugins } from '@capacitor/core';
+import { IonButton } from '@ionic/react';
 import {
   DocumentScanner,
   DocumentScannerSourceType,
@@ -15,7 +15,7 @@ const Scan: FC = () => {
   const [scan, setScan] = useState<string>();
   const { t } = useTranslation('scan');
   const launchScanner = async () => {
-    if (isPlatform('capacitor')) {
+    if (Capacitor.isNative) {
       const path = await DocumentScanner.scanDoc({
         sourceType: DocumentScannerSourceType.CAMERA,
       });

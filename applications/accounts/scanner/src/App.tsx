@@ -13,7 +13,7 @@ import {
 } from 'ionicons/icons';
 import React, { FC, lazy } from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import bootstrap from './utils/bootstrap';
+import withAuth from './utils/withAuth';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -65,4 +65,4 @@ const App: FC = () => (
   </IonApp>
 );
 
-export default bootstrap(App);
+export default withAuth(App);
