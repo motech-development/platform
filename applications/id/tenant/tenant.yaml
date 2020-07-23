@@ -38,14 +38,10 @@ clients:
     allowed_logout_urls:
       - 'https://accounts.motechdevelopment.co.uk'
       - 'http://localhost:3000'
-      - 'http://192.168.1.153:3000'
-      - 'http://192.168.1.66:3000'
     app_type: spa
     callbacks:
       - 'https://accounts.motechdevelopment.co.uk'
       - 'http://localhost:3000'
-      - 'http://192.168.1.153:3000'
-      - 'http://192.168.1.66:3000'
     client_aliases: []
     cross_origin_auth: false
     custom_login_page_on: true
@@ -77,8 +73,6 @@ clients:
     web_origins:
       - 'https://accounts.motechdevelopment.co.uk'
       - 'http://localhost:3000'
-      - 'http://192.168.1.153:3000'
-      - 'http://192.168.1.66:3000'
   - name: Accounts API (Test Application)
     app_type: non_interactive
     cross_origin_auth: false
@@ -116,6 +110,43 @@ clients:
       rotation_type: non-rotating
       expiration_type: non-expiring
     sso_disabled: false
+  - name: Scanner
+    allowed_clients: []
+    allowed_logout_urls:
+      - 'capacitor://localhost'
+    allowed_origins:
+      - 'file://*'
+    app_type: spa
+    callbacks:
+      - 'capacitor://localhost'
+    client_aliases: []
+    cross_origin_auth: false
+    custom_login_page_on: true
+    grant_types:
+      - authorization_code
+      - implicit
+      - refresh_token
+    is_first_party: true
+    is_token_endpoint_ip_header_trusted: false
+    jwt_configuration:
+      alg: RS256
+      lifetime_in_seconds: 36000
+      secret_encoded: false
+    native_social_login:
+      apple:
+        enabled: false
+      facebook:
+        enabled: false
+    oidc_conformant: true
+    refresh_token:
+      leeway: 4
+      token_lifetime: 5
+      rotation_type: rotating
+      expiration_type: expiring
+    sso_disabled: false
+    token_endpoint_auth_method: none
+    web_origins:
+      - 'capacitor://localhost'
   - name: auth0-deploy-cli-extension
     allowed_clients: []
     app_type: non_interactive
@@ -149,6 +180,7 @@ databases:
   - name: Username-Password-Authentication
     strategy: auth0
     enabled_clients:
+      - Scanner
       - Accounts API (Test Application)
       - auth0-deploy-cli-extension
       - Default App
@@ -158,15 +190,29 @@ databases:
       mfa:
         active: true
         return_enroll_settings: true
+      import_mode: false
       passwordPolicy: good
+      password_history:
+        size: 5
+        enable: false
       strategy_version: 2
+      requires_username: false
+      password_dictionary:
+        enable: false
+        dictionary: []
       brute_force_protection: true
+      password_no_personal_info:
+        enable: false
+      password_complexity_options:
+        min_length: 8
+      enabledDatabaseCustomization: false
     realms:
       - Username-Password-Authentication
 connections:
   - name: google-oauth2
     strategy: google-oauth2
     enabled_clients:
+      - Scanner
       - Accounts API (Test Application)
       - auth0-deploy-cli-extension
       - Default App
@@ -189,6 +235,7 @@ tenant:
     disable_clickjack_protection_headers: false
     include_email_in_reset_pwd_redirect: true
     include_email_in_verify_email_redirect: true
+    unpaginated_requests: true
   friendly_name: Motech Development
   picture_url: ''
   support_email: info@motechdevelopment.co.uk
