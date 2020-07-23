@@ -5,17 +5,19 @@
   "private": true,
   "scripts": {
     "build": "react-app-rewired build",
-    "start": "react-app-rewired start",
+    "cap": "ionic cap",
+    "ionic:build": "react-app-rewired build",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
-    "sync": "ionic cap sync",
+    "start": "react-app-rewired start",
     "test": "react-app-rewired test",
     "test:ci": "react-app-rewired test --coverage --runInBand --reporters=default --reporters=jest-junit"
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.10.0",
     "@capacitor/core": "2.3.0",
+    "@capacitor/ios": "^2.3.0",
     "@ionic-native/core": "^5.27.0",
     "@ionic-native/document-scanner": "^5.27.0",
     "@ionic/react": "5.3.0-dev.202007171535.9c22d19",

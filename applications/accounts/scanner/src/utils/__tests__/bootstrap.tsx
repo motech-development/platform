@@ -1,12 +1,28 @@
 import { render } from '@testing-library/react';
 import React, { FC } from 'react';
-import withAuth from '../withAuth';
+import bootstrap from '../bootstrap';
 import TestProvider from '../TestProvider';
 
 const TestComponent: FC = () => <div data-testid="content">Loaded</div>;
-const WrappedComponent = withAuth(TestComponent);
+const WrappedComponent = bootstrap(TestComponent);
 
-describe('withAuth', () => {
+describe('bootstrap', () => {
+  beforeEach(() => {
+    Object.defineProperty(window, 'matchMedia', {
+      value: jest.fn().mockImplementation(query => ({
+        addEventListener: jest.fn(),
+        addListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+        matches: false,
+        media: query,
+        onchange: null,
+        removeEventListener: jest.fn(),
+        removeListener: jest.fn(),
+      })),
+      writable: true,
+    });
+  });
+
   it('should display loader when loading', async () => {
     const { findByTestId } = render(
       <TestProvider isLoading>

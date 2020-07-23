@@ -39,6 +39,7 @@ const Profile: FC = () => {
       </IonItem>
 
       <div color="primary" className="ion-padding">
+        {/* TODO: This needs to work in app */}
         <IonButton expand="full" color="danger" onClick={logOut}>
           {t('log-out')}
         </IonButton>

@@ -1,3 +1,4 @@
+import { Plugins } from '@capacitor/core';
 import {
   IonButton,
   IonCard,
@@ -9,25 +10,55 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  isPlatform,
 } from '@ionic/react';
 import { useAuth } from '@motech-development/auth';
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
+
+const { App, Browser } = Plugins;
 
 const IonCardButton = styled(IonCardContent)`
   padding-top: 0;
 `;
 
 const LogIn: FC = () => {
-  const { loginWithRedirect } = useAuth();
+  const { buildAuthorizeUrl, loginWithRedirect } = useAuth();
   const { t } = useTranslation('log-in');
-  const login = () =>
-    loginWithRedirect({
+  const history = useHistory();
+  const login = async () => {
+    const params = {
       appState: {
         targetUrl: '/receipts',
       },
+    };
+
+    if (isPlatform('capacitor')) {
+      const url = await buildAuthorizeUrl(params);
+
+      await Browser.open({
+        presentationStyle: 'popover',
+        url,
+      });
+    } else {
+      await loginWithRedirect(params);
+    }
+  };
+
+  useEffect(() => {
+    App.addListener('appUrlOpen', async ({ url }) => {
+      if (url) {
+        await Browser.close();
+
+        const { pathname, search } = new URL(url);
+
+        history.push(pathname + search);
+      }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <IonPage>
