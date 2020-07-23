@@ -6,9 +6,13 @@ import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { Route, Router, Switch } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
 
+export const buildAuthorizeUrl = jest.fn();
+
 export const getIdTokenClaims = jest.fn();
 
 export const getTokenSilently = jest.fn();
+
+export const loginWithPopup = jest.fn();
 
 export const loginWithRedirect = jest.fn();
 
@@ -57,10 +61,12 @@ const TestProvider: FC<ITestProviderProps> = ({
       <AuthProvider>
         <AuthContext.Provider
           value={{
+            buildAuthorizeUrl,
             getIdTokenClaims,
             getTokenSilently,
             isAuthenticated,
             isLoading,
+            loginWithPopup,
             loginWithRedirect,
             logout,
             user,
