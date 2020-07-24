@@ -1,0 +1,60 @@
+{
+  "name": "@motech-development/appsync-apollo",
+  "version": "0.0.0",
+  "description": "React Apollo client configured for AppSync",
+  "main": "lib/index.cjs.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
+    "package": "npm run build",
+    "prebuild": "rimraf ./lib",
+    "precommit": "lint-staged",
+    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage --runInBand --reporters=default --reporters=jest-junit"
+  },
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/react-hooks": "^3.1.5",
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-client": "^2.6.10",
+    "apollo-link": "^1.2.14",
+    "aws-appsync-auth-link": "^2.0.2",
+    "aws-appsync-subscription-link": "^2.2.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "peerDependencies": {
+    "@apollo/react-hooks": "3.1.5",
+    "apollo-cache-inmemory": "1.6.6",
+    "apollo-client": "2.6.10",
+    "apollo-link": "1.2.14",
+    "aws-appsync-auth-link": "2.0.2",
+    "aws-appsync-subscription-link": "2.2.0",
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.stories.{ts,tsx}"
+    ],
+    "moduleDirectories": [
+      "../../node_modules",
+      "<rootDir>/node_modules"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
+    ]
+  },
+  "jest-junit": {
+    "outputDirectory": "../../reports/junit",
+    "outputName": "appsync-apollo.xml"
+  },
+  "devDependencies": {
+    "unfetch": "^4.1.0"
+  }
+}

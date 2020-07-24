@@ -64,6 +64,10 @@
     },
     {
       "changeProcessCWD": true,
+      "directory": "./packages/appsync-apollo"
+    },
+    {
+      "changeProcessCWD": true,
       "directory": "./packages/auth"
     },
     {

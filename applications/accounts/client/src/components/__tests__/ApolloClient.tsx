@@ -3,7 +3,7 @@ import React from 'react';
 import TestProvider from '../../utils/TestProvider';
 import ApolloClient from '../ApolloClient';
 
-describe('Apollo', () => {
+describe('ApolloClient', () => {
   it('should show error if no AppSync settings are set', async () => {
     const { findByText } = render(
       <TestProvider>
