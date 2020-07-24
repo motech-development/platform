@@ -24,7 +24,7 @@ const LogIn: FC = () => {
   const login = async () => {
     const params = {
       appState: {
-        targetUrl: '/receipts',
+        targetUrl: '/my-companies',
       },
     };
 

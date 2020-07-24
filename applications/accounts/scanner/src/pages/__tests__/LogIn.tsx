@@ -22,7 +22,7 @@ describe('LogIn', () => {
 
     expect(loginWithRedirect).toHaveBeenCalledWith({
       appState: {
-        targetUrl: '/receipts',
+        targetUrl: '/my-companies',
       },
     });
   });
@@ -39,7 +39,7 @@ describe('LogIn', () => {
 
     expect(buildAuthorizeUrl).toHaveBeenCalledWith({
       appState: {
-        targetUrl: '/receipts',
+        targetUrl: '/my-companies',
       },
     });
   });

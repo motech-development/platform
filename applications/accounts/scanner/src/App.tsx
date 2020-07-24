@@ -10,8 +10,8 @@ import {
 import { Apollo } from '@motech-development/appsync-apollo';
 import { useAuth } from '@motech-development/auth';
 import {
+  businessOutline,
   personCircleOutline,
-  receiptOutline,
   scanOutline,
 } from 'ionicons/icons';
 import React, { FC, lazy } from 'react';
@@ -38,9 +38,10 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 
 const ErrorPage = lazy(() => import('./components/ErrorPage'));
+const MyCompanies = lazy(() => import('./pages/MyCompanies'));
 const Profile = lazy(() => import('./pages/Profile'));
-const Receipts = lazy(() => import('./pages/Receipts'));
 const Scan = lazy(() => import('./pages/Scan'));
+const Transactions = lazy(() => import('./pages/Transactions'));
 
 const App: FC = () => {
   const { getTokenSilently, isAuthenticated, isLoading } = useAuth();
@@ -57,15 +58,24 @@ const App: FC = () => {
       >
         <IonTabs>
           <IonRouterOutlet>
+            <Route exact path="/my-companies" component={MyCompanies} />
             <Route exact path="/profile" component={Profile} />
-            <Route exact path="/receipts" component={Receipts} />
             <Route exact path="/scan" component={Scan} />
-            <Route exact path="/" render={() => <Redirect to="/receipts" />} />
+            <Route
+              exact
+              path="/transactions/:companyId"
+              component={Transactions}
+            />
+            <Route
+              exact
+              path="/"
+              render={() => <Redirect to="/my-companies" />}
+            />
           </IonRouterOutlet>
 
           <IonTabBar color="dark" slot="bottom">
-            <IonTabButton tab="receipts" href="/receipts">
-              <IonIcon icon={receiptOutline} />
+            <IonTabButton tab="my-companies" href="/my-companies">
+              <IonIcon icon={businessOutline} />
             </IonTabButton>
 
             <IonTabButton tab="scan" href="/scan">
