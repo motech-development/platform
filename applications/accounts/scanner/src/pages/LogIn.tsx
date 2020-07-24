@@ -14,13 +14,9 @@ import {
 import { useAuth } from '@motech-development/auth';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
+import IonCardButton from '../components/IonCardButton';
 
 const { Browser } = Plugins;
-
-const IonCardButton = styled(IonCardContent)`
-  padding-top: 0;
-`;
 
 const LogIn: FC = () => {
   const { buildAuthorizeUrl, loginWithRedirect } = useAuth();
@@ -32,7 +28,7 @@ const LogIn: FC = () => {
       },
     };
 
-    if (Capacitor.isPluginAvailable('Browser')) {
+    if (Capacitor.isNative) {
       const url = await buildAuthorizeUrl(params);
 
       await Browser.open({

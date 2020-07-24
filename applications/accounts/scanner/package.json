@@ -15,6 +15,7 @@
     "test:ci": "react-app-rewired test --coverage --runInBand --reporters=default --reporters=jest-junit"
   },
   "dependencies": {
+    "@apollo/react-hooks": "^3.1.5",
     "@auth0/auth0-spa-js": "^1.10.0",
     "@capacitor/core": "2.3.0",
     "@capacitor/ios": "^2.3.0",
@@ -22,9 +23,15 @@
     "@ionic-native/document-scanner": "^5.27.0",
     "@ionic/react": "5.3.0-dev.202007171535.9c22d19",
     "@ionic/react-router": "5.3.0-dev.202007171535.9c22d19",
+    "@motech-development/appsync-apollo": "^0.0.0",
     "@motech-development/auth": "^0.0.0",
     "@motech-development/breeze-ui": "^0.0.0",
     "@motech-development/query-string-hook": "^0.0.0",
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-client": "^2.6.10",
+    "apollo-link": "^1.2.14",
+    "aws-appsync-auth-link": "^2.0.2",
+    "aws-appsync-subscription-link": "^2.2.0",
     "cordova-plugin-document-scanner": "^4.2.5",
     "history": "^4.10.1",
     "i18next": "^19.5.2",

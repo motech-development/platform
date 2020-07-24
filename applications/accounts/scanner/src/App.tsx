@@ -1,11 +1,14 @@
 import {
   IonApp,
   IonIcon,
+  IonLoading,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
   IonTabs,
 } from '@ionic/react';
+import { Apollo } from '@motech-development/appsync-apollo';
+import { useAuth } from '@motech-development/auth';
 import {
   personCircleOutline,
   receiptOutline,
@@ -34,35 +37,49 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+const ErrorPage = lazy(() => import('./components/ErrorPage'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Receipts = lazy(() => import('./pages/Receipts'));
 const Scan = lazy(() => import('./pages/Scan'));
 
-const App: FC = () => (
-  <IonApp>
-    <IonTabs>
-      <IonRouterOutlet>
-        <Route exact path="/profile" component={Profile} />
-        <Route exact path="/receipts" component={Receipts} />
-        <Route exact path="/scan" component={Scan} />
-        <Route exact path="/" render={() => <Redirect to="/receipts" />} />
-      </IonRouterOutlet>
+const App: FC = () => {
+  const { getTokenSilently, isAuthenticated, isLoading } = useAuth();
 
-      <IonTabBar color="dark" slot="bottom">
-        <IonTabButton tab="receipts" href="/receipts">
-          <IonIcon icon={receiptOutline} />
-        </IonTabButton>
+  return (
+    <IonApp>
+      <Apollo
+        error={<ErrorPage namespace="error" />}
+        fallback={<IonLoading isOpen />}
+        getTokenSilently={getTokenSilently}
+        isAuthenticated={isAuthenticated}
+        isLoading={isLoading}
+        unauthorised={<ErrorPage namespace="unauthorised" />}
+      >
+        <IonTabs>
+          <IonRouterOutlet>
+            <Route exact path="/profile" component={Profile} />
+            <Route exact path="/receipts" component={Receipts} />
+            <Route exact path="/scan" component={Scan} />
+            <Route exact path="/" render={() => <Redirect to="/receipts" />} />
+          </IonRouterOutlet>
 
-        <IonTabButton tab="scan" href="/scan">
-          <IonIcon icon={scanOutline} />
-        </IonTabButton>
+          <IonTabBar color="dark" slot="bottom">
+            <IonTabButton tab="receipts" href="/receipts">
+              <IonIcon icon={receiptOutline} />
+            </IonTabButton>
 
-        <IonTabButton tab="profile" href="/profile">
-          <IonIcon icon={personCircleOutline} />
-        </IonTabButton>
-      </IonTabBar>
-    </IonTabs>
-  </IonApp>
-);
+            <IonTabButton tab="scan" href="/scan">
+              <IonIcon icon={scanOutline} />
+            </IonTabButton>
+
+            <IonTabButton tab="profile" href="/profile">
+              <IonIcon icon={personCircleOutline} />
+            </IonTabButton>
+          </IonTabBar>
+        </IonTabs>
+      </Apollo>
+    </IonApp>
+  );
+};
 
 export default withAuth(App);

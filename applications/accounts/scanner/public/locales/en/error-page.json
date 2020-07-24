@@ -1,0 +1,10 @@
+{
+  "error": {
+    "title": "Error",
+    "description": "Something has gone wrong"
+  },
+  "unauthorised": {
+    "title": "Unauthorised",
+    "description": "You do not have permission to view this resource"
+  }
+}
