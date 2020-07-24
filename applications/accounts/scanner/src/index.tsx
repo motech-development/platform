@@ -8,14 +8,26 @@ import history from './history';
 import './i18n';
 import * as serviceWorker from './serviceWorker';
 
-const { StatusBar } = Plugins;
+const { App: CapacitorApp, Browser, StatusBar } = Plugins;
 
-if (Capacitor.isPluginAvailable('StatusBar')) {
+if (Capacitor.isNative) {
   (async () => {
     await StatusBar.setStyle({
       style: StatusBarStyle.Dark,
     });
   })();
+
+  CapacitorApp.addListener('appUrlOpen', async ({ url }) => {
+    if (url) {
+      await Browser.close();
+
+      const { pathname, search } = new URL(url);
+
+      if (pathname && search) {
+        history.push(pathname + search);
+      }
+    }
+  });
 }
 
 const onRedirectCallback = (appState: IAppState) => {

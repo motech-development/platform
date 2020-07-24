@@ -15,19 +15,8 @@ import { useAuth } from '@motech-development/auth';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import history from '../history';
 
-const { App, Browser } = Plugins;
-
-App.addListener('appUrlOpen', async ({ url }) => {
-  if (url) {
-    await Browser.close();
-
-    const { pathname, search } = new URL(url);
-
-    history.push(pathname + search);
-  }
-});
+const { Browser } = Plugins;
 
 const IonCardButton = styled(IonCardContent)`
   padding-top: 0;
