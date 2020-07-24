@@ -4,13 +4,13 @@ import React, { FC, memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import ErrorCard from './ErrorCard';
 
-export interface IConnectProps {
+export interface IConnectedProps {
   children: ReactNode;
   error?: ApolloError;
   loading: boolean;
 }
 
-const Connected: FC<IConnectProps> = ({
+const Connected: FC<IConnectedProps> = ({
   children,
   error = undefined,
   loading,
