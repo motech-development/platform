@@ -2,7 +2,7 @@ import { ProtectedRoute, useAuth } from '@motech-development/auth';
 import { Loader } from '@motech-development/breeze-ui';
 import React, { FC, lazy, memo, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import Apollo from '../../components/Apollo';
+import ApolloClient from '../../components/ApolloClient';
 import Container from '../../components/Container';
 import UserBar from '../../components/UserBar';
 import UserNotifications from './UserNotifications';
@@ -23,7 +23,7 @@ const Routes: FC = () => {
     });
 
   return (
-    <Apollo>
+    <ApolloClient>
       {user && (
         <UserBar
           name={user.name}
@@ -71,7 +71,7 @@ const Routes: FC = () => {
           </Switch>
         </Container>
       </Suspense>
-    </Apollo>
+    </ApolloClient>
   );
 };
 

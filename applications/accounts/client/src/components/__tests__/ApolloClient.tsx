@@ -1,15 +1,15 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import TestProvider from '../../utils/TestProvider';
-import Apollo from '../Apollo';
+import ApolloClient from '../ApolloClient';
 
 describe('Apollo', () => {
   it('should show error if no AppSync settings are set', async () => {
     const { findByText } = render(
       <TestProvider>
-        <Apollo>
+        <ApolloClient>
           <div data-testid="content" />
-        </Apollo>
+        </ApolloClient>
       </TestProvider>,
     );
 
@@ -35,9 +35,9 @@ describe('Apollo', () => {
     it('should show spinner if loading', () => {
       const { container } = render(
         <TestProvider isLoading>
-          <Apollo>
+          <ApolloClient>
             <div data-testid="content" />
-          </Apollo>
+          </ApolloClient>
         </TestProvider>,
       );
       const loader = container.querySelector('circle');
@@ -48,9 +48,9 @@ describe('Apollo', () => {
     it('should show error if user is not authenticated', async () => {
       const { findByText } = render(
         <TestProvider isAuthenticated={false}>
-          <Apollo>
+          <ApolloClient>
             <div data-testid="content" />
-          </Apollo>
+          </ApolloClient>
         </TestProvider>,
       );
 
@@ -62,9 +62,9 @@ describe('Apollo', () => {
     it('should render child', async () => {
       const { findByTestId } = render(
         <TestProvider>
-          <Apollo>
+          <ApolloClient>
             <div data-testid="content" />
-          </Apollo>
+          </ApolloClient>
         </TestProvider>,
       );
 
