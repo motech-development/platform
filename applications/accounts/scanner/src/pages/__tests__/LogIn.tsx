@@ -8,9 +8,7 @@ import TestProvider, {
 import LogIn from '../LogIn';
 
 describe('LogIn', () => {
-  it('should call log in with the correct params when plugin is available', async () => {
-    (Capacitor.isPluginAvailable as jest.Mock).mockReturnValueOnce(false);
-
+  it('should call log in with the correct params when not run native', async () => {
     const { findByText } = render(
       <TestProvider>
         <LogIn />
@@ -27,7 +25,9 @@ describe('LogIn', () => {
     });
   });
 
-  it('should call log in with the correct params when plugin is available', async () => {
+  it('should call log in with the correct params when run native', async () => {
+    Capacitor.isNative = true;
+
     const { findByText } = render(
       <TestProvider>
         <LogIn />
