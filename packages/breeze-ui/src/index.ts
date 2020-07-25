@@ -10,6 +10,11 @@ export { default as Card, ICardProps } from './Card/Card';
 export { default as CheckBox, ICheckBoxProps } from './CheckBox/CheckBox';
 export { default as Col, IColProps } from './Col/Col';
 export { default as Content, IContentProps } from './Content/Content';
+export {
+  default as Currency,
+  ICurrencyProps,
+  formatCurrency,
+} from './Currency/Currency';
 export { default as DataTable, IDataTableProps } from './DataTable/DataTable';
 export {
   default as DatePicker,

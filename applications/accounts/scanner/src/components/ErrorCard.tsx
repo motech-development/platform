@@ -21,7 +21,7 @@ const ErrorCard: FC<IErrorCardProps> = ({ backTo, description }) => {
   };
 
   return (
-    <IonCard>
+    <IonCard color="tertiary">
       <IonCardContent>{description}</IonCardContent>
 
       <IonCardButton>

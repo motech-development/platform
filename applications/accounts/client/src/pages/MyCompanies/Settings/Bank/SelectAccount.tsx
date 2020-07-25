@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   Button,
   Col,
+  Currency,
   DataTable,
   LinkButton,
   PageTitle,
@@ -14,7 +15,6 @@ import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
-import Currency from '../../../../components/Currency';
 import ErrorCard from '../../../../components/ErrorCard';
 import GET_BANK_ACCOUNTS, {
   IGetBankAccountsInput,

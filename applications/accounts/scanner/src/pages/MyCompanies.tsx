@@ -1,9 +1,10 @@
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
-import { IonItem, IonLabel, IonList } from '@ionic/react';
+import { IonItem, IonLabel } from '@ionic/react';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Connected from '../components/Connected';
+import DataList from '../components/DataList';
 import Page from '../components/Page';
 
 interface IGetCompaniesInput {
@@ -46,8 +47,10 @@ const MyCompanies: FC = () => {
     <Connected error={error} loading={loading}>
       <Page title={t('title')}>
         {data && (
-          <IonList>
-            {data.getCompanies.items.map(({ companyNumber, id, name }) => (
+          <DataList
+            items={data.getCompanies.items}
+            noResults={t('no-results')}
+            row={({ companyNumber, id, name }) => (
               <IonItem key={id} routerLink={`transactions/${id}`}>
                 <IonLabel>
                   <h2>{name}</h2>
@@ -55,8 +58,8 @@ const MyCompanies: FC = () => {
                   <p>{companyNumber}</p>
                 </IonLabel>
               </IonItem>
-            ))}
-          </IonList>
+            )}
+          />
         )}
       </Page>
     </Connected>

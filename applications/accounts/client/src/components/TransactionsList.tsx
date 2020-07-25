@@ -1,5 +1,6 @@
 import {
   Button,
+  Currency,
   DateTime,
   LinkButton,
   Table,
@@ -10,7 +11,6 @@ import {
 } from '@motech-development/breeze-ui';
 import React, { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Currency from './Currency';
 import DeleteItem from './DeleteItem';
 import NoTransactions from './NoTransactions';
 import TransactionArrow from './TransactionArrow';

@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   Card,
+  formatCurrency,
   LinkButton,
   Masonry,
   PageTitle,
@@ -12,7 +13,6 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import TransactionsList from '../../../components/TransactionsList';
 import Connected from '../../../components/Connected';
-import { formatCurrency } from '../../../components/Currency';
 import GET_BALANCE, {
   IGetBalanceInput,
   IGetBalanceOutput,

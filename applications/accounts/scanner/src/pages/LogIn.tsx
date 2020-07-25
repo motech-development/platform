@@ -5,16 +5,12 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
 } from '@ionic/react';
 import { useAuth } from '@motech-development/auth';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import IonCardButton from '../components/IonCardButton';
+import Page from '../components/Page';
 
 const { Browser } = Plugins;
 
@@ -41,29 +37,21 @@ const LogIn: FC = () => {
   };
 
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>{t('global:app-name')}</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+    <Page title={t('global:app-name')}>
+      <IonCard color="tertiary">
+        <IonCardHeader>
+          <IonCardTitle>{t('welcome')}</IonCardTitle>
+        </IonCardHeader>
 
-      <IonContent>
-        <IonCard color="dark">
-          <IonCardHeader>
-            <IonCardTitle>{t('welcome')}</IonCardTitle>
-          </IonCardHeader>
+        <IonCardContent>{t('intro')}</IonCardContent>
 
-          <IonCardContent>{t('intro')}</IonCardContent>
-
-          <IonCardButton>
-            <IonButton color="secondary" expand="full" onClick={login}>
-              {t('log-in')}
-            </IonButton>
-          </IonCardButton>
-        </IonCard>
-      </IonContent>
-    </IonPage>
+        <IonCardButton>
+          <IonButton color="secondary" expand="full" onClick={login}>
+            {t('log-in')}
+          </IonButton>
+        </IonCardButton>
+      </IonCard>
+    </Page>
   );
 };
 
