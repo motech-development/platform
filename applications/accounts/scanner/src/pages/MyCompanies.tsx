@@ -51,7 +51,11 @@ const MyCompanies: FC = () => {
             items={data.getCompanies.items}
             noResults={t('no-results')}
             row={({ companyNumber, id, name }) => (
-              <IonItem key={id} routerLink={`transactions/${id}`}>
+              <IonItem
+                key={id}
+                routerLink={`/transactions/${id}`}
+                data-testid="company-item"
+              >
                 <IonLabel>
                   <h2>{name}</h2>
 

@@ -40,6 +40,7 @@
   },
   "homepage": "https://github.com/motech-development/platform#readme",
   "devDependencies": {
+    "@apollo/react-testing": "^3.1.4",
     "@commitlint/cli": "^9.0.1",
     "@commitlint/config-conventional": "^9.0.1",
     "@ionic/cli": "^6.10.1",

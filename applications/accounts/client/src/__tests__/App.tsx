@@ -1,6 +1,7 @@
-import { render, wait } from '@testing-library/react';
+import { act, render, wait } from '@testing-library/react';
 import React from 'react';
-import TestProvider, { logout } from '../utils/TestProvider';
+import { createMemoryHistory } from 'history';
+import TestProvider, { add, logout } from '../utils/TestProvider';
 import App from '../App';
 
 jest.mock('react-ga');
@@ -43,6 +44,36 @@ describe('App', () => {
     await wait();
 
     jest.runOnlyPendingTimers();
+
+    expect(logout).toHaveBeenCalledWith({
+      returnTo: window.location.origin,
+    });
+  });
+
+  it('should display error toast if there are any log in errors', async () => {
+    const history = createMemoryHistory({
+      initialEntries: ['?error=Error&error_description=Message'],
+    });
+
+    render(
+      <TestProvider history={history}>
+        <App />
+      </TestProvider>,
+    );
+
+    jest.useFakeTimers();
+
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+
+    await wait(() =>
+      expect(add).toHaveBeenCalledWith({
+        colour: 'danger',
+        message: 'Message',
+        onDismiss: expect.any(Function),
+      }),
+    );
 
     expect(logout).toHaveBeenCalledWith({
       returnTo: window.location.origin,
