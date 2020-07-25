@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "react-app-rewired build",
+    "build": "ionic cap sync",
     "cap": "ionic cap",
     "ionic:build": "react-app-rewired build",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",

@@ -23,7 +23,7 @@ if (Capacitor.isNative) {
 
       const { pathname, search } = new URL(url);
 
-      if (pathname && search) {
+      if (pathname || search) {
         history.push(pathname + search);
       }
     }
