@@ -24,7 +24,7 @@ const Profile: FC = () => {
 
   return (
     <Page title={t('title')}>
-      <IonItem color="dark">
+      <IonItem>
         {user.picture && (
           <IonAvatar slot="start">
             <img src={user.picture} alt="" />

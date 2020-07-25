@@ -73,7 +73,7 @@ const App: FC = () => {
             />
           </IonRouterOutlet>
 
-          <IonTabBar color="dark" slot="bottom">
+          <IonTabBar slot="bottom">
             <IonTabButton tab="my-companies" href="/my-companies">
               <IonIcon icon={businessOutline} />
             </IonTabButton>

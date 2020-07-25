@@ -43,13 +43,13 @@ const LogIn: FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="dark">
+        <IonToolbar>
           <IonTitle>{t('global:app-name')}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent color="dark">
-        <IonCard>
+      <IonContent>
+        <IonCard color="dark">
           <IonCardHeader>
             <IonCardTitle>{t('welcome')}</IonCardTitle>
           </IonCardHeader>
@@ -57,7 +57,7 @@ const LogIn: FC = () => {
           <IonCardContent>{t('intro')}</IonCardContent>
 
           <IonCardButton>
-            <IonButton expand="full" onClick={login}>
+            <IonButton color="secondary" expand="full" onClick={login}>
               {t('log-in')}
             </IonButton>
           </IonCardButton>

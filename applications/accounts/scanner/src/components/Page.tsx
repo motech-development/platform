@@ -18,7 +18,7 @@ export interface IPageProps {
 const Page: FC<IPageProps> = ({ children, defaultHref, title }) => (
   <IonPage>
     <IonHeader translucent>
-      <IonToolbar color="dark">
+      <IonToolbar>
         <IonButtons slot="start">
           <IonBackButton defaultHref={defaultHref} />
         </IonButtons>
@@ -27,9 +27,9 @@ const Page: FC<IPageProps> = ({ children, defaultHref, title }) => (
       </IonToolbar>
     </IonHeader>
 
-    <IonContent fullscreen color="dark">
+    <IonContent fullscreen>
       <IonHeader collapse="condense">
-        <IonToolbar color="dark">
+        <IonToolbar>
           <IonTitle size="large">{title}</IonTitle>
         </IonToolbar>
       </IonHeader>

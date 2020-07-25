@@ -9,7 +9,7 @@ const withAuth = (Component: ComponentType) =>
 
     if (isLoading) {
       return (
-        <IonPage color="dark">
+        <IonPage>
           <IonLoading isOpen data-testid="auth-loading" />
         </IonPage>
       );

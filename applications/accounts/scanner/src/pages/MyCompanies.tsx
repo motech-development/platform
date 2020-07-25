@@ -1,6 +1,6 @@
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
-import { IonItem, IonLabel, IonList, IonText } from '@ionic/react';
+import { IonItem, IonLabel, IonList } from '@ionic/react';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Connected from '../components/Connected';
@@ -46,15 +46,13 @@ const MyCompanies: FC = () => {
     <Connected error={error} loading={loading}>
       <Page title={t('title')}>
         {data && (
-          <IonList color="dark">
+          <IonList>
             {data.getCompanies.items.map(({ companyNumber, id, name }) => (
-              <IonItem key={id} routerLink={`transactions/${id}`} color="dark">
+              <IonItem key={id} routerLink={`transactions/${id}`}>
                 <IonLabel>
                   <h2>{name}</h2>
 
-                  <IonText color="medium">
-                    <p>{companyNumber}</p>
-                  </IonText>
+                  <p>{companyNumber}</p>
                 </IonLabel>
               </IonItem>
             ))}
