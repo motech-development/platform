@@ -1,4 +1,4 @@
-import { act, render, wait } from '@testing-library/react';
+import { render, wait } from '@testing-library/react';
 import React from 'react';
 import { createMemoryHistory } from 'history';
 import TestProvider, { add, logout } from '../utils/TestProvider';
@@ -32,6 +32,28 @@ describe('App', () => {
     expect(loader).toBeInTheDocument();
   });
 
+  it('should display error toast if there are any log in errors', async () => {
+    const history = createMemoryHistory({
+      initialEntries: ['?error=Error&error_description=Message'],
+    });
+
+    render(
+      <TestProvider history={history}>
+        <App />
+      </TestProvider>,
+    );
+
+    await wait(() =>
+      expect(add).toHaveBeenCalledWith({
+        colour: 'danger',
+        message: 'Message',
+        onDismiss: expect.any(Function),
+      }),
+    );
+
+    expect(logout).toHaveBeenCalledTimes(1);
+  });
+
   it('should log out when idle when not in production mode', async () => {
     jest.useFakeTimers();
 
@@ -44,36 +66,6 @@ describe('App', () => {
     await wait();
 
     jest.runOnlyPendingTimers();
-
-    expect(logout).toHaveBeenCalledWith({
-      returnTo: window.location.origin,
-    });
-  });
-
-  it('should display error toast if there are any log in errors', async () => {
-    const history = createMemoryHistory({
-      initialEntries: ['?error=Error&error_description=Message'],
-    });
-
-    render(
-      <TestProvider history={history}>
-        <App />
-      </TestProvider>,
-    );
-
-    jest.useFakeTimers();
-
-    act(() => {
-      jest.runOnlyPendingTimers();
-    });
-
-    await wait(() =>
-      expect(add).toHaveBeenCalledWith({
-        colour: 'danger',
-        message: 'Message',
-        onDismiss: expect.any(Function),
-      }),
-    );
 
     expect(logout).toHaveBeenCalledWith({
       returnTo: window.location.origin,

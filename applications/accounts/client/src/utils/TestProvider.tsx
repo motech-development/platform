@@ -18,7 +18,11 @@ export const loginWithRedirect = jest.fn();
 
 export const logout = jest.fn();
 
-export const add = jest.fn();
+export const add = jest.fn(({ onDismiss }) => {
+  if (onDismiss) {
+    onDismiss();
+  }
+});
 
 export const remove = jest.fn();
 
