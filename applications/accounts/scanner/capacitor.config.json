@@ -9,9 +9,8 @@
       "launchShowDuration": 0
     }
   },
-  "cordova": {
-    "preferences": {
-      "URL_SCHEME": "accounts-scanner"
-    }
+  "cordova": {},
+  "server": {
+    "iosScheme": "accounts-scanner"
   }
 }
