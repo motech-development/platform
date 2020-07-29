@@ -113,12 +113,12 @@ clients:
   - name: Scanner
     allowed_clients: []
     allowed_logout_urls:
-      - 'capacitor://localhost'
+      - 'accounts-scanner://localhost'
     allowed_origins:
       - 'file://*'
     app_type: spa
     callbacks:
-      - 'capacitor://localhost'
+      - 'accounts-scanner://localhost'
     client_aliases: []
     cross_origin_auth: false
     custom_login_page_on: true
@@ -146,7 +146,7 @@ clients:
     sso_disabled: false
     token_endpoint_auth_method: none
     web_origins:
-      - 'capacitor://localhost'
+      - 'accounts-scanner://localhost'
   - name: auth0-deploy-cli-extension
     allowed_clients: []
     app_type: non_interactive

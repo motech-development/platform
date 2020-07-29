@@ -15,6 +15,7 @@ import {
   scanOutline,
 } from 'ionicons/icons';
 import React, { FC, lazy } from 'react';
+// import IdleTimer from 'react-idle-timer';
 import { Redirect, Route } from 'react-router-dom';
 import withAuth from './utils/withAuth';
 
@@ -44,7 +45,17 @@ const Scan = lazy(() => import('./pages/Scan'));
 const Transactions = lazy(() => import('./pages/Transactions'));
 
 const App: FC = () => {
-  const { getTokenSilently, isAuthenticated, isLoading } = useAuth();
+  const {
+    getTokenSilently,
+    isAuthenticated,
+    isLoading /* , logout */,
+  } = useAuth();
+  // TODO: Timeout
+  // const timeout = process.env.NODE_ENV === 'production' ? 600000 : 3600000;
+  // const logOut = () =>
+  //   logout({
+  //     returnTo: window.location.origin,
+  //   });
 
   return (
     <IonApp>
@@ -88,6 +99,8 @@ const App: FC = () => {
           </IonTabBar>
         </IonTabs>
       </Apollo>
+
+      {/* <IdleTimer onIdle={logOut} timeout={timeout} /> */}
     </IonApp>
   );
 };
