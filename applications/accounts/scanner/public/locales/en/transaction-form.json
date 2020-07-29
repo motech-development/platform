@@ -1,0 +1,32 @@
+{
+  "buttons": {
+    "scan-receipt": "Scan receipt",
+    "save": "Save"
+  },
+  "name": {
+    "label": "Supplier",
+    "placeholder": "Select a supplier",
+    "required": "Supplier is required"
+  },
+  "description": {
+    "label": "Description",
+    "required": "Description is required"
+  },
+  "date": {
+    "label": "Date",
+    "required": "Date is required"
+  },
+  "category": {
+    "label": "Category",
+    "placeholder": "Select a category",
+    "required": "Category is required"
+  },
+  "amount": {
+    "label": "Amount",
+    "required": "Amount is required"
+  },
+  "vat": {
+    "label": "VAT",
+    "required": "VAT is required"
+  }
+}

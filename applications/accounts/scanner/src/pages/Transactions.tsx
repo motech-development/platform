@@ -99,11 +99,11 @@ const Transactions: FC = () => {
   return (
     <Connected error={error} loading={loading}>
       {data && (
-        <Page title={data.getCompany.name} defaultHref="/my-companies">
+        <Page defaultHref="/my-companies" title={data.getCompany.name}>
           <IonFab horizontal="end" vertical="bottom" slot="fixed">
             <IonFabButton
               color="secondary"
-              routerLink={`transactions/${companyId}/add`}
+              routerLink={`/transactions/${companyId}/record-transaction`}
             >
               <IonIcon icon={receiptOutline} />
             </IonFabButton>

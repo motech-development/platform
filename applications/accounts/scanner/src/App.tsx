@@ -38,6 +38,7 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+const RecordTransaction = lazy(() => import('./pages/RecordTransaction'));
 const ErrorPage = lazy(() => import('./components/ErrorPage'));
 const MyCompanies = lazy(() => import('./pages/MyCompanies'));
 const Profile = lazy(() => import('./pages/Profile'));
@@ -76,6 +77,11 @@ const App: FC = () => {
               exact
               path="/transactions/:companyId"
               component={Transactions}
+            />
+            <Route
+              exact
+              path="/transactions/:companyId/record-transaction"
+              component={RecordTransaction}
             />
             <Route
               exact
