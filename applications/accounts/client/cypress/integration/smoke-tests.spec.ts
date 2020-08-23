@@ -1,4 +1,6 @@
 describe('Smoke tests', () => {
+  let timeout: number;
+
   before(() => {
     cy.clearLocalStorageSnapshot().then(() => {
       cy.login().then(() => {
@@ -27,6 +29,8 @@ describe('Smoke tests', () => {
         cy.wait(1000);
       });
     });
+
+    timeout = 20000;
   });
 
   after(() => {
@@ -957,7 +961,7 @@ describe('Smoke tests', () => {
             });
 
             cy.get('div:contains("File has been uploaded")', {
-              timeout: 10000,
+              timeout,
             }).should('not.be.visible');
 
             cy.get('button[type="submit"]').click();
@@ -1009,7 +1013,7 @@ describe('Smoke tests', () => {
             });
 
             cy.get('div:contains("File has been uploaded")', {
-              timeout: 10000,
+              timeout,
             }).should('not.be.visible');
 
             cy.get('button[type="submit"]').click();
@@ -1061,7 +1065,7 @@ describe('Smoke tests', () => {
             });
 
             cy.get('div:contains("File has been uploaded")', {
-              timeout: 10000,
+              timeout,
             }).should('not.be.visible');
 
             cy.get('button[type="submit"]').click();
@@ -1127,7 +1131,7 @@ describe('Smoke tests', () => {
             cy.get('button:contains("Delete file")').click();
 
             cy.get('div:contains("File has been deleted")', {
-              timeout: 10000,
+              timeout,
             }).should('not.be.visible');
 
             cy.get('input[id="attachment"]').upload({
@@ -1139,7 +1143,7 @@ describe('Smoke tests', () => {
             cy.get('input[id="attachment"]').should('not.be.visible');
 
             cy.get('div:contains("File has been uploaded")', {
-              timeout: 10000,
+              timeout,
             }).should('not.be.visible');
 
             cy.get('button[type="submit"]').click();
