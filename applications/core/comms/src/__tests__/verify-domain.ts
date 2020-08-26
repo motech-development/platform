@@ -44,6 +44,7 @@ describe('verify-domain', () => {
           DMARC: 'v=DMARC1; p=none; pct=100; sp=none; aspf=r;',
           Domain: 'domain.com',
           Region: 'eu-west-2',
+          SPF: 'v=spf1 include:amazonses.com ~all',
           TTL: '1000',
         },
         StackId:
@@ -88,6 +89,12 @@ describe('verify-domain', () => {
                 ResourceRecords: [
                   '"v=DMARC1; p=none; pct=100; sp=none; aspf=r;"',
                 ],
+                TTL: '1000',
+                Type: 'TXT',
+              },
+              {
+                Name: 'domain.com.',
+                ResourceRecords: ['"v=spf1 include:amazonses.com ~all"'],
                 TTL: '1000',
                 Type: 'TXT',
               },
@@ -159,6 +166,12 @@ describe('verify-domain', () => {
                 ResourceRecords: [
                   '"v=DMARC1; p=none; pct=100; sp=none; aspf=r;"',
                 ],
+                TTL: '1000',
+                Type: 'TXT',
+              },
+              {
+                Name: 'domain.com.',
+                ResourceRecords: ['"v=spf1 include:amazonses.com ~all"'],
                 TTL: '1000',
                 Type: 'TXT',
               },

@@ -7,6 +7,7 @@ interface IEvent {
   DMARC: string;
   Domain: string;
   Region: string;
+  SPF: string;
   TTL: number;
 }
 
@@ -15,6 +16,7 @@ const schema = object<IEvent>()
     DMARC: string().required(),
     Domain: string().required(),
     Region: string().required(),
+    SPF: string().required(),
     TTL: number().required(),
   })
   .required();
@@ -25,7 +27,7 @@ export const handler: CloudFormationCustomResourceHandler = async (
 ) => {
   try {
     const { RequestType, ResourceProperties, StackId } = event;
-    const { DMARC, Domain, Region, TTL } = await schema.validate(
+    const { DMARC, Domain, Region, SPF, TTL } = await schema.validate(
       ResourceProperties,
     );
     const ses = new SES({
@@ -65,6 +67,12 @@ export const handler: CloudFormationCustomResourceHandler = async (
           {
             Name: `_dmarc.${Domain}.`,
             ResourceRecords: [`"${DMARC}"`],
+            TTL: TTL.toString(),
+            Type: 'TXT',
+          },
+          {
+            Name: `${Domain}.`,
+            ResourceRecords: [`"${SPF}"`],
             TTL: TTL.toString(),
             Type: 'TXT',
           },
