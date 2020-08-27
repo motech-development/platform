@@ -1021,7 +1021,7 @@ describe('Smoke tests', () => {
     });
   });
 
-  describe.skip('Accounts', () => {
+  describe('Accounts', () => {
     afterEach(() => {
       cy.url().should(
         'include',
@@ -1049,6 +1049,10 @@ describe('Smoke tests', () => {
       it('should add a confirmed sale', () => {
         cy.fixture('data/account.json').then(res => {
           cy.fixture('upload/invoice.pdf').then(file => {
+            cy.get('h2')
+              .should('contain.text', 'Accounts')
+              .should('be.visible');
+
             cy.checkA11y();
 
             const transaction = res[0];
@@ -1847,7 +1851,7 @@ describe('Smoke tests', () => {
     });
   });
 
-  describe.skip('Notifications', () => {
+  describe('Notifications', () => {
     it('should display a notification', () => {
       cy.get('button[aria-label="Notifications (1 unread)"]')
         .should('be.visible')

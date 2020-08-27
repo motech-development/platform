@@ -183,7 +183,6 @@ jobs:
     needs: deploy-accounts-api
 
     env:
-      COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
       CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
