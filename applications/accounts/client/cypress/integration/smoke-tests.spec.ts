@@ -1040,6 +1040,10 @@ describe('Smoke tests', () => {
           .should('be.visible')
           .click();
 
+        cy.get('h2')
+          .should('contain.text', 'Accounts')
+          .should('be.visible');
+
         cy.url().should(
           'include',
           'http://localhost:3000/my-companies/accounts/',
@@ -1049,13 +1053,9 @@ describe('Smoke tests', () => {
       it('should add a confirmed sale', () => {
         cy.fixture('data/account.json').then(res => {
           cy.fixture('upload/invoice.pdf').then(file => {
-            cy.get('h2')
-              .should('contain.text', 'Accounts')
-              .should('be.visible');
+            const transaction = res[0];
 
             cy.checkA11y();
-
-            const transaction = res[0];
 
             cy.get('a:contains("Record a new transaction")')
               .should('be.visible')
