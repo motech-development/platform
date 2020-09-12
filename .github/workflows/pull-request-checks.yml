@@ -252,7 +252,7 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: npm run e2e:ci -- --scope=@accounts/client -- -- --record
+          command: npm run e2e:ci -- --scope=@accounts/client -- -- --record --parallel
           config: defaultCommandTimeout=20000
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000

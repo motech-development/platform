@@ -73,7 +73,12 @@ const MyCompanies: FC = () => {
                 </Typography>
               </Card>
 
-              <LinkButton block to={`/my-companies/dashboard/${id}`} size="lg">
+              <LinkButton
+                block
+                data-test-id={name}
+                to={`/my-companies/dashboard/${id}`}
+                size="lg"
+              >
                 {t('my-companies.select-company')}
               </LinkButton>
             </Fragment>
