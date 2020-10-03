@@ -86,13 +86,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 20
 
       - name: Detect changes
         id: filter
         uses: dorny/paths-filter@v2
         with:
+          base: ${{ github.ref }}
           filters: |
             accounts-data:
               - applications/core/accounts-data/**
