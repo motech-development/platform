@@ -4,6 +4,8 @@ on:
   pull_request:
     types:
       - opened
+      - reopened
+      - synchronize
 
 jobs:
   setup:
@@ -182,8 +184,14 @@ jobs:
 
     needs: deploy-accounts-api
 
+    strategy:
+      fail-fast: false
+      matrix:
+        containers:
+          - 1
+          - 2
+
     env:
-      COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
       CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
@@ -253,7 +261,7 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: npm run e2e:ci -- --scope=@accounts/client -- -- --record
+          command: npm run e2e:ci -- --scope=@accounts/client -- -- --record --parallel
           config: defaultCommandTimeout=20000
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
