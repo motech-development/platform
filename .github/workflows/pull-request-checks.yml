@@ -184,6 +184,13 @@ jobs:
 
     needs: deploy-accounts-api
 
+    strategy:
+      fail-fast: false
+      matrix:
+        containers:
+          - 1
+          - 2
+
     env:
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}

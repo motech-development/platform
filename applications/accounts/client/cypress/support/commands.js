@@ -22,7 +22,7 @@ Cypress.Commands.add(
       // eslint-disable-next-line camelcase
       const { access_token, expires_in, id_token } = body;
 
-      cy.route2('oauth/token', {
+      cy.route2('POST', 'oauth/token', {
         access_token,
         expires_in,
         id_token,
