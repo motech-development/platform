@@ -22,18 +22,12 @@ Cypress.Commands.add(
       // eslint-disable-next-line camelcase
       const { access_token, expires_in, id_token } = body;
 
-      cy.server();
-
-      cy.route({
-        method: 'POST',
-        response: {
-          access_token,
-          expires_in,
-          id_token,
-          scope: 'openid profile email offline_access',
-          token_type: 'Bearer',
-        },
-        url: 'oauth/token',
+      cy.route2('oauth/token', {
+        access_token,
+        expires_in,
+        id_token,
+        scope: 'openid profile email offline_access',
+        token_type: 'Bearer',
       });
 
       const stateId = 'test';

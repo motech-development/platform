@@ -1,4 +1,4 @@
-describe('Smoke tests', () => {
+describe('Non-VAT registered', () => {
   describe('Register company', () => {
     afterEach(() => {
       cy.url().should(
