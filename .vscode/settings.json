@@ -98,5 +98,6 @@
       "changeProcessCWD": true,
       "directory": "./packages/webpack-permissions-plugin"
     }
-  ]
+  ],
+  "search.followSymlinks": false
 }

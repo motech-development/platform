@@ -1,4 +1,8 @@
 {
   "baseUrl": "http://localhost:3000/",
-  "projectId": "13cyok"
+  "chromeWebSecurity": false,
+  "defaultCommandTimeout": 20000,
+  "experimentalNetworkStubbing": true,
+  "projectId": "13cyok",
+  "retries": 3
 }
