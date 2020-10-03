@@ -74,7 +74,12 @@ jobs:
     needs: setup
 
     outputs:
+      accounts-data: ${{ steps.filter.outputs.accounts-data }}
+      accounts-notifications: ${{ steps.filter.outputs.accounts-notifications }}
+      accounts-storage: ${{ steps.filter.outputs.accounts-storage }}
+      accounts-queue: ${{ steps.filter.outputs.accounts-queue }}
       anti-virus: ${{ steps.filter.outputs.anti-virus }}
+      applications: ${{ steps.filter.outputs.applications }}
       auth0-tenant: ${{ steps.filter.outputs.auth0-tenant }}
       open-banking: ${{ steps.filter.outputs.open-banking }}
 
@@ -88,10 +93,19 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v2
         with:
-          base: master
           filters: |
+            accounts-data:
+              - applications/core/accounts-data/**
+            accounts-notifications:
+              - applications/core/accounts-notifications/**
+            accounts-queue:
+              - applications/core/accounts-queue/**
+            accounts-storage:
+              - applications/core/accounts-storage/**
             anti-virus:
               - applications/core/anti-virus/**
+            applications:
+              - applications/**
             auth0-tenant:
               - applications/id/**
             open-banking:
@@ -334,9 +348,11 @@ jobs:
   deploy-accounts-storage:
     runs-on: ubuntu-latest
 
-    if: ${{ always() }}
+    if: ${{ needs.detect-changes.outputs.accounts-storage == 'true' }}
 
-    needs: deploy-anti-virus
+    needs:
+      - detect-changes
+      - deploy-anti-virus
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -384,7 +400,11 @@ jobs:
   deploy-accounts-queue:
     runs-on: ubuntu-latest
 
-    needs: deploy-open-banking
+    if: ${{ needs.detect-changes.outputs.accounts-queue == 'true' }}
+
+    needs:
+      - detect-changes
+      - deploy-open-banking
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -432,7 +452,11 @@ jobs:
   deploy-accounts-data:
     runs-on: ubuntu-latest
 
-    needs: deploy-accounts-storage
+    if: ${{ needs.detect-changes.outputs.accounts-data == 'true' }}
+
+    needs:
+      - detect-changes
+      - deploy-accounts-storage
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -480,7 +504,10 @@ jobs:
   deploy-accounts-api:
     runs-on: ubuntu-latest
 
+    if: ${{ needs.detect-changes.outputs.applications == 'true' }}
+
     needs:
+      - detect-changes
       - deploy-accounts-data
       - deploy-accounts-queue
       - deploy-accounts-storage
@@ -541,7 +568,11 @@ jobs:
   deploy-accounts-notifications:
     runs-on: ubuntu-latest
 
-    needs: deploy-accounts-api
+    if: ${{ needs.detect-changes.outputs.accounts-notifications == 'true' }}
+
+    needs:
+      - detect-changes
+      - deploy-accounts-api
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -589,7 +620,11 @@ jobs:
   build-accounts-client:
     runs-on: ubuntu-latest
 
-    needs: deploy-accounts-notifications
+    if: ${{ needs.detect-changes.outputs.applications == 'true' }}
+
+    needs:
+      - detect-changes
+      - deploy-accounts-notifications
 
     env:
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
