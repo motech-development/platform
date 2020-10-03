@@ -334,6 +334,8 @@ jobs:
   deploy-accounts-storage:
     runs-on: ubuntu-latest
 
+    if: ${{ always() }}
+
     needs: deploy-anti-virus
 
     env:
