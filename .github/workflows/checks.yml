@@ -97,20 +97,28 @@ jobs:
           filters: |
             accounts-data:
               - applications/core/accounts-data/**
+              - packages/**
             accounts-notifications:
               - applications/core/accounts-notifications/**
+              - packages/**
             accounts-queue:
               - applications/core/accounts-queue/**
+              - packages/**
             accounts-storage:
               - applications/core/accounts-storage/**
+              - packages/**
             anti-virus:
               - applications/core/anti-virus/**
+              - packages/**
             applications:
               - applications/**
+              - packages/**
             auth0-tenant:
               - applications/id/**
+              - packages/**
             open-banking:
               - applications/open-banking/**
+              - packages/**
 
   unit-test:
     runs-on: ubuntu-latest
