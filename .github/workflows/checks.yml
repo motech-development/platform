@@ -88,7 +88,7 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v2
         with:
-          base: develop
+          base: master
           filters: |
             anti-virus:
               - applications/core/anti-virus/**
