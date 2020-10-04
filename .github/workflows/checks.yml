@@ -8,8 +8,60 @@ on:
       - hotfix/**
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+
+    outputs:
+      accounts-data: ${{ steps.filter.outputs.accounts-data }}
+      accounts-notifications: ${{ steps.filter.outputs.accounts-notifications }}
+      accounts-storage: ${{ steps.filter.outputs.accounts-storage }}
+      accounts-queue: ${{ steps.filter.outputs.accounts-queue }}
+      anti-virus: ${{ steps.filter.outputs.anti-virus }}
+      applications: ${{ steps.filter.outputs.applications }}
+      auth0-tenant: ${{ steps.filter.outputs.auth0-tenant }}
+      open-banking: ${{ steps.filter.outputs.open-banking }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Detect changes
+        id: filter
+        uses: dorny/paths-filter@v2
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            accounts-data:
+              - applications/accounts/data/**
+              - packages/**
+            accounts-notifications:
+              - applications/accounts/notifications/**
+              - packages/**
+            accounts-queue:
+              - applications/accounts/queue/**
+              - packages/**
+            accounts-storage:
+              - applications/accounts/storage/**
+              - packages/**
+            anti-virus:
+              - applications/core/anti-virus/**
+              - packages/**
+            applications:
+              - applications/**
+              - packages/**
+            auth0-tenant:
+              - applications/id/**
+              - packages/**
+            open-banking:
+              - applications/open-banking/**
+              - packages/**
+
   setup:
     runs-on: ubuntu-latest
+
+    if: needs.detect-changes.outputs.applications == 'true'
+
+    needs: detect-changes
 
     steps:
       - name: Checkout code
@@ -68,56 +120,6 @@ jobs:
       - name: Lint code
         run: npm run lint
 
-  detect-changes:
-    runs-on: ubuntu-latest
-
-    needs: setup
-
-    outputs:
-      accounts-data: ${{ steps.filter.outputs.accounts-data }}
-      accounts-notifications: ${{ steps.filter.outputs.accounts-notifications }}
-      accounts-storage: ${{ steps.filter.outputs.accounts-storage }}
-      accounts-queue: ${{ steps.filter.outputs.accounts-queue }}
-      anti-virus: ${{ steps.filter.outputs.anti-virus }}
-      applications: ${{ steps.filter.outputs.applications }}
-      auth0-tenant: ${{ steps.filter.outputs.auth0-tenant }}
-      open-banking: ${{ steps.filter.outputs.open-banking }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Detect changes
-        id: filter
-        uses: dorny/paths-filter@v2
-        with:
-          base: ${{ github.ref }}
-          filters: |
-            accounts-data:
-              - applications/accounts/data/**
-              - packages/**
-            accounts-notifications:
-              - applications/accounts/notifications/**
-              - packages/**
-            accounts-queue:
-              - applications/accounts/queue/**
-              - packages/**
-            accounts-storage:
-              - applications/accounts/storage/**
-              - packages/**
-            anti-virus:
-              - applications/core/anti-virus/**
-              - packages/**
-            applications:
-              - applications/**
-              - packages/**
-            auth0-tenant:
-              - applications/id/**
-              - packages/**
-            open-banking:
-              - applications/open-banking/**
-              - packages/**
-
   unit-test:
     runs-on: ubuntu-latest
 
@@ -175,7 +177,7 @@ jobs:
   deploy-auth0-tenant:
     runs-on: ubuntu-latest
 
-    if: always() && needs.detect-changes.outputs.auth0-tenant
+    if: always() && needs.detect-changes.outputs.auth0-tenant == 'true'
 
     needs:
       - detect-changes
@@ -249,7 +251,7 @@ jobs:
   deploy-open-banking:
     runs-on: ubuntu-latest
 
-    if: ${{ always() && needs.detect-changes.outputs.open-banking == 'true' }}
+    if: always() && needs.detect-changes.outputs.open-banking == 'true'
 
     needs:
       - detect-changes
@@ -303,7 +305,7 @@ jobs:
   deploy-anti-virus:
     runs-on: ubuntu-latest
 
-    if: ${{ always() && needs.detect-changes.outputs.anti-virus == 'true' }}
+    if: always() && needs.detect-changes.outputs.anti-virus == 'true'
 
     needs:
       - detect-changes
@@ -355,7 +357,7 @@ jobs:
   deploy-accounts-storage:
     runs-on: ubuntu-latest
 
-    if: ${{ always() && needs.detect-changes.outputs.accounts-storage == 'true' }}
+    if: always() && needs.detect-changes.outputs.accounts-storage == 'true'
 
     needs:
       - detect-changes
@@ -407,7 +409,7 @@ jobs:
   deploy-accounts-queue:
     runs-on: ubuntu-latest
 
-    if: ${{ always() && needs.detect-changes.outputs.accounts-queue == 'true' }}
+    if: always() && needs.detect-changes.outputs.accounts-queue == 'true'
 
     needs:
       - detect-changes
@@ -459,7 +461,7 @@ jobs:
   deploy-accounts-data:
     runs-on: ubuntu-latest
 
-    if: ${{ always() && needs.detect-changes.outputs.accounts-data == 'true' }}
+    if: always() && needs.detect-changes.outputs.accounts-data == 'true'
 
     needs:
       - detect-changes
@@ -511,7 +513,7 @@ jobs:
   deploy-accounts-api:
     runs-on: ubuntu-latest
 
-    if: ${{ always() && needs.detect-changes.outputs.applications == 'true' }}
+    if: always() && needs.detect-changes.outputs.applications == 'true'
 
     needs:
       - detect-changes
@@ -575,7 +577,7 @@ jobs:
   deploy-accounts-notifications:
     runs-on: ubuntu-latest
 
-    if: ${{ always() && needs.detect-changes.outputs.accounts-notifications == 'true' }}
+    if: always() && needs.detect-changes.outputs.accounts-notifications == 'true'
 
     needs:
       - detect-changes
@@ -627,7 +629,7 @@ jobs:
   build-accounts-client:
     runs-on: ubuntu-latest
 
-    if: always() && needs.detect-changes.outputs.applications
+    if: always() && needs.detect-changes.outputs.applications == 'true'
 
     needs:
       - detect-changes
