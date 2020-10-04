@@ -96,16 +96,16 @@ jobs:
           base: master
           filters: |
             accounts-data:
-              - applications/core/accounts-data/**
+              - applications/accounts/data/**
               - packages/**
             accounts-notifications:
-              - applications/core/accounts-notifications/**
+              - applications/accounts/notifications/**
               - packages/**
             accounts-queue:
-              - applications/core/accounts-queue/**
+              - applications/accounts/queue/**
               - packages/**
             accounts-storage:
-              - applications/core/accounts-storage/**
+              - applications/accounts/storage/**
               - packages/**
             anti-virus:
               - applications/core/anti-virus/**
