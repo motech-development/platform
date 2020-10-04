@@ -1,7 +1,6 @@
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useLazyGet } from '@motech-development/axios-hooks';
 import { Button, Col, Row, useToast } from '@motech-development/breeze-ui';
-import { gql } from 'apollo-boost';
 import { saveAs } from 'file-saver';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';

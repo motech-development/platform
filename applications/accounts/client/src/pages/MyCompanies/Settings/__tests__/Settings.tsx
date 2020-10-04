@@ -1,8 +1,4 @@
-import {
-  MockedProvider,
-  MockedResponse,
-  wait as apolloWait,
-} from '@apollo/react-testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import {
   act,
   fireEvent,
@@ -150,8 +146,6 @@ describe('Settings', () => {
 
         fireEvent.click(button);
 
-        await apolloWait(0);
-
         await findByTestId('next-page');
       });
 
@@ -169,8 +163,6 @@ describe('Settings', () => {
         const [, , button] = await findAllByRole('button');
 
         fireEvent.click(button);
-
-        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -192,8 +184,6 @@ describe('Settings', () => {
         const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
-
-        await apolloWait(0);
       });
 
       await wait(() =>
@@ -314,8 +304,6 @@ describe('Settings', () => {
         const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
-
-        await apolloWait(0);
       });
 
       await wait(() =>

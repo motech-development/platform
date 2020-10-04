@@ -1,8 +1,4 @@
-import {
-  MockedProvider,
-  MockedResponse,
-  wait as apolloWait,
-} from '@apollo/react-testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import {
   act,
   fireEvent,
@@ -119,8 +115,6 @@ describe('SelectAccount', () => {
 
         fireEvent.click(button);
 
-        await apolloWait(0);
-
         await findByTestId('next-page');
       });
 
@@ -138,8 +132,6 @@ describe('SelectAccount', () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
-
-        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -184,8 +176,6 @@ describe('SelectAccount', () => {
     it('should display an error card', async () => {
       const { findByText } = component;
 
-      await apolloWait(0);
-
       await expect(
         findByText('select-account.errors.failure.title'),
       ).resolves.toBeInTheDocument();
@@ -193,8 +183,6 @@ describe('SelectAccount', () => {
 
     it('should have the correct back link', async () => {
       const { findByText } = component;
-
-      await apolloWait(0);
 
       await expect(findByText('go-back')).resolves.toHaveAttribute(
         'href',

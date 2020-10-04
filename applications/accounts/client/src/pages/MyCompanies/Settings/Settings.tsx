@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import React, { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

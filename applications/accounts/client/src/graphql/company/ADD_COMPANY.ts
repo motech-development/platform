@@ -1,4 +1,4 @@
-import { gql, MutationUpdaterFn } from 'apollo-boost';
+import { gql, MutationUpdaterFn } from '@apollo/client';
 import GET_COMPANIES, { IGetCompaniesOutput } from './GET_COMPANIES';
 
 export interface IAddCompanyInput {

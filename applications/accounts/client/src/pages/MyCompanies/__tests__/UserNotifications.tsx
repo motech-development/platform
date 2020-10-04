@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import React from 'react';
 import TestProvider from '../../../utils/TestProvider';
@@ -236,8 +236,6 @@ describe('UserNotifications', () => {
 
         fireEvent.click(button);
       });
-
-      await wait(0);
 
       expect(container).toBeInTheDocument();
     });

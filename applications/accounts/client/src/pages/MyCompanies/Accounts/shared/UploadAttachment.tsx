@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/react-hooks';
+import { gql, useMutation } from '@apollo/client';
 import { usePut } from '@motech-development/axios-hooks';
 import { FileUpload, useToast } from '@motech-development/breeze-ui';
-import { gql } from 'apollo-boost';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 

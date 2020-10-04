@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import { Loader } from '@motech-development/breeze-ui';
 import useQueryString from '@motech-development/query-string-hook';
 import React, { FC, memo, useEffect, useState } from 'react';

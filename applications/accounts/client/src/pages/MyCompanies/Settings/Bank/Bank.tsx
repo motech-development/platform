@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks';
+import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import {
   Button,
   Col,

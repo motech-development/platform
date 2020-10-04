@@ -1,8 +1,5 @@
-import {
-  MockedProvider,
-  MockedResponse,
-  wait as apolloWait,
-} from '@apollo/react-testing';
+import { InMemoryCache } from '@apollo/client/cache';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import {
   act,
   fireEvent,
@@ -10,10 +7,10 @@ import {
   RenderResult,
   wait,
 } from '@testing-library/react';
-import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import ADD_COMPANY from '../../../graphql/company/ADD_COMPANY';
+import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
 import TestProvider, { add } from '../../../utils/TestProvider';
 import AddCompany from '../AddCompany';
 
@@ -26,13 +23,14 @@ describe('AddCompany', () => {
   beforeEach(async () => {
     cache = new InMemoryCache();
 
-    cache.writeData({
+    cache.writeQuery({
       data: {
         getCompanies: {
           __typename: 'Companies',
           items: [],
         },
       },
+      query: GET_COMPANIES,
     });
 
     history = createMemoryHistory({
@@ -210,8 +208,6 @@ describe('AddCompany', () => {
 
       fireEvent.click(submit);
 
-      await apolloWait(0);
-
       await findByTestId('next-page');
     });
 
@@ -300,8 +296,6 @@ describe('AddCompany', () => {
       const [, submit] = await findAllByRole('button');
 
       fireEvent.click(submit);
-
-      await apolloWait(0);
 
       await findByTestId('next-page');
     });

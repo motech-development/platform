@@ -1,8 +1,5 @@
-import {
-  MockedProvider,
-  MockedResponse,
-  wait as apolloWait,
-} from '@apollo/react-testing';
+import { InMemoryCache } from '@apollo/client/cache';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import {
   act,
   fireEvent,
@@ -10,7 +7,6 @@ import {
   RenderResult,
   wait,
 } from '@testing-library/react';
-import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import DELETE_CLIENT from '../../../../graphql/client/DELETE_CLIENT';
@@ -221,8 +217,6 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(button);
 
-        await apolloWait(0);
-
         await findByTestId('next-page');
       });
 
@@ -240,8 +234,6 @@ describe('UpdateDetails', () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
-
-        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -310,8 +302,6 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
-
         await wait();
 
         await findByTestId('next-page');
@@ -343,8 +333,6 @@ describe('UpdateDetails', () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
-
-        await apolloWait(0);
 
         await wait();
       });
@@ -435,8 +423,6 @@ describe('UpdateDetails', () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
-
-        await apolloWait(0);
 
         await wait();
       });

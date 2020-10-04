@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
@@ -124,8 +124,6 @@ describe('Bank', () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
-
-        await wait(0);
       });
 
       const [button, other] = await findAllByRole('button');
@@ -198,8 +196,6 @@ describe('Bank', () => {
 
       await act(async () => {
         await findByText('select-bank.title');
-
-        await wait(0);
       });
 
       expect(window.location.assign).toHaveBeenCalledWith('https://auth.url');

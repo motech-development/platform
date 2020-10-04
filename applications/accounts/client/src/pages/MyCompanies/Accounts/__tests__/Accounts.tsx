@@ -1,8 +1,4 @@
-import {
-  MockedProvider,
-  MockedResponse,
-  wait as apolloWait,
-} from '@apollo/react-testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import {
   act,
   fireEvent,
@@ -309,8 +305,6 @@ describe('Accounts', () => {
         fireEvent.click(deleteButton);
 
         await wait();
-
-        await apolloWait(0);
       });
 
       await wait(() =>
@@ -467,8 +461,6 @@ describe('Accounts', () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
-
-        await apolloWait(0);
 
         await wait();
       });

@@ -1,9 +1,12 @@
-import { ApolloProvider } from '@apollo/react-hooks';
+import {
+  ApolloClient,
+  ApolloLink,
+  ApolloProvider,
+  InMemoryCache,
+  NormalizedCacheObject,
+} from '@apollo/client';
 import { useAuth } from '@motech-development/auth';
 import { Loader } from '@motech-development/breeze-ui';
-import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
-import ApolloClient from 'apollo-client';
-import { ApolloLink } from 'apollo-link';
 import { createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
 import React, { FC, memo, ReactNode, useEffect, useState } from 'react';

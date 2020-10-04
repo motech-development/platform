@@ -1,8 +1,5 @@
-import {
-  MockedProvider,
-  MockedResponse,
-  wait as apolloWait,
-} from '@apollo/react-testing';
+import { InMemoryCache } from '@apollo/client/cache';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import {
   act,
   fireEvent,
@@ -10,7 +7,6 @@ import {
   RenderResult,
   wait,
 } from '@testing-library/react';
-import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import ADD_CLIENT from '../../../../graphql/client/ADD_CLIENT';
@@ -181,8 +177,6 @@ describe('AddClient', () => {
 
       fireEvent.click(button);
 
-      await apolloWait(0);
-
       await findByTestId('next-page');
     });
 
@@ -259,8 +253,6 @@ describe('AddClient', () => {
       const [button] = await findAllByRole('button');
 
       fireEvent.click(button);
-
-      await apolloWait(0);
 
       await findByTestId('next-page');
     });

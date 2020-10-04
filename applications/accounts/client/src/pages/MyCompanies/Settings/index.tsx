@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import { ConditionalRoute, ProtectedRoute } from '@motech-development/auth';
 import React, { FC, lazy, memo } from 'react';
 import { Switch, useParams } from 'react-router-dom';
