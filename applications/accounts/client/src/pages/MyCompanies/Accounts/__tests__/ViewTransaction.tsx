@@ -13,6 +13,7 @@ import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import UPDATE_TRANSACTION from '../../../../graphql/transaction/UPDATE_TRANSACTION';
+import apolloWait from '../../../../utils/apolloWait';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import { DELETE_FILE, REQUEST_DOWNLOAD } from '../shared/ViewAttachment';
 import ViewTransaction, { VIEW_TRANSACTION } from '../ViewTransaction';
@@ -21,6 +22,7 @@ jest.mock('file-saver', () => ({
   saveAs: jest.fn(),
 }));
 
+// TODO: Fix failing tests
 describe.skip('ViewTransaction', () => {
   let component: RenderResult;
   let history: MemoryHistory;
@@ -238,6 +240,8 @@ describe.skip('ViewTransaction', () => {
 
           await wait();
 
+          await apolloWait(0);
+
           await findByTestId('next-page');
         });
 
@@ -268,6 +272,8 @@ describe.skip('ViewTransaction', () => {
           fireEvent.click(button);
 
           await wait();
+
+          await apolloWait(0);
 
           await findByTestId('next-page');
         });
@@ -344,6 +350,8 @@ describe.skip('ViewTransaction', () => {
 
           fireEvent.click(deleteButton);
 
+          await apolloWait(0);
+
           await wait();
 
           await findByTestId('next-page');
@@ -378,6 +386,8 @@ describe.skip('ViewTransaction', () => {
           const [, , , , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
+
+          await apolloWait(0);
 
           await wait();
         });
@@ -541,6 +551,8 @@ describe.skip('ViewTransaction', () => {
 
           fireEvent.click(deleteButton);
 
+          await apolloWait(0);
+
           await wait();
         });
 
@@ -558,6 +570,8 @@ describe.skip('ViewTransaction', () => {
           );
 
           fireEvent.click(deleteButton);
+
+          await apolloWait(0);
 
           await wait();
         });
@@ -580,6 +594,8 @@ describe.skip('ViewTransaction', () => {
 
           fireEvent.click(downloadButton);
 
+          await apolloWait(0);
+
           await wait();
         });
 
@@ -595,6 +611,8 @@ describe.skip('ViewTransaction', () => {
           );
 
           fireEvent.click(downloadButton);
+
+          await apolloWait(0);
 
           await wait();
         });
@@ -620,6 +638,8 @@ describe.skip('ViewTransaction', () => {
           );
 
           fireEvent.click(downloadButton);
+
+          await apolloWait(0);
 
           await wait();
         });
@@ -839,6 +859,8 @@ describe.skip('ViewTransaction', () => {
 
         await wait();
 
+        await apolloWait(0);
+
         await findByTestId('next-page');
       });
 
@@ -858,6 +880,8 @@ describe.skip('ViewTransaction', () => {
         fireEvent.click(button);
 
         await wait();
+
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -895,6 +919,8 @@ describe.skip('ViewTransaction', () => {
 
         fireEvent.click(deleteButton);
 
+        await apolloWait(0);
+
         await wait();
       });
 
@@ -916,6 +942,8 @@ describe.skip('ViewTransaction', () => {
 
         fireEvent.click(downloadButton);
 
+        await apolloWait(0);
+
         await wait();
       });
 
@@ -936,6 +964,8 @@ describe.skip('ViewTransaction', () => {
         );
 
         fireEvent.click(deleteButton);
+
+        await apolloWait(0);
 
         await wait();
       });

@@ -14,10 +14,12 @@ import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
 import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
+import apolloWait from '../../../../utils/apolloWait';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import RecordTransaction, { RECORD_TRANSACTION } from '../RecordTransaction';
 import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 
+// TODO: Fix failing tests
 describe.skip('RecordTransaction', () => {
   let cache: InMemoryCache;
   let component: RenderResult;
@@ -340,6 +342,8 @@ describe.skip('RecordTransaction', () => {
 
         fireEvent.click(button);
 
+        await apolloWait(0);
+
         await findByTestId('next-page');
       });
 
@@ -419,6 +423,8 @@ describe.skip('RecordTransaction', () => {
         const [, , , button] = await findAllByRole('button');
 
         fireEvent.click(button);
+
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -823,6 +829,8 @@ describe.skip('RecordTransaction', () => {
         const [, , button] = await findAllByRole('button');
 
         fireEvent.click(button);
+
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });

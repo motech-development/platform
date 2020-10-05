@@ -11,6 +11,7 @@ import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import ADD_CLIENT from '../../../../graphql/client/ADD_CLIENT';
 import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
+import apolloWait from '../../../../utils/apolloWait';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import AddClient from '../AddClient';
 
@@ -177,6 +178,8 @@ describe('AddClient', () => {
 
       fireEvent.click(button);
 
+      await apolloWait(0);
+
       await findByTestId('next-page');
     });
 
@@ -253,6 +256,8 @@ describe('AddClient', () => {
       const [button] = await findAllByRole('button');
 
       fireEvent.click(button);
+
+      await apolloWait(0);
 
       await findByTestId('next-page');
     });

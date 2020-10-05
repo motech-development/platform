@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import React from 'react';
+import apolloWait from '../../../utils/apolloWait';
 import TestProvider from '../../../utils/TestProvider';
 import UserNotifications, {
   GET_NOTIFICATIONS,
@@ -236,6 +237,8 @@ describe('UserNotifications', () => {
 
         fireEvent.click(button);
       });
+
+      await apolloWait(0);
 
       expect(container).toBeInTheDocument();
     });

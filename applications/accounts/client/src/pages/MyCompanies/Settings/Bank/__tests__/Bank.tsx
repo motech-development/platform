@@ -5,6 +5,7 @@ import React from 'react';
 import CREATE_BANK_CONNECTION from '../../../../../graphql/bank/CREATE_BANK_CONNECTION';
 import GET_BANKS from '../../../../../graphql/bank/GET_BANKS';
 import ON_BANK_CALLBACK from '../../../../../graphql/bank/ON_BANK_CALLBACK';
+import apolloWait from '../../../../../utils/apolloWait';
 import TestProvider from '../../../../../utils/TestProvider';
 import Bank from '../Bank';
 
@@ -124,6 +125,8 @@ describe('Bank', () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
+
+        await apolloWait(0);
       });
 
       const [button, other] = await findAllByRole('button');
@@ -196,6 +199,8 @@ describe('Bank', () => {
 
       await act(async () => {
         await findByText('select-bank.title');
+
+        await apolloWait(0);
       });
 
       expect(window.location.assign).toHaveBeenCalledWith('https://auth.url');

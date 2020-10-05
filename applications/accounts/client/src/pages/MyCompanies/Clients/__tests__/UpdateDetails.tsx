@@ -13,6 +13,7 @@ import DELETE_CLIENT from '../../../../graphql/client/DELETE_CLIENT';
 import GET_CLIENT from '../../../../graphql/client/GET_CLIENT';
 import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import UPDATE_CLIENT from '../../../../graphql/client/UPDATE_CLIENT';
+import apolloWait from '../../../../utils/apolloWait';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import UpdateDetails from '../UpdateDetails';
 
@@ -217,6 +218,8 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(button);
 
+        await apolloWait(0);
+
         await findByTestId('next-page');
       });
 
@@ -234,6 +237,8 @@ describe('UpdateDetails', () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
+
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -302,6 +307,8 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(deleteButton);
 
+        await apolloWait(0);
+
         await wait();
 
         await findByTestId('next-page');
@@ -333,6 +340,8 @@ describe('UpdateDetails', () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
+
+        await apolloWait(0);
 
         await wait();
       });
@@ -423,6 +432,8 @@ describe('UpdateDetails', () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
+
+        await apolloWait(0);
 
         await wait();
       });

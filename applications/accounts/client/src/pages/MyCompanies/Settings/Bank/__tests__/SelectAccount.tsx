@@ -10,6 +10,7 @@ import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import GET_BANK_ACCOUNTS from '../../../../../graphql/bank/GET_BANK_ACCOUNTS';
 import UPDATE_BANK_SETTINGS from '../../../../../graphql/bank/UPDATE_BANK_SETTINGS';
+import apolloWait from '../../../../../utils/apolloWait';
 import TestProvider, { add } from '../../../../../utils/TestProvider';
 import SelectAccount from '../SelectAccount';
 
@@ -115,6 +116,8 @@ describe('SelectAccount', () => {
 
         fireEvent.click(button);
 
+        await apolloWait(0);
+
         await findByTestId('next-page');
       });
 
@@ -132,6 +135,8 @@ describe('SelectAccount', () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
+
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -176,6 +181,8 @@ describe('SelectAccount', () => {
     it('should display an error card', async () => {
       const { findByText } = component;
 
+      await apolloWait(0);
+
       await expect(
         findByText('select-account.errors.failure.title'),
       ).resolves.toBeInTheDocument();
@@ -183,6 +190,8 @@ describe('SelectAccount', () => {
 
     it('should have the correct back link', async () => {
       const { findByText } = component;
+
+      await apolloWait(0);
 
       await expect(findByText('go-back')).resolves.toHaveAttribute(
         'href',

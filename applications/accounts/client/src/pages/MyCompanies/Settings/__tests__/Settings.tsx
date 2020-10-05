@@ -11,6 +11,7 @@ import React from 'react';
 import DELETE_BANK_CONNECTION from '../../../../graphql/bank/DELETE_BANK_CONNECTION';
 import GET_SETTINGS from '../../../../graphql/settings/GET_SETTINGS';
 import UPDATE_SETTINGS from '../../../../graphql/settings/UPDATE_SETTINGS';
+import apolloWait from '../../../../utils/apolloWait';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import Settings from '../Settings';
 
@@ -146,6 +147,8 @@ describe('Settings', () => {
 
         fireEvent.click(button);
 
+        await apolloWait(0);
+
         await findByTestId('next-page');
       });
 
@@ -163,6 +166,8 @@ describe('Settings', () => {
         const [, , button] = await findAllByRole('button');
 
         fireEvent.click(button);
+
+        await apolloWait(0);
 
         await findByTestId('next-page');
       });
@@ -184,6 +189,8 @@ describe('Settings', () => {
         const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
+
+        await apolloWait(0);
       });
 
       await wait(() =>
@@ -304,6 +311,8 @@ describe('Settings', () => {
         const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
+
+        await apolloWait(0);
       });
 
       await wait(() =>

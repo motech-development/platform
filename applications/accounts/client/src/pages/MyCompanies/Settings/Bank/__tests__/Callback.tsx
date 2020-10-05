@@ -3,6 +3,7 @@ import { act, render, RenderResult } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import UPDATE_BANK_SETTINGS from '../../../../../graphql/bank/UPDATE_BANK_SETTINGS';
+import apolloWait from '../../../../../utils/apolloWait';
 import TestProvider from '../../../../../utils/TestProvider';
 import Callback from '../Callback';
 
@@ -63,7 +64,11 @@ describe('Callback', () => {
     it('should redirect to the account selection', async () => {
       const { findByTestId } = component;
 
-      await findByTestId('next-page');
+      await act(async () => {
+        await apolloWait(0);
+
+        await findByTestId('next-page');
+      });
 
       expect(history.push).toHaveBeenCalledWith(
         '/my-companies/settings/company-id/bank/select-account',
@@ -123,11 +128,19 @@ describe('Callback', () => {
     it('should show the error card', async () => {
       const { findByText } = component;
 
+      await act(async () => {
+        await apolloWait(0);
+      });
+
       await expect(findByText('callback.error')).resolves.toBeInTheDocument();
     });
 
     it('should have the correct back link', async () => {
       const { findByText } = component;
+
+      await act(async () => {
+        await apolloWait(0);
+      });
 
       await expect(findByText('go-back')).resolves.toHaveAttribute(
         'href',

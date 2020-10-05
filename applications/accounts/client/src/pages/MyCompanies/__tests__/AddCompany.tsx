@@ -11,6 +11,7 @@ import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import ADD_COMPANY from '../../../graphql/company/ADD_COMPANY';
 import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
+import apolloWait from '../../../utils/apolloWait';
 import TestProvider, { add } from '../../../utils/TestProvider';
 import AddCompany from '../AddCompany';
 
@@ -208,6 +209,8 @@ describe('AddCompany', () => {
 
       fireEvent.click(submit);
 
+      await apolloWait(0);
+
       await findByTestId('next-page');
     });
 
@@ -296,6 +299,8 @@ describe('AddCompany', () => {
       const [, submit] = await findAllByRole('button');
 
       fireEvent.click(submit);
+
+      await apolloWait(0);
 
       await findByTestId('next-page');
     });
