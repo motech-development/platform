@@ -21,7 +21,7 @@ if [[ $CHECK_FOR = "packages" ]]
 then
   while read -r -d ''; do
     FILES+=("$REPLY")
-  done < <(find . -name 'package.json' -type f -print0)
+  done < <(find . -name 'package-lock.json' -type f -print0)
 fi
 
 # Loop through files and append MD5 to result file
