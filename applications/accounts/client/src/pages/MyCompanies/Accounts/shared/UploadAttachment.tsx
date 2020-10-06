@@ -83,7 +83,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
           if (extIndex > 0) {
             const extension = file.name.substring(extIndex + 1).toLowerCase();
 
-            const result = await mutation({
+            const { data } = await mutation({
               variables: {
                 id,
                 input: {
@@ -97,8 +97,8 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
               },
             });
 
-            if (result?.data) {
-              const { requestUpload } = result.data;
+            if (data) {
+              const { requestUpload } = data;
               const headers = {
                 'Content-Type': file.type,
               };

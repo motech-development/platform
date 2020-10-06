@@ -19,8 +19,7 @@ import TestProvider, { add } from '../../../../utils/TestProvider';
 import RecordTransaction, { RECORD_TRANSACTION } from '../RecordTransaction';
 import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 
-// TODO: Fix failing tests
-describe.skip('RecordTransaction', () => {
+describe('RecordTransaction', () => {
   let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
@@ -239,6 +238,7 @@ describe.skip('RecordTransaction', () => {
                 contentType: 'application/pdf',
                 extension: 'pdf',
                 metadata: {
+                  id: undefined,
                   typename: 'Transaction',
                 },
               },

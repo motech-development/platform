@@ -16,8 +16,7 @@ interface IInitialValues {
   test: string;
 }
 
-// TODO: Undo
-describe.skip('UploadAttachment', () => {
+describe('UploadAttachment', () => {
   let component: RenderResult;
   let file: File;
   let initialValues: IInitialValues;
