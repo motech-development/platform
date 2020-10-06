@@ -126,23 +126,31 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
     MARK_AS_READ,
   );
 
-  useEffect(() => {
-    subscribeToMore<IOnNotificationOutput, IOnNotificationInput>({
-      document: ON_NOTIFICATION,
-      updateQuery: (prev, { subscriptionData }) => ({
-        getNotifications: {
-          ...prev.getNotifications,
-          items: [
-            subscriptionData.data.onNotification,
-            ...prev.getNotifications.items,
-          ],
+  useEffect(
+    () =>
+      subscribeToMore<IOnNotificationOutput, IOnNotificationInput>({
+        document: ON_NOTIFICATION,
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) {
+            return prev;
+          }
+
+          return {
+            getNotifications: {
+              ...prev.getNotifications,
+              items: [
+                subscriptionData.data.onNotification,
+                ...prev.getNotifications.items,
+              ],
+            },
+          };
+        },
+        variables: {
+          owner: id,
         },
       }),
-      variables: {
-        owner: id,
-      },
-    });
-  }, [id, subscribeToMore]);
+    [id, subscribeToMore],
+  );
 
   if (!data) {
     return null;

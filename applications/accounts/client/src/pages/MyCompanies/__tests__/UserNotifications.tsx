@@ -14,7 +14,7 @@ describe('UserNotifications', () => {
   let mocks: MockedResponse[];
 
   describe('when there is no data', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           request: {
@@ -41,13 +41,17 @@ describe('UserNotifications', () => {
         },
       ];
 
-      component = render(
-        <TestProvider>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <UserNotifications id="user-id" />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <UserNotifications id="user-id" />
+            </MockedProvider>
+          </TestProvider>,
+        );
+
+        await apolloWait(1);
+      });
     });
 
     it('should display nothing', () => {
@@ -127,7 +131,6 @@ describe('UserNotifications', () => {
 
     it('should not mark any messages as read', async () => {
       const { container, findByRole } = component;
-
       const button = await findByRole('button');
 
       fireEvent.click(button);
