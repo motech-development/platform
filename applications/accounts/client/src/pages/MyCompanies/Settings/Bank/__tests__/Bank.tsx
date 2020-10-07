@@ -1,11 +1,11 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import CREATE_BANK_CONNECTION from '../../../../../graphql/bank/CREATE_BANK_CONNECTION';
 import GET_BANKS from '../../../../../graphql/bank/GET_BANKS';
 import ON_BANK_CALLBACK from '../../../../../graphql/bank/ON_BANK_CALLBACK';
-import apolloWait from '../../../../../utils/apolloWait';
 import TestProvider from '../../../../../utils/TestProvider';
 import Bank from '../Bank';
 
@@ -126,7 +126,7 @@ describe('Bank', () => {
 
         fireEvent.click(button);
 
-        await apolloWait(0);
+        await waitForApollo(0);
       });
 
       const [button, other] = await findAllByRole('button');
@@ -200,7 +200,7 @@ describe('Bank', () => {
       await act(async () => {
         await findByText('select-bank.title');
 
-        await apolloWait(0);
+        await waitForApollo(0);
       });
 
       expect(window.location.assign).toHaveBeenCalledWith('https://auth.url');

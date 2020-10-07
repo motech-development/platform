@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
   fireEvent,
@@ -10,7 +11,6 @@ import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
-import apolloWait from '../../../../utils/apolloWait';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import PendingTransactions from '../PendingTransactions';
 
@@ -192,7 +192,7 @@ describe('PendingTransactions', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await wait();
       });
@@ -301,7 +301,7 @@ describe('PendingTransactions', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await wait();
       });

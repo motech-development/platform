@@ -1,4 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
   fireEvent,
@@ -13,7 +14,6 @@ import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import UPDATE_TRANSACTION from '../../../../graphql/transaction/UPDATE_TRANSACTION';
-import apolloWait from '../../../../utils/apolloWait';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import { DELETE_FILE, REQUEST_DOWNLOAD } from '../shared/ViewAttachment';
 import ViewTransaction, { VIEW_TRANSACTION } from '../ViewTransaction';
@@ -239,7 +239,7 @@ describe('ViewTransaction', () => {
 
           await wait();
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await findByTestId('next-page');
         });
@@ -272,7 +272,7 @@ describe('ViewTransaction', () => {
 
           await wait();
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await findByTestId('next-page');
         });
@@ -349,7 +349,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(deleteButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
 
@@ -386,7 +386,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(deleteButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -550,7 +550,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(deleteButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -570,7 +570,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(deleteButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -593,7 +593,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(downloadButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -611,7 +611,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(downloadButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -638,7 +638,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(downloadButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -858,7 +858,7 @@ describe('ViewTransaction', () => {
 
         await wait();
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await findByTestId('next-page');
       });
@@ -880,7 +880,7 @@ describe('ViewTransaction', () => {
 
         await wait();
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await findByTestId('next-page');
       });
@@ -918,7 +918,7 @@ describe('ViewTransaction', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await wait();
       });
@@ -941,7 +941,7 @@ describe('ViewTransaction', () => {
 
         fireEvent.click(downloadButton);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await wait();
       });
@@ -964,7 +964,7 @@ describe('ViewTransaction', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await wait();
       });

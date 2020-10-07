@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client/cache';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
   fireEvent,
@@ -11,7 +12,6 @@ import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import ADD_COMPANY from '../../../graphql/company/ADD_COMPANY';
 import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
-import apolloWait from '../../../utils/apolloWait';
 import TestProvider, { add } from '../../../utils/TestProvider';
 import AddCompany from '../AddCompany';
 
@@ -209,7 +209,7 @@ describe('AddCompany', () => {
 
       fireEvent.click(submit);
 
-      await apolloWait(0);
+      await waitForApollo(0);
 
       await findByTestId('next-page');
     });
@@ -300,7 +300,7 @@ describe('AddCompany', () => {
 
       fireEvent.click(submit);
 
-      await apolloWait(0);
+      await waitForApollo(0);
 
       await findByTestId('next-page');
     });

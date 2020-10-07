@@ -1,9 +1,9 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, render, RenderResult } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import UPDATE_BANK_SETTINGS from '../../../../../graphql/bank/UPDATE_BANK_SETTINGS';
-import apolloWait from '../../../../../utils/apolloWait';
 import TestProvider from '../../../../../utils/TestProvider';
 import Callback from '../Callback';
 
@@ -65,7 +65,7 @@ describe('Callback', () => {
       const { findByTestId } = component;
 
       await act(async () => {
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await findByTestId('next-page');
       });
@@ -129,7 +129,7 @@ describe('Callback', () => {
       const { findByText } = component;
 
       await act(async () => {
-        await apolloWait(0);
+        await waitForApollo(0);
       });
 
       await expect(findByText('callback.error')).resolves.toBeInTheDocument();
@@ -139,7 +139,7 @@ describe('Callback', () => {
       const { findByText } = component;
 
       await act(async () => {
-        await apolloWait(0);
+        await waitForApollo(0);
       });
 
       await expect(findByText('go-back')).resolves.toHaveAttribute(

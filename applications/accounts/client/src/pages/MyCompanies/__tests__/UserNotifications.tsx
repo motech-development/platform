@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import React from 'react';
-import apolloWait from '../../../utils/apolloWait';
 import TestProvider from '../../../utils/TestProvider';
 import UserNotifications, {
   GET_NOTIFICATIONS,
@@ -50,7 +50,7 @@ describe('UserNotifications', () => {
           </TestProvider>,
         );
 
-        await apolloWait(1);
+        await waitForApollo(0);
       });
     });
 
@@ -241,7 +241,7 @@ describe('UserNotifications', () => {
         fireEvent.click(button);
       });
 
-      await apolloWait(0);
+      await waitForApollo(0);
 
       expect(container).toBeInTheDocument();
     });

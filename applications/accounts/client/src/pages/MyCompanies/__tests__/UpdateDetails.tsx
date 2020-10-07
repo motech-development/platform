@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client/cache';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
   fireEvent,
@@ -13,7 +14,6 @@ import DELETE_COMPANY from '../../../graphql/company/DELETE_COMPANY';
 import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
 import GET_COMPANY from '../../../graphql/company/GET_COMPANY';
 import UPDATE_COMPANY from '../../../graphql/company/UPDATE_COMPANY';
-import apolloWait from '../../../utils/apolloWait';
 import TestProvider, { add } from '../../../utils/TestProvider';
 import UpdateDetails from '../UpdateDetails';
 
@@ -207,7 +207,7 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(button);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await findByTestId('next-page');
       });
@@ -227,7 +227,7 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(button);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await findByTestId('next-page');
       });
@@ -296,7 +296,7 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await wait();
 
@@ -328,7 +328,7 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await wait();
       });
@@ -421,7 +421,7 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await wait();
       });
