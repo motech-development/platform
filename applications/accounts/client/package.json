@@ -81,10 +81,7 @@
     "moduleDirectories": [
       "../../node_modules",
       "<rootDir>/node_modules"
-    ],
-    "moduleNameMapper": {
-      "^styled-components": "<rootDir>/node_modules/styled-components/dist/styled-components.browser.cjs.js"
-    }
+    ]
   },
   "jest-junit": {
     "outputDirectory": "../../reports/junit",
