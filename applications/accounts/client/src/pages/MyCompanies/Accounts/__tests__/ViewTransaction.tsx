@@ -653,7 +653,7 @@ describe('ViewTransaction', () => {
     });
   });
 
-  describe.only('sale', () => {
+  describe('sale', () => {
     beforeEach(async () => {
       mocks = [
         {
