@@ -76,15 +76,15 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
     onError,
     responseType: 'blob',
   });
-  const [request, { loading: requestLoading }] = useLazyQuery<
-    IRequestDownloadOutput,
-    IRequestDownloadInput
-  >(REQUEST_DOWNLOAD, {
-    onCompleted: async ({ requestDownload }) => {
-      await download(requestDownload.url);
+  const [
+    request,
+    { data: requestData, loading: requestLoading },
+  ] = useLazyQuery<IRequestDownloadOutput, IRequestDownloadInput>(
+    REQUEST_DOWNLOAD,
+    {
+      onError,
     },
-    onError,
-  });
+  );
   const [deleteFile, { loading: deleteFileLoading }] = useMutation<
     IDeleteFileOutput,
     IDeleteFileInput
@@ -111,13 +111,17 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
         <Button
           block
           loading={requestLoading}
-          onClick={() => {
+          onClick={async () => {
             request({
               variables: {
                 id,
                 path,
               },
             });
+
+            if (requestData) {
+              await download(requestData.requestDownload.url);
+            }
           }}
         >
           {t('transaction-form.upload.download-file')}

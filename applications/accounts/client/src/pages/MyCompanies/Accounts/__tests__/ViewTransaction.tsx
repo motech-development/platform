@@ -22,8 +22,7 @@ jest.mock('file-saver', () => ({
   saveAs: jest.fn(),
 }));
 
-// TODO: Fix failing tests
-describe.skip('ViewTransaction', () => {
+describe('ViewTransaction', () => {
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
@@ -654,7 +653,7 @@ describe.skip('ViewTransaction', () => {
     });
   });
 
-  describe('sale', () => {
+  describe.only('sale', () => {
     beforeEach(async () => {
       mocks = [
         {
