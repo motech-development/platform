@@ -18,14 +18,14 @@
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "dependencies": {
-    "@auth0/auth0-spa-js": "^1.10.0",
+    "@auth0/auth0-spa-js": "^1.12.1",
     "@motech-development/query-string-hook": "^0.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0"
   },
   "peerDependencies": {
-    "@auth0/auth0-spa-js": "1.10.0",
+    "@auth0/auth0-spa-js": "1.12.1",
     "@motech-development/query-string-hook": "^0.0.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",

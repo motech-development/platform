@@ -8,60 +8,8 @@ on:
       - hotfix/**
 
 jobs:
-  detect-changes:
-    runs-on: ubuntu-latest
-
-    outputs:
-      accounts-data: ${{ steps.filter.outputs.accounts-data }}
-      accounts-notifications: ${{ steps.filter.outputs.accounts-notifications }}
-      accounts-storage: ${{ steps.filter.outputs.accounts-storage }}
-      accounts-queue: ${{ steps.filter.outputs.accounts-queue }}
-      anti-virus: ${{ steps.filter.outputs.anti-virus }}
-      applications: ${{ steps.filter.outputs.applications }}
-      auth0-tenant: ${{ steps.filter.outputs.auth0-tenant }}
-      open-banking: ${{ steps.filter.outputs.open-banking }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Detect changes
-        id: filter
-        uses: dorny/paths-filter@v2
-        with:
-          base: ${{ github.ref }}
-          filters: |
-            accounts-data:
-              - applications/accounts/data/**
-              - packages/**
-            accounts-notifications:
-              - applications/accounts/notifications/**
-              - packages/**
-            accounts-queue:
-              - applications/accounts/queue/**
-              - packages/**
-            accounts-storage:
-              - applications/accounts/storage/**
-              - packages/**
-            anti-virus:
-              - applications/core/anti-virus/**
-              - packages/**
-            applications:
-              - applications/**
-              - packages/**
-            auth0-tenant:
-              - applications/id/**
-              - packages/**
-            open-banking:
-              - applications/open-banking/**
-              - packages/**
-
   setup:
     runs-on: ubuntu-latest
-
-    if: needs.detect-changes.outputs.applications == 'true'
-
-    needs: detect-changes
 
     steps:
       - name: Checkout code
@@ -177,11 +125,7 @@ jobs:
   deploy-auth0-tenant:
     runs-on: ubuntu-latest
 
-    if: always() && needs.detect-changes.outputs.auth0-tenant == 'true'
-
-    needs:
-      - detect-changes
-      - unit-test
+    needs: unit-test
 
     env:
       AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_DEV }}
@@ -251,11 +195,7 @@ jobs:
   deploy-open-banking:
     runs-on: ubuntu-latest
 
-    if: always() && needs.detect-changes.outputs.open-banking == 'true'
-
-    needs:
-      - detect-changes
-      - unit-test
+    needs: unit-test
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -305,11 +245,7 @@ jobs:
   deploy-anti-virus:
     runs-on: ubuntu-latest
 
-    if: always() && needs.detect-changes.outputs.anti-virus == 'true'
-
-    needs:
-      - detect-changes
-      - unit-test
+    needs: unit-test
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -357,11 +293,7 @@ jobs:
   deploy-accounts-storage:
     runs-on: ubuntu-latest
 
-    if: always() && needs.detect-changes.outputs.accounts-storage == 'true'
-
-    needs:
-      - detect-changes
-      - deploy-anti-virus
+    needs: deploy-anti-virus
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -409,11 +341,7 @@ jobs:
   deploy-accounts-queue:
     runs-on: ubuntu-latest
 
-    if: always() && needs.detect-changes.outputs.accounts-queue == 'true'
-
-    needs:
-      - detect-changes
-      - deploy-open-banking
+    needs: deploy-open-banking
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -461,11 +389,7 @@ jobs:
   deploy-accounts-data:
     runs-on: ubuntu-latest
 
-    if: always() && needs.detect-changes.outputs.accounts-data == 'true'
-
-    needs:
-      - detect-changes
-      - deploy-accounts-storage
+    needs: deploy-accounts-storage
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -513,10 +437,7 @@ jobs:
   deploy-accounts-api:
     runs-on: ubuntu-latest
 
-    if: always() && needs.detect-changes.outputs.applications == 'true'
-
     needs:
-      - detect-changes
       - deploy-accounts-data
       - deploy-accounts-queue
       - deploy-accounts-storage
@@ -577,11 +498,7 @@ jobs:
   deploy-accounts-notifications:
     runs-on: ubuntu-latest
 
-    if: always() && needs.detect-changes.outputs.accounts-notifications == 'true'
-
-    needs:
-      - detect-changes
-      - deploy-accounts-api
+    needs: deploy-accounts-api
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -629,11 +546,7 @@ jobs:
   build-accounts-client:
     runs-on: ubuntu-latest
 
-    if: always() && needs.detect-changes.outputs.applications == 'true'
-
-    needs:
-      - detect-changes
-      - deploy-accounts-notifications
+    needs: deploy-accounts-notifications
 
     env:
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
@@ -701,26 +614,3 @@ jobs:
 
       - name: Build client
         run: npm run build -- --scope=@accounts/client
-
-      - name: Smoke tests
-        uses: cypress-io/github-action@v2
-        with:
-          command: npm run e2e:ci -- --scope=@accounts/client -- -- --record false
-          config: defaultCommandTimeout=20000
-          install: false
-          start: npx serve -s ./applications/accounts/client/build --listen 3000
-          wait-on: http://localhost:3000
-
-      - name: Upload error screenshots
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-screenshots
-          path: applications/accounts/client/cypress/screenshots
-
-      - name: Upload error video
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-videos
-          path: applications/accounts/client/cypress/videos
