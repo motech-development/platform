@@ -77,13 +77,18 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
       });
 
       if (cache) {
-        cache.getCompanies.items = [
+        const items = [
           ...cache.getCompanies.items,
           createCompany,
         ].sort((a, b) => a.name.localeCompare(b.name));
 
         client.writeQuery<IGetCompaniesOutput>({
-          data: cache,
+          data: {
+            getCompanies: {
+              ...cache.getCompanies,
+              items,
+            },
+          },
           query: GET_COMPANIES,
         });
       }

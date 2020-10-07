@@ -32,12 +32,20 @@ export const updateCache: MutationUpdaterFn<IDeleteClientOutput> = (
       });
 
       if (cache) {
-        cache.getClients.items = cache.getClients.items.filter(
+        const items = cache.getClients.items.filter(
           ({ id }) => deleteClient.id !== id,
         );
 
         client.writeQuery<IGetClientsOutput, IGetClientsInput>({
-          data: cache,
+          data: {
+            getClients: {
+              ...cache.getClients,
+              items,
+            },
+            getCompany: {
+              ...cache.getCompany,
+            },
+          },
           query: GET_CLIENTS,
           variables: {
             id: deleteClient.companyId,

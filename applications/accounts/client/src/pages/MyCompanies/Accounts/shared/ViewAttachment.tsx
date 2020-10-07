@@ -1,9 +1,8 @@
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
-import { useLazyGet } from '@motech-development/axios-hooks';
 import { Button, Col, Row, useToast } from '@motech-development/breeze-ui';
-import { saveAs } from 'file-saver';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import DownloadAttachment from './DownloadAttachment';
 
 interface IDeleteFileInput {
   id: string;
@@ -56,33 +55,18 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
 }) => {
   const { t } = useTranslation('accounts');
   const { add } = useToast();
-  const onError = () => {
-    add({
-      colour: 'danger',
-      message: t('uploads.download.error'),
-    });
-  };
-  const [download] = useLazyGet<Blob>({
-    onCompleted: data => {
-      const fileName = path.split('/').pop();
-
-      saveAs(data, fileName);
-
-      add({
-        colour: 'success',
-        message: t('uploads.download.success'),
-      });
-    },
-    onError,
-    responseType: 'blob',
-  });
   const [
     request,
     { data: requestData, loading: requestLoading },
   ] = useLazyQuery<IRequestDownloadOutput, IRequestDownloadInput>(
     REQUEST_DOWNLOAD,
     {
-      onError,
+      onError: () => {
+        add({
+          colour: 'danger',
+          message: t('uploads.download.error'),
+        });
+      },
     },
   );
   const [deleteFile, { loading: deleteFileLoading }] = useMutation<
@@ -111,21 +95,25 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
         <Button
           block
           loading={requestLoading}
-          onClick={async () => {
+          onClick={() => {
             request({
               variables: {
                 id,
                 path,
               },
             });
-
-            if (requestData) {
-              await download(requestData.requestDownload.url);
-            }
           }}
         >
           {t('transaction-form.upload.download-file')}
         </Button>
+
+        {requestData && (
+          <DownloadAttachment
+            loading={requestLoading}
+            path={path}
+            url={requestData.requestDownload.url}
+          />
+        )}
       </Col>
 
       <Col sm={6}>

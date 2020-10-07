@@ -58,13 +58,20 @@ export const updateCache: MutationUpdaterFn<IAddClientOutput> = (
       });
 
       if (cache) {
-        cache.getClients.items = [
-          ...cache.getClients.items,
-          createClient,
-        ].sort((a, b) => a.name.localeCompare(b.name));
+        const items = [...cache.getClients.items, createClient].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        );
 
         client.writeQuery<IGetClientsOutput, IGetClientsInput>({
-          data: cache,
+          data: {
+            getClients: {
+              ...cache.getClients,
+              items,
+            },
+            getCompany: {
+              ...cache.getCompany,
+            },
+          },
           query: GET_CLIENTS,
           variables: {
             id: createClient.companyId,

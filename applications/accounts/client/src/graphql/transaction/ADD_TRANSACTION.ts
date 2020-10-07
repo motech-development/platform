@@ -60,13 +60,21 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
       });
 
       if (cache) {
-        cache.getTransactions.items = [
+        const items = [
           ...cache.getTransactions.items,
           addTransaction,
         ].sort((a, b) => a.date.localeCompare(b.date));
 
         client.writeQuery<IGetTransactionsOutput, IGetTransactionsInput>({
-          data: cache,
+          data: {
+            getBalance: {
+              ...cache.getBalance,
+            },
+            getTransactions: {
+              ...cache.getTransactions,
+              items,
+            },
+          },
           query: GET_TRANSACTIONS,
           variables: {
             companyId: addTransaction.companyId,
@@ -86,6 +94,10 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
       });
 
       if (cache) {
+        const getTypeahead = {
+          ...cache.getTypeahead,
+        };
+
         if (addTransaction.category === 'Sales') {
           const descriptions = new Set([
             ...(cache.getTypeahead.sales === null
@@ -94,7 +106,7 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
             addTransaction.description,
           ]);
 
-          cache.getTypeahead.sales = [...descriptions];
+          getTypeahead.sales = [...descriptions];
         } else {
           const suppliers = new Set([
             ...(cache.getTypeahead.suppliers === null
@@ -109,12 +121,14 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
             addTransaction.description,
           ]);
 
-          cache.getTypeahead.purchases = [...descriptions];
-          cache.getTypeahead.suppliers = [...suppliers];
+          getTypeahead.purchases = [...descriptions];
+          getTypeahead.suppliers = [...suppliers];
         }
 
         client.writeQuery<IGetTypeaheadOutput, IGetTypeaheadInput>({
-          data: cache,
+          data: {
+            getTypeahead,
+          },
           query: GET_TYPEAHEAD,
           variables: {
             id: addTransaction.companyId,

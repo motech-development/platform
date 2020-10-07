@@ -36,12 +36,20 @@ export const updateCache: MutationUpdaterFn<IDeleteTransactionOutput> = (
       });
 
       if (cache) {
-        cache.getTransactions.items = cache.getTransactions.items.filter(
+        const items = cache.getTransactions.items.filter(
           ({ id }) => deleteTransaction.id !== id,
         );
 
         client.writeQuery<IGetTransactionsOutput, IGetTransactionsInput>({
-          data: cache,
+          data: {
+            getBalance: {
+              ...cache.getBalance,
+            },
+            getTransactions: {
+              ...cache.getTransactions,
+              items,
+            },
+          },
           query: GET_TRANSACTIONS,
           variables: {
             companyId: deleteTransaction.companyId,

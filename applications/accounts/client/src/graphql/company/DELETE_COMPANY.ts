@@ -25,12 +25,17 @@ export const updateCache: MutationUpdaterFn<IDeleteCompanyOutput> = (
       });
 
       if (cache) {
-        cache.getCompanies.items = cache.getCompanies.items.filter(
+        const items = cache.getCompanies.items.filter(
           ({ id }) => deleteCompany.id !== id,
         );
 
         client.writeQuery<IGetCompaniesOutput>({
-          data: cache,
+          data: {
+            getCompanies: {
+              ...cache.getCompanies,
+              items,
+            },
+          },
           query: GET_COMPANIES,
         });
       }
