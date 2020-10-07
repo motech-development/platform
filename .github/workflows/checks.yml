@@ -59,7 +59,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
 
-    if: needs.detect-changes.outputs.applications == 'true'
+    # if: needs.detect-changes.outputs.applications == 'true'
 
     needs: detect-changes
 
