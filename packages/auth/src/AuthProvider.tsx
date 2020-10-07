@@ -14,16 +14,19 @@ import createAuth0Client, {
   GetTokenSilentlyOptions,
   IdToken,
   LogoutOptions,
+  PopupLoginOptions,
   RedirectLoginOptions,
 } from '@auth0/auth0-spa-js';
 
 export type AuthUser = Omit<IdToken, '__raw'>;
 
 export interface IAuthContext {
+  buildAuthorizeUrl(o?: RedirectLoginOptions): Promise<string>;
   getIdTokenClaims(o?: GetIdTokenClaimsOptions): Promise<IdToken>;
   getTokenSilently(o?: GetTokenSilentlyOptions): Promise<string | undefined>;
   isAuthenticated: boolean;
   isLoading: boolean;
+  loginWithPopup(o?: PopupLoginOptions): Promise<void>;
   loginWithRedirect(o?: RedirectLoginOptions): Promise<void>;
   logout(o?: LogoutOptions): void;
   user?: AuthUser;
@@ -110,11 +113,17 @@ const AuthProvider: FC<IAuthProviderProps> = ({
     })();
   }, [auth0Client, onRedirectCallback, pathname, search]);
 
+  const buildAuthorizeUrl = (options?: RedirectLoginOptions) =>
+    auth0Client!.buildAuthorizeUrl(options);
+
   const getIdTokenClaims = (options?: GetIdTokenClaimsOptions) =>
     auth0Client!.getIdTokenClaims(options);
 
   const getTokenSilently = (options?: GetTokenSilentlyOptions) =>
     auth0Client!.getTokenSilently(options);
+
+  const loginWithPopup = (options?: PopupLoginOptions) =>
+    auth0Client!.loginWithPopup(options);
 
   const loginWithRedirect = (options?: RedirectLoginOptions) =>
     auth0Client!.loginWithRedirect(options);
@@ -124,10 +133,12 @@ const AuthProvider: FC<IAuthProviderProps> = ({
   return (
     <AuthContext.Provider
       value={{
+        buildAuthorizeUrl,
         getIdTokenClaims,
         getTokenSilently,
         isAuthenticated,
         isLoading,
+        loginWithPopup,
         loginWithRedirect,
         logout,
         user,

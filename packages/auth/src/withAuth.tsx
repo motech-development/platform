@@ -1,38 +1,34 @@
-import { Loader, useToast } from '@motech-development/breeze-ui';
 import useQueryString from '@motech-development/query-string-hook';
-import React, { ComponentType, memo, useEffect } from 'react';
+import React, { FC, ReactNode, useEffect } from 'react';
 import { useAuth } from './AuthProvider';
 
-const withAuth = (Component: ComponentType) =>
-  memo(() => {
-    const query = useQueryString();
-    const { isLoading, logout } = useAuth();
-    const { add } = useToast();
+export interface IWithAuthProps {
+  children: ReactNode;
+  fallback: ReactNode;
+  onError(message: string): void;
+}
 
-    useEffect(() => {
-      if (!isLoading) {
-        const error = query.get('error');
-        const message = query.get('error_description');
+const WithAuth: FC<IWithAuthProps> = ({ children, fallback, onError }) => {
+  const query = useQueryString();
+  const { isLoading } = useAuth();
 
-        if (error && message) {
-          add({
-            colour: 'danger',
-            message,
-            onDismiss: () =>
-              logout({
-                returnTo: window.location.origin,
-              }),
-          });
-        }
+  useEffect(() => {
+    if (!isLoading) {
+      const error = query.get('error');
+      const message = query.get('error_description');
+
+      if (error && message) {
+        onError(message);
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoading]);
-
-    if (isLoading) {
-      return <Loader />;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
-    return <Component />;
-  });
+  if (isLoading) {
+    return <>{fallback}</>;
+  }
 
-export default withAuth;
+  return <>{children}</>;
+};
+
+export default WithAuth;

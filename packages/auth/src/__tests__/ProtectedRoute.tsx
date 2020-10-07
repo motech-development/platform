@@ -9,17 +9,21 @@ const TestComponent: FC = () => (
 );
 
 describe('ProtectedRoute', () => {
+  let buildAuthorizeUrl: jest.Mock;
   let getIdTokenClaims: jest.Mock;
   let getTokenSilently: jest.Mock;
   let isAuthenticated: boolean;
   let isLoading: boolean;
+  let loginWithPopup: jest.Mock;
   let loginWithRedirect: jest.Mock;
   let logout: jest.Mock;
   let user: AuthUser;
 
   beforeEach(() => {
+    buildAuthorizeUrl = jest.fn();
     getIdTokenClaims = jest.fn();
     getIdTokenClaims = jest.fn();
+    loginWithPopup = jest.fn();
     loginWithRedirect = jest.fn();
     logout = jest.fn();
     user = {
@@ -36,10 +40,12 @@ describe('ProtectedRoute', () => {
         <AuthProvider>
           <AuthContext.Provider
             value={{
+              buildAuthorizeUrl,
               getIdTokenClaims,
               getTokenSilently,
               isAuthenticated,
               isLoading,
+              loginWithPopup,
               loginWithRedirect,
               logout,
               user,
@@ -63,10 +69,12 @@ describe('ProtectedRoute', () => {
         <AuthProvider>
           <AuthContext.Provider
             value={{
+              buildAuthorizeUrl,
               getIdTokenClaims,
               getTokenSilently,
               isAuthenticated,
               isLoading,
+              loginWithPopup,
               loginWithRedirect,
               logout,
               user,
@@ -90,10 +98,12 @@ describe('ProtectedRoute', () => {
         <AuthProvider>
           <AuthContext.Provider
             value={{
+              buildAuthorizeUrl,
               getIdTokenClaims,
               getTokenSilently,
               isAuthenticated,
               isLoading,
+              loginWithPopup,
               loginWithRedirect,
               logout,
               user,
