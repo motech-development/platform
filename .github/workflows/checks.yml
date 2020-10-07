@@ -114,7 +114,7 @@ jobs:
         run: npm ci
 
       - name: Build packages
-        if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
+        # if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
         run: npm run package
 
       - name: Lint code
