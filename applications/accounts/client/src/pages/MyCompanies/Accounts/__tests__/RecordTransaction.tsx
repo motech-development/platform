@@ -42,12 +42,10 @@ describe('RecordTransaction', () => {
     cache.writeQuery({
       data: {
         getBalance: {
-          __typename: 'Balance',
           currency: 'GBP',
           id: 'company-id',
         },
         getTransactions: {
-          __typename: 'Transactions',
           id: 'company-id',
           items: [],
         },
@@ -62,12 +60,10 @@ describe('RecordTransaction', () => {
     cache.writeQuery({
       data: {
         getBalance: {
-          __typename: 'Balance',
           currency: 'GBP',
           id: 'company-id',
         },
         getTransactions: {
-          __typename: 'Transactions',
           id: 'company-id',
           items: [],
         },
@@ -105,19 +101,16 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               getBalance: {
-                __typename: 'Balance',
                 balance: 180,
                 currency: 'GBP',
                 id: 'company-id',
                 transactions: [
                   {
-                    __typename: 'BalanceTransaction',
                     balance: 180,
                     currency: 'GBP',
                     date: '2020-04-15T14:07:18Z',
                     items: [
                       {
-                        __typename: 'Transaction',
                         amount: -20,
                         attachment: '',
                         description: 'Lunch',
@@ -127,13 +120,11 @@ describe('RecordTransaction', () => {
                     ],
                   },
                   {
-                    __typename: 'BalanceTransaction',
                     balance: 200,
                     currency: 'GBP',
                     date: '2020-04-13T14:07:18Z',
                     items: [
                       {
-                        __typename: 'Transaction',
                         amount: 200,
                         attachment: '',
                         description: 'Invoice #1',
@@ -144,7 +135,6 @@ describe('RecordTransaction', () => {
                   },
                 ],
                 vat: {
-                  __typename: 'BalanceVat',
                   owed: 100,
                   paid: 99.9,
                 },
@@ -162,27 +152,22 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               getClients: {
-                __typename: 'Clients',
                 id: 'company-id',
                 items: [],
               },
               getSettings: {
-                __typename: 'Settings',
                 categories: [
                   {
-                    __typename: 'ExpenseCategory',
                     name: 'Equipment',
                     vatRate: 20,
                   },
                 ],
                 id: 'company-id',
                 vat: {
-                  __typename: 'VatSettings',
                   pay: 20,
                 },
               },
               getTypeahead: {
-                __typename: 'Typeahead',
                 id: 'company-id',
                 purchases: ['Test purchase 1', 'Test purchase 2'],
                 sales: ['Test sale 1', 'Test sale 2'],
@@ -213,7 +198,6 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               addTransaction: {
-                __typename: 'Transaction',
                 amount: -999.99,
                 attachment: 'company-id/test-id.pdf',
                 category: 'Equipment',
@@ -247,7 +231,6 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               requestUpload: {
-                __typename: 'StorageUpload',
                 id: 'test-id',
                 url: 'https://temp-upload.url/',
               },
@@ -609,19 +592,16 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               getBalance: {
-                __typename: 'Balance',
                 balance: 180,
                 currency: 'GBP',
                 id: 'company-id',
                 transactions: [
                   {
-                    __typename: 'BalanceTransaction',
                     balance: 180,
                     currency: 'GBP',
                     date: '2020-04-15T14:07:18Z',
                     items: [
                       {
-                        __typename: 'Transaction',
                         amount: -20,
                         attachment: '',
                         description: 'Lunch',
@@ -631,13 +611,11 @@ describe('RecordTransaction', () => {
                     ],
                   },
                   {
-                    __typename: 'BalanceTransaction',
                     balance: 200,
                     currency: 'GBP',
                     date: '2020-04-13T14:07:18Z',
                     items: [
                       {
-                        __typename: 'Transaction',
                         amount: 200,
                         attachment: '',
                         description: 'Invoice #1',
@@ -648,7 +626,6 @@ describe('RecordTransaction', () => {
                   },
                 ],
                 vat: {
-                  __typename: 'BalanceVat',
                   owed: 100,
                   paid: 99.9,
                 },
@@ -666,33 +643,27 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               getClients: {
-                __typename: 'Clients',
                 id: 'company-id',
                 items: [
                   {
-                    __typename: 'Client',
                     id: 'client-id',
                     name: 'Motech Development',
                   },
                 ],
               },
               getSettings: {
-                __typename: 'Settings',
                 categories: [
                   {
-                    __typename: 'ExpenseCategory',
                     name: 'Equipment',
                     vatRate: 20,
                   },
                 ],
                 id: 'company-id',
                 vat: {
-                  __typename: 'VatSettings',
                   pay: 20,
                 },
               },
               getTypeahead: {
-                __typename: 'Typeahead',
                 id: 'company-id',
                 purchases: null,
                 sales: null,
@@ -723,7 +694,6 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               addTransaction: {
-                __typename: 'Transaction',
                 amount: 999.99,
                 attachment: '',
                 category: 'Sales',
