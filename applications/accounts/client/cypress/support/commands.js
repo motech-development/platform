@@ -1,17 +1,20 @@
-/* eslint-disable no-undef */
+/* eslint-disable no-undef, camelcase */
 import 'cypress-file-upload';
 import 'cypress-localstorage-commands';
 
 Cypress.Commands.add(
   'login',
   (username = Cypress.env('USERNAME'), password = Cypress.env('PASSWORD')) => {
+    const audience = Cypress.env('AUDIENCE');
+    const client_id = Cypress.env('CLIENT_ID');
+    const scope = 'openid profile email offline_access';
     const options = {
       body: {
-        audience: Cypress.env('AUDIENCE'),
-        client_id: Cypress.env('CLIENT_ID'),
+        audience,
+        client_id,
         grant_type: 'password',
         password,
-        scope: 'openid profile email offline_access',
+        scope,
         username,
       },
       method: 'POST',
@@ -20,7 +23,7 @@ Cypress.Commands.add(
 
     cy.request(options).then(({ body }) => {
       // eslint-disable-next-line camelcase
-      const { access_token, expires_in, id_token } = body;
+      const { access_token, expires_in, id_token, token_type } = body;
 
       cy.route2('POST', 'oauth/token', {
         access_token,
@@ -30,22 +33,27 @@ Cypress.Commands.add(
         token_type: 'Bearer',
       });
 
-      const stateId = 'test';
-
-      cy.setCookie(
-        `a0.spajs.txs.${stateId}`,
-        encodeURIComponent(
-          JSON.stringify({
-            appState: {
-              targetUrl: '/my-companies',
+      cy.setLocalStorage(
+        `@@auth0spajs@@::${client_id}::${audience}::${scope}`,
+        JSON.stringify({
+          body: {
+            access_token,
+            audience,
+            client_id,
+            decodedToken: {
+              user: JSON.parse(
+                Buffer.from(id_token.split('.')[1], 'base64').toString('ascii'),
+              ),
             },
-            audience: Cypress.env('AUDIENCE'),
-            redirect_uri: 'http://localhost:3000/my-companies',
-            scope: 'openid profile email offline_access',
-          }),
-        ),
+            expires_in,
+            id_token,
+            scope,
+            token_type,
+          },
+          expiresAt: Math.floor(Date.now() / 1000) + expires_in,
+        }),
       ).then(() => {
-        cy.visit(`/?code=test-code&state=${stateId}`);
+        cy.visit('/my-companies');
       });
     });
   },
