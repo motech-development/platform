@@ -27,12 +27,10 @@ describe('AddClient', () => {
     cache.writeQuery({
       data: {
         getClients: {
-          __typename: 'Clients',
           id: 'company-id',
           items: [],
         },
         getCompany: {
-          __typename: 'Company',
           id: 'company-id',
           name: 'Test company',
         },
@@ -75,9 +73,7 @@ describe('AddClient', () => {
         result: {
           data: {
             createClient: {
-              __typename: 'Client',
               address: {
-                __typename: 'Address',
                 line1: '1 Street',
                 line2: '',
                 line3: 'Town',
@@ -86,7 +82,6 @@ describe('AddClient', () => {
               },
               companyId: 'company-id',
               contact: {
-                __typename: 'Contact',
                 email: 'info@contact.com',
                 telephone: '07712345678',
               },

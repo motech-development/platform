@@ -38,13 +38,10 @@ describe('UpdateDetails', () => {
       cache.writeQuery({
         data: {
           getCompanies: {
-            __typename: 'Companies',
             id: 'company-uuid',
             items: [
               {
-                __typename: 'Company',
                 address: {
-                  __typename: 'Address',
                   line1: '1 Street',
                   line2: '',
                   line3: 'Town',
@@ -52,13 +49,11 @@ describe('UpdateDetails', () => {
                   line5: 'KT1 1NE',
                 },
                 bank: {
-                  __typename: 'BankDetails',
                   accountNumber: '12345678',
                   sortCode: '12-34-56',
                 },
                 companyNumber: '12345678',
                 contact: {
-                  __typename: 'Contact',
                   email: 'info@contact.com',
                   telephone: '07712345678',
                 },
@@ -82,7 +77,6 @@ describe('UpdateDetails', () => {
           result: {
             data: {
               deleteCompany: {
-                __typename: 'Company',
                 id: 'company-uuid',
                 name: 'New company',
               },
@@ -99,9 +93,7 @@ describe('UpdateDetails', () => {
           result: {
             data: {
               getCompany: {
-                __typename: 'Company',
                 address: {
-                  __typename: 'Address',
                   line1: '1 Street',
                   line2: '',
                   line3: 'Town',
@@ -109,13 +101,11 @@ describe('UpdateDetails', () => {
                   line5: 'KT1 1NE',
                 },
                 bank: {
-                  __typename: 'BankDetails',
                   accountNumber: '12345678',
                   sortCode: '12-34-56',
                 },
                 companyNumber: '12345678',
                 contact: {
-                  __typename: 'Contact',
                   email: 'info@contact.com',
                   telephone: '07712345678',
                 },
@@ -130,9 +120,7 @@ describe('UpdateDetails', () => {
             query: UPDATE_COMPANY,
             variables: {
               input: {
-                __typename: 'Company',
                 address: {
-                  __typename: 'Address',
                   line1: '1 Street',
                   line2: '',
                   line3: 'Town',
@@ -140,13 +128,11 @@ describe('UpdateDetails', () => {
                   line5: 'KT1 1NE',
                 },
                 bank: {
-                  __typename: 'BankDetails',
                   accountNumber: '12345678',
                   sortCode: '12-34-56',
                 },
                 companyNumber: '12345678',
                 contact: {
-                  __typename: 'Contact',
                   email: 'info@contact.com',
                   telephone: '07712345678',
                 },
@@ -158,9 +144,7 @@ describe('UpdateDetails', () => {
           result: {
             data: {
               updateCompany: {
-                __typename: 'Company',
                 address: {
-                  __typename: 'Address',
                   line1: '1 Street',
                   line2: '',
                   line3: 'Town',
@@ -168,13 +152,11 @@ describe('UpdateDetails', () => {
                   line5: 'KT1 1NE',
                 },
                 bank: {
-                  __typename: 'BankDetails',
                   accountNumber: '12345678',
                   sortCode: '12-34-56',
                 },
                 companyNumber: '12345678',
                 contact: {
-                  __typename: 'Contact',
                   email: 'info@contact.com',
                   telephone: '07712345678',
                 },
