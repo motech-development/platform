@@ -22,14 +22,17 @@ const { join } = require('path');
 module.exports = on => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
-  logToOutput.install(on);
-
   const downloads = join(__dirname, '../downloads');
 
   on('before:browser:launch', (browser = {}, launchOptions) => {
     const updatedLaunchOptions = {
       ...launchOptions,
     };
+
+    updatedLaunchOptions.args = logToOutput.browserLaunchHandler(
+      browser,
+      launchOptions.args,
+    );
 
     if (browser.family === 'chromium') {
       updatedLaunchOptions.preferences.default.download = {
