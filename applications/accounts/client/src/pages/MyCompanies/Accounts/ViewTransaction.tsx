@@ -71,7 +71,7 @@ interface IViewTransactionOutput {
 
 export const VIEW_TRANSACTION = gql`
   query ViewTransaction($companyId: ID!, $transactionId: ID!) {
-    getClients(companyId: $companyId) {
+    getClients(id: $companyId) {
       id
       items {
         id

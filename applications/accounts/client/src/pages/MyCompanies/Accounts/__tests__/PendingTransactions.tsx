@@ -32,7 +32,7 @@ describe('PendingTransactions', () => {
           request: {
             query: GET_TRANSACTIONS,
             variables: {
-              companyId: 'company-id',
+              id: 'company-id',
               status: 'pending',
             },
           },
@@ -213,7 +213,7 @@ describe('PendingTransactions', () => {
           request: {
             query: GET_TRANSACTIONS,
             variables: {
-              companyId: 'company-id',
+              id: 'company-id',
               status: 'pending',
             },
           },
@@ -322,7 +322,7 @@ describe('PendingTransactions', () => {
           request: {
             query: GET_TRANSACTIONS,
             variables: {
-              companyId: 'company-id',
+              id: 'company-id',
               status: 'pending',
             },
           },

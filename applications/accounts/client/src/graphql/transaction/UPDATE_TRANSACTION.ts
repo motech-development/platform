@@ -56,7 +56,7 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
       >({
         query: GET_TRANSACTIONS,
         variables: {
-          companyId: updateTransaction.companyId,
+          id: updateTransaction.companyId,
           status: updateTransaction.status,
         },
       });
@@ -81,7 +81,7 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
           },
           query: GET_TRANSACTIONS,
           variables: {
-            companyId: updateTransaction.companyId,
+            id: updateTransaction.companyId,
             status: updateTransaction.status,
           },
         });
@@ -96,7 +96,7 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
       >({
         query: GET_TRANSACTIONS,
         variables: {
-          companyId: updateTransaction.companyId,
+          id: updateTransaction.companyId,
           status: otherStatus,
         },
       });
@@ -118,7 +118,7 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
           },
           query: GET_TRANSACTIONS,
           variables: {
-            companyId: updateTransaction.companyId,
+            id: updateTransaction.companyId,
             status: otherStatus,
           },
         });

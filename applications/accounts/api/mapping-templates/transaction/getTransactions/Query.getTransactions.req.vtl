@@ -1,8 +1,8 @@
 #set($owner = $ctx.identity.sub)
-#set($companyId = $ctx.args.companyId)
+#set($id = $ctx.args.id)
 #set($status = $ctx.args.status)
 #set($typename = "Transaction")
-#set($data = "$owner:$companyId:$status")
+#set($data = "$owner:$id:$status")
 
 {
   "version": "2017-02-28",

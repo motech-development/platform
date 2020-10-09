@@ -30,7 +30,7 @@ export const updateCache: MutationUpdaterFn<IDeleteTransactionOutput> = (
       >({
         query: GET_TRANSACTIONS,
         variables: {
-          companyId: deleteTransaction.companyId,
+          id: deleteTransaction.companyId,
           status: deleteTransaction.status,
         },
       });
@@ -52,7 +52,7 @@ export const updateCache: MutationUpdaterFn<IDeleteTransactionOutput> = (
           },
           query: GET_TRANSACTIONS,
           variables: {
-            companyId: deleteTransaction.companyId,
+            id: deleteTransaction.companyId,
             status: deleteTransaction.status,
           },
         });

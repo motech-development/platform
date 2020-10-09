@@ -45,7 +45,7 @@ interface IRecordTransactionOutput {
 
 export const RECORD_TRANSACTION = gql`
   query RecordTransaction($id: ID!) {
-    getClients(companyId: $id) {
+    getClients(id: $id) {
       id
       items {
         id

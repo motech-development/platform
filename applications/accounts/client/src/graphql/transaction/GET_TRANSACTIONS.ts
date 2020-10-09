@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export interface IGetTransactionsInput {
-  companyId: string;
+  id: string;
   status: string;
 }
 
@@ -25,12 +25,12 @@ export interface IGetTransactionsOutput {
 }
 
 const GET_TRANSACTIONS = gql`
-  query GetTransactions($companyId: ID!, $status: TransactionStatus!) {
-    getBalance(id: $companyId) {
+  query GetTransactions($id: ID!, $status: TransactionStatus!) {
+    getBalance(id: $id) {
       currency
       id
     }
-    getTransactions(companyId: $companyId, status: $status) {
+    getTransactions(id: $id, status: $status) {
       id
       items {
         amount

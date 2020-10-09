@@ -48,7 +48,7 @@ const PendingTransaction: FC = () => {
     IGetTransactionsInput
   >(GET_TRANSACTIONS, {
     variables: {
-      companyId,
+      id: companyId,
       status: 'pending',
     },
   });

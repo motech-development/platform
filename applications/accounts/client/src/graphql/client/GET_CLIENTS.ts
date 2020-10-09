@@ -34,7 +34,7 @@ export interface IGetClientsOutput {
 
 const GET_CLIENTS = gql`
   query GetClients($id: ID!) {
-    getClients(companyId: $id) {
+    getClients(id: $id) {
       id
       items {
         address {
