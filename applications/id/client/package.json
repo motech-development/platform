@@ -75,7 +75,7 @@
     ]
   },
   "jest-junit": {
-    "outputDirectory": "../../reports/junit",
+    "outputDirectory": "../../../reports/junit",
     "outputName": "id-client.xml"
   },
   "reactSnap": {

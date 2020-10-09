@@ -28,7 +28,7 @@
     "testEnvironment": "node"
   },
   "jest-junit": {
-    "outputDirectory": "../../reports/junit",
+    "outputDirectory": "../../../reports/junit",
     "outputName": "accounts-api.xml"
   },
   "dependencies": {
