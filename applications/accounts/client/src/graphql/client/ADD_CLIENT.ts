@@ -1,8 +1,4 @@
-import { gql, MutationUpdaterFn } from '@apollo/client';
-import GET_CLIENTS, {
-  IGetClientsInput,
-  IGetClientsOutput,
-} from './GET_CLIENTS';
+import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
 
 export interface IAddClientInput {
   input: {
@@ -43,43 +39,41 @@ export interface IAddClientOutput {
 }
 
 export const updateCache: MutationUpdaterFn<IAddClientOutput> = (
-  client,
+  cache,
   { data },
 ) => {
   if (data) {
     const { createClient } = data;
 
-    try {
-      const cache = client.readQuery<IGetClientsOutput, IGetClientsInput>({
-        query: GET_CLIENTS,
-        variables: {
-          id: createClient.companyId,
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) => {
+          const newRef = cache.writeFragment({
+            data: createClient,
+            fragment: gql`
+              fragment NewClient on Client {
+                id
+                name
+              }
+            `,
+          });
+
+          if (refs.some(ref => readField('id', ref) === createClient.id)) {
+            return refs;
+          }
+
+          return [...refs, newRef].sort((a, b) =>
+            readField<string>('name', a)!.localeCompare(
+              readField<string>('name', b)!,
+            ),
+          );
         },
-      });
-
-      if (cache) {
-        const items = [...cache.getClients.items, createClient].sort((a, b) =>
-          a.name.localeCompare(b.name),
-        );
-
-        client.writeQuery<IGetClientsOutput, IGetClientsInput>({
-          data: {
-            getClients: {
-              ...cache.getClients,
-              items,
-            },
-            getCompany: {
-              ...cache.getCompany,
-            },
-          },
-          query: GET_CLIENTS,
-          variables: {
-            id: createClient.companyId,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+      },
+      id: cache.identify({
+        __typename: 'Clients',
+        id: createClient.companyId,
+      }),
+    });
   }
 };
 

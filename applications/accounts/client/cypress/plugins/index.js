@@ -24,6 +24,15 @@ module.exports = on => {
   // `config` is the resolved Cypress config
   const downloads = join(__dirname, '../downloads');
 
+  logToOutput.install(
+    () => {},
+    (_, event) => {
+      const levels = ['error', 'warn'];
+
+      return levels.includes(event.level) || levels.includes(event.type);
+    },
+  );
+
   on('before:browser:launch', (browser = {}, launchOptions) => {
     const updatedLaunchOptions = {
       ...launchOptions,

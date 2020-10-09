@@ -1,8 +1,4 @@
-import { gql, MutationUpdaterFn } from '@apollo/client';
-import GET_COMPANIES, {
-  IGetCompaniesInput,
-  IGetCompaniesOutput,
-} from './GET_COMPANIES';
+import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
 
 export interface IAddCompanyInput {
   input: {
@@ -69,41 +65,41 @@ export interface IAddCompanyOutput {
 }
 
 export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
-  client,
+  cache,
   { data },
 ) => {
   if (data) {
     const { createCompany } = data;
 
-    try {
-      const cache = client.readQuery<IGetCompaniesOutput, IGetCompaniesInput>({
-        query: GET_COMPANIES,
-        variables: {
-          id: createCompany.owner,
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) => {
+          const newRef = cache.writeFragment({
+            data: createCompany,
+            fragment: gql`
+              fragment NewCompany on Company {
+                id
+                name
+              }
+            `,
+          });
+
+          if (refs.some(ref => readField('id', ref) === createCompany.id)) {
+            return refs;
+          }
+
+          return [...refs, newRef].sort((a, b) =>
+            readField<string>('name', a)!.localeCompare(
+              readField<string>('name', b)!,
+            ),
+          );
         },
-      });
-
-      if (cache) {
-        const items = [
-          ...cache.getCompanies.items,
-          createCompany,
-        ].sort((a, b) => a.name.localeCompare(b.name));
-
-        client.writeQuery<IGetCompaniesOutput, IGetCompaniesInput>({
-          data: {
-            getCompanies: {
-              ...cache.getCompanies,
-              items,
-            },
-          },
-          query: GET_COMPANIES,
-          variables: {
-            id: createCompany.owner,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+      },
+      id: cache.identify({
+        __typename: 'Companies',
+        id: createCompany.owner,
+      }),
+    });
   }
 };
 
