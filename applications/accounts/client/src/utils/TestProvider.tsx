@@ -45,6 +45,7 @@ const TestProvider: FC<ITestProviderProps> = ({
   }),
   user = {
     name: 'Mo Gusbi',
+    sub: 'user-id',
   },
 }) => {
   const testI18n = i18n;

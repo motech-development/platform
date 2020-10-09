@@ -1,5 +1,8 @@
 import { gql, MutationUpdaterFn } from '@apollo/client';
-import GET_COMPANIES, { IGetCompaniesOutput } from './GET_COMPANIES';
+import GET_COMPANIES, {
+  IGetCompaniesInput,
+  IGetCompaniesOutput,
+} from './GET_COMPANIES';
 
 export interface IAddCompanyInput {
   input: {
@@ -61,6 +64,7 @@ export interface IAddCompanyOutput {
     };
     id: string;
     name: string;
+    owner: string;
   };
 }
 
@@ -72,8 +76,11 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
     const { createCompany } = data;
 
     try {
-      const cache = client.readQuery<IGetCompaniesOutput>({
+      const cache = client.readQuery<IGetCompaniesOutput, IGetCompaniesInput>({
         query: GET_COMPANIES,
+        variables: {
+          id: createCompany.owner,
+        },
       });
 
       if (cache) {
@@ -82,7 +89,7 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
           createCompany,
         ].sort((a, b) => a.name.localeCompare(b.name));
 
-        client.writeQuery<IGetCompaniesOutput>({
+        client.writeQuery<IGetCompaniesOutput, IGetCompaniesInput>({
           data: {
             getCompanies: {
               ...cache.getCompanies,
@@ -90,6 +97,9 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
             },
           },
           query: GET_COMPANIES,
+          variables: {
+            id: createCompany.owner,
+          },
         });
       }
       // eslint-disable-next-line no-empty
@@ -118,6 +128,7 @@ const ADD_COMPANY = gql`
       }
       id
       name
+      owner
     }
   }
 `;

@@ -14,6 +14,9 @@ describe('MyCompanies', () => {
       {
         request: {
           query: GET_COMPANIES,
+          variables: {
+            id: 'user-id',
+          },
         },
         result: {
           data: {

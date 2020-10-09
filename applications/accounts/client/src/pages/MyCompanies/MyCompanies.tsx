@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client';
+import { useAuth } from '@motech-development/auth';
 import {
   Card,
   LinkButton,
@@ -16,10 +17,15 @@ import GET_COMPANIES, {
 
 const MyCompanies: FC = () => {
   const { t } = useTranslation('my-companies');
+  const { user } = useAuth();
   const { data, error, loading } = useQuery<
     IGetCompaniesOutput,
     IGetCompaniesInput
-  >(GET_COMPANIES);
+  >(GET_COMPANIES, {
+    variables: {
+      id: user!.sub,
+    },
+  });
 
   return (
     <Connected error={error} loading={loading}>

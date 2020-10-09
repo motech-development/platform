@@ -54,7 +54,7 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
       >({
         query: GET_TRANSACTIONS,
         variables: {
-          id: addTransaction.id,
+          id: addTransaction.companyId,
           status: addTransaction.status,
         },
       });

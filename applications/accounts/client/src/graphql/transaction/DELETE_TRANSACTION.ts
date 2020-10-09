@@ -1,8 +1,4 @@
-import { gql, MutationUpdaterFn } from '@apollo/client';
-import GET_TRANSACTIONS, {
-  IGetTransactionsInput,
-  IGetTransactionsOutput,
-} from './GET_TRANSACTIONS';
+import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
 
 export interface IDeleteTransactionInput {
   id: string;
@@ -17,48 +13,23 @@ export interface IDeleteTransactionOutput {
 }
 
 export const updateCache: MutationUpdaterFn<IDeleteTransactionOutput> = (
-  client,
+  cache,
   { data },
 ) => {
   if (data) {
     const { deleteTransaction } = data;
 
-    try {
-      const cache = client.readQuery<
-        IGetTransactionsOutput,
-        IGetTransactionsInput
-      >({
-        query: GET_TRANSACTIONS,
-        variables: {
-          id: deleteTransaction.companyId,
-          status: deleteTransaction.status,
-        },
-      });
-
-      if (cache) {
-        const items = cache.getTransactions.items.filter(
-          ({ id }) => deleteTransaction.id !== id,
-        );
-
-        client.writeQuery<IGetTransactionsOutput, IGetTransactionsInput>({
-          data: {
-            getBalance: {
-              ...cache.getBalance,
-            },
-            getTransactions: {
-              ...cache.getTransactions,
-              items,
-            },
-          },
-          query: GET_TRANSACTIONS,
-          variables: {
-            id: deleteTransaction.companyId,
-            status: deleteTransaction.status,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) =>
+          refs.filter(ref => readField('id', ref) !== deleteTransaction.id),
+      },
+      id: cache.identify({
+        __typename: 'Transactions',
+        id: deleteTransaction.companyId,
+        status: deleteTransaction.status,
+      }),
+    });
   }
 };
 

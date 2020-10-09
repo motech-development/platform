@@ -1,5 +1,4 @@
-import { gql, MutationUpdaterFn } from '@apollo/client';
-import GET_COMPANIES, { IGetCompaniesOutput } from './GET_COMPANIES';
+import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
 
 export interface IDeleteCompanyInput {
   id: string;
@@ -9,38 +8,27 @@ export interface IDeleteCompanyOutput {
   deleteCompany: {
     id: string;
     name: string;
+    owner: string;
   };
 }
 
 export const updateCache: MutationUpdaterFn<IDeleteCompanyOutput> = (
-  client,
+  cache,
   { data },
 ) => {
   if (data) {
     const { deleteCompany } = data;
 
-    try {
-      const cache = client.readQuery<IGetCompaniesOutput>({
-        query: GET_COMPANIES,
-      });
-
-      if (cache) {
-        const items = cache.getCompanies.items.filter(
-          ({ id }) => deleteCompany.id !== id,
-        );
-
-        client.writeQuery<IGetCompaniesOutput>({
-          data: {
-            getCompanies: {
-              ...cache.getCompanies,
-              items,
-            },
-          },
-          query: GET_COMPANIES,
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) =>
+          refs.filter(ref => readField('id', ref) !== deleteCompany.id),
+      },
+      id: cache.identify({
+        __typename: 'Companies',
+        id: deleteCompany.owner,
+      }),
+    });
   }
 };
 
@@ -49,6 +37,7 @@ const DELETE_COMPANY = gql`
     deleteCompany(id: $id) {
       id
       name
+      owner
     }
   }
 `;

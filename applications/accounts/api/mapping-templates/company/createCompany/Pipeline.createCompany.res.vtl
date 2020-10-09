@@ -4,6 +4,8 @@
 
 #set($id = $context.result.keys[0].id)
 #set($company = $ctx.args.input.company)
+#set($owner = $ctx.identity.sub)
 #set($input = $company.put("id", $id))
+#set($input = $company.put("owner", $owner))
 
 $utils.toJson($company)

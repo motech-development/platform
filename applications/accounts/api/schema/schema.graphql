@@ -26,7 +26,7 @@ type Query {
   getBankSettings(id: ID!): BankSettings!
   getClients(id: ID!, count: Int, nextToken: String): Clients!
   getClient(id: ID!): Client!
-  getCompanies(count: Int, nextToken: String): Companies!
+  getCompanies(id: ID!, count: Int, nextToken: String): Companies!
   getCompany(id: ID!): Company!
   getSettings(id: ID!): Settings!
   getTransaction(id: ID!): Transaction!
