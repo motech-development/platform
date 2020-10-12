@@ -1,12 +1,4 @@
-import { gql, MutationUpdaterFn } from '@apollo/client';
-import GET_TYPEAHEAD, {
-  IGetTypeaheadInput,
-  IGetTypeaheadOutput,
-} from '../typeahead/GET_TYPEAHEAD';
-import GET_TRANSACTIONS, {
-  IGetTransactionsInput,
-  IGetTransactionsOutput,
-} from './GET_TRANSACTIONS';
+import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
 
 export interface IAddTransactionInput {
   input: {
@@ -41,102 +33,93 @@ export interface IAddTransactionOutput {
 }
 
 export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
-  client,
+  cache,
   { data },
 ) => {
   if (data) {
     const { addTransaction } = data;
 
-    try {
-      const cache = client.readQuery<
-        IGetTransactionsOutput,
-        IGetTransactionsInput
-      >({
-        query: GET_TRANSACTIONS,
-        variables: {
-          id: addTransaction.companyId,
-          status: addTransaction.status,
+    cache.modify({
+      fields: {
+        purchases: (items: string[] | null) => {
+          const descriptions = items || [];
+          const unique = !descriptions.some(
+            desciption => desciption === addTransaction.description,
+          );
+
+          if (addTransaction.category !== 'Sales' && unique) {
+            return [...descriptions, addTransaction.description].sort((a, b) =>
+              a.localeCompare(b),
+            );
+          }
+
+          return descriptions;
         },
-      });
+        sales: (items: string[] | null) => {
+          const descriptions = items || [];
+          const unique = !descriptions.some(
+            desciption => desciption === addTransaction.description,
+          );
 
-      if (cache) {
-        const items = [
-          ...cache.getTransactions.items,
-          addTransaction,
-        ].sort((a, b) => a.date.localeCompare(b.date));
+          if (addTransaction.category === 'Sales' && unique) {
+            return [...descriptions, addTransaction.description].sort((a, b) =>
+              a.localeCompare(b),
+            );
+          }
 
-        client.writeQuery<IGetTransactionsOutput, IGetTransactionsInput>({
-          data: {
-            getBalance: {
-              ...cache.getBalance,
-            },
-            getTransactions: {
-              ...cache.getTransactions,
-              items,
-            },
-          },
-          query: GET_TRANSACTIONS,
-          variables: {
-            id: addTransaction.companyId,
-            status: addTransaction.status,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-
-    try {
-      const cache = client.readQuery<IGetTypeaheadOutput, IGetTypeaheadInput>({
-        query: GET_TYPEAHEAD,
-        variables: {
-          id: addTransaction.companyId,
+          return descriptions;
         },
-      });
+        suppliers: (items: string[] | null) => {
+          const suppliers = items || [];
+          const unique = !suppliers.some(
+            supplier => supplier === addTransaction.name,
+          );
 
-      if (cache) {
-        const getTypeahead = {
-          ...cache.getTypeahead,
-        };
+          if (addTransaction.category !== 'Sales' && unique) {
+            return [...suppliers, addTransaction.name].sort((a, b) =>
+              a.localeCompare(b),
+            );
+          }
 
-        if (addTransaction.category === 'Sales') {
-          const descriptions = new Set([
-            ...(cache.getTypeahead.sales === null
-              ? []
-              : cache.getTypeahead.sales),
-            addTransaction.description,
-          ]);
+          return suppliers;
+        },
+      },
+      id: cache.identify({
+        __typename: 'Typeahead',
+        id: addTransaction.companyId,
+      }),
+    });
 
-          getTypeahead.sales = [...descriptions];
-        } else {
-          const suppliers = new Set([
-            ...(cache.getTypeahead.suppliers === null
-              ? []
-              : cache.getTypeahead.suppliers),
-            addTransaction.name,
-          ]);
-          const descriptions = new Set([
-            ...(cache.getTypeahead.purchases === null
-              ? []
-              : cache.getTypeahead.purchases),
-            addTransaction.description,
-          ]);
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) => {
+          const newRef = cache.writeFragment({
+            data: addTransaction,
+            fragment: gql`
+              fragment NewTransaction on Transaction {
+                date
+                id
+              }
+            `,
+          });
 
-          getTypeahead.purchases = [...descriptions];
-          getTypeahead.suppliers = [...suppliers];
-        }
+          if (refs.some(ref => readField('id', ref) === addTransaction.id)) {
+            return refs;
+          }
 
-        client.writeQuery<IGetTypeaheadOutput, IGetTypeaheadInput>({
-          data: {
-            getTypeahead,
-          },
-          query: GET_TYPEAHEAD,
-          variables: {
-            id: addTransaction.companyId,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+          return [...refs, newRef].sort((a, b) =>
+            readField<string>('date', a)!.localeCompare(
+              readField<string>('date', b)!,
+            ),
+          );
+        },
+      },
+      id: cache.identify({
+        __typename: 'Transactions',
+        id: addTransaction.companyId,
+        status: addTransaction.status,
+      }),
+    });
   }
 };
 

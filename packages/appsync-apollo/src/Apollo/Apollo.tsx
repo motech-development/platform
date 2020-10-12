@@ -3,6 +3,7 @@ import {
   ApolloLink,
   ApolloProvider,
   InMemoryCache,
+  InMemoryCacheConfig,
   NormalizedCacheObject,
 } from '@apollo/client';
 import { createAuthLink } from 'aws-appsync-auth-link';
@@ -10,6 +11,7 @@ import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 
 export interface IApolloProps {
+  cacheConfig?: InMemoryCacheConfig;
   children: ReactNode;
   error: ReactNode;
   fallback: ReactNode;
@@ -20,6 +22,7 @@ export interface IApolloProps {
 }
 
 const Apollo: FC<IApolloProps> = ({
+  cacheConfig,
   children,
   error,
   fallback,
@@ -43,7 +46,7 @@ const Apollo: FC<IApolloProps> = ({
         },
         type: 'OPENID_CONNECT' as const,
       };
-      const cache = new InMemoryCache();
+      const cache = new InMemoryCache(cacheConfig);
       const link = ApolloLink.from([
         createAuthLink({
           auth,

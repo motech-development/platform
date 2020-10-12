@@ -21,6 +21,7 @@ export interface IGetTransactionsOutput {
       name: string;
       scheduled: boolean;
     }[];
+    status: string;
   };
 }
 
@@ -41,6 +42,7 @@ const GET_TRANSACTIONS = gql`
         name
         scheduled
       }
+      status
     }
   }
 `;

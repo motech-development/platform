@@ -16,6 +16,13 @@ const ApolloClient: FC<IApolloClientProps> = ({ children }) => {
 
   return (
     <Apollo
+      cacheConfig={{
+        typePolicies: {
+          Transactions: {
+            keyFields: ['id', 'status'],
+          },
+        },
+      }}
       error={
         <Container>
           <ErrorCard

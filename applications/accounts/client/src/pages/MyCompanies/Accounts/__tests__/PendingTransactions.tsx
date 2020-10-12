@@ -64,6 +64,7 @@ describe('PendingTransactions', () => {
                     scheduled: false,
                   },
                 ],
+                status: 'pending',
               },
             },
           },
@@ -245,6 +246,7 @@ describe('PendingTransactions', () => {
                     scheduled: false,
                   },
                 ],
+                status: 'pending',
               },
             },
           },
@@ -335,6 +337,7 @@ describe('PendingTransactions', () => {
               getTransactions: {
                 id: 'company-id',
                 items: [],
+                status: 'pending',
               },
             },
           },
