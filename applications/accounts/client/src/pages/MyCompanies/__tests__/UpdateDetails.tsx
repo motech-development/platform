@@ -39,7 +39,7 @@ describe('UpdateDetails', () => {
         data: {
           getCompanies: {
             __typename: 'Companies',
-            id: 'company-uuid',
+            id: 'user-id',
             items: [
               {
                 address: {
@@ -65,6 +65,9 @@ describe('UpdateDetails', () => {
           },
         },
         query: GET_COMPANIES,
+        variables: {
+          id: 'user-id',
+        },
       });
 
       mocks = [
@@ -80,6 +83,7 @@ describe('UpdateDetails', () => {
               deleteCompany: {
                 id: 'company-uuid',
                 name: 'New company',
+                owner: 'user-id',
               },
             },
           },

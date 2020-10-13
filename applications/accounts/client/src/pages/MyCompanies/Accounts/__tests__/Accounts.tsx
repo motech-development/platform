@@ -31,6 +31,12 @@ describe('Accounts', () => {
           __typename: 'Balance',
           currency: 'GBP',
           id: 'company-id',
+          transactions: [
+            {
+              id: 'transaction-id',
+              items: [],
+            },
+          ],
         },
         getTransactions: {
           __typename: 'Transactions',

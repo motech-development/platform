@@ -28,10 +28,14 @@ describe('AddCompany', () => {
       data: {
         getCompanies: {
           __typename: 'Companies',
+          id: 'user-id',
           items: [],
         },
       },
       query: GET_COMPANIES,
+      variables: {
+        id: 'user-id',
+      },
     });
 
     history = createMemoryHistory({
@@ -89,6 +93,7 @@ describe('AddCompany', () => {
         result: {
           data: {
             createCompany: {
+              __typename: 'Company',
               address: {
                 line1: '1 Street',
                 line2: '',
@@ -107,6 +112,7 @@ describe('AddCompany', () => {
               },
               id: 'company-uuid',
               name: 'New company',
+              owner: 'user-id',
             },
           },
         },

@@ -48,6 +48,10 @@ export const updateCache: MutationUpdaterFn<IAddClientOutput> = (
     cache.modify({
       fields: {
         items: (refs: Reference[], { readField }) => {
+          if (refs.some(ref => readField('id', ref) === createClient.id)) {
+            return refs;
+          }
+
           const newRef = cache.writeFragment({
             data: createClient,
             fragment: gql`
@@ -57,10 +61,6 @@ export const updateCache: MutationUpdaterFn<IAddClientOutput> = (
               }
             `,
           });
-
-          if (refs.some(ref => readField('id', ref) === createClient.id)) {
-            return refs;
-          }
 
           return [...refs, newRef].sort((a, b) =>
             readField<string>('name', a)!.localeCompare(

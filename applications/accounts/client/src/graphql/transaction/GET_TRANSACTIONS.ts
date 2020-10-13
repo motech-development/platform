@@ -30,6 +30,11 @@ const GET_TRANSACTIONS = gql`
     getBalance(id: $id) {
       currency
       id
+      transactions {
+        items {
+          id
+        }
+      }
     }
     getTransactions(id: $id, status: $status) {
       id

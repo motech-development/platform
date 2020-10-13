@@ -30,6 +30,12 @@ describe('PendingTransactions', () => {
           __typename: 'Balance',
           currency: 'GBP',
           id: 'company-id',
+          transactions: [
+            {
+              id: 'transaction-id',
+              items: [],
+            },
+          ],
         },
         getTransactions: {
           __typename: 'Transactions',
@@ -65,6 +71,12 @@ describe('PendingTransactions', () => {
               getBalance: {
                 currency: 'GBP',
                 id: 'company-id',
+                transactions: [
+                  {
+                    id: 'transaction-id',
+                    items: [],
+                  },
+                ],
               },
               getTransactions: {
                 id: 'company-id',
@@ -247,6 +259,12 @@ describe('PendingTransactions', () => {
               getBalance: {
                 currency: 'GBP',
                 id: 'company-id',
+                transactions: [
+                  {
+                    id: 'transaction-id',
+                    items: [],
+                  },
+                ],
               },
               getTransactions: {
                 id: 'company-id',
@@ -357,6 +375,12 @@ describe('PendingTransactions', () => {
               getBalance: {
                 currency: 'GBP',
                 id: 'company-id',
+                transactions: [
+                  {
+                    id: 'transaction-id',
+                    items: [],
+                  },
+                ],
               },
               getTransactions: {
                 id: 'company-id',
