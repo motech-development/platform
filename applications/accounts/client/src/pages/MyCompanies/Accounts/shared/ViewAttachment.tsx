@@ -1,8 +1,10 @@
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
+import { useLazyGet } from '@motech-development/axios-hooks';
 import { Button, Col, Row, useToast } from '@motech-development/breeze-ui';
+import { saveAs } from 'file-saver';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import DownloadAttachment from './DownloadAttachment';
+import FileDownload from '../../../../components/FileDownload';
 
 interface IDeleteFileInput {
   id: string;
@@ -55,6 +57,25 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
 }) => {
   const { t } = useTranslation('accounts');
   const { add } = useToast();
+  const [download] = useLazyGet<Blob>({
+    onCompleted: data => {
+      const fileName = path.split('/').pop();
+
+      saveAs(data, fileName);
+
+      add({
+        colour: 'success',
+        message: t('uploads.download.success'),
+      });
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('uploads.download.error'),
+      });
+    },
+    responseType: 'blob',
+  });
   const [
     request,
     { data: requestData, loading: requestLoading },
@@ -108,10 +129,11 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
         </Button>
 
         {requestData && (
-          <DownloadAttachment
+          <FileDownload
             loading={requestLoading}
-            path={path}
-            url={requestData.requestDownload.url}
+            onDownload={async () => {
+              await download(requestData.requestDownload.url);
+            }}
           />
         )}
       </Col>

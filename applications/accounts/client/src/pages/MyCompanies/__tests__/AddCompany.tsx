@@ -27,6 +27,7 @@ describe('AddCompany', () => {
     cache.writeQuery({
       data: {
         getCompanies: {
+          __typename: 'Companies',
           items: [],
         },
       },

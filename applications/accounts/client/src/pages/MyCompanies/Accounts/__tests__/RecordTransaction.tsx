@@ -15,6 +15,7 @@ import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
 import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
+import GET_TYPEAHEAD from '../../../../graphql/typeahead/GET_TYPEAHEAD';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import RecordTransaction, { RECORD_TRANSACTION } from '../RecordTransaction';
 import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
@@ -37,22 +38,24 @@ describe('RecordTransaction', () => {
 
     jest.spyOn(history, 'push');
 
-    cache = new InMemoryCache({});
+    cache = new InMemoryCache();
 
     cache.writeQuery({
       data: {
         getBalance: {
+          __typename: 'Balance',
           currency: 'GBP',
           id: 'company-id',
         },
         getTransactions: {
+          __typename: 'Transactions',
           id: 'company-id',
           items: [],
         },
       },
       query: GET_TRANSACTIONS,
       variables: {
-        companyId: 'company-id',
+        id: 'company-id',
         status: 'pending',
       },
     });
@@ -60,18 +63,36 @@ describe('RecordTransaction', () => {
     cache.writeQuery({
       data: {
         getBalance: {
+          __typename: 'Balance',
           currency: 'GBP',
           id: 'company-id',
         },
         getTransactions: {
+          __typename: 'Transactions',
           id: 'company-id',
           items: [],
         },
       },
       query: GET_TRANSACTIONS,
       variables: {
-        companyId: 'company-id',
+        id: 'company-id',
         status: 'confirmed',
+      },
+    });
+
+    cache.writeQuery({
+      data: {
+        getTypeahead: {
+          __typename: 'Typeahead',
+          id: 'company-id',
+          purchases: [],
+          sales: null,
+          suppliers: [],
+        },
+      },
+      query: GET_TYPEAHEAD,
+      variables: {
+        id: 'company-id',
       },
     });
 
@@ -198,6 +219,7 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               addTransaction: {
+                __typename: 'Transaction',
                 amount: -999.99,
                 attachment: 'company-id/test-id.pdf',
                 category: 'Equipment',
@@ -694,6 +716,7 @@ describe('RecordTransaction', () => {
           result: {
             data: {
               addTransaction: {
+                __typename: 'Transaction',
                 amount: 999.99,
                 attachment: '',
                 category: 'Sales',

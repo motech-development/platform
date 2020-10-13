@@ -38,6 +38,7 @@ describe('UpdateDetails', () => {
       cache.writeQuery({
         data: {
           getClients: {
+            __typename: 'Clients',
             id: 'company-id',
             items: [
               {

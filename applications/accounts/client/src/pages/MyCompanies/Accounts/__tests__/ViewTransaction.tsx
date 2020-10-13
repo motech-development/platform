@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client/cache';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -13,7 +14,9 @@ import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
+import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
 import UPDATE_TRANSACTION from '../../../../graphql/transaction/UPDATE_TRANSACTION';
+import GET_TYPEAHEAD from '../../../../graphql/typeahead/GET_TYPEAHEAD';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import { DELETE_FILE, REQUEST_DOWNLOAD } from '../shared/ViewAttachment';
 import ViewTransaction, { VIEW_TRANSACTION } from '../ViewTransaction';
@@ -23,11 +26,50 @@ jest.mock('file-saver', () => ({
 }));
 
 describe('ViewTransaction', () => {
+  let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
 
   beforeEach(() => {
+    cache = new InMemoryCache();
+
+    cache.writeQuery({
+      data: {
+        getBalance: {
+          __typename: 'Balance',
+          currency: 'GBP',
+          id: 'company-id',
+        },
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-id',
+          items: [],
+        },
+      },
+      query: GET_TRANSACTIONS,
+      variables: {
+        id: 'company-id',
+        status: 'pending',
+      },
+    });
+
+    cache.writeQuery({
+      data: {
+        getTypeahead: {
+          __typename: 'Typeahead',
+          id: 'company-id',
+          purchases: [],
+          sales: null,
+          suppliers: [],
+        },
+      },
+      query: GET_TYPEAHEAD,
+      variables: {
+        id: 'company-id',
+      },
+    });
+
     history = createMemoryHistory({
       initialEntries: ['/accounts/company-id/view-transaction/transaction-id'],
     });
@@ -168,6 +210,7 @@ describe('ViewTransaction', () => {
             result: {
               data: {
                 updateTransaction: {
+                  __typename: 'Transaction',
                   amount: -999.99,
                   attachment: '',
                   category: 'Equipment',
@@ -208,7 +251,7 @@ describe('ViewTransaction', () => {
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
             >
-              <MockedProvider mocks={mocks} addTypename={false}>
+              <MockedProvider mocks={mocks} cache={cache}>
                 <ViewTransaction />
               </MockedProvider>
             </TestProvider>,
@@ -477,6 +520,7 @@ describe('ViewTransaction', () => {
             result: {
               data: {
                 updateTransaction: {
+                  __typename: 'Transaction',
                   amount: -999.99,
                   attachment: 'path/to/attachment.pdf',
                   category: 'Equipment',
@@ -532,7 +576,7 @@ describe('ViewTransaction', () => {
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
             >
-              <MockedProvider mocks={mocks} addTypename={false}>
+              <MockedProvider mocks={mocks} cache={cache}>
                 <ViewTransaction />
               </MockedProvider>
             </TestProvider>,
@@ -786,6 +830,7 @@ describe('ViewTransaction', () => {
           result: {
             data: {
               updateTransaction: {
+                __typename: 'Transaction',
                 amount: 999.99,
                 attachment: 'path/to/attachment.pdf',
                 category: 'Sales',
@@ -838,7 +883,7 @@ describe('ViewTransaction', () => {
             path="/accounts/:companyId/view-transaction/:transactionId"
             history={history}
           >
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cache}>
               <ViewTransaction />
             </MockedProvider>
           </TestProvider>,

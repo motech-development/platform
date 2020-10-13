@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client/cache';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -15,11 +16,34 @@ import TestProvider, { add } from '../../../../utils/TestProvider';
 import PendingTransactions from '../PendingTransactions';
 
 describe('PendingTransactions', () => {
+  let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
 
   beforeEach(() => {
+    cache = new InMemoryCache();
+
+    cache.writeQuery({
+      data: {
+        getBalance: {
+          __typename: 'Balance',
+          currency: 'GBP',
+          id: 'company-id',
+        },
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-id',
+          items: [],
+        },
+      },
+      query: GET_TRANSACTIONS,
+      variables: {
+        id: 'company-id',
+        status: 'pending',
+      },
+    });
+
     history = createMemoryHistory({
       initialEntries: ['/accounts/company-id/pending-transactions'],
     });
@@ -94,7 +118,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cache}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,
@@ -268,7 +292,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cache}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,
@@ -350,7 +374,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cache}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,

@@ -22,11 +22,12 @@ describe('AddClient', () => {
   let mocks: MockedResponse[];
 
   beforeEach(async () => {
-    cache = new InMemoryCache({});
+    cache = new InMemoryCache();
 
     cache.writeQuery({
       data: {
         getClients: {
+          __typename: 'Clients',
           id: 'company-id',
           items: [],
         },
@@ -73,6 +74,7 @@ describe('AddClient', () => {
         result: {
           data: {
             createClient: {
+              __typename: 'Client',
               address: {
                 line1: '1 Street',
                 line2: '',
