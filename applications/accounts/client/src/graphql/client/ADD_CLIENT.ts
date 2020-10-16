@@ -20,7 +20,7 @@ export interface IAddClientInput {
 }
 
 export interface IAddClientOutput {
-  createClient: {
+  createClient?: {
     address: {
       line1: string;
       line2: string;
@@ -42,7 +42,7 @@ export const updateCache: MutationUpdaterFn<IAddClientOutput> = (
   cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.createClient) {
     const { createClient } = data;
 
     cache.modify({
@@ -56,6 +56,18 @@ export const updateCache: MutationUpdaterFn<IAddClientOutput> = (
             data: createClient,
             fragment: gql`
               fragment NewClient on Client {
+                address {
+                  line1
+                  line2
+                  line3
+                  line4
+                  line5
+                }
+                companyId
+                contact {
+                  email
+                  telephone
+                }
                 id
                 name
               }
