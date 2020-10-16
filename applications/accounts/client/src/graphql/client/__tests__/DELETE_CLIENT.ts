@@ -1,8 +1,8 @@
 import { InMemoryCache } from '@apollo/client/cache';
-import { updateCache } from '../ADD_CLIENT';
+import { updateCache } from '../DELETE_CLIENT';
 import GET_CLIENTS from '../GET_CLIENTS';
 
-describe('ADD_CLIENT', () => {
+describe('DELETE_CLIENT', () => {
   let cache: InMemoryCache;
 
   beforeEach(() => {
@@ -47,25 +47,13 @@ describe('ADD_CLIENT', () => {
     jest.spyOn(cache, 'modify');
   });
 
-  it('should add new client to the cache', () => {
+  it('should remove client from cache if item exists', () => {
     const input = {
       data: {
-        createClient: {
-          __typename: 'Client',
-          address: {
-            line1: '1 Street',
-            line2: '',
-            line3: 'Town',
-            line4: 'County',
-            line5: 'KT1 1NE',
-          },
+        deleteClient: {
           companyId: 'company-id',
-          contact: {
-            email: 'info@contact.com',
-            telephone: '07712345678',
-          },
-          id: 'client-2',
-          name: 'Client 2',
+          id: 'client-1',
+          name: 'Client 1',
         },
       },
     };
@@ -83,40 +71,7 @@ describe('ADD_CLIENT', () => {
       getClients: {
         __typename: 'Clients',
         id: 'company-id',
-        items: [
-          {
-            __typename: 'Client',
-            address: {
-              line1: '1 Street',
-              line2: '',
-              line3: 'Town',
-              line4: 'County',
-              line5: 'KT1 1NE',
-            },
-            contact: {
-              email: 'info@contact.com',
-              telephone: '07712345678',
-            },
-            id: 'client-1',
-            name: 'Client 1',
-          },
-          {
-            __typename: 'Client',
-            address: {
-              line1: '1 Street',
-              line2: '',
-              line3: 'Town',
-              line4: 'County',
-              line5: 'KT1 1NE',
-            },
-            contact: {
-              email: 'info@contact.com',
-              telephone: '07712345678',
-            },
-            id: 'client-2',
-            name: 'Client 2',
-          },
-        ],
+        items: [],
       },
       getCompany: {
         __typename: 'Company',
@@ -126,24 +81,12 @@ describe('ADD_CLIENT', () => {
     });
   });
 
-  it('should not update cache if id already exists', () => {
+  it('should not remove client from cache if item does not exist', () => {
     const input = {
       data: {
-        createClient: {
-          __typename: 'Client',
-          address: {
-            line1: '1 Street',
-            line2: '',
-            line3: 'Town',
-            line4: 'County',
-            line5: 'KT1 1NE',
-          },
+        deleteClient: {
           companyId: 'company-id',
-          contact: {
-            email: 'info@contact.com',
-            telephone: '07712345678',
-          },
-          id: 'client-1',
+          id: 'client-2',
           name: 'Client 2',
         },
       },

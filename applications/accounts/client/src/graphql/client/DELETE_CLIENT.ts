@@ -5,7 +5,7 @@ export interface IDeleteClientInput {
 }
 
 export interface IDeleteClientOutput {
-  deleteClient: {
+  deleteClient?: {
     companyId: string;
     id: string;
     name: string;
@@ -16,7 +16,7 @@ export const updateCache: MutationUpdaterFn<IDeleteClientOutput> = (
   cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.deleteClient) {
     const { deleteClient } = data;
 
     cache.modify({
