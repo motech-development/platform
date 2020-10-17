@@ -68,16 +68,18 @@ const UpdateDetails: FC = () => {
     { error: deleteError, loading: deleteLoading },
   ] = useMutation<IDeleteClientOutput, IDeleteClientInput>(DELETE_CLIENT, {
     onCompleted: ({ deleteClient }) => {
-      const { companyId, name } = deleteClient;
+      if (deleteClient) {
+        const { companyId, name } = deleteClient;
 
-      add({
-        colour: 'success',
-        message: t('delete-client.success', {
-          name,
-        }),
-      });
+        add({
+          colour: 'success',
+          message: t('delete-client.success', {
+            name,
+          }),
+        });
 
-      history.push(backTo(companyId));
+        history.push(backTo(companyId));
+      }
     },
     onError: () => {
       add({

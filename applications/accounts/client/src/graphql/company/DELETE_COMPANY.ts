@@ -5,7 +5,7 @@ export interface IDeleteCompanyInput {
 }
 
 export interface IDeleteCompanyOutput {
-  deleteCompany: {
+  deleteCompany?: {
     id: string;
     name: string;
     owner: string;
@@ -16,7 +16,7 @@ export const updateCache: MutationUpdaterFn<IDeleteCompanyOutput> = (
   cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.deleteCompany) {
     const { deleteCompany } = data;
 
     cache.modify({

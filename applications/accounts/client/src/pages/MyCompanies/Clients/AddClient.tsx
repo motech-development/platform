@@ -26,16 +26,18 @@ const AddClient: FC = () => {
     IAddClientInput
   >(ADD_CLIENT, {
     onCompleted: ({ createClient }) => {
-      const { companyId: id, name } = createClient;
+      if (createClient) {
+        const { companyId: id, name } = createClient;
 
-      add({
-        colour: 'success',
-        message: t('add-client.success', {
-          name,
-        }),
-      });
+        add({
+          colour: 'success',
+          message: t('add-client.success', {
+            name,
+          }),
+        });
 
-      history.push(backTo(id));
+        history.push(backTo(id));
+      }
     },
   });
   const save = async (input: FormSchema) => {

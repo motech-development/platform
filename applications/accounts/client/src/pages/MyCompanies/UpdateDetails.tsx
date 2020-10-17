@@ -59,16 +59,18 @@ const UpdateDetails: FC = () => {
     IDeleteCompanyInput
   >(DELETE_COMPANY, {
     onCompleted: ({ deleteCompany }) => {
-      const { name } = deleteCompany;
+      if (deleteCompany) {
+        const { name } = deleteCompany;
 
-      add({
-        colour: 'success',
-        message: t('delete-company.success', {
-          name,
-        }),
-      });
+        add({
+          colour: 'success',
+          message: t('delete-company.success', {
+            name,
+          }),
+        });
 
-      history.push('/my-companies');
+        history.push('/my-companies');
+      }
     },
     onError: () => {
       add({

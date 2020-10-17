@@ -41,7 +41,7 @@ export interface IAddCompanyInput {
 }
 
 export interface IAddCompanyOutput {
-  createCompany: {
+  createCompany?: {
     address: {
       line1: string;
       line2: string;
@@ -68,7 +68,7 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
   cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.createCompany) {
     const { createCompany } = data;
 
     cache.modify({
@@ -82,6 +82,22 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
             data: createCompany,
             fragment: gql`
               fragment NewCompany on Company {
+                address {
+                  line1
+                  line2
+                  line3
+                  line4
+                  line5
+                }
+                bank {
+                  accountNumber
+                  sortCode
+                }
+                companyNumber
+                contact {
+                  email
+                  telephone
+                }
                 id
                 name
               }

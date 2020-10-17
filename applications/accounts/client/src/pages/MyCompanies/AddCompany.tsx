@@ -20,16 +20,18 @@ const AddCompany: FC = () => {
     IAddCompanyInput
   >(ADD_COMPANY, {
     onCompleted: ({ createCompany }) => {
-      const { id, name } = createCompany;
+      if (createCompany) {
+        const { id, name } = createCompany;
 
-      add({
-        colour: 'success',
-        message: t('add-company.success', {
-          name,
-        }),
-      });
+        add({
+          colour: 'success',
+          message: t('add-company.success', {
+            name,
+          }),
+        });
 
-      history.push(`/my-companies/dashboard/${id}`);
+        history.push(`/my-companies/dashboard/${id}`);
+      }
     },
   });
   const save = async (input: FormSchema) => {
