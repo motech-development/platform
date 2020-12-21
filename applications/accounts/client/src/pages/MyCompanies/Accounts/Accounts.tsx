@@ -76,7 +76,7 @@ const Accounts: FC = () => {
 
   return (
     <Connected error={error} loading={loading}>
-      {data && (
+      {data?.getBalance && (
         <>
           <PageTitle
             title={t('accounts.title')}

@@ -49,14 +49,16 @@ const SelectAccount: FC = () => {
     IUpdateBankSettingsInput
   >(UPDATE_BANK_SETTINGS, {
     onCompleted: ({ updateBankSettings }) => {
-      const { id } = updateBankSettings;
+      if (updateBankSettings) {
+        const { id } = updateBankSettings;
 
-      add({
-        colour: 'success',
-        message: t('select-account.success'),
-      });
+        add({
+          colour: 'success',
+          message: t('select-account.success'),
+        });
 
-      history.push(`/my-companies/settings/${id}`);
+        history.push(`/my-companies/settings/${id}`);
+      }
     },
   });
   const selectAccount = (account: string) => {
@@ -86,7 +88,7 @@ const SelectAccount: FC = () => {
 
   return (
     <Connected error={error} loading={loading}>
-      {data && (
+      {data?.getBankAccounts && (
         <>
           <PageTitle
             title={t('select-account.title')}

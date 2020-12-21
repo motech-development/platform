@@ -5,7 +5,7 @@ export interface IGetClientInput {
 }
 
 export interface IGetClientOutput {
-  getClient: {
+  getClient?: {
     address: {
       line1: string;
       line2: string;

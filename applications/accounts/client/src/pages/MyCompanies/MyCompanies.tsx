@@ -29,67 +29,70 @@ const MyCompanies: FC = () => {
 
   return (
     <Connected error={error} loading={loading}>
-      <PageTitle
-        title={t('my-companies.title')}
-        subTitle={t('my-companies.sub-title')}
-      />
-
-      <Masonry xs={1} sm={2} md={3} lg={4}>
+      {data?.getCompanies && (
         <>
-          <Card padding="lg">
-            <Typography rule component="h3" variant="h3" margin="lg">
-              {t('my-companies.new-company')}
-            </Typography>
+          <PageTitle
+            title={t('my-companies.title')}
+            subTitle={t('my-companies.sub-title')}
+          />
 
-            <Typography component="p" variant="lead" margin="none">
-              {t('my-companies.enroll-text')}
-            </Typography>
-          </Card>
-
-          <LinkButton block to="/my-companies/add-company" size="lg">
-            {t('my-companies.add-company')}
-          </LinkButton>
-        </>
-
-        {data &&
-          data.getCompanies.items.map(({ companyNumber, id, name }) => (
-            <Fragment key={id}>
+          <Masonry xs={1} sm={2} md={3} lg={4}>
+            <>
               <Card padding="lg">
-                <Typography
-                  rule
-                  component="h3"
-                  variant="h3"
-                  align="center"
-                  margin="lg"
-                >
-                  {name}
+                <Typography rule component="h3" variant="h3" margin="lg">
+                  {t('my-companies.new-company')}
                 </Typography>
 
-                <Typography component="h4" variant="h5" align="center">
-                  {t('my-companies.company-number')}
-                </Typography>
-
-                <Typography
-                  component="p"
-                  variant="p"
-                  align="center"
-                  margin="none"
-                >
-                  {companyNumber}
+                <Typography component="p" variant="lead" margin="none">
+                  {t('my-companies.enroll-text')}
                 </Typography>
               </Card>
 
-              <LinkButton
-                block
-                data-test-id={name}
-                to={`/my-companies/dashboard/${id}`}
-                size="lg"
-              >
-                {t('my-companies.select-company')}
+              <LinkButton block to="/my-companies/add-company" size="lg">
+                {t('my-companies.add-company')}
               </LinkButton>
-            </Fragment>
-          ))}
-      </Masonry>
+            </>
+
+            {data.getCompanies.items.map(({ companyNumber, id, name }) => (
+              <Fragment key={id}>
+                <Card padding="lg">
+                  <Typography
+                    rule
+                    component="h3"
+                    variant="h3"
+                    align="center"
+                    margin="lg"
+                  >
+                    {name}
+                  </Typography>
+
+                  <Typography component="h4" variant="h5" align="center">
+                    {t('my-companies.company-number')}
+                  </Typography>
+
+                  <Typography
+                    component="p"
+                    variant="p"
+                    align="center"
+                    margin="none"
+                  >
+                    {companyNumber}
+                  </Typography>
+                </Card>
+
+                <LinkButton
+                  block
+                  data-test-id={name}
+                  to={`/my-companies/dashboard/${id}`}
+                  size="lg"
+                >
+                  {t('my-companies.select-company')}
+                </LinkButton>
+              </Fragment>
+            ))}
+          </Masonry>
+        </>
+      )}
     </Connected>
   );
 };

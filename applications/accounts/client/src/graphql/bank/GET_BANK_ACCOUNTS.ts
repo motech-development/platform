@@ -5,7 +5,7 @@ export interface IGetBankAccountsInput {
 }
 
 export interface IGetBankAccountsOutput {
-  getBankAccounts: {
+  getBankAccounts?: {
     items: {
       accountIdentifications: {
         identification: string;

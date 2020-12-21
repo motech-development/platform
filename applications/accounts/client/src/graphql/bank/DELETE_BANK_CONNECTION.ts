@@ -5,7 +5,7 @@ export interface IDeleteBankConnectionInput {
 }
 
 export interface IDeleteBankConnectionOutput {
-  deleteBankConnection: {
+  deleteBankConnection?: {
     account: string;
     bank: string;
     id: string;

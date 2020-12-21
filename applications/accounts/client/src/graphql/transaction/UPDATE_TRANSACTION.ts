@@ -17,7 +17,7 @@ export interface IUpdateTransactionInput {
 }
 
 export interface IUpdateTransactionOutput {
-  updateTransaction: {
+  updateTransaction?: {
     amount: number;
     attachment: string;
     category: string;
@@ -36,7 +36,7 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
   cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.updateTransaction) {
     const { updateTransaction } = data;
     const otherStatus =
       updateTransaction.status === 'confirmed' ? 'pending' : 'confirmed';

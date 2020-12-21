@@ -42,16 +42,18 @@ const UpdateDetails: FC = () => {
     { error: updateError, loading: updateLoading },
   ] = useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY, {
     onCompleted: ({ updateCompany }) => {
-      const { id, name } = updateCompany;
+      if (updateCompany) {
+        const { id, name } = updateCompany;
 
-      add({
-        colour: 'success',
-        message: t('update-details.success', {
-          name,
-        }),
-      });
+        add({
+          colour: 'success',
+          message: t('update-details.success', {
+            name,
+          }),
+        });
 
-      history.push(backTo(id));
+        history.push(backTo(id));
+      }
     },
   });
   const [deleteMutation, { loading: deleteLoading }] = useMutation<
@@ -111,7 +113,7 @@ const UpdateDetails: FC = () => {
 
   return (
     <Connected error={error || updateError} loading={loading}>
-      {data && (
+      {data?.getCompany && (
         <>
           <PageTitle
             title={data.getCompany.name}

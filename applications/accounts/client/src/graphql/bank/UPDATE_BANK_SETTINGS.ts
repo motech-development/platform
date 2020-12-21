@@ -11,7 +11,7 @@ export interface IUpdateBankSettingsInput {
 }
 
 export interface IUpdateBankSettingsOutput {
-  updateBankSettings: {
+  updateBankSettings?: {
     account: string;
     id: string;
     user: string;

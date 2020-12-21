@@ -5,7 +5,7 @@ export interface IGetBankSettingsInput {
 }
 
 export interface IGetBankSettingsOutput {
-  getBankSettings: {
+  getBankSettings?: {
     account: string;
     id: string;
     user: string;

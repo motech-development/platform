@@ -17,7 +17,7 @@ export interface IAddTransactionInput {
 }
 
 export interface IAddTransactionOutput {
-  addTransaction: {
+  addTransaction?: {
     amount: number;
     attachment: string;
     category: string;
@@ -36,7 +36,7 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
   cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.addTransaction) {
     const { addTransaction } = data;
 
     cache.modify({

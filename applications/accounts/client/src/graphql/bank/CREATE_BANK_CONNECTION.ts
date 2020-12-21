@@ -10,7 +10,7 @@ export interface ICreateBankConnectionInput {
 }
 
 export interface ICreateBankConnectionOutput {
-  createBankConnection: {
+  createBankConnection?: {
     status: string;
   };
 }

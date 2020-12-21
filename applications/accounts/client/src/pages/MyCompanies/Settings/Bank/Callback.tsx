@@ -25,12 +25,14 @@ const Callback: FC = () => {
     IUpdateBankSettingsInput
   >(UPDATE_BANK_SETTINGS, {
     onCompleted: ({ updateBankSettings }) => {
-      const { id, user } = updateBankSettings;
+      if (updateBankSettings) {
+        const { id, user } = updateBankSettings;
 
-      if (user) {
-        history.push(`/my-companies/settings/${id}/bank/select-account`);
-      } else {
-        setError(true);
+        if (user) {
+          history.push(`/my-companies/settings/${id}/bank/select-account`);
+        } else {
+          setError(true);
+        }
       }
     },
   });

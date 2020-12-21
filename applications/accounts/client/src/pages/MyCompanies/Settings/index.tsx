@@ -28,7 +28,7 @@ const Routes: FC = () => {
 
   return (
     <Connected error={error} loading={loading}>
-      {data && (
+      {data?.getBankSettings && (
         <Switch>
           <ConditionalRoute
             component={Bank}

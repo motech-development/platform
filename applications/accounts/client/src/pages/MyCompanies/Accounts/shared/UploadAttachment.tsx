@@ -17,7 +17,7 @@ interface IRequestUploadInput {
 }
 
 interface IRequestUploadOutput {
-  requestUpload: {
+  requestUpload?: {
     id: string;
     url: string;
   };
@@ -97,7 +97,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
               },
             });
 
-            if (data) {
+            if (data?.requestUpload) {
               const { requestUpload } = data;
               const headers = {
                 'Content-Type': file.type,

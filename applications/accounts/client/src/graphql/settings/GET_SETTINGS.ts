@@ -5,17 +5,17 @@ export interface IGetSettingsInput {
 }
 
 export interface IGetSettingsOutput {
-  getBankSettings: {
+  getBankSettings?: {
     account: string;
     bank: string;
     id: string;
     user: string;
   };
-  getCompany: {
+  getCompany?: {
     id: string;
     name: string;
   };
-  getSettings: {
+  getSettings?: {
     categories: {
       name: string;
       protect: boolean;

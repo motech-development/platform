@@ -56,7 +56,7 @@ const Dashboard: FC = () => {
 
   return (
     <Connected error={error} loading={loading}>
-      {data && (
+      {data?.getCompany && (
         <>
           <PageTitle title={data.getCompany.name} subTitle={t('sub-title')} />
 

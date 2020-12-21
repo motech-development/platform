@@ -7,7 +7,7 @@ export interface IGetCompaniesInput {
 }
 
 export interface IGetCompaniesOutput {
-  getCompanies: {
+  getCompanies?: {
     id: string;
     items: {
       address: {

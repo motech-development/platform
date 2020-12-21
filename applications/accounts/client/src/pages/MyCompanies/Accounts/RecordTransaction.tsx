@@ -21,13 +21,13 @@ interface IRecordTransactionInput {
 }
 
 interface IRecordTransactionOutput {
-  getClients: {
+  getClients?: {
     items: {
       id: string;
       name: string;
     }[];
   };
-  getSettings: {
+  getSettings?: {
     categories: {
       name: string;
       vatRate: number;
@@ -36,7 +36,7 @@ interface IRecordTransactionOutput {
       pay: number;
     };
   };
-  getTypeahead: {
+  getTypeahead?: {
     purchases: string[];
     sales: string[];
     suppliers: string[];
@@ -105,12 +105,14 @@ const RecordTransaction: FC = () => {
   >(ADD_TRANSACTION, {
     awaitRefetchQueries: true,
     onCompleted: ({ addTransaction }) => {
-      add({
-        colour: 'success',
-        message: t('record-transaction.success'),
-      });
+      if (addTransaction) {
+        add({
+          colour: 'success',
+          message: t('record-transaction.success'),
+        });
 
-      history.push(backTo(addTransaction.companyId, addTransaction.status));
+        history.push(backTo(addTransaction.companyId, addTransaction.status));
+      }
     },
     refetchQueries: () => [
       {
@@ -149,21 +151,21 @@ const RecordTransaction: FC = () => {
               />
             }
             backTo={backTo(companyId)}
-            categories={data.getSettings.categories.map(
+            categories={data.getSettings?.categories.map(
               ({ name, vatRate }) => ({
                 name,
                 value: vatRate.toFixed(2),
               }),
             )}
-            clients={data.getClients.items.map(({ name }) => ({
+            clients={data.getClients?.items.map(({ name }) => ({
               name,
               value: name,
             }))}
             companyId={companyId}
             loading={addLoading}
-            purchases={data.getTypeahead.purchases}
-            sales={data.getTypeahead.sales}
-            suppliers={data.getTypeahead.suppliers}
+            purchases={data.getTypeahead?.purchases}
+            sales={data.getTypeahead?.sales}
+            suppliers={data.getTypeahead?.suppliers}
             uploader={
               <UploadAttachment
                 id={companyId}
@@ -171,7 +173,7 @@ const RecordTransaction: FC = () => {
                 onUpload={setAttachment}
               />
             }
-            vat={data.getSettings.vat.pay}
+            vat={data.getSettings?.vat.pay}
             onSave={save}
           />
         </>

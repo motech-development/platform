@@ -5,7 +5,7 @@ export interface IGetCompanyInput {
 }
 
 export interface IGetCompanyOutput {
-  getCompany: {
+  getCompany?: {
     address: {
       line1: string;
       line2: string;

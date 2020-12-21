@@ -102,101 +102,105 @@ const PendingTransaction: FC = () => {
           />
 
           <Row>
-            <Col>
-              <DataTable
-                items={data.getTransactions.items}
-                header={
-                  <>
-                    <TableCell as="th" colSpan={2}>
-                      {t('pending-transactions.transactions.name')}
-                    </TableCell>
-                    <TableCell as="th">
-                      {t('pending-transactions.transactions.date')}
-                    </TableCell>
-                    <TableCell as="th" align="right">
-                      {t('pending-transactions.transactions.amount')}
-                    </TableCell>
-                    <TableCell as="th">
-                      {t('pending-transactions.transactions.actions')}
-                    </TableCell>
-                  </>
-                }
-                row={({
-                  amount,
-                  attachment,
-                  date,
-                  description,
-                  id,
-                  name,
-                  scheduled,
-                }) => (
-                  <>
-                    <TransactionArrow value={amount} />
+            {data.getTransactions && (
+              <Col>
+                <DataTable
+                  items={data.getTransactions.items}
+                  header={
+                    <>
+                      <TableCell as="th" colSpan={2}>
+                        {t('pending-transactions.transactions.name')}
+                      </TableCell>
+                      <TableCell as="th">
+                        {t('pending-transactions.transactions.date')}
+                      </TableCell>
+                      <TableCell as="th" align="right">
+                        {t('pending-transactions.transactions.amount')}
+                      </TableCell>
+                      <TableCell as="th">
+                        {t('pending-transactions.transactions.actions')}
+                      </TableCell>
+                    </>
+                  }
+                  row={({
+                    amount,
+                    attachment,
+                    date,
+                    description,
+                    id,
+                    name,
+                    scheduled,
+                  }) => (
+                    <>
+                      <TransactionArrow value={amount} />
 
-                    <TransactionDetailsCell>
-                      <WarningText
-                        id={id}
-                        component="p"
-                        margin="none"
-                        message={t(
-                          'pending-transactions.transactions.no-attachment',
-                        )}
-                        placement="right"
-                        show={!attachment}
-                        variant="h6"
-                      >
-                        {name}
-                      </WarningText>
+                      <TransactionDetailsCell>
+                        <WarningText
+                          id={id}
+                          component="p"
+                          margin="none"
+                          message={t(
+                            'pending-transactions.transactions.no-attachment',
+                          )}
+                          placement="right"
+                          show={!attachment}
+                          variant="h6"
+                        >
+                          {name}
+                        </WarningText>
 
-                      <Typography
-                        truncate
-                        component="p"
-                        variant="p"
-                        margin="none"
-                      >
-                        {description}
-                      </Typography>
-                    </TransactionDetailsCell>
+                        <Typography
+                          truncate
+                          component="p"
+                          variant="p"
+                          margin="none"
+                        >
+                          {description}
+                        </Typography>
+                      </TransactionDetailsCell>
 
-                    <TableCell>
-                      <Scheduled
-                        id={id}
-                        message={t(
-                          'pending-transactions.transactions.scheduled',
-                        )}
-                        placement="right"
-                        show={scheduled}
-                        value={date}
-                      />
-                    </TableCell>
+                      <TableCell>
+                        <Scheduled
+                          id={id}
+                          message={t(
+                            'pending-transactions.transactions.scheduled',
+                          )}
+                          placement="right"
+                          show={scheduled}
+                          value={date}
+                        />
+                      </TableCell>
 
-                    <TableCell align="right">
-                      <Currency
-                        currency={data.getBalance.currency}
-                        value={amount}
-                      />
-                    </TableCell>
+                      {data.getBalance && (
+                        <TableCell align="right">
+                          <Currency
+                            currency={data.getBalance.currency}
+                            value={amount}
+                          />
+                        </TableCell>
+                      )}
 
-                    <TableCell>
-                      <LinkButton
-                        to={`/my-companies/accounts/${companyId}/view-transaction/${id}`}
-                        size="sm"
-                      >
-                        {t('pending-transactions.transactions.view')}
-                      </LinkButton>{' '}
-                      <Button
-                        colour="danger"
-                        size="sm"
-                        onClick={() => launchDeleteModal(id, name)}
-                      >
-                        {t('pending-transactions.transactions.delete')}
-                      </Button>
-                    </TableCell>
-                  </>
-                )}
-                noResults={<NoTransactions />}
-              />
-            </Col>
+                      <TableCell>
+                        <LinkButton
+                          to={`/my-companies/accounts/${companyId}/view-transaction/${id}`}
+                          size="sm"
+                        >
+                          {t('pending-transactions.transactions.view')}
+                        </LinkButton>{' '}
+                        <Button
+                          colour="danger"
+                          size="sm"
+                          onClick={() => launchDeleteModal(id, name)}
+                        >
+                          {t('pending-transactions.transactions.delete')}
+                        </Button>
+                      </TableCell>
+                    </>
+                  )}
+                  noResults={<NoTransactions />}
+                />
+              </Col>
+            )}
 
             <Col>
               <Row>

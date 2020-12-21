@@ -34,12 +34,12 @@ interface IViewTransactionInput {
 }
 
 interface IViewTransactionOutput {
-  getClients: {
+  getClients?: {
     items: {
       name: string;
     }[];
   };
-  getSettings: {
+  getSettings?: {
     categories: {
       name: string;
       vatRate: number;
@@ -49,7 +49,7 @@ interface IViewTransactionOutput {
       pay: number;
     };
   };
-  getTransaction: {
+  getTransaction?: {
     amount: number;
     attachment: string;
     category: string;
@@ -62,7 +62,7 @@ interface IViewTransactionOutput {
     status: string;
     vat: number;
   };
-  getTypeahead: {
+  getTypeahead?: {
     purchases: string[];
     sales: string[];
     suppliers: string[];
@@ -122,7 +122,7 @@ const ViewTransaction: FC = () => {
   const [modal, setModal] = useState(false);
   const { t } = useTranslation('accounts');
   const { add } = useToast();
-  const backTo = (id: string, status: string) => {
+  const backTo = (id: string, status?: string) => {
     const pending = status === 'pending';
     const location = `/my-companies/accounts/${id}`;
 
@@ -137,7 +137,9 @@ const ViewTransaction: FC = () => {
     IViewTransactionInput
   >(VIEW_TRANSACTION, {
     onCompleted: ({ getTransaction }) => {
-      setAttachment(getTransaction.attachment || '');
+      if (getTransaction) {
+        setAttachment(getTransaction.attachment || '');
+      }
     },
     variables: {
       companyId,
@@ -152,14 +154,16 @@ const ViewTransaction: FC = () => {
     {
       awaitRefetchQueries: true,
       onCompleted: ({ updateTransaction }) => {
-        add({
-          colour: 'success',
-          message: t('view-transaction.success'),
-        });
+        if (updateTransaction) {
+          add({
+            colour: 'success',
+            message: t('view-transaction.success'),
+          });
 
-        history.push(
-          backTo(updateTransaction.companyId, updateTransaction.status),
-        );
+          history.push(
+            backTo(updateTransaction.companyId, updateTransaction.status),
+          );
+        }
       },
       refetchQueries: () => [
         {
@@ -177,14 +181,16 @@ const ViewTransaction: FC = () => {
   >(DELETE_TRANSACTION, {
     awaitRefetchQueries: true,
     onCompleted: ({ deleteTransaction }) => {
-      add({
-        colour: 'success',
-        message: t('delete-transaction.success'),
-      });
+      if (deleteTransaction) {
+        add({
+          colour: 'success',
+          message: t('delete-transaction.success'),
+        });
 
-      history.push(
-        backTo(deleteTransaction.companyId, deleteTransaction.status),
-      );
+        history.push(
+          backTo(deleteTransaction.companyId, deleteTransaction.status),
+        );
+      }
     },
     onError: () => {
       add({
@@ -244,23 +250,23 @@ const ViewTransaction: FC = () => {
                     onDelete={setAttachment}
                   />
                 }
-                backTo={backTo(companyId, data.getTransaction.status)}
-                categories={data.getSettings.categories.map(
+                backTo={backTo(companyId, data.getTransaction?.status)}
+                categories={data.getSettings?.categories.map(
                   ({ name, vatRate }) => ({
                     name,
                     value: vatRate.toFixed(2),
                   }),
                 )}
-                clients={data.getClients.items.map(({ name }) => ({
+                clients={data.getClients?.items.map(({ name }) => ({
                   name,
                   value: name,
                 }))}
                 companyId={companyId}
                 initialValues={data.getTransaction}
                 loading={mutationLoading}
-                purchases={data.getTypeahead.purchases}
-                sales={data.getTypeahead.sales}
-                suppliers={data.getTypeahead.suppliers}
+                purchases={data.getTypeahead?.purchases}
+                sales={data.getTypeahead?.sales}
+                suppliers={data.getTypeahead?.suppliers}
                 uploader={
                   <UploadAttachment
                     id={companyId}
@@ -269,7 +275,7 @@ const ViewTransaction: FC = () => {
                     transactionId={transactionId}
                   />
                 }
-                vat={data.getSettings.vat.pay}
+                vat={data.getSettings?.vat.pay}
                 onSave={save}
               />
             </Col>
@@ -286,15 +292,17 @@ const ViewTransaction: FC = () => {
             </Col>
           </Row>
 
-          <DeleteItem
-            title={t('delete-transaction.title')}
-            warning={t('delete-transaction.warning')}
-            display={modal}
-            loading={deleteLoading}
-            name={data.getTransaction.name}
-            onDelete={onDelete}
-            onDismiss={onDismiss}
-          />
+          {data.getTransaction && (
+            <DeleteItem
+              title={t('delete-transaction.title')}
+              warning={t('delete-transaction.warning')}
+              display={modal}
+              loading={deleteLoading}
+              name={data.getTransaction.name}
+              onDelete={onDelete}
+              onDismiss={onDismiss}
+            />
+          )}
         </>
       )}
     </Connected>

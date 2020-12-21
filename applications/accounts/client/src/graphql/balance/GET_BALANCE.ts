@@ -5,7 +5,7 @@ export interface IGetBalanceInput {
 }
 
 export interface IGetBalanceOutput {
-  getBalance: {
+  getBalance?: {
     balance: number;
     currency: string;
     id: string;

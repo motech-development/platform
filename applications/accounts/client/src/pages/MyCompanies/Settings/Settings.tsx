@@ -44,14 +44,16 @@ const Settings: FC = () => {
     UPDATE_SETTINGS,
     {
       onCompleted: ({ updateSettings }) => {
-        const { id } = updateSettings;
+        if (updateSettings) {
+          const { id } = updateSettings;
 
-        add({
-          colour: 'success',
-          message: t('settings.success'),
-        });
+          add({
+            colour: 'success',
+            message: t('settings.success'),
+          });
 
-        history.push(backTo(id));
+          history.push(backTo(id));
+        }
       },
     },
   );
@@ -90,7 +92,7 @@ const Settings: FC = () => {
   };
 
   useEffect(() => {
-    if (data) {
+    if (data?.getBankSettings) {
       setConnected(!!data.getBankSettings.account);
     }
   }, [data]);
@@ -99,24 +101,28 @@ const Settings: FC = () => {
     <Connected error={error || updateError} loading={loading}>
       {data && (
         <>
-          <PageTitle
-            title={t('settings.title')}
-            subTitle={data.getCompany.name}
-          />
+          {data.getCompany && (
+            <PageTitle
+              title={t('settings.title')}
+              subTitle={data.getCompany.name}
+            />
+          )}
 
-          <SettingsForm
-            backTo={backTo(companyId)}
-            bank={{
-              connected,
-              disconnectLoading,
-              link: `/my-companies/settings/${companyId}/bank`,
-              name: data.getBankSettings.bank,
-              onDisconnect: () => onDisconnect(companyId),
-            }}
-            initialValues={data.getSettings}
-            loading={updateLoading}
-            onSave={save}
-          />
+          {data.getBankSettings && data.getSettings && (
+            <SettingsForm
+              backTo={backTo(companyId)}
+              bank={{
+                connected,
+                disconnectLoading,
+                link: `/my-companies/settings/${companyId}/bank`,
+                name: data.getBankSettings.bank,
+                onDisconnect: () => onDisconnect(companyId),
+              }}
+              initialValues={data.getSettings}
+              loading={updateLoading}
+              onSave={save}
+            />
+          )}
         </>
       )}
     </Connected>

@@ -29,7 +29,7 @@ interface IOnNotificationInput {
 }
 
 interface IOnNotificationOutput {
-  onNotification: {
+  onNotification?: {
     createdAt: string;
     id: string;
     message: string;
@@ -58,7 +58,7 @@ interface IGetNotificationsInput {
 }
 
 interface IGetNotificationsOutput {
-  getNotifications: {
+  getNotifications?: {
     id: string;
     items: {
       createdAt: string;
@@ -88,7 +88,7 @@ interface IMarkAsReadInput {
 }
 
 interface IMarkAsReadOutput {
-  markAsRead: {
+  markAsRead?: {
     items: {
       id: string;
       read: boolean;
@@ -131,7 +131,10 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
       subscribeToMore<IOnNotificationOutput, IOnNotificationInput>({
         document: ON_NOTIFICATION,
         updateQuery: (prev, { subscriptionData }) => {
-          if (!subscriptionData.data) {
+          if (
+            !subscriptionData.data?.onNotification ||
+            !prev.getNotifications
+          ) {
             return prev;
           }
 
@@ -152,7 +155,7 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
     [id, subscribeToMore],
   );
 
-  if (!data) {
+  if (!data?.getNotifications) {
     return null;
   }
 

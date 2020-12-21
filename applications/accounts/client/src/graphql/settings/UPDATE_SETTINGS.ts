@@ -22,7 +22,7 @@ export interface IUpdateSettingsInput {
 }
 
 export interface IUpdateSettingsOutput {
-  updateSettings: {
+  updateSettings?: {
     categories: {
       name: string;
       protect: boolean;

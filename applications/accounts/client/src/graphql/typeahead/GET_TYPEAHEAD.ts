@@ -5,7 +5,7 @@ export interface IGetTypeaheadInput {
 }
 
 export interface IGetTypeaheadOutput {
-  getTypeahead: {
+  getTypeahead?: {
     id: string;
     purchases: string[] | null;
     sales: string[] | null;

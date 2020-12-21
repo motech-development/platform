@@ -12,7 +12,7 @@ interface IDeleteFileInput {
 }
 
 interface IDeleteFileOutput {
-  deleteFile: {
+  deleteFile?: {
     path: string;
   };
 }
@@ -31,7 +31,7 @@ interface IRequestDownloadInput {
 }
 
 interface IRequestDownloadOutput {
-  requestDownload: {
+  requestDownload?: {
     url: string;
   };
 }
@@ -132,7 +132,9 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
           <FileDownload
             loading={requestLoading}
             onDownload={async () => {
-              await download(requestData.requestDownload.url);
+              if (requestData.requestDownload) {
+                await download(requestData.requestDownload.url);
+              }
             }}
           />
         )}

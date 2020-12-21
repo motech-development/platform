@@ -20,7 +20,7 @@ export interface IUpdateClientInput {
 }
 
 export interface IUpdateClientOutput {
-  updateClient: {
+  updateClient?: {
     address: {
       line1: string;
       line2: string;

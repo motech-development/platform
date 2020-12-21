@@ -6,11 +6,11 @@ export interface IGetTransactionsInput {
 }
 
 export interface IGetTransactionsOutput {
-  getBalance: {
+  getBalance?: {
     currency: string;
     id: string;
   };
-  getTransactions: {
+  getTransactions?: {
     id: string;
     items: {
       amount: number;

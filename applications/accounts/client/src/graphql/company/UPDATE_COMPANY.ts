@@ -24,7 +24,7 @@ export interface IUpdateCompanyInput {
 }
 
 export interface IUpdateCompanyOutput {
-  updateCompany: {
+  updateCompany?: {
     address: {
       line1: string;
       line2: string;

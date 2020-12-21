@@ -5,7 +5,7 @@ export interface IDeleteTransactionInput {
 }
 
 export interface IDeleteTransactionOutput {
-  deleteTransaction: {
+  deleteTransaction?: {
     companyId: string;
     id: string;
     status: string;
@@ -20,7 +20,7 @@ export const updateCache: MutationUpdaterFn<IDeleteTransactionOutput> = (
   cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.deleteTransaction) {
     const { deleteTransaction } = data;
 
     cache.modify({

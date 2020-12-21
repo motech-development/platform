@@ -7,7 +7,7 @@ export interface IGetClientsInput {
 }
 
 export interface IGetClientsOutput {
-  getClients: {
+  getClients?: {
     id: string;
     items: {
       address: {
@@ -26,7 +26,7 @@ export interface IGetClientsOutput {
       name: string;
     }[];
   };
-  getCompany: {
+  getCompany?: {
     id: string;
     name: string;
   };
