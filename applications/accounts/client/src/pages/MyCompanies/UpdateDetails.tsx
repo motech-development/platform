@@ -53,6 +53,13 @@ const UpdateDetails: FC = () => {
         });
 
         history.push(backTo(id));
+      } else {
+        add({
+          colour: 'danger',
+          message: t('update-details.retry'),
+        });
+
+        history.push(backTo(companyId));
       }
     },
   });
@@ -70,9 +77,14 @@ const UpdateDetails: FC = () => {
             name,
           }),
         });
-
-        history.push('/my-companies');
+      } else {
+        add({
+          colour: 'danger',
+          message: t('delete-company.retry'),
+        });
       }
+
+      history.push('/my-companies');
     },
     onError: () => {
       add({

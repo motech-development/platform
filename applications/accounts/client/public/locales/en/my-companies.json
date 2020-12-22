@@ -12,17 +12,20 @@
   "add-company": {
     "title": "Add a new company",
     "sub-title": "Onboard a new company to Accounts",
-    "success": "{{name}} has been added to your companies"
+    "success": "{{name}} has been added to your companies",
+    "retry": "Something might have gone wrong. Please retry your request"
   },
   "update-details": {
     "sub-title": "Update your company details",
     "success": "{{name}} has been updated",
+    "retry": "Something might have gone wrong. Please retry your request",
     "delete-company": "Delete {{name}}"
   },
   "delete-company": {
     "title": "Are you sure you want to delete {{name}}?",
     "warning": "This action cannot be undone.",
     "success": "{{name}} has been deleted",
+    "retry": "Something might have gone wrong. Please retry your request",
     "error": "Unable to delete company"
   },
   "company-form": {

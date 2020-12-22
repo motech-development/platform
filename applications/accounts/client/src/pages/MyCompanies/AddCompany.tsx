@@ -31,6 +31,13 @@ const AddCompany: FC = () => {
         });
 
         history.push(`/my-companies/dashboard/${id}`);
+      } else {
+        add({
+          colour: 'danger',
+          message: t('add-company.retry'),
+        });
+
+        history.push('/my-companies');
       }
     },
   });
