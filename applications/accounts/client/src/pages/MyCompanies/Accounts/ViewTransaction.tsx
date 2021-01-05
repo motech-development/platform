@@ -137,8 +137,8 @@ const ViewTransaction: FC = () => {
     IViewTransactionInput
   >(VIEW_TRANSACTION, {
     onCompleted: ({ getTransaction }) => {
-      if (getTransaction) {
-        setAttachment(getTransaction.attachment || '');
+      if (getTransaction?.attachment) {
+        setAttachment(getTransaction.attachment);
       }
     },
     variables: {
@@ -163,6 +163,13 @@ const ViewTransaction: FC = () => {
           history.push(
             backTo(updateTransaction.companyId, updateTransaction.status),
           );
+        } else {
+          add({
+            colour: 'danger',
+            message: t('view-transaction.retry'),
+          });
+
+          history.push(backTo(companyId));
         }
       },
       refetchQueries: () => [
@@ -190,6 +197,13 @@ const ViewTransaction: FC = () => {
         history.push(
           backTo(deleteTransaction.companyId, deleteTransaction.status),
         );
+      } else {
+        add({
+          colour: 'danger',
+          message: t('delete-transaction.retry'),
+        });
+
+        history.push(backTo(companyId));
       }
     },
     onError: () => {

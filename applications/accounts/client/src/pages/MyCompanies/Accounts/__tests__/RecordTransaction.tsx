@@ -110,494 +110,815 @@ describe('RecordTransaction', () => {
   });
 
   describe('purchase', () => {
-    beforeEach(async () => {
-      mocks = [
-        {
-          request: {
-            query: GET_BALANCE,
-            variables: {
-              id: 'company-id',
-            },
-          },
-          result: {
-            data: {
-              getBalance: {
-                balance: 180,
-                currency: 'GBP',
+    describe('when data is returned', () => {
+      beforeEach(async () => {
+        mocks = [
+          {
+            request: {
+              query: GET_BALANCE,
+              variables: {
                 id: 'company-id',
-                transactions: [
-                  {
-                    balance: 180,
-                    currency: 'GBP',
-                    date: '2020-04-15T14:07:18Z',
-                    items: [
-                      {
-                        amount: -20,
-                        attachment: '',
-                        description: 'Lunch',
-                        id: 'transaction-2',
-                        name: 'KFC',
-                      },
-                    ],
+              },
+            },
+            result: {
+              data: {
+                getBalance: {
+                  balance: 180,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  transactions: [
+                    {
+                      balance: 180,
+                      currency: 'GBP',
+                      date: '2020-04-15T14:07:18Z',
+                      items: [
+                        {
+                          amount: -20,
+                          attachment: '',
+                          description: 'Lunch',
+                          id: 'transaction-2',
+                          name: 'KFC',
+                        },
+                      ],
+                    },
+                    {
+                      balance: 200,
+                      currency: 'GBP',
+                      date: '2020-04-13T14:07:18Z',
+                      items: [
+                        {
+                          amount: 200,
+                          attachment: '',
+                          description: 'Invoice #1',
+                          id: 'transaction-1',
+                          name: 'Client',
+                        },
+                      ],
+                    },
+                  ],
+                  vat: {
+                    owed: 100,
+                    paid: 99.9,
                   },
-                  {
-                    balance: 200,
-                    currency: 'GBP',
-                    date: '2020-04-13T14:07:18Z',
-                    items: [
-                      {
-                        amount: 200,
-                        attachment: '',
-                        description: 'Invoice #1',
-                        id: 'transaction-1',
-                        name: 'Client',
-                      },
-                    ],
-                  },
-                ],
-                vat: {
-                  owed: 100,
-                  paid: 99.9,
                 },
               },
             },
           },
-        },
-        {
-          request: {
-            query: RECORD_TRANSACTION,
-            variables: {
-              id: 'company-id',
-            },
-          },
-          result: {
-            data: {
-              getClients: {
+          {
+            request: {
+              query: RECORD_TRANSACTION,
+              variables: {
                 id: 'company-id',
-                items: [],
               },
-              getSettings: {
-                categories: [
-                  {
-                    name: 'Equipment',
-                    vatRate: 20,
+            },
+            result: {
+              data: {
+                getClients: {
+                  id: 'company-id',
+                  items: [],
+                },
+                getSettings: {
+                  categories: [
+                    {
+                      name: 'Equipment',
+                      vatRate: 20,
+                    },
+                  ],
+                  id: 'company-id',
+                  vat: {
+                    pay: 20,
                   },
-                ],
-                id: 'company-id',
-                vat: {
-                  pay: 20,
                 },
-              },
-              getTypeahead: {
-                id: 'company-id',
-                purchases: ['Test purchase 1', 'Test purchase 2'],
-                sales: ['Test sale 1', 'Test sale 2'],
-                suppliers: ['Test suppliers 1', 'Test suppliers 2'],
-              },
-            },
-          },
-        },
-        {
-          request: {
-            query: ADD_TRANSACTION,
-            variables: {
-              input: {
-                amount: -999.99,
-                attachment: 'company-id/test-id.pdf',
-                category: 'Equipment',
-                companyId: 'company-id',
-                date: '2020-05-07T10:58:17Z',
-                description: 'Laptop',
-                id: '',
-                name: 'Apple',
-                scheduled: false,
-                status: 'confirmed',
-                vat: 166.66,
-              },
-            },
-          },
-          result: {
-            data: {
-              addTransaction: {
-                __typename: 'Transaction',
-                amount: -999.99,
-                attachment: 'company-id/test-id.pdf',
-                category: 'Equipment',
-                companyId: 'company-id',
-                date: '2020-05-07T10:58:17Z',
-                description: 'Laptop',
-                id: 'transaction-id',
-                name: 'Apple',
-                scheduled: false,
-                status: 'confirmed',
-                vat: 166.66,
-              },
-            },
-          },
-        },
-        {
-          request: {
-            query: REQUEST_UPLOAD,
-            variables: {
-              id: 'company-id',
-              input: {
-                contentType: 'application/pdf',
-                extension: 'pdf',
-                metadata: {
-                  id: undefined,
-                  typename: 'Transaction',
+                getTypeahead: {
+                  id: 'company-id',
+                  purchases: ['Test purchase 1', 'Test purchase 2'],
+                  sales: ['Test sale 1', 'Test sale 2'],
+                  suppliers: ['Test suppliers 1', 'Test suppliers 2'],
                 },
               },
             },
           },
-          result: {
-            data: {
-              requestUpload: {
-                id: 'test-id',
-                url: 'https://temp-upload.url/',
+          {
+            request: {
+              query: ADD_TRANSACTION,
+              variables: {
+                input: {
+                  amount: -999.99,
+                  attachment: 'company-id/test-id.pdf',
+                  category: 'Equipment',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17Z',
+                  description: 'Laptop',
+                  id: '',
+                  name: 'Apple',
+                  scheduled: false,
+                  status: 'confirmed',
+                  vat: 166.66,
+                },
+              },
+            },
+            result: {
+              data: {
+                addTransaction: {
+                  __typename: 'Transaction',
+                  amount: -999.99,
+                  attachment: 'company-id/test-id.pdf',
+                  category: 'Equipment',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17Z',
+                  description: 'Laptop',
+                  id: 'transaction-id',
+                  name: 'Apple',
+                  scheduled: false,
+                  status: 'confirmed',
+                  vat: 166.66,
+                },
               },
             },
           },
-        },
-      ];
+          {
+            request: {
+              query: REQUEST_UPLOAD,
+              variables: {
+                id: 'company-id',
+                input: {
+                  contentType: 'application/pdf',
+                  extension: 'pdf',
+                  metadata: {
+                    id: undefined,
+                    typename: 'Transaction',
+                  },
+                },
+              },
+            },
+            result: {
+              data: {
+                requestUpload: {
+                  id: 'test-id',
+                  url: 'https://temp-upload.url/',
+                },
+              },
+            },
+          },
+        ];
 
-      await act(async () => {
-        component = render(
-          <TestProvider
-            path="/accounts/:companyId/record-transaction"
-            history={history}
-          >
-            <MockedProvider mocks={mocks} cache={cache}>
-              <RecordTransaction />
-            </MockedProvider>
-          </TestProvider>,
+        await act(async () => {
+          component = render(
+            <TestProvider
+              path="/accounts/:companyId/record-transaction"
+              history={history}
+            >
+              <MockedProvider mocks={mocks} cache={cache}>
+                <RecordTransaction />
+              </MockedProvider>
+            </TestProvider>,
+          );
+        });
+      });
+
+      it('should redirect you back to accounts page on complete', async () => {
+        const { findAllByRole, findByLabelText, findByTestId } = component;
+
+        await act(async () => {
+          const transactionType = await findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          await wait();
+
+          const supplier = await findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
+
+          fireEvent.change(supplier, {
+            target: {
+              focus: () => {},
+              value: 'Apple',
+            },
+          });
+
+          fireEvent.change(description, {
+            target: {
+              focus: () => {},
+              value: 'Laptop',
+            },
+          });
+
+          fireEvent.click(status);
+
+          fireEvent.change(category, {
+            target: {
+              value: 0,
+            },
+          });
+
+          fireEvent.change(amount, {
+            target: {
+              focus: () => {},
+              value: '999.99',
+            },
+          });
+
+          Object.defineProperty(fileUpload, 'files', {
+            value: [upload],
+          });
+
+          fireEvent.change(fileUpload);
+
+          await wait();
+
+          const [, , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          await waitForApollo(0);
+
+          await findByTestId('next-page');
+        });
+
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/accounts/company-id',
+        );
+      });
+
+      it('should display a success toast when transaction is added', async () => {
+        const { findAllByRole, findByLabelText, findByTestId } = component;
+
+        await act(async () => {
+          const transactionType = await findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          await wait();
+
+          const supplier = await findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
+
+          fireEvent.change(supplier, {
+            target: {
+              focus: () => {},
+              value: 'Apple',
+            },
+          });
+
+          fireEvent.change(description, {
+            target: {
+              focus: () => {},
+              value: 'Laptop',
+            },
+          });
+
+          fireEvent.click(status);
+
+          fireEvent.change(category, {
+            target: {
+              value: 0,
+            },
+          });
+
+          fireEvent.change(amount, {
+            target: {
+              focus: () => {},
+              value: '999.99',
+            },
+          });
+
+          Object.defineProperty(fileUpload, 'files', {
+            value: [upload],
+          });
+
+          fireEvent.change(fileUpload);
+
+          await wait();
+
+          const [, , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          await waitForApollo(0);
+
+          await findByTestId('next-page');
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'success',
+            message: 'record-transaction.success',
+          }),
+        );
+      });
+
+      it('should display an success toast if upload is successful', async () => {
+        const { findByLabelText } = component;
+
+        await act(async () => {
+          const transactionType = await findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          await wait();
+
+          const supplier = await findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
+
+          fireEvent.change(supplier, {
+            target: {
+              focus: () => {},
+              value: 'Apple',
+            },
+          });
+
+          fireEvent.change(description, {
+            target: {
+              focus: () => {},
+              value: 'Laptop',
+            },
+          });
+
+          fireEvent.click(status);
+
+          fireEvent.change(category, {
+            target: {
+              value: 0,
+            },
+          });
+
+          fireEvent.change(amount, {
+            target: {
+              focus: () => {},
+              value: '999.99',
+            },
+          });
+
+          Object.defineProperty(fileUpload, 'files', {
+            value: [upload],
+          });
+
+          fireEvent.change(fileUpload);
+
+          await wait();
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'success',
+            message: 'uploads.add.success',
+          }),
+        );
+      });
+
+      it('should display an error toast if upload is unsuccessful', async () => {
+        (axios.request as jest.Mock).mockRejectedValueOnce({
+          data: 'fail',
+        });
+
+        const { findByLabelText } = component;
+
+        await act(async () => {
+          const transactionType = await findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          await wait();
+
+          const supplier = await findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
+
+          fireEvent.change(supplier, {
+            target: {
+              focus: () => {},
+              value: 'Apple',
+            },
+          });
+
+          fireEvent.change(description, {
+            target: {
+              focus: () => {},
+              value: 'Laptop',
+            },
+          });
+
+          fireEvent.click(status);
+
+          fireEvent.change(category, {
+            target: {
+              value: 0,
+            },
+          });
+
+          fireEvent.change(amount, {
+            target: {
+              focus: () => {},
+              value: '999.99',
+            },
+          });
+
+          Object.defineProperty(fileUpload, 'files', {
+            value: [upload],
+          });
+
+          fireEvent.change(fileUpload);
+
+          await wait();
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'uploads.add.error',
+          }),
         );
       });
     });
 
-    it('should redirect you back to accounts page on complete', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
-
-      await act(async () => {
-        const transactionType = await findByLabelText(
-          'transaction-form.transaction-details.transaction.options.purchase',
-        );
-
-        fireEvent.click(transactionType);
-
-        await wait();
-
-        const supplier = await findByLabelText(
-          'transaction-form.transaction-details.name.label',
-        );
-        const description = await findByLabelText(
-          'transaction-form.transaction-details.description.label',
-        );
-        const status = await findByLabelText(
-          'transaction-form.transaction-amount.status.options.confirmed',
-        );
-        const category = await findByLabelText(
-          'transaction-form.transaction-amount.category.label',
-        );
-        const amount = await findByLabelText(
-          'transaction-form.transaction-amount.amount.label',
-        );
-        const fileUpload = await findByLabelText(
-          'transaction-form.upload.upload.label',
-        );
-
-        fireEvent.change(supplier, {
-          target: {
-            focus: () => {},
-            value: 'Apple',
+    describe('when data is not returned', () => {
+      beforeEach(async () => {
+        mocks = [
+          {
+            request: {
+              query: GET_BALANCE,
+              variables: {
+                id: 'company-id',
+              },
+            },
+            result: {
+              data: {
+                getBalance: {
+                  balance: 180,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  transactions: [
+                    {
+                      balance: 180,
+                      currency: 'GBP',
+                      date: '2020-04-15T14:07:18Z',
+                      items: [
+                        {
+                          amount: -20,
+                          attachment: '',
+                          description: 'Lunch',
+                          id: 'transaction-2',
+                          name: 'KFC',
+                        },
+                      ],
+                    },
+                    {
+                      balance: 200,
+                      currency: 'GBP',
+                      date: '2020-04-13T14:07:18Z',
+                      items: [
+                        {
+                          amount: 200,
+                          attachment: '',
+                          description: 'Invoice #1',
+                          id: 'transaction-1',
+                          name: 'Client',
+                        },
+                      ],
+                    },
+                  ],
+                  vat: {
+                    owed: 100,
+                    paid: 99.9,
+                  },
+                },
+              },
+            },
           },
-        });
-
-        fireEvent.change(description, {
-          target: {
-            focus: () => {},
-            value: 'Laptop',
+          {
+            request: {
+              query: RECORD_TRANSACTION,
+              variables: {
+                id: 'company-id',
+              },
+            },
+            result: {
+              data: {
+                getClients: {
+                  id: 'company-id',
+                  items: [],
+                },
+                getSettings: {
+                  categories: [
+                    {
+                      name: 'Equipment',
+                      vatRate: 20,
+                    },
+                  ],
+                  id: 'company-id',
+                  vat: {
+                    pay: 20,
+                  },
+                },
+                getTypeahead: {
+                  id: 'company-id',
+                  purchases: ['Test purchase 1', 'Test purchase 2'],
+                  sales: ['Test sale 1', 'Test sale 2'],
+                  suppliers: ['Test suppliers 1', 'Test suppliers 2'],
+                },
+              },
+            },
           },
-        });
-
-        fireEvent.click(status);
-
-        fireEvent.change(category, {
-          target: {
-            value: 0,
+          {
+            request: {
+              query: ADD_TRANSACTION,
+              variables: {
+                input: {
+                  amount: -999.99,
+                  attachment: 'company-id/test-id.pdf',
+                  category: 'Equipment',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17Z',
+                  description: 'Laptop',
+                  id: '',
+                  name: 'Apple',
+                  scheduled: false,
+                  status: 'confirmed',
+                  vat: 166.66,
+                },
+              },
+            },
+            result: {
+              data: {},
+            },
           },
-        });
-
-        fireEvent.change(amount, {
-          target: {
-            focus: () => {},
-            value: '999.99',
+          {
+            request: {
+              query: REQUEST_UPLOAD,
+              variables: {
+                id: 'company-id',
+                input: {
+                  contentType: 'application/pdf',
+                  extension: 'pdf',
+                  metadata: {
+                    id: undefined,
+                    typename: 'Transaction',
+                  },
+                },
+              },
+            },
+            result: {
+              data: {
+                requestUpload: {
+                  id: 'test-id',
+                  url: 'https://temp-upload.url/',
+                },
+              },
+            },
           },
+        ];
+
+        await act(async () => {
+          component = render(
+            <TestProvider
+              path="/accounts/:companyId/record-transaction"
+              history={history}
+            >
+              <MockedProvider mocks={mocks} cache={cache}>
+                <RecordTransaction />
+              </MockedProvider>
+            </TestProvider>,
+          );
         });
-
-        Object.defineProperty(fileUpload, 'files', {
-          value: [upload],
-        });
-
-        fireEvent.change(fileUpload);
-
-        await wait();
-
-        const [, , , button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/accounts/company-id',
-      );
-    });
+      it('should display a warning toast', async () => {
+        const { findAllByRole, findByLabelText, findByTestId } = component;
 
-    it('should display a success toast when transaction is added', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
+        await act(async () => {
+          const transactionType = await findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
 
-      await act(async () => {
-        const transactionType = await findByLabelText(
-          'transaction-form.transaction-details.transaction.options.purchase',
-        );
+          fireEvent.click(transactionType);
 
-        fireEvent.click(transactionType);
+          await wait();
 
-        await wait();
+          const supplier = await findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
 
-        const supplier = await findByLabelText(
-          'transaction-form.transaction-details.name.label',
-        );
-        const description = await findByLabelText(
-          'transaction-form.transaction-details.description.label',
-        );
-        const status = await findByLabelText(
-          'transaction-form.transaction-amount.status.options.confirmed',
-        );
-        const category = await findByLabelText(
-          'transaction-form.transaction-amount.category.label',
-        );
-        const amount = await findByLabelText(
-          'transaction-form.transaction-amount.amount.label',
-        );
-        const fileUpload = await findByLabelText(
-          'transaction-form.upload.upload.label',
-        );
+          fireEvent.change(supplier, {
+            target: {
+              focus: () => {},
+              value: 'Apple',
+            },
+          });
 
-        fireEvent.change(supplier, {
-          target: {
-            focus: () => {},
-            value: 'Apple',
-          },
+          fireEvent.change(description, {
+            target: {
+              focus: () => {},
+              value: 'Laptop',
+            },
+          });
+
+          fireEvent.click(status);
+
+          fireEvent.change(category, {
+            target: {
+              value: 0,
+            },
+          });
+
+          fireEvent.change(amount, {
+            target: {
+              focus: () => {},
+              value: '999.99',
+            },
+          });
+
+          Object.defineProperty(fileUpload, 'files', {
+            value: [upload],
+          });
+
+          fireEvent.change(fileUpload);
+
+          await wait();
+
+          const [, , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          await waitForApollo(0);
+
+          await findByTestId('next-page');
         });
 
-        fireEvent.change(description, {
-          target: {
-            focus: () => {},
-            value: 'Laptop',
-          },
-        });
-
-        fireEvent.click(status);
-
-        fireEvent.change(category, {
-          target: {
-            value: 0,
-          },
-        });
-
-        fireEvent.change(amount, {
-          target: {
-            focus: () => {},
-            value: '999.99',
-          },
-        });
-
-        Object.defineProperty(fileUpload, 'files', {
-          value: [upload],
-        });
-
-        fireEvent.change(fileUpload);
-
-        await wait();
-
-        const [, , , button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        await waitForApollo(0);
-
-        await findByTestId('next-page');
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'record-transaction.retry',
+          }),
+        );
       });
 
-      await wait(() =>
-        expect(add).toHaveBeenCalledWith({
-          colour: 'success',
-          message: 'record-transaction.success',
-        }),
-      );
-    });
+      it('should redirect you back to accounts page', async () => {
+        const { findAllByRole, findByLabelText, findByTestId } = component;
 
-    it('should display an success toast if upload is successful', async () => {
-      const { findByLabelText } = component;
+        await act(async () => {
+          const transactionType = await findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
 
-      await act(async () => {
-        const transactionType = await findByLabelText(
-          'transaction-form.transaction-details.transaction.options.purchase',
-        );
+          fireEvent.click(transactionType);
 
-        fireEvent.click(transactionType);
+          await wait();
 
-        await wait();
+          const supplier = await findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
 
-        const supplier = await findByLabelText(
-          'transaction-form.transaction-details.name.label',
-        );
-        const description = await findByLabelText(
-          'transaction-form.transaction-details.description.label',
-        );
-        const status = await findByLabelText(
-          'transaction-form.transaction-amount.status.options.confirmed',
-        );
-        const category = await findByLabelText(
-          'transaction-form.transaction-amount.category.label',
-        );
-        const amount = await findByLabelText(
-          'transaction-form.transaction-amount.amount.label',
-        );
-        const fileUpload = await findByLabelText(
-          'transaction-form.upload.upload.label',
-        );
+          fireEvent.change(supplier, {
+            target: {
+              focus: () => {},
+              value: 'Apple',
+            },
+          });
 
-        fireEvent.change(supplier, {
-          target: {
-            focus: () => {},
-            value: 'Apple',
-          },
+          fireEvent.change(description, {
+            target: {
+              focus: () => {},
+              value: 'Laptop',
+            },
+          });
+
+          fireEvent.click(status);
+
+          fireEvent.change(category, {
+            target: {
+              value: 0,
+            },
+          });
+
+          fireEvent.change(amount, {
+            target: {
+              focus: () => {},
+              value: '999.99',
+            },
+          });
+
+          Object.defineProperty(fileUpload, 'files', {
+            value: [upload],
+          });
+
+          fireEvent.change(fileUpload);
+
+          await wait();
+
+          const [, , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          await waitForApollo(0);
+
+          await findByTestId('next-page');
         });
 
-        fireEvent.change(description, {
-          target: {
-            focus: () => {},
-            value: 'Laptop',
-          },
-        });
-
-        fireEvent.click(status);
-
-        fireEvent.change(category, {
-          target: {
-            value: 0,
-          },
-        });
-
-        fireEvent.change(amount, {
-          target: {
-            focus: () => {},
-            value: '999.99',
-          },
-        });
-
-        Object.defineProperty(fileUpload, 'files', {
-          value: [upload],
-        });
-
-        fireEvent.change(fileUpload);
-
-        await wait();
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/accounts/company-id',
+        );
       });
-
-      await wait(() =>
-        expect(add).toHaveBeenCalledWith({
-          colour: 'success',
-          message: 'uploads.add.success',
-        }),
-      );
-    });
-
-    it('should display an error toast if upload is unsuccessful', async () => {
-      (axios.request as jest.Mock).mockRejectedValueOnce({
-        data: 'fail',
-      });
-
-      const { findByLabelText } = component;
-
-      await act(async () => {
-        const transactionType = await findByLabelText(
-          'transaction-form.transaction-details.transaction.options.purchase',
-        );
-
-        fireEvent.click(transactionType);
-
-        await wait();
-
-        const supplier = await findByLabelText(
-          'transaction-form.transaction-details.name.label',
-        );
-        const description = await findByLabelText(
-          'transaction-form.transaction-details.description.label',
-        );
-        const status = await findByLabelText(
-          'transaction-form.transaction-amount.status.options.confirmed',
-        );
-        const category = await findByLabelText(
-          'transaction-form.transaction-amount.category.label',
-        );
-        const amount = await findByLabelText(
-          'transaction-form.transaction-amount.amount.label',
-        );
-        const fileUpload = await findByLabelText(
-          'transaction-form.upload.upload.label',
-        );
-
-        fireEvent.change(supplier, {
-          target: {
-            focus: () => {},
-            value: 'Apple',
-          },
-        });
-
-        fireEvent.change(description, {
-          target: {
-            focus: () => {},
-            value: 'Laptop',
-          },
-        });
-
-        fireEvent.click(status);
-
-        fireEvent.change(category, {
-          target: {
-            value: 0,
-          },
-        });
-
-        fireEvent.change(amount, {
-          target: {
-            focus: () => {},
-            value: '999.99',
-          },
-        });
-
-        Object.defineProperty(fileUpload, 'files', {
-          value: [upload],
-        });
-
-        fireEvent.change(fileUpload);
-
-        await wait();
-      });
-
-      await wait(() =>
-        expect(add).toHaveBeenCalledWith({
-          colour: 'danger',
-          message: 'uploads.add.error',
-        }),
-      );
     });
   });
 

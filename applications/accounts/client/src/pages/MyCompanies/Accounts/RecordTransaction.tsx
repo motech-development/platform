@@ -112,6 +112,13 @@ const RecordTransaction: FC = () => {
         });
 
         history.push(backTo(addTransaction.companyId, addTransaction.status));
+      } else {
+        add({
+          colour: 'danger',
+          message: t('record-transaction.retry'),
+        });
+
+        history.push(backTo(companyId));
       }
     },
     refetchQueries: () => [
