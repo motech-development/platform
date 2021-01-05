@@ -1271,7 +1271,12 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page when a transaction is deleted', async () => {
-        const { findAllByRole, findByLabelText, findByText } = component;
+        const {
+          findAllByRole,
+          findByTestId,
+          findByLabelText,
+          findByText,
+        } = component;
 
         await act(async () => {
           await findByText('view-transaction.title');
@@ -1298,6 +1303,8 @@ describe('ViewTransaction', () => {
           await waitForApollo(0);
 
           await wait();
+
+          await findByTestId('next-page');
         });
 
         expect(history.push).toHaveBeenCalledWith(
