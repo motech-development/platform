@@ -1169,6 +1169,18 @@ describe('ViewTransaction', () => {
               data: {},
             },
           },
+          {
+            request: {
+              query: REQUEST_DOWNLOAD,
+              variables: {
+                id: 'company-id',
+                path: 'path/to/attachment.pdf',
+              },
+            },
+            result: {
+              data: {},
+            },
+          },
         ];
 
         await act(async () => {

@@ -132,8 +132,13 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
           <FileDownload
             loading={requestLoading}
             onDownload={async () => {
-              if (requestData.requestDownload) {
+              if (requestData.requestDownload?.url) {
                 await download(requestData.requestDownload.url);
+              } else {
+                add({
+                  colour: 'danger',
+                  message: t('uploads.download.retry'),
+                });
               }
             }}
           />
@@ -145,15 +150,13 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
           block
           colour="danger"
           loading={deleteFileLoading}
-          onClick={() => {
-            (async () => {
-              await deleteFile({
-                variables: {
-                  id,
-                  path,
-                },
-              });
-            })();
+          onClick={async () => {
+            await deleteFile({
+              variables: {
+                id,
+                path,
+              },
+            });
           }}
         >
           {t('transaction-form.upload.delete-file')}

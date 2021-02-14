@@ -696,7 +696,7 @@ describe('RecordTransaction', () => {
               variables: {
                 input: {
                   amount: -999.99,
-                  attachment: 'company-id/test-id.pdf',
+                  attachment: '',
                   category: 'Equipment',
                   companyId: 'company-id',
                   date: '2020-05-07T10:58:17Z',
@@ -729,12 +729,7 @@ describe('RecordTransaction', () => {
               },
             },
             result: {
-              data: {
-                requestUpload: {
-                  id: 'test-id',
-                  url: 'https://temp-upload.url/',
-                },
-              },
+              data: {},
             },
           },
         ];
@@ -780,8 +775,81 @@ describe('RecordTransaction', () => {
           const amount = await findByLabelText(
             'transaction-form.transaction-amount.amount.label',
           );
-          const fileUpload = await findByLabelText(
-            'transaction-form.upload.upload.label',
+
+          fireEvent.change(supplier, {
+            target: {
+              focus: () => {},
+              value: 'Apple',
+            },
+          });
+
+          fireEvent.change(description, {
+            target: {
+              focus: () => {},
+              value: 'Laptop',
+            },
+          });
+
+          fireEvent.click(status);
+
+          fireEvent.change(category, {
+            target: {
+              value: 0,
+            },
+          });
+
+          fireEvent.change(amount, {
+            target: {
+              focus: () => {},
+              value: '999.99',
+            },
+          });
+
+          await wait();
+
+          const [, , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          await waitForApollo(0);
+
+          await findByTestId('next-page');
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'record-transaction.retry',
+          }),
+        );
+      });
+
+      it('should redirect you back to accounts page', async () => {
+        const { findAllByRole, findByLabelText, findByTestId } = component;
+
+        await act(async () => {
+          const transactionType = await findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          await wait();
+
+          const supplier = await findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
           );
 
           fireEvent.change(supplier, {
@@ -813,15 +881,9 @@ describe('RecordTransaction', () => {
             },
           });
 
-          Object.defineProperty(fileUpload, 'files', {
-            value: [upload],
-          });
-
-          fireEvent.change(fileUpload);
-
           await wait();
 
-          const [, , , button] = await findAllByRole('button');
+          const [, , button] = await findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -830,16 +892,13 @@ describe('RecordTransaction', () => {
           await findByTestId('next-page');
         });
 
-        await wait(() =>
-          expect(add).toHaveBeenCalledWith({
-            colour: 'danger',
-            message: 'record-transaction.retry',
-          }),
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/accounts/company-id',
         );
       });
 
-      it('should redirect you back to accounts page', async () => {
-        const { findAllByRole, findByLabelText, findByTestId } = component;
+      it('should do nothing when uploading an attachment', async () => {
+        const { findByLabelText } = component;
 
         await act(async () => {
           const transactionType = await findByLabelText(
@@ -905,18 +964,13 @@ describe('RecordTransaction', () => {
           fireEvent.change(fileUpload);
 
           await wait();
-
-          const [, , , button] = await findAllByRole('button');
-
-          fireEvent.click(button);
-
-          await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/accounts/company-id',
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'uploads.add.retry',
+          }),
         );
       });
     });

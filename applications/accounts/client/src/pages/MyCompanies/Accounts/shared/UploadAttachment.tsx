@@ -112,6 +112,11 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
 
                 onUpload(attachment);
               }
+            } else {
+              add({
+                colour: 'danger',
+                message: t('uploads.add.retry'),
+              });
             }
           }
           // eslint-disable-next-line no-empty

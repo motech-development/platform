@@ -149,7 +149,8 @@
   "uploads": {
     "add": {
       "success": "File has been uploaded",
-      "error": "Unable to upload this file"
+      "error": "Unable to upload this file",
+      "retry": "Something might have gone wrong. Please retry your request"
     },
     "delete": {
       "success": "File has been deleted",
@@ -157,7 +158,8 @@
     },
     "download": {
       "success": "The download has started",
-      "error": "Unable to download this file"
+      "error": "Unable to download this file",
+      "retry": "Something might have gone wrong. Please retry your request"
     }
   }
 }
