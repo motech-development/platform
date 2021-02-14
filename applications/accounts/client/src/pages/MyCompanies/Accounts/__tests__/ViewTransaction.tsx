@@ -1178,7 +1178,11 @@ describe('ViewTransaction', () => {
               },
             },
             result: {
-              data: {},
+              data: {
+                requestDownload: {
+                  url: null,
+                },
+              },
             },
           },
         ];
@@ -1321,6 +1325,29 @@ describe('ViewTransaction', () => {
 
         expect(history.push).toHaveBeenCalledWith(
           '/my-companies/accounts/company-id',
+        );
+      });
+
+      it('should display an error toast if file fails to delete', async () => {
+        const { findByText } = component;
+
+        await act(async () => {
+          const downloadButton = await findByText(
+            'transaction-form.upload.download-file',
+          );
+
+          fireEvent.click(downloadButton);
+
+          await waitForApollo(0);
+
+          await wait();
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'uploads.download.retry',
+          }),
         );
       });
     });
