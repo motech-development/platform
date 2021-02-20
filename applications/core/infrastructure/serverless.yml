@@ -27,8 +27,17 @@ resources:
         Type: MX
         TTL: '3600'
         ResourceRecords:
-          - 10 mx00.ionos.co.uk
-          - 10 mx01.ionos.co.uk
+          - 0 motechdevelopment-co-uk.mail.protection.outlook.com.
+
+    CNameRecords:
+      Type: AWS::Route53::RecordSet
+      Properties:
+        Name: !Sub 'autodiscover.${self:custom.domainName}.'
+        HostedZoneId: !Ref HostedZone
+        Type: CNAME
+        TTL: '3600'
+        ResourceRecords:
+          - autodiscover.outlook.com.
 
     Certificate:
       Type: AWS::CertificateManager::Certificate
