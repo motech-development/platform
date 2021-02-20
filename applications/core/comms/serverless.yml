@@ -35,8 +35,8 @@ resources:
         DMARC: 'v=DMARC1; p=none; pct=100; sp=none; aspf=r;'
         Domain: ${self:custom.domainName}
         Region: eu-west-1
-        SPF: 'v=spf1 include:_spf.perfora.net include:_spf.kundenserver.de include:amazonses.com ~all'
-        TTL: 1800
+        SPF: 'v=spf1 include:spf.protection.outlook.com include:amazonses.com ~all'
+        TTL: 3600
 
     EmailVerificationRecords:
       Type: AWS::Route53::RecordSetGroup
