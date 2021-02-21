@@ -246,7 +246,7 @@ const ViewTransaction: FC = () => {
 
   return (
     <Connected error={error || mutationError} loading={loading}>
-      {data && (
+      {data?.getTransaction && data?.getSettings && data?.getClients && (
         <>
           <PageTitle
             title={t('view-transaction.title')}
@@ -264,14 +264,14 @@ const ViewTransaction: FC = () => {
                     onDelete={setAttachment}
                   />
                 }
-                backTo={backTo(companyId, data.getTransaction?.status)}
-                categories={data.getSettings?.categories.map(
+                backTo={backTo(companyId, data.getTransaction.status)}
+                categories={data.getSettings.categories.map(
                   ({ name, vatRate }) => ({
                     name,
                     value: vatRate.toFixed(2),
                   }),
                 )}
-                clients={data.getClients?.items.map(({ name }) => ({
+                clients={data.getClients.items.map(({ name }) => ({
                   name,
                   value: name,
                 }))}
@@ -289,7 +289,7 @@ const ViewTransaction: FC = () => {
                     transactionId={transactionId}
                   />
                 }
-                vat={data.getSettings?.vat.pay}
+                vat={data.getSettings.vat.pay}
                 onSave={save}
               />
             </Col>
@@ -306,17 +306,15 @@ const ViewTransaction: FC = () => {
             </Col>
           </Row>
 
-          {data.getTransaction && (
-            <DeleteItem
-              title={t('delete-transaction.title')}
-              warning={t('delete-transaction.warning')}
-              display={modal}
-              loading={deleteLoading}
-              name={data.getTransaction.name}
-              onDelete={onDelete}
-              onDismiss={onDismiss}
-            />
-          )}
+          <DeleteItem
+            title={t('delete-transaction.title')}
+            warning={t('delete-transaction.warning')}
+            display={modal}
+            loading={deleteLoading}
+            name={data.getTransaction.name}
+            onDelete={onDelete}
+            onDismiss={onDismiss}
+          />
         </>
       )}
     </Connected>

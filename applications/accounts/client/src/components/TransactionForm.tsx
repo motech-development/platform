@@ -57,8 +57,8 @@ export interface ITransactionForm {
   attachment: string;
   attachmentView: ReactNode;
   backTo: string;
-  categories?: ISelectOption[];
-  clients?: ISelectOption[];
+  categories: ISelectOption[];
+  clients: ISelectOption[];
   companyId: string;
   initialValues?: FormSchema;
   loading: boolean;
@@ -66,7 +66,7 @@ export interface ITransactionForm {
   sales?: string[] | null;
   suppliers?: string[] | null;
   uploader: ReactNode;
-  vat?: number;
+  vat: number;
   onSave(value: FormSchema): void;
 }
 
@@ -78,8 +78,8 @@ const TransactionForm: FC<ITransactionForm> = ({
   attachment,
   attachmentView,
   backTo,
-  categories = [],
-  clients = [],
+  categories,
+  clients,
   companyId,
   initialValues = {
     ...formSchema,
@@ -91,7 +91,7 @@ const TransactionForm: FC<ITransactionForm> = ({
   sales,
   suppliers,
   uploader,
-  vat = 0,
+  vat,
 }) => {
   const isEmpty = initialValues.amount === '';
   const initialTransaction = initialValues.amount > 0 ? 'Sales' : 'Purchase';

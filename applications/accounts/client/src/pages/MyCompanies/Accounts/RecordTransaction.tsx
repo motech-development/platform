@@ -141,7 +141,7 @@ const RecordTransaction: FC = () => {
 
   return (
     <Connected error={error || addError} loading={loading}>
-      {data && (
+      {data?.getClients && data?.getSettings && (
         <>
           <PageTitle
             title={t('record-transaction.title')}
@@ -158,13 +158,13 @@ const RecordTransaction: FC = () => {
               />
             }
             backTo={backTo(companyId)}
-            categories={data.getSettings?.categories.map(
+            categories={data.getSettings.categories.map(
               ({ name, vatRate }) => ({
                 name,
                 value: vatRate.toFixed(2),
               }),
             )}
-            clients={data.getClients?.items.map(({ name }) => ({
+            clients={data.getClients.items.map(({ name }) => ({
               name,
               value: name,
             }))}
@@ -180,7 +180,7 @@ const RecordTransaction: FC = () => {
                 onUpload={setAttachment}
               />
             }
-            vat={data.getSettings?.vat.pay}
+            vat={data.getSettings.vat.pay}
             onSave={save}
           />
         </>
