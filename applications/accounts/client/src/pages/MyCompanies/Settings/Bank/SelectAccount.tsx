@@ -58,6 +58,13 @@ const SelectAccount: FC = () => {
         });
 
         history.push(`/my-companies/settings/${id}`);
+      } else {
+        add({
+          colour: 'danger',
+          message: t('select-account.retry'),
+        });
+
+        history.push(`/my-companies/settings/${companyId}`);
       }
     },
   });

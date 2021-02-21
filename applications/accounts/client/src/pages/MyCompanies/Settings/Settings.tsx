@@ -53,6 +53,13 @@ const Settings: FC = () => {
           });
 
           history.push(backTo(id));
+        } else {
+          add({
+            colour: 'danger',
+            message: t('settings.retry'),
+          });
+
+          history.push(backTo(companyId));
         }
       },
     },

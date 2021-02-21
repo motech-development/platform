@@ -33,6 +33,8 @@ const Callback: FC = () => {
         } else {
           setError(true);
         }
+      } else {
+        setError(true);
       }
     },
   });

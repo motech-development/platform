@@ -50,21 +50,19 @@ const Bank: FC = () => {
   const { data: subscription, loading: subscriptionLoading } = useSubscription<
     IOnBankCallbackOutput
   >(ON_BANK_CALLBACK);
-  const connect = async (bank: string, user?: string) => {
-    if (user) {
-      setSelected(bank);
+  const connect = async (bank: string, user: string) => {
+    setSelected(bank);
 
-      await mutation({
-        variables: {
-          input: {
-            bank,
-            callback: `${window.location.origin}/my-companies/settings/${companyId}/bank/callback`,
-            companyId,
-            user,
-          },
+    await mutation({
+      variables: {
+        input: {
+          bank,
+          callback: `${window.location.origin}/my-companies/settings/${companyId}/bank/callback`,
+          companyId,
+          user,
         },
-      });
-    }
+      },
+    });
   };
 
   useEffect(() => {
@@ -101,14 +99,18 @@ const Bank: FC = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Button
-                        loading={selected === id}
-                        disabled={selected !== ''}
-                        onClick={() => connect(id, data.getBankSettings?.user)}
-                        size="sm"
-                      >
-                        {t('select-bank.connect')}
-                      </Button>
+                      {data.getBankSettings && (
+                        <Button
+                          loading={selected === id}
+                          disabled={selected !== ''}
+                          onClick={() =>
+                            connect(id, data.getBankSettings!.user)
+                          }
+                          size="sm"
+                        >
+                          {t('select-bank.connect')}
+                        </Button>
+                      )}
                     </TableCell>
                   </>
                 )}
