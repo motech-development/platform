@@ -21,249 +21,457 @@ describe('AddClient', () => {
   let history: MemoryHistory;
   let mocks: MockedResponse[];
 
-  beforeEach(async () => {
-    cache = new InMemoryCache();
-
-    cache.writeQuery({
-      data: {
-        getClients: {
-          __typename: 'Clients',
-          id: 'company-id',
-          items: [],
-        },
-        getCompany: {
-          id: 'company-id',
-          name: 'Test company',
-        },
-      },
-      query: GET_CLIENTS,
-      variables: {
-        id: 'company-id',
-      },
-    });
-
+  beforeEach(() => {
     history = createMemoryHistory({
       initialEntries: ['/clients/company-id/add-client'],
     });
 
     jest.spyOn(history, 'push');
+  });
 
-    mocks = [
-      {
-        request: {
-          query: ADD_CLIENT,
-          variables: {
-            input: {
-              address: {
-                line1: '1 Street',
-                line2: '',
-                line3: 'Town',
-                line4: 'County',
-                line5: 'KT1 1NE',
+  describe('when data is returned', () => {
+    beforeEach(async () => {
+      cache = new InMemoryCache();
+
+      cache.writeQuery({
+        data: {
+          getClients: {
+            __typename: 'Clients',
+            id: 'company-id',
+            items: [],
+          },
+          getCompany: {
+            id: 'company-id',
+            name: 'Test company',
+          },
+        },
+        query: GET_CLIENTS,
+        variables: {
+          id: 'company-id',
+        },
+      });
+
+      mocks = [
+        {
+          request: {
+            query: ADD_CLIENT,
+            variables: {
+              input: {
+                address: {
+                  line1: '1 Street',
+                  line2: '',
+                  line3: 'Town',
+                  line4: 'County',
+                  line5: 'KT1 1NE',
+                },
+                companyId: 'company-id',
+                contact: {
+                  email: 'info@contact.com',
+                  telephone: '07712345678',
+                },
+                id: '',
+                name: 'New company',
               },
-              companyId: 'company-id',
-              contact: {
-                email: 'info@contact.com',
-                telephone: '07712345678',
+            },
+          },
+          result: {
+            data: {
+              createClient: {
+                __typename: 'Client',
+                address: {
+                  line1: '1 Street',
+                  line2: '',
+                  line3: 'Town',
+                  line4: 'County',
+                  line5: 'KT1 1NE',
+                },
+                companyId: 'company-id',
+                contact: {
+                  email: 'info@contact.com',
+                  telephone: '07712345678',
+                },
+                id: 'client-id',
+                name: 'New company',
               },
-              id: '',
-              name: 'New company',
             },
           },
         },
-        result: {
-          data: {
-            createClient: {
-              __typename: 'Client',
-              address: {
-                line1: '1 Street',
-                line2: '',
-                line3: 'Town',
-                line4: 'County',
-                line5: 'KT1 1NE',
-              },
-              companyId: 'company-id',
-              contact: {
-                email: 'info@contact.com',
-                telephone: '07712345678',
-              },
-              id: 'client-id',
-              name: 'New company',
-            },
-          },
-        },
-      },
-    ];
+      ];
 
-    await act(async () => {
-      component = render(
-        <TestProvider path="/clients/:companyId/add-client" history={history}>
-          <MockedProvider mocks={mocks} cache={cache}>
-            <AddClient />
-          </MockedProvider>
-        </TestProvider>,
+      await act(async () => {
+        component = render(
+          <TestProvider path="/clients/:companyId/add-client" history={history}>
+            <MockedProvider mocks={mocks} cache={cache}>
+              <AddClient />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
+    });
+
+    it('should redirect you back to clients page on complete', async () => {
+      const { findAllByRole, findByLabelText, findByTestId } = component;
+
+      await act(async () => {
+        const line1 = await findByLabelText('address.line1');
+        const line3 = await findByLabelText('address.line3');
+        const line4 = await findByLabelText('address.line4');
+        const line5 = await findByLabelText('address.line5');
+        const email = await findByLabelText('contact-details.email');
+        const telephone = await findByLabelText('contact-details.telephone');
+        const name = await findByLabelText(
+          'client-form.client-details.name.label',
+        );
+
+        fireEvent.change(line1, {
+          target: {
+            focus: () => {},
+            value: '1 Street',
+          },
+        });
+
+        fireEvent.change(line3, {
+          target: {
+            focus: () => {},
+            value: 'Town',
+          },
+        });
+
+        fireEvent.change(line4, {
+          target: {
+            focus: () => {},
+            value: 'County',
+          },
+        });
+
+        fireEvent.change(line5, {
+          target: {
+            focus: () => {},
+            value: 'KT1 1NE',
+          },
+        });
+
+        fireEvent.change(email, {
+          target: {
+            focus: () => {},
+            value: 'info@contact.com',
+          },
+        });
+
+        fireEvent.change(telephone, {
+          target: {
+            focus: () => {},
+            value: '07712345678',
+          },
+        });
+
+        fireEvent.change(name, {
+          target: {
+            focus: () => {},
+            value: 'New company',
+          },
+        });
+
+        await wait();
+
+        const [button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        await waitForApollo(0);
+
+        await findByTestId('next-page');
+      });
+
+      expect(history.push).toHaveBeenCalledWith(
+        '/my-companies/clients/company-id',
+      );
+    });
+
+    it('should display a success toast', async () => {
+      const { findAllByRole, findByLabelText, findByTestId } = component;
+
+      await act(async () => {
+        const line1 = await findByLabelText('address.line1');
+        const line3 = await findByLabelText('address.line3');
+        const line4 = await findByLabelText('address.line4');
+        const line5 = await findByLabelText('address.line5');
+        const email = await findByLabelText('contact-details.email');
+        const telephone = await findByLabelText('contact-details.telephone');
+        const name = await findByLabelText(
+          'client-form.client-details.name.label',
+        );
+
+        fireEvent.change(line1, {
+          target: {
+            focus: () => {},
+            value: '1 Street',
+          },
+        });
+
+        fireEvent.change(line3, {
+          target: {
+            focus: () => {},
+            value: 'Town',
+          },
+        });
+
+        fireEvent.change(line4, {
+          target: {
+            focus: () => {},
+            value: 'County',
+          },
+        });
+
+        fireEvent.change(line5, {
+          target: {
+            focus: () => {},
+            value: 'KT1 1NE',
+          },
+        });
+
+        fireEvent.change(email, {
+          target: {
+            focus: () => {},
+            value: 'info@contact.com',
+          },
+        });
+
+        fireEvent.change(telephone, {
+          target: {
+            focus: () => {},
+            value: '07712345678',
+          },
+        });
+
+        fireEvent.change(name, {
+          target: {
+            focus: () => {},
+            value: 'New company',
+          },
+        });
+
+        await wait();
+
+        const [button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        await waitForApollo(0);
+
+        await findByTestId('next-page');
+      });
+
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'success',
+          message: 'add-client.success',
+        }),
       );
     });
   });
 
-  it('should redirect you back to clients page on complete', async () => {
-    const { findAllByRole, findByLabelText, findByTestId } = component;
-
-    await act(async () => {
-      const line1 = await findByLabelText('address.line1');
-      const line3 = await findByLabelText('address.line3');
-      const line4 = await findByLabelText('address.line4');
-      const line5 = await findByLabelText('address.line5');
-      const email = await findByLabelText('contact-details.email');
-      const telephone = await findByLabelText('contact-details.telephone');
-      const name = await findByLabelText(
-        'client-form.client-details.name.label',
-      );
-
-      fireEvent.change(line1, {
-        target: {
-          focus: () => {},
-          value: '1 Street',
+  describe('when data is not returned', () => {
+    beforeEach(async () => {
+      mocks = [
+        {
+          request: {
+            query: ADD_CLIENT,
+            variables: {
+              input: {
+                address: {
+                  line1: '1 Street',
+                  line2: '',
+                  line3: 'Town',
+                  line4: 'County',
+                  line5: 'KT1 1NE',
+                },
+                companyId: 'company-id',
+                contact: {
+                  email: 'info@contact.com',
+                  telephone: '07712345678',
+                },
+                id: '',
+                name: 'New company',
+              },
+            },
+          },
+          result: {
+            data: {},
+          },
         },
+      ];
+
+      await act(async () => {
+        component = render(
+          <TestProvider path="/clients/:companyId/add-client" history={history}>
+            <MockedProvider mocks={mocks}>
+              <AddClient />
+            </MockedProvider>
+          </TestProvider>,
+        );
       });
-
-      fireEvent.change(line3, {
-        target: {
-          focus: () => {},
-          value: 'Town',
-        },
-      });
-
-      fireEvent.change(line4, {
-        target: {
-          focus: () => {},
-          value: 'County',
-        },
-      });
-
-      fireEvent.change(line5, {
-        target: {
-          focus: () => {},
-          value: 'KT1 1NE',
-        },
-      });
-
-      fireEvent.change(email, {
-        target: {
-          focus: () => {},
-          value: 'info@contact.com',
-        },
-      });
-
-      fireEvent.change(telephone, {
-        target: {
-          focus: () => {},
-          value: '07712345678',
-        },
-      });
-
-      fireEvent.change(name, {
-        target: {
-          focus: () => {},
-          value: 'New company',
-        },
-      });
-
-      await wait();
-
-      const [button] = await findAllByRole('button');
-
-      fireEvent.click(button);
-
-      await waitForApollo(0);
-
-      await findByTestId('next-page');
     });
 
-    expect(history.push).toHaveBeenCalledWith(
-      '/my-companies/clients/company-id',
-    );
-  });
+    it('should display a warning toast', async () => {
+      const { findAllByRole, findByLabelText, findByTestId } = component;
 
-  it('should display a success toast', async () => {
-    const { findAllByRole, findByLabelText, findByTestId } = component;
+      await act(async () => {
+        const line1 = await findByLabelText('address.line1');
+        const line3 = await findByLabelText('address.line3');
+        const line4 = await findByLabelText('address.line4');
+        const line5 = await findByLabelText('address.line5');
+        const email = await findByLabelText('contact-details.email');
+        const telephone = await findByLabelText('contact-details.telephone');
+        const name = await findByLabelText(
+          'client-form.client-details.name.label',
+        );
 
-    await act(async () => {
-      const line1 = await findByLabelText('address.line1');
-      const line3 = await findByLabelText('address.line3');
-      const line4 = await findByLabelText('address.line4');
-      const line5 = await findByLabelText('address.line5');
-      const email = await findByLabelText('contact-details.email');
-      const telephone = await findByLabelText('contact-details.telephone');
-      const name = await findByLabelText(
-        'client-form.client-details.name.label',
+        fireEvent.change(line1, {
+          target: {
+            focus: () => {},
+            value: '1 Street',
+          },
+        });
+
+        fireEvent.change(line3, {
+          target: {
+            focus: () => {},
+            value: 'Town',
+          },
+        });
+
+        fireEvent.change(line4, {
+          target: {
+            focus: () => {},
+            value: 'County',
+          },
+        });
+
+        fireEvent.change(line5, {
+          target: {
+            focus: () => {},
+            value: 'KT1 1NE',
+          },
+        });
+
+        fireEvent.change(email, {
+          target: {
+            focus: () => {},
+            value: 'info@contact.com',
+          },
+        });
+
+        fireEvent.change(telephone, {
+          target: {
+            focus: () => {},
+            value: '07712345678',
+          },
+        });
+
+        fireEvent.change(name, {
+          target: {
+            focus: () => {},
+            value: 'New company',
+          },
+        });
+
+        await wait();
+
+        const [button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        await waitForApollo(0);
+
+        await findByTestId('next-page');
+      });
+
+      await wait(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'add-client.retry',
+        }),
       );
-
-      fireEvent.change(line1, {
-        target: {
-          focus: () => {},
-          value: '1 Street',
-        },
-      });
-
-      fireEvent.change(line3, {
-        target: {
-          focus: () => {},
-          value: 'Town',
-        },
-      });
-
-      fireEvent.change(line4, {
-        target: {
-          focus: () => {},
-          value: 'County',
-        },
-      });
-
-      fireEvent.change(line5, {
-        target: {
-          focus: () => {},
-          value: 'KT1 1NE',
-        },
-      });
-
-      fireEvent.change(email, {
-        target: {
-          focus: () => {},
-          value: 'info@contact.com',
-        },
-      });
-
-      fireEvent.change(telephone, {
-        target: {
-          focus: () => {},
-          value: '07712345678',
-        },
-      });
-
-      fireEvent.change(name, {
-        target: {
-          focus: () => {},
-          value: 'New company',
-        },
-      });
-
-      await wait();
-
-      const [button] = await findAllByRole('button');
-
-      fireEvent.click(button);
-
-      await waitForApollo(0);
-
-      await findByTestId('next-page');
     });
 
-    await wait(() =>
-      expect(add).toHaveBeenCalledWith({
-        colour: 'success',
-        message: 'add-client.success',
-      }),
-    );
+    it('should redirect you back to company page', async () => {
+      const { findAllByRole, findByLabelText, findByTestId } = component;
+
+      await act(async () => {
+        const line1 = await findByLabelText('address.line1');
+        const line3 = await findByLabelText('address.line3');
+        const line4 = await findByLabelText('address.line4');
+        const line5 = await findByLabelText('address.line5');
+        const email = await findByLabelText('contact-details.email');
+        const telephone = await findByLabelText('contact-details.telephone');
+        const name = await findByLabelText(
+          'client-form.client-details.name.label',
+        );
+
+        fireEvent.change(line1, {
+          target: {
+            focus: () => {},
+            value: '1 Street',
+          },
+        });
+
+        fireEvent.change(line3, {
+          target: {
+            focus: () => {},
+            value: 'Town',
+          },
+        });
+
+        fireEvent.change(line4, {
+          target: {
+            focus: () => {},
+            value: 'County',
+          },
+        });
+
+        fireEvent.change(line5, {
+          target: {
+            focus: () => {},
+            value: 'KT1 1NE',
+          },
+        });
+
+        fireEvent.change(email, {
+          target: {
+            focus: () => {},
+            value: 'info@contact.com',
+          },
+        });
+
+        fireEvent.change(telephone, {
+          target: {
+            focus: () => {},
+            value: '07712345678',
+          },
+        });
+
+        fireEvent.change(name, {
+          target: {
+            focus: () => {},
+            value: 'New company',
+          },
+        });
+
+        await wait();
+
+        const [button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        await waitForApollo(0);
+
+        await findByTestId('next-page');
+      });
+
+      expect(history.push).toHaveBeenCalledWith(
+        '/my-companies/clients/company-id',
+      );
+    });
   });
 });

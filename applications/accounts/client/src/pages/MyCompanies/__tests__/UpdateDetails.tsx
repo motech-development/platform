@@ -262,7 +262,7 @@ describe('UpdateDetails', () => {
         expect(queryByRole('dialog')).not.toBeInTheDocument();
       });
 
-      it('should delete a client', async () => {
+      it('should delete a company', async () => {
         const {
           findAllByRole,
           findByTestId,
@@ -299,7 +299,7 @@ describe('UpdateDetails', () => {
         expect(history.push).toHaveBeenCalledWith('/my-companies');
       });
 
-      it('should display a success toast when deleting a client', async () => {
+      it('should display a success toast when deleting a company', async () => {
         const { findAllByRole, findByLabelText, findByText } = component;
 
         await act(async () => {
@@ -392,7 +392,7 @@ describe('UpdateDetails', () => {
         });
       });
 
-      it('should display an error toast when deleting a client', async () => {
+      it('should display an error toast when deleting a company', async () => {
         const { findAllByRole, findByLabelText, findByText } = component;
 
         await act(async () => {
@@ -518,7 +518,7 @@ describe('UpdateDetails', () => {
       });
     });
 
-    it('should display a warning toast when updating a client', async () => {
+    it('should display a warning toast when updating a company', async () => {
       const { findAllByRole, findByTestId, findByText } = component;
 
       await act(async () => {
@@ -541,7 +541,27 @@ describe('UpdateDetails', () => {
       );
     });
 
-    it('should display a warning toast when deleting a client', async () => {
+    it('should redirect you to the right place when updating a company', async () => {
+      const { findAllByRole, findByTestId, findByText } = component;
+
+      await act(async () => {
+        await findByText('New company');
+
+        const [button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        await waitForApollo(0);
+
+        await findByTestId('next-page');
+      });
+
+      expect(history.push).toHaveBeenCalledWith(
+        '/my-companies/dashboard/company-uuid',
+      );
+    });
+
+    it('should display a warning toast when deleting a company', async () => {
       const { findAllByRole, findByLabelText, findByText } = component;
 
       await act(async () => {
@@ -574,6 +594,36 @@ describe('UpdateDetails', () => {
           message: 'delete-company.retry',
         }),
       );
+    });
+
+    it('should redirect you to the right place when deleting a company', async () => {
+      const { findAllByRole, findByLabelText, findByText } = component;
+
+      await act(async () => {
+        await findByText('New company');
+
+        const [, button] = await findAllByRole('button');
+
+        fireEvent.click(button);
+
+        const input = await findByLabelText('confirm-delete');
+
+        fireEvent.change(input, {
+          target: { focus: () => {}, value: 'New company' },
+        });
+
+        await wait();
+
+        const [, , , deleteButton] = await findAllByRole('button');
+
+        fireEvent.click(deleteButton);
+
+        await waitForApollo(0);
+
+        await wait();
+      });
+
+      expect(history.push).toHaveBeenCalledWith('/my-companies');
     });
   });
 });

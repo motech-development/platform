@@ -37,6 +37,13 @@ const AddClient: FC = () => {
         });
 
         history.push(backTo(id));
+      } else {
+        add({
+          colour: 'danger',
+          message: t('add-client.retry'),
+        });
+
+        history.push(backTo(companyId));
       }
     },
   });
