@@ -101,8 +101,13 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
             data: addTransaction,
             fragment: gql`
               fragment NewTransaction on Transaction {
+                amount
+                attachment
                 date
+                description
                 id
+                name
+                scheduled
               }
             `,
           });
