@@ -437,7 +437,7 @@ describe('ADD_TRANSACTION', () => {
       });
     });
 
-    it.only('should not add a duplicate transaction', () => {
+    it('should not add a duplicate transaction', () => {
       const input = {
         data: {
           addTransaction: {
