@@ -212,6 +212,106 @@ describe('ADD_TRANSACTION', () => {
         });
       });
     });
+
+    describe('with set data', () => {
+      beforeEach(() => {
+        cache.writeQuery({
+          data: {
+            getTypeahead: {
+              __typename: 'Typeahead',
+              id: 'company-id',
+              purchases: ['A purchase'],
+              sales: ['A sale'],
+              suppliers: ['Your favourite shop'],
+            },
+          },
+          query: GET_TYPEAHEAD,
+          variables: {
+            id: 'company-id',
+          },
+        });
+      });
+
+      it('should not add sale description to the typeahead', () => {
+        const input = {
+          data: {
+            addTransaction: {
+              __typename: 'Transaction',
+              amount: 100,
+              attachment: '',
+              category: 'Sales',
+              companyId: 'company-id',
+              date: '2021-02-22',
+              description: 'A sale',
+              id: 'transaction-id',
+              name: 'A client',
+              scheduled: false,
+              status: 'confirmed',
+              vat: 0,
+            },
+          },
+        };
+
+        updateCache(cache, input);
+
+        const result = cache.readQuery({
+          query: GET_TYPEAHEAD,
+          variables: {
+            id: 'company-id',
+          },
+        });
+
+        expect(result).toEqual({
+          getTypeahead: {
+            __typename: 'Typeahead',
+            id: 'company-id',
+            purchases: ['A purchase'],
+            sales: ['A sale'],
+            suppliers: ['Your favourite shop'],
+          },
+        });
+      });
+
+      it('should not add purchase description and supplier to the typeahead', () => {
+        const input = {
+          data: {
+            addTransaction: {
+              __typename: 'Transaction',
+              amount: 100,
+              attachment: '',
+              category: 'Bills',
+              companyId: 'company-id',
+              date: '2021-02-22',
+              description: 'A purchase',
+              id: 'transaction-id',
+              name: 'Your favourite shop',
+              scheduled: false,
+              status: 'confirmed',
+              vat: 0,
+            },
+          },
+        };
+
+        updateCache(cache, input);
+
+        const result = cache.readQuery({
+          query: GET_TYPEAHEAD,
+          variables: {
+            id: 'company-id',
+          },
+        });
+
+        expect(result).toEqual({
+          getTypeahead: {
+            __typename: 'Typeahead',
+            id: 'company-id',
+            purchases: ['A purchase'],
+            sales: ['A sale'],
+            suppliers: ['Your favourite shop'],
+          },
+        });
+      });
+    });
   });
 
   describe('transactions', () => {
@@ -348,7 +448,7 @@ describe('ADD_TRANSACTION', () => {
             companyId: 'company-id-0',
             date: '2021-02-21',
             description: 'A purchase',
-            id: 'transaction-id-2',
+            id: 'transaction-id-1',
             name: 'Your favourite shop',
             scheduled: false,
             status: 'confirmed',
