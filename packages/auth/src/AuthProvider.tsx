@@ -113,22 +113,26 @@ const AuthProvider: FC<IAuthProviderProps> = ({
     })();
   }, [auth0Client, onRedirectCallback, pathname, search]);
 
+  if (!auth0Client) {
+    return null;
+  }
+
   const buildAuthorizeUrl = (options?: RedirectLoginOptions) =>
-    auth0Client!.buildAuthorizeUrl(options);
+    auth0Client.buildAuthorizeUrl(options);
 
   const getIdTokenClaims = (options?: GetIdTokenClaimsOptions) =>
-    auth0Client!.getIdTokenClaims(options);
+    auth0Client.getIdTokenClaims(options);
 
   const getTokenSilently = (options?: GetTokenSilentlyOptions) =>
-    auth0Client!.getTokenSilently(options);
+    auth0Client.getTokenSilently(options);
 
   const loginWithPopup = (options?: PopupLoginOptions) =>
-    auth0Client!.loginWithPopup(options);
+    auth0Client.loginWithPopup(options);
 
   const loginWithRedirect = (options?: RedirectLoginOptions) =>
-    auth0Client!.loginWithRedirect(options);
+    auth0Client.loginWithRedirect(options);
 
-  const logout = (options?: LogoutOptions) => auth0Client!.logout(options);
+  const logout = (options?: LogoutOptions) => auth0Client.logout(options);
 
   return (
     <AuthContext.Provider

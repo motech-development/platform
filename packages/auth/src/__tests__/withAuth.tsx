@@ -9,6 +9,7 @@ const LoadingComponent: FC = () => <div data-testid="loading">Loading</div>;
 
 describe('withAuth', () => {
   let buildAuthorizeUrl: jest.Mock;
+  let env: NodeJS.ProcessEnv;
   let getIdTokenClaims: jest.Mock;
   let getTokenSilently: jest.Mock;
   let isAuthenticated: boolean;
@@ -21,6 +22,9 @@ describe('withAuth', () => {
 
   beforeEach(() => {
     buildAuthorizeUrl = jest.fn();
+    env = {
+      ...process.env,
+    };
     getIdTokenClaims = jest.fn();
     getIdTokenClaims = jest.fn();
     isAuthenticated = false;
@@ -28,9 +32,17 @@ describe('withAuth', () => {
     loginWithRedirect = jest.fn();
     logout = jest.fn();
     onError = jest.fn();
+    process.env.NODE_ENV = 'development';
+    process.env.REACT_APP_AUTH0_AUDIENCE = 'APP_AUTH0_AUDIENCE';
+    process.env.REACT_APP_AUTH0_CLIENT_ID = 'AUTH0_CLIENT_ID';
+    process.env.REACT_APP_AUTH0_DOMAIN = 'AUTH0_DOMAIN';
     user = {
       name: 'Mo Gusbi',
     };
+  });
+
+  afterEach(() => {
+    process.env = env;
   });
 
   describe('when loaded', () => {

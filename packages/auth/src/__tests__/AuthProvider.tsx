@@ -13,7 +13,7 @@ const TestComponent: FC = () => {
   } = useAuth();
 
   return (
-    <>
+    <div data-testid="test-component">
       {isLoading ? (
         <div data-testid="loading">Loading...</div>
       ) : (
@@ -45,7 +45,7 @@ const TestComponent: FC = () => {
           )}
         </>
       )}
-    </>
+    </div>
   );
 };
 
@@ -232,11 +232,8 @@ describe('AuthProvider', () => {
   });
 
   describe('when Auth0 is not configured', () => {
-    it('should show loading message', async () => {
-      isLoading = true;
-      isAuthenticated = false;
-
-      const { findByTestId } = render(
+    it('should now show content when client is not present', () => {
+      const { queryByTestId } = render(
         <MemoryRouter>
           <AuthProvider>
             <AuthContext.Provider
@@ -258,9 +255,7 @@ describe('AuthProvider', () => {
         </MemoryRouter>,
       );
 
-      await expect(findByTestId('loading')).resolves.toHaveTextContent(
-        'Loading...',
-      );
+      expect(queryByTestId('test-component')).not.toBeInTheDocument();
     });
   });
 });
