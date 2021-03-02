@@ -7,7 +7,13 @@ describe('DELETE_TRANSACTION', () => {
   let cache: InMemoryCache;
 
   beforeEach(() => {
-    cache = new InMemoryCache();
+    cache = new InMemoryCache({
+      typePolicies: {
+        Transactions: {
+          keyFields: ['id', 'status'],
+        },
+      },
+    });
 
     cache.writeQuery({
       data: {

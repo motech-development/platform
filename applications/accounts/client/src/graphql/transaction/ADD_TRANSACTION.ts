@@ -111,6 +111,7 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
               }
             `,
           });
+
           return [...refs, newRef].sort((a, b) =>
             readField<string>('date', a)!.localeCompare(
               readField<string>('date', b)!,
