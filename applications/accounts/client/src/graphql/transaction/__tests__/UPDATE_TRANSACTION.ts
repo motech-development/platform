@@ -628,6 +628,116 @@ describe('UPDATE_TRANSACTION', () => {
         },
       });
     });
+
+    it('should not move a transaction from one collection to another', () => {
+      const input = {
+        data: {
+          updateTransaction: {
+            __typename: 'Transaction',
+            amount: 100,
+            attachment: '',
+            category: 'Bills',
+            companyId: 'company-id',
+            date: '2021-02-23',
+            description: 'A pending purchase',
+            id: 'transaction-id-4',
+            name: 'Your favourite shop',
+            scheduled: false,
+            status: 'pending',
+            vat: 0,
+          },
+        },
+      };
+
+      updateCache(cache, input);
+
+      const confirmed = cache.readQuery({
+        query: GET_TRANSACTIONS,
+        variables: {
+          id: 'company-id',
+          status: 'confirmed',
+        },
+      });
+      const pending = cache.readQuery({
+        query: GET_TRANSACTIONS,
+        variables: {
+          id: 'company-id',
+          status: 'pending',
+        },
+      });
+
+      expect(confirmed).toEqual({
+        getBalance: {
+          __typename: 'Balance',
+          currency: 'GBP',
+          id: 'company-id',
+          transactions: [],
+        },
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-id',
+          items: [
+            {
+              __typename: 'Transaction',
+              amount: 100,
+              attachment: '',
+              date: '2021-02-21',
+              description: 'A purchase',
+              id: 'transaction-id-0',
+              name: 'Your favourite shop',
+              scheduled: false,
+            },
+            {
+              __typename: 'Transaction',
+              amount: 100,
+              attachment: '',
+              date: '2021-02-23',
+              description: 'A purchase',
+              id: 'transaction-id-1',
+              name: 'Your favourite shop',
+              scheduled: false,
+            },
+          ],
+          status: 'confirmed',
+        },
+      });
+
+      expect(pending).toEqual({
+        getBalance: {
+          __typename: 'Balance',
+          currency: 'GBP',
+          id: 'company-id',
+          transactions: [],
+        },
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-id',
+          items: [
+            {
+              __typename: 'Transaction',
+              amount: 100,
+              attachment: '',
+              date: '2021-02-21',
+              description: 'A pending purchase',
+              id: 'transaction-id-3',
+              name: 'Your favourite shop',
+              scheduled: false,
+            },
+            {
+              __typename: 'Transaction',
+              amount: 100,
+              attachment: '',
+              date: '2021-02-23',
+              description: 'A pending purchase',
+              id: 'transaction-id-4',
+              name: 'Your favourite shop',
+              scheduled: false,
+            },
+          ],
+          status: 'pending',
+        },
+      });
+    });
   });
 
   it('should not modify cache if no data is passed', () => {
