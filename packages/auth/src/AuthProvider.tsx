@@ -53,6 +53,13 @@ const AuthProvider: FC<IAuthProviderProps> = ({
   children,
   onRedirectCallback = defaultRedirectCallback,
 }) => {
+  const {
+    NODE_ENV,
+    REACT_APP_AUTH0_AUDIENCE,
+    REACT_APP_AUTH0_CLIENT_ID,
+    REACT_APP_AUTH0_DOMAIN,
+  } = process.env;
+
   const [auth0Client, setAuth0Client] = useState<Auth0Client>();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,13 +68,6 @@ const AuthProvider: FC<IAuthProviderProps> = ({
 
   useEffect(() => {
     (async () => {
-      const {
-        NODE_ENV,
-        REACT_APP_AUTH0_AUDIENCE,
-        REACT_APP_AUTH0_CLIENT_ID,
-        REACT_APP_AUTH0_DOMAIN,
-      } = process.env;
-
       if (
         NODE_ENV !== 'test' &&
         REACT_APP_AUTH0_AUDIENCE &&
@@ -88,7 +88,12 @@ const AuthProvider: FC<IAuthProviderProps> = ({
         setAuth0Client(client);
       }
     })();
-  }, []);
+  }, [
+    NODE_ENV,
+    REACT_APP_AUTH0_AUDIENCE,
+    REACT_APP_AUTH0_CLIENT_ID,
+    REACT_APP_AUTH0_DOMAIN,
+  ]);
 
   useEffect(() => {
     (async () => {
@@ -112,6 +117,10 @@ const AuthProvider: FC<IAuthProviderProps> = ({
       }
     })();
   }, [auth0Client, onRedirectCallback, pathname, search]);
+
+  if (NODE_ENV === 'test') {
+    return <>{children}</>;
+  }
 
   if (!auth0Client) {
     return null;

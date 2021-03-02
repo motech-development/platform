@@ -51,6 +51,7 @@ const TestComponent: FC = () => {
 
 describe('AuthProvider', () => {
   let buildAuthorizeUrl: jest.Mock;
+  let env: NodeJS.ProcessEnv;
   let getIdTokenClaims: jest.Mock;
   let getTokenSilently: jest.Mock;
   let isAuthenticated: boolean;
@@ -62,6 +63,9 @@ describe('AuthProvider', () => {
 
   beforeEach(() => {
     buildAuthorizeUrl = jest.fn();
+    env = {
+      ...process.env,
+    };
     getIdTokenClaims = jest.fn();
     getIdTokenClaims = jest.fn();
     loginWithPopup = jest.fn();
@@ -72,22 +76,16 @@ describe('AuthProvider', () => {
     };
   });
 
+  afterEach(() => {
+    process.env = env;
+  });
+
   describe('when Auth0 is configured', () => {
-    let env: NodeJS.ProcessEnv;
-
     beforeEach(() => {
-      env = {
-        ...process.env,
-      };
-
       process.env.NODE_ENV = 'development';
       process.env.REACT_APP_AUTH0_AUDIENCE = 'APP_AUTH0_AUDIENCE';
       process.env.REACT_APP_AUTH0_CLIENT_ID = 'AUTH0_CLIENT_ID';
       process.env.REACT_APP_AUTH0_DOMAIN = 'AUTH0_DOMAIN';
-    });
-
-    afterEach(() => {
-      process.env = env;
     });
 
     it('should show loading message when loading', async () => {
@@ -232,6 +230,13 @@ describe('AuthProvider', () => {
   });
 
   describe('when Auth0 is not configured', () => {
+    beforeEach(() => {
+      process.env.NODE_ENV = 'development';
+      // process.env.REACT_APP_AUTH0_AUDIENCE = 'APP_AUTH0_AUDIENCE';
+      // process.env.REACT_APP_AUTH0_CLIENT_ID = 'AUTH0_CLIENT_ID';
+      // process.env.REACT_APP_AUTH0_DOMAIN = 'AUTH0_DOMAIN';
+    });
+
     it('should now show content when client is not present', () => {
       const { queryByTestId } = render(
         <MemoryRouter>
@@ -256,6 +261,39 @@ describe('AuthProvider', () => {
       );
 
       expect(queryByTestId('test-component')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('when in test mode', () => {
+    it('should show loading message', async () => {
+      isLoading = true;
+      isAuthenticated = false;
+
+      const { findByTestId } = render(
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthContext.Provider
+              value={{
+                buildAuthorizeUrl,
+                getIdTokenClaims,
+                getTokenSilently,
+                isAuthenticated,
+                isLoading,
+                loginWithPopup,
+                loginWithRedirect,
+                logout,
+                user,
+              }}
+            >
+              <TestComponent />
+            </AuthContext.Provider>
+          </AuthProvider>
+        </MemoryRouter>,
+      );
+
+      await expect(findByTestId('loading')).resolves.toHaveTextContent(
+        'Loading...',
+      );
     });
   });
 });
