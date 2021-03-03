@@ -1,3 +1,4 @@
+import { Auth0Client } from '@auth0/auth0-spa-js';
 import { fireEvent, render, waitForElement } from '@testing-library/react';
 import React, { FC } from 'react';
 import { MemoryRouter } from 'react-router-dom';
@@ -188,7 +189,8 @@ describe('AuthProvider', () => {
     });
 
     it("should show log in button when auth0 says you're not authorised", async () => {
-      process.env.REACT_APP_AUTH0_DOMAIN = 'FAKE_DOMAIN';
+      (Auth0Client.prototype
+        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
 
       const { findByTestId } = render(
         <MemoryRouter>
@@ -207,9 +209,6 @@ describe('AuthProvider', () => {
       window.history.replaceState = jest.fn();
       document.title = 'Hello world';
 
-      isLoading = false;
-      isAuthenticated = false;
-
       const { findByTestId } = render(
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
@@ -227,14 +226,294 @@ describe('AuthProvider', () => {
       );
       expect(result).toHaveTextContent('Mo Gusbi');
     });
+
+    it('should call logout', async () => {
+      const { findByTestId } = render(
+        <MemoryRouter initialEntries={['?code=test']}>
+          <AuthProvider>
+            <AuthContext.Consumer>
+              {ctx => (
+                <>
+                  <button
+                    type="button"
+                    data-testid="no-opts"
+                    onClick={() => ctx!.logout()}
+                  >
+                    No opts
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="with-opts"
+                    onClick={() =>
+                      ctx!.logout({
+                        returnTo: 'test',
+                      })
+                    }
+                  >
+                    With opts
+                  </button>
+                </>
+              )}
+            </AuthContext.Consumer>
+          </AuthProvider>
+        </MemoryRouter>,
+      );
+      const noOpts = await findByTestId('no-opts');
+      const withOpts = await findByTestId('with-opts');
+
+      fireEvent.click(noOpts);
+      fireEvent.click(withOpts);
+
+      expect(Auth0Client.prototype.logout).toHaveBeenCalledWith(undefined);
+      expect(Auth0Client.prototype.logout).toHaveBeenCalledWith({
+        returnTo: 'test',
+      });
+    });
+
+    it('should call loginWithPopup', async () => {
+      (Auth0Client.prototype
+        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
+
+      const { findByTestId } = render(
+        <MemoryRouter initialEntries={['?code=test']}>
+          <AuthProvider>
+            <AuthContext.Consumer>
+              {ctx => (
+                <>
+                  <button
+                    type="button"
+                    data-testid="no-opts"
+                    onClick={() => ctx!.loginWithPopup()}
+                  >
+                    No opts
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="with-opts"
+                    onClick={() =>
+                      ctx!.loginWithPopup({
+                        audience: 'test',
+                      })
+                    }
+                  >
+                    With opts
+                  </button>
+                </>
+              )}
+            </AuthContext.Consumer>
+          </AuthProvider>
+        </MemoryRouter>,
+      );
+      const noOpts = await findByTestId('no-opts');
+      const withOpts = await findByTestId('with-opts');
+
+      fireEvent.click(noOpts);
+      fireEvent.click(withOpts);
+
+      expect(Auth0Client.prototype.loginWithPopup).toHaveBeenCalledWith(
+        undefined,
+      );
+      expect(Auth0Client.prototype.loginWithPopup).toHaveBeenCalledWith({
+        audience: 'test',
+      });
+    });
+
+    it('should call loginWithRedirect', async () => {
+      (Auth0Client.prototype
+        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
+
+      const { findByTestId } = render(
+        <MemoryRouter initialEntries={['?code=test']}>
+          <AuthProvider>
+            <AuthContext.Consumer>
+              {ctx => (
+                <>
+                  <button
+                    type="button"
+                    data-testid="no-opts"
+                    onClick={() => ctx!.loginWithRedirect()}
+                  >
+                    No opts
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="with-opts"
+                    onClick={() =>
+                      ctx!.loginWithRedirect({
+                        audience: 'test',
+                      })
+                    }
+                  >
+                    With opts
+                  </button>
+                </>
+              )}
+            </AuthContext.Consumer>
+          </AuthProvider>
+        </MemoryRouter>,
+      );
+      const noOpts = await findByTestId('no-opts');
+      const withOpts = await findByTestId('with-opts');
+
+      fireEvent.click(noOpts);
+      fireEvent.click(withOpts);
+
+      expect(Auth0Client.prototype.loginWithRedirect).toHaveBeenCalledWith(
+        undefined,
+      );
+      expect(Auth0Client.prototype.loginWithRedirect).toHaveBeenCalledWith({
+        audience: 'test',
+      });
+    });
+
+    it('should call buildAuthorizeUrl', async () => {
+      (Auth0Client.prototype
+        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
+
+      const { findByTestId } = render(
+        <MemoryRouter initialEntries={['?code=test']}>
+          <AuthProvider>
+            <AuthContext.Consumer>
+              {ctx => (
+                <>
+                  <button
+                    type="button"
+                    data-testid="no-opts"
+                    onClick={() => ctx!.buildAuthorizeUrl()}
+                  >
+                    No opts
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="with-opts"
+                    onClick={() =>
+                      ctx!.buildAuthorizeUrl({
+                        audience: 'test',
+                      })
+                    }
+                  >
+                    With opts
+                  </button>
+                </>
+              )}
+            </AuthContext.Consumer>
+          </AuthProvider>
+        </MemoryRouter>,
+      );
+      const noOpts = await findByTestId('no-opts');
+      const withOpts = await findByTestId('with-opts');
+
+      fireEvent.click(noOpts);
+      fireEvent.click(withOpts);
+
+      expect(Auth0Client.prototype.buildAuthorizeUrl).toHaveBeenCalledWith(
+        undefined,
+      );
+      expect(Auth0Client.prototype.buildAuthorizeUrl).toHaveBeenCalledWith({
+        audience: 'test',
+      });
+    });
+
+    it('should call getIdTokenClaims', async () => {
+      (Auth0Client.prototype
+        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
+
+      const { findByTestId } = render(
+        <MemoryRouter initialEntries={['?code=test']}>
+          <AuthProvider>
+            <AuthContext.Consumer>
+              {ctx => (
+                <>
+                  <button
+                    type="button"
+                    data-testid="no-opts"
+                    onClick={() => ctx!.getIdTokenClaims()}
+                  >
+                    No opts
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="with-opts"
+                    onClick={() =>
+                      ctx!.getIdTokenClaims({
+                        audience: 'test',
+                      })
+                    }
+                  >
+                    With opts
+                  </button>
+                </>
+              )}
+            </AuthContext.Consumer>
+          </AuthProvider>
+        </MemoryRouter>,
+      );
+      const noOpts = await findByTestId('no-opts');
+      const withOpts = await findByTestId('with-opts');
+
+      fireEvent.click(noOpts);
+      fireEvent.click(withOpts);
+
+      expect(Auth0Client.prototype.getIdTokenClaims).toHaveBeenCalledWith(
+        undefined,
+      );
+      expect(Auth0Client.prototype.getIdTokenClaims).toHaveBeenCalledWith({
+        audience: 'test',
+      });
+    });
+
+    it('should call getTokenSilently', async () => {
+      (Auth0Client.prototype
+        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
+
+      const { findByTestId } = render(
+        <MemoryRouter initialEntries={['?code=test']}>
+          <AuthProvider>
+            <AuthContext.Consumer>
+              {ctx => (
+                <>
+                  <button
+                    type="button"
+                    data-testid="no-opts"
+                    onClick={() => ctx!.getTokenSilently()}
+                  >
+                    No opts
+                  </button>
+                  <button
+                    type="button"
+                    data-testid="with-opts"
+                    onClick={() =>
+                      ctx!.getTokenSilently({
+                        audience: 'test',
+                      })
+                    }
+                  >
+                    With opts
+                  </button>
+                </>
+              )}
+            </AuthContext.Consumer>
+          </AuthProvider>
+        </MemoryRouter>,
+      );
+      const noOpts = await findByTestId('no-opts');
+      const withOpts = await findByTestId('with-opts');
+
+      fireEvent.click(noOpts);
+      fireEvent.click(withOpts);
+
+      expect(Auth0Client.prototype.getTokenSilently).toHaveBeenCalledWith(
+        undefined,
+      );
+      expect(Auth0Client.prototype.getTokenSilently).toHaveBeenCalledWith({
+        audience: 'test',
+      });
+    });
   });
 
   describe('when Auth0 is not configured', () => {
     beforeEach(() => {
       process.env.NODE_ENV = 'development';
-      // process.env.REACT_APP_AUTH0_AUDIENCE = 'APP_AUTH0_AUDIENCE';
-      // process.env.REACT_APP_AUTH0_CLIENT_ID = 'AUTH0_CLIENT_ID';
-      // process.env.REACT_APP_AUTH0_DOMAIN = 'AUTH0_DOMAIN';
     });
 
     it('should now show content when client is not present', () => {
