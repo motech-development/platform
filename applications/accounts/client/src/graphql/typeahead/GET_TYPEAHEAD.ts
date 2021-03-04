@@ -1,11 +1,11 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IGetTypeaheadInput {
   id: string;
 }
 
 export interface IGetTypeaheadOutput {
-  getTypeahead: {
+  getTypeahead?: {
     id: string;
     purchases: string[] | null;
     sales: string[] | null;

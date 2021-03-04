@@ -1,15 +1,11 @@
-import { gql, MutationUpdaterFn } from 'apollo-boost';
-import GET_CLIENTS, {
-  IGetClientsInput,
-  IGetClientsOutput,
-} from './GET_CLIENTS';
+import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
 
 export interface IDeleteClientInput {
   id: string;
 }
 
 export interface IDeleteClientOutput {
-  deleteClient: {
+  deleteClient?: {
     companyId: string;
     id: string;
     name: string;
@@ -17,35 +13,22 @@ export interface IDeleteClientOutput {
 }
 
 export const updateCache: MutationUpdaterFn<IDeleteClientOutput> = (
-  client,
+  cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.deleteClient) {
     const { deleteClient } = data;
 
-    try {
-      const cache = client.readQuery<IGetClientsOutput, IGetClientsInput>({
-        query: GET_CLIENTS,
-        variables: {
-          id: deleteClient.companyId,
-        },
-      });
-
-      if (cache) {
-        cache.getClients.items = cache.getClients.items.filter(
-          ({ id }) => deleteClient.id !== id,
-        );
-
-        client.writeQuery<IGetClientsOutput, IGetClientsInput>({
-          data: cache,
-          query: GET_CLIENTS,
-          variables: {
-            id: deleteClient.companyId,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) =>
+          refs.filter(ref => readField('id', ref) !== deleteClient.id),
+      },
+      id: cache.identify({
+        __typename: 'Clients',
+        id: deleteClient.companyId,
+      }),
+    });
   }
 };
 

@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, wait } from '@testing-library/react';
 import React, { FC } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
@@ -9,25 +9,41 @@ const TestComponent: FC = () => (
 );
 
 describe('ProtectedRoute', () => {
+  let buildAuthorizeUrl: jest.Mock;
+  let env: NodeJS.ProcessEnv;
   let getIdTokenClaims: jest.Mock;
   let getTokenSilently: jest.Mock;
   let isAuthenticated: boolean;
   let isLoading: boolean;
+  let loginWithPopup: jest.Mock;
   let loginWithRedirect: jest.Mock;
   let logout: jest.Mock;
   let user: AuthUser;
 
   beforeEach(() => {
+    buildAuthorizeUrl = jest.fn();
+    env = {
+      ...process.env,
+    };
     getIdTokenClaims = jest.fn();
     getIdTokenClaims = jest.fn();
+    loginWithPopup = jest.fn();
     loginWithRedirect = jest.fn();
     logout = jest.fn();
+    process.env.NODE_ENV = 'development';
+    process.env.REACT_APP_AUTH0_AUDIENCE = 'APP_AUTH0_AUDIENCE';
+    process.env.REACT_APP_AUTH0_CLIENT_ID = 'AUTH0_CLIENT_ID';
+    process.env.REACT_APP_AUTH0_DOMAIN = 'AUTH0_DOMAIN';
     user = {
       name: 'Mo Gusbi',
     };
   });
 
-  it('should not render component if not authenticated', () => {
+  afterEach(() => {
+    process.env = env;
+  });
+
+  it('should not render component if not authenticated', async () => {
     isLoading = false;
     isAuthenticated = false;
 
@@ -36,10 +52,12 @@ describe('ProtectedRoute', () => {
         <AuthProvider>
           <AuthContext.Provider
             value={{
+              buildAuthorizeUrl,
               getIdTokenClaims,
               getTokenSilently,
               isAuthenticated,
               isLoading,
+              loginWithPopup,
               loginWithRedirect,
               logout,
               user,
@@ -51,7 +69,7 @@ describe('ProtectedRoute', () => {
       </MemoryRouter>,
     );
 
-    expect(queryByTestId('authenticated')).toBeNull();
+    await wait(() => expect(queryByTestId('authenticated')).toBeNull());
   });
 
   it('should render component if authenticated', async () => {
@@ -63,10 +81,12 @@ describe('ProtectedRoute', () => {
         <AuthProvider>
           <AuthContext.Provider
             value={{
+              buildAuthorizeUrl,
               getIdTokenClaims,
               getTokenSilently,
               isAuthenticated,
               isLoading,
+              loginWithPopup,
               loginWithRedirect,
               logout,
               user,
@@ -81,7 +101,7 @@ describe('ProtectedRoute', () => {
     await expect(findByTestId('authenticated')).resolves.toBeInTheDocument();
   });
 
-  it('should redirect to log in if not authenticated', () => {
+  it('should redirect to log in if not authenticated', async () => {
     isLoading = false;
     isAuthenticated = false;
 
@@ -90,10 +110,12 @@ describe('ProtectedRoute', () => {
         <AuthProvider>
           <AuthContext.Provider
             value={{
+              buildAuthorizeUrl,
               getIdTokenClaims,
               getTokenSilently,
               isAuthenticated,
               isLoading,
+              loginWithPopup,
               loginWithRedirect,
               logout,
               user,
@@ -105,10 +127,12 @@ describe('ProtectedRoute', () => {
       </MemoryRouter>,
     );
 
-    expect(loginWithRedirect).toHaveBeenCalledWith({
-      appState: {
-        targetUrl: '/',
-      },
-    });
+    await wait(() =>
+      expect(loginWithRedirect).toHaveBeenCalledWith({
+        appState: {
+          targetUrl: '/',
+        },
+      }),
+    );
   });
 });

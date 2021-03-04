@@ -1,6 +1,5 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import { gql } from 'apollo-boost';
 import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
@@ -22,13 +21,13 @@ interface IRecordTransactionInput {
 }
 
 interface IRecordTransactionOutput {
-  getClients: {
+  getClients?: {
     items: {
       id: string;
       name: string;
     }[];
   };
-  getSettings: {
+  getSettings?: {
     categories: {
       name: string;
       vatRate: number;
@@ -37,7 +36,7 @@ interface IRecordTransactionOutput {
       pay: number;
     };
   };
-  getTypeahead: {
+  getTypeahead?: {
     purchases: string[];
     sales: string[];
     suppliers: string[];
@@ -46,7 +45,7 @@ interface IRecordTransactionOutput {
 
 export const RECORD_TRANSACTION = gql`
   query RecordTransaction($id: ID!) {
-    getClients(companyId: $id) {
+    getClients(id: $id) {
       id
       items {
         id
@@ -106,12 +105,21 @@ const RecordTransaction: FC = () => {
   >(ADD_TRANSACTION, {
     awaitRefetchQueries: true,
     onCompleted: ({ addTransaction }) => {
-      add({
-        colour: 'success',
-        message: t('record-transaction.success'),
-      });
+      if (addTransaction) {
+        add({
+          colour: 'success',
+          message: t('record-transaction.success'),
+        });
 
-      history.push(backTo(addTransaction.companyId, addTransaction.status));
+        history.push(backTo(addTransaction.companyId, addTransaction.status));
+      } else {
+        add({
+          colour: 'danger',
+          message: t('record-transaction.retry'),
+        });
+
+        history.push(backTo(companyId));
+      }
     },
     refetchQueries: () => [
       {
@@ -133,7 +141,7 @@ const RecordTransaction: FC = () => {
 
   return (
     <Connected error={error || addError} loading={loading}>
-      {data && (
+      {data?.getClients && data?.getSettings && (
         <>
           <PageTitle
             title={t('record-transaction.title')}
@@ -162,9 +170,9 @@ const RecordTransaction: FC = () => {
             }))}
             companyId={companyId}
             loading={addLoading}
-            purchases={data.getTypeahead.purchases}
-            sales={data.getTypeahead.sales}
-            suppliers={data.getTypeahead.suppliers}
+            purchases={data.getTypeahead?.purchases}
+            sales={data.getTypeahead?.sales}
+            suppliers={data.getTypeahead?.suppliers}
             uploader={
               <UploadAttachment
                 id={companyId}

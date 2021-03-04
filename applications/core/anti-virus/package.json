@@ -24,7 +24,7 @@
     "testEnvironment": "node"
   },
   "jest-junit": {
-    "outputDirectory": "../../reports/junit",
+    "outputDirectory": "../../../reports/junit",
     "outputName": "anti-virus.xml"
   },
   "devDependencies": {

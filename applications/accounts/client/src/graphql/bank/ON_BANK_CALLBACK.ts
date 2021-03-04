@@ -1,7 +1,7 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IOnBankCallbackOutput {
-  onBankCallback: {
+  onBankCallback?: {
     authorisationUrl: string;
   };
 }

@@ -1,4 +1,4 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IUpdateBankSettingsInput {
   input: {
@@ -11,7 +11,7 @@ export interface IUpdateBankSettingsInput {
 }
 
 export interface IUpdateBankSettingsOutput {
-  updateBankSettings: {
+  updateBankSettings?: {
     account: string;
     id: string;
     user: string;

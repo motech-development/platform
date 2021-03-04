@@ -1,21 +1,21 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IGetSettingsInput {
   id: string;
 }
 
 export interface IGetSettingsOutput {
-  getBankSettings: {
+  getBankSettings?: {
     account: string;
     bank: string;
     id: string;
     user: string;
   };
-  getCompany: {
+  getCompany?: {
     id: string;
     name: string;
   };
-  getSettings: {
+  getSettings?: {
     categories: {
       name: string;
       protect: boolean;

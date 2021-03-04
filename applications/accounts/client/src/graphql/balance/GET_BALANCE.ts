@@ -1,11 +1,11 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IGetBalanceInput {
   id: string;
 }
 
 export interface IGetBalanceOutput {
-  getBalance: {
+  getBalance?: {
     balance: number;
     currency: string;
     id: string;

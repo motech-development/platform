@@ -1,11 +1,11 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IGetBankAccountsInput {
   id: string;
 }
 
 export interface IGetBankAccountsOutput {
-  getBankAccounts: {
+  getBankAccounts?: {
     items: {
       accountIdentifications: {
         identification: string;

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/client';
 import {
   Button,
   Col,
@@ -42,16 +42,25 @@ const UpdateDetails: FC = () => {
     { error: updateError, loading: updateLoading },
   ] = useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY, {
     onCompleted: ({ updateCompany }) => {
-      const { id, name } = updateCompany;
+      if (updateCompany) {
+        const { id, name } = updateCompany;
 
-      add({
-        colour: 'success',
-        message: t('update-details.success', {
-          name,
-        }),
-      });
+        add({
+          colour: 'success',
+          message: t('update-details.success', {
+            name,
+          }),
+        });
 
-      history.push(backTo(id));
+        history.push(backTo(id));
+      } else {
+        add({
+          colour: 'danger',
+          message: t('update-details.retry'),
+        });
+
+        history.push(backTo(companyId));
+      }
     },
   });
   const [deleteMutation, { loading: deleteLoading }] = useMutation<
@@ -59,14 +68,21 @@ const UpdateDetails: FC = () => {
     IDeleteCompanyInput
   >(DELETE_COMPANY, {
     onCompleted: ({ deleteCompany }) => {
-      const { name } = deleteCompany;
+      if (deleteCompany) {
+        const { name } = deleteCompany;
 
-      add({
-        colour: 'success',
-        message: t('delete-company.success', {
-          name,
-        }),
-      });
+        add({
+          colour: 'success',
+          message: t('delete-company.success', {
+            name,
+          }),
+        });
+      } else {
+        add({
+          colour: 'danger',
+          message: t('delete-company.retry'),
+        });
+      }
 
       history.push('/my-companies');
     },
@@ -109,7 +125,7 @@ const UpdateDetails: FC = () => {
 
   return (
     <Connected error={error || updateError} loading={loading}>
-      {data && (
+      {data?.getCompany && (
         <>
           <PageTitle
             title={data.getCompany.name}

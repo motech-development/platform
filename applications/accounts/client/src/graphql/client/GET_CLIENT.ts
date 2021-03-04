@@ -1,11 +1,11 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IGetClientInput {
   id: string;
 }
 
 export interface IGetClientOutput {
-  getClient: {
+  getClient?: {
     address: {
       line1: string;
       line2: string;

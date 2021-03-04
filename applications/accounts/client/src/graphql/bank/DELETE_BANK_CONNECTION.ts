@@ -1,11 +1,11 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IDeleteBankConnectionInput {
   id: string;
 }
 
 export interface IDeleteBankConnectionOutput {
-  deleteBankConnection: {
+  deleteBankConnection?: {
     account: string;
     bank: string;
     id: string;

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/client';
 import {
   Card,
   LinkButton,
@@ -76,7 +76,7 @@ const Accounts: FC = () => {
 
   return (
     <Connected error={error} loading={loading}>
-      {data && (
+      {data?.getBalance && (
         <>
           <PageTitle
             title={t('accounts.title')}

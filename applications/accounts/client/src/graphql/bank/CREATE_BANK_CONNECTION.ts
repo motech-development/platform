@@ -1,4 +1,4 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface ICreateBankConnectionInput {
   input: {
@@ -10,7 +10,7 @@ export interface ICreateBankConnectionInput {
 }
 
 export interface ICreateBankConnectionOutput {
-  createBankConnection: {
+  createBankConnection?: {
     status: string;
   };
 }

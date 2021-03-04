@@ -6,19 +6,23 @@ import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { Route, Router, Switch } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
 
-const user = {
-  name: 'Mo Gusbi',
-};
+export const buildAuthorizeUrl = jest.fn();
 
 export const getIdTokenClaims = jest.fn();
 
 export const getTokenSilently = jest.fn();
 
+export const loginWithPopup = jest.fn();
+
 export const loginWithRedirect = jest.fn();
 
 export const logout = jest.fn();
 
-export const add = jest.fn();
+export const add = jest.fn(({ onDismiss }) => {
+  if (onDismiss) {
+    onDismiss();
+  }
+});
 
 export const remove = jest.fn();
 
@@ -28,6 +32,7 @@ export interface ITestProviderProps {
   isLoading?: boolean;
   history?: MemoryHistory;
   path?: string;
+  user?: object;
 }
 
 const TestProvider: FC<ITestProviderProps> = ({
@@ -38,6 +43,10 @@ const TestProvider: FC<ITestProviderProps> = ({
   history = createMemoryHistory({
     initialEntries: [path],
   }),
+  user = {
+    name: 'Mo Gusbi',
+    sub: 'user-id',
+  },
 }) => {
   const testI18n = i18n;
 
@@ -57,10 +66,12 @@ const TestProvider: FC<ITestProviderProps> = ({
       <AuthProvider>
         <AuthContext.Provider
           value={{
+            buildAuthorizeUrl,
             getIdTokenClaims,
             getTokenSilently,
             isAuthenticated,
             isLoading,
+            loginWithPopup,
             loginWithRedirect,
             logout,
             user,

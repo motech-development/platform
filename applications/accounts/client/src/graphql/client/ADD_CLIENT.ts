@@ -1,8 +1,4 @@
-import { gql, MutationUpdaterFn } from 'apollo-boost';
-import GET_CLIENTS, {
-  IGetClientsInput,
-  IGetClientsOutput,
-} from './GET_CLIENTS';
+import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
 
 export interface IAddClientInput {
   input: {
@@ -24,7 +20,7 @@ export interface IAddClientInput {
 }
 
 export interface IAddClientOutput {
-  createClient: {
+  createClient?: {
     address: {
       line1: string;
       line2: string;
@@ -43,36 +39,53 @@ export interface IAddClientOutput {
 }
 
 export const updateCache: MutationUpdaterFn<IAddClientOutput> = (
-  client,
+  cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.createClient) {
     const { createClient } = data;
 
-    try {
-      const cache = client.readQuery<IGetClientsOutput, IGetClientsInput>({
-        query: GET_CLIENTS,
-        variables: {
-          id: createClient.companyId,
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) => {
+          if (refs.some(ref => readField('id', ref) === createClient.id)) {
+            return refs;
+          }
+
+          const newRef = cache.writeFragment({
+            data: createClient,
+            fragment: gql`
+              fragment NewClient on Client {
+                address {
+                  line1
+                  line2
+                  line3
+                  line4
+                  line5
+                }
+                companyId
+                contact {
+                  email
+                  telephone
+                }
+                id
+                name
+              }
+            `,
+          });
+
+          return [...refs, newRef].sort((a, b) =>
+            readField<string>('name', a)!.localeCompare(
+              readField<string>('name', b)!,
+            ),
+          );
         },
-      });
-
-      if (cache) {
-        cache.getClients.items = [
-          ...cache.getClients.items,
-          createClient,
-        ].sort((a, b) => a.name.localeCompare(b.name));
-
-        client.writeQuery<IGetClientsOutput, IGetClientsInput>({
-          data: cache,
-          query: GET_CLIENTS,
-          variables: {
-            id: createClient.companyId,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+      },
+      id: cache.identify({
+        __typename: 'Clients',
+        id: createClient.companyId,
+      }),
+    });
   }
 };
 

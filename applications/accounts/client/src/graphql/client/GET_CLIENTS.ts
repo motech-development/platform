@@ -1,4 +1,4 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IGetClientsInput {
   count?: number;
@@ -7,7 +7,7 @@ export interface IGetClientsInput {
 }
 
 export interface IGetClientsOutput {
-  getClients: {
+  getClients?: {
     id: string;
     items: {
       address: {
@@ -26,7 +26,7 @@ export interface IGetClientsOutput {
       name: string;
     }[];
   };
-  getCompany: {
+  getCompany?: {
     id: string;
     name: string;
   };
@@ -34,7 +34,7 @@ export interface IGetClientsOutput {
 
 const GET_CLIENTS = gql`
   query GetClients($id: ID!) {
-    getClients(companyId: $id) {
+    getClients(id: $id) {
       id
       items {
         address {

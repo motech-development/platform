@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/react-hooks';
+import { gql, useMutation } from '@apollo/client';
 import { usePut } from '@motech-development/axios-hooks';
 import { FileUpload, useToast } from '@motech-development/breeze-ui';
-import { gql } from 'apollo-boost';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +17,7 @@ interface IRequestUploadInput {
 }
 
 interface IRequestUploadOutput {
-  requestUpload: {
+  requestUpload?: {
     id: string;
     url: string;
   };
@@ -84,7 +83,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
           if (extIndex > 0) {
             const extension = file.name.substring(extIndex + 1).toLowerCase();
 
-            const result = await mutation({
+            const { data } = await mutation({
               variables: {
                 id,
                 input: {
@@ -98,8 +97,8 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
               },
             });
 
-            if (result?.data) {
-              const { requestUpload } = result.data;
+            if (data?.requestUpload) {
+              const { requestUpload } = data;
               const headers = {
                 'Content-Type': file.type,
               };
@@ -113,6 +112,11 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
 
                 onUpload(attachment);
               }
+            } else {
+              add({
+                colour: 'danger',
+                message: t('uploads.add.retry'),
+              });
             }
           }
           // eslint-disable-next-line no-empty

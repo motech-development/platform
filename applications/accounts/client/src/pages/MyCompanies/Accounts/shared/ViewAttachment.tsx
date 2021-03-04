@@ -1,10 +1,10 @@
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useLazyGet } from '@motech-development/axios-hooks';
 import { Button, Col, Row, useToast } from '@motech-development/breeze-ui';
-import { gql } from 'apollo-boost';
 import { saveAs } from 'file-saver';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import FileDownload from '../../../../components/FileDownload';
 
 interface IDeleteFileInput {
   id: string;
@@ -12,7 +12,7 @@ interface IDeleteFileInput {
 }
 
 interface IDeleteFileOutput {
-  deleteFile: {
+  deleteFile?: {
     path: string;
   };
 }
@@ -31,7 +31,7 @@ interface IRequestDownloadInput {
 }
 
 interface IRequestDownloadOutput {
-  requestDownload: {
+  requestDownload?: {
     url: string;
   };
 }
@@ -77,15 +77,15 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
     onError,
     responseType: 'blob',
   });
-  const [request, { loading: requestLoading }] = useLazyQuery<
-    IRequestDownloadOutput,
-    IRequestDownloadInput
-  >(REQUEST_DOWNLOAD, {
-    onCompleted: async ({ requestDownload }) => {
-      await download(requestDownload.url);
+  const [
+    request,
+    { data: requestData, loading: requestLoading },
+  ] = useLazyQuery<IRequestDownloadOutput, IRequestDownloadInput>(
+    REQUEST_DOWNLOAD,
+    {
+      onError,
     },
-    onError,
-  });
+  );
   const [deleteFile, { loading: deleteFileLoading }] = useMutation<
     IDeleteFileOutput,
     IDeleteFileInput
@@ -123,6 +123,22 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
         >
           {t('transaction-form.upload.download-file')}
         </Button>
+
+        {requestData && (
+          <FileDownload
+            loading={requestLoading}
+            onDownload={async () => {
+              if (requestData.requestDownload?.url) {
+                await download(requestData.requestDownload.url);
+              } else {
+                add({
+                  colour: 'danger',
+                  message: t('uploads.download.retry'),
+                });
+              }
+            }}
+          />
+        )}
       </Col>
 
       <Col sm={6}>
@@ -130,15 +146,13 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
           block
           colour="danger"
           loading={deleteFileLoading}
-          onClick={() => {
-            (async () => {
-              await deleteFile({
-                variables: {
-                  id,
-                  path,
-                },
-              });
-            })();
+          onClick={async () => {
+            await deleteFile({
+              variables: {
+                id,
+                path,
+              },
+            });
           }}
         >
           {t('transaction-form.upload.delete-file')}

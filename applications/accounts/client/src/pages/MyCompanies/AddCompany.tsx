@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,16 +20,25 @@ const AddCompany: FC = () => {
     IAddCompanyInput
   >(ADD_COMPANY, {
     onCompleted: ({ createCompany }) => {
-      const { id, name } = createCompany;
+      if (createCompany) {
+        const { id, name } = createCompany;
 
-      add({
-        colour: 'success',
-        message: t('add-company.success', {
-          name,
-        }),
-      });
+        add({
+          colour: 'success',
+          message: t('add-company.success', {
+            name,
+          }),
+        });
 
-      history.push(`/my-companies/dashboard/${id}`);
+        history.push(`/my-companies/dashboard/${id}`);
+      } else {
+        add({
+          colour: 'danger',
+          message: t('add-company.retry'),
+        });
+
+        history.push('/my-companies');
+      }
     },
   });
   const save = async (input: FormSchema) => {

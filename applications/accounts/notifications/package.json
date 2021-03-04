@@ -23,11 +23,11 @@
     "testEnvironment": "node"
   },
   "jest-junit": {
-    "outputDirectory": "../../reports/junit",
+    "outputDirectory": "../../../reports/junit",
     "outputName": "accounts-notifications.xml"
   },
   "dependencies": {
-    "aws-appsync": "^4.0.0",
+    "aws-appsync": "^4.0.1",
     "cross-fetch": "^3.0.5",
     "graphql-tag": "^2.10.4"
   }

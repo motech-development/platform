@@ -1,5 +1,4 @@
-import { gql, MutationUpdaterFn } from 'apollo-boost';
-import GET_COMPANIES, { IGetCompaniesOutput } from './GET_COMPANIES';
+import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
 
 export interface IAddCompanyInput {
   input: {
@@ -42,7 +41,7 @@ export interface IAddCompanyInput {
 }
 
 export interface IAddCompanyOutput {
-  createCompany: {
+  createCompany?: {
     address: {
       line1: string;
       line2: string;
@@ -61,34 +60,62 @@ export interface IAddCompanyOutput {
     };
     id: string;
     name: string;
+    owner: string;
   };
 }
 
 export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
-  client,
+  cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.createCompany) {
     const { createCompany } = data;
 
-    try {
-      const cache = client.readQuery<IGetCompaniesOutput>({
-        query: GET_COMPANIES,
-      });
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) => {
+          if (refs.some(ref => readField('id', ref) === createCompany.id)) {
+            return refs;
+          }
 
-      if (cache) {
-        cache.getCompanies.items = [
-          ...cache.getCompanies.items,
-          createCompany,
-        ].sort((a, b) => a.name.localeCompare(b.name));
+          const newRef = cache.writeFragment({
+            data: createCompany,
+            fragment: gql`
+              fragment NewCompany on Company {
+                address {
+                  line1
+                  line2
+                  line3
+                  line4
+                  line5
+                }
+                bank {
+                  accountNumber
+                  sortCode
+                }
+                companyNumber
+                contact {
+                  email
+                  telephone
+                }
+                id
+                name
+              }
+            `,
+          });
 
-        client.writeQuery<IGetCompaniesOutput>({
-          data: cache,
-          query: GET_COMPANIES,
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+          return [...refs, newRef].sort((a, b) =>
+            readField<string>('name', a)!.localeCompare(
+              readField<string>('name', b)!,
+            ),
+          );
+        },
+      },
+      id: cache.identify({
+        __typename: 'Companies',
+        id: createCompany.owner,
+      }),
+    });
   }
 };
 
@@ -113,6 +140,7 @@ const ADD_COMPANY = gql`
       }
       id
       name
+      owner
     }
   }
 `;

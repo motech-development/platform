@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
 import {
   Card,
   LinkButton,
@@ -33,7 +33,7 @@ const Clients: FC = () => {
 
   return (
     <Connected error={error} loading={loading}>
-      {data && (
+      {data?.getCompany && (
         <>
           <PageTitle
             title={t('clients.title')}
@@ -61,7 +61,7 @@ const Clients: FC = () => {
               </LinkButton>
             </>
 
-            {data.getClients.items.map(({ id, name, contact }) => (
+            {data.getClients?.items.map(({ id, name, contact }) => (
               <Fragment key={id}>
                 <Card padding="lg">
                   <Typography

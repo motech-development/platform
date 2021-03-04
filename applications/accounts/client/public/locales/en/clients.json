@@ -11,15 +11,18 @@
   "delete-client": {
     "title": "Are you sure you want to delete {{name}}?",
     "warning": "This action cannot be undone.",
+    "retry": "Something might have gone wrong. Please retry your request",
     "success": "{{name}} has been deleted",
     "error": "Unable to delete client"
   },
   "add-client": {
     "title": "Add a new client",
+    "retry": "Something might have gone wrong. Please retry your request",
     "sub-title": "Add your client details to Accounts",
     "success": "{{name}} has been added as a client"
   },
   "update-details": {
+    "retry": "Something might have gone wrong. Please retry your request",
     "sub-title": "Update your client details",
     "success": "{{name}} has been updated",
     "delete-client": "Delete {{name}}"

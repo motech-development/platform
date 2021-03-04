@@ -1,16 +1,16 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IGetTransactionsInput {
-  companyId: string;
+  id: string;
   status: string;
 }
 
 export interface IGetTransactionsOutput {
-  getBalance: {
+  getBalance?: {
     currency: string;
     id: string;
   };
-  getTransactions: {
+  getTransactions?: {
     id: string;
     items: {
       amount: number;
@@ -21,16 +21,22 @@ export interface IGetTransactionsOutput {
       name: string;
       scheduled: boolean;
     }[];
+    status: string;
   };
 }
 
 const GET_TRANSACTIONS = gql`
-  query GetTransactions($companyId: ID!, $status: TransactionStatus!) {
-    getBalance(id: $companyId) {
+  query GetTransactions($id: ID!, $status: TransactionStatus!) {
+    getBalance(id: $id) {
       currency
       id
+      transactions {
+        items {
+          id
+        }
+      }
     }
-    getTransactions(companyId: $companyId, status: $status) {
+    getTransactions(id: $id, status: $status) {
       id
       items {
         amount
@@ -41,6 +47,7 @@ const GET_TRANSACTIONS = gql`
         name
         scheduled
       }
+      status
     }
   }
 `;

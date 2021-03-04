@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks';
+import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import {
   Button,
   Col,
@@ -50,21 +50,19 @@ const Bank: FC = () => {
   const { data: subscription, loading: subscriptionLoading } = useSubscription<
     IOnBankCallbackOutput
   >(ON_BANK_CALLBACK);
-  const connect = (bank: string, user: string) => {
-    (async () => {
-      setSelected(bank);
+  const connect = async (bank: string, user: string) => {
+    setSelected(bank);
 
-      await mutation({
-        variables: {
-          input: {
-            bank,
-            callback: `${window.location.origin}/my-companies/settings/${companyId}/bank/callback`,
-            companyId,
-            user,
-          },
+    await mutation({
+      variables: {
+        input: {
+          bank,
+          callback: `${window.location.origin}/my-companies/settings/${companyId}/bank/callback`,
+          companyId,
+          user,
         },
-      });
-    })();
+      },
+    });
   };
 
   useEffect(() => {
@@ -77,7 +75,7 @@ const Bank: FC = () => {
 
   return (
     <Connected error={error} loading={loading}>
-      {data && (
+      {data?.getBanks && (
         <>
           <PageTitle
             title={t('select-bank.title')}
@@ -101,14 +99,18 @@ const Bank: FC = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Button
-                        loading={selected === id}
-                        disabled={selected !== ''}
-                        onClick={() => connect(id, data.getBankSettings.user)}
-                        size="sm"
-                      >
-                        {t('select-bank.connect')}
-                      </Button>
+                      {data.getBankSettings && (
+                        <Button
+                          loading={selected === id}
+                          disabled={selected !== ''}
+                          onClick={() =>
+                            connect(id, data.getBankSettings!.user)
+                          }
+                          size="sm"
+                        >
+                          {t('select-bank.connect')}
+                        </Button>
+                      )}
                     </TableCell>
                   </>
                 )}

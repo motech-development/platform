@@ -1,8 +1,6 @@
-import {
-  MockedProvider,
-  MockedResponse,
-  wait as apolloWait,
-} from '@apollo/react-testing';
+import { InMemoryCache } from '@apollo/client/cache';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
   fireEvent,
@@ -18,11 +16,40 @@ import TestProvider, { add } from '../../../../utils/TestProvider';
 import PendingTransactions from '../PendingTransactions';
 
 describe('PendingTransactions', () => {
+  let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
 
   beforeEach(() => {
+    cache = new InMemoryCache();
+
+    cache.writeQuery({
+      data: {
+        getBalance: {
+          __typename: 'Balance',
+          currency: 'GBP',
+          id: 'company-id',
+          transactions: [
+            {
+              id: 'transaction-id',
+              items: [],
+            },
+          ],
+        },
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-id',
+          items: [],
+        },
+      },
+      query: GET_TRANSACTIONS,
+      variables: {
+        id: 'company-id',
+        status: 'pending',
+      },
+    });
+
     history = createMemoryHistory({
       initialEntries: ['/accounts/company-id/pending-transactions'],
     });
@@ -35,7 +62,7 @@ describe('PendingTransactions', () => {
           request: {
             query: GET_TRANSACTIONS,
             variables: {
-              companyId: 'company-id',
+              id: 'company-id',
               status: 'pending',
             },
           },
@@ -44,6 +71,12 @@ describe('PendingTransactions', () => {
               getBalance: {
                 currency: 'GBP',
                 id: 'company-id',
+                transactions: [
+                  {
+                    id: 'transaction-id',
+                    items: [],
+                  },
+                ],
               },
               getTransactions: {
                 id: 'company-id',
@@ -67,6 +100,7 @@ describe('PendingTransactions', () => {
                     scheduled: false,
                   },
                 ],
+                status: 'pending',
               },
             },
           },
@@ -96,7 +130,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cache}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,
@@ -195,7 +229,7 @@ describe('PendingTransactions', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await wait();
       });
@@ -216,7 +250,7 @@ describe('PendingTransactions', () => {
           request: {
             query: GET_TRANSACTIONS,
             variables: {
-              companyId: 'company-id',
+              id: 'company-id',
               status: 'pending',
             },
           },
@@ -225,6 +259,12 @@ describe('PendingTransactions', () => {
               getBalance: {
                 currency: 'GBP',
                 id: 'company-id',
+                transactions: [
+                  {
+                    id: 'transaction-id',
+                    items: [],
+                  },
+                ],
               },
               getTransactions: {
                 id: 'company-id',
@@ -248,6 +288,7 @@ describe('PendingTransactions', () => {
                     scheduled: false,
                   },
                 ],
+                status: 'pending',
               },
             },
           },
@@ -269,7 +310,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cache}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,
@@ -304,7 +345,7 @@ describe('PendingTransactions', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await wait();
       });
@@ -325,7 +366,7 @@ describe('PendingTransactions', () => {
           request: {
             query: GET_TRANSACTIONS,
             variables: {
-              companyId: 'company-id',
+              id: 'company-id',
               status: 'pending',
             },
           },
@@ -334,10 +375,17 @@ describe('PendingTransactions', () => {
               getBalance: {
                 currency: 'GBP',
                 id: 'company-id',
+                transactions: [
+                  {
+                    id: 'transaction-id',
+                    items: [],
+                  },
+                ],
               },
               getTransactions: {
                 id: 'company-id',
                 items: [],
+                status: 'pending',
               },
             },
           },
@@ -350,7 +398,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cache}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,

@@ -1,12 +1,14 @@
-#set($companyId = $ctx.args.companyId)
+#set($id = $ctx.args.id)
+#set($status = $ctx.args.status)
 
 #if($ctx.error)
   $utils.error($ctx.error.message, $ctx.error.type)
 #end
 
 {
-  "id": $utils.toJson($companyId),
-  "items": $utils.toJson($ctx.result.items)
+  "id": $utils.toJson($id),
+  "items": $utils.toJson($ctx.result.items),
+  "status": $utils.toJson($status)
   #if($ctx.result.nextToken)
     ,"nextToken": "$ctx.result.nextToken"
   #end

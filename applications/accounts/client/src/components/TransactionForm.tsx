@@ -62,9 +62,9 @@ export interface ITransactionForm {
   companyId: string;
   initialValues?: FormSchema;
   loading: boolean;
-  purchases: string[] | null;
-  sales: string[] | null;
-  suppliers: string[] | null;
+  purchases?: string[] | null;
+  sales?: string[] | null;
+  suppliers?: string[] | null;
   uploader: ReactNode;
   vat: number;
   onSave(value: FormSchema): void;
@@ -278,8 +278,8 @@ const TransactionForm: FC<ITransactionForm> = ({
     const descriptions = transactionType === 'Sales' ? sales : purchases;
 
     setTypeahead({
-      descriptions: descriptions === null ? [] : descriptions,
-      suppliers: suppliers === null ? [] : suppliers,
+      descriptions: !descriptions ? [] : descriptions,
+      suppliers: !suppliers ? [] : suppliers,
     });
   }, [purchases, sales, suppliers, transactionType]);
 
@@ -381,7 +381,7 @@ const TransactionForm: FC<ITransactionForm> = ({
                           )}
                           name="category"
                           onChange={onCategoryChange}
-                          options={dropdown.sort((a, b) =>
+                          options={[...dropdown].sort((a, b) =>
                             a.name.localeCompare(b.name),
                           )}
                           placeholder={t(

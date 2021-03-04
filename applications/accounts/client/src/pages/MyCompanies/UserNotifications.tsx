@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -8,7 +8,6 @@ import {
   TableCell,
   Typography,
 } from '@motech-development/breeze-ui';
-import { gql } from 'apollo-boost';
 import React, { FC, memo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -30,7 +29,7 @@ interface IOnNotificationInput {
 }
 
 interface IOnNotificationOutput {
-  onNotification: {
+  onNotification?: {
     createdAt: string;
     id: string;
     message: string;
@@ -59,7 +58,7 @@ interface IGetNotificationsInput {
 }
 
 interface IGetNotificationsOutput {
-  getNotifications: {
+  getNotifications?: {
     id: string;
     items: {
       createdAt: string;
@@ -89,7 +88,7 @@ interface IMarkAsReadInput {
 }
 
 interface IMarkAsReadOutput {
-  markAsRead: {
+  markAsRead?: {
     items: {
       id: string;
       read: boolean;
@@ -127,25 +126,36 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
     MARK_AS_READ,
   );
 
-  useEffect(() => {
-    subscribeToMore<IOnNotificationOutput, IOnNotificationInput>({
-      document: ON_NOTIFICATION,
-      updateQuery: (prev, { subscriptionData }) => ({
-        getNotifications: {
-          ...prev.getNotifications,
-          items: [
-            subscriptionData.data.onNotification,
-            ...prev.getNotifications.items,
-          ],
+  useEffect(
+    () =>
+      subscribeToMore<IOnNotificationOutput, IOnNotificationInput>({
+        document: ON_NOTIFICATION,
+        updateQuery: (prev, { subscriptionData }) => {
+          if (
+            !subscriptionData.data?.onNotification ||
+            !prev.getNotifications
+          ) {
+            return prev;
+          }
+
+          return {
+            getNotifications: {
+              ...prev.getNotifications,
+              items: [
+                subscriptionData.data.onNotification,
+                ...prev.getNotifications.items,
+              ],
+            },
+          };
+        },
+        variables: {
+          owner: id,
         },
       }),
-      variables: {
-        owner: id,
-      },
-    });
-  }, [id, subscribeToMore]);
+    [id, subscribeToMore],
+  );
 
-  if (!data) {
+  if (!data?.getNotifications) {
     return null;
   }
 

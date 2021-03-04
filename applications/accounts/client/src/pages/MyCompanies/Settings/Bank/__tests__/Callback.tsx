@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, render, RenderResult } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
@@ -64,7 +65,7 @@ describe('Callback', () => {
       const { findByTestId } = component;
 
       await act(async () => {
-        await wait(0);
+        await waitForApollo(0);
 
         await findByTestId('next-page');
       });
@@ -128,7 +129,7 @@ describe('Callback', () => {
       const { findByText } = component;
 
       await act(async () => {
-        await wait(0);
+        await waitForApollo(0);
       });
 
       await expect(findByText('callback.error')).resolves.toBeInTheDocument();
@@ -138,7 +139,74 @@ describe('Callback', () => {
       const { findByText } = component;
 
       await act(async () => {
-        await wait(0);
+        await waitForApollo(0);
+      });
+
+      await expect(findByText('go-back')).resolves.toHaveAttribute(
+        'href',
+        '/my-companies/settings/company-id',
+      );
+    });
+  });
+
+  describe('when no data is sent', () => {
+    beforeEach(async () => {
+      history = createMemoryHistory({
+        initialEntries: [
+          '/settings/company-id/bank/callback?institution=bank-name&consent=consent-token&user-uuid=user-id',
+        ],
+      });
+
+      jest.spyOn(history, 'push');
+
+      mocks = [
+        {
+          request: {
+            query: UPDATE_BANK_SETTINGS,
+            variables: {
+              input: {
+                bank: 'bank-name',
+                consent: 'consent-token',
+                id: 'company-id',
+                user: 'user-id',
+              },
+            },
+          },
+          result: {
+            data: {},
+          },
+        },
+      ];
+
+      await act(async () => {
+        component = render(
+          <TestProvider
+            path="/settings/:companyId/bank/callback"
+            history={history}
+          >
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <Callback />
+            </MockedProvider>
+          </TestProvider>,
+        );
+      });
+    });
+
+    it('should show the error card', async () => {
+      const { findByText } = component;
+
+      await act(async () => {
+        await waitForApollo(0);
+      });
+
+      await expect(findByText('callback.error')).resolves.toBeInTheDocument();
+    });
+
+    it('should have the correct back link', async () => {
+      const { findByText } = component;
+
+      await act(async () => {
+        await waitForApollo(0);
       });
 
       await expect(findByText('go-back')).resolves.toHaveAttribute(

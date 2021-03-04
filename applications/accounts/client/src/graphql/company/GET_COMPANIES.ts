@@ -1,12 +1,13 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IGetCompaniesInput {
+  id: string;
   count?: number;
   nextToken?: string;
 }
 
 export interface IGetCompaniesOutput {
-  getCompanies: {
+  getCompanies?: {
     id: string;
     items: {
       address: {
@@ -32,8 +33,8 @@ export interface IGetCompaniesOutput {
 }
 
 const GET_COMPANIES = gql`
-  query GetCompanies {
-    getCompanies {
+  query GetCompanies($id: ID!) {
+    getCompanies(id: $id) {
       id
       items {
         address {

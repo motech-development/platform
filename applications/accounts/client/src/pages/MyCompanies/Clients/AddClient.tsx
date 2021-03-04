@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import React, { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,16 +26,25 @@ const AddClient: FC = () => {
     IAddClientInput
   >(ADD_CLIENT, {
     onCompleted: ({ createClient }) => {
-      const { companyId: id, name } = createClient;
+      if (createClient) {
+        const { companyId: id, name } = createClient;
 
-      add({
-        colour: 'success',
-        message: t('add-client.success', {
-          name,
-        }),
-      });
+        add({
+          colour: 'success',
+          message: t('add-client.success', {
+            name,
+          }),
+        });
 
-      history.push(backTo(id));
+        history.push(backTo(id));
+      } else {
+        add({
+          colour: 'danger',
+          message: t('add-client.retry'),
+        });
+
+        history.push(backTo(companyId));
+      }
     },
   });
   const save = async (input: FormSchema) => {

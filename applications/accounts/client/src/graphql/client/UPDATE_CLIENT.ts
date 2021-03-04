@@ -1,4 +1,4 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IUpdateClientInput {
   input: {
@@ -20,7 +20,7 @@ export interface IUpdateClientInput {
 }
 
 export interface IUpdateClientOutput {
-  updateClient: {
+  updateClient?: {
     address: {
       line1: string;
       line2: string;

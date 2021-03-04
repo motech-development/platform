@@ -1,6 +1,7 @@
 {
   "settings": {
     "title": "Settings",
+    "retry": "Something might have gone wrong. Please retry your request",
     "success": "Company settings have been updated",
     "bank-disconnected": "Disconnected from bank",
     "bank-disconnected-error": "Unable to disconnect. Please try again"
@@ -56,6 +57,7 @@
     "link-account": "Link account",
     "success": "Bank account linked",
     "accounts": "Accounts",
+    "retry": "Something might have gone wrong. Please retry your request",
     "errors": {
       "failure": {
         "title": "Error",

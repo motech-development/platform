@@ -1,12 +1,4 @@
-import { gql, MutationUpdaterFn } from 'apollo-boost';
-import GET_TYPEAHEAD, {
-  IGetTypeaheadInput,
-  IGetTypeaheadOutput,
-} from '../typeahead/GET_TYPEAHEAD';
-import GET_TRANSACTIONS, {
-  IGetTransactionsInput,
-  IGetTransactionsOutput,
-} from './GET_TRANSACTIONS';
+import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
 
 export interface IAddTransactionInput {
   input: {
@@ -25,7 +17,7 @@ export interface IAddTransactionInput {
 }
 
 export interface IAddTransactionOutput {
-  addTransaction: {
+  addTransaction?: {
     amount: number;
     attachment: string;
     category: string;
@@ -41,88 +33,98 @@ export interface IAddTransactionOutput {
 }
 
 export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
-  client,
+  cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.addTransaction) {
     const { addTransaction } = data;
 
-    try {
-      const cache = client.readQuery<
-        IGetTransactionsOutput,
-        IGetTransactionsInput
-      >({
-        query: GET_TRANSACTIONS,
-        variables: {
-          companyId: addTransaction.companyId,
-          status: addTransaction.status,
+    cache.modify({
+      fields: {
+        purchases: (items: string[] | null) => {
+          const descriptions = items || [];
+          const unique = !descriptions.some(
+            desciption => desciption === addTransaction.description,
+          );
+
+          if (addTransaction.category !== 'Sales' && unique) {
+            return [...descriptions, addTransaction.description].sort((a, b) =>
+              a.localeCompare(b),
+            );
+          }
+
+          return descriptions;
         },
-      });
+        sales: (items: string[] | null) => {
+          const descriptions = items || [];
+          const unique = !descriptions.some(
+            desciption => desciption === addTransaction.description,
+          );
 
-      if (cache) {
-        cache.getTransactions.items = [
-          ...cache.getTransactions.items,
-          addTransaction,
-        ].sort((a, b) => a.date.localeCompare(b.date));
+          if (addTransaction.category === 'Sales' && unique) {
+            return [...descriptions, addTransaction.description].sort((a, b) =>
+              a.localeCompare(b),
+            );
+          }
 
-        client.writeQuery<IGetTransactionsOutput, IGetTransactionsInput>({
-          data: cache,
-          query: GET_TRANSACTIONS,
-          variables: {
-            companyId: addTransaction.companyId,
-            status: addTransaction.status,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-
-    try {
-      const cache = client.readQuery<IGetTypeaheadOutput, IGetTypeaheadInput>({
-        query: GET_TYPEAHEAD,
-        variables: {
-          id: addTransaction.companyId,
+          return descriptions;
         },
-      });
+        suppliers: (items: string[] | null) => {
+          const suppliers = items || [];
+          const unique = !suppliers.some(
+            supplier => supplier === addTransaction.name,
+          );
 
-      if (cache) {
-        if (addTransaction.category === 'Sales') {
-          const descriptions = new Set([
-            ...(cache.getTypeahead.sales === null
-              ? []
-              : cache.getTypeahead.sales),
-            addTransaction.description,
-          ]);
+          if (addTransaction.category !== 'Sales' && unique) {
+            return [...suppliers, addTransaction.name].sort((a, b) =>
+              a.localeCompare(b),
+            );
+          }
 
-          cache.getTypeahead.sales = [...descriptions];
-        } else {
-          const suppliers = new Set([
-            ...(cache.getTypeahead.suppliers === null
-              ? []
-              : cache.getTypeahead.suppliers),
-            addTransaction.name,
-          ]);
-          const descriptions = new Set([
-            ...(cache.getTypeahead.purchases === null
-              ? []
-              : cache.getTypeahead.purchases),
-            addTransaction.description,
-          ]);
+          return suppliers;
+        },
+      },
+      id: cache.identify({
+        __typename: 'Typeahead',
+        id: addTransaction.companyId,
+      }),
+    });
 
-          cache.getTypeahead.purchases = [...descriptions];
-          cache.getTypeahead.suppliers = [...suppliers];
-        }
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) => {
+          if (refs.some(ref => readField('id', ref) === addTransaction.id)) {
+            return refs;
+          }
 
-        client.writeQuery<IGetTypeaheadOutput, IGetTypeaheadInput>({
-          data: cache,
-          query: GET_TYPEAHEAD,
-          variables: {
-            id: addTransaction.companyId,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+          const newRef = cache.writeFragment({
+            data: addTransaction,
+            fragment: gql`
+              fragment NewTransaction on Transaction {
+                amount
+                attachment
+                date
+                description
+                id
+                name
+                scheduled
+              }
+            `,
+          });
+
+          return [...refs, newRef].sort((a, b) =>
+            readField<string>('date', a)!.localeCompare(
+              readField<string>('date', b)!,
+            ),
+          );
+        },
+      },
+      id: cache.identify({
+        __typename: 'Transactions',
+        id: addTransaction.companyId,
+        status: addTransaction.status,
+      }),
+    });
   }
 };
 

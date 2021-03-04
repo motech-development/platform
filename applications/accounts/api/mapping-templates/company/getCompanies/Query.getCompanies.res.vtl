@@ -1,11 +1,19 @@
+#set($id = $ctx.args.id)
+#set($owner = $ctx.identity.sub)
+
 #if($ctx.error)
   $utils.error($ctx.error.message, $ctx.error.type)
 #end
 
-{
-  "id": $utils.toJson($ctx.identity.sub),
-  "items": $utils.toJson($ctx.result.items)
-  #if($ctx.result.nextToken)
-    ,"nextToken": "$ctx.result.nextToken"
-  #end
-}
+#if($id == $owner)
+  {
+    "id": $utils.toJson($id),
+    "items": $utils.toJson($ctx.result.items)
+    #if($ctx.result.nextToken)
+      ,"nextToken": "$ctx.result.nextToken"
+    #end
+  }
+#else
+  $utils.unauthorized()
+#end
+

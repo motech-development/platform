@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import {
   Button,
   Col,
@@ -6,7 +6,6 @@ import {
   Row,
   useToast,
 } from '@motech-development/breeze-ui';
-import { gql } from 'apollo-boost';
 import React, { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
@@ -35,12 +34,12 @@ interface IViewTransactionInput {
 }
 
 interface IViewTransactionOutput {
-  getClients: {
+  getClients?: {
     items: {
       name: string;
     }[];
   };
-  getSettings: {
+  getSettings?: {
     categories: {
       name: string;
       vatRate: number;
@@ -50,7 +49,7 @@ interface IViewTransactionOutput {
       pay: number;
     };
   };
-  getTransaction: {
+  getTransaction?: {
     amount: number;
     attachment: string;
     category: string;
@@ -63,7 +62,7 @@ interface IViewTransactionOutput {
     status: string;
     vat: number;
   };
-  getTypeahead: {
+  getTypeahead?: {
     purchases: string[];
     sales: string[];
     suppliers: string[];
@@ -72,7 +71,7 @@ interface IViewTransactionOutput {
 
 export const VIEW_TRANSACTION = gql`
   query ViewTransaction($companyId: ID!, $transactionId: ID!) {
-    getClients(companyId: $companyId) {
+    getClients(id: $companyId) {
       id
       items {
         id
@@ -123,7 +122,7 @@ const ViewTransaction: FC = () => {
   const [modal, setModal] = useState(false);
   const { t } = useTranslation('accounts');
   const { add } = useToast();
-  const backTo = (id: string, status: string) => {
+  const backTo = (id: string, status?: string) => {
     const pending = status === 'pending';
     const location = `/my-companies/accounts/${id}`;
 
@@ -138,7 +137,9 @@ const ViewTransaction: FC = () => {
     IViewTransactionInput
   >(VIEW_TRANSACTION, {
     onCompleted: ({ getTransaction }) => {
-      setAttachment(getTransaction.attachment || '');
+      if (getTransaction?.attachment) {
+        setAttachment(getTransaction.attachment);
+      }
     },
     variables: {
       companyId,
@@ -153,14 +154,23 @@ const ViewTransaction: FC = () => {
     {
       awaitRefetchQueries: true,
       onCompleted: ({ updateTransaction }) => {
-        add({
-          colour: 'success',
-          message: t('view-transaction.success'),
-        });
+        if (updateTransaction) {
+          add({
+            colour: 'success',
+            message: t('view-transaction.success'),
+          });
 
-        history.push(
-          backTo(updateTransaction.companyId, updateTransaction.status),
-        );
+          history.push(
+            backTo(updateTransaction.companyId, updateTransaction.status),
+          );
+        } else {
+          add({
+            colour: 'danger',
+            message: t('view-transaction.retry'),
+          });
+
+          history.push(backTo(companyId));
+        }
       },
       refetchQueries: () => [
         {
@@ -178,14 +188,23 @@ const ViewTransaction: FC = () => {
   >(DELETE_TRANSACTION, {
     awaitRefetchQueries: true,
     onCompleted: ({ deleteTransaction }) => {
-      add({
-        colour: 'success',
-        message: t('delete-transaction.success'),
-      });
+      if (deleteTransaction) {
+        add({
+          colour: 'success',
+          message: t('delete-transaction.success'),
+        });
 
-      history.push(
-        backTo(deleteTransaction.companyId, deleteTransaction.status),
-      );
+        history.push(
+          backTo(deleteTransaction.companyId, deleteTransaction.status),
+        );
+      } else {
+        add({
+          colour: 'danger',
+          message: t('delete-transaction.retry'),
+        });
+
+        history.push(backTo(companyId));
+      }
     },
     onError: () => {
       add({
@@ -227,7 +246,7 @@ const ViewTransaction: FC = () => {
 
   return (
     <Connected error={error || mutationError} loading={loading}>
-      {data && (
+      {data?.getTransaction && data?.getSettings && data?.getClients && (
         <>
           <PageTitle
             title={t('view-transaction.title')}
@@ -259,9 +278,9 @@ const ViewTransaction: FC = () => {
                 companyId={companyId}
                 initialValues={data.getTransaction}
                 loading={mutationLoading}
-                purchases={data.getTypeahead.purchases}
-                sales={data.getTypeahead.sales}
-                suppliers={data.getTypeahead.suppliers}
+                purchases={data.getTypeahead?.purchases}
+                sales={data.getTypeahead?.sales}
+                suppliers={data.getTypeahead?.suppliers}
                 uploader={
                   <UploadAttachment
                     id={companyId}

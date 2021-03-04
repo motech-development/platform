@@ -12,6 +12,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+const logToOutput = require('cypress-log-to-output');
 const { rmdirSync } = require('fs');
 const { join } = require('path');
 
@@ -23,10 +24,24 @@ module.exports = on => {
   // `config` is the resolved Cypress config
   const downloads = join(__dirname, '../downloads');
 
+  logToOutput.install(
+    () => {},
+    (_, event) => {
+      const levels = ['error', 'warn'];
+
+      return levels.includes(event.level) || levels.includes(event.type);
+    },
+  );
+
   on('before:browser:launch', (browser = {}, launchOptions) => {
     const updatedLaunchOptions = {
       ...launchOptions,
     };
+
+    updatedLaunchOptions.args = logToOutput.browserLaunchHandler(
+      browser,
+      launchOptions.args,
+    );
 
     if (browser.family === 'chromium') {
       updatedLaunchOptions.preferences.default.download = {

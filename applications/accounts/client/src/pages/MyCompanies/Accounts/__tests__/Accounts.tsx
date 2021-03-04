@@ -1,8 +1,6 @@
-import {
-  MockedProvider,
-  MockedResponse,
-  wait as apolloWait,
-} from '@apollo/react-testing';
+import { InMemoryCache } from '@apollo/client/cache';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
   fireEvent,
@@ -13,16 +11,46 @@ import {
 import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
+import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import Accounts from '../Accounts';
 
 describe('Accounts', () => {
+  let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
 
   beforeEach(() => {
+    cache = new InMemoryCache();
+
+    cache.writeQuery({
+      data: {
+        getBalance: {
+          __typename: 'Balance',
+          currency: 'GBP',
+          id: 'company-id',
+          transactions: [
+            {
+              id: 'transaction-id',
+              items: [],
+            },
+          ],
+        },
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-id',
+          items: [],
+        },
+      },
+      query: GET_TRANSACTIONS,
+      variables: {
+        id: 'company-id',
+        status: 'pending',
+      },
+    });
+
     history = createMemoryHistory({
       initialEntries: ['/accounts/company-id'],
     });
@@ -147,7 +175,7 @@ describe('Accounts', () => {
       await act(async () => {
         component = render(
           <TestProvider path="/accounts/:companyId" history={history}>
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cache}>
               <Accounts />
             </MockedProvider>
           </TestProvider>,
@@ -310,7 +338,7 @@ describe('Accounts', () => {
 
         await wait();
 
-        await apolloWait(0);
+        await waitForApollo(0);
       });
 
       await wait(() =>
@@ -433,7 +461,7 @@ describe('Accounts', () => {
       await act(async () => {
         component = render(
           <TestProvider path="/accounts/:companyId" history={history}>
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks} cache={cache}>
               <Accounts />
             </MockedProvider>
           </TestProvider>,
@@ -468,7 +496,7 @@ describe('Accounts', () => {
 
         fireEvent.click(deleteButton);
 
-        await apolloWait(0);
+        await waitForApollo(0);
 
         await wait();
       });

@@ -884,8 +884,7 @@ describe('VAT registered', () => {
           .should('be.visible')
           .click();
 
-        // TODO: Fix this a11y issue
-        // cy.checkA11y();
+        cy.checkA11y();
 
         cy.get('input[id="confirmation"]')
           .should('be.visible')

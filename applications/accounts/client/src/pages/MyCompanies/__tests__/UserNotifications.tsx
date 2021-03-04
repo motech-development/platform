@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse, wait } from '@apollo/react-testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import React from 'react';
 import TestProvider from '../../../utils/TestProvider';
@@ -13,7 +14,7 @@ describe('UserNotifications', () => {
   let mocks: MockedResponse[];
 
   describe('when there is no data', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           request: {
@@ -40,13 +41,17 @@ describe('UserNotifications', () => {
         },
       ];
 
-      component = render(
-        <TestProvider>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <UserNotifications id="user-id" />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <UserNotifications id="user-id" />
+            </MockedProvider>
+          </TestProvider>,
+        );
+
+        await waitForApollo(0);
+      });
     });
 
     it('should display nothing', () => {
@@ -126,7 +131,6 @@ describe('UserNotifications', () => {
 
     it('should not mark any messages as read', async () => {
       const { container, findByRole } = component;
-
       const button = await findByRole('button');
 
       fireEvent.click(button);
@@ -237,7 +241,7 @@ describe('UserNotifications', () => {
         fireEvent.click(button);
       });
 
-      await wait(0);
+      await waitForApollo(0);
 
       expect(container).toBeInTheDocument();
     });

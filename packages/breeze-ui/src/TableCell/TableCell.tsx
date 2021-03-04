@@ -2,7 +2,7 @@
 import React, { FC, memo, TdHTMLAttributes } from 'react';
 import styled from 'styled-components';
 
-const baseStyles = (align = 'inherit', noWrap: boolean) => `
+const baseStyles = (noWrap: boolean, align = 'inherit') => `
   padding: 10px;
   text-align: ${align};
   vertical-align: middle;
@@ -15,14 +15,14 @@ interface ITableCell {
 
 const TableDataCell = styled.td<ITableCell>`
   ${({ align, $noWrap }) => `
-    ${baseStyles(align, $noWrap)}
+    ${baseStyles($noWrap, align)}
     font-weight: 300;
   `}
 `;
 
 const TableHeadCell = styled.th<ITableCell>`
   ${({ align, $noWrap }) => `
-    ${baseStyles(align, $noWrap)}
+    ${baseStyles($noWrap, align)}
     font-family: 'Cabin', sans-serif;
     font-weight: 600;
   `}

@@ -1,4 +1,4 @@
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export interface IUpdateSettingsInput {
   input: {
@@ -22,7 +22,7 @@ export interface IUpdateSettingsInput {
 }
 
 export interface IUpdateSettingsOutput {
-  updateSettings: {
+  updateSettings?: {
     categories: {
       name: string;
       protect: boolean;

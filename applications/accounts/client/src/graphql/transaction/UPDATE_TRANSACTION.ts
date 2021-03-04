@@ -1,12 +1,4 @@
-import { gql, MutationUpdaterFn } from 'apollo-boost';
-import GET_TYPEAHEAD, {
-  IGetTypeaheadInput,
-  IGetTypeaheadOutput,
-} from '../typeahead/GET_TYPEAHEAD';
-import GET_TRANSACTIONS, {
-  IGetTransactionsInput,
-  IGetTransactionsOutput,
-} from './GET_TRANSACTIONS';
+import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
 
 export interface IUpdateTransactionInput {
   input: {
@@ -25,7 +17,7 @@ export interface IUpdateTransactionInput {
 }
 
 export interface IUpdateTransactionOutput {
-  updateTransaction: {
+  updateTransaction?: {
     amount: number;
     attachment: string;
     category: string;
@@ -41,121 +33,114 @@ export interface IUpdateTransactionOutput {
 }
 
 export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
-  client,
+  cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.updateTransaction) {
     const { updateTransaction } = data;
     const otherStatus =
       updateTransaction.status === 'confirmed' ? 'pending' : 'confirmed';
 
-    try {
-      const cache = client.readQuery<
-        IGetTransactionsOutput,
-        IGetTransactionsInput
-      >({
-        query: GET_TRANSACTIONS,
-        variables: {
-          companyId: updateTransaction.companyId,
-          status: updateTransaction.status,
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) => {
+          if (refs.some(ref => readField('id', ref) === updateTransaction.id)) {
+            return refs;
+          }
+
+          const newRef = cache.writeFragment({
+            data: updateTransaction,
+            fragment: gql`
+              fragment NewTransaction on Transaction {
+                amount
+                attachment
+                date
+                description
+                id
+                name
+                scheduled
+              }
+            `,
+          });
+
+          return [...refs, newRef].sort((a, b) =>
+            readField<string>('date', a)!.localeCompare(
+              readField<string>('date', b)!,
+            ),
+          );
         },
-      });
+      },
+      id: cache.identify({
+        __typename: 'Transactions',
+        id: updateTransaction.companyId,
+        status: updateTransaction.status,
+      }),
+    });
 
-      if (cache) {
-        cache.getTransactions.items = [
-          ...cache.getTransactions.items.filter(
-            ({ id }) => id !== updateTransaction.id,
-          ),
-          updateTransaction,
-        ].sort((a, b) => a.date.localeCompare(b.date));
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) =>
+          refs.filter(ref => readField('id', ref) !== updateTransaction.id),
+      },
+      id: cache.identify({
+        __typename: 'Transactions',
+        id: updateTransaction.companyId,
+        status: otherStatus,
+      }),
+    });
 
-        client.writeQuery<IGetTransactionsOutput, IGetTransactionsInput>({
-          data: cache,
-          query: GET_TRANSACTIONS,
-          variables: {
-            companyId: updateTransaction.companyId,
-            status: updateTransaction.status,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+    cache.modify({
+      fields: {
+        purchases: (items: string[] | null) => {
+          const descriptions = items || [];
+          const unique = !descriptions.some(
+            desciption => desciption === updateTransaction.description,
+          );
 
-    try {
-      const cache = client.readQuery<
-        IGetTransactionsOutput,
-        IGetTransactionsInput
-      >({
-        query: GET_TRANSACTIONS,
-        variables: {
-          companyId: updateTransaction.companyId,
-          status: otherStatus,
+          if (updateTransaction.category !== 'Sales' && unique) {
+            return [
+              ...descriptions,
+              updateTransaction.description,
+            ].sort((a, b) => a.localeCompare(b));
+          }
+
+          return descriptions;
         },
-      });
+        sales: (items: string[] | null) => {
+          const descriptions = items || [];
+          const unique = !descriptions.some(
+            desciption => desciption === updateTransaction.description,
+          );
 
-      if (cache) {
-        cache.getTransactions.items = cache.getTransactions.items.filter(
-          ({ id }) => updateTransaction.id !== id,
-        );
+          if (updateTransaction.category === 'Sales' && unique) {
+            return [
+              ...descriptions,
+              updateTransaction.description,
+            ].sort((a, b) => a.localeCompare(b));
+          }
 
-        client.writeQuery<IGetTransactionsOutput, IGetTransactionsInput>({
-          data: cache,
-          query: GET_TRANSACTIONS,
-          variables: {
-            companyId: updateTransaction.companyId,
-            status: otherStatus,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-
-    try {
-      const cache = client.readQuery<IGetTypeaheadOutput, IGetTypeaheadInput>({
-        query: GET_TYPEAHEAD,
-        variables: {
-          id: updateTransaction.companyId,
+          return descriptions;
         },
-      });
+        suppliers: (items: string[] | null) => {
+          const suppliers = items || [];
+          const unique = !suppliers.some(
+            supplier => supplier === updateTransaction.name,
+          );
 
-      if (cache) {
-        if (updateTransaction.category === 'Sales') {
-          const descriptions = new Set([
-            ...(cache.getTypeahead.sales === null
-              ? []
-              : cache.getTypeahead.sales),
-            updateTransaction.description,
-          ]);
+          if (updateTransaction.category !== 'Sales' && unique) {
+            return [...suppliers, updateTransaction.name].sort((a, b) =>
+              a.localeCompare(b),
+            );
+          }
 
-          cache.getTypeahead.sales = [...descriptions];
-        } else {
-          const suppliers = new Set([
-            ...(cache.getTypeahead.suppliers === null
-              ? []
-              : cache.getTypeahead.suppliers),
-            updateTransaction.name,
-          ]);
-          const descriptions = new Set([
-            ...(cache.getTypeahead.purchases === null
-              ? []
-              : cache.getTypeahead.purchases),
-            updateTransaction.description,
-          ]);
-
-          cache.getTypeahead.purchases = [...descriptions];
-          cache.getTypeahead.suppliers = [...suppliers];
-        }
-
-        client.writeQuery<IGetTypeaheadOutput, IGetTypeaheadInput>({
-          data: cache,
-          query: GET_TYPEAHEAD,
-          variables: {
-            id: updateTransaction.companyId,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+          return suppliers;
+        },
+      },
+      id: cache.identify({
+        __typename: 'Typeahead',
+        id: updateTransaction.companyId,
+      }),
+    });
   }
 };
 

@@ -38,6 +38,13 @@ Utility to make working with API gateway lambda functions less of a pain
 Build the package by running `npm run build -- --scope=@motech-development/api-gateway-handler`\
 Test the package by running `npm test -- --scope=@motech-development/api-gateway-handler`
 
+### AppSync Apollo
+
+React Apollo client configured for AppSync
+
+Build the package by running `npm run build -- --scope=@motech-development/appsync-apollo`\
+Test the package by running `npm test -- --scope=@motech-development/appsync-apollo`
+
 ### Auth
 
 An Auth0 helper library for React

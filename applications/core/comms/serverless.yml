@@ -32,7 +32,7 @@ resources:
       Type: Custom::VerifyDomain
       Properties:
         ServiceToken: !GetAtt VerifyDomainLambdaFunction.Arn
-        DMARC: 'v=DMARC1; p=none; pct=100; sp=none; aspf=r;'
+        DMARC: 'v=DMARC1; p=reject; pct=100; sp=reject; aspf=s;'
         Domain: ${self:custom.domainName}
         Region: eu-west-1
         SPF: 'v=spf1 include:spf.protection.outlook.com include:amazonses.com ~all'

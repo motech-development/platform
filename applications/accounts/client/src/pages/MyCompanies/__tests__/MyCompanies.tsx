@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/react-testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { render, RenderResult, act } from '@testing-library/react';
 import React from 'react';
 import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
@@ -14,6 +14,9 @@ describe('MyCompanies', () => {
       {
         request: {
           query: GET_COMPANIES,
+          variables: {
+            id: 'user-id',
+          },
         },
         result: {
           data: {

@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/client';
 import { Loader } from '@motech-development/breeze-ui';
 import useQueryString from '@motech-development/query-string-hook';
 import React, { FC, memo, useEffect, useState } from 'react';
@@ -25,10 +25,14 @@ const Callback: FC = () => {
     IUpdateBankSettingsInput
   >(UPDATE_BANK_SETTINGS, {
     onCompleted: ({ updateBankSettings }) => {
-      const { id, user } = updateBankSettings;
+      if (updateBankSettings) {
+        const { id, user } = updateBankSettings;
 
-      if (user) {
-        history.push(`/my-companies/settings/${id}/bank/select-account`);
+        if (user) {
+          history.push(`/my-companies/settings/${id}/bank/select-account`);
+        } else {
+          setError(true);
+        }
       } else {
         setError(true);
       }

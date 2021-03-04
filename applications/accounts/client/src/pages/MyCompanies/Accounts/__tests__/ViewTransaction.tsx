@@ -1,8 +1,6 @@
-import {
-  MockedProvider,
-  MockedResponse,
-  wait as apolloWait,
-} from '@apollo/react-testing';
+import { InMemoryCache } from '@apollo/client/cache';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
   fireEvent,
@@ -16,7 +14,9 @@ import { createMemoryHistory, MemoryHistory } from 'history';
 import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
+import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
 import UPDATE_TRANSACTION from '../../../../graphql/transaction/UPDATE_TRANSACTION';
+import GET_TYPEAHEAD from '../../../../graphql/typeahead/GET_TYPEAHEAD';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import { DELETE_FILE, REQUEST_DOWNLOAD } from '../shared/ViewAttachment';
 import ViewTransaction, { VIEW_TRANSACTION } from '../ViewTransaction';
@@ -26,11 +26,50 @@ jest.mock('file-saver', () => ({
 }));
 
 describe('ViewTransaction', () => {
+  let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
 
   beforeEach(() => {
+    cache = new InMemoryCache();
+
+    cache.writeQuery({
+      data: {
+        getBalance: {
+          __typename: 'Balance',
+          currency: 'GBP',
+          id: 'company-id',
+        },
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-id',
+          items: [],
+        },
+      },
+      query: GET_TRANSACTIONS,
+      variables: {
+        id: 'company-id',
+        status: 'pending',
+      },
+    });
+
+    cache.writeQuery({
+      data: {
+        getTypeahead: {
+          __typename: 'Typeahead',
+          id: 'company-id',
+          purchases: [],
+          sales: null,
+          suppliers: [],
+        },
+      },
+      query: GET_TYPEAHEAD,
+      variables: {
+        id: 'company-id',
+      },
+    });
+
     history = createMemoryHistory({
       initialEntries: ['/accounts/company-id/view-transaction/transaction-id'],
     });
@@ -171,6 +210,7 @@ describe('ViewTransaction', () => {
             result: {
               data: {
                 updateTransaction: {
+                  __typename: 'Transaction',
                   amount: -999.99,
                   attachment: '',
                   category: 'Equipment',
@@ -211,7 +251,7 @@ describe('ViewTransaction', () => {
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
             >
-              <MockedProvider mocks={mocks} addTypename={false}>
+              <MockedProvider mocks={mocks} cache={cache}>
                 <ViewTransaction />
               </MockedProvider>
             </TestProvider>,
@@ -242,7 +282,7 @@ describe('ViewTransaction', () => {
 
           await wait();
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await findByTestId('next-page');
         });
@@ -275,7 +315,7 @@ describe('ViewTransaction', () => {
 
           await wait();
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await findByTestId('next-page');
         });
@@ -352,7 +392,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(deleteButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
 
@@ -389,7 +429,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(deleteButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -480,6 +520,7 @@ describe('ViewTransaction', () => {
             result: {
               data: {
                 updateTransaction: {
+                  __typename: 'Transaction',
                   amount: -999.99,
                   attachment: 'path/to/attachment.pdf',
                   category: 'Equipment',
@@ -535,7 +576,7 @@ describe('ViewTransaction', () => {
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
             >
-              <MockedProvider mocks={mocks} addTypename={false}>
+              <MockedProvider mocks={mocks} cache={cache}>
                 <ViewTransaction />
               </MockedProvider>
             </TestProvider>,
@@ -553,7 +594,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(deleteButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -573,7 +614,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(deleteButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -596,7 +637,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(downloadButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -614,7 +655,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(downloadButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -641,7 +682,7 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(downloadButton);
 
-          await apolloWait(0);
+          await waitForApollo(0);
 
           await wait();
         });
@@ -657,327 +698,658 @@ describe('ViewTransaction', () => {
   });
 
   describe('sale', () => {
-    beforeEach(async () => {
-      mocks = [
-        {
-          request: {
-            query: GET_BALANCE,
-            variables: {
-              id: 'company-id',
-            },
-          },
-          result: {
-            data: {
-              getBalance: {
-                balance: 180,
-                currency: 'GBP',
+    describe('when data is returned', () => {
+      beforeEach(async () => {
+        mocks = [
+          {
+            request: {
+              query: GET_BALANCE,
+              variables: {
                 id: 'company-id',
-                transactions: [
-                  {
-                    balance: 180,
-                    currency: 'GBP',
-                    date: '2020-04-15T14:07:18+0000',
-                    items: [
-                      {
-                        amount: -20,
-                        attachment: '',
-                        description: 'Lunch',
-                        id: 'transaction-2',
-                        name: 'KFC',
-                      },
-                    ],
+              },
+            },
+            result: {
+              data: {
+                getBalance: {
+                  balance: 180,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  transactions: [
+                    {
+                      balance: 180,
+                      currency: 'GBP',
+                      date: '2020-04-15T14:07:18+0000',
+                      items: [
+                        {
+                          amount: -20,
+                          attachment: '',
+                          description: 'Lunch',
+                          id: 'transaction-2',
+                          name: 'KFC',
+                        },
+                      ],
+                    },
+                    {
+                      balance: 200,
+                      currency: 'GBP',
+                      date: '2020-04-13T14:07:18+0000',
+                      items: [
+                        {
+                          amount: 200,
+                          attachment: '',
+                          description: 'Invoice #1',
+                          id: 'transaction-1',
+                          name: 'Client',
+                        },
+                      ],
+                    },
+                  ],
+                  vat: {
+                    owed: 100,
+                    paid: 99.9,
                   },
-                  {
-                    balance: 200,
-                    currency: 'GBP',
-                    date: '2020-04-13T14:07:18+0000',
-                    items: [
-                      {
-                        amount: 200,
-                        attachment: '',
-                        description: 'Invoice #1',
-                        id: 'transaction-1',
-                        name: 'Client',
-                      },
-                    ],
-                  },
-                ],
-                vat: {
-                  owed: 100,
-                  paid: 99.9,
                 },
               },
             },
           },
-        },
-        {
-          request: {
-            query: VIEW_TRANSACTION,
-            variables: {
-              companyId: 'company-id',
-              transactionId: 'transaction-id',
-            },
-          },
-          result: {
-            data: {
-              getClients: {
-                id: 'company-id',
-                items: [
-                  {
-                    id: 'client-id',
-                    name: 'Motech Development',
-                  },
-                ],
+          {
+            request: {
+              query: VIEW_TRANSACTION,
+              variables: {
+                companyId: 'company-id',
+                transactionId: 'transaction-id',
               },
-              getSettings: {
-                categories: [
-                  {
-                    name: 'Equipment',
-                    vatRate: 20,
+            },
+            result: {
+              data: {
+                getClients: {
+                  id: 'company-id',
+                  items: [
+                    {
+                      id: 'client-id',
+                      name: 'Motech Development',
+                    },
+                  ],
+                },
+                getSettings: {
+                  categories: [
+                    {
+                      name: 'Equipment',
+                      vatRate: 20,
+                    },
+                    {
+                      name: 'Accommodation',
+                      vatRate: 20,
+                    },
+                  ],
+                  id: 'company-id',
+                  vat: {
+                    pay: 20,
                   },
-                  {
-                    name: 'Accommodation',
-                    vatRate: 20,
-                  },
-                ],
-                id: 'company-id',
-                vat: {
-                  pay: 20,
+                },
+                getTransaction: {
+                  amount: 999.99,
+                  attachment: 'path/to/attachment.pdf',
+                  category: 'Sales',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17+00:00',
+                  description: 'Invoice #1',
+                  id: 'transaction-id',
+                  name: 'Motech Development',
+                  scheduled: null,
+                  status: 'confirmed',
+                  vat: 200,
+                },
+                getTypeahead: {
+                  id: 'company-id',
+                  purchases: ['Test purchase 1', 'Test purchase 2'],
+                  sales: ['Test sale 1', 'Test sale 2'],
+                  suppliers: ['Test suppliers 1', 'Test suppliers 2'],
                 },
               },
-              getTransaction: {
-                amount: 999.99,
-                attachment: 'path/to/attachment.pdf',
-                category: 'Sales',
-                companyId: 'company-id',
-                date: '2020-05-07T10:58:17+00:00',
-                description: 'Invoice #1',
-                id: 'transaction-id',
-                name: 'Motech Development',
-                scheduled: null,
-                status: 'confirmed',
-                vat: 200,
+            },
+          },
+          {
+            request: {
+              query: UPDATE_TRANSACTION,
+              variables: {
+                input: {
+                  amount: 999.99,
+                  attachment: 'path/to/attachment.pdf',
+                  category: 'Sales',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17+00:00',
+                  description: 'Invoice #1',
+                  id: 'transaction-id',
+                  name: 'Motech Development',
+                  scheduled: false,
+                  status: 'confirmed',
+                  vat: 200,
+                },
               },
-              getTypeahead: {
+            },
+            result: {
+              data: {
+                updateTransaction: {
+                  __typename: 'Transaction',
+                  amount: 999.99,
+                  attachment: 'path/to/attachment.pdf',
+                  category: 'Sales',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17+00:00',
+                  description: 'Invoice #1',
+                  id: 'transaction-id',
+                  name: 'Motech Development',
+                  scheduled: false,
+                  status: 'confirmed',
+                  vat: 200,
+                },
+              },
+            },
+          },
+          {
+            error: new Error(),
+            request: {
+              query: DELETE_TRANSACTION,
+              variables: {
+                id: 'transaction-id',
+              },
+            },
+          },
+          {
+            error: new Error(),
+            request: {
+              query: REQUEST_DOWNLOAD,
+              variables: {
                 id: 'company-id',
-                purchases: ['Test purchase 1', 'Test purchase 2'],
-                sales: ['Test sale 1', 'Test sale 2'],
-                suppliers: ['Test suppliers 1', 'Test suppliers 2'],
+                path: 'path/to/attachment.pdf',
               },
             },
           },
-        },
-        {
-          request: {
-            query: UPDATE_TRANSACTION,
-            variables: {
-              input: {
-                amount: 999.99,
-                attachment: 'path/to/attachment.pdf',
-                category: 'Sales',
-                companyId: 'company-id',
-                date: '2020-05-07T10:58:17+00:00',
-                description: 'Invoice #1',
-                id: 'transaction-id',
-                name: 'Motech Development',
-                scheduled: false,
-                status: 'confirmed',
-                vat: 200,
+          {
+            error: new Error(),
+            request: {
+              query: DELETE_FILE,
+              variables: {
+                id: 'company-id',
+                path: 'path/to/attachment.pdf',
               },
             },
           },
-          result: {
-            data: {
-              updateTransaction: {
-                amount: 999.99,
-                attachment: 'path/to/attachment.pdf',
-                category: 'Sales',
-                companyId: 'company-id',
-                date: '2020-05-07T10:58:17+00:00',
-                description: 'Invoice #1',
-                id: 'transaction-id',
-                name: 'Motech Development',
-                scheduled: false,
-                status: 'confirmed',
-                vat: 200,
-              },
-            },
-          },
-        },
-        {
-          error: new Error(),
-          request: {
-            query: DELETE_TRANSACTION,
-            variables: {
-              id: 'transaction-id',
-            },
-          },
-        },
-        {
-          error: new Error(),
-          request: {
-            query: REQUEST_DOWNLOAD,
-            variables: {
-              id: 'company-id',
-              path: 'path/to/attachment.pdf',
-            },
-          },
-        },
-        {
-          error: new Error(),
-          request: {
-            query: DELETE_FILE,
-            variables: {
-              id: 'company-id',
-              path: 'path/to/attachment.pdf',
-            },
-          },
-        },
-      ];
+        ];
 
-      await act(async () => {
-        component = render(
-          <TestProvider
-            path="/accounts/:companyId/view-transaction/:transactionId"
-            history={history}
-          >
-            <MockedProvider mocks={mocks} addTypename={false}>
-              <ViewTransaction />
-            </MockedProvider>
-          </TestProvider>,
-        );
-      });
-    });
-
-    it('should redirect you back to accounts page on complete', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
-
-      await act(async () => {
-        await findByText('view-transaction.title');
-
-        const [, , , button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        await wait();
-
-        await apolloWait(0);
-
-        await findByTestId('next-page');
+        await act(async () => {
+          component = render(
+            <TestProvider
+              path="/accounts/:companyId/view-transaction/:transactionId"
+              history={history}
+            >
+              <MockedProvider mocks={mocks} cache={cache}>
+                <ViewTransaction />
+              </MockedProvider>
+            </TestProvider>,
+          );
+        });
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/accounts/company-id',
-      );
-    });
+      it('should redirect you back to accounts page on complete', async () => {
+        const { findAllByRole, findByTestId, findByText } = component;
 
-    it('should display a success toast', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
+        await act(async () => {
+          await findByText('view-transaction.title');
 
-      await act(async () => {
-        await findByText('view-transaction.title');
+          const [, , , button] = await findAllByRole('button');
 
-        const [, , , button] = await findAllByRole('button');
+          fireEvent.click(button);
 
-        fireEvent.click(button);
+          await wait();
 
-        await wait();
+          await waitForApollo(0);
 
-        await apolloWait(0);
-
-        await findByTestId('next-page');
-      });
-
-      await wait(() =>
-        expect(add).toHaveBeenCalledWith({
-          colour: 'success',
-          message: 'view-transaction.success',
-        }),
-      );
-    });
-
-    it('should display an error toast when deleting a transaction', async () => {
-      const { findAllByRole, findByLabelText, findByText } = component;
-
-      await act(async () => {
-        await findByText('view-transaction.title');
-
-        const [, , , , button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        const input = await findByLabelText('confirm-delete');
-
-        fireEvent.change(input, {
-          target: {
-            focus: () => {},
-            value: 'Motech Development',
-          },
+          await findByTestId('next-page');
         });
 
-        await wait();
-
-        const [, , , , , , deleteButton] = await findAllByRole('button');
-
-        fireEvent.click(deleteButton);
-
-        await apolloWait(0);
-
-        await wait();
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/accounts/company-id',
+        );
       });
 
-      await wait(() =>
-        expect(add).toHaveBeenCalledWith({
-          colour: 'danger',
-          message: 'delete-transaction.error',
-        }),
-      );
+      it('should display a success toast', async () => {
+        const { findAllByRole, findByTestId, findByText } = component;
+
+        await act(async () => {
+          await findByText('view-transaction.title');
+
+          const [, , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          await wait();
+
+          await waitForApollo(0);
+
+          await findByTestId('next-page');
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'success',
+            message: 'view-transaction.success',
+          }),
+        );
+      });
+
+      it('should display an error toast when deleting a transaction', async () => {
+        const { findAllByRole, findByLabelText, findByText } = component;
+
+        await act(async () => {
+          await findByText('view-transaction.title');
+
+          const [, , , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          const input = await findByLabelText('confirm-delete');
+
+          fireEvent.change(input, {
+            target: {
+              focus: () => {},
+              value: 'Motech Development',
+            },
+          });
+
+          await wait();
+
+          const [, , , , , , deleteButton] = await findAllByRole('button');
+
+          fireEvent.click(deleteButton);
+
+          await waitForApollo(0);
+
+          await wait();
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'delete-transaction.error',
+          }),
+        );
+      });
+
+      it('should display an error toast if file fails to download', async () => {
+        const { findByText } = component;
+
+        await act(async () => {
+          const downloadButton = await findByText(
+            'transaction-form.upload.download-file',
+          );
+
+          fireEvent.click(downloadButton);
+
+          await waitForApollo(0);
+
+          await wait();
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'uploads.download.error',
+          }),
+        );
+      });
+
+      it('should display an error toast if file fails to delete', async () => {
+        const { findByText } = component;
+
+        await act(async () => {
+          const deleteButton = await findByText(
+            'transaction-form.upload.delete-file',
+          );
+
+          fireEvent.click(deleteButton);
+
+          await waitForApollo(0);
+
+          await wait();
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'uploads.delete.error',
+          }),
+        );
+      });
     });
 
-    it('should display an error toast if file fails to download', async () => {
-      const { findByText } = component;
+    describe('when data is not returned', () => {
+      beforeEach(async () => {
+        mocks = [
+          {
+            request: {
+              query: GET_BALANCE,
+              variables: {
+                id: 'company-id',
+              },
+            },
+            result: {
+              data: {
+                getBalance: {
+                  balance: 180,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  transactions: [
+                    {
+                      balance: 180,
+                      currency: 'GBP',
+                      date: '2020-04-15T14:07:18+0000',
+                      items: [
+                        {
+                          amount: -20,
+                          attachment: '',
+                          description: 'Lunch',
+                          id: 'transaction-2',
+                          name: 'KFC',
+                        },
+                      ],
+                    },
+                    {
+                      balance: 200,
+                      currency: 'GBP',
+                      date: '2020-04-13T14:07:18+0000',
+                      items: [
+                        {
+                          amount: 200,
+                          attachment: '',
+                          description: 'Invoice #1',
+                          id: 'transaction-1',
+                          name: 'Client',
+                        },
+                      ],
+                    },
+                  ],
+                  vat: {
+                    owed: 100,
+                    paid: 99.9,
+                  },
+                },
+              },
+            },
+          },
+          {
+            request: {
+              query: VIEW_TRANSACTION,
+              variables: {
+                companyId: 'company-id',
+                transactionId: 'transaction-id',
+              },
+            },
+            result: {
+              data: {
+                getClients: {
+                  id: 'company-id',
+                  items: [
+                    {
+                      id: 'client-id',
+                      name: 'Motech Development',
+                    },
+                  ],
+                },
+                getSettings: {
+                  categories: [
+                    {
+                      name: 'Equipment',
+                      vatRate: 20,
+                    },
+                    {
+                      name: 'Accommodation',
+                      vatRate: 20,
+                    },
+                  ],
+                  id: 'company-id',
+                  vat: {
+                    pay: 20,
+                  },
+                },
+                getTransaction: {
+                  amount: 999.99,
+                  attachment: 'path/to/attachment.pdf',
+                  category: 'Sales',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17+00:00',
+                  description: 'Invoice #1',
+                  id: 'transaction-id',
+                  name: 'Motech Development',
+                  scheduled: null,
+                  status: 'confirmed',
+                  vat: 200,
+                },
+                getTypeahead: {
+                  id: 'company-id',
+                  purchases: ['Test purchase 1', 'Test purchase 2'],
+                  sales: ['Test sale 1', 'Test sale 2'],
+                  suppliers: ['Test suppliers 1', 'Test suppliers 2'],
+                },
+              },
+            },
+          },
+          {
+            request: {
+              query: UPDATE_TRANSACTION,
+              variables: {
+                input: {
+                  amount: 999.99,
+                  attachment: 'path/to/attachment.pdf',
+                  category: 'Sales',
+                  companyId: 'company-id',
+                  date: '2020-05-07T10:58:17+00:00',
+                  description: 'Invoice #1',
+                  id: 'transaction-id',
+                  name: 'Motech Development',
+                  scheduled: false,
+                  status: 'confirmed',
+                  vat: 200,
+                },
+              },
+            },
+            result: {
+              data: {},
+            },
+          },
+          {
+            request: {
+              query: DELETE_TRANSACTION,
+              variables: {
+                id: 'transaction-id',
+              },
+            },
+            result: {
+              data: {},
+            },
+          },
+          {
+            request: {
+              query: REQUEST_DOWNLOAD,
+              variables: {
+                id: 'company-id',
+                path: 'path/to/attachment.pdf',
+              },
+            },
+            result: {
+              data: {
+                requestDownload: {
+                  url: null,
+                },
+              },
+            },
+          },
+        ];
 
-      await act(async () => {
-        const downloadButton = await findByText(
-          'transaction-form.upload.download-file',
-        );
-
-        fireEvent.click(downloadButton);
-
-        await apolloWait(0);
-
-        await wait();
+        await act(async () => {
+          component = render(
+            <TestProvider
+              path="/accounts/:companyId/view-transaction/:transactionId"
+              history={history}
+            >
+              <MockedProvider mocks={mocks} cache={cache}>
+                <ViewTransaction />
+              </MockedProvider>
+            </TestProvider>,
+          );
+        });
       });
 
-      await wait(() =>
-        expect(add).toHaveBeenCalledWith({
-          colour: 'danger',
-          message: 'uploads.download.error',
-        }),
-      );
-    });
+      it('should display a warning toast when a transaction is updated', async () => {
+        const { findAllByRole, findByTestId, findByText } = component;
 
-    it('should display an error toast if file fails to delete', async () => {
-      const { findByText } = component;
+        await act(async () => {
+          await findByText('view-transaction.title');
 
-      await act(async () => {
-        const deleteButton = await findByText(
-          'transaction-form.upload.delete-file',
+          const [, , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          await wait();
+
+          await waitForApollo(0);
+
+          await findByTestId('next-page');
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'view-transaction.retry',
+          }),
         );
-
-        fireEvent.click(deleteButton);
-
-        await apolloWait(0);
-
-        await wait();
       });
 
-      await wait(() =>
-        expect(add).toHaveBeenCalledWith({
-          colour: 'danger',
-          message: 'uploads.delete.error',
-        }),
-      );
+      it('should redirect you back to accounts page when a transaction is updated', async () => {
+        const { findAllByRole, findByTestId, findByText } = component;
+
+        await act(async () => {
+          await findByText('view-transaction.title');
+
+          const [, , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          await wait();
+
+          await waitForApollo(0);
+
+          await findByTestId('next-page');
+        });
+
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/accounts/company-id',
+        );
+      });
+
+      it('should display a warning toast when a transaction is deleted', async () => {
+        const { findAllByRole, findByLabelText, findByText } = component;
+
+        await act(async () => {
+          await findByText('view-transaction.title');
+
+          const [, , , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          const input = await findByLabelText('confirm-delete');
+
+          fireEvent.change(input, {
+            target: {
+              focus: () => {},
+              value: 'Motech Development',
+            },
+          });
+
+          await wait();
+
+          const [, , , , , , deleteButton] = await findAllByRole('button');
+
+          fireEvent.click(deleteButton);
+
+          await waitForApollo(0);
+
+          await wait();
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'delete-transaction.retry',
+          }),
+        );
+      });
+
+      it('should redirect you back to accounts page when a transaction is deleted', async () => {
+        const {
+          findAllByRole,
+          findByTestId,
+          findByLabelText,
+          findByText,
+        } = component;
+
+        await act(async () => {
+          await findByText('view-transaction.title');
+
+          const [, , , , button] = await findAllByRole('button');
+
+          fireEvent.click(button);
+
+          const input = await findByLabelText('confirm-delete');
+
+          fireEvent.change(input, {
+            target: {
+              focus: () => {},
+              value: 'Motech Development',
+            },
+          });
+
+          await wait();
+
+          const [, , , , , , deleteButton] = await findAllByRole('button');
+
+          fireEvent.click(deleteButton);
+
+          await waitForApollo(0);
+
+          await wait();
+
+          await findByTestId('next-page');
+        });
+
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/accounts/company-id',
+        );
+      });
+
+      it('should display an error toast if file fails to delete', async () => {
+        const { findByText } = component;
+
+        await act(async () => {
+          const downloadButton = await findByText(
+            'transaction-form.upload.download-file',
+          );
+
+          fireEvent.click(downloadButton);
+
+          await waitForApollo(0);
+
+          await wait();
+        });
+
+        await wait(() =>
+          expect(add).toHaveBeenCalledWith({
+            colour: 'danger',
+            message: 'uploads.download.retry',
+          }),
+        );
+      });
     });
   });
 });

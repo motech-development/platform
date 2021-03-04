@@ -11,6 +11,7 @@ type Company {
   contact: Contact
   id: ID
   name: String
+  owner: String
 }
 
 input CompanyInput {

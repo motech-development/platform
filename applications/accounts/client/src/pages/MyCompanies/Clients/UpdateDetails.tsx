@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/client';
 import {
   Button,
   Col,
@@ -37,7 +37,7 @@ const UpdateDetails: FC = () => {
   const { t } = useTranslation('clients');
   const { add } = useToast();
   const [modal, setModal] = useState(false);
-  const { clientId } = useParams<IUpdateDetailsParams>();
+  const { clientId, companyId } = useParams<IUpdateDetailsParams>();
   const { data, error, loading } = useQuery<IGetClientOutput, IGetClientInput>(
     GET_CLIENT,
     {
@@ -51,16 +51,25 @@ const UpdateDetails: FC = () => {
     { error: updateError, loading: updateLoading },
   ] = useMutation<IUpdateClientOutput, IUpdateClientInput>(UPDATE_CLIENT, {
     onCompleted: ({ updateClient }) => {
-      const { companyId, name } = updateClient;
+      if (updateClient) {
+        const { companyId: id, name } = updateClient;
 
-      add({
-        colour: 'success',
-        message: t('update-details.success', {
-          name,
-        }),
-      });
+        add({
+          colour: 'success',
+          message: t('update-details.success', {
+            name,
+          }),
+        });
 
-      history.push(backTo(companyId));
+        history.push(backTo(id));
+      } else {
+        add({
+          colour: 'danger',
+          message: t('update-details.retry'),
+        });
+
+        history.push(backTo(companyId));
+      }
     },
   });
   const [
@@ -68,16 +77,25 @@ const UpdateDetails: FC = () => {
     { error: deleteError, loading: deleteLoading },
   ] = useMutation<IDeleteClientOutput, IDeleteClientInput>(DELETE_CLIENT, {
     onCompleted: ({ deleteClient }) => {
-      const { companyId, name } = deleteClient;
+      if (deleteClient) {
+        const { companyId: id, name } = deleteClient;
 
-      add({
-        colour: 'success',
-        message: t('delete-client.success', {
-          name,
-        }),
-      });
+        add({
+          colour: 'success',
+          message: t('delete-client.success', {
+            name,
+          }),
+        });
 
-      history.push(backTo(companyId));
+        history.push(backTo(id));
+      } else {
+        add({
+          colour: 'danger',
+          message: t('delete-client.retry'),
+        });
+
+        history.push(backTo(companyId));
+      }
     },
     onError: () => {
       add({
@@ -110,7 +128,7 @@ const UpdateDetails: FC = () => {
 
   return (
     <Connected error={error || deleteError || updateError} loading={loading}>
-      {data && (
+      {data?.getClient && (
         <>
           <PageTitle
             title={data.getClient.name}

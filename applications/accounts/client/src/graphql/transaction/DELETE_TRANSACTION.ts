@@ -1,56 +1,54 @@
-import { gql, MutationUpdaterFn } from 'apollo-boost';
-import GET_TRANSACTIONS, {
-  IGetTransactionsInput,
-  IGetTransactionsOutput,
-} from './GET_TRANSACTIONS';
+import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
 
 export interface IDeleteTransactionInput {
   id: string;
 }
 
 export interface IDeleteTransactionOutput {
-  deleteTransaction: {
+  deleteTransaction?: {
     companyId: string;
     id: string;
     status: string;
   };
 }
 
+interface ITransaction {
+  items: Reference[];
+}
+
 export const updateCache: MutationUpdaterFn<IDeleteTransactionOutput> = (
-  client,
+  cache,
   { data },
 ) => {
-  if (data) {
+  if (data?.deleteTransaction) {
     const { deleteTransaction } = data;
 
-    try {
-      const cache = client.readQuery<
-        IGetTransactionsOutput,
-        IGetTransactionsInput
-      >({
-        query: GET_TRANSACTIONS,
-        variables: {
-          companyId: deleteTransaction.companyId,
-          status: deleteTransaction.status,
-        },
-      });
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) =>
+          refs.filter(ref => readField('id', ref) !== deleteTransaction.id),
+      },
+      id: cache.identify({
+        __typename: 'Transactions',
+        id: deleteTransaction.companyId,
+        status: deleteTransaction.status,
+      }),
+    });
 
-      if (cache) {
-        cache.getTransactions.items = cache.getTransactions.items.filter(
-          ({ id }) => deleteTransaction.id !== id,
-        );
-
-        client.writeQuery<IGetTransactionsOutput, IGetTransactionsInput>({
-          data: cache,
-          query: GET_TRANSACTIONS,
-          variables: {
-            companyId: deleteTransaction.companyId,
-            status: deleteTransaction.status,
-          },
-        });
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+    cache.modify({
+      fields: {
+        transactions: (transactions: ITransaction[], { readField }) =>
+          transactions.filter(transaction =>
+            transaction.items.every(
+              item => readField('id', item) !== deleteTransaction.id,
+            ),
+          ),
+      },
+      id: cache.identify({
+        __typename: 'Balance',
+        id: deleteTransaction.companyId,
+      }),
+    });
   }
 };
 

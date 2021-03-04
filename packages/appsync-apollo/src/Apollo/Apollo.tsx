@@ -1,24 +1,37 @@
-import { ApolloProvider } from '@apollo/react-hooks';
-import { useAuth } from '@motech-development/auth';
-import { Loader } from '@motech-development/breeze-ui';
-import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
-import ApolloClient from 'apollo-client';
-import { ApolloLink } from 'apollo-link';
+import {
+  ApolloClient,
+  ApolloLink,
+  ApolloProvider,
+  InMemoryCache,
+  InMemoryCacheConfig,
+  NormalizedCacheObject,
+} from '@apollo/client';
 import { createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
-import React, { FC, memo, ReactNode, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import Container from './Container';
-import ErrorCard from './ErrorCard';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 
 export interface IApolloProps {
+  cacheConfig?: InMemoryCacheConfig;
   children: ReactNode;
+  error: ReactNode;
+  fallback: ReactNode;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  unauthorised: ReactNode;
+  getTokenSilently(): Promise<string | undefined>;
 }
 
-const Apollo: FC<IApolloProps> = ({ children }) => {
+const Apollo: FC<IApolloProps> = ({
+  cacheConfig,
+  children,
+  error,
+  fallback,
+  getTokenSilently,
+  isAuthenticated,
+  isLoading,
+  unauthorised,
+}) => {
   const [client, setClient] = useState<ApolloClient<NormalizedCacheObject>>();
-  const { getTokenSilently, isAuthenticated, isLoading } = useAuth();
-  const { t } = useTranslation('apollo');
   const { REACT_APP_APPSYNC_URL, REACT_APP_AWS_REGION } = process.env;
   const url = REACT_APP_APPSYNC_URL;
   const region = REACT_APP_AWS_REGION;
@@ -33,7 +46,7 @@ const Apollo: FC<IApolloProps> = ({ children }) => {
         },
         type: 'OPENID_CONNECT' as const,
       };
-      const cache = new InMemoryCache();
+      const cache = new InMemoryCache(cacheConfig);
       const link = ApolloLink.from([
         createAuthLink({
           auth,
@@ -58,32 +71,18 @@ const Apollo: FC<IApolloProps> = ({ children }) => {
   }, []);
 
   if (!url || !region) {
-    return (
-      <Container>
-        <ErrorCard
-          title={t('error.title')}
-          description={t('error.description')}
-        />
-      </Container>
-    );
+    return <>{error}</>;
   }
 
   if (isLoading || !client) {
-    return <Loader />;
+    return <>{fallback}</>;
   }
 
   if (!isAuthenticated) {
-    return (
-      <Container>
-        <ErrorCard
-          title={t('unauthorised.title')}
-          description={t('unauthorised.description')}
-        />
-      </Container>
-    );
+    return <>{unauthorised}</>;
   }
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
 
-export default memo(Apollo);
+export default Apollo;
