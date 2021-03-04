@@ -25,7 +25,7 @@
     "@motech-development/ga-web-vitals": "^0.0.0",
     "@popperjs/core": "^2.4.3",
     "auth0-js": "^9.13.3",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "body-scroll-lock": "^3.0.3",
     "formik": "^2.1.4",
     "history": "^4.10.1",

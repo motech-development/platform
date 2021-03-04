@@ -34,7 +34,7 @@
     "@popperjs/core": "^2.4.3",
     "aws-appsync-auth-link": "^3.0.2",
     "aws-appsync-subscription-link": "^3.0.3",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "file-saver": "^2.0.2",
     "formik": "^2.1.4",
     "graphql": "^15.2.0",

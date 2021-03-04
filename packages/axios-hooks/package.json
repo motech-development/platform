@@ -18,11 +18,11 @@
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "react": "^16.13.1"
   },
   "peerDependencies": {
-    "axios": "0.19.2",
+    "axios": "0.21.1",
     "react": "16.13.1"
   },
   "jest": {
