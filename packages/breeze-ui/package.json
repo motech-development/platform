@@ -27,8 +27,8 @@
     "formik": "^2.2.6",
     "moment": "^2.29.1",
     "polished": "^4.1.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "react-number-format": "^4.4.4",
     "react-popper": "^2.2.4",
     "react-router-dom": "^5.2.0",
@@ -40,7 +40,7 @@
     "@storybook/addon-knobs": "^5.3.19",
     "@storybook/react": "^5.3.19",
     "@storybook/storybook-deployer": "^2.8.6",
-    "yup": "^0.32.9"
+    "yup": "^0.29.1"
   },
   "peerDependencies": {
     "@fortawesome/fontawesome-svg-core": "1.2.34",
@@ -50,8 +50,8 @@
     "formik": "2.2.6",
     "moment": "2.29.1",
     "polished": "4.1.1",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
     "react-number-format": "4.4.4",
     "react-popper": "2.2.4",
     "react-router-dom": "5.2.0",

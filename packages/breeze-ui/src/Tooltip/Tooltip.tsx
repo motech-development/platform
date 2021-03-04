@@ -122,7 +122,7 @@ const Tooltip: FC<ITooltipProps> = ({
   parent,
   placement,
 }) => {
-  let timer: number;
+  let timer: ReturnType<typeof setTimeout>;
   const [visible, setVisibility] = useState(false);
   const mounted = useRef(false);
   const hideTooltip = () => {

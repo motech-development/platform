@@ -111,7 +111,7 @@ const Alert: FC<IAlertProps> = ({
   );
 
   useEffect(() => {
-    let timeout: number;
+    let timeout: ReturnType<typeof setTimeout>;
 
     if (typeof dismissable === 'number') {
       timeout = setTimeout(dismiss, dismissable);

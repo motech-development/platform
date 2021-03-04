@@ -44,8 +44,8 @@
     "i18next-http-backend": "^1.1.1",
     "moment": "^2.29.1",
     "polished": "^4.1.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "react-ga": "^3.3.0",
     "react-i18next": "^11.8.8",
     "react-idle-timer": "^4.5.5",
@@ -55,7 +55,7 @@
     "styled-components": "^5.2.1",
     "styled-reset": "^4.3.4",
     "web-vitals": "^0.2.3",
-    "yup": "^0.32.9"
+    "yup": "^0.29.1"
   },
   "eslintConfig": {
     "extends": "react-app"
