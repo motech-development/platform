@@ -67,13 +67,11 @@ const AuthProvider: FC<IAuthProviderProps> = ({
   const { pathname, search } = useLocation();
 
   useEffect(() => {
-    (async () => {
-      if (
-        NODE_ENV !== 'test' &&
-        REACT_APP_AUTH0_AUDIENCE &&
-        REACT_APP_AUTH0_CLIENT_ID &&
-        REACT_APP_AUTH0_DOMAIN
-      ) {
+    NODE_ENV !== 'test' &&
+      REACT_APP_AUTH0_AUDIENCE &&
+      REACT_APP_AUTH0_CLIENT_ID &&
+      REACT_APP_AUTH0_DOMAIN &&
+      (async () => {
         const config = {
           audience: REACT_APP_AUTH0_AUDIENCE,
           cacheLocation: 'localstorage' as const,
@@ -86,8 +84,7 @@ const AuthProvider: FC<IAuthProviderProps> = ({
         const client = await createAuth0Client(config);
 
         setAuth0Client(client);
-      }
-    })();
+      })();
   }, [
     NODE_ENV,
     REACT_APP_AUTH0_AUDIENCE,
@@ -96,8 +93,8 @@ const AuthProvider: FC<IAuthProviderProps> = ({
   ]);
 
   useEffect(() => {
-    (async () => {
-      if (auth0Client) {
+    auth0Client &&
+      (async () => {
         if (search.includes('code=')) {
           const { appState } = await auth0Client.handleRedirectCallback();
 
@@ -114,8 +111,7 @@ const AuthProvider: FC<IAuthProviderProps> = ({
         }
 
         setIsLoading(false);
-      }
-    })();
+      })();
   }, [auth0Client, onRedirectCallback, pathname, search]);
 
   if (NODE_ENV === 'test') {
