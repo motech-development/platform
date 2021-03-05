@@ -19,11 +19,11 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
-    "react": "^17.0.1"
+    "react": "^16.13.1"
   },
   "peerDependencies": {
     "axios": "0.21.1",
-    "react": "17.0.1"
+    "react": "16.13.1"
   },
   "jest": {
     "collectCoverageFrom": [

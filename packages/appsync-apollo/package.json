@@ -18,21 +18,21 @@
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "dependencies": {
-    "@apollo/client": "^3.3.11",
+    "@apollo/client": "^3.2.2",
     "aws-appsync-auth-link": "^3.0.4",
     "aws-appsync-subscription-link": "^3.0.6",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "devDependencies": {
     "unfetch": "^4.1.0"
   },
   "peerDependencies": {
-    "@apollo/client": "3.3.11",
+    "@apollo/client": "3.2.2",
     "aws-appsync-auth-link": "3.0.4",
     "aws-appsync-subscription-link": "3.0.6",
-    "react": "17.0.1",
-    "react-dom": "17.0.1"
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
   },
   "jest": {
     "collectCoverageFrom": [
