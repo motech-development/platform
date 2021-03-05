@@ -8,7 +8,7 @@ interface IInitialValues {
   test: string;
 }
 
-describe('TextBox', () => {
+describe.skip('TextBox', () => {
   let initialValues: IInitialValues;
   let validationSchema: Yup.ObjectSchema<IInitialValues>;
   let onChange: jest.Mock;

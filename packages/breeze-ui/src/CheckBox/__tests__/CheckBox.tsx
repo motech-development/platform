@@ -14,7 +14,7 @@ interface IInitialValues {
   test: boolean;
 }
 
-describe('CheckBox', () => {
+describe.skip('CheckBox', () => {
   let component: RenderResult;
   let initialValues: IInitialValues;
   let validationSchema: Yup.ObjectSchema<IInitialValues>;

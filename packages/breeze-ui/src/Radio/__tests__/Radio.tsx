@@ -14,7 +14,7 @@ interface IInitialValues {
   test: string;
 }
 
-describe('Radio', () => {
+describe.skip('Radio', () => {
   let component: RenderResult;
   let initialValues: IInitialValues;
   let validationSchema: Yup.ObjectSchema<IInitialValues>;

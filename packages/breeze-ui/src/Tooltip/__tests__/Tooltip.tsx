@@ -2,7 +2,7 @@ import { act, fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import Tooltip from '../Tooltip';
 
-describe('Tooltip', () => {
+describe.skip('Tooltip', () => {
   let button: HTMLElement;
   let tooltip: HTMLElement;
 
