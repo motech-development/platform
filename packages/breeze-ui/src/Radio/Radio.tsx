@@ -1,5 +1,5 @@
 import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
-import React, { ChangeEvent, FC, memo } from 'react';
+import { ChangeEvent, FC, memo } from 'react';
 import CheckableInput from '../CheckableInput/CheckableInput';
 import useInputValidation from '../hooks/useInputValidation';
 import FieldSet from '../FieldSet/FieldSet';
@@ -75,7 +75,7 @@ const InternalRadio: FC<IInternalRadio> = ({
             readOnly={readOnly}
             type="radio"
             value={value}
-            onChange={e => doChange(e, value)}
+            onChange={(e) => doChange(e, value)}
           />
 
           <OptionLabelText>{name}</OptionLabelText>

@@ -1,5 +1,5 @@
-import { render, wait } from '@testing-library/react';
-import React, { FC } from 'react';
+import { render, waitFor } from '@testing-library/react';
+import { FC } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
 import ProtectedRoute from '../ProtectedRoute';
@@ -69,7 +69,7 @@ describe('ProtectedRoute', () => {
       </MemoryRouter>,
     );
 
-    await wait(() => expect(queryByTestId('authenticated')).toBeNull());
+    await waitFor(() => expect(queryByTestId('authenticated')).toBeNull());
   });
 
   it('should render component if authenticated', async () => {
@@ -127,7 +127,7 @@ describe('ProtectedRoute', () => {
       </MemoryRouter>,
     );
 
-    await wait(() =>
+    await waitFor(() =>
       expect(loginWithRedirect).toHaveBeenCalledWith({
         appState: {
           targetUrl: '/',

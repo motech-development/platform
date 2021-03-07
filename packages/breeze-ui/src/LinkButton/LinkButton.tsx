@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { Link, LinkProps } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import BaseButton, {

@@ -7,18 +7,15 @@ import { randomFillSync } from 'crypto';
 import 'jest-date-mock';
 import 'jest-styled-components';
 
-Object.defineProperty(window, 'matchMedia', {
-  value: jest.fn().mockImplementation(query => ({
-    addEventListener: jest.fn(),
-    addListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-    matches: false,
-    media: query,
-    onchange: null,
-    removeEventListener: jest.fn(),
-    removeListener: jest.fn(),
-  })),
-  writable: true,
+window.matchMedia = (query) => ({
+  addEventListener: jest.fn(),
+  addListener: jest.fn(),
+  dispatchEvent: jest.fn(),
+  matches: false,
+  media: query,
+  onchange: null,
+  removeEventListener: jest.fn(),
+  removeListener: jest.fn(),
 });
 
 Object.defineProperty(window, 'crypto', {

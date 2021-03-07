@@ -1,5 +1,4 @@
 import { fireEvent, render, RenderResult } from '@testing-library/react';
-import React from 'react';
 import Stepper from '../Stepper';
 
 describe('Stepper', () => {
@@ -132,7 +131,7 @@ describe('Stepper', () => {
         <Stepper
           previousLabel="Prev"
           nextLabel="Next"
-          enableNext={step => step !== 0}
+          enableNext={(step) => step !== 0}
         >
           <div data-testid="step-1">Step</div>
 

@@ -2,7 +2,7 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useLazyGet } from '@motech-development/axios-hooks';
 import { Button, Col, Row, useToast } from '@motech-development/breeze-ui';
 import { saveAs } from 'file-saver';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import FileDownload from '../../../../components/FileDownload';
 
@@ -64,7 +64,7 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
     });
   };
   const [download] = useLazyGet<Blob>({
-    onCompleted: data => {
+    onCompleted: (data) => {
       const fileName = path.split('/').pop();
 
       saveAs(data, fileName);

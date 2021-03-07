@@ -6,7 +6,7 @@ import {
   PageTitle,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, Fragment, memo } from 'react';
+import { FC, Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../components/Connected';
@@ -31,7 +31,7 @@ const Dashboard: FC = () => {
   });
   const { t } = useTranslation('dashboard');
   const cards = [
-    ...['accounts', 'clients', 'settings'].map(name => ({
+    ...['accounts', 'clients', 'settings'].map((name) => ({
       button: t(`${name}.button`),
       colour: 'primary' as const,
       lead: t(`${name}.lead`),

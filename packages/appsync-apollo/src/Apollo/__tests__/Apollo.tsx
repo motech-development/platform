@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import Apollo from '../Apollo';
 
 const Error: FC = () => <p data-testid="error">Error</p>;

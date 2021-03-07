@@ -1,5 +1,4 @@
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
-import React from 'react';
 import TestProvider from '../../utils/TestProvider';
 import UserBar from '../UserBar';
 
@@ -15,7 +14,7 @@ describe('UserBar', () => {
     picture = 'https://avatar.photo';
 
     Object.defineProperty(window, 'matchMedia', {
-      value: jest.fn().mockImplementation(query => ({
+      value: jest.fn().mockImplementation((query) => ({
         addEventListener: jest.fn(),
         addListener: jest.fn(),
         dispatchEvent: jest.fn(),

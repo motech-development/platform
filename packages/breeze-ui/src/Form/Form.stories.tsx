@@ -1,7 +1,6 @@
 import { withA11y } from '@storybook/addon-a11y';
 import { boolean, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import React from 'react';
 import { bool, date, object, string } from 'yup';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Button from '../Button/Button';
@@ -38,18 +37,14 @@ const validationSchema = object()
     category: string().required(),
     choice: string().required(),
     dob: date().required(),
-    email: string()
-      .email()
-      .required(),
+    email: string().email().required(),
     extra: object().shape({
       sortCode: string().required(),
       telephone: string().required(),
     }),
     name: string().required(),
     password: string().required(),
-    terms: bool()
-      .oneOf([true])
-      .required(),
+    terms: bool().oneOf([true]).required(),
     typeahead: string().required(),
     upload: string().required(),
   })

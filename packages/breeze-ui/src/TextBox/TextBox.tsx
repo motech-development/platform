@@ -1,10 +1,9 @@
 import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
-import React, {
+import {
   ChangeEvent,
   FC,
   FocusEvent,
   InputHTMLAttributes,
-  memo,
   useEffect,
   useState,
 } from 'react';
@@ -260,4 +259,4 @@ const TextBox: FC<ITextBoxProps> = ({
   );
 };
 
-export default memo(TextBox);
+export default TextBox;

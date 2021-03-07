@@ -1,5 +1,5 @@
 import { FormikProps, FormikValues } from 'formik';
-import React, { FC, memo, useState } from 'react';
+import { FC, memo, useState } from 'react';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
 import Button from '../Button/Button';

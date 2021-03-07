@@ -2,7 +2,7 @@ import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Field, FieldProps, getIn } from 'formik';
 import moment from 'moment';
-import React, { FC, memo, useEffect, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
 import Calendar from '../Calendar/Calendar';
@@ -75,9 +75,7 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
   const { name, value } = field;
   const [date, setDate] = useState(() => {
     if (value === '') {
-      return moment()
-        .utc()
-        .format();
+      return moment().utc().format();
     }
 
     return value;

@@ -1,7 +1,7 @@
 const { resolve } = require('path');
 const pkg = require('./package.json');
 
-module.exports = function override(config, env) {
+module.exports = function override(config) {
   const updated = {
     ...config,
   };

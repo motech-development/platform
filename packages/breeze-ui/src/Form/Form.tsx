@@ -1,5 +1,5 @@
 import { Form as FormikForm, Formik, FormikValues } from 'formik';
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import { ObjectSchema } from 'yup';
 import Button from '../Button/Button';
 import Col from '../Col/Col';
@@ -14,7 +14,7 @@ function encodeNullValues<T>(values: T) {
     ...values,
   };
 
-  Object.keys(initialValues).forEach(key => {
+  Object.keys(initialValues).forEach((key) => {
     const value = initialValues[key];
 
     if (value === null) {
@@ -72,7 +72,7 @@ const Form: FC<IFormProps> = ({
       onSubmit={doSubmit}
     >
       {({ isValid }) => (
-        <FormikForm autoComplete="off">
+        <FormikForm autoComplete="off" role="form">
           <Row>
             <Col>{children}</Col>
 

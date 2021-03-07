@@ -1,5 +1,5 @@
 import { Button, Col, Row } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 
 export interface IFormFooterProps {
   change: string;

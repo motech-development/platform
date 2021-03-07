@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 
 const defaultFormat = 'DD/MM/YYYY';
 

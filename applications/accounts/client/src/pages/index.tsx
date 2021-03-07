@@ -1,4 +1,4 @@
-import React, { FC, lazy, memo } from 'react';
+import { FC, lazy, memo } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 const MyCompanies = lazy(() => import('./MyCompanies'));

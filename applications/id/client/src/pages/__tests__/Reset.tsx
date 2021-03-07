@@ -3,10 +3,9 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import axios from 'axios';
-import React from 'react';
 import TextProvider, { add } from '../../utils/TestProvider';
 import Reset from '../Reset';
 
@@ -33,7 +32,7 @@ describe('Reset', () => {
   });
 
   describe('when config is set', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       window.passwordReset = {
         csrfToken: 'token',
         email: 'text@example.com',
@@ -41,11 +40,13 @@ describe('Reset', () => {
         ticket: 'ticket',
       };
 
-      component = render(
-        <TextProvider>
-          <Reset />
-        </TextProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TextProvider>
+            <Reset />
+          </TextProvider>,
+        );
+      });
     });
 
     describe('when successful', () => {
@@ -73,26 +74,28 @@ describe('Reset', () => {
               value: 'Test',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const button = await findByRole('button');
 
           fireEvent.click(button);
         });
 
-        expect(axios.request).toHaveBeenCalledWith({
-          data: {
-            _csrf: 'token',
-            confirmNewPassword: 'Test',
-            newPassword: 'Test',
-            'password-policy': 'good',
-            ticket: 'ticket',
-          },
-          headers: {},
-          method: 'POST',
-          url: '/lo/reset',
-        });
+        await waitFor(() =>
+          expect(axios.request).toHaveBeenCalledWith({
+            data: {
+              _csrf: 'token',
+              confirmNewPassword: 'Test',
+              newPassword: 'Test',
+              'password-policy': 'good',
+              ticket: 'ticket',
+            },
+            headers: {},
+            method: 'POST',
+            url: '/lo/reset',
+          }),
+        );
       });
 
       it('should display the succes screen when password is reset', async () => {
@@ -113,15 +116,15 @@ describe('Reset', () => {
               value: 'Test',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const button = await findByRole('button');
 
           fireEvent.click(button);
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(findByText('success')).resolves.toBeInTheDocument(),
         );
       });
@@ -158,15 +161,15 @@ describe('Reset', () => {
               value: 'Test',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const button = await findByRole('button');
 
           fireEvent.click(button);
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'Ooops',
@@ -194,15 +197,15 @@ describe('Reset', () => {
               value: 'Test',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const button = await findByRole('button');
 
           fireEvent.click(button);
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'error',

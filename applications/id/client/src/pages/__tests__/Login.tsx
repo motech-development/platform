@@ -3,10 +3,9 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import { WebAuth } from 'auth0-js';
-import React from 'react';
 import TestProvider, { add } from '../../utils/TestProvider';
 import Login from '../Login';
 
@@ -77,15 +76,15 @@ describe('Login', () => {
               value: 'Password',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [, button] = await findAllByRole('button');
 
           fireEvent.click(button);
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'log-in.fallback',
@@ -111,9 +110,9 @@ describe('Login', () => {
               value: 'Password',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [, button] = await findAllByRole('button');
 
           fireEvent.click(button);
@@ -175,15 +174,15 @@ describe('Login', () => {
               value: 'Password',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'test',
@@ -234,9 +233,9 @@ describe('Login', () => {
               value: 'Password',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);
@@ -292,15 +291,15 @@ describe('Login', () => {
               value: 'Password',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'success',
@@ -349,9 +348,9 @@ describe('Login', () => {
               value: 'test@example.com',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);
@@ -377,15 +376,15 @@ describe('Login', () => {
               value: 'test@example.com',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'success',
@@ -408,9 +407,9 @@ describe('Login', () => {
               value: 'test@example.com',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);

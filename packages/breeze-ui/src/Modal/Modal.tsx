@@ -1,11 +1,4 @@
-import React, {
-  FC,
-  memo,
-  MouseEvent,
-  ReactNode,
-  Suspense,
-  useEffect,
-} from 'react';
+import { FC, memo, MouseEvent, ReactNode, Suspense, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import Card from '../Card/Card';

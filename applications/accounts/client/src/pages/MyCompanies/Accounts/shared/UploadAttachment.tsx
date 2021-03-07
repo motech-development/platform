@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client';
 import { usePut } from '@motech-development/axios-hooks';
 import { FileUpload, useToast } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface IRequestUploadInput {

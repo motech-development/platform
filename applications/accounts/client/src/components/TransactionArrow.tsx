@@ -1,7 +1,7 @@
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { TableCell } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const danger = {

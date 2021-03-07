@@ -17,7 +17,7 @@ jest.mock('../../shared/file-operations', () => ({
 describe('update-definitions', () => {
   let callback: jest.Mock;
   let context: Context;
-  let event: object;
+  let event: Record<string, unknown>;
 
   beforeEach(() => {
     context = ctx();

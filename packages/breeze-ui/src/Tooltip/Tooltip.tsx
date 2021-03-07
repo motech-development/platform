@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode, useEffect, useRef, useState } from 'react';
+import { FC, memo, ReactNode, useEffect, useRef, useState } from 'react';
 import { Manager, Popper, Reference } from 'react-popper';
 import styled, { ThemeProvider } from 'styled-components';
 

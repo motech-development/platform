@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
-import React from 'react';
 import TestProvider from '../../../utils/TestProvider';
 import UserNotifications, {
   GET_NOTIFICATIONS,

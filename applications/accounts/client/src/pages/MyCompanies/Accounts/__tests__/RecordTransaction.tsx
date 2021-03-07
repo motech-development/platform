@@ -6,12 +6,11 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import axios from 'axios';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { advanceTo, clear } from 'jest-date-mock';
-import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
 import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
@@ -277,7 +276,7 @@ describe('RecordTransaction', () => {
       });
 
       it('should redirect you back to accounts page on complete', async () => {
-        const { findAllByRole, findByLabelText, findByTestId } = component;
+        const { findAllByRole, findByLabelText } = component;
 
         await act(async () => {
           const transactionType = await findByLabelText(
@@ -285,9 +284,9 @@ describe('RecordTransaction', () => {
           );
 
           fireEvent.click(transactionType);
+        });
 
-          await wait();
-
+        await act(async () => {
           const supplier = await findByLabelText(
             'transaction-form.transaction-details.name.label',
           );
@@ -341,25 +340,25 @@ describe('RecordTransaction', () => {
           });
 
           fireEvent.change(fileUpload);
+        });
 
-          await wait();
-
+        await act(async () => {
           const [, , , button] = await findAllByRole('button');
 
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/accounts/company-id',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/accounts/company-id',
+          ),
         );
       });
 
       it('should display a success toast when transaction is added', async () => {
-        const { findAllByRole, findByLabelText, findByTestId } = component;
+        const { findAllByRole, findByLabelText } = component;
 
         await act(async () => {
           const transactionType = await findByLabelText(
@@ -367,9 +366,9 @@ describe('RecordTransaction', () => {
           );
 
           fireEvent.click(transactionType);
+        });
 
-          await wait();
-
+        await act(async () => {
           const supplier = await findByLabelText(
             'transaction-form.transaction-details.name.label',
           );
@@ -423,19 +422,17 @@ describe('RecordTransaction', () => {
           });
 
           fireEvent.change(fileUpload);
+        });
 
-          await wait();
-
+        await act(async () => {
           const [, , , button] = await findAllByRole('button');
 
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'record-transaction.success',
@@ -452,9 +449,9 @@ describe('RecordTransaction', () => {
           );
 
           fireEvent.click(transactionType);
+        });
 
-          await wait();
-
+        await act(async () => {
           const supplier = await findByLabelText(
             'transaction-form.transaction-details.name.label',
           );
@@ -508,11 +505,9 @@ describe('RecordTransaction', () => {
           });
 
           fireEvent.change(fileUpload);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'uploads.add.success',
@@ -533,9 +528,9 @@ describe('RecordTransaction', () => {
           );
 
           fireEvent.click(transactionType);
+        });
 
-          await wait();
-
+        await act(async () => {
           const supplier = await findByLabelText(
             'transaction-form.transaction-details.name.label',
           );
@@ -589,11 +584,9 @@ describe('RecordTransaction', () => {
           });
 
           fireEvent.change(fileUpload);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'uploads.add.error',
@@ -749,7 +742,7 @@ describe('RecordTransaction', () => {
       });
 
       it('should display a warning toast', async () => {
-        const { findAllByRole, findByLabelText, findByTestId } = component;
+        const { findAllByRole, findByLabelText } = component;
 
         await act(async () => {
           const transactionType = await findByLabelText(
@@ -757,9 +750,9 @@ describe('RecordTransaction', () => {
           );
 
           fireEvent.click(transactionType);
+        });
 
-          await wait();
-
+        await act(async () => {
           const supplier = await findByLabelText(
             'transaction-form.transaction-details.name.label',
           );
@@ -804,19 +797,17 @@ describe('RecordTransaction', () => {
               value: '999.99',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [, , button] = await findAllByRole('button');
 
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'record-transaction.retry',
@@ -825,7 +816,7 @@ describe('RecordTransaction', () => {
       });
 
       it('should redirect you back to accounts page', async () => {
-        const { findAllByRole, findByLabelText, findByTestId } = component;
+        const { findAllByRole, findByLabelText } = component;
 
         await act(async () => {
           const transactionType = await findByLabelText(
@@ -833,9 +824,9 @@ describe('RecordTransaction', () => {
           );
 
           fireEvent.click(transactionType);
+        });
 
-          await wait();
-
+        await act(async () => {
           const supplier = await findByLabelText(
             'transaction-form.transaction-details.name.label',
           );
@@ -880,20 +871,20 @@ describe('RecordTransaction', () => {
               value: '999.99',
             },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [, , button] = await findAllByRole('button');
 
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/accounts/company-id',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/accounts/company-id',
+          ),
         );
       });
 
@@ -906,9 +897,9 @@ describe('RecordTransaction', () => {
           );
 
           fireEvent.click(transactionType);
+        });
 
-          await wait();
-
+        await act(async () => {
           const supplier = await findByLabelText(
             'transaction-form.transaction-details.name.label',
           );
@@ -962,11 +953,9 @@ describe('RecordTransaction', () => {
           });
 
           fireEvent.change(fileUpload);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'uploads.add.retry',
@@ -1137,7 +1126,7 @@ describe('RecordTransaction', () => {
     });
 
     it('should redirect you back to accounts page on complete', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
+      const { findAllByRole, findByLabelText } = component;
 
       await act(async () => {
         const transactionType = await findByLabelText(
@@ -1145,9 +1134,9 @@ describe('RecordTransaction', () => {
         );
 
         fireEvent.click(transactionType);
+      });
 
-        await wait();
-
+      await act(async () => {
         const supplier = await findByLabelText(
           'transaction-form.transaction-details.name.label',
         );
@@ -1173,9 +1162,9 @@ describe('RecordTransaction', () => {
         });
 
         fireEvent.click(status);
+      });
 
-        await wait();
-
+      await act(async () => {
         const schedule = await findByLabelText(
           'transaction-form.transaction-amount.schedule.options.yes',
         );
@@ -1191,20 +1180,20 @@ describe('RecordTransaction', () => {
             value: '999.99',
           },
         });
+      });
 
-        await wait();
-
+      await act(async () => {
         const [, , button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/accounts/company-id/pending-transactions',
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/accounts/company-id/pending-transactions',
+        ),
       );
     });
 
@@ -1217,9 +1206,9 @@ describe('RecordTransaction', () => {
         );
 
         fireEvent.click(transactionType);
+      });
 
-        await wait();
-
+      await act(async () => {
         const supplier = await findByLabelText(
           'transaction-form.transaction-details.name.label',
         );
@@ -1245,9 +1234,9 @@ describe('RecordTransaction', () => {
         });
 
         fireEvent.click(status);
+      });
 
-        await wait();
-
+      await act(async () => {
         const schedule = await findByLabelText(
           'transaction-form.transaction-amount.schedule.options.yes',
         );
@@ -1272,11 +1261,9 @@ describe('RecordTransaction', () => {
         });
 
         fireEvent.change(fileUpload);
-
-        await wait();
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'danger',
           message: 'uploads.add.error',

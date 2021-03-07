@@ -1,5 +1,4 @@
 import { render, RenderResult } from '@testing-library/react';
-import React from 'react';
 import TableBody from '../../TableBody/TableBody';
 import TableCell from '../../TableCell/TableCell';
 import TableHead from '../../TableHead/TableHead';

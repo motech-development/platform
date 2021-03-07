@@ -1,7 +1,7 @@
 import { Apollo } from '@motech-development/appsync-apollo';
 import { useAuth } from '@motech-development/auth';
 import { Loader } from '@motech-development/breeze-ui';
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import Container from './Container';
 import ErrorCard from './ErrorCard';

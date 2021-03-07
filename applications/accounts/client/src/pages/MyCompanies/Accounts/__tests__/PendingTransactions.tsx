@@ -6,10 +6,9 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
@@ -135,8 +134,6 @@ describe('PendingTransactions', () => {
             </MockedProvider>
           </TestProvider>,
         );
-
-        await wait();
       });
     });
 
@@ -223,18 +220,14 @@ describe('PendingTransactions', () => {
           },
         });
 
-        await wait();
-
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
         await waitForApollo(0);
-
-        await wait();
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'success',
           message: 'delete-transaction.success',
@@ -315,8 +308,6 @@ describe('PendingTransactions', () => {
             </MockedProvider>
           </TestProvider>,
         );
-
-        await wait();
       });
     });
 
@@ -339,18 +330,14 @@ describe('PendingTransactions', () => {
           },
         });
 
-        await wait();
-
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
         await waitForApollo(0);
-
-        await wait();
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'danger',
           message: 'delete-transaction.error',
@@ -403,8 +390,6 @@ describe('PendingTransactions', () => {
             </MockedProvider>
           </TestProvider>,
         );
-
-        await wait();
       });
     });
 

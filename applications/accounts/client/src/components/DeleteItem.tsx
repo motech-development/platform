@@ -4,7 +4,7 @@ import {
   Overlay,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import ConfirmDelete from './ConfirmDelete';
 
 export interface IDeleteItemProps {

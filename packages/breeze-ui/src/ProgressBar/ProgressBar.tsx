@@ -1,5 +1,5 @@
 import { rgba } from 'polished';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import styled from 'styled-components';
 
 const ProgressBarInternal = styled.progress`

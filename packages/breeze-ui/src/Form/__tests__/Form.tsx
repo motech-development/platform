@@ -1,6 +1,5 @@
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { FormikValues } from 'formik';
-import React from 'react';
 import { object, ObjectSchema, string } from 'yup';
 import TextBox from '../../TextBox/TextBox';
 import Form from '../Form';
@@ -51,7 +50,7 @@ describe('Form', () => {
           submitLabel="Submit"
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={value => onSubmit(value)}
+          onSubmit={(value) => onSubmit(value)}
         >
           <TextBox label="Empty" name="empty" />
           <TextBox label="Object empty" name="obj.empty" />
@@ -114,7 +113,7 @@ describe('Form', () => {
           submitLabel="Submit"
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={value => onSubmit(value)}
+          onSubmit={(value) => onSubmit(value)}
         >
           <TextBox label="Test" name="test" />
         </Form>,
@@ -135,7 +134,7 @@ describe('Form', () => {
           submitLabel="Submit"
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={value => onSubmit(value)}
+          onSubmit={(value) => onSubmit(value)}
         >
           <TextBox label="Test" name="test" format="##-##-##" />
         </Form>,
@@ -175,7 +174,7 @@ describe('Form', () => {
           submitLabel="Submit"
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={value => onSubmit(value)}
+          onSubmit={(value) => onSubmit(value)}
         >
           <TextBox label="Test" name="test" suffix="%" />
         </Form>,
@@ -215,7 +214,7 @@ describe('Form', () => {
           submitLabel="Submit"
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={value => onSubmit(value)}
+          onSubmit={(value) => onSubmit(value)}
         >
           <TextBox label="Test" name="test" prefix="£" />
         </Form>,
@@ -256,7 +255,7 @@ describe('Form', () => {
           submitLabel="Submit"
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={value => onSubmit(value)}
+          onSubmit={(value) => onSubmit(value)}
         >
           <TextBox label="Test" name="test" format="##-##-##" />
         </Form>,
@@ -288,7 +287,7 @@ describe('Form', () => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onPreSubmit={onPreSumbit}
-          onSubmit={value => onSubmit(value)}
+          onSubmit={(value) => onSubmit(value)}
         >
           <TextBox label="Test" name="test" prefix="£" />
         </Form>,

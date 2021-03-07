@@ -1,6 +1,6 @@
 import { Card, TextBox, Typography } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 import FormFooter from './FormFooter';

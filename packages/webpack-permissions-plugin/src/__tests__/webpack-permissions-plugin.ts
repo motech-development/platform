@@ -1,6 +1,6 @@
 import { chmodSync, existsSync } from 'fs';
-import { Tap } from 'tapable';
-import { Compiler } from 'webpack';
+import { TapOptions } from 'tapable';
+import { Compiler, Stats } from 'webpack';
 import PermissionsPlugin from '../webpack-permissions-plugin';
 
 jest.mock('fs');
@@ -26,10 +26,13 @@ describe('webpack-permissions-plugin', () => {
 
     pluginName = jest.fn();
 
-    compiler.hooks.done.tap = (name: string | Tap, fn: Function) => {
+    compiler.hooks.done.tap = (
+      name: string | TapOptions<'sync', Stats, null, null>,
+      fn: (arg1: Stats, arg2: null, arg3: null) => void,
+    ) => {
       pluginName(name);
 
-      fn();
+      fn({} as Stats, null, null);
     };
 
     permissionsPlugin = new PermissionsPlugin({

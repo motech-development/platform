@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
 
 export interface IConditionalRouteProps extends RouteProps {

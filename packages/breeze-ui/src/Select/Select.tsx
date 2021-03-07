@@ -1,7 +1,7 @@
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
-import React, {
+import {
   ChangeEvent,
   FC,
   FocusEvent,

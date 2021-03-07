@@ -4,7 +4,7 @@ import {
   faCheckCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, {
+import {
   createContext,
   FC,
   ReactNode,
@@ -88,7 +88,7 @@ const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
   };
   const remove = (id: string) =>
     setToasts(
-      toasts.filter(t => {
+      toasts.filter((t) => {
         if (t.id === id && t.onDismiss) {
           t.onDismiss();
         }

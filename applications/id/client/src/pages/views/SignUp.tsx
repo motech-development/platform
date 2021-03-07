@@ -1,6 +1,6 @@
 import { useToast } from '@motech-development/breeze-ui';
 import { Auth0Error, WebAuth } from 'auth0-js';
-import React, { FC, memo, useState } from 'react';
+import { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AuthForm, { FormSchema } from '../../components/AuthForm';
 
@@ -24,7 +24,7 @@ const SignUp: FC<ISignUpProps> = ({ client, handleError, setView }) => {
         password,
         userMetadata,
       },
-      e => {
+      (e) => {
         handleError(e);
 
         setLoading(false);

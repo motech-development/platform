@@ -1,6 +1,5 @@
-import { act, fireEvent, render, wait } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { Form, Formik } from 'formik';
-import React from 'react';
 import * as Yup from 'yup';
 import Select, { ISelectOption } from '../Select';
 
@@ -8,7 +7,7 @@ interface IInitialValues {
   test: string;
 }
 
-describe.skip('Select', () => {
+describe('Select', () => {
   let initialValues: IInitialValues;
   let validationSchema: Yup.ObjectSchema<IInitialValues>;
   let onChange: jest.Mock;
@@ -83,8 +82,6 @@ describe.skip('Select', () => {
         const input = await findByLabelText('Test');
 
         fireEvent.focus(input);
-
-        await wait();
       });
 
       const input = await findByLabelText('Test');
@@ -122,8 +119,6 @@ describe.skip('Select', () => {
         });
 
         fireEvent.blur(input);
-
-        await wait();
       });
 
       const alert = await findByRole('alert');
@@ -180,8 +175,6 @@ describe.skip('Select', () => {
         });
 
         fireEvent.blur(input);
-
-        await wait();
       });
 
       await expect(findByText('Test')).resolves.toHaveStyle(`
@@ -239,8 +232,6 @@ describe.skip('Select', () => {
             value: 'Option 1',
           },
         });
-
-        await wait();
       });
 
       expect(onChange).toHaveBeenCalled();
@@ -295,8 +286,6 @@ describe.skip('Select', () => {
         const input = await findByLabelText('Test');
 
         fireEvent.focus(input);
-
-        await wait();
       });
 
       const input = await findByLabelText('Test');
@@ -347,8 +336,6 @@ describe.skip('Select', () => {
         const input = await findByLabelText('Test');
 
         fireEvent.blur(input);
-
-        await wait();
       });
 
       await expect(findByText('Test')).resolves.toHaveStyle(`
@@ -406,8 +393,6 @@ describe.skip('Select', () => {
             value: 'Option 1',
           },
         });
-
-        await wait();
       });
 
       expect(onChange).toHaveBeenCalled();

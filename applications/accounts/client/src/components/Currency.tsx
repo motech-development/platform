@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 
 const currencySymbol = (currency: string) => {
   switch (currency) {

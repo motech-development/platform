@@ -1,5 +1,4 @@
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
-import React from 'react';
 import TestProvider from '../../utils/TestProvider';
 import ConfirmDelete from '../ConfirmDelete';
 

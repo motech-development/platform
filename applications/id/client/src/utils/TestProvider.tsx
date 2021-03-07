@@ -1,6 +1,6 @@
 import { ToastContext, ToastProvider } from '@motech-development/breeze-ui';
 import i18n from 'i18next';
-import React, { FC, ReactNode, Suspense } from 'react';
+import { FC, ReactNode, Suspense } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 export const add = jest.fn();

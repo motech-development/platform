@@ -1,4 +1,4 @@
-import React, { FC, HTMLAttributes, memo } from 'react';
+import { FC, HTMLAttributes, memo } from 'react';
 import { darken } from 'polished';
 import styled, { ThemeProvider } from 'styled-components';
 

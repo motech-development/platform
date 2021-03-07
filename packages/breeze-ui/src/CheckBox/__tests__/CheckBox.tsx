@@ -1,12 +1,5 @@
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  wait,
-} from '@testing-library/react';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { Form, Formik } from 'formik';
-import React from 'react';
 import * as Yup from 'yup';
 import CheckBox from '../CheckBox';
 
@@ -14,7 +7,7 @@ interface IInitialValues {
   test: boolean;
 }
 
-describe.skip('CheckBox', () => {
+describe('CheckBox', () => {
   let component: RenderResult;
   let initialValues: IInitialValues;
   let validationSchema: Yup.ObjectSchema<IInitialValues>;
@@ -26,9 +19,7 @@ describe.skip('CheckBox', () => {
     onSubmit = jest.fn();
     validationSchema = Yup.object()
       .shape({
-        test: Yup.boolean()
-          .oneOf([true])
-          .required(),
+        test: Yup.boolean().oneOf([true]).required(),
       })
       .required();
   });
@@ -137,8 +128,6 @@ describe.skip('CheckBox', () => {
         fireEvent.click(option);
 
         fireEvent.blur(option);
-
-        await wait();
       });
 
       await expect(findByText('Tick this')).resolves.toHaveStyle(`
@@ -157,8 +146,6 @@ describe.skip('CheckBox', () => {
         fireEvent.focus(option);
 
         fireEvent.blur(option);
-
-        await wait();
       });
 
       await expect(findByText('Tick this')).resolves.toHaveStyleRule(
@@ -176,8 +163,6 @@ describe.skip('CheckBox', () => {
         fireEvent.focus(option);
 
         fireEvent.blur(option);
-
-        await wait();
       });
 
       await expect(findByRole('alert')).resolves.toBeInTheDocument();
@@ -246,8 +231,6 @@ describe.skip('CheckBox', () => {
       const option = await findByLabelText('Test');
 
       fireEvent.click(option);
-
-      await wait();
     });
 
     expect(onChange).toHaveBeenCalled();

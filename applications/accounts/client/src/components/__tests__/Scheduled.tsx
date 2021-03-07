@@ -1,5 +1,4 @@
 import { act, render, RenderResult } from '@testing-library/react';
-import React from 'react';
 import Scheduled from '../Scheduled';
 
 describe('Scheduled', () => {

@@ -1,12 +1,5 @@
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  wait,
-} from '@testing-library/react';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { Form, Formik } from 'formik';
-import React from 'react';
 import * as Yup from 'yup';
 import FileUpload from '../FileUpload';
 
@@ -124,8 +117,6 @@ describe('FileUpload', () => {
           });
 
           fireEvent.change(upload);
-
-          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyleRule(
@@ -169,8 +160,6 @@ describe('FileUpload', () => {
           });
 
           fireEvent.change(upload);
-
-          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyleRule(
@@ -190,8 +179,6 @@ describe('FileUpload', () => {
           });
 
           fireEvent.change(upload);
-
-          await wait();
         });
 
         await expect(findByRole('alert')).resolves.toBeInTheDocument();
@@ -281,8 +268,6 @@ describe('FileUpload', () => {
         });
 
         fireEvent.change(upload);
-
-        await wait();
       });
 
       expect(onSelect).not.toHaveBeenCalled();
@@ -298,8 +283,6 @@ describe('FileUpload', () => {
         const button = await findByRole('button');
 
         fireEvent.click(button);
-
-        await wait();
       });
 
       expect(upload.click).toHaveBeenCalled();

@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { render, RenderResult, act } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import TestProvider from '../../../../utils/TestProvider';
 import Clients from '../Clients';

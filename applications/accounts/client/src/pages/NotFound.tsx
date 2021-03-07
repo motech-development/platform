@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import ErrorCard from '../components/ErrorCard';
 import Container from '../components/Container';

@@ -1,5 +1,4 @@
 import { act, render, RenderResult } from '@testing-library/react';
-import React from 'react';
 import WarningText from '../WarningText';
 
 describe('WarningText', () => {

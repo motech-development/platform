@@ -8,7 +8,7 @@ import {
 } from '@apollo/client';
 import { createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
-import React, { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 
 export interface IApolloProps {
   cacheConfig?: InMemoryCacheConfig;

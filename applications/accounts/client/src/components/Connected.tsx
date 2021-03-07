@@ -1,6 +1,6 @@
 import { ApolloError } from '@apollo/client';
 import { Loader } from '@motech-development/breeze-ui';
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import ErrorCard from './ErrorCard';
 

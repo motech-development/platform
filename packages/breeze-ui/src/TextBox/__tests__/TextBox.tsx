@@ -1,6 +1,5 @@
-import { act, fireEvent, render, wait } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { Form, Formik } from 'formik';
-import React from 'react';
 import * as Yup from 'yup';
 import TextBox from '../TextBox';
 
@@ -8,7 +7,7 @@ interface IInitialValues {
   test: string;
 }
 
-describe.skip('TextBox', () => {
+describe('TextBox', () => {
   let initialValues: IInitialValues;
   let validationSchema: Yup.ObjectSchema<IInitialValues>;
   let onChange: jest.Mock;
@@ -65,8 +64,6 @@ describe.skip('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.focus(input);
-
-          await wait();
         });
 
         const input = await findByPlaceholderText('Test');
@@ -96,8 +93,6 @@ describe.skip('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.blur(input);
-
-          await wait();
         });
 
         const alert = await findByRole('alert');
@@ -162,8 +157,6 @@ describe.skip('TextBox', () => {
           const input = await findByLabelText('Test');
 
           fireEvent.blur(input);
-
-          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
@@ -192,8 +185,6 @@ describe.skip('TextBox', () => {
               value: 'Test',
             },
           });
-
-          await wait();
         });
 
         expect(onChange).toHaveBeenCalled();
@@ -254,8 +245,6 @@ describe.skip('TextBox', () => {
           const input = await findByLabelText('Test');
 
           fireEvent.blur(input);
-
-          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
@@ -279,8 +268,6 @@ describe.skip('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.focus(input);
-
-          await wait();
         });
 
         const input = await findByPlaceholderText('Test');
@@ -311,8 +298,6 @@ describe.skip('TextBox', () => {
               value: 'Test',
             },
           });
-
-          await wait();
         });
 
         expect(onChange).toHaveBeenCalled();
@@ -386,8 +371,6 @@ describe.skip('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.focus(input);
-
-          await wait();
         });
 
         const input = await findByPlaceholderText('Test');
@@ -422,8 +405,6 @@ describe.skip('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.blur(input);
-
-          await wait();
         });
 
         const alert = await findByRole('alert');
@@ -493,8 +474,6 @@ describe.skip('TextBox', () => {
           const input = await findByLabelText('Test');
 
           fireEvent.blur(input);
-
-          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
@@ -528,8 +507,6 @@ describe.skip('TextBox', () => {
               value: '000000',
             },
           });
-
-          await wait();
         });
 
         expect(onChange).toHaveBeenCalled();
@@ -574,8 +551,6 @@ describe.skip('TextBox', () => {
           const input = await findByLabelText('Test');
 
           fireEvent.blur(input);
-
-          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyle(`
@@ -604,8 +579,6 @@ describe.skip('TextBox', () => {
           const input = await findByPlaceholderText('Test');
 
           fireEvent.focus(input);
-
-          await wait();
         });
 
         const input = await findByPlaceholderText('Test');
@@ -642,8 +615,6 @@ describe.skip('TextBox', () => {
             value: '000000',
           },
         });
-
-        await wait();
       });
 
       expect(onChange).toHaveBeenCalled();

@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const AppBarInner = styled.div`

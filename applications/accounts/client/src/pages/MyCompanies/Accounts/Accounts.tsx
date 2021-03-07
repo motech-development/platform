@@ -7,7 +7,7 @@ import {
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import TransactionsList from '../../../components/TransactionsList';

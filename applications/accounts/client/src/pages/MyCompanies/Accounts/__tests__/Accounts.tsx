@@ -6,10 +6,9 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
@@ -180,8 +179,6 @@ describe('Accounts', () => {
             </MockedProvider>
           </TestProvider>,
         );
-
-        await wait();
       });
     });
 
@@ -299,8 +296,6 @@ describe('Accounts', () => {
 
         fireEvent.click(button);
 
-        await wait();
-
         await findByRole('dialog');
 
         const [, , cancelButton] = await findAllByRole('button');
@@ -330,18 +325,14 @@ describe('Accounts', () => {
           },
         });
 
-        await wait();
-
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
-        await wait();
-
         await waitForApollo(0);
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'success',
           message: 'delete-transaction.success',
@@ -466,8 +457,6 @@ describe('Accounts', () => {
             </MockedProvider>
           </TestProvider>,
         );
-
-        await wait();
       });
     });
 
@@ -490,18 +479,14 @@ describe('Accounts', () => {
           },
         });
 
-        await wait();
-
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
         await waitForApollo(0);
-
-        await wait();
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'danger',
           message: 'delete-transaction.error',

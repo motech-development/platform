@@ -1,4 +1,4 @@
-import React, { memo, ReactNode } from 'react';
+import { memo, ReactNode } from 'react';
 import Table from '../Table/Table';
 import TableBody from '../TableBody/TableBody';
 import TableHead from '../TableHead/TableHead';

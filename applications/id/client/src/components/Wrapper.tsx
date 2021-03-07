@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode, useEffect, useRef } from 'react';
+import { FC, memo, ReactNode, useEffect, useRef } from 'react';
 import { disableBodyScroll } from 'body-scroll-lock';
 
 export interface IWrapperProps {

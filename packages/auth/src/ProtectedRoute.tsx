@@ -1,4 +1,4 @@
-import React, { ComponentType, FC, memo, useEffect } from 'react';
+import { ComponentType, FC, memo, useEffect } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 

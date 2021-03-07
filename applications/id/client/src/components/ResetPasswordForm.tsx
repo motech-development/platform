@@ -1,6 +1,6 @@
 import { Button, Card, TextBox } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, ref, string } from 'yup';
 

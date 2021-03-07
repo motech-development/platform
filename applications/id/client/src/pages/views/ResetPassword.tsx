@@ -1,6 +1,6 @@
 import { usePost } from '@motech-development/axios-hooks';
 import { useToast } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import ResetPasswordForm, {
   FormSchema,
@@ -17,7 +17,7 @@ const ResetPassword: FC<IResetPasswordProps> = ({ setView }) => {
     onCompleted: () => {
       setView('success');
     },
-    onError: e => {
+    onError: (e) => {
       add({
         colour: 'danger',
         message: e.response?.data.message || t('error'),

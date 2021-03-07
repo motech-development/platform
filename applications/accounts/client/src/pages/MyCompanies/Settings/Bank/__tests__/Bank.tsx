@@ -2,7 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import CREATE_BANK_CONNECTION from '../../../../../graphql/bank/CREATE_BANK_CONNECTION';
 import GET_BANKS from '../../../../../graphql/bank/GET_BANKS';
 import ON_BANK_CALLBACK from '../../../../../graphql/bank/ON_BANK_CALLBACK';
@@ -181,7 +180,12 @@ describe('Bank', () => {
         },
       ];
 
-      window.location.assign = jest.fn();
+      Object.defineProperty(window, 'location', {
+        value: {
+          assign: jest.fn(),
+        },
+        writable: true,
+      });
 
       await act(async () => {
         component = render(

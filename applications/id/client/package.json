@@ -72,7 +72,8 @@
     "moduleDirectories": [
       "../../node_modules",
       "<rootDir>/node_modules"
-    ]
+    ],
+    "resetMocks": false
   },
   "jest-junit": {
     "outputDirectory": "../../../reports/junit",

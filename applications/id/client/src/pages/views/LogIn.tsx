@@ -1,6 +1,6 @@
 import { ButtonLink } from '@motech-development/breeze-ui';
 import { Auth0Error, WebAuth } from 'auth0-js';
-import React, { FC, memo, useState } from 'react';
+import { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AuthForm, { FormSchema } from '../../components/AuthForm';
 
@@ -22,7 +22,7 @@ const LogIn: FC<ILogInProps> = ({ client, handleError, setView }) => {
         realm: 'Username-Password-Authentication',
         username,
       },
-      e => {
+      (e) => {
         handleError(e);
 
         setLoading(false);

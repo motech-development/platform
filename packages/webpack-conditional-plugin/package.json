@@ -9,6 +9,7 @@
     "build": "rollup -c",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
     "package": "npm run build",
+    "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",

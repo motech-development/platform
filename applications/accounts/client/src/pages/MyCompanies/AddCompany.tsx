@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import CompanyWizard, { FormSchema } from '../../components/CompanyWizard';

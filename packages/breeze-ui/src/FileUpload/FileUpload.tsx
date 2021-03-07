@@ -1,5 +1,5 @@
 import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
-import React, { ChangeEvent, FC, memo, useEffect, useState } from 'react';
+import { ChangeEvent, FC, memo, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from '../Button/Button';
 import useInputValidation from '../hooks/useInputValidation';

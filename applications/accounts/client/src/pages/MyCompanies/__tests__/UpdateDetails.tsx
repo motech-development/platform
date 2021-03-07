@@ -6,10 +6,9 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import DELETE_COMPANY from '../../../graphql/company/DELETE_COMPANY';
 import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
 import GET_COMPANY from '../../../graphql/company/GET_COMPANY';
@@ -186,7 +185,7 @@ describe('UpdateDetails', () => {
       });
 
       it('should redirect you to the dashboard on complete', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('New company');
@@ -196,17 +195,17 @@ describe('UpdateDetails', () => {
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/dashboard/company-uuid',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/dashboard/company-uuid',
+          ),
         );
       });
 
       it('should display a success toast', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('New company');
@@ -216,11 +215,9 @@ describe('UpdateDetails', () => {
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'update-details.success',
@@ -259,7 +256,9 @@ describe('UpdateDetails', () => {
           fireEvent.click(cancelButton);
         });
 
-        expect(queryByRole('dialog')).not.toBeInTheDocument();
+        await waitFor(() =>
+          expect(queryByRole('dialog')).not.toBeInTheDocument(),
+        );
       });
 
       it('should delete a company', async () => {
@@ -283,20 +282,16 @@ describe('UpdateDetails', () => {
             target: { focus: () => {}, value: 'New company' },
           });
 
-          await wait();
-
           const [, , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith('/my-companies');
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith('/my-companies'),
+        );
       });
 
       it('should display a success toast when deleting a company', async () => {
@@ -314,19 +309,17 @@ describe('UpdateDetails', () => {
           fireEvent.change(input, {
             target: { focus: () => {}, value: 'New company' },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [, , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'delete-company.success',
@@ -405,21 +398,22 @@ describe('UpdateDetails', () => {
           const input = await findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
-            target: { focus: () => {}, value: 'New company' },
+            target: {
+              focus: () => {},
+              value: 'New company',
+            },
           });
+        });
 
-          await wait();
-
+        await act(async () => {
           const [, , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'delete-company.error',
@@ -519,7 +513,7 @@ describe('UpdateDetails', () => {
     });
 
     it('should display a warning toast when updating a company', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
+      const { findAllByRole, findByText } = component;
 
       await act(async () => {
         await findByText('New company');
@@ -529,11 +523,9 @@ describe('UpdateDetails', () => {
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'danger',
           message: 'update-details.retry',
@@ -542,7 +534,7 @@ describe('UpdateDetails', () => {
     });
 
     it('should redirect you to the right place when updating a company', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
+      const { findAllByRole, findByText } = component;
 
       await act(async () => {
         await findByText('New company');
@@ -552,12 +544,12 @@ describe('UpdateDetails', () => {
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/dashboard/company-uuid',
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/dashboard/company-uuid',
+        ),
       );
     });
 
@@ -576,19 +568,17 @@ describe('UpdateDetails', () => {
         fireEvent.change(input, {
           target: { focus: () => {}, value: 'New company' },
         });
+      });
 
-        await wait();
-
+      await act(async () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
         await waitForApollo(0);
-
-        await wait();
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'danger',
           message: 'delete-company.retry',
@@ -611,19 +601,19 @@ describe('UpdateDetails', () => {
         fireEvent.change(input, {
           target: { focus: () => {}, value: 'New company' },
         });
+      });
 
-        await wait();
-
+      await act(async () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
         await waitForApollo(0);
-
-        await wait();
       });
 
-      expect(history.push).toHaveBeenCalledWith('/my-companies');
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith('/my-companies'),
+      );
     });
   });
 });

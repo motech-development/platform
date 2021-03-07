@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { FC, memo, TdHTMLAttributes } from 'react';
+import { FC, memo, TdHTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 const baseStyles = (noWrap: boolean, align = 'inherit') => `

@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import { darken } from 'polished';
 import styled from 'styled-components';
 

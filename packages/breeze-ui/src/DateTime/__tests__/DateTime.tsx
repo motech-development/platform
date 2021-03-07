@@ -1,6 +1,5 @@
 import { render, RenderResult } from '@testing-library/react';
 import moment from 'moment';
-import React from 'react';
 import DateTime from '../DateTime';
 
 describe('DateTime', () => {

@@ -6,7 +6,7 @@ import {
   Row,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
@@ -53,7 +53,7 @@ const ErrorCard: FC<IErrorCardProps> = ({
           </Typography>
 
           {errors &&
-            errors.map(message => (
+            errors.map((message) => (
               <Typography key={message} component="p" variant="p" margin="none">
                 {message}
               </Typography>

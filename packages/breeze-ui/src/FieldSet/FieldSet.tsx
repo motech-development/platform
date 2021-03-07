@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import styled from 'styled-components';
 import HelpText from '../HelpText/HelpText';
 import InputAlert from '../InputAlert/InputAlert';

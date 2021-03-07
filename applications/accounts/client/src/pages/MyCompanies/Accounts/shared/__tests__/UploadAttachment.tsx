@@ -1,14 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  wait,
-} from '@testing-library/react';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { Form, Formik } from 'formik';
 import { GraphQLError } from 'graphql';
-import React from 'react';
 import TestProvider from '../../../../../utils/TestProvider';
 import UploadAttachment, { REQUEST_UPLOAD } from '../UploadAttachment';
 
@@ -84,8 +77,6 @@ describe('UploadAttachment', () => {
       });
 
       fireEvent.change(upload);
-
-      await wait();
     });
 
     expect(onUpload).not.toHaveBeenCalled();
@@ -108,8 +99,6 @@ describe('UploadAttachment', () => {
       });
 
       fireEvent.change(upload);
-
-      await wait();
     });
 
     expect(onUpload).not.toHaveBeenCalled();

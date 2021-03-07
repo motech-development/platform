@@ -1,7 +1,6 @@
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { Form, Formik } from 'formik';
 import { advanceTo, clear } from 'jest-date-mock';
-import React from 'react';
 import * as Yup from 'yup';
 import DatePicker from '../DatePicker';
 
@@ -24,9 +23,7 @@ describe('DatePicker', () => {
 
     validationSchema = Yup.object()
       .shape({
-        test: Yup.date()
-          .min('2015-06-03T19:45:00+00:00')
-          .required(),
+        test: Yup.date().min('2015-06-03T19:45:00+00:00').required(),
       })
       .required();
   });

@@ -1,5 +1,5 @@
-import { render, wait } from '@testing-library/react';
-import React, { FC } from 'react';
+import { render, waitFor } from '@testing-library/react';
+import { FC } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
 import WithAuth from '../WithAuth';
@@ -105,7 +105,7 @@ describe('withAuth', () => {
         </MemoryRouter>,
       );
 
-      await wait(() => expect(onError).toHaveBeenCalledWith('Message'));
+      await waitFor(() => expect(onError).toHaveBeenCalledWith('Message'));
     });
   });
 

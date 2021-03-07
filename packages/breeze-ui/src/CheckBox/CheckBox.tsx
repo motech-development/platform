@@ -1,5 +1,5 @@
 import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
-import React, { ChangeEvent, FC, memo } from 'react';
+import { ChangeEvent, FC, memo } from 'react';
 import CheckableInput from '../CheckableInput/CheckableInput';
 import useInputValidation from '../hooks/useInputValidation';
 import FieldSet from '../FieldSet/FieldSet';
