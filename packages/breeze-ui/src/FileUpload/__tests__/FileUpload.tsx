@@ -92,7 +92,6 @@ describe('FileUpload', () => {
             {() => (
               <Form>
                 <FileUpload
-                  disabled
                   buttonText="Browse"
                   label="Test"
                   name="test"
@@ -110,13 +109,13 @@ describe('FileUpload', () => {
         const { findByLabelText, findByText } = component;
 
         await act(async () => {
-          const upload = (await findByLabelText('Test')) as HTMLInputElement;
+          const upload = await findByLabelText('Test');
 
-          Object.defineProperty(upload, 'files', {
-            value: [file],
+          fireEvent.change(upload, {
+            target: {
+              files: [file],
+            },
           });
-
-          fireEvent.change(upload);
         });
 
         await expect(findByText('Test')).resolves.toHaveStyleRule(
@@ -137,7 +136,6 @@ describe('FileUpload', () => {
             {() => (
               <Form>
                 <FileUpload
-                  disabled
                   buttonText="Browse"
                   label="Test"
                   name="test"
@@ -155,11 +153,11 @@ describe('FileUpload', () => {
         await act(async () => {
           const upload = (await findByLabelText('Test')) as HTMLInputElement;
 
-          Object.defineProperty(upload, 'files', {
-            value: [file],
+          fireEvent.change(upload, {
+            target: {
+              files: [file],
+            },
           });
-
-          fireEvent.change(upload);
         });
 
         await expect(findByText('Test')).resolves.toHaveStyleRule(
@@ -263,11 +261,11 @@ describe('FileUpload', () => {
       await act(async () => {
         const upload = (await findByLabelText('Test')) as HTMLInputElement;
 
-        Object.defineProperty(upload, 'files', {
-          value: [],
+        fireEvent.change(upload, {
+          target: {
+            files: [],
+          },
         });
-
-        fireEvent.change(upload);
       });
 
       expect(onSelect).not.toHaveBeenCalled();

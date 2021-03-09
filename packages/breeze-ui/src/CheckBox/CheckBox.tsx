@@ -94,7 +94,7 @@ const CheckBox: FC<ICheckBoxProps> = ({
   label,
   legend,
   name,
-  onChange = undefined,
+  onChange,
   readOnly = false,
   spacing = 'md',
 }) => (

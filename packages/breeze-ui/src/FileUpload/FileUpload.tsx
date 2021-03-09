@@ -70,11 +70,13 @@ const InternalFileUpload: FC<IInternalFileUpload> = ({
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
 
-      setFileName(file.name);
+      (async () => {
+        setFileName(file.name);
 
-      form.setFieldTouched(name, true);
+        await Promise.resolve(onSelect(file, form));
 
-      (async () => onSelect(file, form))();
+        form.setFieldTouched(name, true);
+      })();
     }
   };
   const onClick = () => {
@@ -142,10 +144,10 @@ export interface IFileUploadProps {
 }
 
 const FileUpload: FC<IFileUploadProps> = ({
-  accept = undefined,
+  accept,
   buttonText,
   disabled = false,
-  helpText = undefined,
+  helpText,
   label,
   loading = false,
   name,

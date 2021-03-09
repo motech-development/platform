@@ -59,9 +59,11 @@ const Form: FC<IFormProps> = ({
   validationSchema,
 }) => {
   const doSubmit = async (values: FormikValues) => {
-    const payload = onPreSubmit ? await onPreSubmit(values) : values;
+    const payload = onPreSubmit
+      ? await Promise.resolve(onPreSubmit(values))
+      : values;
 
-    await onSubmit(payload);
+    await Promise.resolve(onSubmit(payload));
   };
 
   return (

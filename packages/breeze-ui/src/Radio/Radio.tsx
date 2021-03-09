@@ -107,7 +107,7 @@ const Radio: FC<IRadioProps> = ({
   helpText = null,
   label,
   name,
-  onChange = undefined,
+  onChange,
   options,
   readOnly = false,
   spacing = 'md',

@@ -19,8 +19,8 @@ const Stepper: FC<IStepperProps> = ({
   children,
   enableNext = () => true,
   nextLabel,
-  onComplete = undefined,
-  onStart = undefined,
+  onComplete,
+  onStart,
   previousLabel,
   start = 0,
 }) => {

@@ -229,7 +229,7 @@ const Select: FC<ISelectProps> = ({
   helpText = null,
   label,
   name,
-  onChange = undefined,
+  onChange,
   options,
   placeholder,
   readOnly = false,

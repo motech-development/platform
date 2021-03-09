@@ -262,12 +262,7 @@ describe('UpdateDetails', () => {
       });
 
       it('should delete a company', async () => {
-        const {
-          findAllByRole,
-          findByTestId,
-          findByLabelText,
-          findByText,
-        } = component;
+        const { findAllByRole, findByLabelText, findByText } = component;
 
         await act(async () => {
           await findByText('New company');

@@ -118,7 +118,7 @@ function Notifications<T>({
 
     if (!visible) {
       (async () => {
-        await onClose();
+        await Promise.resolve(onClose());
       })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

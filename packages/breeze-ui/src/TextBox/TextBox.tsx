@@ -112,7 +112,14 @@ const InternalTextBox: FC<IInternalTextBox> = ({
   }, [field.value]);
 
   const { onBlur, ...rest } = field;
-  const { errors, handleBlur, handleChange, setFieldValue, touched } = form;
+  const {
+    errors,
+    handleBlur,
+    handleChange,
+    setFieldTouched,
+    setFieldValue,
+    touched,
+  } = form;
   const error = useInputValidation(field.name, errors, touched);
   const describedBy = `${field.name}-error`;
   const useNumberFormat = Boolean(decimalScale || format || prefix || suffix);
@@ -147,6 +154,8 @@ const InternalTextBox: FC<IInternalTextBox> = ({
 
     if (onChange) {
       onChange(e, form);
+
+      setFieldTouched(field.name, true);
     }
   };
 
@@ -220,18 +229,18 @@ export interface ITextBoxProps {
 }
 
 const TextBox: FC<ITextBoxProps> = ({
-  decimalScale = undefined,
+  decimalScale,
   disabled = false,
-  format = undefined,
+  format,
   helpText = null,
   label,
   name,
-  onChange = undefined,
+  onChange,
   placeholder = '',
-  prefix = undefined,
+  prefix,
   readOnly = false,
   spacing = 'md',
-  suffix = undefined,
+  suffix,
   type = 'text',
 }) => {
   const [focus, setFocus] = useState();

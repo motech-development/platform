@@ -119,7 +119,7 @@ const Typography: FC<ITypographyProps> = ({
   children,
   className = '',
   component,
-  id = undefined,
+  id,
   margin = 'md',
   rule = false,
   truncate = false,

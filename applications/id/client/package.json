@@ -27,7 +27,7 @@
     "auth0-js": "^9.13.3",
     "axios": "^0.21.1",
     "body-scroll-lock": "^3.0.3",
-    "formik": "^2.1.4",
+    "formik": "^2.2.6",
     "history": "^4.10.1",
     "i18next": "^19.9.1",
     "i18next-browser-languagedetector": "^6.0.1",
