@@ -19,7 +19,7 @@ import TestProvider, { add } from '../../../../utils/TestProvider';
 import RecordTransaction, { RECORD_TRANSACTION } from '../RecordTransaction';
 import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 
-describe('RecordTransaction', () => {
+describe.only('RecordTransaction', () => {
   let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;

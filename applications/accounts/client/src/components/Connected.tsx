@@ -10,11 +10,7 @@ export interface IConnectedProps {
   loading: boolean;
 }
 
-const Connected: FC<IConnectedProps> = ({
-  children,
-  error = undefined,
-  loading,
-}) => {
+const Connected: FC<IConnectedProps> = ({ children, error, loading }) => {
   const { t } = useTranslation('connected');
 
   if (loading) {

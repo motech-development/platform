@@ -145,7 +145,9 @@ describe('Login', () => {
           const [, , signUp] = await findAllByRole('button');
 
           fireEvent.click(signUp);
+        });
 
+        await act(async () => {
           const givenName = await findByLabelText('given-name.label');
           const familyName = await findByLabelText('family-name.label');
           const email = await findByLabelText('username.label');
@@ -204,7 +206,9 @@ describe('Login', () => {
           const [, , signUp] = await findAllByRole('button');
 
           fireEvent.click(signUp);
+        });
 
+        await act(async () => {
           const givenName = await findByLabelText('given-name.label');
           const familyName = await findByLabelText('family-name.label');
           const email = await findByLabelText('username.label');
@@ -262,7 +266,9 @@ describe('Login', () => {
           const [, , signUp] = await findAllByRole('button');
 
           fireEvent.click(signUp);
+        });
 
+        await act(async () => {
           const givenName = await findByLabelText('given-name.label');
           const familyName = await findByLabelText('family-name.label');
           const email = await findByLabelText('username.label');
@@ -318,8 +324,10 @@ describe('Login', () => {
           const [, , signUp] = await findAllByRole('button');
 
           fireEvent.click(signUp);
+        });
 
-          await findByLabelText('username.label');
+        await act(async () => {
+          await waitFor(() => findByLabelText('username.label'));
 
           const [, goBack] = await findAllByRole('button');
 
@@ -340,7 +348,9 @@ describe('Login', () => {
           const [forgottenPassword] = await findAllByRole('button');
 
           fireEvent.click(forgottenPassword);
+        });
 
+        await act(async () => {
           const email = await findByLabelText('username.label');
 
           fireEvent.change(email, {
@@ -368,7 +378,9 @@ describe('Login', () => {
           const [forgottenPassword] = await findAllByRole('button');
 
           fireEvent.click(forgottenPassword);
+        });
 
+        await act(async () => {
           const email = await findByLabelText('username.label');
 
           fireEvent.change(email, {
@@ -399,7 +411,9 @@ describe('Login', () => {
           const [forgottenPassword] = await findAllByRole('button');
 
           fireEvent.click(forgottenPassword);
+        });
 
+        await act(async () => {
           const email = await findByLabelText('username.label');
 
           fireEvent.change(email, {
@@ -432,8 +446,10 @@ describe('Login', () => {
         const [forgottenPassword] = await findAllByRole('button');
 
         fireEvent.click(forgottenPassword);
+      });
 
-        await findByLabelText('username.label');
+      await act(async () => {
+        await waitFor(() => findByLabelText('username.label'));
 
         const [, goBack] = await findAllByRole('button');
 
