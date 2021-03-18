@@ -1,4 +1,5 @@
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import TextBox from '../TextBox';
@@ -60,18 +61,18 @@ describe('TextBox', () => {
           </Formik>,
         );
 
-        await act(async () => {
-          const input = await findByPlaceholderText('Test');
+        const input = await findByPlaceholderText('Test');
 
+        await act(async () => {
           fireEvent.focus(input);
         });
 
-        const input = await findByPlaceholderText('Test');
-
-        expect(input).toHaveStyle(`
-          color: #333;
-          cursor: text;
-        `);
+        await waitFor(() =>
+          expect(input).toHaveStyle(`
+        color: #333;
+        cursor: text;
+      `),
+        );
       });
 
       it('should display an error if input is invalid', async () => {
@@ -264,18 +265,18 @@ describe('TextBox', () => {
           </Formik>,
         );
 
-        await act(async () => {
-          const input = await findByPlaceholderText('Test');
+        const input = await findByPlaceholderText('Test');
 
+        await act(async () => {
           fireEvent.focus(input);
         });
 
-        const input = await findByPlaceholderText('Test');
-
-        expect(input).toHaveStyle(`
-          color: #333;
-          cursor: text;
-        `);
+        await waitFor(() =>
+          expect(input).toHaveStyle(`
+        color: #333;
+        cursor: text;
+      `),
+        );
       });
 
       it('should call onChange if set', async () => {
@@ -367,18 +368,18 @@ describe('TextBox', () => {
           </Formik>,
         );
 
-        await act(async () => {
-          const input = await findByPlaceholderText('Test');
+        const input = await findByPlaceholderText('Test');
 
+        await act(async () => {
           fireEvent.focus(input);
         });
 
-        const input = await findByPlaceholderText('Test');
-
-        expect(input).toHaveStyle(`
-          color: #333;
-          cursor: text;
-        `);
+        await waitFor(() =>
+          expect(input).toHaveStyle(`
+        color: #333;
+        cursor: text;
+      `),
+        );
       });
 
       it('should display an error if input is invalid', async () => {
@@ -575,18 +576,18 @@ describe('TextBox', () => {
           </Formik>,
         );
 
-        await act(async () => {
-          const input = await findByPlaceholderText('Test');
+        const input = await findByPlaceholderText('Test');
 
+        await act(async () => {
           fireEvent.focus(input);
         });
 
-        const input = await findByPlaceholderText('Test');
-
-        expect(input).toHaveStyle(`
-          color: #333;
-          cursor: text;
-        `);
+        await waitFor(() =>
+          expect(input).toHaveStyle(`
+        color: #333;
+        cursor: text;
+      `),
+        );
       });
     });
 
