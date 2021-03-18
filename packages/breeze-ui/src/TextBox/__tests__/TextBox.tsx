@@ -1,5 +1,4 @@
 import { act, fireEvent, render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import TextBox from '../TextBox';
@@ -69,9 +68,9 @@ describe('TextBox', () => {
 
         await waitFor(() =>
           expect(input).toHaveStyle(`
-        color: #333;
-        cursor: text;
-      `),
+            color: #333;
+            cursor: text;
+          `),
         );
       });
 
@@ -273,9 +272,9 @@ describe('TextBox', () => {
 
         await waitFor(() =>
           expect(input).toHaveStyle(`
-        color: #333;
-        cursor: text;
-      `),
+            color: #333;
+            cursor: text;
+          `),
         );
       });
 
@@ -376,9 +375,9 @@ describe('TextBox', () => {
 
         await waitFor(() =>
           expect(input).toHaveStyle(`
-        color: #333;
-        cursor: text;
-      `),
+            color: #333;
+            cursor: text;
+          `),
         );
       });
 
@@ -584,9 +583,9 @@ describe('TextBox', () => {
 
         await waitFor(() =>
           expect(input).toHaveStyle(`
-        color: #333;
-        cursor: text;
-      `),
+            color: #333;
+            cursor: text;
+          `),
         );
       });
     });
