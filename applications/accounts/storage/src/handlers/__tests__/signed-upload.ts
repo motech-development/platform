@@ -61,7 +61,7 @@ describe('signed-upload', () => {
     });
 
     it('should return an error response if no body is set', async () => {
-      delete event.body;
+      event.body = null;
 
       await handler(event, context, callback);
 
