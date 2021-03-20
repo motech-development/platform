@@ -1,4 +1,4 @@
-import { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const AppBarInner = styled.div`
@@ -87,4 +87,4 @@ const AppBar: FC<IAppBarProps> = ({
   </ThemeProvider>
 );
 
-export default memo(AppBar);
+export default AppBar;

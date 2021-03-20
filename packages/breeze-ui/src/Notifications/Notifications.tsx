@@ -1,6 +1,6 @@
 import { faAsterisk, faBell } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { memo, ReactNode, useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
 import Button from '../Button/Button';
@@ -161,4 +161,4 @@ function Notifications<T>({
   );
 }
 
-export default memo(Notifications) as typeof Notifications;
+export default Notifications;

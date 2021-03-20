@@ -1,4 +1,4 @@
-import { FC, memo, MouseEvent, ReactNode, Suspense, useEffect } from 'react';
+import { FC, MouseEvent, ReactNode, Suspense, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import Card from '../Card/Card';
@@ -91,4 +91,4 @@ const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss }) => {
   return null;
 };
 
-export default memo(Modal);
+export default Modal;

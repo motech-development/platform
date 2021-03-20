@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, memo, ReactNode } from 'react';
+import { FC, HTMLAttributes, ReactNode } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -37,4 +37,4 @@ const Table: FC<ITableProps> = ({ children, fixed = false, ...rest }) => (
   </Wrapper>
 );
 
-export default memo(Table);
+export default Table;

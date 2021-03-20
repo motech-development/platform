@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import styled from 'styled-components';
 
 const Overlay = styled.div`
@@ -11,4 +10,4 @@ const Overlay = styled.div`
   z-index: 1000;
 `;
 
-export default memo(Overlay);
+export default Overlay;

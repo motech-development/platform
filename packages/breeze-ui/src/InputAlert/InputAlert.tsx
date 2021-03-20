@@ -1,6 +1,6 @@
 import { faExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -25,4 +25,4 @@ const InputAlert: FC<IInputAlertProps> = () => (
   </Wrapper>
 );
 
-export default memo(InputAlert);
+export default InputAlert;

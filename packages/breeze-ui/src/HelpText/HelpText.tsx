@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import styled from 'styled-components';
 
 const helpTextSpacing = {
@@ -13,7 +12,7 @@ export interface IHelpTextProps {
 }
 
 const HelpText = styled('p').withConfig({
-  shouldForwardProp: prop => !['error', 'spacing'].includes(prop),
+  shouldForwardProp: (prop) => !['error', 'spacing'].includes(prop),
 })<IHelpTextProps>`
   ${({ error, spacing }) => `
     color: ${error ? 'rgb(199,56,79)' : '#727272'};
@@ -22,4 +21,4 @@ const HelpText = styled('p').withConfig({
   `}
 `;
 
-export default memo(HelpText);
+export default HelpText;

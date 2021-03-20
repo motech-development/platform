@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import styled from 'styled-components';
 
 export interface ILikeInputProps {
@@ -18,4 +17,4 @@ const LikeInput = styled.div<ILikeInputProps>`
   `}
 `;
 
-export default memo(LikeInput);
+export default LikeInput;

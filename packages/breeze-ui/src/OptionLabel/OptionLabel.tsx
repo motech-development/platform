@@ -1,4 +1,4 @@
-import { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import { darken } from 'polished';
 import styled from 'styled-components';
 
@@ -43,4 +43,4 @@ const OptionLabel: FC<IOptionLabel> = ({ children, disabled, selected }) => (
   </BaseOptionLabel>
 );
 
-export default memo(OptionLabel);
+export default OptionLabel;

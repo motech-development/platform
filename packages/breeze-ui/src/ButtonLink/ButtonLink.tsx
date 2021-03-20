@@ -1,4 +1,4 @@
-import { FC, ButtonHTMLAttributes, memo } from 'react';
+import { FC, ButtonHTMLAttributes } from 'react';
 import BaseLink from '../BaseLink/BaseLink';
 
 const ButtonLink: FC<ButtonHTMLAttributes<HTMLButtonElement>> = (props) => (
@@ -6,4 +6,4 @@ const ButtonLink: FC<ButtonHTMLAttributes<HTMLButtonElement>> = (props) => (
   <BaseLink as="button" {...props} />
 );
 
-export default memo(ButtonLink);
+export default ButtonLink;

@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 
@@ -19,4 +18,4 @@ const BaseStyles = createGlobalStyle`
   }
 `;
 
-export default memo(BaseStyles);
+export default BaseStyles;

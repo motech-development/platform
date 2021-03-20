@@ -1,5 +1,5 @@
 import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
-import { ChangeEvent, FC, memo, useEffect, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from '../Button/Button';
 import useInputValidation from '../hooks/useInputValidation';
@@ -66,17 +66,14 @@ const InternalFileUpload: FC<IInternalFileUpload> = ({
   const { name } = field;
   const [fileName, setFileName] = useState('');
   const error = useInputValidation(name, errors, touched);
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const onChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
 
-      (async () => {
-        setFileName(file.name);
+      setFileName(file.name);
 
-        await Promise.resolve(onSelect(file, form));
-
-        form.setFieldTouched(name, true);
-      })();
+      await Promise.resolve(onSelect(file, form));
+      await Promise.resolve(form.setFieldTouched(name, true));
     }
   };
   const onClick = () => {
@@ -168,4 +165,4 @@ const FileUpload: FC<IFileUploadProps> = ({
   />
 );
 
-export default memo(FileUpload);
+export default FileUpload;

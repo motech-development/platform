@@ -1,5 +1,5 @@
 import { Form as FormikForm, Formik, FormikValues } from 'formik';
-import { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import { ObjectSchema } from 'yup';
 import Button from '../Button/Button';
 import Col from '../Col/Col';
@@ -107,4 +107,4 @@ const Form: FC<IFormProps> = ({
   );
 };
 
-export default memo(Form);
+export default Form;

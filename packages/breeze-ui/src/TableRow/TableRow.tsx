@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, memo } from 'react';
+import { FC, HTMLAttributes } from 'react';
 import { darken } from 'polished';
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -43,4 +43,4 @@ const TableRow: FC<ITableRowProps> = ({ colour = 'default', ...rest }) => (
   </ThemeProvider>
 );
 
-export default memo(TableRow);
+export default TableRow;

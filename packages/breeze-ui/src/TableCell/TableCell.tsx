@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { FC, memo, TdHTMLAttributes } from 'react';
+import { FC, TdHTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 const baseStyles = (noWrap: boolean, align = 'inherit') => `
@@ -45,4 +45,4 @@ const TableCell: FC<ITableCellProps> = ({
     <TableHeadCell $noWrap={noWrap} {...rest} />
   );
 
-export default memo(TableCell);
+export default TableCell;

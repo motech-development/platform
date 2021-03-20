@@ -5,7 +5,6 @@ import {
   ChangeEvent,
   FC,
   FocusEvent,
-  memo,
   SelectHTMLAttributes,
   useEffect,
   useState,
@@ -256,4 +255,4 @@ const Select: FC<ISelectProps> = ({
   );
 };
 
-export default memo(Select);
+export default Select;

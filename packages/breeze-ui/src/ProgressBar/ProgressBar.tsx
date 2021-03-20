@@ -1,5 +1,5 @@
 import { rgba } from 'polished';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
 
 const ProgressBarInternal = styled.progress`
@@ -36,4 +36,4 @@ const ProgressBar: FC<IProgressBarProps> = ({ max = 100, progress }) => (
   <ProgressBarInternal max={max} value={progress} />
 );
 
-export default memo(ProgressBar);
+export default ProgressBar;

@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { Link as RouterLink, LinkProps } from 'react-router-dom';
 import BaseLink from '../BaseLink/BaseLink';
 
@@ -7,4 +7,4 @@ const Link: FC<LinkProps> = (props) => (
   <BaseLink as={RouterLink} {...props} />
 );
 
-export default memo(Link);
+export default Link;

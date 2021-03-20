@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, memo } from 'react';
+import { FC, HTMLAttributes } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import BaseButton, {
   buttonTheme,
@@ -86,4 +86,4 @@ const Button: FC<IButtonProps> = ({
   );
 };
 
-export default memo(Button);
+export default Button;

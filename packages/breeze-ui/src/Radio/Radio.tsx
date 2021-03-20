@@ -1,5 +1,5 @@
 import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
-import { ChangeEvent, FC, memo } from 'react';
+import { ChangeEvent, FC } from 'react';
 import CheckableInput from '../CheckableInput/CheckableInput';
 import useInputValidation from '../hooks/useInputValidation';
 import FieldSet from '../FieldSet/FieldSet';
@@ -126,4 +126,4 @@ const Radio: FC<IRadioProps> = ({
   />
 );
 
-export default memo(Radio);
+export default Radio;

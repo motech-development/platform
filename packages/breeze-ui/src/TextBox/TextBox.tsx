@@ -82,7 +82,7 @@ interface IInternalTextBox extends FieldProps {
   onChange(
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
-  ): void;
+  ): Promise<void> | void;
   prefix: string;
   setFocus(focus: boolean): void;
   spacing: InputSpacing;
@@ -147,16 +147,16 @@ const InternalTextBox: FC<IInternalTextBox> = ({
       setFieldValue(field.name, floatValue);
     }
   };
-  const doChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const doChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (!useNumberFormat) {
       handleChange(e);
     }
 
     if (onChange) {
-      onChange(e, form);
-
-      setFieldTouched(field.name, true);
+      await Promise.resolve(onChange(e, form));
     }
+
+    await Promise.resolve(setFieldTouched(field.name, true));
   };
 
   return (
@@ -225,7 +225,7 @@ export interface ITextBoxProps {
   onChange?(
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
-  ): void;
+  ): Promise<void> | void;
 }
 
 const TextBox: FC<ITextBoxProps> = ({

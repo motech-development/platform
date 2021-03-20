@@ -1,4 +1,4 @@
-import { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import HelpText from '../HelpText/HelpText';
 import InputAlert from '../InputAlert/InputAlert';
@@ -78,4 +78,4 @@ const InputWrapper: FC<IInputWrapperProps> = ({
   );
 };
 
-export default memo(InputWrapper);
+export default InputWrapper;

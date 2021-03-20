@@ -1,5 +1,5 @@
 import { FormikProps, FormikValues } from 'formik';
-import { FC, memo, useState } from 'react';
+import { FC, useState } from 'react';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
 import Button from '../Button/Button';
@@ -109,4 +109,4 @@ const Typeahead: FC<ITypeaheadProps> = ({ suggestions, ...rest }) => {
   );
 };
 
-export default memo(Typeahead);
+export default Typeahead;

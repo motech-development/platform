@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
 
 interface IImageProps {
@@ -39,4 +39,4 @@ const Avatar: FC<IAvatarProps> = ({ alt, src, width = 0 }) => (
   </Wrapper>
 );
 
-export default memo(Avatar);
+export default Avatar;

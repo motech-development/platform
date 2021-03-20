@@ -1,4 +1,4 @@
-import { Children, FC, memo, ReactNode, useState } from 'react';
+import { Children, FC, ReactNode, useState } from 'react';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 import Col from '../Col/Col';
@@ -89,4 +89,4 @@ const Stepper: FC<IStepperProps> = ({
   );
 };
 
-export default memo(Stepper);
+export default Stepper;

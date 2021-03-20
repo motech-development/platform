@@ -1,4 +1,4 @@
-import { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 
 interface IRowContainer {
@@ -26,4 +26,4 @@ const Row: FC<IRowProps> = ({ children, columns = 12, gutter = '1rem' }) => (
   </RowContainer>
 );
 
-export default memo(Row);
+export default Row;
