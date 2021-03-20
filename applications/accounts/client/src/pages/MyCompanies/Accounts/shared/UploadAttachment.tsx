@@ -1,7 +1,8 @@
 import { gql, useMutation } from '@apollo/client';
 import { usePut } from '@motech-development/axios-hooks';
 import { FileUpload, useToast } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FormikProps, FormikValues } from 'formik';
+import { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface IRequestUploadInput {
@@ -39,12 +40,23 @@ export interface IUploadAttachmentProps {
   onUpload(value: string): void;
 }
 
+interface IUploadData {
+  extension: string;
+  file: File;
+  form: FormikProps<FormikValues>;
+  requestUpload: {
+    id: string;
+    url: string;
+  };
+}
+
 const UploadAttachment: FC<IUploadAttachmentProps> = ({
   id,
   name,
   onUpload,
   transactionId,
 }) => {
+  const [uploadData, setUploadData] = useState<IUploadData>();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
   const onError = () => {
@@ -68,6 +80,27 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
     },
     onError,
   });
+
+  useEffect(() => {
+    if (uploadData) {
+      (async () => {
+        const { extension, file, form, requestUpload } = uploadData;
+        const headers = {
+          'Content-Type': file.type,
+        };
+        const uploadResult = await put(requestUpload.url, file, headers);
+
+        if (uploadResult !== undefined) {
+          const attachment = `${id}/${requestUpload.id}.${extension}`;
+
+          form.setFieldValue('attachment', attachment);
+
+          onUpload(attachment);
+        }
+      })();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploadData]);
 
   return (
     <FileUpload
@@ -99,19 +132,13 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
 
             if (data?.requestUpload) {
               const { requestUpload } = data;
-              const headers = {
-                'Content-Type': file.type,
-              };
 
-              const uploadResult = await put(requestUpload.url, file, headers);
-
-              if (uploadResult !== undefined) {
-                const attachment = `${id}/${requestUpload.id}.${extension}`;
-
-                form.setFieldValue('attachment', attachment);
-
-                onUpload(attachment);
-              }
+              setUploadData({
+                extension,
+                file,
+                form,
+                requestUpload,
+              });
             } else {
               add({
                 colour: 'danger',
@@ -126,4 +153,4 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
   );
 };
 
-export default memo(UploadAttachment);
+export default UploadAttachment;

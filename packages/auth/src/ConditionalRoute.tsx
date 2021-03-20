@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
 
 export interface IConditionalRouteProps extends RouteProps {
@@ -13,4 +13,4 @@ const ConditionalRoute: FC<IConditionalRouteProps> = ({
   // eslint-disable-next-line react/jsx-props-no-spreading
 }) => (condition ? <Route {...rest} /> : <Redirect to={redirect} />);
 
-export default memo(ConditionalRoute);
+export default ConditionalRoute;

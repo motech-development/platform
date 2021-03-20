@@ -1105,6 +1105,10 @@ describe.skip('RecordTransaction', () => {
               input: {
                 contentType: 'application/pdf',
                 extension: 'pdf',
+                metadata: {
+                  id: undefined,
+                  typename: 'Transaction',
+                },
               },
             },
           },

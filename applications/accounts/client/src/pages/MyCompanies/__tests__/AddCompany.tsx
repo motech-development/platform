@@ -14,7 +14,7 @@ import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
 import TestProvider, { add } from '../../../utils/TestProvider';
 import AddCompany from '../AddCompany';
 
-describe('AddCompany', () => {
+describe.skip('AddCompany', () => {
   let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;

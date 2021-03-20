@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   IHeaders,
   IOptions,
@@ -14,6 +14,7 @@ import {
 const client = axios.create();
 
 const executeGet = async <TData>(
+  isMounted: boolean,
   url: string,
   setData: SetData<TData>,
   setError: SetError,
@@ -21,34 +22,39 @@ const executeGet = async <TData>(
   options: IOptions<TData> = {},
   additionalHeaders: IHeaders = {},
 ) => {
-  try {
-    setLoading(true);
+  if (isMounted) {
+    try {
+      setLoading(true);
 
-    const { headers, onCompleted, onError, ...rest } = options;
-    const opts = {
-      ...rest,
-      headers: {
-        ...headers,
-        ...additionalHeaders,
-      },
-    };
-    const { data } = await client.request<TData>({
-      ...opts,
-      method: 'GET',
-      url,
-    });
+      const { headers, onCompleted, onError, ...rest } = options;
+      const opts = {
+        ...rest,
+        headers: {
+          ...headers,
+          ...additionalHeaders,
+        },
+      };
+      const { data } = await client.request<TData>({
+        ...opts,
+        method: 'GET',
+        url,
+      });
 
-    setData(data);
+      setData(data);
 
-    return data;
-  } catch (e) {
-    setError(e);
+      return data;
+    } catch (e) {
+      setError(e);
 
-    return undefined;
+      return undefined;
+    }
   }
+
+  return undefined;
 };
 
 const executeForm = async <TData, TBody>(
+  isMounted: boolean,
   method: Method,
   url: string,
   body: TBody,
@@ -58,32 +64,36 @@ const executeForm = async <TData, TBody>(
   options: IOptions<TData> = {},
   additionalHeaders: IHeaders = {},
 ) => {
-  try {
-    setLoading(true);
+  if (isMounted) {
+    try {
+      setLoading(true);
 
-    const { headers, onCompleted, onError, ...rest } = options;
-    const opts = {
-      ...rest,
-      headers: {
-        ...headers,
-        ...additionalHeaders,
-      },
-    };
-    const { data } = await client.request<TData>({
-      ...opts,
-      data: body,
-      method,
-      url,
-    });
+      const { headers, onCompleted, onError, ...rest } = options;
+      const opts = {
+        ...rest,
+        headers: {
+          ...headers,
+          ...additionalHeaders,
+        },
+      };
+      const { data } = await client.request<TData>({
+        ...opts,
+        data: body,
+        method,
+        url,
+      });
 
-    setData(data);
+      setData(data);
 
-    return data;
-  } catch (e) {
-    setError(e);
+      return data;
+    } catch (e) {
+      setError(e);
 
-    return undefined;
+      return undefined;
+    }
   }
+
+  return undefined;
 };
 
 const complete = (setLoading: SetLoading) => {
@@ -119,13 +129,28 @@ const useCallbacks = <TData>(
 };
 
 export const useGet = <TData>(url: string, options?: IOptions<TData>) => {
+  const isMounted = useRef(true);
   const [data, setData] = useState<TData>();
   const [error, setError] = useState<AxiosError>();
   const [loading, setLoading] = useState(false);
 
+  useEffect(
+    () => () => {
+      isMounted.current = false;
+    },
+    [],
+  );
+
   useEffect(() => {
     (async () => {
-      await executeGet(url, setData, setError, setLoading, options);
+      await executeGet(
+        isMounted.current,
+        url,
+        setData,
+        setError,
+        setLoading,
+        options,
+      );
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -144,11 +169,27 @@ export const useGet = <TData>(url: string, options?: IOptions<TData>) => {
 export const useLazyGet = <TData>(
   options?: IOptions<TData>,
 ): UseWithoutInput<TData> => {
+  const isMounted = useRef(true);
   const [data, setData] = useState<TData>();
   const [error, setError] = useState<AxiosError>();
   const [loading, setLoading] = useState(false);
   const execute = async (url: string, headers?: IHeaders) =>
-    executeGet(url, setData, setError, setLoading, options, headers);
+    executeGet(
+      isMounted.current,
+      url,
+      setData,
+      setError,
+      setLoading,
+      options,
+      headers,
+    );
+
+  useEffect(
+    () => () => {
+      isMounted.current = false;
+    },
+    [],
+  );
 
   useEffect(() => complete(setLoading), [data, error]);
 
@@ -168,11 +209,13 @@ const useFormAction = <TData, TBody>(
   method: Method,
   options?: IOptions<TData>,
 ): UseWithInput<TData, TBody> => {
+  const isMounted = useRef(true);
   const [data, setData] = useState<TData>();
   const [error, setError] = useState<AxiosError>();
   const [loading, setLoading] = useState(false);
   const execute = async (url: string, body: TBody, headers?: IHeaders) =>
     executeForm(
+      isMounted.current,
       method,
       url,
       body,
@@ -182,6 +225,13 @@ const useFormAction = <TData, TBody>(
       options,
       headers,
     );
+
+  useEffect(
+    () => () => {
+      isMounted.current = false;
+    },
+    [],
+  );
 
   useEffect(() => complete(setLoading), [data, error]);
 
