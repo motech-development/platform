@@ -4,6 +4,5 @@
   "defaultCommandTimeout": 20000,
   "experimentalNetworkStubbing": true,
   "projectId": "13cyok",
-  "retries": 3,
-  "video": false
+  "retries": 3
 }

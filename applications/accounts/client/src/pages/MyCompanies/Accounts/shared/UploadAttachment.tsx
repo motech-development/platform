@@ -37,7 +37,7 @@ export interface IUploadAttachmentProps {
   id: string;
   name: string;
   transactionId?: string;
-  onUpload(value: string): void;
+  onUpload: (value: string) => void;
 }
 
 interface IFormData {
@@ -86,8 +86,8 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
     onError,
   });
   const [put, { loading: putLoading }] = usePut<null, File>({
-    onCompleted: (data) => {
-      if (data && formData && uploadData) {
+    onCompleted: () => {
+      if (formData && uploadData) {
         const { extension, form } = formData;
 
         const attachment = `${id}/${uploadData.id}.${extension}`;
