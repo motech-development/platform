@@ -1,6 +1,6 @@
 import { Button, Col, Row, TextBox } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 
@@ -78,4 +78,4 @@ const ConfirmDelete: FC<IConfirmDeleteProps> = ({
   );
 };
 
-export default memo(ConfirmDelete);
+export default ConfirmDelete;

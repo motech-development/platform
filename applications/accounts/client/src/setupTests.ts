@@ -25,3 +25,6 @@ Object.defineProperty(window, 'crypto', {
   },
   writable: true,
 });
+
+// TODO: Improve tests so that the timeout can be reduced
+jest.setTimeout(10000);

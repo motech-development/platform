@@ -40,14 +40,15 @@ export interface IUploadAttachmentProps {
   onUpload(value: string): void;
 }
 
-interface IUploadData {
+interface IFormData {
   extension: string;
   file: File;
   form: FormikProps<FormikValues>;
-  requestUpload: {
-    id: string;
-    url: string;
-  };
+}
+
+interface IUploadData {
+  id: string;
+  url: string;
 }
 
 const UploadAttachment: FC<IUploadAttachmentProps> = ({
@@ -56,6 +57,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
   onUpload,
   transactionId,
 }) => {
+  const [formData, setFormData] = useState<IFormData>();
   const [uploadData, setUploadData] = useState<IUploadData>();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
@@ -69,38 +71,53 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
     IRequestUploadOutput,
     IRequestUploadInput
   >(REQUEST_UPLOAD, {
+    onCompleted: (data) => {
+      const { requestUpload } = data;
+
+      if (requestUpload) {
+        setUploadData(requestUpload);
+      } else {
+        add({
+          colour: 'danger',
+          message: t('uploads.add.retry'),
+        });
+      }
+    },
     onError,
   });
   const [put, { loading: putLoading }] = usePut<null, File>({
-    onCompleted: () => {
-      add({
-        colour: 'success',
-        message: t('uploads.add.success'),
-      });
+    onCompleted: (data) => {
+      if (data && formData && uploadData) {
+        const { extension, form } = formData;
+
+        const attachment = `${id}/${uploadData.id}.${extension}`;
+
+        form.setFieldValue('attachment', attachment);
+
+        onUpload(attachment);
+
+        add({
+          colour: 'success',
+          message: t('uploads.add.success'),
+        });
+      }
     },
     onError,
   });
 
   useEffect(() => {
-    if (uploadData) {
+    if (formData && uploadData) {
       (async () => {
-        const { extension, file, form, requestUpload } = uploadData;
+        const { file } = formData;
         const headers = {
           'Content-Type': file.type,
         };
-        const uploadResult = await put(requestUpload.url, file, headers);
 
-        if (uploadResult !== undefined) {
-          const attachment = `${id}/${requestUpload.id}.${extension}`;
-
-          form.setFieldValue('attachment', attachment);
-
-          onUpload(attachment);
-        }
+        await put(uploadData.url, file, headers);
       })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uploadData]);
+  }, [formData, uploadData]);
 
   return (
     <FileUpload
@@ -110,44 +127,31 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
       loading={mutationLoading || putLoading}
       name={name}
       onSelect={async (file, form) => {
-        try {
-          const extIndex = file.name.lastIndexOf('.');
+        const extIndex = file.name.lastIndexOf('.');
 
-          if (extIndex > 0) {
-            const extension = file.name.substring(extIndex + 1).toLowerCase();
+        if (extIndex > 0) {
+          const extension = file.name.substring(extIndex + 1).toLowerCase();
 
-            const { data } = await mutation({
-              variables: {
-                id,
-                input: {
-                  contentType: file.type,
-                  extension,
-                  metadata: {
-                    id: transactionId,
-                    typename: 'Transaction',
-                  },
+          setFormData({
+            extension,
+            file,
+            form,
+          });
+
+          await mutation({
+            variables: {
+              id,
+              input: {
+                contentType: file.type,
+                extension,
+                metadata: {
+                  id: transactionId,
+                  typename: 'Transaction',
                 },
               },
-            });
-
-            if (data?.requestUpload) {
-              const { requestUpload } = data;
-
-              setUploadData({
-                extension,
-                file,
-                form,
-                requestUpload,
-              });
-            } else {
-              add({
-                colour: 'danger',
-                message: t('uploads.add.retry'),
-              });
-            }
-          }
-          // eslint-disable-next-line no-empty
-        } catch (e) {}
+            },
+          });
+        }
       }}
     />
   );

@@ -156,7 +156,7 @@ const InternalTextBox: FC<IInternalTextBox> = ({
       await Promise.resolve(onChange(e, form));
     }
 
-    await Promise.resolve(setFieldTouched(field.name, true));
+    setFieldTouched(field.name, true);
   };
 
   return (

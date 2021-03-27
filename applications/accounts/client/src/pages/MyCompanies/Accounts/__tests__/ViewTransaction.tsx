@@ -24,7 +24,7 @@ jest.mock('file-saver', () => ({
   saveAs: jest.fn(),
 }));
 
-describe.skip('ViewTransaction', () => {
+describe('ViewTransaction', () => {
   let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;

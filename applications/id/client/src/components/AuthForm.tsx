@@ -23,7 +23,7 @@ export interface IAuthFormProps {
   name?: boolean;
   submit: string;
   onChange(): void;
-  onSubmit(value: FormSchema): void;
+  onSubmit: (value: FormSchema) => void;
 }
 
 const AuthForm: FC<IAuthFormProps> = ({

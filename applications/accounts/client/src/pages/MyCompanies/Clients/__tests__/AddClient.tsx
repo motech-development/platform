@@ -14,7 +14,7 @@ import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import AddClient from '../AddClient';
 
-describe.skip('AddClient', () => {
+describe('AddClient', () => {
   let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;

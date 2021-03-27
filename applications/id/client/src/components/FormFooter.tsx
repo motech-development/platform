@@ -6,7 +6,7 @@ export interface IFormFooterProps {
   isValid: boolean;
   loading: boolean;
   submit: string;
-  onChange(): void;
+  onChange: () => void;
 }
 
 const FormFooter: FC<IFormFooterProps> = ({

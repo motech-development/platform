@@ -16,7 +16,7 @@ import UPDATE_COMPANY from '../../../graphql/company/UPDATE_COMPANY';
 import TestProvider, { add } from '../../../utils/TestProvider';
 import UpdateDetails from '../UpdateDetails';
 
-describe.skip('UpdateDetails', () => {
+describe('UpdateDetails', () => {
   let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
@@ -274,7 +274,10 @@ describe.skip('UpdateDetails', () => {
           const input = await findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
-            target: { focus: () => {}, value: 'New company' },
+            target: {
+              focus: () => {},
+              value: 'New company',
+            },
           });
 
           const [, , , deleteButton] = await findAllByRole('button');
@@ -302,11 +305,12 @@ describe.skip('UpdateDetails', () => {
           const input = await findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
-            target: { focus: () => {}, value: 'New company' },
+            target: {
+              focus: () => {},
+              value: 'New company',
+            },
           });
-        });
 
-        await act(async () => {
           const [, , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
@@ -398,9 +402,7 @@ describe.skip('UpdateDetails', () => {
               value: 'New company',
             },
           });
-        });
 
-        await act(async () => {
           const [, , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
@@ -561,11 +563,12 @@ describe.skip('UpdateDetails', () => {
         const input = await findByLabelText('confirm-delete');
 
         fireEvent.change(input, {
-          target: { focus: () => {}, value: 'New company' },
+          target: {
+            focus: () => {},
+            value: 'New company',
+          },
         });
-      });
 
-      await act(async () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
@@ -594,11 +597,12 @@ describe.skip('UpdateDetails', () => {
         const input = await findByLabelText('confirm-delete');
 
         fireEvent.change(input, {
-          target: { focus: () => {}, value: 'New company' },
+          target: {
+            focus: () => {},
+            value: 'New company',
+          },
         });
-      });
 
-      await act(async () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);

@@ -5,6 +5,7 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import TextProvider, { add } from '../../utils/TestProvider';
 import Reset from '../Reset';
@@ -63,23 +64,17 @@ describe('Reset', () => {
           const password = await findByLabelText('password.label');
           const confirmation = await findByLabelText('confirm-password.label');
 
-          fireEvent.change(password, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(password, 'Test');
 
-          fireEvent.change(confirmation, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(confirmation, 'Test');
+
+          fireEvent.blur(confirmation);
         });
 
         await act(async () => {
           const button = await findByRole('button');
 
-          fireEvent.click(button);
+          userEvent.click(button);
         });
 
         await waitFor(() =>
@@ -105,23 +100,17 @@ describe('Reset', () => {
           const password = await findByLabelText('password.label');
           const confirmation = await findByLabelText('confirm-password.label');
 
-          fireEvent.change(password, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(password, 'Test');
 
-          fireEvent.change(confirmation, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(confirmation, 'Test');
+
+          fireEvent.blur(confirmation);
         });
 
         await act(async () => {
           const button = await findByRole('button');
 
-          fireEvent.click(button);
+          userEvent.click(button);
         });
 
         await waitFor(() =>
@@ -150,23 +139,17 @@ describe('Reset', () => {
           const password = await findByLabelText('password.label');
           const confirmation = await findByLabelText('confirm-password.label');
 
-          fireEvent.change(password, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(password, 'Test');
 
-          fireEvent.change(confirmation, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(confirmation, 'Test');
+
+          fireEvent.blur(confirmation);
         });
 
         await act(async () => {
           const button = await findByRole('button');
 
-          fireEvent.click(button);
+          userEvent.click(button);
         });
 
         await waitFor(() =>
@@ -186,23 +169,17 @@ describe('Reset', () => {
           const password = await findByLabelText('password.label');
           const confirmation = await findByLabelText('confirm-password.label');
 
-          fireEvent.change(password, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(password, 'Test');
 
-          fireEvent.change(confirmation, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(confirmation, 'Test');
+
+          fireEvent.blur(confirmation);
         });
 
         await act(async () => {
           const button = await findByRole('button');
 
-          fireEvent.click(button);
+          userEvent.click(button);
         });
 
         await waitFor(() =>
