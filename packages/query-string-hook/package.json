@@ -6,9 +6,10 @@
   "module": "lib/useQueryString.esm.js",
   "types": "lib/useQueryString.d.ts",
   "scripts": {
-    "build": "rollup -c",
+    "build": "NODE_ENV=production rollup -c",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "package": "npm run build",
+    "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
@@ -18,11 +19,11 @@
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "dependencies": {
-    "react": "^16.13.1",
+    "react": "^17.0.1",
     "react-router-dom": "^5.2.0"
   },
   "peerDependencies": {
-    "react": "16.13.1",
+    "react": "17.0.1",
     "react-router-dom": "5.2.0"
   },
   "jest": {

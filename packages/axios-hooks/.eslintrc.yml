@@ -42,6 +42,8 @@ rules:
     - extensions:
         - .jsx
         - .tsx
+  react/jsx-uses-react: off
+  react/react-in-jsx-scope: off
   sort-keys:
     - error
     - asc

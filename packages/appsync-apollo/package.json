@@ -6,9 +6,10 @@
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "rollup -c",
+    "build": "NODE_ENV=production rollup -c",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "package": "npm run build",
+    "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
@@ -18,21 +19,21 @@
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "dependencies": {
-    "@apollo/client": "^3.2.2",
-    "aws-appsync-auth-link": "^3.0.2",
-    "aws-appsync-subscription-link": "^3.0.3",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "@apollo/client": "^3.3.12",
+    "aws-appsync-auth-link": "^3.0.4",
+    "aws-appsync-subscription-link": "^3.0.6",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   },
   "devDependencies": {
     "unfetch": "^4.1.0"
   },
   "peerDependencies": {
-    "@apollo/client": "3.2.2",
-    "aws-appsync-auth-link": "3.0.2",
-    "aws-appsync-subscription-link": "3.0.3",
-    "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "@apollo/client": "3.3.12",
+    "aws-appsync-auth-link": "3.0.4",
+    "aws-appsync-subscription-link": "3.0.6",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
   },
   "jest": {
     "collectCoverageFrom": [

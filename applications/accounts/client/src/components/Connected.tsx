@@ -1,6 +1,6 @@
 import { ApolloError } from '@apollo/client';
 import { Loader } from '@motech-development/breeze-ui';
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import ErrorCard from './ErrorCard';
 
@@ -10,11 +10,7 @@ export interface IConnectedProps {
   loading: boolean;
 }
 
-const Connected: FC<IConnectedProps> = ({
-  children,
-  error = undefined,
-  loading,
-}) => {
+const Connected: FC<IConnectedProps> = ({ children, error, loading }) => {
   const { t } = useTranslation('connected');
 
   if (loading) {

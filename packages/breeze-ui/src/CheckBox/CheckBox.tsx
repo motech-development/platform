@@ -1,5 +1,5 @@
 import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
-import React, { ChangeEvent, FC, memo } from 'react';
+import { ChangeEvent, FC } from 'react';
 import CheckableInput from '../CheckableInput/CheckableInput';
 import useInputValidation from '../hooks/useInputValidation';
 import FieldSet from '../FieldSet/FieldSet';
@@ -94,7 +94,7 @@ const CheckBox: FC<ICheckBoxProps> = ({
   label,
   legend,
   name,
-  onChange = undefined,
+  onChange,
   readOnly = false,
   spacing = 'md',
 }) => (
@@ -112,4 +112,4 @@ const CheckBox: FC<ICheckBoxProps> = ({
   />
 );
 
-export default memo(CheckBox);
+export default CheckBox;

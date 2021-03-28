@@ -1,6 +1,6 @@
 import { Auth0Client } from '@auth0/auth0-spa-js';
-import { fireEvent, render, waitForElement } from '@testing-library/react';
-import React, { FC } from 'react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
+import { FC } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser, useAuth } from '../AuthProvider';
 
@@ -200,7 +200,7 @@ describe('AuthProvider', () => {
         </MemoryRouter>,
       );
 
-      const result = await waitForElement(() => findByTestId('log-in'));
+      const result = await waitFor(() => findByTestId('log-in'));
 
       expect(result).toBeInTheDocument();
     });
@@ -217,7 +217,7 @@ describe('AuthProvider', () => {
         </MemoryRouter>,
       );
 
-      const result = await waitForElement(() => findByTestId('user'));
+      const result = await waitFor(() => findByTestId('user'));
 
       expect(window.history.replaceState).toHaveBeenCalledWith(
         {},
@@ -232,7 +232,7 @@ describe('AuthProvider', () => {
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {ctx => (
+              {(ctx) => (
                 <>
                   <button
                     type="button"
@@ -278,7 +278,7 @@ describe('AuthProvider', () => {
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {ctx => (
+              {(ctx) => (
                 <>
                   <button
                     type="button"
@@ -326,7 +326,7 @@ describe('AuthProvider', () => {
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {ctx => (
+              {(ctx) => (
                 <>
                   <button
                     type="button"
@@ -374,7 +374,7 @@ describe('AuthProvider', () => {
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {ctx => (
+              {(ctx) => (
                 <>
                   <button
                     type="button"
@@ -422,7 +422,7 @@ describe('AuthProvider', () => {
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {ctx => (
+              {(ctx) => (
                 <>
                   <button
                     type="button"
@@ -470,7 +470,7 @@ describe('AuthProvider', () => {
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {ctx => (
+              {(ctx) => (
                 <>
                   <button
                     type="button"

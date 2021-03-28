@@ -1,10 +1,9 @@
 import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
-import React, {
+import {
   ChangeEvent,
   FC,
   FocusEvent,
   InputHTMLAttributes,
-  memo,
   useEffect,
   useState,
 } from 'react';
@@ -83,7 +82,7 @@ interface IInternalTextBox extends FieldProps {
   onChange(
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
-  ): void;
+  ): Promise<void> | void;
   prefix: string;
   setFocus(focus: boolean): void;
   spacing: InputSpacing;
@@ -113,7 +112,14 @@ const InternalTextBox: FC<IInternalTextBox> = ({
   }, [field.value]);
 
   const { onBlur, ...rest } = field;
-  const { errors, handleBlur, handleChange, setFieldValue, touched } = form;
+  const {
+    errors,
+    handleBlur,
+    handleChange,
+    setFieldTouched,
+    setFieldValue,
+    touched,
+  } = form;
   const error = useInputValidation(field.name, errors, touched);
   const describedBy = `${field.name}-error`;
   const useNumberFormat = Boolean(decimalScale || format || prefix || suffix);
@@ -141,14 +147,16 @@ const InternalTextBox: FC<IInternalTextBox> = ({
       setFieldValue(field.name, floatValue);
     }
   };
-  const doChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const doChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (!useNumberFormat) {
       handleChange(e);
     }
 
     if (onChange) {
-      onChange(e, form);
+      await Promise.resolve(onChange(e, form));
     }
+
+    setFieldTouched(field.name, true);
   };
 
   return (
@@ -217,22 +225,22 @@ export interface ITextBoxProps {
   onChange?(
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
-  ): void;
+  ): Promise<void> | void;
 }
 
 const TextBox: FC<ITextBoxProps> = ({
-  decimalScale = undefined,
+  decimalScale,
   disabled = false,
-  format = undefined,
+  format,
   helpText = null,
   label,
   name,
-  onChange = undefined,
+  onChange,
   placeholder = '',
-  prefix = undefined,
+  prefix,
   readOnly = false,
   spacing = 'md',
-  suffix = undefined,
+  suffix,
   type = 'text',
 }) => {
   const [focus, setFocus] = useState();
@@ -260,4 +268,4 @@ const TextBox: FC<ITextBoxProps> = ({
   );
 };
 
-export default memo(TextBox);
+export default TextBox;

@@ -1,5 +1,4 @@
 import { act, fireEvent, render } from '@testing-library/react';
-import React from 'react';
 import Alert from '../Alert';
 
 describe('Alert', () => {
@@ -102,12 +101,12 @@ describe('Alert', () => {
     await expect(findByText('Hello world')).resolves.toBeDefined();
   });
 
-  it('should display the an icon if one is set', () => {
+  it('should display the an icon if one is set', async () => {
     const { findByTestId } = render(
       <Alert message="Hello world" icon={<div data-testid="icon" />} />,
     );
 
-    expect(findByTestId('icon')).toBeDefined();
+    await expect(findByTestId('icon')).resolves.toBeDefined();
   });
 
   it('should display the dismiss button if dismissable', async () => {

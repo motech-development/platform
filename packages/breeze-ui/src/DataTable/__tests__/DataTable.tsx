@@ -1,5 +1,4 @@
 import { render, RenderResult } from '@testing-library/react';
-import React from 'react';
 import TableCell from '../../TableCell/TableCell';
 import DataTable from '../DataTable';
 

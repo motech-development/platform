@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import React from 'react';
 import Masonry from '../Masonry';
 
 describe('Masonry', () => {
@@ -18,7 +17,7 @@ describe('Masonry', () => {
   describe('xs viewport', () => {
     beforeEach(() => {
       Object.defineProperty(window, 'matchMedia', {
-        value: jest.fn().mockImplementation(query => ({
+        value: jest.fn().mockImplementation((query) => ({
           addEventListener: jest.fn(),
           addListener: jest.fn(),
           dispatchEvent: jest.fn(),
@@ -57,7 +56,7 @@ describe('Masonry', () => {
   describe('sm viewport', () => {
     beforeEach(() => {
       Object.defineProperty(window, 'matchMedia', {
-        value: jest.fn().mockImplementation(query => ({
+        value: jest.fn().mockImplementation((query) => ({
           addEventListener: jest.fn(),
           addListener: jest.fn(),
           dispatchEvent: jest.fn(),
@@ -96,7 +95,7 @@ describe('Masonry', () => {
   describe('md viewport', () => {
     beforeEach(() => {
       Object.defineProperty(window, 'matchMedia', {
-        value: jest.fn().mockImplementation(query => ({
+        value: jest.fn().mockImplementation((query) => ({
           addEventListener: jest.fn(),
           addListener: jest.fn(),
           dispatchEvent: jest.fn(),
@@ -135,7 +134,7 @@ describe('Masonry', () => {
   describe('lg viewport', () => {
     beforeEach(() => {
       Object.defineProperty(window, 'matchMedia', {
-        value: jest.fn().mockImplementation(query => ({
+        value: jest.fn().mockImplementation((query) => ({
           addEventListener: jest.fn(),
           addListener: jest.fn(),
           dispatchEvent: jest.fn(),

@@ -6,12 +6,11 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
@@ -260,12 +259,7 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page on complete', async () => {
-        const {
-          findAllByRole,
-          findByLabelText,
-          findByTestId,
-          findByText,
-        } = component;
+        const { findAllByRole, findByLabelText, findByText } = component;
 
         await act(async () => {
           await findByText('view-transaction.title');
@@ -280,25 +274,18 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(button);
 
-          await wait();
-
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/accounts/company-id',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/accounts/company-id',
+          ),
         );
       });
 
       it('should display a success toast', async () => {
-        const {
-          findAllByRole,
-          findByLabelText,
-          findByTestId,
-          findByText,
-        } = component;
+        const { findAllByRole, findByLabelText, findByText } = component;
 
         await act(async () => {
           await findByText('view-transaction.title');
@@ -313,14 +300,10 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(button);
 
-          await wait();
-
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'view-transaction.success',
@@ -363,12 +346,7 @@ describe('ViewTransaction', () => {
       });
 
       it('should delete the transaction', async () => {
-        const {
-          findAllByRole,
-          findByLabelText,
-          findByTestId,
-          findByText,
-        } = component;
+        const { findAllByRole, findByLabelText, findByText } = component;
 
         await act(async () => {
           await findByText('view-transaction.title');
@@ -386,21 +364,17 @@ describe('ViewTransaction', () => {
             },
           });
 
-          await wait();
-
           const [, , , , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/accounts/company-id/pending-transactions',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/accounts/company-id/pending-transactions',
+          ),
         );
       });
 
@@ -423,18 +397,14 @@ describe('ViewTransaction', () => {
             },
           });
 
-          await wait();
-
           const [, , , , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'delete-transaction.success',
@@ -595,8 +565,6 @@ describe('ViewTransaction', () => {
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
         await expect(
@@ -615,11 +583,9 @@ describe('ViewTransaction', () => {
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'uploads.delete.success',
@@ -638,8 +604,6 @@ describe('ViewTransaction', () => {
           fireEvent.click(downloadButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
         expect(saveAs).toHaveBeenCalledWith('success', 'attachment.pdf');
@@ -656,11 +620,9 @@ describe('ViewTransaction', () => {
           fireEvent.click(downloadButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'uploads.download.success',
@@ -683,11 +645,9 @@ describe('ViewTransaction', () => {
           fireEvent.click(downloadButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'uploads.download.error',
@@ -893,7 +853,7 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page on complete', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('view-transaction.title');
@@ -902,20 +862,18 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(button);
 
-          await wait();
-
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/accounts/company-id',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/accounts/company-id',
+          ),
         );
       });
 
       it('should display a success toast', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('view-transaction.title');
@@ -924,14 +882,10 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(button);
 
-          await wait();
-
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'view-transaction.success',
@@ -958,18 +912,14 @@ describe('ViewTransaction', () => {
             },
           });
 
-          await wait();
-
           const [, , , , , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'delete-transaction.error',
@@ -988,11 +938,9 @@ describe('ViewTransaction', () => {
           fireEvent.click(downloadButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'uploads.download.error',
@@ -1011,11 +959,9 @@ describe('ViewTransaction', () => {
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'uploads.delete.error',
@@ -1202,7 +1148,7 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a warning toast when a transaction is updated', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('view-transaction.title');
@@ -1211,14 +1157,10 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(button);
 
-          await wait();
-
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'view-transaction.retry',
@@ -1227,7 +1169,7 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page when a transaction is updated', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('view-transaction.title');
@@ -1236,15 +1178,13 @@ describe('ViewTransaction', () => {
 
           fireEvent.click(button);
 
-          await wait();
-
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/accounts/company-id',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/accounts/company-id',
+          ),
         );
       });
 
@@ -1267,18 +1207,14 @@ describe('ViewTransaction', () => {
             },
           });
 
-          await wait();
-
           const [, , , , , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'delete-transaction.retry',
@@ -1287,12 +1223,7 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page when a transaction is deleted', async () => {
-        const {
-          findAllByRole,
-          findByTestId,
-          findByLabelText,
-          findByText,
-        } = component;
+        const { findAllByRole, findByLabelText, findByText } = component;
 
         await act(async () => {
           await findByText('view-transaction.title');
@@ -1310,21 +1241,17 @@ describe('ViewTransaction', () => {
             },
           });
 
-          await wait();
-
           const [, , , , , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/accounts/company-id',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/accounts/company-id',
+          ),
         );
       });
 
@@ -1339,11 +1266,9 @@ describe('ViewTransaction', () => {
           fireEvent.click(downloadButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'uploads.download.retry',

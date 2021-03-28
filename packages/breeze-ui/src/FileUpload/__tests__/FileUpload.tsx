@@ -1,12 +1,5 @@
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  wait,
-} from '@testing-library/react';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { Form, Formik } from 'formik';
-import React from 'react';
 import * as Yup from 'yup';
 import FileUpload from '../FileUpload';
 
@@ -99,7 +92,6 @@ describe('FileUpload', () => {
             {() => (
               <Form>
                 <FileUpload
-                  disabled
                   buttonText="Browse"
                   label="Test"
                   name="test"
@@ -117,15 +109,13 @@ describe('FileUpload', () => {
         const { findByLabelText, findByText } = component;
 
         await act(async () => {
-          const upload = (await findByLabelText('Test')) as HTMLInputElement;
+          const upload = await findByLabelText('Test');
 
-          Object.defineProperty(upload, 'files', {
-            value: [file],
+          fireEvent.change(upload, {
+            target: {
+              files: [file],
+            },
           });
-
-          fireEvent.change(upload);
-
-          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyleRule(
@@ -146,7 +136,6 @@ describe('FileUpload', () => {
             {() => (
               <Form>
                 <FileUpload
-                  disabled
                   buttonText="Browse"
                   label="Test"
                   name="test"
@@ -164,13 +153,11 @@ describe('FileUpload', () => {
         await act(async () => {
           const upload = (await findByLabelText('Test')) as HTMLInputElement;
 
-          Object.defineProperty(upload, 'files', {
-            value: [file],
+          fireEvent.change(upload, {
+            target: {
+              files: [file],
+            },
           });
-
-          fireEvent.change(upload);
-
-          await wait();
         });
 
         await expect(findByText('Test')).resolves.toHaveStyleRule(
@@ -190,8 +177,6 @@ describe('FileUpload', () => {
           });
 
           fireEvent.change(upload);
-
-          await wait();
         });
 
         await expect(findByRole('alert')).resolves.toBeInTheDocument();
@@ -276,13 +261,11 @@ describe('FileUpload', () => {
       await act(async () => {
         const upload = (await findByLabelText('Test')) as HTMLInputElement;
 
-        Object.defineProperty(upload, 'files', {
-          value: [],
+        fireEvent.change(upload, {
+          target: {
+            files: [],
+          },
         });
-
-        fireEvent.change(upload);
-
-        await wait();
       });
 
       expect(onSelect).not.toHaveBeenCalled();
@@ -298,8 +281,6 @@ describe('FileUpload', () => {
         const button = await findByRole('button');
 
         fireEvent.click(button);
-
-        await wait();
       });
 
       expect(upload.click).toHaveBeenCalled();

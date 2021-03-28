@@ -1,6 +1,5 @@
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { advanceTo, clear } from 'jest-date-mock';
-import React from 'react';
 import Calendar from '../Calendar';
 
 describe('Calendar', () => {

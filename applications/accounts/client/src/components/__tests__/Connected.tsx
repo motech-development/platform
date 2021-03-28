@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
-import React from 'react';
 import TestProvider from '../../utils/TestProvider';
 import Connected from '../Connected';
 

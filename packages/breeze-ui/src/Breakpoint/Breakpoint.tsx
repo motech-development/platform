@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import useBreakpoint from '../hooks/useBreakpoint';
 
 export interface IBreakpoint {
@@ -31,4 +31,4 @@ const Breakpoint: FC<IBreakpoint> = ({
   return null;
 };
 
-export default memo(Breakpoint);
+export default Breakpoint;

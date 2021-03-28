@@ -1,5 +1,5 @@
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { AlertTheme } from '../../Alert/Alert';
 import ToastProvider, { useToast } from '../ToastProvider';
 

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import React, { FC, memo, useEffect, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';

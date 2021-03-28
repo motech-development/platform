@@ -14,14 +14,7 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { FormikProps, FormikValues, getIn } from 'formik';
-import React, {
-  ChangeEvent,
-  FC,
-  memo,
-  ReactNode,
-  useEffect,
-  useState,
-} from 'react';
+import { ChangeEvent, FC, memo, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { boolean, date, number, object, string } from 'yup';
 
@@ -145,9 +138,7 @@ const TransactionForm: FC<ITransactionForm> = ({
       name: string().required(
         t('transaction-form.transaction-details.name.required'),
       ),
-      scheduled: boolean()
-        .oneOf([false, true])
-        .required(),
+      scheduled: boolean().oneOf([false, true]).required(),
       status: string().required(
         t('transaction-form.transaction-amount.status.required'),
       ),
@@ -329,7 +320,7 @@ const TransactionForm: FC<ITransactionForm> = ({
                   <Typeahead
                     label={t('transaction-form.transaction-details.name.label')}
                     name="name"
-                    suggestions={typeahead.suppliers.map(supplier => ({
+                    suggestions={typeahead.suppliers.map((supplier) => ({
                       name: supplier,
                       value: supplier,
                     }))}
@@ -341,7 +332,7 @@ const TransactionForm: FC<ITransactionForm> = ({
                     'transaction-form.transaction-details.description.label',
                   )}
                   name="description"
-                  suggestions={typeahead.descriptions.map(description => ({
+                  suggestions={typeahead.descriptions.map((description) => ({
                     name: description,
                     value: description,
                   }))}

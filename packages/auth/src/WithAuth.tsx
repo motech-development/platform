@@ -1,5 +1,5 @@
 import useQueryString from '@motech-development/query-string-hook';
-import React, { FC, ReactNode, useEffect } from 'react';
+import { FC, ReactNode, useEffect } from 'react';
 import { useAuth } from './AuthProvider';
 
 export interface IWithAuthProps {

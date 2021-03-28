@@ -2,9 +2,11 @@
   "compilerOptions": {
     "declaration": true,
     "downlevelIteration": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "lib",
     "target": "es5"
   },
   "extends": "../../tsconfig.json",

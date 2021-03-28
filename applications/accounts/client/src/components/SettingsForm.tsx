@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { FieldArray, Form, Formik } from 'formik';
-import React, { FC, Fragment, memo } from 'react';
+import { FC, Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { array, boolean, object, string } from 'yup';
 import { useVatSettings, useYearEnd } from '../hooks/schema';
@@ -87,7 +87,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
       onSubmit={onSave}
     >
       {({ isValid, values }) => (
-        <Form autoComplete="off">
+        <Form autoComplete="off" role="form">
           <Row>
             <Col>
               <Card padding="lg">
@@ -97,7 +97,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
 
                 <FieldArray
                   name="categories"
-                  render={arrayHelpers => (
+                  render={(arrayHelpers) => (
                     <Row>
                       <Col>
                         <Row>

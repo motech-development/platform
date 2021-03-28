@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import styled from 'styled-components';
 
 const ValidatorWrapper = styled.div`
@@ -9,4 +8,4 @@ const ValidatorWrapper = styled.div`
   z-index: 1;
 `;
 
-export default memo(ValidatorWrapper);
+export default ValidatorWrapper;

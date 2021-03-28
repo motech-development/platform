@@ -1,11 +1,10 @@
 import { render } from '@testing-library/react';
-import React from 'react';
 import TransactionDetailsCell from '../TransactionDetailsCell';
 
 describe('TransactionDetailsCell', () => {
   it('should set width on xs viewport', async () => {
     Object.defineProperty(window, 'matchMedia', {
-      value: jest.fn().mockImplementation(query => ({
+      value: jest.fn().mockImplementation((query) => ({
         addEventListener: jest.fn(),
         addListener: jest.fn(),
         dispatchEvent: jest.fn(),
@@ -37,7 +36,7 @@ describe('TransactionDetailsCell', () => {
 
   it('should set width on sm viewport', async () => {
     Object.defineProperty(window, 'matchMedia', {
-      value: jest.fn().mockImplementation(query => ({
+      value: jest.fn().mockImplementation((query) => ({
         addEventListener: jest.fn(),
         addListener: jest.fn(),
         dispatchEvent: jest.fn(),
@@ -69,7 +68,7 @@ describe('TransactionDetailsCell', () => {
 
   it('should not set width on other viewports', async () => {
     Object.defineProperty(window, 'matchMedia', {
-      value: jest.fn().mockImplementation(query => ({
+      value: jest.fn().mockImplementation((query) => ({
         addEventListener: jest.fn(),
         addListener: jest.fn(),
         dispatchEvent: jest.fn(),

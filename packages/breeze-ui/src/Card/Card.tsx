@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const cardTheme = {
@@ -41,4 +41,4 @@ const Card: FC<ICardProps> = ({ children, padding = 'md' }) => (
   </ThemeProvider>
 );
 
-export default memo(Card);
+export default Card;

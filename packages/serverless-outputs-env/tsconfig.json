@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "lib": ["es2017"],
     "module": "ESNEXT",
+    "outDir": "lib",
     "target": "es5"
   },
   "extends": "../../tsconfig.json",

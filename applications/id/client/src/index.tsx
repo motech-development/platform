@@ -1,6 +1,6 @@
 import { Loader } from '@motech-development/breeze-ui';
 import sendToAnalytics from '@motech-development/ga-web-vitals';
-import React, { FC, StrictMode, Suspense } from 'react';
+import { FC, StrictMode, Suspense } from 'react';
 import { hydrate, render } from 'react-dom';
 import { initialize } from 'react-ga';
 import App from './App';

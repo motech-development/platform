@@ -1,5 +1,5 @@
 import { Typography } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import styled from 'styled-components';
 
 const Text = styled(Typography)`

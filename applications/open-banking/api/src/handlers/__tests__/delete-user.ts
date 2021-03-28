@@ -25,7 +25,7 @@ describe('delete-user', () => {
   });
 
   it('should return error if no path params set', async () => {
-    delete event.pathParameters;
+    event.pathParameters = null;
 
     await handler(event as APIGatewayEvent, context, callback);
 

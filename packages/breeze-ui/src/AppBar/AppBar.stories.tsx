@@ -1,7 +1,5 @@
-import { withA11y } from '@storybook/addon-a11y';
 import { boolean, select, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import React from 'react';
 import styled from 'styled-components';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Notifications from '../Notifications/Notifications';
@@ -25,7 +23,6 @@ const colours = {
   Secondary: 'secondary',
 };
 
-stories.addDecorator(withA11y);
 stories.addDecorator(withKnobs);
 
 stories

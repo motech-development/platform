@@ -1,11 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  wait,
-} from '@testing-library/react';
-import React from 'react';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import TestProvider from '../../utils/TestProvider';
 import SettingsForm, { FormSchema } from '../SettingsForm';
 
@@ -67,7 +60,7 @@ describe('SettingsForm', () => {
             }}
             loading={false}
             initialValues={initialValues}
-            onSave={value => onSave(value)}
+            onSave={(value) => onSave(value)}
           />
         </TestProvider>,
       );
@@ -154,8 +147,6 @@ describe('SettingsForm', () => {
           },
         });
 
-        await wait();
-
         fireEvent.click(submit);
       });
 
@@ -189,7 +180,7 @@ describe('SettingsForm', () => {
             }}
             loading={false}
             initialValues={initialValues}
-            onSave={value => onSave(value)}
+            onSave={(value) => onSave(value)}
           />
         </TestProvider>,
       );

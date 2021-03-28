@@ -1,12 +1,12 @@
 import { Button, Col, Row } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 
 export interface IFormFooterProps {
   change: string;
   isValid: boolean;
   loading: boolean;
   submit: string;
-  onChange(): void;
+  onChange: () => void;
 }
 
 const FormFooter: FC<IFormFooterProps> = ({

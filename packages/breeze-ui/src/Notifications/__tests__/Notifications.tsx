@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import TableCell from '../../TableCell/TableCell';
 import Notifications from '../Notifications';
 
@@ -16,7 +16,7 @@ describe('Notifications', () => {
     items = ['Alert 1', 'Alert 2'];
     label = 'Notifications';
     noResults = <div>No results</div>;
-    row = item => <TableCell>{item}</TableCell>;
+    row = (item) => <TableCell>{item}</TableCell>;
     onClose = jest.fn();
   });
 

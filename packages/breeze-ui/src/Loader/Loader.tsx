@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
 
 interface ICircle {
@@ -62,4 +62,4 @@ const Loader: FC<ILoaderProps> = ({ colour = 'default', className = '' }) => (
   </BaseLoader>
 );
 
-export default memo(Loader);
+export default Loader;

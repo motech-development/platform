@@ -5,10 +5,9 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import DELETE_BANK_CONNECTION from '../../../../graphql/bank/DELETE_BANK_CONNECTION';
 import GET_SETTINGS from '../../../../graphql/settings/GET_SETTINGS';
 import UPDATE_SETTINGS from '../../../../graphql/settings/UPDATE_SETTINGS';
@@ -138,7 +137,7 @@ describe('Settings', () => {
     });
 
     it('should redirect you to the dashboard on complete', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
+      const { findAllByRole, findByText } = component;
 
       await act(async () => {
         await findByText('Company name');
@@ -148,17 +147,17 @@ describe('Settings', () => {
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/dashboard/company-uuid',
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/dashboard/company-uuid',
+        ),
       );
     });
 
     it('should display a success toast', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
+      const { findAllByRole, findByText } = component;
 
       await act(async () => {
         await findByText('Company name');
@@ -168,11 +167,9 @@ describe('Settings', () => {
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'success',
           message: 'settings.success',
@@ -193,7 +190,7 @@ describe('Settings', () => {
         await waitForApollo(0);
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'success',
           message: 'settings.bank-disconnected',
@@ -315,7 +312,7 @@ describe('Settings', () => {
         await waitForApollo(0);
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'danger',
           message: 'settings.bank-disconnected-error',
@@ -401,7 +398,7 @@ describe('Settings', () => {
     });
 
     it('should redirect you to the dashboard on complete', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
+      const { findAllByRole, findByText } = component;
 
       await act(async () => {
         await findByText('Company name');
@@ -411,17 +408,17 @@ describe('Settings', () => {
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/dashboard/company-uuid',
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/dashboard/company-uuid',
+        ),
       );
     });
 
     it('should display a danger toast', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
+      const { findAllByRole, findByText } = component;
 
       await act(async () => {
         await findByText('Company name');
@@ -431,11 +428,9 @@ describe('Settings', () => {
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'danger',
           message: 'settings.retry',

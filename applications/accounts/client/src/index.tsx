@@ -5,7 +5,7 @@ import {
   ToastProvider,
 } from '@motech-development/breeze-ui';
 import sendToAnalytics from '@motech-development/ga-web-vitals';
-import React, { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { render } from 'react-dom';
 import { initialize, pageview, set } from 'react-ga';
 import { Router } from 'react-router-dom';
@@ -23,7 +23,7 @@ if (!REACT_APP_GA) {
 
 initialize(REACT_APP_GA);
 
-history.listen(location => {
+history.listen((location) => {
   set({
     page: location.pathname,
   });
@@ -56,7 +56,7 @@ render(
 );
 
 serviceWorker.register({
-  onUpdate: async registration => {
+  onUpdate: async (registration) => {
     await registration.update();
   },
 });

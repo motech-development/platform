@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import styled from 'styled-components';
 
 export interface ILegendProps {
@@ -6,7 +5,7 @@ export interface ILegendProps {
 }
 
 const Legend = styled('legend').withConfig({
-  shouldForwardProp: prop => !['error'].includes(prop),
+  shouldForwardProp: (prop) => !['error'].includes(prop),
 })<ILegendProps>`
   ${({ error }) => `
     color: ${error ? 'rgb(199,56,79)' : '#007aa3'};
@@ -15,4 +14,4 @@ const Legend = styled('legend').withConfig({
   `}
 `;
 
-export default memo(Legend);
+export default Legend;

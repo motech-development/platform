@@ -1,10 +1,4 @@
-import {
-  fireEvent,
-  render,
-  wait,
-  waitForElement,
-} from '@testing-library/react';
-import React from 'react';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import TestProvider from '../../utils/TestProvider';
 import ClientForm, { FormSchema } from '../ClientForm';
 
@@ -40,12 +34,12 @@ describe('ClientForm', () => {
             backTo="/test"
             companyId="company-uuid"
             loading={false}
-            onSave={value => onSave(value)}
+            onSave={(value) => onSave(value)}
           />
         </TestProvider>,
       );
 
-      const form = await waitForElement(() => findByRole('form'));
+      const form = await waitFor(() => findByRole('form'));
 
       expect(form).toBeInTheDocument();
     });
@@ -60,12 +54,12 @@ describe('ClientForm', () => {
             initialValues={initialValues}
             loading={false}
             backTo="/test"
-            onSave={value => onSave(value)}
+            onSave={(value) => onSave(value)}
           />
         </TestProvider>,
       );
 
-      const form = await waitForElement(() => findByRole('form'));
+      const form = await waitFor(() => findByRole('form'));
 
       expect(form).toBeInTheDocument();
     });
@@ -78,12 +72,12 @@ describe('ClientForm', () => {
             initialValues={initialValues}
             loading={false}
             backTo="/test"
-            onSave={value => onSave(value)}
+            onSave={(value) => onSave(value)}
           />
         </TestProvider>,
       );
 
-      await wait(async () => {
+      await act(async () => {
         const button = await findByRole('button');
 
         fireEvent.click(button);

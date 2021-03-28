@@ -6,9 +6,10 @@
   "module": "lib/axios-hooks.esm.js",
   "types": "lib/axios-hooks.d.ts",
   "scripts": {
-    "build": "rollup -c",
+    "build": "NODE_ENV=production rollup -c",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "package": "npm run build",
+    "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
@@ -18,12 +19,12 @@
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
-    "react": "^16.13.1"
+    "axios": "^0.21.1",
+    "react": "^17.0.1"
   },
   "peerDependencies": {
-    "axios": "0.19.2",
-    "react": "16.13.1"
+    "axios": "0.21.1",
+    "react": "17.0.1"
   },
   "jest": {
     "collectCoverageFrom": [

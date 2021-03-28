@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import styled from 'styled-components';
 
 export interface ILabelProps {
@@ -7,7 +6,7 @@ export interface ILabelProps {
 }
 
 const Label = styled('label').withConfig({
-  shouldForwardProp: prop => !['active', 'error'].includes(prop),
+  shouldForwardProp: (prop) => !['active', 'error'].includes(prop),
 })<ILabelProps>`
   ${({ active, error }) => `
     color: ${(() => {
@@ -32,4 +31,4 @@ const Label = styled('label').withConfig({
   `}
 `;
 
-export default memo(Label);
+export default Label;

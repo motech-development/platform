@@ -1,4 +1,4 @@
-import React, { ComponentType, FC, memo, useEffect } from 'react';
+import { ComponentType, FC, useEffect } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 
@@ -35,4 +35,4 @@ const ProtectedRoute: FC<IProtectedRouteProps> = ({
   return <Route path={path} component={render} {...rest} />;
 };
 
-export default memo(ProtectedRoute);
+export default ProtectedRoute;

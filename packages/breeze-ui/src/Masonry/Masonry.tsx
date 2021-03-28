@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 import useBreakpoint from '../hooks/useBreakpoint';
 import Col from '../Col/Col';
@@ -73,4 +73,4 @@ const Masonry: FC<IMasonryProps> = ({
   );
 };
 
-export default memo(Masonry);
+export default Masonry;

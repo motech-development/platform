@@ -1,5 +1,5 @@
 import { ProtectedRoute } from '@motech-development/auth';
-import React, { FC, lazy, memo } from 'react';
+import { FC, lazy, memo } from 'react';
 import { Switch } from 'react-router-dom';
 
 const Accounts = lazy(() => import('./Accounts'));

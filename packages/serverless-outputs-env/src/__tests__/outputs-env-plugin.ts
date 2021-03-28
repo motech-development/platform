@@ -1,12 +1,30 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { writeFile } from 'fs';
-import { Options } from 'serverless';
+import Serverless, { Options } from 'serverless';
 import tomlify from 'tomlify-j0.4';
 import OutputsEnvPlugin, { IServerlessInstance } from '../outputs-env-plugin';
+
+interface ITestInstance extends Pick<Serverless, 'cli' | 'getProvider'> {
+  service?: {
+    custom: {
+      outputs: {
+        files: string[];
+        env: {
+          [name: string]: string;
+        };
+      };
+    };
+    provider?: {
+      name: string;
+      stackName?: string;
+    };
+  };
+}
 
 describe('OutputsEnvPlugin', () => {
   let options: Options;
   let outputsEnvPlugin: OutputsEnvPlugin;
-  let serverless: IServerlessInstance;
+  let serverless: ITestInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -62,7 +80,10 @@ describe('OutputsEnvPlugin', () => {
     it('should throw an error if service is not provided', async () => {
       delete serverless.service;
 
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 
@@ -72,9 +93,12 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should throw an error if no provider is set', async () => {
-      delete serverless.service.provider;
+      delete serverless.service?.provider;
 
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 
@@ -84,9 +108,12 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should throw an error if provider is not AWS', async () => {
-      serverless.service.provider.name = 'Azure';
+      serverless.service!.provider!.name = 'Azure';
 
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 
@@ -98,7 +125,10 @@ describe('OutputsEnvPlugin', () => {
     it('should display an error if skipping deployment', async () => {
       options.noDeploy = true;
 
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 
@@ -108,7 +138,10 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should output the correct data', async () => {
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 
@@ -120,7 +153,10 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should write the file the correct number of times', async () => {
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 
@@ -130,13 +166,16 @@ describe('OutputsEnvPlugin', () => {
 
   describe('with a stack name defined', () => {
     beforeEach(() => {
-      serverless.service.provider.stackName = 'custom-stack-name';
+      serverless.service!.provider!.stackName = 'custom-stack-name';
     });
 
     it('should throw an error if service is not provided', async () => {
       delete serverless.service;
 
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 
@@ -146,9 +185,12 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should throw an error if no provider is set', async () => {
-      delete serverless.service.provider;
+      delete serverless.service?.provider;
 
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 
@@ -158,9 +200,12 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should throw an error if provider is not AWS', async () => {
-      serverless.service.provider.name = 'Azure';
+      serverless.service!.provider!.name = 'Azure';
 
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 
@@ -172,7 +217,10 @@ describe('OutputsEnvPlugin', () => {
     it('should display an error if skipping deployment', async () => {
       options.noDeploy = true;
 
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 
@@ -182,7 +230,10 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should output the correct data', async () => {
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 
@@ -194,7 +245,10 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should write the file the correct number of times', async () => {
-      outputsEnvPlugin = new OutputsEnvPlugin(serverless, options);
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
 
       await outputsEnvPlugin.hooks['after:deploy:deploy']();
 

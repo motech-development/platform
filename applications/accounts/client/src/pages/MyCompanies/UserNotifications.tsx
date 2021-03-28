@@ -8,7 +8,7 @@ import {
   TableCell,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo, useEffect } from 'react';
+import { FC, memo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
@@ -164,7 +164,7 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
   const alert = unread > 0;
 
   const onClose = async () => {
-    const ids = unreadItems.map(item => item.id);
+    const ids = unreadItems.map((item) => item.id);
 
     if (ids.length > 0) {
       await markAsRead({

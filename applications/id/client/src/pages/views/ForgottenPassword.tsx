@@ -1,6 +1,6 @@
 import { useToast } from '@motech-development/breeze-ui';
 import { WebAuth } from 'auth0-js';
-import React, { FC, memo, useState } from 'react';
+import { FC, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ForgottenPasswordForm, {
   FormSchema,

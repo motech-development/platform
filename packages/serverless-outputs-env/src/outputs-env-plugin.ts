@@ -95,7 +95,7 @@ class OutputsEnvPlugin {
     const output = stack.Outputs;
 
     return output.reduce(
-      (obj: object, item: IOutput) => ({
+      (obj: Record<string, unknown>, item: IOutput) => ({
         ...obj,
         [item.OutputKey]: item.OutputValue,
       }),
@@ -121,7 +121,7 @@ class OutputsEnvPlugin {
       };
     }, {});
     const toml = tomlify.toToml(result);
-    const queue = this.output.files.map(path => writeFileAsync(path, toml));
+    const queue = this.output.files.map((path) => writeFileAsync(path, toml));
 
     await Promise.all(queue);
 

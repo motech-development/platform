@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 
 interface IColContainer {
@@ -131,4 +131,4 @@ const Col: FC<IColProps> = ({
   </ColContainer>
 );
 
-export default memo(Col);
+export default Col;

@@ -5,10 +5,9 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import GET_BANK_ACCOUNTS from '../../../../../graphql/bank/GET_BANK_ACCOUNTS';
 import UPDATE_BANK_SETTINGS from '../../../../../graphql/bank/UPDATE_BANK_SETTINGS';
 import TestProvider, { add } from '../../../../../utils/TestProvider';
@@ -108,7 +107,7 @@ describe('SelectAccount', () => {
       });
 
       it('should redirect to settings page when account is linked', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('select-account.title');
@@ -118,17 +117,17 @@ describe('SelectAccount', () => {
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/settings/company-id',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/settings/company-id',
+          ),
         );
       });
 
       it('should show a success toast', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('select-account.title');
@@ -138,11 +137,9 @@ describe('SelectAccount', () => {
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'select-account.success',
@@ -215,7 +212,7 @@ describe('SelectAccount', () => {
       });
 
       it('should redirect to settings page', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('select-account.title');
@@ -225,17 +222,17 @@ describe('SelectAccount', () => {
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/settings/company-id',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/settings/company-id',
+          ),
         );
       });
 
       it('should show a danger toast', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('select-account.title');
@@ -245,11 +242,9 @@ describe('SelectAccount', () => {
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'select-account.retry',

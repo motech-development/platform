@@ -1,5 +1,5 @@
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import useOutsideClick from '../useOutsideClick';
 
 const TestComponent: FC = () => {

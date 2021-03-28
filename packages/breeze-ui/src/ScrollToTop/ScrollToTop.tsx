@@ -1,4 +1,4 @@
-import { FC, memo, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const ScrollToTop: FC = () => {
@@ -11,4 +11,4 @@ const ScrollToTop: FC = () => {
   return null;
 };
 
-export default memo(ScrollToTop);
+export default ScrollToTop;

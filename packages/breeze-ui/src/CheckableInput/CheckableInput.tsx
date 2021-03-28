@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import styled from 'styled-components';
 
 const CheckableInput = styled.input`
@@ -14,4 +13,4 @@ const CheckableInput = styled.input`
   z-index: 1;
 `;
 
-export default (memo(CheckableInput) as unknown) as typeof CheckableInput;
+export default CheckableInput;

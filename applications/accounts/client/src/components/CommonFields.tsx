@@ -6,7 +6,7 @@ import {
   TextBox,
 } from '@motech-development/breeze-ui';
 import moment from 'moment';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const name = (value: string, prefix?: string) => {

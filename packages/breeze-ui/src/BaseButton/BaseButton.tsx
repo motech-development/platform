@@ -1,5 +1,4 @@
 import { darken } from 'polished';
-import { memo } from 'react';
 import styled from 'styled-components';
 
 export const buttonTheme = {
@@ -30,7 +29,7 @@ export interface IBaseButtonProps {
 }
 
 const BaseButton = styled('button').withConfig({
-  shouldForwardProp: prop => !['block', 'colour', 'size'].includes(prop),
+  shouldForwardProp: (prop) => !['block', 'colour', 'size'].includes(prop),
 })<IBaseButtonProps>`
   ${({ block = false, colour = 'primary', size = 'md', theme }) => `
     appearance: none;
@@ -95,4 +94,4 @@ const BaseButton = styled('button').withConfig({
   `}
 `;
 
-export default memo(BaseButton);
+export default BaseButton;

@@ -1,6 +1,4 @@
-import { withA11y } from '@storybook/addon-a11y';
 import { storiesOf } from '@storybook/react';
-import React from 'react';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import TableBody from '../TableBody/TableBody';
 import TableCell from '../TableCell/TableCell';
@@ -48,14 +46,12 @@ const data = [
 
 const stories = storiesOf('Table', module);
 
-stories.addDecorator(withA11y);
-
 stories.add('Basic table', () => (
   <>
     <BaseStyles />
 
     <Table>
-      {data.map(item => (
+      {data.map((item) => (
         <TableBody key={item.date}>
           <TableRow colour="primary">
             <TableCell as="th">Date</TableCell>
@@ -72,7 +68,7 @@ stories.add('Basic table', () => (
             <TableCell as="th">Value</TableCell>
           </TableRow>
 
-          {item.transactions.map(transaction => (
+          {item.transactions.map((transaction) => (
             <TableRow key={transaction.id}>
               <TableCell>{transaction.description}</TableCell>
               <TableCell>£{transaction.amount}</TableCell>

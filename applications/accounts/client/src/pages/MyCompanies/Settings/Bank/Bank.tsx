@@ -9,7 +9,7 @@ import {
   TableCell,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo, useEffect, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
@@ -47,9 +47,10 @@ const Bank: FC = () => {
     ICreateBankConnectionOutput,
     ICreateBankConnectionInput
   >(CREATE_BANK_CONNECTION);
-  const { data: subscription, loading: subscriptionLoading } = useSubscription<
-    IOnBankCallbackOutput
-  >(ON_BANK_CALLBACK);
+  const {
+    data: subscription,
+    loading: subscriptionLoading,
+  } = useSubscription<IOnBankCallbackOutput>(ON_BANK_CALLBACK);
   const connect = async (bank: string, user: string) => {
     setSelected(bank);
 

@@ -1,8 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
-import { act, render, RenderResult } from '@testing-library/react';
+import { act, render, RenderResult, waitFor } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import UPDATE_BANK_SETTINGS from '../../../../../graphql/bank/UPDATE_BANK_SETTINGS';
 import TestProvider from '../../../../../utils/TestProvider';
 import Callback from '../Callback';
@@ -62,16 +61,14 @@ describe('Callback', () => {
     });
 
     it('should redirect to the account selection', async () => {
-      const { findByTestId } = component;
-
       await act(async () => {
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/settings/company-id/bank/select-account',
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/settings/company-id/bank/select-account',
+        ),
       );
     });
   });

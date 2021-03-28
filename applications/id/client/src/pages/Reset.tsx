@@ -1,5 +1,5 @@
 import { Loader, Window } from '@motech-development/breeze-ui';
-import React, { FC, lazy, memo, useEffect, useState } from 'react';
+import { FC, lazy, memo, useEffect, useState } from 'react';
 import { pageview } from 'react-ga';
 import AppTitle from '../components/AppTitle';
 

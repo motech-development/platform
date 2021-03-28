@@ -1,14 +1,10 @@
-import { withA11y } from '@storybook/addon-a11y';
 import { storiesOf } from '@storybook/react';
-import React from 'react';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 import Stepper from './Stepper';
 
 const stories = storiesOf('Stepper', module);
-
-stories.addDecorator(withA11y);
 
 stories.add('Basic stepper', () => (
   <>

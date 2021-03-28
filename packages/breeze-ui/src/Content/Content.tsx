@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.section`
@@ -16,4 +16,4 @@ const Content: FC<IContentProps> = ({ children }) => (
   <Wrapper>{children}</Wrapper>
 );
 
-export default memo(Content);
+export default Content;

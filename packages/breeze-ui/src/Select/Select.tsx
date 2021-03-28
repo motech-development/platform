@@ -1,11 +1,10 @@
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
-import React, {
+import {
   ChangeEvent,
   FC,
   FocusEvent,
-  memo,
   SelectHTMLAttributes,
   useEffect,
   useState,
@@ -229,7 +228,7 @@ const Select: FC<ISelectProps> = ({
   helpText = null,
   label,
   name,
-  onChange = undefined,
+  onChange,
   options,
   placeholder,
   readOnly = false,
@@ -256,4 +255,4 @@ const Select: FC<ISelectProps> = ({
   );
 };
 
-export default memo(Select);
+export default Select;

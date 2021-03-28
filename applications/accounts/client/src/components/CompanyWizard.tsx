@@ -9,7 +9,7 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { number, object } from 'yup';
 import {
@@ -107,13 +107,11 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
           ),
         }),
       }),
-      company: object()
-        .concat(company)
-        .shape({
-          address,
-          bank,
-          contact,
-        }),
+      company: object().concat(company).shape({
+        address,
+        bank,
+        contact,
+      }),
       vat,
       yearEnd,
     })

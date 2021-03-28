@@ -1,6 +1,6 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { FC, memo, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 type AlertSpacing = 'sm' | 'md' | 'lg';
@@ -83,16 +83,16 @@ export interface IAlertProps {
   icon?: ReactNode;
   message: string;
   spacing?: AlertSpacing;
-  onDismiss?(): void;
+  onDismiss?: () => void;
 }
 
 const Alert: FC<IAlertProps> = ({
   colour = 'primary',
   dismissable = false,
-  icon = null,
+  icon,
   message,
   spacing = 'md',
-  onDismiss = null,
+  onDismiss,
 }) => {
   const [visible, setVisiblity] = useState(true);
   const dismiss = () => {
@@ -111,7 +111,7 @@ const Alert: FC<IAlertProps> = ({
   );
 
   useEffect(() => {
-    let timeout: number;
+    let timeout: ReturnType<typeof setTimeout>;
 
     if (typeof dismissable === 'number') {
       timeout = setTimeout(dismiss, dismissable);
@@ -156,4 +156,4 @@ const Alert: FC<IAlertProps> = ({
   return null;
 };
 
-export default memo(Alert);
+export default Alert;

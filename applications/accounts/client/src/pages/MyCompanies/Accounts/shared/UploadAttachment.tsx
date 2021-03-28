@@ -1,7 +1,8 @@
 import { gql, useMutation } from '@apollo/client';
 import { usePut } from '@motech-development/axios-hooks';
 import { FileUpload, useToast } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FormikProps, FormikValues } from 'formik';
+import { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface IRequestUploadInput {
@@ -36,7 +37,18 @@ export interface IUploadAttachmentProps {
   id: string;
   name: string;
   transactionId?: string;
-  onUpload(value: string): void;
+  onUpload: (value: string) => void;
+}
+
+interface IFormData {
+  extension: string;
+  file: File;
+  form: FormikProps<FormikValues>;
+}
+
+interface IUploadData {
+  id: string;
+  url: string;
 }
 
 const UploadAttachment: FC<IUploadAttachmentProps> = ({
@@ -45,6 +57,8 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
   onUpload,
   transactionId,
 }) => {
+  const [formData, setFormData] = useState<IFormData>();
+  const [uploadData, setUploadData] = useState<IUploadData>();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
   const onError = () => {
@@ -57,17 +71,53 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
     IRequestUploadOutput,
     IRequestUploadInput
   >(REQUEST_UPLOAD, {
+    onCompleted: (data) => {
+      const { requestUpload } = data;
+
+      if (requestUpload) {
+        setUploadData(requestUpload);
+      } else {
+        add({
+          colour: 'danger',
+          message: t('uploads.add.retry'),
+        });
+      }
+    },
     onError,
   });
   const [put, { loading: putLoading }] = usePut<null, File>({
     onCompleted: () => {
-      add({
-        colour: 'success',
-        message: t('uploads.add.success'),
-      });
+      if (formData && uploadData) {
+        const { extension, form } = formData;
+
+        const attachment = `${id}/${uploadData.id}.${extension}`;
+
+        form.setFieldValue('attachment', attachment);
+
+        onUpload(attachment);
+
+        add({
+          colour: 'success',
+          message: t('uploads.add.success'),
+        });
+      }
     },
     onError,
   });
+
+  useEffect(() => {
+    if (formData && uploadData) {
+      (async () => {
+        const { file } = formData;
+        const headers = {
+          'Content-Type': file.type,
+        };
+
+        await put(uploadData.url, file, headers);
+      })();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData, uploadData]);
 
   return (
     <FileUpload
@@ -77,53 +127,34 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
       loading={mutationLoading || putLoading}
       name={name}
       onSelect={async (file, form) => {
-        try {
-          const extIndex = file.name.lastIndexOf('.');
+        const extIndex = file.name.lastIndexOf('.');
 
-          if (extIndex > 0) {
-            const extension = file.name.substring(extIndex + 1).toLowerCase();
+        if (extIndex > 0) {
+          const extension = file.name.substring(extIndex + 1).toLowerCase();
 
-            const { data } = await mutation({
-              variables: {
-                id,
-                input: {
-                  contentType: file.type,
-                  extension,
-                  metadata: {
-                    id: transactionId,
-                    typename: 'Transaction',
-                  },
+          setFormData({
+            extension,
+            file,
+            form,
+          });
+
+          await mutation({
+            variables: {
+              id,
+              input: {
+                contentType: file.type,
+                extension,
+                metadata: {
+                  id: transactionId,
+                  typename: 'Transaction',
                 },
               },
-            });
-
-            if (data?.requestUpload) {
-              const { requestUpload } = data;
-              const headers = {
-                'Content-Type': file.type,
-              };
-
-              const uploadResult = await put(requestUpload.url, file, headers);
-
-              if (uploadResult !== undefined) {
-                const attachment = `${id}/${requestUpload.id}.${extension}`;
-
-                form.setFieldValue('attachment', attachment);
-
-                onUpload(attachment);
-              }
-            } else {
-              add({
-                colour: 'danger',
-                message: t('uploads.add.retry'),
-              });
-            }
-          }
-          // eslint-disable-next-line no-empty
-        } catch (e) {}
+            },
+          });
+        }
       }}
     />
   );
 };
 
-export default memo(UploadAttachment);
+export default UploadAttachment;

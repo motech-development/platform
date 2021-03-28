@@ -1,7 +1,7 @@
 import { AuthContext, AuthProvider } from '@motech-development/auth';
 import { ToastContext, ToastProvider } from '@motech-development/breeze-ui';
 import i18n from 'i18next';
-import React, { FC, ReactElement } from 'react';
+import { FC, ReactElement } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { Route, Router, Switch } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';

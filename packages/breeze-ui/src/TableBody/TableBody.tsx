@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import styled from 'styled-components';
 
 const TableBody = styled.tbody`
@@ -6,4 +5,4 @@ const TableBody = styled.tbody`
   color: #000;
 `;
 
-export default memo(TableBody);
+export default TableBody;

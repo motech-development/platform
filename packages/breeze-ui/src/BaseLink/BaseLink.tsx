@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import styled from 'styled-components';
 
 const BaseLink = styled.a`
@@ -19,4 +18,4 @@ const BaseLink = styled.a`
   }
 `;
 
-export default memo(BaseLink);
+export default BaseLink;

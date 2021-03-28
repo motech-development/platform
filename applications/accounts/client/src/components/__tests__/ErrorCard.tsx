@@ -1,6 +1,5 @@
 import { fireEvent, render } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import TestProvider from '../../utils/TestProvider';
 import ErrorCard from '../ErrorCard';
 

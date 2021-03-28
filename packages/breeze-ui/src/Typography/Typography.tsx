@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 
 type TypographyVariants = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
@@ -119,7 +119,7 @@ const Typography: FC<ITypographyProps> = ({
   children,
   className = '',
   component,
-  id = undefined,
+  id,
   margin = 'md',
   rule = false,
   truncate = false,
@@ -143,4 +143,4 @@ const Typography: FC<ITypographyProps> = ({
   </>
 );
 
-export default memo(Typography);
+export default Typography;

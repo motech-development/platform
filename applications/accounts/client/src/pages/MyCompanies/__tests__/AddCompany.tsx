@@ -6,10 +6,9 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import ADD_COMPANY from '../../../graphql/company/ADD_COMPANY';
 import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
 import TestProvider, { add } from '../../../utils/TestProvider';
@@ -134,7 +133,7 @@ describe('AddCompany', () => {
     });
 
     it('should redirect you to the dashboard on complete', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
+      const { findAllByRole, findByLabelText } = component;
 
       await act(async () => {
         const line1 = await findByLabelText('address.line1');
@@ -207,25 +206,25 @@ describe('AddCompany', () => {
         });
 
         fireEvent.click(vatScheme);
+      });
 
-        await wait();
-
+      await act(async () => {
         const [, submit] = await findAllByRole('button');
 
         fireEvent.click(submit);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/dashboard/company-uuid',
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/dashboard/company-uuid',
+        ),
       );
     });
 
     it('should display a success toast', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
+      const { findAllByRole, findByLabelText } = component;
 
       await act(async () => {
         const line1 = await findByLabelText('address.line1');
@@ -298,19 +297,17 @@ describe('AddCompany', () => {
         });
 
         fireEvent.click(vatScheme);
+      });
 
-        await wait();
-
+      await act(async () => {
         const [, submit] = await findAllByRole('button');
 
         fireEvent.click(submit);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'success',
           message: 'add-company.success',
@@ -385,7 +382,7 @@ describe('AddCompany', () => {
     });
 
     it('should display a warning toast', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
+      const { findAllByRole, findByLabelText } = component;
 
       await act(async () => {
         const line1 = await findByLabelText('address.line1');
@@ -458,19 +455,17 @@ describe('AddCompany', () => {
         });
 
         fireEvent.click(vatScheme);
+      });
 
-        await wait();
-
+      await act(async () => {
         const [, submit] = await findAllByRole('button');
 
         fireEvent.click(submit);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'danger',
           message: 'add-company.retry',
@@ -479,7 +474,7 @@ describe('AddCompany', () => {
     });
 
     it('should redirect you back to my companies page', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
+      const { findAllByRole, findByLabelText } = component;
 
       await act(async () => {
         const line1 = await findByLabelText('address.line1');
@@ -552,19 +547,19 @@ describe('AddCompany', () => {
         });
 
         fireEvent.click(vatScheme);
+      });
 
-        await wait();
-
+      await act(async () => {
         const [, submit] = await findAllByRole('button');
 
         fireEvent.click(submit);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      expect(history.push).toHaveBeenCalledWith('/my-companies');
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith('/my-companies'),
+      );
     });
   });
 });

@@ -27,8 +27,8 @@
     "outputName": "accounts-notifications.xml"
   },
   "dependencies": {
-    "aws-appsync": "^4.0.1",
-    "cross-fetch": "^3.0.5",
-    "graphql-tag": "^2.10.4"
+    "aws-appsync": "^4.0.3",
+    "cross-fetch": "^3.0.6",
+    "graphql-tag": "^2.11.0"
   }
 }

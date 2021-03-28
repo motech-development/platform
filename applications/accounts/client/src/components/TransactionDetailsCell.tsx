@@ -1,5 +1,5 @@
 import { TableCell, useBreakpoint } from '@motech-development/breeze-ui';
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import styled from 'styled-components';
 
 interface ICell {

@@ -2,7 +2,7 @@ const { resolve } = require('path');
 const { GenerateSW } = require('workbox-webpack-plugin');
 const pkg = require('./package.json');
 
-module.exports = function override(config, env) {
+module.exports = function override(config) {
   const updated = {
     ...config,
   };
@@ -21,7 +21,7 @@ module.exports = function override(config, env) {
 
   updated.resolve.alias = dependencies;
 
-  updated.plugins = config.plugins.map(plugin => {
+  updated.plugins = config.plugins.map((plugin) => {
     if (plugin.constructor.name === 'GenerateSW') {
       return new GenerateSW({
         clientsClaim: true,

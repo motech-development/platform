@@ -8,7 +8,7 @@ import {
   TableRow,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo, useEffect, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Currency from './Currency';
 import DeleteItem from './DeleteItem';
@@ -82,7 +82,7 @@ const TransactionsList: FC<ITransactionsListProps> = ({
               </TableCell>
             </TableRow>
 
-            {items.map(item => (
+            {items.map((item) => (
               <TableRow key={item.id}>
                 <TransactionArrow value={item.amount} />
 

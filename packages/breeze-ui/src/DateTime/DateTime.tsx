@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { FC, memo } from 'react';
+import { FC } from 'react';
 
 const defaultFormat = 'DD/MM/YYYY';
 
@@ -23,4 +23,4 @@ const DateTime: FC<IDateTimeProps> = ({ format = defaultFormat, value }) => {
   return <time dateTime={ISOString}>{formatted}</time>;
 };
 
-export default memo(DateTime);
+export default DateTime;

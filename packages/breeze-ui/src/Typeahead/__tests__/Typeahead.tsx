@@ -1,12 +1,5 @@
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  wait,
-} from '@testing-library/react';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { Form, Formik } from 'formik';
-import React from 'react';
 import { object, ObjectSchema, string } from 'yup';
 import Typeahead, { ITypeaheadSuggestion } from '../Typeahead';
 
@@ -47,7 +40,7 @@ describe('Typeahead', () => {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={value => onSubmit(value)}
+          onSubmit={(value) => onSubmit(value)}
         >
           {() => (
             <Form>
@@ -80,8 +73,6 @@ describe('Typeahead', () => {
           value: 'n',
         },
       });
-
-      await wait();
     });
 
     await expect(findAllByRole('button')).resolves.toHaveLength(3);
@@ -99,8 +90,6 @@ describe('Typeahead', () => {
           value: 'XYZ',
         },
       });
-
-      await wait();
     });
 
     await expect(findAllByRole('button')).resolves.toHaveLength(1);
@@ -122,8 +111,6 @@ describe('Typeahead', () => {
       const [option, submit] = await findAllByRole('button');
 
       fireEvent.click(option);
-
-      await wait();
 
       fireEvent.click(submit);
     });
@@ -149,9 +136,6 @@ describe('Typeahead', () => {
       const [option, submit] = await findAllByRole('button');
 
       fireEvent.click(option);
-
-      await wait();
-
       fireEvent.click(submit);
     });
 
@@ -177,8 +161,6 @@ describe('Typeahead', () => {
 
       fireEvent.click(option);
 
-      await wait();
-
       fireEvent.click(submit);
     });
 
@@ -195,8 +177,6 @@ describe('Typeahead', () => {
       const [option, submit] = await findAllByRole('button');
 
       fireEvent.click(option);
-
-      await wait();
 
       fireEvent.click(submit);
     });
@@ -220,8 +200,6 @@ describe('Typeahead', () => {
         },
       });
 
-      await wait();
-
       fireEvent.mouseDown(body);
     });
 
@@ -241,16 +219,12 @@ describe('Typeahead', () => {
         },
       });
 
-      await wait();
-
       fireEvent.change(input, {
         target: {
           focus: () => {},
           value: '',
         },
       });
-
-      await wait();
     });
 
     await expect(findAllByRole('button')).resolves.toHaveLength(1);
@@ -268,8 +242,6 @@ describe('Typeahead', () => {
           value: 'Motech Development',
         },
       });
-
-      await wait();
 
       const submit = await findByRole('button');
 

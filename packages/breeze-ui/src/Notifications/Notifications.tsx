@@ -1,6 +1,6 @@
 import { faAsterisk, faBell } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { memo, ReactNode, useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
 import Button from '../Button/Button';
@@ -118,7 +118,7 @@ function Notifications<T>({
 
     if (!visible) {
       (async () => {
-        await onClose();
+        await Promise.resolve(onClose());
       })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -161,4 +161,4 @@ function Notifications<T>({
   );
 }
 
-export default memo(Notifications) as typeof Notifications;
+export default Notifications;

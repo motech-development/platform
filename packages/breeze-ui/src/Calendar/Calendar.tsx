@@ -7,7 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
-import React, { FC, memo, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonColour } from '../BaseButton/BaseButton';
 import Button from '../Button/Button';
@@ -313,4 +313,4 @@ const Calendar: FC<ICalendarProps> = ({
   );
 };
 
-export default memo(Calendar);
+export default Calendar;

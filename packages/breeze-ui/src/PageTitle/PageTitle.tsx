@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
 import Typography from '../Typography/Typography';
 
@@ -55,4 +55,4 @@ const PageTitle: FC<IPageTitleProps> = ({ subTitle = null, title }) => (
   </Wrapper>
 );
 
-export default memo(PageTitle);
+export default PageTitle;

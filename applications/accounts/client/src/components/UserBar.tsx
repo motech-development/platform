@@ -8,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo, ReactNode } from 'react';
+import { FC, memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 

@@ -1,4 +1,4 @@
-import React, { memo, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import Table from '../Table/Table';
 import TableBody from '../TableBody/TableBody';
 import TableHead from '../TableHead/TableHead';
@@ -43,4 +43,4 @@ function DataTable<T>({
   );
 }
 
-export default memo(DataTable) as typeof DataTable;
+export default DataTable;

@@ -1,10 +1,4 @@
-import {
-  act,
-  render,
-  RenderResult,
-  waitForElement,
-} from '@testing-library/react';
-import React from 'react';
+import { act, render, RenderResult, waitFor } from '@testing-library/react';
 import InputWrapper from '../InputWrapper';
 
 describe('InputWrapper', () => {
@@ -51,7 +45,7 @@ describe('InputWrapper', () => {
     it('should render when the correct styles when there is an error', async () => {
       const { container, findByRole } = component;
 
-      await waitForElement(() => findByRole('alert'));
+      await waitFor(() => findByRole('alert'));
 
       expect(container.firstChild).toHaveStyle(
         'border-bottom-color: rgb(199,56,79);',

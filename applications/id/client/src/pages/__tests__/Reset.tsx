@@ -3,10 +3,10 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import axios from 'axios';
-import React from 'react';
 import TextProvider, { add } from '../../utils/TestProvider';
 import Reset from '../Reset';
 
@@ -33,7 +33,7 @@ describe('Reset', () => {
   });
 
   describe('when config is set', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       window.passwordReset = {
         csrfToken: 'token',
         email: 'text@example.com',
@@ -41,11 +41,13 @@ describe('Reset', () => {
         ticket: 'ticket',
       };
 
-      component = render(
-        <TextProvider>
-          <Reset />
-        </TextProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TextProvider>
+            <Reset />
+          </TextProvider>,
+        );
+      });
     });
 
     describe('when successful', () => {
@@ -62,37 +64,33 @@ describe('Reset', () => {
           const password = await findByLabelText('password.label');
           const confirmation = await findByLabelText('confirm-password.label');
 
-          fireEvent.change(password, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(password, 'Test');
 
-          fireEvent.change(confirmation, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(confirmation, 'Test');
 
-          await wait();
+          fireEvent.blur(confirmation);
+        });
 
+        await act(async () => {
           const button = await findByRole('button');
 
-          fireEvent.click(button);
+          userEvent.click(button);
         });
 
-        expect(axios.request).toHaveBeenCalledWith({
-          data: {
-            _csrf: 'token',
-            confirmNewPassword: 'Test',
-            newPassword: 'Test',
-            'password-policy': 'good',
-            ticket: 'ticket',
-          },
-          headers: {},
-          method: 'POST',
-          url: '/lo/reset',
-        });
+        await waitFor(() =>
+          expect(axios.request).toHaveBeenCalledWith({
+            data: {
+              _csrf: 'token',
+              confirmNewPassword: 'Test',
+              newPassword: 'Test',
+              'password-policy': 'good',
+              ticket: 'ticket',
+            },
+            headers: {},
+            method: 'POST',
+            url: '/lo/reset',
+          }),
+        );
       });
 
       it('should display the succes screen when password is reset', async () => {
@@ -102,26 +100,20 @@ describe('Reset', () => {
           const password = await findByLabelText('password.label');
           const confirmation = await findByLabelText('confirm-password.label');
 
-          fireEvent.change(password, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(password, 'Test');
 
-          fireEvent.change(confirmation, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(confirmation, 'Test');
 
-          await wait();
-
-          const button = await findByRole('button');
-
-          fireEvent.click(button);
+          fireEvent.blur(confirmation);
         });
 
-        await wait(() =>
+        await act(async () => {
+          const button = await findByRole('button');
+
+          userEvent.click(button);
+        });
+
+        await waitFor(() =>
           expect(findByText('success')).resolves.toBeInTheDocument(),
         );
       });
@@ -147,26 +139,20 @@ describe('Reset', () => {
           const password = await findByLabelText('password.label');
           const confirmation = await findByLabelText('confirm-password.label');
 
-          fireEvent.change(password, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(password, 'Test');
 
-          fireEvent.change(confirmation, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(confirmation, 'Test');
 
-          await wait();
-
-          const button = await findByRole('button');
-
-          fireEvent.click(button);
+          fireEvent.blur(confirmation);
         });
 
-        await wait(() =>
+        await act(async () => {
+          const button = await findByRole('button');
+
+          userEvent.click(button);
+        });
+
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'Ooops',
@@ -183,26 +169,20 @@ describe('Reset', () => {
           const password = await findByLabelText('password.label');
           const confirmation = await findByLabelText('confirm-password.label');
 
-          fireEvent.change(password, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(password, 'Test');
 
-          fireEvent.change(confirmation, {
-            target: {
-              value: 'Test',
-            },
-          });
+          userEvent.type(confirmation, 'Test');
 
-          await wait();
-
-          const button = await findByRole('button');
-
-          fireEvent.click(button);
+          fireEvent.blur(confirmation);
         });
 
-        await wait(() =>
+        await act(async () => {
+          const button = await findByRole('button');
+
+          userEvent.click(button);
+        });
+
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'error',

@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import { FC } from 'react';
 import { Link, LinkProps } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import BaseButton, {
@@ -38,4 +38,4 @@ const LinkButton: FC<ILinkButtonProps> = ({
   </ThemeProvider>
 );
 
-export default memo(LinkButton);
+export default LinkButton;

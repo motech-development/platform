@@ -5,7 +5,7 @@ import {
   Tooltip,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import styled from 'styled-components';
 
 interface IWarningTriangle {

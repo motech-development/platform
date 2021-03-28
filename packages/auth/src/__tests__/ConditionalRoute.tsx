@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import ConditionalRoute from '../ConditionalRoute';
 

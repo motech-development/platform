@@ -1,12 +1,5 @@
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  wait,
-} from '@testing-library/react';
+import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { Form, Formik } from 'formik';
-import React from 'react';
 import * as Yup from 'yup';
 import Radio, { IRadioOption } from '../Radio';
 
@@ -152,8 +145,6 @@ describe('Radio', () => {
         fireEvent.click(option);
 
         fireEvent.blur(option);
-
-        await wait();
       });
 
       await expect(findByText('Test')).resolves.toHaveStyle(`
@@ -172,8 +163,6 @@ describe('Radio', () => {
         fireEvent.focus(option);
 
         fireEvent.blur(option);
-
-        await wait();
       });
 
       await expect(findByText('Test')).resolves.toHaveStyleRule(
@@ -191,8 +180,6 @@ describe('Radio', () => {
         fireEvent.focus(option);
 
         fireEvent.blur(option);
-
-        await wait();
       });
 
       await expect(findByRole('alert')).resolves.toBeInTheDocument();
@@ -261,8 +248,6 @@ describe('Radio', () => {
       const option = await findByLabelText('Option 1');
 
       fireEvent.click(option);
-
-      await wait();
     });
 
     expect(onChange).toHaveBeenCalled();

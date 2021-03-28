@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode, useEffect, useRef, useState } from 'react';
+import { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { Manager, Popper, Reference } from 'react-popper';
 import styled, { ThemeProvider } from 'styled-components';
 
@@ -122,7 +122,7 @@ const Tooltip: FC<ITooltipProps> = ({
   parent,
   placement,
 }) => {
-  let timer: number;
+  let timer: ReturnType<typeof setTimeout>;
   const [visible, setVisibility] = useState(false);
   const mounted = useRef(false);
   const hideTooltip = () => {
@@ -204,4 +204,4 @@ const Tooltip: FC<ITooltipProps> = ({
   );
 };
 
-export default memo(Tooltip);
+export default Tooltip;

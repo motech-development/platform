@@ -6,10 +6,9 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import DELETE_CLIENT from '../../../../graphql/client/DELETE_CLIENT';
 import GET_CLIENT from '../../../../graphql/client/GET_CLIENT';
 import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
@@ -193,7 +192,7 @@ describe('UpdateDetails', () => {
       });
 
       it('should redirect you back to clients page on complete', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('New client');
@@ -203,17 +202,17 @@ describe('UpdateDetails', () => {
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/clients/company-id',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/clients/company-id',
+          ),
         );
       });
 
       it('should display a success toast', async () => {
-        const { findAllByRole, findByTestId, findByText } = component;
+        const { findAllByRole, findByText } = component;
 
         await act(async () => {
           await findByText('New client');
@@ -223,11 +222,9 @@ describe('UpdateDetails', () => {
           fireEvent.click(button);
 
           await waitForApollo(0);
-
-          await findByTestId('next-page');
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'update-details.success',
@@ -241,7 +238,9 @@ describe('UpdateDetails', () => {
 
         fireEvent.click(button);
 
-        await expect(findByRole('dialog')).resolves.toBeInTheDocument();
+        await waitFor(() =>
+          expect(findByRole('dialog')).resolves.toBeInTheDocument(),
+        );
       });
 
       it('should hide the delete confirmation modal', async () => {
@@ -266,16 +265,13 @@ describe('UpdateDetails', () => {
           fireEvent.click(cancelButton);
         });
 
-        expect(queryByRole('dialog')).not.toBeInTheDocument();
+        await waitFor(() =>
+          expect(queryByRole('dialog')).not.toBeInTheDocument(),
+        );
       });
 
       it('should delete a client', async () => {
-        const {
-          findAllByRole,
-          findByLabelText,
-          findByTestId,
-          findByText,
-        } = component;
+        const { findAllByRole, findByLabelText, findByText } = component;
 
         await act(async () => {
           await findByText('New client');
@@ -287,24 +283,23 @@ describe('UpdateDetails', () => {
           const input = await findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
-            target: { focus: () => {}, value: 'New client' },
+            target: {
+              focus: () => {},
+              value: 'New client',
+            },
           });
-
-          await wait();
 
           const [, , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
-
-          await findByTestId('next-page');
         });
 
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/clients/company-id',
+        await waitFor(() =>
+          expect(history.push).toHaveBeenCalledWith(
+            '/my-companies/clients/company-id',
+          ),
         );
       });
 
@@ -321,21 +316,20 @@ describe('UpdateDetails', () => {
           const input = await findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
-            target: { focus: () => {}, value: 'New client' },
+            target: {
+              focus: () => {},
+              value: 'New client',
+            },
           });
-
-          await wait();
 
           const [, , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'success',
             message: 'delete-client.success',
@@ -413,21 +407,20 @@ describe('UpdateDetails', () => {
           const input = await findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
-            target: { focus: () => {}, value: 'New client' },
+            target: {
+              focus: () => {},
+              value: 'New client',
+            },
           });
-
-          await wait();
 
           const [, , , deleteButton] = await findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
-
-          await wait();
         });
 
-        await wait(() =>
+        await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
             colour: 'danger',
             message: 'delete-client.error',
@@ -522,7 +515,7 @@ describe('UpdateDetails', () => {
     });
 
     it('should display a warning toast when updating a client', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
+      const { findAllByRole, findByText } = component;
 
       await act(async () => {
         await findByText('New client');
@@ -532,11 +525,9 @@ describe('UpdateDetails', () => {
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'danger',
           message: 'update-details.retry',
@@ -545,7 +536,7 @@ describe('UpdateDetails', () => {
     });
 
     it('should redirect you to the right place when updating a client', async () => {
-      const { findAllByRole, findByTestId, findByText } = component;
+      const { findAllByRole, findByText } = component;
 
       await act(async () => {
         await findByText('New client');
@@ -555,12 +546,12 @@ describe('UpdateDetails', () => {
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/clients/company-id',
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/clients/company-id',
+        ),
       );
     });
 
@@ -577,21 +568,20 @@ describe('UpdateDetails', () => {
         const input = await findByLabelText('confirm-delete');
 
         fireEvent.change(input, {
-          target: { focus: () => {}, value: 'New client' },
+          target: {
+            focus: () => {},
+            value: 'New client',
+          },
         });
-
-        await wait();
 
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
         await waitForApollo(0);
-
-        await wait();
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'danger',
           message: 'delete-client.retry',
@@ -615,19 +605,17 @@ describe('UpdateDetails', () => {
           target: { focus: () => {}, value: 'New client' },
         });
 
-        await wait();
-
         const [, , , deleteButton] = await findAllByRole('button');
 
         fireEvent.click(deleteButton);
 
         await waitForApollo(0);
-
-        await wait();
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/clients/company-id',
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/clients/company-id',
+        ),
       );
     });
   });

@@ -6,10 +6,9 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
+  waitFor,
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import ADD_CLIENT from '../../../../graphql/client/ADD_CLIENT';
 import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
@@ -110,7 +109,7 @@ describe('AddClient', () => {
     });
 
     it('should redirect you back to clients page on complete', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
+      const { findAllByRole, findByLabelText } = component;
 
       await act(async () => {
         const line1 = await findByLabelText('address.line1');
@@ -171,25 +170,23 @@ describe('AddClient', () => {
             value: 'New company',
           },
         });
+      });
 
-        await wait();
-
+      await act(async () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
-
-        await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/clients/company-id',
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/clients/company-id',
+        ),
       );
     });
 
     it('should display a success toast', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
+      const { findAllByRole, findByLabelText } = component;
 
       await act(async () => {
         const line1 = await findByLabelText('address.line1');
@@ -250,19 +247,17 @@ describe('AddClient', () => {
             value: 'New company',
           },
         });
+      });
 
-        await wait();
-
+      await act(async () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'success',
           message: 'add-client.success',
@@ -314,7 +309,7 @@ describe('AddClient', () => {
     });
 
     it('should display a warning toast', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
+      const { findAllByRole, findByLabelText } = component;
 
       await act(async () => {
         const line1 = await findByLabelText('address.line1');
@@ -375,19 +370,17 @@ describe('AddClient', () => {
             value: 'New company',
           },
         });
+      });
 
-        await wait();
-
+      await act(async () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      await wait(() =>
+      await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
           colour: 'danger',
           message: 'add-client.retry',
@@ -396,7 +389,7 @@ describe('AddClient', () => {
     });
 
     it('should redirect you back to company page', async () => {
-      const { findAllByRole, findByLabelText, findByTestId } = component;
+      const { findAllByRole, findByLabelText } = component;
 
       await act(async () => {
         const line1 = await findByLabelText('address.line1');
@@ -457,20 +450,20 @@ describe('AddClient', () => {
             value: 'New company',
           },
         });
+      });
 
-        await wait();
-
+      await act(async () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
 
         await waitForApollo(0);
-
-        await findByTestId('next-page');
       });
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/clients/company-id',
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/clients/company-id',
+        ),
       );
     });
   });

@@ -2,23 +2,20 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import { randomFillSync } from 'crypto';
 import 'jest-date-mock';
 import 'jest-styled-components';
 
-Object.defineProperty(window, 'matchMedia', {
-  value: jest.fn().mockImplementation(query => ({
-    addEventListener: jest.fn(),
-    addListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-    matches: false,
-    media: query,
-    onchange: null,
-    removeEventListener: jest.fn(),
-    removeListener: jest.fn(),
-  })),
-  writable: true,
+window.matchMedia = (query) => ({
+  addEventListener: jest.fn(),
+  addListener: jest.fn(),
+  dispatchEvent: jest.fn(),
+  matches: false,
+  media: query,
+  onchange: null,
+  removeEventListener: jest.fn(),
+  removeListener: jest.fn(),
 });
 
 Object.defineProperty(window, 'crypto', {
@@ -28,3 +25,6 @@ Object.defineProperty(window, 'crypto', {
   },
   writable: true,
 });
+
+// TODO: Improve tests so that the timeout can be reduced
+jest.setTimeout(10000);

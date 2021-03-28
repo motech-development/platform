@@ -1,15 +1,11 @@
+import { babel } from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import external from 'rollup-plugin-peer-deps-external';
-import typescript from 'rollup-plugin-typescript2';
+import external from 'rollup-plugin-exclude-dependencies-from-bundle';
 import pkg from './package.json';
 
 export default [
   {
-    external: {
-      ...pkg.peerDependencies,
-      ...pkg.dependencies,
-    },
     input: 'src/index.ts',
     output: [
       {
@@ -25,22 +21,14 @@ export default [
     ],
     plugins: [
       external(),
-      typescript({
-        clean: true,
-        rollupCommonJSResolveHack: true,
-        tsconfigOverride: {
-          exclude: [
-            '**/__tests__/*.ts',
-            '**/__tests__/*.tsx',
-            '**/*.stories.tsx',
-            'src/setupTests.ts',
-          ],
-        },
-      }),
       resolve({
-        extensions: ['.ts', '.tsx'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
       }),
       commonjs(),
+      babel({
+        babelHelpers: 'runtime',
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      }),
     ],
   },
 ];

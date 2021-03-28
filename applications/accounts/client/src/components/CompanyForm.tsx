@@ -6,7 +6,7 @@ import {
   Row,
   Typography,
 } from '@motech-development/breeze-ui';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object } from 'yup';
 import {
