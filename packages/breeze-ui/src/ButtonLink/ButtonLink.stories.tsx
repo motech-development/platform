@@ -1,4 +1,3 @@
-import { withA11y } from '@storybook/addon-a11y';
 import { text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import BaseStyles from '../BaseStyles/BaseStyles';
@@ -7,7 +6,6 @@ import ButtonLink from './ButtonLink';
 
 const stories = storiesOf('ButtonLink', module);
 
-stories.addDecorator(withA11y);
 stories.addDecorator(withKnobs);
 
 stories.add('Basic button link', () => (

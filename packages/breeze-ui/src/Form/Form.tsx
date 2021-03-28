@@ -74,7 +74,7 @@ const Form: FC<IFormProps> = ({
       onSubmit={doSubmit}
     >
       {({ isValid }) => (
-        <FormikForm autoComplete="off" role="form">
+        <FormikForm autoComplete="off">
           <Row>
             <Col>{children}</Col>
 
