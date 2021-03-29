@@ -21,10 +21,10 @@
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.34",
-    "@fortawesome/free-solid-svg-icons": "^5.15.2",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
-    "@popperjs/core": "^2.9.0",
+    "@popperjs/core": "^2.9.1",
     "formik": "^2.2.6",
     "moment": "^2.29.1",
     "polished": "^4.1.1",
@@ -44,10 +44,10 @@
     "yup": "^0.29.1"
   },
   "peerDependencies": {
-    "@fortawesome/fontawesome-svg-core": "1.2.34",
-    "@fortawesome/free-solid-svg-icons": "5.15.2",
+    "@fortawesome/fontawesome-svg-core": "1.2.35",
+    "@fortawesome/free-solid-svg-icons": "5.15.3",
     "@fortawesome/react-fontawesome": "0.1.14",
-    "@popperjs/core": "2.9.0",
+    "@popperjs/core": "2.9.1",
     "formik": "2.2.6",
     "moment": "2.29.1",
     "polished": "4.1.1",

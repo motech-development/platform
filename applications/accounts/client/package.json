@@ -20,10 +20,10 @@
     "test:ci": "react-app-rewired test --coverage --runInBand --reporters=default --reporters=jest-junit"
   },
   "dependencies": {
-    "@apollo/client": "^3.3.12",
-    "@auth0/auth0-spa-js": "^1.13.6",
-    "@fortawesome/fontawesome-svg-core": "^1.2.34",
-    "@fortawesome/free-solid-svg-icons": "^5.15.2",
+    "@apollo/client": "^3.3.13",
+    "@auth0/auth0-spa-js": "^1.14.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@motech-development/appsync-apollo": "^0.0.0",
     "@motech-development/auth": "^0.0.0",
@@ -31,7 +31,7 @@
     "@motech-development/breeze-ui": "^0.0.0",
     "@motech-development/ga-web-vitals": "^0.0.0",
     "@motech-development/query-string-hook": "^0.0.0",
-    "@popperjs/core": "^2.9.0",
+    "@popperjs/core": "^2.9.1",
     "aws-appsync-auth-link": "^3.0.4",
     "aws-appsync-subscription-link": "^3.0.6",
     "axios": "^0.21.1",

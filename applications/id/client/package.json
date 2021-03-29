@@ -17,13 +17,13 @@
     "test:ci": "react-app-rewired test --coverage --runInBand --reporters=default --reporters=jest-junit"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.34",
-    "@fortawesome/free-solid-svg-icons": "^5.15.2",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@motech-development/axios-hooks": "^0.0.0",
     "@motech-development/breeze-ui": "^0.0.0",
     "@motech-development/ga-web-vitals": "^0.0.0",
-    "@popperjs/core": "^2.9.0",
+    "@popperjs/core": "^2.9.1",
     "auth0-js": "^9.13.3",
     "axios": "^0.21.1",
     "body-scroll-lock": "^3.0.3",
