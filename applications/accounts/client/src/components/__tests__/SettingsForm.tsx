@@ -118,7 +118,7 @@ describe('SettingsForm', () => {
       await expect(findByRole('form')).resolves.toBeInTheDocument();
     });
 
-    it('should submit the form with the correct data', async () => {
+    it('should submit the form with the updated data', async () => {
       const { findAllByRole, findAllByLabelText } = component;
 
       await act(async () => {

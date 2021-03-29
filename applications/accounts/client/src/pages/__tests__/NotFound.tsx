@@ -13,7 +13,7 @@ describe('NotFound', () => {
     await expect(findByText('not-found')).resolves.toBeInTheDocument();
   });
 
-  it('should display the correct title', async () => {
+  it('should display the correct description', async () => {
     const { findByText } = render(
       <TestProvider>
         <NotFound />

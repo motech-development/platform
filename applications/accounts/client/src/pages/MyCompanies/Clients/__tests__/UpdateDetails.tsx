@@ -589,7 +589,7 @@ describe('UpdateDetails', () => {
       );
     });
 
-    it('should display a warning toast when deleting a client', async () => {
+    it('should redirect you to the right place when when deleting a client', async () => {
       const { findAllByRole, findByLabelText, findByText } = component;
 
       await act(async () => {

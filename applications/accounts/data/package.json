@@ -31,6 +31,6 @@
   },
   "dependencies": {
     "decimal.js": "^10.2.1",
-    "uuid": "^8.2.0"
+    "uuid": "^8.3.2"
   }
 }

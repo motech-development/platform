@@ -28,7 +28,7 @@ describe('Col', () => {
       expect(container.firstChild).toHaveStyle('grid-column: span 6;');
     });
 
-    it('should have the correct styles when size is set', () => {
+    it('should have the correct styles when size and offset is set', () => {
       const { container } = render(
         <Col xs={6} xsOffset={4}>
           Hello
@@ -46,7 +46,7 @@ describe('Col', () => {
       expect(container.firstChild).toMatchSnapshot();
     });
 
-    it('should have the correct styles when size is set', () => {
+    it('should have the correct styles when size and offset is set', () => {
       const { container } = render(
         <Col sm={6} smOffset={4}>
           Hello
@@ -64,7 +64,7 @@ describe('Col', () => {
       expect(container.firstChild).toMatchSnapshot();
     });
 
-    it('should have the correct styles when size is set', () => {
+    it('should have the correct styles when size and offset is set', () => {
       const { container } = render(
         <Col md={6} mdOffset={4}>
           Hello
@@ -82,7 +82,7 @@ describe('Col', () => {
       expect(container.firstChild).toMatchSnapshot();
     });
 
-    it('should have the correct styles when size is set', () => {
+    it('should have the correct styles when size and offset is set', () => {
       const { container } = render(
         <Col lg={6} lgOffset={4}>
           Hello
