@@ -13,7 +13,7 @@ import App from './App';
 import history from './history';
 import './i18n';
 import reportWebVitals from './reportWebVitals';
-import * as serviceWorker from './serviceWorker';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const { REACT_APP_GA } = process.env;
 
@@ -55,7 +55,7 @@ render(
   document.getElementById('root'),
 );
 
-serviceWorker.register({
+serviceWorkerRegistration.register({
   onUpdate: async (registration) => {
     await registration.update();
   },
