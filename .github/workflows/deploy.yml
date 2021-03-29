@@ -18,9 +18,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -33,7 +30,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -73,9 +70,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -87,7 +81,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -128,9 +122,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -142,7 +133,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -186,9 +177,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -200,7 +188,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -248,9 +236,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -262,7 +247,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -296,9 +281,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -310,7 +292,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -345,9 +327,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -359,7 +338,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -396,9 +375,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -410,7 +386,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -444,9 +420,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -458,7 +431,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -492,9 +465,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -506,7 +476,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -545,9 +515,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -559,7 +526,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -602,9 +569,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -616,7 +580,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -650,9 +614,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -664,7 +625,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -705,9 +666,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: Generate modules cache key
-        run: ./scripts/checksum.sh ./modules.txt modules
-
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
@@ -719,7 +677,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/modules.txt') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 

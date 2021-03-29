@@ -2,6 +2,8 @@
   "name": "@motech-development/serverless-outputs-env",
   "version": "0.0.0",
   "description": "A Serverless plugin to get Serverless outputs as environment variables",
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "license": "ISC",
   "main": "lib/outputs-env-plugin.cjs.js",
   "module": "lib/outputs-env-plugin.esm.js",
   "types": "lib/outputs-env-plugin.d.ts",

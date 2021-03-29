@@ -73,3 +73,26 @@ Cypress.Commands.add('format', (type, value) => {
       throw new Error('Format unknown');
   }
 });
+
+Cypress.Commands.add('a11yWithLogs', () => {
+  cy.checkA11y(null, null, (violations) => {
+    cy.task(
+      'log',
+      `${violations.length} accessibility violation${
+        violations.length === 1 ? '' : 's'
+      } ${violations.length === 1 ? 'was' : 'were'} detected`,
+    );
+
+    const violationData = violations.map(
+      ({ id, impact, description, nodes }) => ({
+        id,
+        impact,
+        // eslint-disable-next-line sort-keys
+        description,
+        nodes: nodes.length,
+      }),
+    );
+
+    cy.task('table', violationData);
+  });
+});

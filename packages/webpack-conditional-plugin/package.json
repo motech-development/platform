@@ -2,6 +2,8 @@
   "name": "@motech-development/webpack-conditional-plugin",
   "version": "0.0.0",
   "description": "A Webpack plugin to conditionally apply plugins",
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "license": "ISC",
   "main": "lib/webpack-conditional-plugin.cjs.js",
   "module": "lib/webpack-conditional-plugin.esm.js",
   "types": "lib/webpack-conditional-plugin.d.ts",
