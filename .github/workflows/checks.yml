@@ -18,7 +18,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -59,14 +59,14 @@ jobs:
 
       - name: Install dependencies
         if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: yarn install
 
       - name: Build packages
         if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
-        run: npm run package
+        run: yarn package
 
       - name: Lint code
-        run: npm run lint
+        run: yarn lint
 
   unit-test:
     runs-on: ubuntu-latest
@@ -82,7 +82,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -111,7 +111,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Unit test
-        run: npm run test:ci
+        run: yarn test:ci
 
       - name: Fix paths for SonarCloud Scan
         run: ./scripts/sonar-scanner-path-fix.sh
@@ -149,7 +149,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -178,19 +178,19 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy ID infrastructure
-        run: npm run deploy -- --scope=@id/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
+        run: yarn deploy -- --scope=@id/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
 
       - name: Build ID client
-        run: npm run build -- --scope=@id/client
+        run: yarn build -- --scope=@id/client
 
       - name: Build ID emails
-        run: npm run build -- --scope=@id/emails
+        run: yarn build --scope=@id/emails
 
       - name: Deploy client
-        run: npm run deploy -- --scope=@id/client -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
+        run: yarn deploy -- --scope=@id/client -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
 
       - name: Deploy to Auth0
-        run: npm run deploy -- --scope=@id/tenant -- -- -c config.json
+        run: yarn deploy -- --scope=@id/tenant -- -- -c config.json
 
   deploy-open-banking:
     runs-on: ubuntu-latest
@@ -211,7 +211,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -240,7 +240,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy
-        run: npm run deploy -- --scope=@open-banking/api -- -- --stage $STAGE --appId $YAPILY_APPLICATION_KEY --appSecret $YAPILY_APPLICATION_SECRET
+        run: yarn deploy -- --scope=@open-banking/api -- -- --stage $STAGE --appId $YAPILY_APPLICATION_KEY --appSecret $YAPILY_APPLICATION_SECRET
 
   deploy-anti-virus:
     runs-on: ubuntu-latest
@@ -259,7 +259,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -288,7 +288,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy
-        run: npm run deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
+        run: yarn deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
 
   deploy-accounts-storage:
     runs-on: ubuntu-latest
@@ -307,7 +307,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -336,7 +336,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy
-        run: npm run deploy -- --scope=@accounts/storage -- -- --stage $STAGE
+        run: yarn deploy -- --scope=@accounts/storage -- -- --stage $STAGE
 
   deploy-accounts-queue:
     runs-on: ubuntu-latest
@@ -355,7 +355,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -384,7 +384,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy
-        run: npm run deploy -- --scope=@accounts/queue -- -- --stage $STAGE
+        run: yarn deploy -- --scope=@accounts/queue -- -- --stage $STAGE
 
   deploy-accounts-data:
     runs-on: ubuntu-latest
@@ -403,7 +403,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -432,7 +432,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy
-        run: npm run deploy -- --scope=@accounts/data -- -- --stage $STAGE
+        run: yarn deploy -- --scope=@accounts/data -- -- --stage $STAGE
 
   deploy-accounts-api:
     runs-on: ubuntu-latest
@@ -456,7 +456,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -493,7 +493,7 @@ jobs:
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
       - name: Deploy
-        run: npm run deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
+        run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
 
   deploy-accounts-notifications:
     runs-on: ubuntu-latest
@@ -512,7 +512,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -541,7 +541,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy
-        run: npm run deploy -- --scope=@accounts/notifications -- -- --stage $STAGE
+        run: yarn deploy -- --scope=@accounts/notifications -- -- --stage $STAGE
 
   build-accounts-client:
     runs-on: ubuntu-latest
@@ -568,7 +568,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -613,12 +613,12 @@ jobs:
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
       - name: Build client
-        run: npm run build -- --scope=@accounts/client
+        run: yarn build -- --scope=@accounts/client
 
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: npm run e2e:ci -- --scope=@accounts/client -- -- --record false
+          command: yarn e2e:ci -- --scope=@accounts/client -- -- --record false
           config: defaultCommandTimeout=20000
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000

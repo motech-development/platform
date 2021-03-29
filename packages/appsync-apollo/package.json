@@ -8,7 +8,7 @@
   "scripts": {
     "build": "NODE_ENV=production rollup -c",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
-    "package": "npm run build",
+    "package": "yarn build",
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
@@ -39,10 +39,6 @@
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
       "!src/**/*.stories.{ts,tsx}"
-    ],
-    "moduleDirectories": [
-      "../../node_modules",
-      "<rootDir>/node_modules"
     ],
     "setupFilesAfterEnv": [
       "<rootDir>/src/setupTests.ts"

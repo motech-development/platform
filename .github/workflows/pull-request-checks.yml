@@ -18,7 +18,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -59,14 +59,14 @@ jobs:
 
       - name: Install dependencies
         if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: yarn install
 
       - name: Build packages
         if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
-        run: npm run package
+        run: yarn package
 
       - name: Lint code
-        run: npm run lint
+        run: yarn lint
 
   unit-test:
     runs-on: ubuntu-latest
@@ -82,7 +82,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -111,7 +111,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Unit test
-        run: npm run test:ci
+        run: yarn test:ci
 
       - name: Fix paths for SonarCloud Scan
         run: ./scripts/sonar-scanner-path-fix.sh
@@ -140,7 +140,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -177,7 +177,7 @@ jobs:
             ${{ runner.os }}-accounts-client-env-vars-pr-
 
       - name: Deploy
-        run: npm run deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
+        run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
 
   smoke-test:
     runs-on: ubuntu-latest
@@ -211,7 +211,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 12
 
       - name: Generate modules cache key
         run: ./scripts/checksum.sh ./modules.txt modules
@@ -256,12 +256,12 @@ jobs:
             ${{ runner.os }}-accounts-client-env-vars-pr-
 
       - name: Build client
-        run: npm run build -- --scope=@accounts/client
+        run: yarn build --scope=@accounts/client
 
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: npm run e2e:ci -- --scope=@accounts/client -- -- --record --parallel
+          command: yarn e2e:ci -- --scope=@accounts/client -- -- --record --parallel
           config: defaultCommandTimeout=20000
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000

@@ -8,7 +8,7 @@
   "scripts": {
     "build": "rollup -c",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
-    "package": "npm run build",
+    "package": "yarn build",
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
@@ -20,10 +20,6 @@
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
       "!src/**/*.d.ts"
-    ],
-    "moduleDirectories": [
-      "../../node_modules",
-      "<rootDir>/node_modules"
     ],
     "testEnvironment": "node"
   },

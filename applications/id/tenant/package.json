@@ -16,10 +16,6 @@
     "collectCoverageFrom": [
       "src/**/*.js"
     ],
-    "moduleDirectories": [
-      "../../node_modules",
-      "<rootDir>/node_modules"
-    ],
     "setupFiles": [
       "jest-date-mock"
     ],

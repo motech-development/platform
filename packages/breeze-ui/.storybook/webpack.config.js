@@ -10,7 +10,13 @@ module.exports = ({ config }) => {
 
   config.plugins.push(
     new ForkTsCheckerWebpackPlugin({
-      checkSyntacticErrors: true,
+      typescript: {
+        diagnosticOptions: {
+          semantic: true,
+          syntactic: true,
+        },
+        mode: 'write-references',
+      },
     }),
   );
 

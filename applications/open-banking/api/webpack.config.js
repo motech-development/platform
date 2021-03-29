@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-// TODO: Get to the bottom of the issues with serverless-webpack
-// const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { cpus } = require('os');
 const { join } = require('path');
 const slsw = require('serverless-webpack');
@@ -43,9 +42,15 @@ module.exports = {
     path: join(__dirname, '.webpack'),
   },
   plugins: [
-    // new ForkTsCheckerWebpackPlugin({
-    //   checkSyntacticErrors: true,
-    // }),
+    new ForkTsCheckerWebpackPlugin({
+      typescript: {
+        diagnosticOptions: {
+          semantic: true,
+          syntactic: true,
+        },
+        mode: 'write-references',
+      },
+    }),
   ],
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],

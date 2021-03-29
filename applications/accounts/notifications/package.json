@@ -16,10 +16,6 @@
       "src/**/*.{ts,tsx}",
       "!src/**/*.d.ts"
     ],
-    "moduleDirectories": [
-      "../../node_modules",
-      "<rootDir>/node_modules"
-    ],
     "testEnvironment": "node"
   },
   "dependencies": {
