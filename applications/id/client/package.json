@@ -14,7 +14,7 @@
     "start": "react-app-rewired start",
     "teardown": "serverless client remove --verbose --no-confirm",
     "test": "react-app-rewired test",
-    "test:ci": "react-app-rewired test --coverage --runInBand --reporters=default --reporters=jest-junit"
+    "test:ci": "react-app-rewired test --coverage --runInBand"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -74,10 +74,6 @@
       "<rootDir>/node_modules"
     ],
     "resetMocks": false
-  },
-  "jest-junit": {
-    "outputDirectory": "../../../reports/junit",
-    "outputName": "id-client.xml"
   },
   "reactSnap": {
     "include": [

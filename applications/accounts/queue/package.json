@@ -9,7 +9,7 @@
     "precommit": "lint-staged",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand --reporters=default --reporters=jest-junit"
+    "test:ci": "jest --coverage --runInBand"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -21,10 +21,6 @@
       "<rootDir>/node_modules"
     ],
     "testEnvironment": "node"
-  },
-  "jest-junit": {
-    "outputDirectory": "../../../reports/junit",
-    "outputName": "accounts-queue.xml"
   },
   "dependencies": {
     "aws4": "^1.11.0",

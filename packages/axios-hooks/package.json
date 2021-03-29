@@ -14,7 +14,7 @@
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
     "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand --reporters=default --reporters=jest-junit"
+    "test:ci": "jest --coverage --runInBand"
   },
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
@@ -34,9 +34,5 @@
       "../../node_modules",
       "<rootDir>/node_modules"
     ]
-  },
-  "jest-junit": {
-    "outputDirectory": "../../reports/junit",
-    "outputName": "axios-hooks.xml"
   }
 }
