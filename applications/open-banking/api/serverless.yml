@@ -1,6 +1,4 @@
-service:
-  name: ${opt:appName, 'open-banking'}
-  publish: false
+service: ${opt:appName, 'open-banking'}
 
 provider:
   name: aws

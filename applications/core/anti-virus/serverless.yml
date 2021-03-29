@@ -1,6 +1,4 @@
-service:
-  name: ${opt:appName, 'anti-virus'}
-  publish: false
+service: ${opt:appName, 'anti-virus'}
 
 provider:
   name: aws

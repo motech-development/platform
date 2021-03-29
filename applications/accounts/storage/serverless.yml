@@ -1,6 +1,4 @@
-service:
-  name: ${opt:appName, 'accounts'}
-  publish: false
+service: ${opt:appName, 'accounts'}
 
 provider:
   name: aws
