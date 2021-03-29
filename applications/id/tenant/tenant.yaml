@@ -27,7 +27,7 @@ pages:
 resourceServers:
   - name: Accounts API
     identifier: accounts-api
-    allow_offline_access: false
+    allow_offline_access: true
     signing_alg: RS256
     skip_consent_for_verifiable_first_party_clients: true
     token_lifetime: 86400
