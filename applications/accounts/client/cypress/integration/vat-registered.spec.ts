@@ -18,8 +18,7 @@ describe('VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const data = res[0];
 
-        // TODO: Reinstate a11y checks
-        // cy.a11yWithLogs();
+        cy.a11yWithLogs();
 
         cy.get('a:contains("Add a new company")').should('be.visible').click();
 
@@ -27,8 +26,7 @@ describe('VAT registered', () => {
           .should('contain.text', 'Add a new company')
           .should('be.visible');
 
-        // TODO: Reinstate a11y checks
-        // cy.a11yWithLogs();
+        cy.a11yWithLogs();
 
         cy.get('input[id="company.name"]')
           .should('be.visible')
@@ -142,8 +140,7 @@ describe('VAT registered', () => {
 
         cy.get('h2').should('contain.text', company.name).should('be.visible');
 
-        // TODO: Reinstate a11y checks
-        // cy.a11yWithLogs();
+        cy.a11yWithLogs();
 
         cy.get('a:contains("Manage company details")')
           .should('be.visible')
@@ -151,8 +148,7 @@ describe('VAT registered', () => {
 
         cy.get('h2').should('contain.text', company.name).should('be.visible');
 
-        // TODO: Reinstate a11y checks
-        // cy.a11yWithLogs();
+        cy.a11yWithLogs();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -242,8 +238,7 @@ describe('VAT registered', () => {
           const settings = res[0];
           const company = companies[0];
 
-          // TODO: Reinstate a11y checks
-          // cy.a11yWithLogs();
+          cy.a11yWithLogs();
 
           cy.get('button:contains("Add a new category")')
             .should('be.visible')
@@ -460,8 +455,7 @@ describe('VAT registered', () => {
       cy.fixture('data/client.json').then((res) => {
         const client = res[0];
 
-        // TODO: Reinstate a11y checks
-        // cy.a11yWithLogs();
+        cy.a11yWithLogs();
 
         cy.get('a:contains("Add a new client")').should('be.visible').click();
 
@@ -469,8 +463,7 @@ describe('VAT registered', () => {
           .should('contain.text', 'Add a new client')
           .should('be.visible');
 
-        // TODO: Reinstate a11y checks
-        // cy.a11yWithLogs();
+        cy.a11yWithLogs();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -543,8 +536,7 @@ describe('VAT registered', () => {
         cy.fixture('upload/invoice.pdf').then((file) => {
           const transaction = res[0];
 
-          // TODO: Reinstate a11y checks
-          // cy.a11yWithLogs();
+          cy.a11yWithLogs();
 
           cy.get('a:contains("Record a new transaction")')
             .should('be.visible')
@@ -554,8 +546,7 @@ describe('VAT registered', () => {
             .should('contain.text', 'Record transaction')
             .should('be.visible');
 
-          // TODO: Reinstate a11y checks
-          // cy.a11yWithLogs();
+          cy.a11yWithLogs();
 
           cy.findByLabelText('Sale').check();
 
@@ -736,8 +727,7 @@ describe('VAT registered', () => {
             .should('contain.text', 'View transaction')
             .should('be.visible');
 
-          // TODO: Reinstate a11y checks
-          // cy.a11yWithLogs();
+          cy.a11yWithLogs();
 
           cy.get('input[name="transaction"][type="hidden"]').should(
             'have.value',
@@ -798,8 +788,7 @@ describe('VAT registered', () => {
 
         cy.get('button:contains("Delete")').eq(2).should('be.visible').click();
 
-        // TODO: Reinstate a11y checks
-        // cy.a11yWithLogs();
+        cy.a11yWithLogs();
 
         cy.get('input[id="confirmation"]')
           .should('be.visible')

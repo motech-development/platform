@@ -87,7 +87,7 @@ const SettingsForm: FC<ISettingsFormProps> = ({
       onSubmit={onSave}
     >
       {({ isValid, values }) => (
-        <Form autoComplete="off" role="form">
+        <Form autoComplete="off" aria-label="form">
           <Row>
             <Col>
               <Card padding="lg">

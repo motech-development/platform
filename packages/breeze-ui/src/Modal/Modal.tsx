@@ -36,17 +36,24 @@ const ModalDialog = styled.div`
 export interface IModalProps {
   children: ReactNode;
   isOpen: boolean;
+  title: string;
   onDismiss(): void;
 }
 
-const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss }) => {
+const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss, title }) => {
   const output = document.createElement('div');
   const doNotDismiss = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
   };
   const modal = (
     <Suspense fallback={<Loader />}>
-      <ModalOuter aria-modal role="dialog" tabIndex={-1} onClick={onDismiss}>
+      <ModalOuter
+        aria-modal
+        aria-label={title}
+        role="dialog"
+        tabIndex={-1}
+        onClick={onDismiss}
+      >
         <ModalDialog role="document">
           <ModalContent onClick={doNotDismiss}>
             <Card padding="lg">{children}</Card>
