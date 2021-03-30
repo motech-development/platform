@@ -99,16 +99,19 @@ describe('VAT registered', () => {
 
         cy.get('input[id="balance.balance"]')
           .should('be.visible')
+          .focus()
           .clear()
           .type(data.balance.balance);
 
         cy.get('input[id="balance.vat.owed"]')
           .should('be.visible')
+          .focus()
           .clear()
           .type(data.balance.vat.owed);
 
         cy.get('input[id="balance.vat.paid"]')
           .should('be.visible')
+          .focus()
           .clear()
           .type(data.balance.vat.paid);
 
@@ -161,6 +164,7 @@ describe('VAT registered', () => {
         cy.get('input[id="bank.accountNumber"]')
           .should('be.visible')
           .should('have.value', company.bank.accountNumber)
+          .focus()
           .clear()
           .type(updated.bank.accountNumber);
 
@@ -168,6 +172,7 @@ describe('VAT registered', () => {
           cy.get('input[id="bank.sortCode"]')
             .should('be.visible')
             .should('have.value', value)
+            .focus()
             .clear()
             .type(updated.bank.sortCode);
         });
@@ -175,12 +180,14 @@ describe('VAT registered', () => {
         cy.get('input[id="address.line1"]')
           .should('be.visible')
           .should('have.value', company.address.line1)
+          .focus()
           .clear()
           .type(updated.address.line1);
 
         cy.get('input[id="address.line2"]')
           .should('be.visible')
           .should('have.value', company.address.line2)
+          .focus()
           .clear();
 
         cy.get('input[id="address.line3"]')
@@ -194,6 +201,7 @@ describe('VAT registered', () => {
         cy.get('input[id="contact.email"]')
           .should('be.visible')
           .should('have.value', company.contact.email)
+          .focus()
           .clear()
           .type(updated.contact.email);
 
@@ -260,6 +268,7 @@ describe('VAT registered', () => {
 
           cy.get('input[id="categories.6.vatRate"]')
             .should('be.visible')
+            .focus()
             .clear()
             .type(settings.categories[1].vatRate);
 
@@ -274,6 +283,7 @@ describe('VAT registered', () => {
 
           cy.get('input[id="categories.7.vatRate"]')
             .should('be.visible')
+            .focus()
             .clear()
             .type(settings.categories[2].vatRate);
 
@@ -281,6 +291,7 @@ describe('VAT registered', () => {
             cy.get('input[id="vat.pay"]')
               .should('be.visible')
               .should('have.value', value)
+              .focus()
               .clear()
               .type(settings.vat.pay);
           });
@@ -295,6 +306,7 @@ describe('VAT registered', () => {
 
           cy.get('input[id="vat.registration"]')
             .should('be.visible')
+            .focus()
             .clear()
             .type(settings.vat.registration);
 
@@ -415,6 +427,7 @@ describe('VAT registered', () => {
 
         cy.get('input[id="categories.6.vatRate"]')
           .should('be.visible')
+          .focus()
           .clear()
           .type(settings.categories[1].vatRate);
 
@@ -746,6 +759,7 @@ describe('VAT registered', () => {
 
           cy.get('input[id="amount"]')
             .should('be.visible')
+            .focus()
             .clear()
             .type(transaction.amount);
 

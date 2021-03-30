@@ -80,11 +80,13 @@ describe('Non-VAT registered', () => {
 
         cy.get('input[id="vat.charge"]')
           .should('be.visible')
+          .focus()
           .clear()
           .type(data.vat.charge);
 
         cy.get('input[id="vat.pay"]')
           .should('be.visible')
+          .focus()
           .clear()
           .type(data.vat.pay);
 
@@ -194,6 +196,7 @@ describe('Non-VAT registered', () => {
 
         cy.get('input[id="categories.6.vatRate"]')
           .should('be.visible')
+          .focus()
           .clear()
           .type(settings.categories[1].vatRate);
 
@@ -392,6 +395,7 @@ describe('Non-VAT registered', () => {
         cy.get('input[id="name"]')
           .should('be.visible')
           .should('have.value', client.name)
+          .focus()
           .clear()
           .type(updated.name);
 
