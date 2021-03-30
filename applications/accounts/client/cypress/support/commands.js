@@ -76,24 +76,29 @@ Cypress.Commands.add('format', (type, value) => {
 });
 
 Cypress.Commands.add('a11yWithLogs', () => {
-  cy.checkA11y(null, null, (violations) => {
-    cy.task(
-      'log',
-      `${violations.length} accessibility violation${
-        violations.length === 1 ? '' : 's'
-      } ${violations.length === 1 ? 'was' : 'were'} detected`,
-    );
+  cy.checkA11y(
+    null,
+    null,
+    (violations) => {
+      cy.task(
+        'log',
+        `${violations.length} accessibility violation${
+          violations.length === 1 ? '' : 's'
+        } ${violations.length === 1 ? 'was' : 'were'} detected`,
+      );
 
-    const violationData = violations.map(
-      ({ id, impact, description, nodes }) => ({
-        id,
-        impact,
-        // eslint-disable-next-line sort-keys
-        description,
-        nodes: nodes.length,
-      }),
-    );
+      const violationData = violations.map(
+        ({ id, impact, description, nodes }) => ({
+          id,
+          impact,
+          // eslint-disable-next-line sort-keys
+          description,
+          nodes: nodes.length,
+        }),
+      );
 
-    cy.task('table', violationData);
-  });
+      cy.task('table', violationData);
+    },
+    true,
+  );
 });
