@@ -38,7 +38,13 @@ module.exports = {
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
-      checkSyntacticErrors: true,
+      typescript: {
+        diagnosticOptions: {
+          semantic: true,
+          syntactic: true,
+        },
+        mode: 'write-references',
+      },
     }),
   ],
   resolve: {

@@ -74,6 +74,26 @@ exports[`Col alignment should have the correct styles when vertical alignment se
 </div>
 `;
 
+exports[`Col lg should have the correct styles when size and offset is set 1`] = `
+.c0 {
+  grid-column: span 12;
+  position: relative;
+  text-align: left;
+}
+
+@media (min-width:992px) {
+  .c0 {
+    grid-column: 4 / span 6;
+  }
+}
+
+<div
+  class="c0"
+>
+  Hello
+</div>
+`;
+
 exports[`Col lg should have the correct styles when size is set 1`] = `
 .c0 {
   grid-column: span 12;
@@ -94,14 +114,14 @@ exports[`Col lg should have the correct styles when size is set 1`] = `
 </div>
 `;
 
-exports[`Col lg should have the correct styles when size is set 2`] = `
+exports[`Col md should have the correct styles when size and offset is set 1`] = `
 .c0 {
   grid-column: span 12;
   position: relative;
   text-align: left;
 }
 
-@media (min-width:992px) {
+@media (min-width:768px) {
   .c0 {
     grid-column: 4 / span 6;
   }
@@ -134,14 +154,14 @@ exports[`Col md should have the correct styles when size is set 1`] = `
 </div>
 `;
 
-exports[`Col md should have the correct styles when size is set 2`] = `
+exports[`Col sm should have the correct styles when size and offset is set 1`] = `
 .c0 {
   grid-column: span 12;
   position: relative;
   text-align: left;
 }
 
-@media (min-width:768px) {
+@media (min-width:576px) {
   .c0 {
     grid-column: 4 / span 6;
   }
@@ -164,26 +184,6 @@ exports[`Col sm should have the correct styles when size is set 1`] = `
 @media (min-width:576px) {
   .c0 {
     grid-column: span 6;
-  }
-}
-
-<div
-  class="c0"
->
-  Hello
-</div>
-`;
-
-exports[`Col sm should have the correct styles when size is set 2`] = `
-.c0 {
-  grid-column: span 12;
-  position: relative;
-  text-align: left;
-}
-
-@media (min-width:576px) {
-  .c0 {
-    grid-column: 4 / span 6;
   }
 }
 

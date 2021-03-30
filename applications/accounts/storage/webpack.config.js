@@ -10,7 +10,7 @@ module.exports = {
   entry: slsw.lib.entries,
   externals: [
     nodeExternals({
-      whitelist: ['@motech-development/api-gateway-handler'],
+      allowlist: ['@motech-development/api-gateway-handler'],
     }),
   ],
   mode: 'none',
@@ -42,7 +42,13 @@ module.exports = {
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
-      checkSyntacticErrors: true,
+      typescript: {
+        diagnosticOptions: {
+          semantic: true,
+          syntactic: true,
+        },
+        mode: 'write-references',
+      },
     }),
   ],
   resolve: {

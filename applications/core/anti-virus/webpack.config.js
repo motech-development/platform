@@ -8,7 +8,7 @@ const { join, resolve } = require('path');
 const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
 
-const condition = compiler => {
+const condition = (compiler) => {
   const name = compiler.options.output.path.split('/').pop();
   const result = ['ScanFile', 'UpdateDefinitions'].includes(name);
 
@@ -48,7 +48,13 @@ module.exports = {
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
-      checkSyntacticErrors: true,
+      typescript: {
+        diagnosticOptions: {
+          semantic: true,
+          syntactic: true,
+        },
+        mode: 'write-references',
+      },
     }),
     new ConditionalPlugin(
       condition,
@@ -60,16 +66,16 @@ module.exports = {
       condition,
       new PermissionsOutputPlugin({
         file: '755',
-        folders: compiler => {
+        folders: (compiler) => {
           const entries = Object.keys(compiler.options.entry);
 
-          return entries.map(entry => {
+          return entries.map((entry) => {
             const handler = `${entry}.handler`;
             const functions = Object.keys(
               slsw.lib.serverless.service.functions,
             );
             const name = functions.find(
-              func =>
+              (func) =>
                 slsw.lib.serverless.service.functions[func].handler === handler,
             );
 

@@ -10,7 +10,7 @@ describe('Modal', () => {
 
   it('should not show a modal when isOpen is false', () => {
     const { queryByTestId } = render(
-      <Modal isOpen={false} onDismiss={onDismiss}>
+      <Modal isOpen={false} title="Title" onDismiss={onDismiss}>
         <p data-testid="content">Content</p>
       </Modal>,
     );
@@ -23,7 +23,7 @@ describe('Modal', () => {
 
     beforeEach(() => {
       component = render(
-        <Modal isOpen onDismiss={onDismiss}>
+        <Modal isOpen title="Title" onDismiss={onDismiss}>
           <p data-testid="content">Content</p>
         </Modal>,
       );

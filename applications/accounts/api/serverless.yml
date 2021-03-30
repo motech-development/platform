@@ -437,6 +437,7 @@ custom:
 
   webpack:
     includeModules: true
+    serializedCompile: true
 
 functions:
   LambdaDataSource:

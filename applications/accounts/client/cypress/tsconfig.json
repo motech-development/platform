@@ -5,6 +5,7 @@
     "strict": true,
     "target": "es5",
     "types": [
+      "@testing-library/cypress",
       "cypress",
       "cypress-axe",
       "cypress-file-upload",

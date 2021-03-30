@@ -1,3 +1,4 @@
+/* eslint-disable jest/valid-expect-in-promise */
 describe('Non-VAT registered', () => {
   describe('Register company', () => {
     afterEach(() => {
@@ -8,12 +9,10 @@ describe('Non-VAT registered', () => {
     });
 
     it('should create a company', () => {
-      cy.fixture('data/company.json').then(res => {
+      cy.fixture('data/company.json').then((res) => {
         const data = res[1];
 
-        cy.get('a:contains("Add a new company")')
-          .should('be.visible')
-          .click();
+        cy.get('a:contains("Add a new company")').should('be.visible').click();
 
         cy.get('input[id="company.name"]')
           .should('be.visible')
@@ -65,13 +64,9 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(data.company.contact.telephone);
 
-        cy.get('button:contains("Settings")')
-          .should('be.visible')
-          .click();
+        cy.get('button:contains("Settings")').should('be.visible').click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(data.vat.scheme);
+        cy.findByLabelText('None').check();
 
         cy.get('select[id="yearEnd.day"]')
           .should('be.visible')
@@ -85,17 +80,17 @@ describe('Non-VAT registered', () => {
 
         cy.get('input[id="vat.charge"]')
           .should('be.visible')
+          .focus()
           .clear()
           .type(data.vat.charge);
 
         cy.get('input[id="vat.pay"]')
           .should('be.visible')
+          .focus()
           .clear()
           .type(data.vat.pay);
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
         cy.get('h2')
           .should('contain.text', data.company.name)
@@ -106,24 +101,18 @@ describe('Non-VAT registered', () => {
 
   describe('Settings', () => {
     beforeEach(() => {
-      cy.fixture('data/company.json').then(res => {
+      cy.fixture('data/company.json').then((res) => {
         const { company } = res[1];
 
         cy.get(`a[data-test-id="${company.name}"]`)
           .should('be.visible')
           .click();
 
-        cy.get('h2')
-          .should('contain.text', company.name)
-          .should('be.visible');
+        cy.get('h2').should('contain.text', company.name).should('be.visible');
 
-        cy.get('a:contains("Manage settings")')
-          .should('be.visible')
-          .click();
+        cy.get('a:contains("Manage settings")').should('be.visible').click();
 
-        cy.get('h2')
-          .should('contain.text', 'Settings')
-          .should('be.visible');
+        cy.get('h2').should('contain.text', 'Settings').should('be.visible');
       });
     });
 
@@ -135,18 +124,18 @@ describe('Non-VAT registered', () => {
     });
 
     it('should have correct default settings', () => {
-      cy.fixture('data/settings.json').then(res => {
-        cy.fixture('data/company.json').then(companies => {
+      cy.fixture('data/settings.json').then((res) => {
+        cy.fixture('data/company.json').then((companies) => {
           const company = companies[1];
           const settings = res[1];
 
-          cy.format('percentage', settings.vat.charge).then(value => {
+          cy.format('percentage', settings.vat.charge).then((value) => {
             cy.get('input[id="vat.charge"]')
               .should('be.visible')
               .should('have.value', value);
           });
 
-          cy.format('percentage', settings.vat.pay).then(value => {
+          cy.format('percentage', settings.vat.pay).then((value) => {
             cy.get('input[id="vat.pay"]')
               .should('be.visible')
               .should('have.value', value);
@@ -156,9 +145,7 @@ describe('Non-VAT registered', () => {
             .should('be.visible')
             .should('have.value', company.vat.registration);
 
-          cy.get(`input[type="radio"][value="${company.vat.scheme}"]`)
-            .should('be.visible')
-            .should('be.checked');
+          cy.findByLabelText('None').should('be.checked');
 
           cy.get('select[id="yearEnd.day"]')
             .should('be.visible')
@@ -178,9 +165,7 @@ describe('Non-VAT registered', () => {
             .focus()
             .select(settings.yearEnd.month);
 
-          cy.get('button[type="submit"]')
-            .should('be.visible')
-            .click();
+          cy.get('button[type="submit"]').should('be.visible').click();
 
           cy.get('p:contains("Dashboard")').should('be.visible');
         });
@@ -188,7 +173,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should update company settings', () => {
-      cy.fixture('data/settings.json').then(res => {
+      cy.fixture('data/settings.json').then((res) => {
         const settings = res[1];
 
         cy.get('button:contains("Add a new category")')
@@ -211,6 +196,7 @@ describe('Non-VAT registered', () => {
 
         cy.get('input[id="categories.6.vatRate"]')
           .should('be.visible')
+          .focus()
           .clear()
           .type(settings.categories[1].vatRate);
 
@@ -222,9 +208,7 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .should('have.value', settings.yearEnd.month);
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
         cy.get('p:contains("Dashboard")').should('be.visible');
       });
@@ -233,24 +217,18 @@ describe('Non-VAT registered', () => {
 
   describe('Clients', () => {
     beforeEach(() => {
-      cy.fixture('data/company.json').then(res => {
+      cy.fixture('data/company.json').then((res) => {
         const { company } = res[1];
 
         cy.get(`a[data-test-id="${company.name}"]`)
           .should('be.visible')
           .click();
 
-        cy.get('h2')
-          .should('contain.text', company.name)
-          .should('be.visible');
+        cy.get('h2').should('contain.text', company.name).should('be.visible');
 
-        cy.get('a:contains("Manage clients")')
-          .should('be.visible')
-          .click();
+        cy.get('a:contains("Manage clients")').should('be.visible').click();
 
-        cy.get('h2')
-          .should('contain.text', 'Clients')
-          .should('be.visible');
+        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
 
         cy.url().should(
           'include',
@@ -264,12 +242,10 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add client 1', () => {
-      cy.fixture('data/client.json').then(res => {
+      cy.fixture('data/client.json').then((res) => {
         const client = res[0];
 
-        cy.get('a:contains("Add a new client")')
-          .should('be.visible')
-          .click();
+        cy.get('a:contains("Add a new client")').should('be.visible').click();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -301,23 +277,17 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(client.contact.telephone);
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
-        cy.get('h2')
-          .should('contain.text', 'Clients')
-          .should('be.visible');
+        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
       });
     });
 
     it('should add client 2', () => {
-      cy.fixture('data/client.json').then(res => {
+      cy.fixture('data/client.json').then((res) => {
         const client = res[1];
 
-        cy.get('a:contains("Add a new client")')
-          .should('be.visible')
-          .click();
+        cy.get('a:contains("Add a new client")').should('be.visible').click();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -359,23 +329,17 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(client.contact.telephone);
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
-        cy.get('h2')
-          .should('contain.text', 'Clients')
-          .should('be.visible');
+        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
       });
     });
 
     it('should add client 3', () => {
-      cy.fixture('data/client.json').then(res => {
+      cy.fixture('data/client.json').then((res) => {
         const client = res[2];
 
-        cy.get('a:contains("Add a new client")')
-          .should('be.visible')
-          .click();
+        cy.get('a:contains("Add a new client")').should('be.visible').click();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -412,18 +376,14 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(client.contact.telephone);
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
-        cy.get('h2')
-          .should('contain.text', 'Clients')
-          .should('be.visible');
+        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
       });
     });
 
     it('should update client 2', () => {
-      cy.fixture('data/client.json').then(res => {
+      cy.fixture('data/client.json').then((res) => {
         const client = res[1];
         const updated = res[3];
 
@@ -435,6 +395,7 @@ describe('Non-VAT registered', () => {
         cy.get('input[id="name"]')
           .should('be.visible')
           .should('have.value', client.name)
+          .focus()
           .clear()
           .type(updated.name);
 
@@ -466,18 +427,14 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .should('have.value', client.contact.telephone);
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
-        cy.get('h2')
-          .should('contain.text', 'Clients')
-          .should('be.visible');
+        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
       });
     });
 
     it('should delete client 3', () => {
-      cy.fixture('data/client.json').then(res => {
+      cy.fixture('data/client.json').then((res) => {
         const client = res[2];
 
         cy.get('a:contains("Manage client details")')
@@ -494,38 +451,27 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(client.name);
 
-        cy.get('button[type="submit"]')
-          .eq(1)
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').eq(1).should('be.visible').click();
 
-        cy.get('h2')
-          .should('contain.text', 'Clients')
-          .should('be.visible');
+        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
       });
     });
   });
 
   describe('Accounts', () => {
     beforeEach(() => {
-      cy.fixture('data/company.json').then(res => {
+      cy.fixture('data/company.json').then((res) => {
         const { company } = res[1];
 
         cy.get(`a[data-test-id="${company.name}"]`)
           .should('be.visible')
           .click();
 
-        cy.get('h2')
-          .should('contain.text', company.name)
-          .should('be.visible');
+        cy.get('h2').should('contain.text', company.name).should('be.visible');
 
-        cy.get('a:contains("Manage accounts")')
-          .should('be.visible')
-          .click();
+        cy.get('a:contains("Manage accounts")').should('be.visible').click();
 
-        cy.get('h2')
-          .should('contain.text', 'Accounts')
-          .should('be.visible');
+        cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
 
         cy.url().should(
           'include',
@@ -542,16 +488,14 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add a confirmed sale', () => {
-      cy.fixture('data/account.json').then(res => {
+      cy.fixture('data/account.json').then((res) => {
         const transaction = res[0];
 
         cy.get('a:contains("Record a new transaction")')
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Sale').check();
 
         cy.get('select[id="name"]')
           .should('be.visible')
@@ -563,42 +507,34 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Confirmed').check();
 
         cy.get('input[id="amount"]')
           .should('be.visible')
           .focus()
           .type(transaction.amount);
 
-        cy.format('currency', '0').then(value => {
+        cy.format('currency', '0').then((value) => {
           cy.get('input[id="vat"]')
             .should('be.visible')
             .should('have.value', value);
         });
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
-        cy.get('h2')
-          .should('contain.text', 'Accounts')
-          .should('be.visible');
+        cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
       });
     });
 
     it('should add a confirmed purchase', () => {
-      cy.fixture('data/account.json').then(res => {
+      cy.fixture('data/account.json').then((res) => {
         const transaction = res[1];
 
         cy.get('a:contains("Record a new transaction")')
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Purchase').check();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -610,9 +546,7 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Confirmed').check();
 
         cy.get('select[id="category"]')
           .should('be.visible')
@@ -624,33 +558,27 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.amount);
 
-        cy.format('currency', transaction.vat).then(value => {
+        cy.format('currency', transaction.vat).then((value) => {
           cy.get('input[id="vat"]')
             .should('be.visible')
             .should('have.value', value);
         });
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
-        cy.get('h2')
-          .should('contain.text', 'Accounts')
-          .should('be.visible');
+        cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
       });
     });
 
     it('should add a confirmed zero VAT rate purchase', () => {
-      cy.fixture('data/account.json').then(res => {
+      cy.fixture('data/account.json').then((res) => {
         const transaction = res[2];
 
         cy.get('a:contains("Record a new transaction")')
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Purchase').check();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -662,9 +590,7 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Confirmed').check();
 
         cy.get('select[id="category"]')
           .should('be.visible')
@@ -676,19 +602,15 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.amount);
 
-        cy.format('currency', transaction.vat).then(value => {
+        cy.format('currency', transaction.vat).then((value) => {
           cy.get('input[id="vat"]')
             .should('be.visible')
             .should('have.value', value);
         });
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
-        cy.get('h2')
-          .should('contain.text', 'Accounts')
-          .should('be.visible');
+        cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
       });
     });
 
@@ -701,38 +623,31 @@ describe('Non-VAT registered', () => {
     });
 
     it('should delete a confirmed transaction', () => {
-      cy.fixture('data/account.json').then(res => {
+      cy.fixture('data/account.json').then((res) => {
         const transaction = res[2];
 
-        cy.get('button:contains("Delete")')
-          .eq(0)
-          .should('be.visible')
-          .click();
+        cy.get('button:contains("Delete")').eq(0).should('be.visible').click();
 
         cy.get('input[id="confirmation"]')
           .should('be.visible')
           .focus()
           .type(transaction.supplier);
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
         cy.contains('Balance: £1902.40').should('be.visible');
       });
     });
 
     it('should add a pending sale', () => {
-      cy.fixture('data/account.json').then(res => {
+      cy.fixture('data/account.json').then((res) => {
         const transaction = res[3];
 
         cy.get('a:contains("Record a new transaction")')
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Sale').check();
 
         cy.get('select[id="name"]')
           .should('be.visible')
@@ -744,28 +659,22 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Pending').check();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.scheduled);
+        cy.findByLabelText('Yes').check();
 
         cy.get('input[id="amount"]')
           .should('be.visible')
           .focus()
           .type(transaction.amount);
 
-        cy.format('currency', '0').then(value => {
+        cy.format('currency', '0').then((value) => {
           cy.get('input[id="vat"]')
             .should('be.visible')
             .should('have.value', value);
         });
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
         cy.get('h2')
           .should('contain.text', 'Pending transactions')
@@ -774,16 +683,14 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add a pending purchase', () => {
-      cy.fixture('data/account.json').then(res => {
+      cy.fixture('data/account.json').then((res) => {
         const transaction = res[4];
 
         cy.get('a:contains("Record a new transaction")')
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Purchase').check();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -795,13 +702,9 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Pending').check();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.scheduled);
+        cy.findByLabelText('No').check();
 
         cy.get('select[id="category"]')
           .should('be.visible')
@@ -813,15 +716,13 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.amount);
 
-        cy.format('currency', transaction.vat).then(value => {
+        cy.format('currency', transaction.vat).then((value) => {
           cy.get('input[id="vat"]')
             .should('be.visible')
             .should('have.value', value);
         });
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
         cy.get('h2')
           .should('contain.text', 'Pending transactions')
@@ -830,16 +731,14 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add a pending zero VAT rate purchase', () => {
-      cy.fixture('data/account.json').then(res => {
+      cy.fixture('data/account.json').then((res) => {
         const transaction = res[5];
 
         cy.get('a:contains("Record a new transaction")')
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Purchase').check();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -851,13 +750,9 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Pending').check();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.scheduled);
+        cy.findByLabelText('No').check();
 
         cy.get('select[id="category"]')
           .should('be.visible')
@@ -869,15 +764,13 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.amount);
 
-        cy.format('currency', transaction.vat).then(value => {
+        cy.format('currency', transaction.vat).then((value) => {
           cy.get('input[id="vat"]')
             .should('be.visible')
             .should('have.value', value);
         });
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
         cy.get('h2')
           .should('contain.text', 'Pending transactions')
@@ -886,7 +779,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should delete a pending transaction', () => {
-      cy.fixture('data/account.json').then(res => {
+      cy.fixture('data/account.json').then((res) => {
         const transaction = res[5];
 
         cy.get('a:contains("View pending transactions")')
@@ -897,21 +790,16 @@ describe('Non-VAT registered', () => {
           .should('contain.text', 'Pending transactions')
           .should('be.visible');
 
-        cy.checkA11y();
+        cy.a11yWithLogs();
 
-        cy.get('button:contains("Delete")')
-          .eq(1)
-          .should('be.visible')
-          .click();
+        cy.get('button:contains("Delete")').eq(1).should('be.visible').click();
 
         cy.get('input[id="confirmation"]')
           .should('be.visible')
           .focus()
           .type(transaction.supplier);
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').click();
 
         cy.get('button:contains("Delete")').should('have.length', 1);
       });
@@ -953,7 +841,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should remove company', () => {
-      cy.fixture('data/company.json').then(res => {
+      cy.fixture('data/company.json').then((res) => {
         const { company } = res[1];
 
         cy.get(`a[data-test-id="${company.name}"]`)
@@ -973,10 +861,7 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(company.name);
 
-        cy.get('button[type="submit"]')
-          .should('be.visible')
-          .eq(1)
-          .click();
+        cy.get('button[type="submit"]').should('be.visible').eq(1).click();
 
         cy.get('h2')
           .should('contain.text', 'My companies')

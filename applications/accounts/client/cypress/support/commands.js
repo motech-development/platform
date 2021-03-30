@@ -1,4 +1,5 @@
 /* eslint-disable no-undef, camelcase */
+import '@testing-library/cypress/add-commands';
 import 'cypress-file-upload';
 import 'cypress-localstorage-commands';
 
@@ -25,7 +26,7 @@ Cypress.Commands.add(
       // eslint-disable-next-line camelcase
       const { access_token, expires_in, id_token, token_type } = body;
 
-      cy.route2('POST', 'oauth/token', {
+      cy.intercept('POST', 'oauth/token', {
         access_token,
         expires_in,
         id_token,
@@ -72,4 +73,32 @@ Cypress.Commands.add('format', (type, value) => {
     default:
       throw new Error('Format unknown');
   }
+});
+
+Cypress.Commands.add('a11yWithLogs', () => {
+  cy.checkA11y(
+    null,
+    null,
+    (violations) => {
+      cy.task(
+        'log',
+        `${violations.length} accessibility violation${
+          violations.length === 1 ? '' : 's'
+        } ${violations.length === 1 ? 'was' : 'were'} detected`,
+      );
+
+      const violationData = violations.map(
+        ({ id, impact, description, nodes }) => ({
+          id,
+          impact,
+          // eslint-disable-next-line sort-keys
+          description,
+          nodes: nodes.length,
+        }),
+      );
+
+      cy.task('table', violationData);
+    },
+    true,
+  );
 });

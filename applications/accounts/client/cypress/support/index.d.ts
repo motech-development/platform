@@ -21,9 +21,9 @@ declare namespace Cypress {
     injectAxe(): Chainable<EventEmitter>;
 
     /**
-     * Runs a11y checking
-     * @example cy.checkA11y()
+     * Runs a11y checking with logs
+     * @example cy.a11yWithLogs()
      */
-    checkA11y(): Chainable<EventEmitter>;
+    a11yWithLogs(): void;
   }
 }

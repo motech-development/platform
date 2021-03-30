@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /// <reference types="cypress" />
 // ***********************************************************
 // This example plugins/index.js can be used to load plugins
@@ -19,7 +20,7 @@ const { join } = require('path');
 /**
  * @type {Cypress.PluginConfig}
  */
-module.exports = on => {
+module.exports = (on) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   const downloads = join(__dirname, '../downloads');
@@ -57,6 +58,16 @@ module.exports = on => {
       rmdirSync(downloads, {
         recursive: true,
       });
+
+      return null;
+    },
+    log(message) {
+      console.log(message);
+
+      return null;
+    },
+    table(message) {
+      console.table(message);
 
       return null;
     },

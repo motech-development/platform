@@ -31,7 +31,7 @@ const DeleteItem: FC<IDeleteItemProps> = ({
       <Loader />
     </Overlay>
   ) : (
-    <Modal isOpen={display} onDismiss={onDismiss}>
+    <Modal isOpen={display} title={title} onDismiss={onDismiss}>
       <Typography rule component="h3" variant="h3" margin="lg">
         {title}
       </Typography>

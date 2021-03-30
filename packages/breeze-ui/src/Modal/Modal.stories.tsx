@@ -14,7 +14,11 @@ stories.add('Basic modal', () => (
   <>
     <BaseStyles />
 
-    <Modal isOpen={boolean('Show', true)} onDismiss={onDismiss}>
+    <Modal
+      isOpen={boolean('Show', true)}
+      title="My modal"
+      onDismiss={onDismiss}
+    >
       <Typography rule component="h1" variant="h2" margin="lg">
         Are you sure you want to do this?
       </Typography>
