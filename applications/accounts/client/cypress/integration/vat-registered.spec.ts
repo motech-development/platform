@@ -87,9 +87,7 @@ describe('VAT registered', () => {
           .focus()
           .type(data.vat.registration);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(data.vat.scheme);
+        cy.findByLabelText('Standard').check();
 
         cy.get('select[id="yearEnd.day"]')
           .should('be.visible')
@@ -305,13 +303,9 @@ describe('VAT registered', () => {
             .clear()
             .type(settings.vat.registration);
 
-          cy.get(`input[type="radio"][value="${company.vat.scheme}"]`)
-            .should('be.visible')
-            .should('be.checked');
+          cy.findByLabelText('Standard').should('be.checked');
 
-          cy.get('input[type="radio"]')
-            .should('be.visible')
-            .check(settings.vat.scheme);
+          cy.findByLabelText('Flat rate').check();
 
           cy.get('select[id="yearEnd.day"]')
             .should('be.visible')
@@ -388,9 +382,7 @@ describe('VAT registered', () => {
           },
         );
 
-        cy.get(`input[type="radio"][value="${settings.vat.scheme}"]`)
-          .should('be.visible')
-          .should('be.checked');
+        cy.findByLabelText('Flat rate').should('be.checked');
 
         cy.get('button:contains("Remove")').eq(0).should('be.visible').click();
 
@@ -565,17 +557,15 @@ describe('VAT registered', () => {
           // TODO: Reinstate a11y checks
           // cy.a11yWithLogs();
 
-          cy.get('input[type="radio"]')
-            .should('be.visible')
-            .check(transaction.type);
+          cy.findByLabelText('Sale').check();
 
-          cy.get('input[id="attachment"]').should('be.visible').attachFile({
+          cy.findByLabelText('Select file to upload').attachFile({
             fileContent: file,
             fileName: 'invoice.pdf',
             mimeType: 'application/pdf',
           });
 
-          cy.get('input[id="attachment"]').should('not.be.visible');
+          cy.findByLabelText('Select file to upload').should('not.exist');
 
           cy.get('select[id="name"]')
             .should('be.visible')
@@ -587,9 +577,7 @@ describe('VAT registered', () => {
             .focus()
             .type(transaction.description);
 
-          cy.get('input[type="radio"]')
-            .should('be.visible')
-            .check(transaction.status);
+          cy.findByLabelText('Confirmed').check();
 
           cy.get('input[id="amount"]')
             .should('be.visible')
@@ -604,7 +592,7 @@ describe('VAT registered', () => {
 
           cy.get('div:contains("File has been uploaded")', {
             timeout,
-          }).should('not.be.visible');
+          }).should('not.exist');
 
           cy.get('button[type="submit"]').should('be.visible').click();
 
@@ -622,9 +610,7 @@ describe('VAT registered', () => {
             .should('be.visible')
             .click();
 
-          cy.get('input[type="radio"]')
-            .should('be.visible')
-            .check(transaction.type);
+          cy.findByLabelText('Purchase').check();
 
           cy.get('input[id="name"]')
             .should('be.visible')
@@ -636,17 +622,15 @@ describe('VAT registered', () => {
             .focus()
             .type(transaction.description);
 
-          cy.get('input[type="radio"]')
-            .should('be.visible')
-            .check(transaction.status);
+          cy.findByLabelText('Confirmed').check();
 
-          cy.get('input[id="attachment"]').should('be.visible').attachFile({
+          cy.findByLabelText('Select file to upload').attachFile({
             fileContent: file,
             fileName: 'invoice.pdf',
             mimeType: 'application/pdf',
           });
 
-          cy.get('input[id="attachment"]').should('not.be.visible');
+          cy.findByLabelText('Select file to upload').should('not.exist');
 
           cy.get('select[id="category"]')
             .should('be.visible')
@@ -666,7 +650,7 @@ describe('VAT registered', () => {
 
           cy.get('div:contains("File has been uploaded")', {
             timeout,
-          }).should('not.be.visible');
+          }).should('not.exist');
 
           cy.get('button[type="submit"]').should('be.visible').click();
 
@@ -684,9 +668,7 @@ describe('VAT registered', () => {
             .should('be.visible')
             .click();
 
-          cy.get('input[type="radio"]')
-            .should('be.visible')
-            .check(transaction.type);
+          cy.findByLabelText('Purchase').check();
 
           cy.get('input[id="name"]')
             .should('be.visible')
@@ -698,17 +680,15 @@ describe('VAT registered', () => {
             .focus()
             .type(transaction.description);
 
-          cy.get('input[type="radio"]')
-            .should('be.visible')
-            .check(transaction.status);
+          cy.findByLabelText('Confirmed').check();
 
-          cy.get('input[id="attachment"]').should('be.visible').attachFile({
+          cy.findByLabelText('Select file to upload').attachFile({
             fileContent: file,
             fileName: 'invoice.pdf',
             mimeType: 'application/pdf',
           });
 
-          cy.get('input[id="attachment"]').should('not.be.visible');
+          cy.findByLabelText('Select file to upload').should('not.exist');
 
           cy.get('select[id="category"]')
             .should('be.visible')
@@ -728,7 +708,7 @@ describe('VAT registered', () => {
 
           cy.get('div:contains("File has been uploaded")', {
             timeout,
-          }).should('not.be.visible');
+          }).should('not.exist');
 
           cy.get('button[type="submit"]').should('be.visible').click();
 
@@ -772,9 +752,7 @@ describe('VAT registered', () => {
             .should('be.visible')
             .should('have.value', transaction.description);
 
-          cy.get(`input[value="${transaction.status}"]`)
-            .should('be.visible')
-            .should('have.prop', 'checked');
+          cy.findByLabelText('Confirmed').should('have.prop', 'checked');
 
           cy.get('input[id="amount"]')
             .should('be.visible')
@@ -791,19 +769,19 @@ describe('VAT registered', () => {
 
           cy.get('div:contains("File has been deleted")', {
             timeout,
-          }).should('not.be.visible');
+          }).should('not.exist');
 
-          cy.get('input[id="attachment"]').should('be.visible').attachFile({
+          cy.findByLabelText('Select file to upload').attachFile({
             fileContent: file,
             fileName: 'invoice.pdf',
             mimeType: 'application/pdf',
           });
 
-          cy.get('input[id="attachment"]').should('not.be.visible');
+          cy.findByLabelText('Select file to upload').should('not.exist');
 
           cy.get('div:contains("File has been uploaded")', {
             timeout,
-          }).should('not.be.visible');
+          }).should('not.exist');
 
           cy.get('button[type="submit"]').should('be.visible').click();
 
@@ -844,9 +822,7 @@ describe('VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Purchase').check();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -858,9 +834,7 @@ describe('VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Confirmed').check();
 
         cy.get('select[id="category"]')
           .should('be.visible')

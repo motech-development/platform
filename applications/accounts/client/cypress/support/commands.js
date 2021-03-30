@@ -1,4 +1,5 @@
 /* eslint-disable no-undef, camelcase */
+import '@testing-library/cypress/add-commands';
 import 'cypress-file-upload';
 import 'cypress-localstorage-commands';
 
@@ -25,7 +26,7 @@ Cypress.Commands.add(
       // eslint-disable-next-line camelcase
       const { access_token, expires_in, id_token, token_type } = body;
 
-      cy.route2('POST', 'oauth/token', {
+      cy.intercept('POST', 'oauth/token', {
         access_token,
         expires_in,
         id_token,

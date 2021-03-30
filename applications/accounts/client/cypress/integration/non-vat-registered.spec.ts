@@ -66,9 +66,7 @@ describe('Non-VAT registered', () => {
 
         cy.get('button:contains("Settings")').should('be.visible').click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(data.vat.scheme);
+        cy.findByLabelText('None').check();
 
         cy.get('select[id="yearEnd.day"]')
           .should('be.visible')
@@ -145,9 +143,7 @@ describe('Non-VAT registered', () => {
             .should('be.visible')
             .should('have.value', company.vat.registration);
 
-          cy.get(`input[type="radio"][value="${company.vat.scheme}"]`)
-            .should('be.visible')
-            .should('be.checked');
+          cy.findByLabelText('None').should('be.checked');
 
           cy.get('select[id="yearEnd.day"]')
             .should('be.visible')
@@ -495,9 +491,7 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Sale').check();
 
         cy.get('select[id="name"]')
           .should('be.visible')
@@ -509,9 +503,7 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Confirmed').check();
 
         cy.get('input[id="amount"]')
           .should('be.visible')
@@ -538,9 +530,7 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Purchase').check();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -552,9 +542,7 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Confirmed').check();
 
         cy.get('select[id="category"]')
           .should('be.visible')
@@ -586,9 +574,7 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Purchase').check();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -600,9 +586,7 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Confirmed').check();
 
         cy.get('select[id="category"]')
           .should('be.visible')
@@ -659,9 +643,7 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Sale').check();
 
         cy.get('select[id="name"]')
           .should('be.visible')
@@ -673,13 +655,9 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Pending').check();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.scheduled);
+        cy.findByLabelText('Yes').check();
 
         cy.get('input[id="amount"]')
           .should('be.visible')
@@ -708,9 +686,7 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Purchase').check();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -722,13 +698,9 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Pending').check();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.scheduled);
+        cy.findByLabelText('No').check();
 
         cy.get('select[id="category"]')
           .should('be.visible')
@@ -762,9 +734,7 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.type);
+        cy.findByLabelText('Purchase').check();
 
         cy.get('input[id="name"]')
           .should('be.visible')
@@ -776,13 +746,9 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(transaction.description);
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.status);
+        cy.findByLabelText('Pending').check();
 
-        cy.get('input[type="radio"]')
-          .should('be.visible')
-          .check(transaction.scheduled);
+        cy.findByLabelText('No').check();
 
         cy.get('select[id="category"]')
           .should('be.visible')
