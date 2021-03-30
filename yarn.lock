@@ -3980,10 +3980,10 @@
     request "^2.88.0"
     request-promise-native "^1.0.8"
 
-"@testing-library/cypress@^7.0.4":
-  version "7.0.4"
-  resolved "https://registry.yarnpkg.com/@testing-library/cypress/-/cypress-7.0.4.tgz#38a55880712f222ddb9671bc899fe80f8c41bfc0"
-  integrity sha512-5I1amLVB2ExIRWuHlvG35dVFVC2KiNBZ0U1ASJUJZASFPQ0BhqJG4s0B8B8wNAE7TrR8KWlrzcNutkgxXL6VOg==
+"@testing-library/cypress@^7.0.5":
+  version "7.0.5"
+  resolved "https://registry.yarnpkg.com/@testing-library/cypress/-/cypress-7.0.5.tgz#0d0d111ba8b0538ddf8565ccaaa43f8658da154b"
+  integrity sha512-bV7CSj5Yeh/mI28sVYNWhNxYQm8eji+FiHHHbP4R0VCijulGScaw/M/zCQJm4X9GLZ5JNRp+lY5XQw3KwCfL8Q==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^7.28.1"
@@ -4028,18 +4028,18 @@
     filter-console "^0.1.1"
     react-error-boundary "^3.1.0"
 
-"@testing-library/react@^11.1.0":
-  version "11.2.5"
-  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-11.2.5.tgz#ae1c36a66c7790ddb6662c416c27863d87818eb9"
-  integrity sha512-yEx7oIa/UWLe2F2dqK0FtMF9sJWNXD+2PPtp39BvE0Kh9MJ9Kl0HrZAgEuhUJR+Lx8Di6Xz+rKwSdEPY2UV8ZQ==
+"@testing-library/react@^11.2.6":
+  version "11.2.6"
+  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-11.2.6.tgz#586a23adc63615985d85be0c903f374dab19200b"
+  integrity sha512-TXMCg0jT8xmuU8BkKMtp8l7Z50Ykew5WNX8UoIKTaLFwKkP2+1YDhOLA2Ga3wY4x29jyntk7EWfum0kjlYiSjQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^7.28.1"
 
-"@testing-library/user-event@^13.0.16":
-  version "13.0.16"
-  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-13.0.16.tgz#c027a9656f1984cf05f9c94c8f7168c06e85792c"
-  integrity sha512-plXL8lGR2H0xm0fHE0Dfz37ke2UtBI1wAmaWIo6BP7+pGt+BxdBQrITHAMGcac0a3PtBi5CXNPth8S53ISO1Ew==
+"@testing-library/user-event@^13.1.1":
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-13.1.1.tgz#1e011de944cf4d2a917cef6c3046c26389943e24"
+  integrity sha512-B4roX+0mpXKGj8ndd38YoIo3IV9pmTTWxr/2cOke5apTtrNabEUE0KMBccpcAcYlfPcr7uMu+dxeeC3HdXd9qQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
 
@@ -8987,22 +8987,18 @@ copy-to-clipboard@^3.0.8:
   dependencies:
     toggle-selection "^1.0.6"
 
-copy-webpack-plugin@^6.4.1:
-  version "6.4.1"
-  resolved "https://registry.yarnpkg.com/copy-webpack-plugin/-/copy-webpack-plugin-6.4.1.tgz#138cd9b436dbca0a6d071720d5414848992ec47e"
-  integrity sha512-MXyPCjdPVx5iiWyl40Va3JGh27bKzOTNY3NjUTrosD2q7dR/cLD0013uqJ3BpFbUjyONINjb6qI7nDIJujrMbA==
+copy-webpack-plugin@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/copy-webpack-plugin/-/copy-webpack-plugin-8.1.0.tgz#0b53170db798ed301439536a02f2868ff63291a0"
+  integrity sha512-Soiq8kXI2AZkpw3dSp18u6oU2JonC7UKv3UdXsKOmT1A5QT46ku9+6c0Qy29JDbSavQJNN1/eKGpd3QNw+cZWg==
   dependencies:
-    cacache "^15.0.5"
-    fast-glob "^3.2.4"
-    find-cache-dir "^3.3.1"
+    fast-glob "^3.2.5"
     glob-parent "^5.1.1"
-    globby "^11.0.1"
-    loader-utils "^2.0.0"
+    globby "^11.0.3"
     normalize-path "^3.0.0"
-    p-limit "^3.0.2"
+    p-limit "^3.1.0"
     schema-utils "^3.0.0"
     serialize-javascript "^5.0.1"
-    webpack-sources "^1.4.3"
 
 core-js-compat@^3.6.2, core-js-compat@^3.8.1, core-js-compat@^3.9.0:
   version "3.9.1"
