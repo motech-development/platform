@@ -1,4 +1,6 @@
 # test directories
+__mocks__
+__snapshots__
 __tests__
 # Fix for serverless-enterprise
 # test
@@ -45,3 +47,4 @@ wercker.yml
 
 # misc
 *.md
+*.snap

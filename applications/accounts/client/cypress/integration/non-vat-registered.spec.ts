@@ -1,11 +1,16 @@
 /* eslint-disable jest/valid-expect-in-promise */
 describe('Non-VAT registered', () => {
+  let timeout: number;
+
+  beforeEach(() => {
+    timeout = 20000;
+  });
+
   describe('Register company', () => {
     afterEach(() => {
-      cy.url().should(
-        'include',
-        'http://localhost:3000/my-companies/dashboard/',
-      );
+      cy.url({
+        timeout,
+      }).should('include', 'http://localhost:3000/my-companies/dashboard/');
     });
 
     it('should create a company', () => {
@@ -117,10 +122,9 @@ describe('Non-VAT registered', () => {
     });
 
     afterEach(() => {
-      cy.url().should(
-        'include',
-        'http://localhost:3000/my-companies/dashboard/',
-      );
+      cy.url({
+        timeout,
+      }).should('include', 'http://localhost:3000/my-companies/dashboard/');
     });
 
     it('should have correct default settings', () => {
@@ -230,15 +234,16 @@ describe('Non-VAT registered', () => {
 
         cy.get('h2').should('contain.text', 'Clients').should('be.visible');
 
-        cy.url().should(
-          'include',
-          'http://localhost:3000/my-companies/clients/',
-        );
+        cy.url({
+          timeout,
+        }).should('include', 'http://localhost:3000/my-companies/clients/');
       });
     });
 
     afterEach(() => {
-      cy.url().should('include', 'http://localhost:3000/my-companies/clients/');
+      cy.url({
+        timeout,
+      }).should('include', 'http://localhost:3000/my-companies/clients/');
     });
 
     it('should add client 1', () => {
@@ -473,18 +478,16 @@ describe('Non-VAT registered', () => {
 
         cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
 
-        cy.url().should(
-          'include',
-          'http://localhost:3000/my-companies/accounts/',
-        );
+        cy.url({
+          timeout,
+        }).should('include', 'http://localhost:3000/my-companies/accounts/');
       });
     });
 
     afterEach(() => {
-      cy.url().should(
-        'include',
-        'http://localhost:3000/my-companies/accounts/',
-      );
+      cy.url({
+        timeout,
+      }).should('include', 'http://localhost:3000/my-companies/accounts/');
     });
 
     it('should add a confirmed sale', () => {
@@ -837,7 +840,9 @@ describe('Non-VAT registered', () => {
 
   describe('Delete company', () => {
     afterEach(() => {
-      cy.url().should('eq', 'http://localhost:3000/my-companies');
+      cy.url({
+        timeout,
+      }).should('eq', 'http://localhost:3000/my-companies');
     });
 
     it('should remove company', () => {
