@@ -6088,18 +6088,18 @@ auth0-source-control-extension-tools@~4.4.3:
     rimraf "^2.5.4"
     winston "^2.2.0"
 
-auth0@2.23.0:
-  version "2.23.0"
-  resolved "https://registry.yarnpkg.com/auth0/-/auth0-2.23.0.tgz#62de27c1d19a692bcf689274e98019d7286e529f"
-  integrity sha512-g2JoVorNMEK3pC9RV7wva86Nr8W3em2NP0A3yjVKfblx67C0rJNSZe2uDL6DOTXnO1XwMfExhVRIp4Hou7w+mw==
+auth0@2.32.0:
+  version "2.32.0"
+  resolved "https://registry.yarnpkg.com/auth0/-/auth0-2.32.0.tgz#dd6731fb4c6d7a2a1261218ddbe9bc2326f87734"
+  integrity sha512-i7opuHn8MpOBCEQgS0DlAwT3J1G+MH/qfrnX7Xl5rO9amd8rgK9F/QJ8aRnqsHEgcfbj5UH6JD4gmpoarXokuQ==
   dependencies:
-    bluebird "^3.5.5"
+    axios "^0.21.1"
+    es6-promisify "^6.1.1"
+    form-data "^3.0.0"
     jsonwebtoken "^8.5.1"
-    jwks-rsa "^1.7.0"
+    jwks-rsa "^1.10.0"
     lru-memoizer "^2.1.0"
-    object.assign "^4.1.0"
-    request "^2.88.0"
-    rest-facade "^1.12.0"
+    rest-facade "^1.13.0"
     retry "^0.12.0"
 
 auth0@^2.23.0, auth0@^2.27.0:
@@ -15404,7 +15404,7 @@ jwks-rsa@1.2.0:
     ms "^2.0.0"
     request "^2.73.0"
 
-jwks-rsa@^1.10.0, jwks-rsa@^1.7.0:
+jwks-rsa@^1.10.0:
   version "1.12.3"
   resolved "https://registry.yarnpkg.com/jwks-rsa/-/jwks-rsa-1.12.3.tgz#40232f85d16734cb82837f38bb3e350a34435400"
   integrity sha512-cFipFDeYYaO9FhhYJcZWX/IyZgc0+g316rcHnDpT2dNRNIE/lMOmWKKqp09TkJoYlNFzrEVODsR4GgXJMgWhnA==
@@ -21224,7 +21224,7 @@ responselike@^2.0.0:
   dependencies:
     lowercase-keys "^2.0.0"
 
-rest-facade@^1.12.0, rest-facade@^1.13.0:
+rest-facade@^1.13.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/rest-facade/-/rest-facade-1.13.0.tgz#ce2680b9b1c90d6a93799c7c68982fba47e251e2"
   integrity sha512-0tVvvP+xUtl1LxsxuDBioj7hEWBFS/cpdxpxguuVbRj9GaZySx/E1le+awmT1xP3RHdwcaoC8ud3yQ5IqnmM7A==
