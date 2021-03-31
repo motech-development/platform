@@ -1,6 +1,8 @@
 # test directories
 __tests__
-test
+# Fix for serverless-enterprise
+# test
+^(?!@serverless/enterprise-plugin/).*test.*$
 tests
 powered-test
 

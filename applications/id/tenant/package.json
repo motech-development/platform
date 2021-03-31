@@ -22,7 +22,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "auth0": "2.9.1"
+    "auth0": "2.32.0"
   },
   "devDependencies": {
     "auth0-deploy-cli": "^5.5.5",
