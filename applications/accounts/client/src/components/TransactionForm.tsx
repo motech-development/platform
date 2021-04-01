@@ -277,20 +277,16 @@ const TransactionForm: FC<ITransactionForm> = ({
 
     let amount: number;
 
-    switch (isPurchase) {
-      case true:
-        if (value.refund) {
-          amount = value.amount;
-        } else {
-          amount = -Math.abs(value.amount);
-        }
-        break;
-      default:
-        if (value.refund) {
-          amount = -Math.abs(value.amount);
-        } else {
-          amount = value.amount;
-        }
+    if (isPurchase) {
+      if (value.refund) {
+        amount = value.amount;
+      } else {
+        amount = -Math.abs(value.amount);
+      }
+    } else if (value.refund) {
+      amount = -Math.abs(value.amount);
+    } else {
+      amount = value.amount;
     }
 
     return {
