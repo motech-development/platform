@@ -242,7 +242,7 @@ const TransactionForm: FC<ITransactionForm> = ({
     const rate = new Decimal(vatRate).dividedBy(100).plus(1);
     const calculated = new Decimal(value)
       .minus(new Decimal(value).dividedBy(rate))
-      .toFixed(2, Decimal.ROUND_DOWN);
+      .toFixed(2);
 
     setFieldValue('vat', calculated);
   };

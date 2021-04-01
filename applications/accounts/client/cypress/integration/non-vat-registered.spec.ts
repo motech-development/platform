@@ -664,7 +664,7 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('Pending').check();
 
-        cy.findByLabelText('Yes').check();
+        cy.findAllByLabelText('Yes').eq(1).check();
 
         cy.get('input[id="amount"]')
           .should('be.visible')
@@ -707,7 +707,7 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('Pending').check();
 
-        cy.findByLabelText('No').check();
+        cy.findAllByLabelText('No').eq(1).check();
 
         cy.get('select[id="category"]')
           .should('be.visible')
@@ -755,7 +755,7 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('Pending').check();
 
-        cy.findByLabelText('No').check();
+        cy.findAllByLabelText('No').eq(1).check();
 
         cy.get('select[id="category"]')
           .should('be.visible')
