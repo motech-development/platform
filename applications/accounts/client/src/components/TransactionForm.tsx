@@ -90,7 +90,8 @@ const TransactionForm: FC<ITransactionForm> = ({
   vat,
 }) => {
   const isEmpty = initialValues.amount === '';
-  const initialTransaction = initialValues.amount > 0 ? 'Sales' : 'Purchase';
+  const initialTransaction =
+    !initialValues.refund && initialValues.amount > 0 ? 'Sales' : 'Purchase';
   const formValues = {
     ...initialValues,
     amount: initialValues.amount

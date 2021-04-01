@@ -11,11 +11,7 @@ const vatUtility = (record: ITransaction) => {
 
   switch (record.category) {
     case 'VAT payment':
-      if (record.refund) {
-        value = -Math.abs(record.amount);
-      } else {
-        value = record.amount;
-      }
+      value = record.amount;
       break;
     default:
       if (record.refund) {
