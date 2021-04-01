@@ -1,10 +1,10 @@
-import { InMemoryCache } from '@apollo/client/cache';
+import { ApolloCache, InMemoryCache } from '@apollo/client/cache';
 import GET_BALANCE from '../../balance/GET_BALANCE';
-import { updateCache } from '../DELETE_TRANSACTION';
+import { IDeleteTransactionOutput, updateCache } from '../DELETE_TRANSACTION';
 import GET_TRANSACTIONS from '../GET_TRANSACTIONS';
 
 describe('DELETE_TRANSACTION', () => {
-  let cache: InMemoryCache;
+  let cache: ApolloCache<IDeleteTransactionOutput>;
 
   beforeEach(() => {
     cache = new InMemoryCache({
@@ -13,7 +13,7 @@ describe('DELETE_TRANSACTION', () => {
           keyFields: ['id', 'status'],
         },
       },
-    });
+    }) as ApolloCache<IDeleteTransactionOutput>;
 
     cache.writeQuery({
       data: {

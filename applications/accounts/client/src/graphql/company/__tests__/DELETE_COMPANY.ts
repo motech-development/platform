@@ -1,12 +1,12 @@
-import { InMemoryCache } from '@apollo/client/cache';
-import { updateCache } from '../DELETE_COMPANY';
+import { ApolloCache, InMemoryCache } from '@apollo/client/cache';
+import { IDeleteCompanyOutput, updateCache } from '../DELETE_COMPANY';
 import GET_COMPANIES from '../GET_COMPANIES';
 
 describe('DELETE_COMPANY', () => {
-  let cache: InMemoryCache;
+  let cache: ApolloCache<IDeleteCompanyOutput>;
 
   beforeEach(() => {
-    cache = new InMemoryCache();
+    cache = new InMemoryCache() as ApolloCache<IDeleteCompanyOutput>;
 
     cache.writeQuery({
       data: {

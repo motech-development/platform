@@ -32,7 +32,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -92,7 +92,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -147,7 +147,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -215,7 +215,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 

@@ -1,12 +1,12 @@
-import { InMemoryCache } from '@apollo/client/cache';
-import { updateCache } from '../ADD_CLIENT';
+import { ApolloCache, InMemoryCache } from '@apollo/client/cache';
+import { IAddClientOutput, updateCache } from '../ADD_CLIENT';
 import GET_CLIENTS from '../GET_CLIENTS';
 
 describe('ADD_CLIENT', () => {
-  let cache: InMemoryCache;
+  let cache: ApolloCache<IAddClientOutput>;
 
   beforeEach(() => {
-    cache = new InMemoryCache();
+    cache = new InMemoryCache() as ApolloCache<IAddClientOutput>;
 
     cache.writeQuery({
       data: {
