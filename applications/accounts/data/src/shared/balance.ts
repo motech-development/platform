@@ -4,10 +4,26 @@ import aggregatedDay from './aggregated-day';
 import { ITransaction, TransactionStatus } from './transaction';
 
 const vatUtility = (record: ITransaction) => {
-  const value = record.category === 'VAT payment' ? record.amount : record.vat;
   const name = record.category === 'VAT payment' ? 'amount' : 'vat';
 
+  let value: number;
   let property: string;
+
+  switch (record.category) {
+    case 'VAT payment':
+      if (record.refund) {
+        value = -Math.abs(record.amount);
+      } else {
+        value = record.amount;
+      }
+      break;
+    default:
+      if (record.refund) {
+        value = -Math.abs(record.vat);
+      } else {
+        value = record.vat;
+      }
+  }
 
   switch (record.category) {
     case 'VAT payment':
