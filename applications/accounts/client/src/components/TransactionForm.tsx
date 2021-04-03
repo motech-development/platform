@@ -111,6 +111,9 @@ const TransactionForm: FC<ITransactionForm> = ({
     refund: initialValues.refund === null ? false : initialValues.refund,
     scheduled:
       initialValues.scheduled === null ? false : initialValues.scheduled,
+    vat: initialValues.vat
+      ? Math.abs(initialValues.vat as number)
+      : initialValues.vat,
   };
   const [transactionType, setTransactionType] = useState(
     formValues.transaction,
@@ -294,6 +297,7 @@ const TransactionForm: FC<ITransactionForm> = ({
       amount,
       attachment,
       category,
+      vat: value.refund ? -Math.abs(value.vat) : value.vat,
     };
   };
 
