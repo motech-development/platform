@@ -40,9 +40,6 @@ describe('insert-transactions', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            refund: {
-              BOOL: false,
-            },
             status: {
               S: 'confirmed',
             },
@@ -66,9 +63,6 @@ describe('insert-transactions', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            refund: {
-              BOOL: false,
-            },
             status: {
               S: 'confirmed',
             },
@@ -96,9 +90,6 @@ describe('insert-transactions', () => {
             },
             date: {
               S: '2019-12-15T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'confirmed',
@@ -123,9 +114,6 @@ describe('insert-transactions', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            refund: {
-              BOOL: false,
-            },
             status: {
               S: 'confirmed',
             },
@@ -153,9 +141,6 @@ describe('insert-transactions', () => {
             },
             date: {
               S: '2019-12-15T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'pending',
@@ -179,9 +164,6 @@ describe('insert-transactions', () => {
             },
             date: {
               S: '2019-12-15T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'pending',
@@ -210,9 +192,6 @@ describe('insert-transactions', () => {
             },
             date: {
               S: '2019-12-15T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'confirmed',
@@ -236,9 +215,6 @@ describe('insert-transactions', () => {
             },
             date: {
               S: '2019-12-15T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'confirmed',

@@ -49,9 +49,6 @@ describe('insert-typeahead', () => {
             owner: {
               S: 'owner-id',
             },
-            refund: {
-              BOOL: false,
-            },
             status: {
               S: 'confirmed',
             },
@@ -84,9 +81,6 @@ describe('insert-typeahead', () => {
             owner: {
               S: 'owner-id',
             },
-            refund: {
-              BOOL: false,
-            },
             status: {
               S: 'confirmed',
             },
@@ -124,9 +118,6 @@ describe('insert-typeahead', () => {
             owner: {
               S: 'owner-id',
             },
-            refund: {
-              BOOL: false,
-            },
             status: {
               S: 'confirmed',
             },
@@ -158,9 +149,6 @@ describe('insert-typeahead', () => {
             },
             owner: {
               S: 'owner-id',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'confirmed',
@@ -198,9 +186,6 @@ describe('insert-typeahead', () => {
             },
             owner: {
               S: 'owner-id',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'pending',
@@ -233,9 +218,6 @@ describe('insert-typeahead', () => {
             },
             owner: {
               S: 'owner-id',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'pending',
@@ -273,9 +255,6 @@ describe('insert-typeahead', () => {
             },
             owner: {
               S: 'owner-id',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'confirmed',
@@ -308,9 +287,6 @@ describe('insert-typeahead', () => {
             },
             owner: {
               S: 'owner-id',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'confirmed',

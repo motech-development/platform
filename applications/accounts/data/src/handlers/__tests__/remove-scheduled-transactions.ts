@@ -46,9 +46,6 @@ describe('remove-scheduled-transactions', () => {
             owner: {
               S: 'owner',
             },
-            refund: {
-              BOOL: false,
-            },
             scheduled: {
               BOOL: false,
             },
@@ -81,9 +78,6 @@ describe('remove-scheduled-transactions', () => {
             owner: {
               S: 'owner',
             },
-            refund: {
-              BOOL: false,
-            },
             scheduled: {
               BOOL: false,
             },
@@ -120,9 +114,6 @@ describe('remove-scheduled-transactions', () => {
             },
             owner: {
               S: 'owner',
-            },
-            refund: {
-              BOOL: false,
             },
             scheduled: {
               BOOL: true,
@@ -156,9 +147,6 @@ describe('remove-scheduled-transactions', () => {
             owner: {
               S: 'owner',
             },
-            refund: {
-              BOOL: false,
-            },
             scheduled: {
               BOOL: false,
             },
@@ -196,9 +184,6 @@ describe('remove-scheduled-transactions', () => {
             owner: {
               S: 'owner',
             },
-            refund: {
-              BOOL: false,
-            },
             scheduled: {
               BOOL: false,
             },
@@ -230,9 +215,6 @@ describe('remove-scheduled-transactions', () => {
             },
             owner: {
               S: 'owner',
-            },
-            refund: {
-              BOOL: false,
             },
             scheduled: {
               BOOL: true,
@@ -270,9 +252,6 @@ describe('remove-scheduled-transactions', () => {
             },
             owner: {
               S: 'owner',
-            },
-            refund: {
-              BOOL: false,
             },
             scheduled: {
               BOOL: true,
@@ -305,9 +284,6 @@ describe('remove-scheduled-transactions', () => {
             },
             owner: {
               S: 'owner',
-            },
-            refund: {
-              BOOL: false,
             },
             scheduled: {
               BOOL: true,

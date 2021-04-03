@@ -601,6 +601,51 @@ describe('VAT registered', () => {
       });
     });
 
+    it('should add a confirmed sale refund', () => {
+      cy.fixture('data/account.json').then((res) => {
+        const transaction = res[8];
+
+        cy.get('a:contains("Record a new transaction")')
+          .should('be.visible')
+          .click();
+
+        cy.get('h2')
+          .should('contain.text', 'Record transaction')
+          .should('be.visible');
+
+        cy.findByLabelText('Sale').check();
+
+        cy.findByLabelText('Supplier')
+          .should('be.visible')
+          .focus()
+          .select(transaction.supplier);
+
+        cy.findByLabelText('Description')
+          .should('be.visible')
+          .focus()
+          .type(transaction.description);
+
+        cy.findByLabelText('Confirmed').check();
+
+        cy.findByLabelText('Yes').check();
+
+        cy.findByLabelText('Amount')
+          .should('be.visible')
+          .focus()
+          .type(transaction.amount);
+
+        cy.format('currency', transaction.vat).then((value) => {
+          cy.findByLabelText('VAT')
+            .should('be.visible')
+            .should('have.value', value);
+        });
+
+        cy.get('button[type="submit"]').should('be.visible').click();
+
+        cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
+      });
+    });
+
     it('should add a confirmed purchase', () => {
       cy.fixture('data/account.json').then((res) => {
         cy.fixture('upload/invoice.pdf').then((file) => {
@@ -718,9 +763,9 @@ describe('VAT registered', () => {
     });
 
     it('should show correct balance details', () => {
-      cy.contains('Balance: £2790.40').should('be.visible');
+      cy.contains('Balance: £2290.40').should('be.visible');
 
-      cy.contains('VAT owed: £410.00').should('be.visible');
+      cy.contains('VAT owed: £332.50').should('be.visible');
 
       cy.contains('VAT paid: £26.27').should('be.visible');
     });
@@ -730,7 +775,7 @@ describe('VAT registered', () => {
         cy.fixture('upload/invoice.pdf').then((file) => {
           const transaction = res[6];
 
-          cy.get('a:contains("View")').eq(3).should('be.visible').click();
+          cy.get('a:contains("View")').eq(4).should('be.visible').click();
 
           cy.get('h2')
             .should('contain.text', 'View transaction')
@@ -785,9 +830,9 @@ describe('VAT registered', () => {
 
           cy.get('button[type="submit"]').should('be.visible').click();
 
-          cy.contains('Balance: £3290.40').should('be.visible');
+          cy.contains('Balance: £2790.40').should('be.visible');
 
-          cy.contains('VAT owed: £487.50').should('be.visible');
+          cy.contains('VAT owed: £410.00').should('be.visible');
         });
       });
     });
@@ -796,7 +841,7 @@ describe('VAT registered', () => {
       cy.fixture('data/account.json').then((res) => {
         const transaction = res[0];
 
-        cy.get('button:contains("Delete")').eq(2).should('be.visible').click();
+        cy.get('button:contains("Delete")').eq(3).should('be.visible').click();
 
         cy.a11yWithLogs();
 
@@ -807,9 +852,9 @@ describe('VAT registered', () => {
 
         cy.get('button[type="submit"]').should('be.visible').click();
 
-        cy.contains('Balance: £790.40').should('be.visible');
+        cy.contains('Balance: £290.40').should('be.visible');
 
-        cy.contains('VAT owed: £100.00').should('be.visible');
+        cy.contains('VAT owed: £22.50').should('be.visible');
       });
     });
 
@@ -857,14 +902,60 @@ describe('VAT registered', () => {
       });
     });
 
-    it('should show correct balance details after VAT is paid', () => {
-      cy.contains('Balance: £690.40').should('be.visible');
+    it('should make a VAT refund', () => {
+      cy.fixture('data/account.json').then((res) => {
+        const transaction = res[10];
 
-      cy.contains('VAT owed: £0').should('be.visible');
+        cy.get('a:contains("Record a new transaction")')
+          .should('be.visible')
+          .click();
+
+        cy.findByLabelText('Purchase').check();
+
+        cy.findByLabelText('Supplier')
+          .should('be.visible')
+          .focus()
+          .type(transaction.supplier);
+
+        cy.findByLabelText('Description')
+          .should('be.visible')
+          .focus()
+          .type(transaction.description);
+
+        cy.findByLabelText('Confirmed').check();
+
+        cy.findByLabelText('Yes').check();
+
+        cy.findByLabelText('Category')
+          .should('be.visible')
+          .focus()
+          .select(transaction.category);
+
+        cy.findByLabelText('Amount')
+          .should('be.visible')
+          .focus()
+          .type(transaction.amount);
+
+        cy.format('currency', transaction.vat).then((value) => {
+          cy.findByLabelText('VAT')
+            .should('be.visible')
+            .should('have.value', value);
+        });
+
+        cy.get('button[type="submit"]').should('be.visible').click();
+
+        cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
+      });
+    });
+
+    it('should show correct balance details after VAT is paid', () => {
+      cy.contains('Balance: £267.90').should('be.visible');
+
+      cy.contains('VAT owed: £0.00').should('be.visible');
     });
 
     it('should download attachment', () => {
-      cy.get('a:contains("View")').eq(3).should('be.visible').click();
+      cy.get('a:contains("View")').eq(4).should('be.visible').click();
 
       cy.get('h2')
         .should('contain.text', 'View transaction')

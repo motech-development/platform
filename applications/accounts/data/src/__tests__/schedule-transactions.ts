@@ -50,9 +50,6 @@ describe('schedule-transaction', () => {
               owner: {
                 S: 'owner',
               },
-              refund: {
-                BOOL: false,
-              },
               scheduled: {
                 BOOL: true,
               },
@@ -90,9 +87,6 @@ describe('schedule-transaction', () => {
               },
               owner: {
                 S: 'owner',
-              },
-              refund: {
-                BOOL: false,
               },
               scheduled: {
                 BOOL: true,
@@ -137,9 +131,6 @@ describe('schedule-transaction', () => {
               owner: {
                 S: 'owner',
               },
-              refund: {
-                BOOL: false,
-              },
               scheduled: {
                 BOOL: true,
               },
@@ -177,9 +168,6 @@ describe('schedule-transaction', () => {
               },
               owner: {
                 S: 'owner',
-              },
-              refund: {
-                BOOL: false,
               },
               scheduled: {
                 BOOL: true,
@@ -224,9 +212,6 @@ describe('schedule-transaction', () => {
               owner: {
                 S: 'owner',
               },
-              refund: {
-                BOOL: false,
-              },
               scheduled: {
                 BOOL: true,
               },
@@ -264,9 +249,6 @@ describe('schedule-transaction', () => {
               },
               owner: {
                 S: 'owner',
-              },
-              refund: {
-                BOOL: false,
               },
               scheduled: {
                 BOOL: true,

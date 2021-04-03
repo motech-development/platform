@@ -40,9 +40,6 @@ describe('update-transactions', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            refund: {
-              BOOL: false,
-            },
             status: {
               S: 'confirmed',
             },
@@ -66,8 +63,56 @@ describe('update-transactions', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            refund: {
-              BOOL: false,
+            status: {
+              S: 'confirmed',
+            },
+            vat: {
+              N: '2.4',
+            },
+          },
+        },
+      },
+      {
+        awsRegion: 'eu-west-1',
+        dynamodb: {
+          NewImage: {
+            __typename: {
+              S: 'Transaction',
+            },
+            amount: {
+              N: '100.25',
+            },
+            category: {
+              S: 'Sales',
+            },
+            companyId: {
+              S: 'company-id',
+            },
+            date: {
+              S: '2019-12-15T00:00:00.000Z',
+            },
+            status: {
+              S: 'confirmed',
+            },
+            vat: {
+              N: '1.2',
+            },
+          },
+          OldImage: {
+            __typename: {
+              S: 'Transaction',
+            },
+            amount: {
+              N: '200.5',
+            },
+            category: {
+              S: 'Sales',
+            },
+            companyId: {
+              S: 'company-id',
+            },
+            date: {
+              S: '2019-12-14T00:00:00.000Z',
             },
             status: {
               S: 'confirmed',
@@ -97,9 +142,6 @@ describe('update-transactions', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            refund: {
-              BOOL: false,
-            },
             status: {
               S: 'confirmed',
             },
@@ -122,66 +164,6 @@ describe('update-transactions', () => {
             },
             date: {
               S: '2019-12-14T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
-            },
-            status: {
-              S: 'confirmed',
-            },
-            vat: {
-              N: '2.4',
-            },
-          },
-        },
-      },
-      {
-        awsRegion: 'eu-west-1',
-        dynamodb: {
-          NewImage: {
-            __typename: {
-              S: 'Transaction',
-            },
-            amount: {
-              N: '100.25',
-            },
-            category: {
-              S: 'Sales',
-            },
-            companyId: {
-              S: 'company-id',
-            },
-            date: {
-              S: '2019-12-15T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
-            },
-            status: {
-              S: 'confirmed',
-            },
-            vat: {
-              N: '1.2',
-            },
-          },
-          OldImage: {
-            __typename: {
-              S: 'Transaction',
-            },
-            amount: {
-              N: '200.5',
-            },
-            category: {
-              S: 'Sales',
-            },
-            companyId: {
-              S: 'company-id',
-            },
-            date: {
-              S: '2019-12-14T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'pending',
@@ -211,9 +193,6 @@ describe('update-transactions', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            refund: {
-              BOOL: false,
-            },
             status: {
               S: 'pending',
             },
@@ -236,9 +215,6 @@ describe('update-transactions', () => {
             },
             date: {
               S: '2019-12-14T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'confirmed',
@@ -268,9 +244,6 @@ describe('update-transactions', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            refund: {
-              BOOL: false,
-            },
             status: {
               S: 'pending',
             },
@@ -293,9 +266,6 @@ describe('update-transactions', () => {
             },
             date: {
               S: '2019-12-14T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'pending',
@@ -324,9 +294,6 @@ describe('update-transactions', () => {
             },
             date: {
               S: '2019-12-15T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'confirmed',
@@ -350,9 +317,6 @@ describe('update-transactions', () => {
             },
             date: {
               S: '2019-12-14T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'pending',
@@ -382,9 +346,6 @@ describe('update-transactions', () => {
             date: {
               S: '2019-12-15T00:00:00.000Z',
             },
-            refund: {
-              BOOL: false,
-            },
             status: {
               S: 'pending',
             },
@@ -407,9 +368,6 @@ describe('update-transactions', () => {
             },
             date: {
               S: '2019-12-14T00:00:00.000Z',
-            },
-            refund: {
-              BOOL: false,
             },
             status: {
               S: 'confirmed',

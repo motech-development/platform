@@ -47,9 +47,6 @@ describe('attachments', () => {
               owner: {
                 S: 'owner',
               },
-              refund: {
-                BOOL: false,
-              },
               status: {
                 S: 'confirmed',
               },
@@ -84,9 +81,6 @@ describe('attachments', () => {
               },
               owner: {
                 S: 'owner',
-              },
-              refund: {
-                BOOL: false,
               },
               status: {
                 S: 'confirmed',
@@ -128,9 +122,6 @@ describe('attachments', () => {
               owner: {
                 S: 'owner',
               },
-              refund: {
-                BOOL: false,
-              },
               status: {
                 S: 'confirmed',
               },
@@ -165,9 +156,6 @@ describe('attachments', () => {
               },
               owner: {
                 S: 'owner',
-              },
-              refund: {
-                BOOL: false,
               },
               status: {
                 S: 'confirmed',
@@ -209,9 +197,6 @@ describe('attachments', () => {
               owner: {
                 S: 'owner',
               },
-              refund: {
-                BOOL: false,
-              },
               status: {
                 S: 'confirmed',
               },
@@ -246,9 +231,6 @@ describe('attachments', () => {
               },
               owner: {
                 S: 'owner',
-              },
-              refund: {
-                BOOL: false,
               },
               status: {
                 S: 'confirmed',
