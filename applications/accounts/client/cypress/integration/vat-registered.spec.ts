@@ -19,7 +19,11 @@ describe('VAT registered', () => {
 
         cy.a11yWithLogs();
 
-        cy.get('a:contains("Add a new company")').should('be.visible').click();
+        cy.findByRole('link', {
+          name: 'Add a new company',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2')
           .should('contain.text', 'Add a new company')
@@ -27,94 +31,102 @@ describe('VAT registered', () => {
 
         cy.a11yWithLogs();
 
-        cy.get('input[id="company.name"]')
+        cy.findByLabelText('Name*')
           .should('be.visible')
           .focus()
           .type(data.company.name);
 
-        cy.get('input[id="company.companyNumber"]')
+        cy.findByLabelText('Company number*')
           .should('be.visible')
           .focus()
           .type(data.company.companyNumber);
 
-        cy.get('input[id="company.bank.accountNumber"]')
+        cy.findByLabelText('Account number*')
           .should('be.visible')
           .focus()
           .type(data.company.bank.accountNumber);
 
-        cy.get('input[id="company.bank.sortCode"]')
+        cy.findByLabelText('Sort code*')
           .should('be.visible')
           .focus()
           .type(data.company.bank.sortCode);
 
-        cy.get('input[id="company.address.line1"]')
+        cy.findByLabelText('Address line 1*')
           .should('be.visible')
           .focus()
           .type(data.company.address.line1);
 
-        cy.get('input[id="company.address.line2"]')
+        cy.findByLabelText('Address line 2')
           .should('be.visible')
           .focus()
           .type(data.company.address.line2);
 
-        cy.get('input[id="company.address.line3"]')
+        cy.findByLabelText('Town*')
           .should('be.visible')
           .focus()
           .type(data.company.address.line3);
 
-        cy.get('input[id="company.address.line5"]')
+        cy.findByLabelText('Postcode*')
           .should('be.visible')
           .focus()
           .type(data.company.address.line5);
 
-        cy.get('input[id="company.contact.email"]')
+        cy.findByLabelText('Email address*')
           .should('be.visible')
           .focus()
           .type(data.company.contact.email);
 
-        cy.get('input[id="company.contact.telephone"]')
+        cy.findByLabelText('Telephone number*')
           .should('be.visible')
           .focus()
           .type(data.company.contact.telephone);
 
-        cy.get('button:contains("Settings")').should('be.visible').click();
+        cy.findByRole('button', {
+          name: 'Settings',
+        })
+          .should('be.visible')
+          .click();
 
-        cy.get('input[id="vat.registration"]')
+        cy.findByLabelText('VAT registration number')
           .should('be.visible')
           .focus()
           .type(data.vat.registration);
 
         cy.findByLabelText('Standard').check();
 
-        cy.get('select[id="yearEnd.day"]')
+        cy.findByLabelText('Day')
           .should('be.visible')
           .focus()
           .select(data.yearEnd.day);
 
-        cy.get('select[id="yearEnd.month"]')
+        cy.findByLabelText('Month')
           .should('be.visible')
           .focus()
           .select(data.yearEnd.month);
 
-        cy.get('input[id="balance.balance"]')
+        cy.findByLabelText('Opening balance')
           .should('be.visible')
           .focus()
           .clear()
           .type(data.balance.balance);
 
-        cy.get('input[id="balance.vat.owed"]')
+        cy.findByLabelText('VAT owed')
           .should('be.visible')
           .focus()
           .clear()
           .type(data.balance.vat.owed);
 
-        cy.get('input[id="balance.vat.paid"]')
+        cy.findByLabelText('VAT paid')
           .should('be.visible')
           .focus()
           .clear()
           .type(data.balance.vat.paid);
 
-        cy.get('button[type="submit"]').should('be.visible').click();
+        cy.findByRole('button', {
+          name: 'Save',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2')
           .should('contain.text', data.company.name)
@@ -295,13 +307,13 @@ describe('VAT registered', () => {
 
           cy.format('VAT registration', company.vat.registration).then(
             (value) => {
-              cy.get('input[id="vat.registration"]')
+              cy.findByLabelText('VAT registration number')
                 .should('be.visible')
                 .should('have.value', value);
             },
           );
 
-          cy.get('input[id="vat.registration"]')
+          cy.findByLabelText('VAT registration number')
             .should('be.visible')
             .focus()
             .clear()
@@ -311,11 +323,11 @@ describe('VAT registered', () => {
 
           cy.findByLabelText('Flat rate').check();
 
-          cy.get('select[id="yearEnd.day"]')
+          cy.findByLabelText('Day')
             .should('be.visible')
             .should('have.value', company.yearEnd.day);
 
-          cy.get('select[id="yearEnd.month"]')
+          cy.findByLabelText('Month')
             .should('be.visible')
             .should('have.value', company.yearEnd.month);
 
@@ -380,7 +392,7 @@ describe('VAT registered', () => {
 
         cy.format('VAT registration', settings.vat.registration).then(
           (value) => {
-            cy.get('input[id="vat.registration"]')
+            cy.findByLabelText('VAT registration number')
               .should('be.visible')
               .should('have.value', value);
           },
@@ -567,25 +579,25 @@ describe('VAT registered', () => {
 
           cy.findByLabelText('Select file to upload').should('not.exist');
 
-          cy.get('select[id="name"]')
+          cy.findByLabelText('Supplier')
             .should('be.visible')
             .focus()
             .select(transaction.supplier);
 
-          cy.get('input[id="description"]')
+          cy.findByLabelText('Description')
             .should('be.visible')
             .focus()
             .type(transaction.description);
 
           cy.findByLabelText('Confirmed').check();
 
-          cy.get('input[id="amount"]')
+          cy.findByLabelText('Amount')
             .should('be.visible')
             .focus()
             .type(transaction.amount);
 
           cy.format('currency', transaction.vat).then((value) => {
-            cy.get('input[id="vat"]')
+            cy.findByLabelText('VAT')
               .should('be.visible')
               .should('have.value', value);
           });
@@ -657,12 +669,12 @@ describe('VAT registered', () => {
 
           cy.findByLabelText('Purchase').check();
 
-          cy.get('input[id="name"]')
+          cy.findByLabelText('Supplier')
             .should('be.visible')
             .focus()
             .type(transaction.supplier);
 
-          cy.get('input[id="description"]')
+          cy.findByLabelText('Description')
             .should('be.visible')
             .focus()
             .type(transaction.description);
@@ -677,18 +689,18 @@ describe('VAT registered', () => {
 
           cy.findByLabelText('Select file to upload').should('not.exist');
 
-          cy.get('select[id="category"]')
+          cy.findByLabelText('Category')
             .should('be.visible')
             .focus()
             .select(transaction.category);
 
-          cy.get('input[id="amount"]')
+          cy.findByLabelText('Amount')
             .should('be.visible')
             .focus()
             .type(transaction.amount);
 
           cy.format('currency', transaction.vat).then((value) => {
-            cy.get('input[id="vat"]')
+            cy.findByLabelText('VAT')
               .should('be.visible')
               .should('have.value', value);
           });
@@ -715,12 +727,12 @@ describe('VAT registered', () => {
 
           cy.findByLabelText('Purchase').check();
 
-          cy.get('input[id="name"]')
+          cy.findByLabelText('Supplier')
             .should('be.visible')
             .focus()
             .type(transaction.supplier);
 
-          cy.get('input[id="description"]')
+          cy.findByLabelText('Description')
             .should('be.visible')
             .focus()
             .type(transaction.description);
@@ -735,18 +747,18 @@ describe('VAT registered', () => {
 
           cy.findByLabelText('Select file to upload').should('not.exist');
 
-          cy.get('select[id="category"]')
+          cy.findByLabelText('Category')
             .should('be.visible')
             .focus()
             .select(transaction.category);
 
-          cy.get('input[id="amount"]')
+          cy.findByLabelText('Amount')
             .should('be.visible')
             .focus()
             .type(transaction.amount);
 
           cy.format('currency', transaction.vat).then((value) => {
-            cy.get('input[id="vat"]')
+            cy.findByLabelText('VAT')
               .should('be.visible')
               .should('have.value', value);
           });
@@ -788,24 +800,24 @@ describe('VAT registered', () => {
             transaction.type,
           );
 
-          cy.get('select[id="name"]')
+          cy.findByLabelText('Supplier')
             .should('be.visible')
             .should('have.value', transaction.supplier);
 
-          cy.get('input[id="description"]')
+          cy.findByLabelText('Description')
             .should('be.visible')
             .should('have.value', transaction.description);
 
           cy.findByLabelText('Confirmed').should('have.prop', 'checked');
 
-          cy.get('input[id="amount"]')
+          cy.findByLabelText('Amount')
             .should('be.visible')
             .focus()
             .clear()
             .type(transaction.amount);
 
           cy.format('currency', transaction.vat).then((value) => {
-            cy.get('input[id="vat"]')
+            cy.findByLabelText('VAT')
               .should('be.visible')
               .should('have.value', value);
           });
@@ -845,7 +857,7 @@ describe('VAT registered', () => {
 
         cy.a11yWithLogs();
 
-        cy.get('input[id="confirmation"]')
+        cy.findByLabelText(`Please type ${transaction.supplier} to confirm`)
           .should('be.visible')
           .focus()
           .type(transaction.supplier);
@@ -868,30 +880,30 @@ describe('VAT registered', () => {
 
         cy.findByLabelText('Purchase').check();
 
-        cy.get('input[id="name"]')
+        cy.findByLabelText('Supplier')
           .should('be.visible')
           .focus()
           .type(transaction.supplier);
 
-        cy.get('input[id="description"]')
+        cy.findByLabelText('Description')
           .should('be.visible')
           .focus()
           .type(transaction.description);
 
         cy.findByLabelText('Confirmed').check();
 
-        cy.get('select[id="category"]')
+        cy.findByLabelText('Category')
           .should('be.visible')
           .focus()
           .select(transaction.category);
 
-        cy.get('input[id="amount"]')
+        cy.findByLabelText('Amount')
           .should('be.visible')
           .focus()
           .type(transaction.amount);
 
         cy.format('currency', transaction.vat).then((value) => {
-          cy.get('input[id="vat"]')
+          cy.findByLabelText('VAT')
             .should('be.visible')
             .should('have.value', value);
         });
