@@ -109,9 +109,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2')
-          .should('contain.text', data.company.name)
-          .should('be.visible');
+        cy.findByRole('heading', {
+          name: data.company.name,
+        }).should('be.visible');
       });
     });
   });
@@ -123,7 +123,9 @@ describe('Non-VAT registered', () => {
 
         cy.findByTestId(company.name).should('be.visible').click();
 
-        cy.get('h2').should('contain.text', company.name).should('be.visible');
+        cy.findByRole('heading', {
+          name: company.name,
+        }).should('be.visible');
 
         cy.findByRole('link', {
           name: 'Manage settings',
@@ -131,7 +133,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Settings').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Settings',
+        }).should('be.visible');
       });
     });
 
@@ -189,7 +193,7 @@ describe('Non-VAT registered', () => {
             .should('be.visible')
             .click();
 
-          cy.get('p:contains("Dashboard")').should('be.visible');
+          cy.findByText('Dashboard').should('be.visible');
         });
       });
     });
@@ -243,7 +247,7 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('p:contains("Dashboard")').should('be.visible');
+        cy.findByText('Dashboard').should('be.visible');
       });
     });
   });
@@ -255,7 +259,9 @@ describe('Non-VAT registered', () => {
 
         cy.findByTestId(company.name).should('be.visible').click();
 
-        cy.get('h2').should('contain.text', company.name).should('be.visible');
+        cy.findByRole('heading', {
+          name: company.name,
+        }).should('be.visible');
 
         cy.findByRole('link', {
           name: 'Manage clients',
@@ -263,7 +269,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Clients',
+        }).should('be.visible');
 
         cy.url({
           timeout,
@@ -323,7 +331,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Clients',
+        }).should('be.visible');
       });
     });
 
@@ -383,7 +393,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Clients',
+        }).should('be.visible');
       });
     });
 
@@ -438,7 +450,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Clients',
+        }).should('be.visible');
       });
     });
 
@@ -495,7 +509,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Clients',
+        }).should('be.visible');
       });
     });
 
@@ -527,7 +543,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Clients').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Clients',
+        }).should('be.visible');
       });
     });
   });
@@ -539,7 +557,9 @@ describe('Non-VAT registered', () => {
 
         cy.findByTestId(company.name).should('be.visible').click();
 
-        cy.get('h2').should('contain.text', company.name).should('be.visible');
+        cy.findByRole('heading', {
+          name: company.name,
+        }).should('be.visible');
 
         cy.findByRole('link', {
           name: 'Manage accounts',
@@ -547,7 +567,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Accounts',
+        }).should('be.visible');
 
         cy.url({
           timeout,
@@ -602,7 +624,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Accounts',
+        }).should('be.visible');
       });
     });
 
@@ -652,7 +676,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Accounts',
+        }).should('be.visible');
       });
     });
 
@@ -704,7 +730,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Accounts',
+        }).should('be.visible');
       });
     });
 
@@ -754,7 +782,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Accounts',
+        }).should('be.visible');
       });
     });
 
@@ -836,9 +866,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2')
-          .should('contain.text', 'Pending transactions')
-          .should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Pending transactions',
+        }).should('be.visible');
       });
     });
 
@@ -890,9 +920,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2')
-          .should('contain.text', 'Pending transactions')
-          .should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Pending transactions',
+        }).should('be.visible');
       });
     });
 
@@ -944,9 +974,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2')
-          .should('contain.text', 'Pending transactions')
-          .should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Pending transactions',
+        }).should('be.visible');
       });
     });
 
@@ -960,9 +990,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2')
-          .should('contain.text', 'Pending transactions')
-          .should('be.visible');
+        cy.findByRole('heading', {
+          name: 'Pending transactions',
+        }).should('be.visible');
 
         cy.a11yWithLogs();
 
@@ -1008,10 +1038,9 @@ describe('Non-VAT registered', () => {
         .should('be.visible')
         .click();
 
-      cy.get('p')
-        .eq(1)
-        .should('contain.text', 'A scheduled transaction has been published')
-        .should('be.visible');
+      cy.findByText('A scheduled transaction has been published').should(
+        'be.visible',
+      );
 
       cy.findByRole('button', {
         name: 'Notifications (1 unread)',
@@ -1061,9 +1090,9 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('h2')
-          .should('contain.text', 'My companies')
-          .should('be.visible');
+        cy.findByRole('heading', {
+          name: 'My companies',
+        }).should('be.visible');
       });
     });
   });
