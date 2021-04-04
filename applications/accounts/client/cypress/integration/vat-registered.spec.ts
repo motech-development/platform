@@ -513,7 +513,11 @@ describe('VAT registered', () => {
 
         cy.get('h2').should('contain.text', company.name).should('be.visible');
 
-        cy.get('a:contains("Manage clients")').should('be.visible').click();
+        cy.findByRole('link', {
+          name: 'Manage clients',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2').should('contain.text', 'Clients').should('be.visible');
 
@@ -535,7 +539,11 @@ describe('VAT registered', () => {
 
         cy.a11yWithLogs();
 
-        cy.get('a:contains("Add a new client")').should('be.visible').click();
+        cy.findByRole('link', {
+          name: 'Add a new client',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2')
           .should('contain.text', 'Add a new client')
@@ -573,7 +581,11 @@ describe('VAT registered', () => {
           .focus()
           .type(client.contact.telephone);
 
-        cy.get('button[type="submit"]').should('be.visible').click();
+        cy.findByRole('button', {
+          name: 'Save',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2').should('contain.text', 'Clients').should('be.visible');
       });
@@ -589,7 +601,11 @@ describe('VAT registered', () => {
 
         cy.get('h2').should('contain.text', company.name).should('be.visible');
 
-        cy.get('a:contains("Manage accounts")').should('be.visible').click();
+        cy.findByRole('link', {
+          name: 'Manage accounts',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
 
@@ -612,7 +628,9 @@ describe('VAT registered', () => {
 
           cy.a11yWithLogs();
 
-          cy.get('a:contains("Record a new transaction")')
+          cy.findByRole('link', {
+            name: 'Record a new transaction',
+          })
             .should('be.visible')
             .click();
 
@@ -655,11 +673,16 @@ describe('VAT registered', () => {
               .should('have.value', value);
           });
 
-          cy.get('div:contains("File has been uploaded")', {
+          cy.findByRole('alert', {
+            name: 'File has been uploaded',
             timeout,
           }).should('not.exist');
 
-          cy.get('button[type="submit"]').should('be.visible').click();
+          cy.findByRole('button', {
+            name: 'Save',
+          })
+            .should('be.visible')
+            .click();
 
           cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
         });
@@ -670,7 +693,9 @@ describe('VAT registered', () => {
       cy.fixture('data/account.json').then((res) => {
         const transaction = res[8];
 
-        cy.get('a:contains("Record a new transaction")')
+        cy.findByRole('link', {
+          name: 'Record a new transaction',
+        })
           .should('be.visible')
           .click();
 
@@ -705,7 +730,11 @@ describe('VAT registered', () => {
             .should('have.value', value);
         });
 
-        cy.get('button[type="submit"]').should('be.visible').click();
+        cy.findByRole('button', {
+          name: 'Save',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
       });
@@ -716,7 +745,9 @@ describe('VAT registered', () => {
         cy.fixture('upload/invoice.pdf').then((file) => {
           const transaction = res[1];
 
-          cy.get('a:contains("Record a new transaction")')
+          cy.findByRole('link', {
+            name: 'Record a new transaction',
+          })
             .should('be.visible')
             .click();
 
@@ -758,11 +789,16 @@ describe('VAT registered', () => {
               .should('have.value', value);
           });
 
-          cy.get('div:contains("File has been uploaded")', {
+          cy.findByRole('alert', {
+            name: 'File has been uploaded',
             timeout,
           }).should('not.exist');
 
-          cy.get('button[type="submit"]').should('be.visible').click();
+          cy.findByRole('button', {
+            name: 'Save',
+          })
+            .should('be.visible')
+            .click();
 
           cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
         });
@@ -774,7 +810,9 @@ describe('VAT registered', () => {
         cy.fixture('upload/invoice.pdf').then((file) => {
           const transaction = res[2];
 
-          cy.get('a:contains("Record a new transaction")')
+          cy.findByRole('link', {
+            name: 'Record a new transaction',
+          })
             .should('be.visible')
             .click();
 
@@ -816,11 +854,16 @@ describe('VAT registered', () => {
               .should('have.value', value);
           });
 
-          cy.get('div:contains("File has been uploaded")', {
+          cy.findByRole('alert', {
+            name: 'File has been uploaded',
             timeout,
           }).should('not.exist');
 
-          cy.get('button[type="submit"]').should('be.visible').click();
+          cy.findByRole('button', {
+            name: 'Save',
+          })
+            .should('be.visible')
+            .click();
 
           cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
         });
@@ -840,7 +883,12 @@ describe('VAT registered', () => {
         cy.fixture('upload/invoice.pdf').then((file) => {
           const transaction = res[6];
 
-          cy.get('a:contains("View")').eq(4).should('be.visible').click();
+          cy.findAllByRole('link', {
+            name: 'View',
+          })
+            .eq(3)
+            .should('be.visible')
+            .click();
 
           cy.get('h2')
             .should('contain.text', 'View transaction')
@@ -875,7 +923,11 @@ describe('VAT registered', () => {
               .should('have.value', value);
           });
 
-          cy.get('button:contains("Delete file")').should('be.visible').click();
+          cy.findByRole('button', {
+            name: 'Delete file',
+          })
+            .should('be.visible')
+            .click();
 
           cy.get('div:contains("File has been deleted")', {
             timeout,
@@ -889,11 +941,16 @@ describe('VAT registered', () => {
 
           cy.findByLabelText('Select file to upload').should('not.exist');
 
-          cy.get('div:contains("File has been uploaded")', {
+          cy.findByRole('alert', {
+            name: 'File has been uploaded',
             timeout,
           }).should('not.exist');
 
-          cy.get('button[type="submit"]').should('be.visible').click();
+          cy.findByRole('button', {
+            name: 'Save',
+          })
+            .should('be.visible')
+            .click();
 
           cy.contains('Balance: £2790.40').should('be.visible');
 
@@ -906,7 +963,12 @@ describe('VAT registered', () => {
       cy.fixture('data/account.json').then((res) => {
         const transaction = res[0];
 
-        cy.get('button:contains("Delete")').eq(3).should('be.visible').click();
+        cy.findAllByRole('button', {
+          name: 'Delete',
+        })
+          .eq(3)
+          .should('be.visible')
+          .click();
 
         cy.a11yWithLogs();
 
@@ -915,7 +977,12 @@ describe('VAT registered', () => {
           .focus()
           .type(transaction.supplier);
 
-        cy.get('button[type="submit"]').should('be.visible').click();
+        cy.findAllByRole('button', {
+          name: 'Delete',
+        })
+          .last()
+          .should('be.visible')
+          .click();
 
         cy.contains('Balance: £290.40').should('be.visible');
 
@@ -927,7 +994,9 @@ describe('VAT registered', () => {
       cy.fixture('data/account.json').then((res) => {
         const transaction = res[7];
 
-        cy.get('a:contains("Record a new transaction")')
+        cy.findByRole('link', {
+          name: 'Record a new transaction',
+        })
           .should('be.visible')
           .click();
 
@@ -961,7 +1030,11 @@ describe('VAT registered', () => {
             .should('have.value', value);
         });
 
-        cy.get('button[type="submit"]').should('be.visible').click();
+        cy.findByRole('button', {
+          name: 'Save',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
       });
@@ -971,7 +1044,9 @@ describe('VAT registered', () => {
       cy.fixture('data/account.json').then((res) => {
         const transaction = res[10];
 
-        cy.get('a:contains("Record a new transaction")')
+        cy.findByRole('link', {
+          name: 'Record a new transaction',
+        })
           .should('be.visible')
           .click();
 
@@ -1007,7 +1082,11 @@ describe('VAT registered', () => {
             .should('have.value', value);
         });
 
-        cy.get('button[type="submit"]').should('be.visible').click();
+        cy.findByRole('button', {
+          name: 'Save',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2').should('contain.text', 'Accounts').should('be.visible');
       });
@@ -1020,13 +1099,22 @@ describe('VAT registered', () => {
     });
 
     it('should download attachment', () => {
-      cy.get('a:contains("View")').eq(4).should('be.visible').click();
+      cy.findAllByRole('link', {
+        name: 'View',
+      })
+        .eq(3)
+        .should('be.visible')
+        .click();
 
       cy.get('h2')
         .should('contain.text', 'View transaction')
         .should('be.visible');
 
-      cy.get('button:contains("Download file")').should('be.visible').click();
+      cy.findByRole('button', {
+        name: 'Download file',
+      })
+        .should('be.visible')
+        .click();
 
       cy.get('div:contains("The download has started")').should('be.visible');
     });
@@ -1045,20 +1133,28 @@ describe('VAT registered', () => {
 
         cy.findByTestId(company.name).should('be.visible').click();
 
-        cy.get('a:contains("Manage company details")')
+        cy.findByRole('link', {
+          name: 'Manage company details',
+        })
           .should('be.visible')
           .click();
 
-        cy.get(`button:contains("Delete ${company.name}")`)
+        cy.findByRole('button', {
+          name: `Delete ${company.name}`,
+        })
           .should('be.visible')
           .click();
 
-        cy.get('input[id="confirmation"]')
+        cy.findByLabelText(`Please type ${company.name} to confirm`)
           .should('be.visible')
           .focus()
           .type(company.name);
 
-        cy.get('button[type="submit"]').eq(1).should('be.visible').click();
+        cy.findByRole('button', {
+          name: 'Delete',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2')
           .should('contain.text', 'My companies')
