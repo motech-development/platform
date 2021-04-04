@@ -147,7 +147,15 @@ describe('VAT registered', () => {
         const { company } = res[0];
         const updated = res[2].company;
 
-        cy.get(`a[data-test-id="${company.name}"]`)
+        cy.findByTestId(company.name).should('be.visible').click();
+
+        cy.get('h2').should('contain.text', company.name).should('be.visible');
+
+        cy.a11yWithLogs();
+
+        cy.findByRole('link', {
+          name: 'Manage company details',
+        })
           .should('be.visible')
           .click();
 
@@ -155,23 +163,15 @@ describe('VAT registered', () => {
 
         cy.a11yWithLogs();
 
-        cy.get('a:contains("Manage company details")')
-          .should('be.visible')
-          .click();
-
-        cy.get('h2').should('contain.text', company.name).should('be.visible');
-
-        cy.a11yWithLogs();
-
-        cy.get('input[id="name"]')
+        cy.findByLabelText('Name*')
           .should('be.visible')
           .should('have.value', company.name);
 
-        cy.get('input[id="companyNumber"]')
+        cy.findByLabelText('Company number*')
           .should('be.visible')
           .should('have.value', company.companyNumber);
 
-        cy.get('input[id="bank.accountNumber"]')
+        cy.findByLabelText('Account number*')
           .should('be.visible')
           .should('have.value', company.bank.accountNumber)
           .focus()
@@ -179,7 +179,7 @@ describe('VAT registered', () => {
           .type(updated.bank.accountNumber);
 
         cy.format('sort code', company.bank.sortCode).then((value) => {
-          cy.get('input[id="bank.sortCode"]')
+          cy.findByLabelText('Sort code*')
             .should('be.visible')
             .should('have.value', value)
             .focus()
@@ -187,39 +187,43 @@ describe('VAT registered', () => {
             .type(updated.bank.sortCode);
         });
 
-        cy.get('input[id="address.line1"]')
+        cy.findByLabelText('Address line 1*')
           .should('be.visible')
           .should('have.value', company.address.line1)
           .focus()
           .clear()
           .type(updated.address.line1);
 
-        cy.get('input[id="address.line2"]')
+        cy.findByLabelText('Address line 2')
           .should('be.visible')
           .should('have.value', company.address.line2)
           .focus()
           .clear();
 
-        cy.get('input[id="address.line3"]')
+        cy.findByLabelText('Town*')
           .should('be.visible')
           .should('have.value', company.address.line3);
 
-        cy.get('input[id="address.line5"]')
+        cy.findByLabelText('Postcode*')
           .should('be.visible')
           .should('have.value', company.address.line5);
 
-        cy.get('input[id="contact.email"]')
+        cy.findByLabelText('Email address*')
           .should('be.visible')
           .should('have.value', company.contact.email)
           .focus()
           .clear()
           .type(updated.contact.email);
 
-        cy.get('input[id="contact.telephone"]')
+        cy.findByLabelText('Telephone number*')
           .should('be.visible')
           .should('have.value', company.contact.telephone);
 
-        cy.get('button[type="submit"]').should('be.visible').click();
+        cy.findByRole('button', {
+          name: 'Save',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2').should('contain.text', company.name).should('be.visible');
       });
@@ -231,13 +235,15 @@ describe('VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[0];
 
-        cy.get(`a[data-test-id="${company.name}"]`)
-          .should('be.visible')
-          .click();
+        cy.findByTestId(company.name).should('be.visible').click();
 
         cy.get('h2').should('contain.text', company.name).should('be.visible');
 
-        cy.get('a:contains("Manage settings")').should('be.visible').click();
+        cy.findByRole('link', {
+          name: 'Manage settings',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2').should('contain.text', 'Settings').should('be.visible');
       });
@@ -257,47 +263,58 @@ describe('VAT registered', () => {
 
           cy.a11yWithLogs();
 
-          cy.get('button:contains("Add a new category")')
+          cy.findByRole('button', {
+            name: 'Add a new category',
+          })
             .should('be.visible')
             .click();
 
-          cy.get('input[id="categories.5.name"]')
+          cy.findAllByLabelText('Name')
+            .eq(5)
             .should('be.visible')
             .focus()
             .type(settings.categories[0].name);
 
-          cy.get('button:contains("Add a new category")')
+          cy.findByRole('button', {
+            name: 'Add a new category',
+          })
             .should('be.visible')
             .click();
 
-          cy.get('input[id="categories.6.name"]')
+          cy.findAllByLabelText('Name')
+            .eq(6)
             .should('be.visible')
             .focus()
             .type(settings.categories[1].name);
 
-          cy.get('input[id="categories.6.vatRate"]')
+          cy.findAllByLabelText('VAT rate')
+            .eq(6)
             .should('be.visible')
             .focus()
             .clear()
             .type(settings.categories[1].vatRate);
 
-          cy.get('button:contains("Add a new category")')
+          cy.findByRole('button', {
+            name: 'Add a new category',
+          })
             .should('be.visible')
             .click();
 
-          cy.get('input[id="categories.7.name"]')
+          cy.findAllByLabelText('Name')
+            .eq(7)
             .should('be.visible')
             .focus()
             .type(settings.categories[2].name);
 
-          cy.get('input[id="categories.7.vatRate"]')
+          cy.findAllByLabelText('VAT rate')
+            .eq(7)
             .should('be.visible')
             .focus()
             .clear()
             .type(settings.categories[2].vatRate);
 
           cy.format('percentage', '20').then((value) => {
-            cy.get('input[id="vat.pay"]')
+            cy.findByLabelText('VAT to pay')
               .should('be.visible')
               .should('have.value', value)
               .focus()
@@ -331,7 +348,11 @@ describe('VAT registered', () => {
             .should('be.visible')
             .should('have.value', company.yearEnd.month);
 
-          cy.get('button[type="submit"]').should('be.visible').click();
+          cy.findByRole('button', {
+            name: 'Save',
+          })
+            .should('be.visible')
+            .click();
 
           cy.get('p:contains("Dashboard")').should('be.visible');
         });
@@ -342,50 +363,56 @@ describe('VAT registered', () => {
       cy.fixture('data/settings.json').then((res) => {
         const settings = res[0];
 
-        cy.get('input[id="categories.5.name"]')
+        cy.findAllByLabelText('Name')
+          .eq(5)
           .should('be.visible')
           .should('have.value', settings.categories[0].name);
 
         cy.format('percentage', settings.categories[0].vatRate).then(
           (value) => {
-            cy.get('input[id="categories.5.vatRate"]')
+            cy.findAllByLabelText('VAT rate')
+              .eq(5)
               .should('be.visible')
               .should('have.value', value);
           },
         );
 
-        cy.get('input[id="categories.6.name"]')
+        cy.findAllByLabelText('Name')
+          .eq(6)
           .should('be.visible')
           .should('have.value', settings.categories[1].name);
 
         cy.format('percentage', settings.categories[1].vatRate).then(
           (value) => {
-            cy.get('input[id="categories.6.vatRate"]')
+            cy.findAllByLabelText('VAT rate')
+              .eq(6)
               .should('be.visible')
               .should('have.value', value);
           },
         );
 
-        cy.get('input[id="categories.7.name"]')
+        cy.findAllByLabelText('Name')
+          .eq(7)
           .should('be.visible')
           .should('have.value', settings.categories[2].name);
 
         cy.format('percentage', settings.categories[2].vatRate).then(
           (value) => {
-            cy.get('input[id="categories.7.vatRate"]')
+            cy.findAllByLabelText('VAT rate')
+              .eq(7)
               .should('be.visible')
               .should('have.value', value);
           },
         );
 
         cy.format('percentage', settings.vat.charge).then((value) => {
-          cy.get('input[id="vat.charge"]')
+          cy.findByLabelText('VAT to charge')
             .should('be.visible')
             .should('have.value', value);
         });
 
         cy.format('percentage', settings.vat.pay).then((value) => {
-          cy.get('input[id="vat.pay"]')
+          cy.findByLabelText('VAT to pay')
             .should('be.visible')
             .should('have.value', value);
         });
@@ -400,13 +427,32 @@ describe('VAT registered', () => {
 
         cy.findByLabelText('Flat rate').should('be.checked');
 
-        cy.get('button:contains("Remove")').eq(0).should('be.visible').click();
+        cy.findAllByRole('button', {
+          name: 'Remove',
+        })
+          .eq(0)
+          .should('be.visible')
+          .click();
 
-        cy.get('button:contains("Remove")').eq(0).should('be.visible').click();
+        cy.findAllByRole('button', {
+          name: 'Remove',
+        })
+          .eq(0)
+          .should('be.visible')
+          .click();
 
-        cy.get('button:contains("Remove")').eq(0).should('be.visible').click();
+        cy.findAllByRole('button', {
+          name: 'Remove',
+        })
+          .eq(0)
+          .should('be.visible')
+          .click();
 
-        cy.get('button[type="submit"]').should('be.visible').click();
+        cy.findByRole('button', {
+          name: 'Save',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('p:contains("Dashboard")').should('be.visible');
       });
@@ -416,31 +462,42 @@ describe('VAT registered', () => {
       cy.fixture('data/settings.json').then((res) => {
         const settings = res[0];
 
-        cy.get('button:contains("Add a new category")')
+        cy.findByRole('button', {
+          name: 'Add a new category',
+        })
           .should('be.visible')
           .click();
 
-        cy.get('input[id="categories.5.name"]')
+        cy.findAllByLabelText('Name')
+          .eq(5)
           .should('be.visible')
           .focus()
           .type(settings.categories[0].name);
 
-        cy.get('button:contains("Add a new category")')
+        cy.findByRole('button', {
+          name: 'Add a new category',
+        })
           .should('be.visible')
           .click();
 
-        cy.get('input[id="categories.6.name"]')
+        cy.findAllByLabelText('Name')
+          .eq(6)
           .should('be.visible')
           .focus()
           .type(settings.categories[1].name);
 
-        cy.get('input[id="categories.6.vatRate"]')
+        cy.findAllByLabelText('VAT rate')
+          .eq(6)
           .should('be.visible')
           .focus()
           .clear()
           .type(settings.categories[1].vatRate);
 
-        cy.get('button[type="submit"]').should('be.visible').click();
+        cy.findByRole('button', {
+          name: 'Save',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('p:contains("Dashboard")').should('be.visible');
       });
@@ -452,9 +509,7 @@ describe('VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[0];
 
-        cy.get(`a[data-test-id="${company.name}"]`)
-          .should('be.visible')
-          .click();
+        cy.findByTestId(company.name).should('be.visible').click();
 
         cy.get('h2').should('contain.text', company.name).should('be.visible');
 
@@ -488,32 +543,32 @@ describe('VAT registered', () => {
 
         cy.a11yWithLogs();
 
-        cy.get('input[id="name"]')
+        cy.findByLabelText('Name*')
           .should('be.visible')
           .focus()
           .type(client.name);
 
-        cy.get('input[id="address.line1"]')
+        cy.findByLabelText('Address line 1*')
           .should('be.visible')
           .focus()
           .type(client.address.line1);
 
-        cy.get('input[id="address.line3"]')
+        cy.findByLabelText('Town*')
           .should('be.visible')
           .focus()
           .type(client.address.line3);
 
-        cy.get('input[id="address.line5"]')
+        cy.findByLabelText('Postcode*')
           .should('be.visible')
           .focus()
           .type(client.address.line5);
 
-        cy.get('input[id="contact.email"]')
+        cy.findByLabelText('Email address*')
           .should('be.visible')
           .focus()
           .type(client.contact.email);
 
-        cy.get('input[id="contact.telephone"]')
+        cy.findByLabelText('Telephone number*')
           .should('be.visible')
           .focus()
           .type(client.contact.telephone);
@@ -530,9 +585,7 @@ describe('VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[0];
 
-        cy.get(`a[data-test-id="${company.name}"]`)
-          .should('be.visible')
-          .click();
+        cy.findByTestId(company.name).should('be.visible').click();
 
         cy.get('h2').should('contain.text', company.name).should('be.visible');
 
@@ -990,9 +1043,7 @@ describe('VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[0];
 
-        cy.get(`a[data-test-id="${company.name}"]`)
-          .should('be.visible')
-          .click();
+        cy.findByTestId(company.name).should('be.visible').click();
 
         cy.get('a:contains("Manage company details")')
           .should('be.visible')

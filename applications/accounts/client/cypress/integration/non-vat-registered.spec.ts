@@ -121,13 +121,15 @@ describe('Non-VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[1];
 
-        cy.get(`a[data-test-id="${company.name}"]`)
-          .should('be.visible')
-          .click();
+        cy.findByTestId(company.name).should('be.visible').click();
 
         cy.get('h2').should('contain.text', company.name).should('be.visible');
 
-        cy.get('a:contains("Manage settings")').should('be.visible').click();
+        cy.findByRole('link', {
+          name: 'Manage settings',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('h2').should('contain.text', 'Settings').should('be.visible');
       });
@@ -181,7 +183,11 @@ describe('Non-VAT registered', () => {
             .focus()
             .select(settings.yearEnd.month);
 
-          cy.get('button[type="submit"]').should('be.visible').click();
+          cy.findByRole('button', {
+            name: 'Save',
+          })
+            .should('be.visible')
+            .click();
 
           cy.get('p:contains("Dashboard")').should('be.visible');
         });
@@ -192,25 +198,32 @@ describe('Non-VAT registered', () => {
       cy.fixture('data/settings.json').then((res) => {
         const settings = res[1];
 
-        cy.get('button:contains("Add a new category")')
+        cy.findByRole('button', {
+          name: 'Add a new category',
+        })
           .should('be.visible')
           .click();
 
-        cy.get('input[id="categories.5.name"]')
+        cy.findAllByLabelText('Name')
+          .eq(5)
           .should('be.visible')
           .focus()
           .type(settings.categories[0].name);
 
-        cy.get('button:contains("Add a new category")')
+        cy.findByRole('button', {
+          name: 'Add a new category',
+        })
           .should('be.visible')
           .click();
 
-        cy.get('input[id="categories.6.name"]')
+        cy.findAllByLabelText('Name')
+          .eq(6)
           .should('be.visible')
           .focus()
           .type(settings.categories[1].name);
 
-        cy.get('input[id="categories.6.vatRate"]')
+        cy.findAllByLabelText('VAT rate')
+          .eq(6)
           .should('be.visible')
           .focus()
           .clear()
@@ -224,7 +237,11 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .should('have.value', settings.yearEnd.month);
 
-        cy.get('button[type="submit"]').should('be.visible').click();
+        cy.findByRole('button', {
+          name: 'Save',
+        })
+          .should('be.visible')
+          .click();
 
         cy.get('p:contains("Dashboard")').should('be.visible');
       });
@@ -236,9 +253,7 @@ describe('Non-VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[1];
 
-        cy.get(`a[data-test-id="${company.name}"]`)
-          .should('be.visible')
-          .click();
+        cy.findByTestId(company.name).should('be.visible').click();
 
         cy.get('h2').should('contain.text', company.name).should('be.visible');
 
@@ -264,32 +279,32 @@ describe('Non-VAT registered', () => {
 
         cy.get('a:contains("Add a new client")').should('be.visible').click();
 
-        cy.get('input[id="name"]')
+        cy.findByLabelText('Name*')
           .should('be.visible')
           .focus()
           .type(client.name);
 
-        cy.get('input[id="address.line1"]')
+        cy.findByLabelText('Address line 1*')
           .should('be.visible')
           .focus()
           .type(client.address.line1);
 
-        cy.get('input[id="address.line3"]')
+        cy.findByLabelText('Town*')
           .should('be.visible')
           .focus()
           .type(client.address.line3);
 
-        cy.get('input[id="address.line5"]')
+        cy.findByLabelText('Postcode*')
           .should('be.visible')
           .focus()
           .type(client.address.line5);
 
-        cy.get('input[id="contact.email"]')
+        cy.findByLabelText('Email address*')
           .should('be.visible')
           .focus()
           .type(client.contact.email);
 
-        cy.get('input[id="contact.telephone"]')
+        cy.findByLabelText('Telephone number*')
           .should('be.visible')
           .focus()
           .type(client.contact.telephone);
@@ -306,22 +321,22 @@ describe('Non-VAT registered', () => {
 
         cy.get('a:contains("Add a new client")').should('be.visible').click();
 
-        cy.get('input[id="name"]')
+        cy.findByLabelText('Name*')
           .should('be.visible')
           .focus()
           .type(client.name);
 
-        cy.get('input[id="address.line1"]')
+        cy.findByLabelText('Address line 1*')
           .should('be.visible')
           .focus()
           .type(client.address.line1);
 
-        cy.get('input[id="address.line2"]')
+        cy.findByLabelText('Address line 2')
           .should('be.visible')
           .focus()
           .type(client.address.line2);
 
-        cy.get('input[id="address.line3"]')
+        cy.findByLabelText('Town*')
           .should('be.visible')
           .focus()
           .type(client.address.line3);
@@ -331,17 +346,17 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(client.address.line4);
 
-        cy.get('input[id="address.line5"]')
+        cy.findByLabelText('Postcode*')
           .should('be.visible')
           .focus()
           .type(client.address.line5);
 
-        cy.get('input[id="contact.email"]')
+        cy.findByLabelText('Email address*')
           .should('be.visible')
           .focus()
           .type(client.contact.email);
 
-        cy.get('input[id="contact.telephone"]')
+        cy.findByLabelText('Telephone number*')
           .should('be.visible')
           .focus()
           .type(client.contact.telephone);
@@ -358,17 +373,17 @@ describe('Non-VAT registered', () => {
 
         cy.get('a:contains("Add a new client")').should('be.visible').click();
 
-        cy.get('input[id="name"]')
+        cy.findByLabelText('Name*')
           .should('be.visible')
           .focus()
           .type(client.name);
 
-        cy.get('input[id="address.line1"]')
+        cy.findByLabelText('Address line 1*')
           .should('be.visible')
           .focus()
           .type(client.address.line1);
 
-        cy.get('input[id="address.line3"]')
+        cy.findByLabelText('Town*')
           .should('be.visible')
           .focus()
           .type(client.address.line3);
@@ -378,17 +393,17 @@ describe('Non-VAT registered', () => {
           .focus()
           .type(client.address.line4);
 
-        cy.get('input[id="address.line5"]')
+        cy.findByLabelText('Postcode*')
           .should('be.visible')
           .focus()
           .type(client.address.line5);
 
-        cy.get('input[id="contact.email"]')
+        cy.findByLabelText('Email address*')
           .should('be.visible')
           .focus()
           .type(client.contact.email);
 
-        cy.get('input[id="contact.telephone"]')
+        cy.findByLabelText('Telephone number*')
           .should('be.visible')
           .focus()
           .type(client.contact.telephone);
@@ -409,22 +424,22 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .click();
 
-        cy.get('input[id="name"]')
+        cy.findByLabelText('Name*')
           .should('be.visible')
           .should('have.value', client.name)
           .focus()
           .clear()
           .type(updated.name);
 
-        cy.get('input[id="address.line1"]')
+        cy.findByLabelText('Address line 1*')
           .should('be.visible')
           .should('have.value', client.address.line1);
 
-        cy.get('input[id="address.line2"]')
+        cy.findByLabelText('Address line 2')
           .should('be.visible')
           .should('have.value', client.address.line2);
 
-        cy.get('input[id="address.line3"]')
+        cy.findByLabelText('Town*')
           .should('be.visible')
           .should('have.value', client.address.line3);
 
@@ -432,15 +447,15 @@ describe('Non-VAT registered', () => {
           .should('be.visible')
           .should('have.value', client.address.line4);
 
-        cy.get('input[id="address.line5"]')
+        cy.findByLabelText('Postcode*')
           .should('be.visible')
           .should('have.value', client.address.line5);
 
-        cy.get('input[id="contact.email"]')
+        cy.findByLabelText('Email address*')
           .should('be.visible')
           .should('have.value', client.contact.email);
 
-        cy.get('input[id="contact.telephone"]')
+        cy.findByLabelText('Telephone number*')
           .should('be.visible')
           .should('have.value', client.contact.telephone);
 
@@ -480,9 +495,7 @@ describe('Non-VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[1];
 
-        cy.get(`a[data-test-id="${company.name}"]`)
-          .should('be.visible')
-          .click();
+        cy.findByTestId(company.name).should('be.visible').click();
 
         cy.get('h2').should('contain.text', company.name).should('be.visible');
 
@@ -907,9 +920,7 @@ describe('Non-VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[1];
 
-        cy.get(`a[data-test-id="${company.name}"]`)
-          .should('be.visible')
-          .click();
+        cy.findByTestId(company.name).should('be.visible').click();
 
         cy.get('a:contains("Manage company details")')
           .should('be.visible')
