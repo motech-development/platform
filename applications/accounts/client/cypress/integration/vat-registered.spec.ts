@@ -21,9 +21,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('link', {
           name: 'Add a new company',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByRole('heading', {
           name: 'Add a new company',
@@ -83,9 +81,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('button', {
           name: 'Settings',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByLabelText('VAT registration number')
           .should('be.visible')
@@ -124,9 +120,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('button', {
           name: 'Save',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByRole('heading', {
           name: data.company.name,
@@ -147,7 +141,7 @@ describe('VAT registered', () => {
         const { company } = res[0];
         const updated = res[2].company;
 
-        cy.findByTestId(company.name).should('be.visible').click();
+        cy.findByTestId(company.name).should('be.visible').safeClick();
 
         cy.findByRole('heading', {
           name: company.name,
@@ -157,9 +151,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('link', {
           name: 'Manage company details',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByRole('heading', {
           name: company.name,
@@ -225,9 +217,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('button', {
           name: 'Save',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByRole('heading', {
           name: company.name,
@@ -241,7 +231,9 @@ describe('VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[0];
 
-        cy.findByTestId(company.name).should('be.visible').click();
+        cy.findByTestId(company.name).should('be.visible').safeClick();
+
+        cy.findByTestId('connected-content').waitForElement();
 
         cy.findByRole('heading', {
           name: company.name,
@@ -249,9 +241,9 @@ describe('VAT registered', () => {
 
         cy.findByRole('link', {
           name: 'Manage settings',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
+
+        cy.findByTestId('connected-content').waitForElement();
 
         cy.findByRole('heading', {
           name: 'Settings',
@@ -275,9 +267,7 @@ describe('VAT registered', () => {
 
           cy.findByRole('button', {
             name: 'Add a new category',
-          })
-            .should('be.visible')
-            .click();
+          }).click();
 
           cy.findAllByLabelText('Name')
             .eq(5)
@@ -287,9 +277,7 @@ describe('VAT registered', () => {
 
           cy.findByRole('button', {
             name: 'Add a new category',
-          })
-            .should('be.visible')
-            .click();
+          }).click();
 
           cy.findAllByLabelText('Name')
             .eq(6)
@@ -306,9 +294,7 @@ describe('VAT registered', () => {
 
           cy.findByRole('button', {
             name: 'Add a new category',
-          })
-            .should('be.visible')
-            .click();
+          }).click();
 
           cy.findAllByLabelText('Name')
             .eq(7)
@@ -360,9 +346,7 @@ describe('VAT registered', () => {
 
           cy.findByRole('button', {
             name: 'Save',
-          })
-            .should('be.visible')
-            .click();
+          }).safeClick();
 
           cy.findByText('Dashboard').should('be.visible');
         });
@@ -441,28 +425,23 @@ describe('VAT registered', () => {
           name: 'Remove',
         })
           .eq(0)
-          .should('be.visible')
           .click();
 
         cy.findAllByRole('button', {
           name: 'Remove',
         })
           .eq(0)
-          .should('be.visible')
           .click();
 
         cy.findAllByRole('button', {
           name: 'Remove',
         })
           .eq(0)
-          .should('be.visible')
           .click();
 
         cy.findByRole('button', {
           name: 'Save',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByText('Dashboard').should('be.visible');
       });
@@ -474,9 +453,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('button', {
           name: 'Add a new category',
-        })
-          .should('be.visible')
-          .click();
+        }).click();
 
         cy.findAllByLabelText('Name')
           .eq(5)
@@ -486,9 +463,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('button', {
           name: 'Add a new category',
-        })
-          .should('be.visible')
-          .click();
+        }).click();
 
         cy.findAllByLabelText('Name')
           .eq(6)
@@ -505,9 +480,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('button', {
           name: 'Save',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByText('Dashboard').should('be.visible');
       });
@@ -519,7 +492,9 @@ describe('VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[0];
 
-        cy.findByTestId(company.name).should('be.visible').click();
+        cy.findByTestId(company.name).should('be.visible').safeClick();
+
+        cy.findByTestId('connected-content').waitForElement();
 
         cy.findByRole('heading', {
           name: company.name,
@@ -527,9 +502,9 @@ describe('VAT registered', () => {
 
         cy.findByRole('link', {
           name: 'Manage clients',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
+
+        cy.findByTestId('connected-content').waitForElement();
 
         cy.findByRole('heading', {
           name: 'Clients',
@@ -555,9 +530,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('link', {
           name: 'Add a new client',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByRole('heading', {
           name: 'Add a new client',
@@ -597,9 +570,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('button', {
           name: 'Save',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByRole('heading', {
           name: 'Clients',
@@ -613,7 +584,9 @@ describe('VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[0];
 
-        cy.findByTestId(company.name).should('be.visible').click();
+        cy.findByTestId(company.name).should('be.visible').safeClick();
+
+        cy.findByTestId('connected-content').waitForElement();
 
         cy.findByRole('heading', {
           name: company.name,
@@ -621,13 +594,15 @@ describe('VAT registered', () => {
 
         cy.findByRole('link', {
           name: 'Manage accounts',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
-        cy.findByRole('heading', {
+        cy.findByTestId('connected-content').waitForElement();
+
+        cy.findAllByRole('heading', {
           name: 'Accounts',
-        }).should('be.visible');
+        })
+          .eq(1)
+          .should('be.visible');
 
         cy.url({
           timeout,
@@ -650,9 +625,7 @@ describe('VAT registered', () => {
 
           cy.findByRole('link', {
             name: 'Record a new transaction',
-          })
-            .should('be.visible')
-            .click();
+          }).safeClick();
 
           cy.findByRole('heading', {
             name: 'Record transaction',
@@ -693,20 +666,17 @@ describe('VAT registered', () => {
               .should('have.value', value);
           });
 
-          cy.findByRole('alert', {
-            name: 'File has been uploaded',
-            timeout,
-          }).should('not.exist');
+          cy.waitForToast();
 
           cy.findByRole('button', {
             name: 'Save',
-          })
-            .should('be.visible')
-            .click();
+          }).safeClick();
 
-          cy.findByRole('heading', {
+          cy.findAllByRole('heading', {
             name: 'Accounts',
-          }).should('be.visible');
+          })
+            .eq(1)
+            .should('be.visible');
         });
       });
     });
@@ -717,9 +687,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('link', {
           name: 'Record a new transaction',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByRole('heading', {
           name: 'Record transaction',
@@ -754,13 +722,13 @@ describe('VAT registered', () => {
 
         cy.findByRole('button', {
           name: 'Save',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
-        cy.findByRole('heading', {
+        cy.findAllByRole('heading', {
           name: 'Accounts',
-        }).should('be.visible');
+        })
+          .eq(1)
+          .should('be.visible');
       });
     });
 
@@ -771,9 +739,7 @@ describe('VAT registered', () => {
 
           cy.findByRole('link', {
             name: 'Record a new transaction',
-          })
-            .should('be.visible')
-            .click();
+          }).safeClick();
 
           cy.findByLabelText('Purchase').check();
 
@@ -813,20 +779,17 @@ describe('VAT registered', () => {
               .should('have.value', value);
           });
 
-          cy.findByRole('alert', {
-            name: 'File has been uploaded',
-            timeout,
-          }).should('not.exist');
+          cy.waitForToast();
 
           cy.findByRole('button', {
             name: 'Save',
-          })
-            .should('be.visible')
-            .click();
+          }).safeClick();
 
-          cy.findByRole('heading', {
+          cy.findAllByRole('heading', {
             name: 'Accounts',
-          }).should('be.visible');
+          })
+            .eq(1)
+            .should('be.visible');
         });
       });
     });
@@ -838,9 +801,7 @@ describe('VAT registered', () => {
 
           cy.findByRole('link', {
             name: 'Record a new transaction',
-          })
-            .should('be.visible')
-            .click();
+          }).safeClick();
 
           cy.findByLabelText('Purchase').check();
 
@@ -880,20 +841,17 @@ describe('VAT registered', () => {
               .should('have.value', value);
           });
 
-          cy.findByRole('alert', {
-            name: 'File has been uploaded',
-            timeout,
-          }).should('not.exist');
+          cy.waitForToast();
 
           cy.findByRole('button', {
             name: 'Save',
-          })
-            .should('be.visible')
-            .click();
+          }).safeClick();
 
-          cy.findByRole('heading', {
+          cy.findAllByRole('heading', {
             name: 'Accounts',
-          }).should('be.visible');
+          })
+            .eq(1)
+            .should('be.visible');
         });
       });
     });
@@ -915,8 +873,7 @@ describe('VAT registered', () => {
             name: 'View',
           })
             .eq(3)
-            .should('be.visible')
-            .click();
+            .safeClick();
 
           cy.findByRole('heading', {
             name: 'View transaction',
@@ -950,14 +907,7 @@ describe('VAT registered', () => {
 
           cy.findByRole('button', {
             name: 'Delete file',
-          })
-            .should('be.visible')
-            .click();
-
-          cy.findByRole('alert', {
-            name: 'File has been deleted',
-            timeout,
-          }).should('not.exist');
+          }).safeClick();
 
           cy.findByLabelText('Select file to upload').attachFile({
             fileContent: file,
@@ -967,16 +917,11 @@ describe('VAT registered', () => {
 
           cy.findByLabelText('Select file to upload').should('not.exist');
 
-          cy.findByRole('alert', {
-            name: 'File has been uploaded',
-            timeout,
-          }).should('not.exist');
+          cy.waitForToast(40000);
 
           cy.findByRole('button', {
             name: 'Save',
-          })
-            .should('be.visible')
-            .click();
+          }).safeClick();
 
           cy.contains('Balance: £2790.40').should('be.visible');
 
@@ -993,7 +938,6 @@ describe('VAT registered', () => {
           name: 'Delete',
         })
           .eq(3)
-          .should('be.visible')
           .click();
 
         cy.a11yWithLogs();
@@ -1007,8 +951,7 @@ describe('VAT registered', () => {
           name: 'Delete',
         })
           .last()
-          .should('be.visible')
-          .click();
+          .safeClick();
 
         cy.contains('Balance: £290.40').should('be.visible');
 
@@ -1022,9 +965,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('link', {
           name: 'Record a new transaction',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByLabelText('Purchase').check();
 
@@ -1058,13 +999,13 @@ describe('VAT registered', () => {
 
         cy.findByRole('button', {
           name: 'Save',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
-        cy.findByRole('heading', {
+        cy.findAllByRole('heading', {
           name: 'Accounts',
-        }).should('be.visible');
+        })
+          .eq(1)
+          .should('be.visible');
       });
     });
 
@@ -1074,9 +1015,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('link', {
           name: 'Record a new transaction',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByLabelText('Purchase').check();
 
@@ -1112,13 +1051,13 @@ describe('VAT registered', () => {
 
         cy.findByRole('button', {
           name: 'Save',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
-        cy.findByRole('heading', {
+        cy.findAllByRole('heading', {
           name: 'Accounts',
-        }).should('be.visible');
+        })
+          .eq(1)
+          .should('be.visible');
       });
     });
 
@@ -1133,8 +1072,7 @@ describe('VAT registered', () => {
         name: 'View',
       })
         .eq(3)
-        .should('be.visible')
-        .click();
+        .safeClick();
 
       cy.findByRole('heading', {
         name: 'View transaction',
@@ -1142,9 +1080,7 @@ describe('VAT registered', () => {
 
       cy.findByRole('button', {
         name: 'Download file',
-      })
-        .should('be.visible')
-        .click();
+      }).click();
 
       cy.get('div:contains("The download has started")').should('be.visible');
     });
@@ -1161,19 +1097,15 @@ describe('VAT registered', () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[0];
 
-        cy.findByTestId(company.name).should('be.visible').click();
+        cy.findByTestId(company.name).should('be.visible').safeClick();
 
         cy.findByRole('link', {
           name: 'Manage company details',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByRole('button', {
           name: `Delete ${company.name}`,
-        })
-          .should('be.visible')
-          .click();
+        }).click();
 
         cy.findByLabelText(`Please type ${company.name} to confirm`)
           .should('be.visible')
@@ -1182,9 +1114,7 @@ describe('VAT registered', () => {
 
         cy.findByRole('button', {
           name: 'Delete',
-        })
-          .should('be.visible')
-          .click();
+        }).safeClick();
 
         cy.findByRole('heading', {
           name: 'My companies',
