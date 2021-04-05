@@ -113,6 +113,13 @@
         "label": "Amount",
         "required": "Amount is required"
       },
+      "refund": {
+        "label": "Is this a refund?",
+        "options": {
+          "yes": "Yes",
+          "no": "No"
+        }
+      },
       "vat": {
         "label": "VAT",
         "required": "VAT is required"

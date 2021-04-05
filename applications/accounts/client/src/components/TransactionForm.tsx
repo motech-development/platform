@@ -13,6 +13,7 @@ import {
   Typeahead,
   Typography,
 } from '@motech-development/breeze-ui';
+import { Decimal } from 'decimal.js';
 import { FormikProps, FormikValues, getIn } from 'formik';
 import { ChangeEvent, FC, memo, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +28,7 @@ const formSchema = {
   description: '',
   id: '',
   name: '',
+  refund: false,
   scheduled: false,
   status: '',
   vat: '',
@@ -41,6 +43,7 @@ export type FormSchema = {
   description: string;
   id: string;
   name: string;
+  refund: boolean;
   scheduled: boolean;
   status: string;
   vat: number;
@@ -87,7 +90,8 @@ const TransactionForm: FC<ITransactionForm> = ({
   vat,
 }) => {
   const isEmpty = initialValues.amount === '';
-  const initialTransaction = initialValues.amount > 0 ? 'Sales' : 'Purchase';
+  const initialTransaction =
+    !initialValues.refund && initialValues.amount > 0 ? 'Sales' : 'Purchase';
   const formValues = {
     ...initialValues,
     amount: initialValues.amount
@@ -104,8 +108,12 @@ const TransactionForm: FC<ITransactionForm> = ({
       : {
           transaction: initialTransaction,
         }),
+    refund: initialValues.refund === null ? false : initialValues.refund,
     scheduled:
       initialValues.scheduled === null ? false : initialValues.scheduled,
+    vat: initialValues.vat
+      ? Math.abs(initialValues.vat as number)
+      : initialValues.vat,
   };
   const [transactionType, setTransactionType] = useState(
     formValues.transaction,
@@ -138,7 +146,8 @@ const TransactionForm: FC<ITransactionForm> = ({
       name: string().required(
         t('transaction-form.transaction-details.name.required'),
       ),
-      scheduled: boolean().oneOf([false, true]).required(),
+      refund: boolean().required(),
+      scheduled: boolean().required(),
       status: string().required(
         t('transaction-form.transaction-amount.status.required'),
       ),
@@ -168,6 +177,16 @@ const TransactionForm: FC<ITransactionForm> = ({
       value: 'Sales',
     },
   ];
+  const refundOptions = ([
+    {
+      name: t('transaction-form.transaction-amount.refund.options.no'),
+      value: false,
+    },
+    {
+      name: t('transaction-form.transaction-amount.refund.options.yes'),
+      value: true,
+    },
+  ] as unknown) as IRadioOption[];
   const scheduleOptions = ([
     {
       name: t('transaction-form.transaction-amount.schedule.options.yes'),
@@ -196,6 +215,7 @@ const TransactionForm: FC<ITransactionForm> = ({
 
     setTransactionType(event.target.value);
 
+    setFieldValue('refund', false);
     setFieldValue('name', '');
 
     if (event.target.value === 'Sales') {
@@ -211,7 +231,7 @@ const TransactionForm: FC<ITransactionForm> = ({
   ) => {
     const { setFieldValue } = form;
     const value = parseFloat(event.target.value.replace(currency, ''));
-    const calculated = ((value / 100) * vat).toFixed(2);
+    const calculated = new Decimal(value).dividedBy(100).times(vat).toFixed(2);
 
     setFieldValue('vat', calculated);
   };
@@ -223,8 +243,10 @@ const TransactionForm: FC<ITransactionForm> = ({
     const value = parseFloat(event.target.value.replace(currency, ''));
     const i = getIn(values, 'category');
     const vatRate = parseFloat(categories[i].value);
-    const rate = vatRate / 100 + 1;
-    const calculated = (value - value / rate).toFixed(2);
+    const rate = new Decimal(vatRate).dividedBy(100).plus(1);
+    const calculated = new Decimal(value)
+      .minus(new Decimal(value).dividedBy(rate))
+      .toFixed(2);
 
     setFieldValue('vat', calculated);
   };
@@ -243,25 +265,39 @@ const TransactionForm: FC<ITransactionForm> = ({
       setFieldValue('scheduled', false);
     }
   };
-  const onScheduledChange = (
+  const onRadioChange = (name: string) => (
     event: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
   ) => {
     const { value } = event.target;
     const { setFieldValue } = form;
 
-    setFieldValue('scheduled', value === 'true');
+    setFieldValue(name, value === 'true');
   };
   const onPreSubmit = ({ transaction, ...value }: IFormValues) => {
     const isPurchase = transaction === 'Purchase';
-    const amount = isPurchase ? -Math.abs(value.amount) : value.amount;
     const category = isPurchase ? categories[value.category].name : transaction;
+
+    let amount: number;
+
+    if (isPurchase) {
+      if (value.refund) {
+        amount = value.amount;
+      } else {
+        amount = -Math.abs(value.amount);
+      }
+    } else if (value.refund) {
+      amount = -Math.abs(value.amount);
+    } else {
+      amount = value.amount;
+    }
 
     return {
       ...value,
       amount,
       attachment,
       category,
+      vat: value.refund ? -Math.abs(value.vat) : value.vat,
     };
   };
 
@@ -391,6 +427,15 @@ const TransactionForm: FC<ITransactionForm> = ({
                           prefix={currency}
                         />
 
+                        <Radio
+                          name="refund"
+                          label={t(
+                            'transaction-form.transaction-amount.refund.label',
+                          )}
+                          options={refundOptions}
+                          readOnly={!!formValues.id}
+                        />
+
                         <TextBox
                           decimalScale={2}
                           disabled={disableInput}
@@ -413,6 +458,16 @@ const TransactionForm: FC<ITransactionForm> = ({
                           prefix={currency}
                         />
 
+                        <Radio
+                          name="refund"
+                          label={t(
+                            'transaction-form.transaction-amount.refund.label',
+                          )}
+                          options={refundOptions}
+                          readOnly={!!formValues.id}
+                          onChange={onRadioChange('refund')}
+                        />
+
                         <TextBox
                           decimalScale={2}
                           label={t(
@@ -433,7 +488,7 @@ const TransactionForm: FC<ITransactionForm> = ({
                       'transaction-form.transaction-amount.schedule.label',
                     )}
                     options={scheduleOptions}
-                    onChange={onScheduledChange}
+                    onChange={onRadioChange('scheduled')}
                   />
                 )}
               </Card>

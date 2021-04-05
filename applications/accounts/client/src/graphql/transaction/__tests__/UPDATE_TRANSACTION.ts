@@ -1,10 +1,10 @@
-import { InMemoryCache } from '@apollo/client/cache';
+import { ApolloCache, InMemoryCache } from '@apollo/client/cache';
 import GET_TYPEAHEAD from '../../typeahead/GET_TYPEAHEAD';
 import GET_TRANSACTIONS from '../GET_TRANSACTIONS';
-import { updateCache } from '../UPDATE_TRANSACTION';
+import { IUpdateTransactionOutput, updateCache } from '../UPDATE_TRANSACTION';
 
 describe('UPDATE_TRANSACTION', () => {
-  let cache: InMemoryCache;
+  let cache: ApolloCache<IUpdateTransactionOutput>;
 
   beforeEach(() => {
     cache = new InMemoryCache({
@@ -13,7 +13,7 @@ describe('UPDATE_TRANSACTION', () => {
           keyFields: ['id', 'status'],
         },
       },
-    });
+    }) as ApolloCache<IUpdateTransactionOutput>;
 
     jest.spyOn(cache, 'modify');
   });

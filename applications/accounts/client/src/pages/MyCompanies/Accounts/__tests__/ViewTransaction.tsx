@@ -4,8 +4,8 @@ import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
   fireEvent,
+  screen,
   render,
-  RenderResult,
   waitFor,
 } from '@testing-library/react';
 import axios from 'axios';
@@ -26,7 +26,6 @@ jest.mock('file-saver', () => ({
 
 describe('ViewTransaction', () => {
   let cache: InMemoryCache;
-  let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
 
@@ -174,9 +173,10 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
+                  refund: false,
                   scheduled: true,
                   status: 'pending',
-                  vat: 166.66,
+                  vat: 166.67,
                 },
                 getTypeahead: {
                   id: 'company-id',
@@ -200,9 +200,10 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
+                  refund: false,
                   scheduled: false,
                   status: 'confirmed',
-                  vat: 166.66,
+                  vat: 166.67,
                 },
               },
             },
@@ -218,9 +219,10 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
+                  refund: false,
                   scheduled: false,
                   status: 'confirmed',
-                  vat: 166.66,
+                  vat: 166.67,
                 },
               },
             },
@@ -245,7 +247,7 @@ describe('ViewTransaction', () => {
         ];
 
         await act(async () => {
-          component = render(
+          render(
             <TestProvider
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
@@ -255,22 +257,22 @@ describe('ViewTransaction', () => {
               </MockedProvider>
             </TestProvider>,
           );
+
+          await waitForApollo(0);
         });
       });
 
       it('should redirect you back to accounts page on complete', async () => {
-        const { findAllByRole, findByLabelText, findByText } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const status = await findByLabelText(
+          const status = await screen.findByLabelText(
             'transaction-form.transaction-amount.status.options.confirmed',
           );
 
           fireEvent.click(status);
 
-          const [, , button] = await findAllByRole('button');
+          const [, , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -285,18 +287,16 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a success toast', async () => {
-        const { findAllByRole, findByLabelText, findByText } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const status = await findByLabelText(
+          const status = await screen.findByLabelText(
             'transaction-form.transaction-amount.status.options.confirmed',
           );
 
           fireEvent.click(status);
 
-          const [, , button] = await findAllByRole('button');
+          const [, , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -312,50 +312,42 @@ describe('ViewTransaction', () => {
       });
 
       it('should display delete confirmation modal', async () => {
-        const { findByRole, findByText } = component;
-        const button = await findByText('view-transaction.delete-transaction');
+        const button = await screen.findByText(
+          'view-transaction.delete-transaction',
+        );
 
         fireEvent.click(button);
 
-        await expect(findByRole('dialog')).resolves.toBeInTheDocument();
+        await expect(screen.findByRole('dialog')).resolves.toBeInTheDocument();
       });
 
       it('should hide the delete confirmation modal', async () => {
-        const {
-          findAllByRole,
-          findByRole,
-          findByText,
-          queryByRole,
-        } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const [, , , button] = await findAllByRole('button');
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
-          await findByRole('dialog');
+          await screen.findByRole('dialog');
 
-          const [, , , , cancelButton] = await findAllByRole('button');
+          const [, , , , cancelButton] = await screen.findAllByRole('button');
 
           fireEvent.click(cancelButton);
         });
 
-        expect(queryByRole('dialog')).not.toBeInTheDocument();
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       });
 
       it('should delete the transaction', async () => {
-        const { findAllByRole, findByLabelText, findByText } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const [, , , button] = await findAllByRole('button');
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
-          const input = await findByLabelText('confirm-delete');
+          const input = await screen.findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
             target: {
@@ -364,7 +356,7 @@ describe('ViewTransaction', () => {
             },
           });
 
-          const [, , , , , deleteButton] = await findAllByRole('button');
+          const [, , , , , deleteButton] = await screen.findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
@@ -379,16 +371,14 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a success toast when deleting a transaction', async () => {
-        const { findAllByRole, findByLabelText, findByText } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const [, , , button] = await findAllByRole('button');
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
-          const input = await findByLabelText('confirm-delete');
+          const input = await screen.findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
             target: {
@@ -397,7 +387,7 @@ describe('ViewTransaction', () => {
             },
           });
 
-          const [, , , , , deleteButton] = await findAllByRole('button');
+          const [, , , , , deleteButton] = await screen.findAllByRole('button');
 
           fireEvent.click(deleteButton);
 
@@ -455,9 +445,10 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
+                  refund: false,
                   scheduled: false,
                   status: 'confirmed',
-                  vat: 166.66,
+                  vat: 166.67,
                 },
                 getTypeahead: {
                   id: 'company-id',
@@ -481,9 +472,10 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
+                  refund: false,
                   scheduled: false,
                   status: 'confirmed',
-                  vat: 166.66,
+                  vat: 166.67,
                 },
               },
             },
@@ -499,9 +491,10 @@ describe('ViewTransaction', () => {
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
+                  refund: false,
                   scheduled: false,
                   status: 'confirmed',
-                  vat: 166.66,
+                  vat: 166.67,
                 },
               },
             },
@@ -541,7 +534,7 @@ describe('ViewTransaction', () => {
         ];
 
         await act(async () => {
-          component = render(
+          render(
             <TestProvider
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
@@ -551,14 +544,14 @@ describe('ViewTransaction', () => {
               </MockedProvider>
             </TestProvider>,
           );
+
+          await waitForApollo(0);
         });
       });
 
       it('should remove download attachment', async () => {
-        const { findByLabelText, findByText } = component;
-
         await act(async () => {
-          const deleteButton = await findByText(
+          const deleteButton = await screen.findByText(
             'transaction-form.upload.delete-file',
           );
 
@@ -568,15 +561,13 @@ describe('ViewTransaction', () => {
         });
 
         await expect(
-          findByLabelText('transaction-form.upload.upload.label'),
+          screen.findByLabelText('transaction-form.upload.upload.label'),
         ).resolves.toBeInTheDocument();
       });
 
       it('should display success toast when attachment is removed', async () => {
-        const { findByText } = component;
-
         await act(async () => {
-          const deleteButton = await findByText(
+          const deleteButton = await screen.findByText(
             'transaction-form.upload.delete-file',
           );
 
@@ -594,10 +585,8 @@ describe('ViewTransaction', () => {
       });
 
       it('should download the attachment', async () => {
-        const { findByText } = component;
-
         await act(async () => {
-          const downloadButton = await findByText(
+          const downloadButton = await screen.findByText(
             'transaction-form.upload.download-file',
           );
 
@@ -610,10 +599,8 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a success toast when attachment is downloaded', async () => {
-        const { findByText } = component;
-
         await act(async () => {
-          const downloadButton = await findByText(
+          const downloadButton = await screen.findByText(
             'transaction-form.upload.download-file',
           );
 
@@ -635,10 +622,8 @@ describe('ViewTransaction', () => {
           data: 'fail',
         });
 
-        const { findByText } = component;
-
         await act(async () => {
-          const downloadButton = await findByText(
+          const downloadButton = await screen.findByText(
             'transaction-form.upload.download-file',
           );
 
@@ -756,6 +741,7 @@ describe('ViewTransaction', () => {
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
+                  refund: null,
                   scheduled: null,
                   status: 'confirmed',
                   vat: 200,
@@ -782,6 +768,7 @@ describe('ViewTransaction', () => {
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
+                  refund: false,
                   scheduled: false,
                   status: 'confirmed',
                   vat: 200,
@@ -800,6 +787,7 @@ describe('ViewTransaction', () => {
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
+                  refund: false,
                   scheduled: false,
                   status: 'confirmed',
                   vat: 200,
@@ -839,7 +827,7 @@ describe('ViewTransaction', () => {
         ];
 
         await act(async () => {
-          component = render(
+          render(
             <TestProvider
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
@@ -849,16 +837,16 @@ describe('ViewTransaction', () => {
               </MockedProvider>
             </TestProvider>,
           );
+
+          await waitForApollo(0);
         });
       });
 
       it('should redirect you back to accounts page on complete', async () => {
-        const { findAllByRole, findByText } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const [, , , button] = await findAllByRole('button');
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -873,12 +861,10 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a success toast', async () => {
-        const { findAllByRole, findByText } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const [, , , button] = await findAllByRole('button');
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -894,16 +880,14 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast when deleting a transaction', async () => {
-        const { findAllByRole, findByLabelText, findByText } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const [, , , , button] = await findAllByRole('button');
+          const [, , , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
-          const input = await findByLabelText('confirm-delete');
+          const input = await screen.findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
             target: {
@@ -912,7 +896,9 @@ describe('ViewTransaction', () => {
             },
           });
 
-          const [, , , , , , deleteButton] = await findAllByRole('button');
+          const [, , , , , , deleteButton] = await screen.findAllByRole(
+            'button',
+          );
 
           fireEvent.click(deleteButton);
 
@@ -928,10 +914,8 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast if file fails to download', async () => {
-        const { findByText } = component;
-
         await act(async () => {
-          const downloadButton = await findByText(
+          const downloadButton = await screen.findByText(
             'transaction-form.upload.download-file',
           );
 
@@ -949,10 +933,8 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast if file fails to delete', async () => {
-        const { findByText } = component;
-
         await act(async () => {
-          const deleteButton = await findByText(
+          const deleteButton = await screen.findByText(
             'transaction-form.upload.delete-file',
           );
 
@@ -1068,6 +1050,7 @@ describe('ViewTransaction', () => {
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
+                  refund: null,
                   scheduled: null,
                   status: 'confirmed',
                   vat: 200,
@@ -1094,6 +1077,7 @@ describe('ViewTransaction', () => {
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
+                  refund: false,
                   scheduled: false,
                   status: 'confirmed',
                   vat: 200,
@@ -1134,7 +1118,7 @@ describe('ViewTransaction', () => {
         ];
 
         await act(async () => {
-          component = render(
+          render(
             <TestProvider
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
@@ -1144,16 +1128,16 @@ describe('ViewTransaction', () => {
               </MockedProvider>
             </TestProvider>,
           );
+
+          await waitForApollo(0);
         });
       });
 
       it('should display a warning toast when a transaction is updated', async () => {
-        const { findAllByRole, findByText } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const [, , , button] = await findAllByRole('button');
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -1169,12 +1153,10 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page when a transaction is updated', async () => {
-        const { findAllByRole, findByText } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const [, , , button] = await findAllByRole('button');
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -1189,16 +1171,14 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a warning toast when a transaction is deleted', async () => {
-        const { findAllByRole, findByLabelText, findByText } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const [, , , , button] = await findAllByRole('button');
+          const [, , , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
-          const input = await findByLabelText('confirm-delete');
+          const input = await screen.findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
             target: {
@@ -1207,7 +1187,9 @@ describe('ViewTransaction', () => {
             },
           });
 
-          const [, , , , , , deleteButton] = await findAllByRole('button');
+          const [, , , , , , deleteButton] = await screen.findAllByRole(
+            'button',
+          );
 
           fireEvent.click(deleteButton);
 
@@ -1223,16 +1205,14 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page when a transaction is deleted', async () => {
-        const { findAllByRole, findByLabelText, findByText } = component;
-
         await act(async () => {
-          await findByText('view-transaction.title');
+          await screen.findByText('view-transaction.title');
 
-          const [, , , , button] = await findAllByRole('button');
+          const [, , , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
-          const input = await findByLabelText('confirm-delete');
+          const input = await screen.findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
             target: {
@@ -1241,7 +1221,9 @@ describe('ViewTransaction', () => {
             },
           });
 
-          const [, , , , , , deleteButton] = await findAllByRole('button');
+          const [, , , , , , deleteButton] = await screen.findAllByRole(
+            'button',
+          );
 
           fireEvent.click(deleteButton);
 
@@ -1256,10 +1238,8 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast if file fails to delete', async () => {
-        const { findByText } = component;
-
         await act(async () => {
-          const downloadButton = await findByText(
+          const downloadButton = await screen.findByText(
             'transaction-form.upload.download-file',
           );
 

@@ -1,10 +1,10 @@
-import { InMemoryCache } from '@apollo/client/cache';
+import { ApolloCache, InMemoryCache } from '@apollo/client/cache';
 import GET_TYPEAHEAD from '../../typeahead/GET_TYPEAHEAD';
-import { updateCache } from '../ADD_TRANSACTION';
+import { IAddTransactionOutput, updateCache } from '../ADD_TRANSACTION';
 import GET_TRANSACTIONS from '../GET_TRANSACTIONS';
 
 describe('ADD_TRANSACTION', () => {
-  let cache: InMemoryCache;
+  let cache: ApolloCache<IAddTransactionOutput>;
 
   beforeEach(() => {
     cache = new InMemoryCache({
@@ -13,7 +13,7 @@ describe('ADD_TRANSACTION', () => {
           keyFields: ['id', 'status'],
         },
       },
-    });
+    }) as ApolloCache<IAddTransactionOutput>;
 
     jest.spyOn(cache, 'modify');
   });
@@ -51,6 +51,7 @@ describe('ADD_TRANSACTION', () => {
               description: 'A sale',
               id: 'transaction-id',
               name: 'A client',
+              refund: false,
               scheduled: false,
               status: 'confirmed',
               vat: 0,
@@ -91,6 +92,7 @@ describe('ADD_TRANSACTION', () => {
               description: 'A purchase',
               id: 'transaction-id',
               name: 'Your favourite shop',
+              refund: false,
               scheduled: false,
               status: 'confirmed',
               vat: 0,
@@ -151,6 +153,7 @@ describe('ADD_TRANSACTION', () => {
               description: 'A sale',
               id: 'transaction-id',
               name: 'A client',
+              refund: false,
               scheduled: false,
               status: 'confirmed',
               vat: 0,
@@ -191,6 +194,7 @@ describe('ADD_TRANSACTION', () => {
               description: 'A purchase',
               id: 'transaction-id',
               name: 'Your favourite shop',
+              refund: false,
               scheduled: false,
               status: 'confirmed',
               vat: 0,
@@ -251,6 +255,7 @@ describe('ADD_TRANSACTION', () => {
               description: 'A sale',
               id: 'transaction-id',
               name: 'A client',
+              refund: false,
               scheduled: false,
               status: 'confirmed',
               vat: 0,
@@ -291,6 +296,7 @@ describe('ADD_TRANSACTION', () => {
               description: 'A purchase',
               id: 'transaction-id',
               name: 'Your favourite shop',
+              refund: false,
               scheduled: false,
               status: 'confirmed',
               vat: 0,
@@ -379,6 +385,7 @@ describe('ADD_TRANSACTION', () => {
             description: 'A purchase',
             id: 'transaction-id-2',
             name: 'Your favourite shop',
+            refund: false,
             scheduled: false,
             status: 'confirmed',
             vat: 0,
@@ -456,6 +463,7 @@ describe('ADD_TRANSACTION', () => {
             description: 'A purchase',
             id: 'transaction-id-1',
             name: 'Your favourite shop',
+            refund: false,
             scheduled: false,
             status: 'confirmed',
             vat: 0,

@@ -2,6 +2,7 @@
 import '@testing-library/cypress/add-commands';
 import 'cypress-file-upload';
 import 'cypress-localstorage-commands';
+import 'cypress-wait-until';
 
 Cypress.Commands.add(
   'login',
@@ -102,3 +103,45 @@ Cypress.Commands.add('a11yWithLogs', () => {
     true,
   );
 });
+
+Cypress.Commands.add(
+  'safeClick',
+  {
+    prevSubject: 'element',
+  },
+  ($element) => {
+    const click = ($el) => {
+      const instance = $el.get(0);
+
+      instance.click();
+
+      return instance;
+    };
+
+    return cy
+      .wrap($element)
+      .should('be.visible')
+      .pipe(click)
+      .should(($el) => expect($el).to.not.be.visible);
+  },
+);
+
+Cypress.Commands.add('waitForToast', (timeout = 20000) =>
+  cy.waitUntil(() => Cypress.$('[role="alert"]').length === 0, {
+    timeout,
+  }),
+);
+
+Cypress.Commands.add(
+  'waitForElement',
+  {
+    prevSubject: 'element',
+  },
+  ($element, visible = true) => {
+    const check = ($el) => $el.get(0);
+
+    cy.wrap($element)
+      .pipe(check)
+      .should(visible ? 'be.visible' : 'not.exist');
+  },
+);

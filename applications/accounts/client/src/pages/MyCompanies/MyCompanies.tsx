@@ -82,7 +82,7 @@ const MyCompanies: FC = () => {
 
                 <LinkButton
                   block
-                  data-test-id={name}
+                  data-testid={name}
                   to={`/my-companies/dashboard/${id}`}
                   size="lg"
                 >

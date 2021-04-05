@@ -10,6 +10,7 @@ export interface IAddTransactionInput {
     description: string;
     id: string;
     name: string;
+    refund: boolean;
     scheduled: boolean;
     status: string;
     vat: number;
@@ -26,6 +27,7 @@ export interface IAddTransactionOutput {
     description: string;
     id: string;
     name: string;
+    refund: boolean;
     scheduled: boolean;
     status: string;
     vat: number;
@@ -44,7 +46,7 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
         purchases: (items: string[] | null) => {
           const descriptions = items || [];
           const unique = !descriptions.some(
-            desciption => desciption === addTransaction.description,
+            (desciption) => desciption === addTransaction.description,
           );
 
           if (addTransaction.category !== 'Sales' && unique) {
@@ -58,7 +60,7 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
         sales: (items: string[] | null) => {
           const descriptions = items || [];
           const unique = !descriptions.some(
-            desciption => desciption === addTransaction.description,
+            (desciption) => desciption === addTransaction.description,
           );
 
           if (addTransaction.category === 'Sales' && unique) {
@@ -72,7 +74,7 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
         suppliers: (items: string[] | null) => {
           const suppliers = items || [];
           const unique = !suppliers.some(
-            supplier => supplier === addTransaction.name,
+            (supplier) => supplier === addTransaction.name,
           );
 
           if (addTransaction.category !== 'Sales' && unique) {
@@ -93,7 +95,7 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
     cache.modify({
       fields: {
         items: (refs: Reference[], { readField }) => {
-          if (refs.some(ref => readField('id', ref) === addTransaction.id)) {
+          if (refs.some((ref) => readField('id', ref) === addTransaction.id)) {
             return refs;
           }
 
@@ -139,6 +141,7 @@ const ADD_TRANSACTION = gql`
       description
       id
       name
+      refund
       scheduled
       status
       vat

@@ -15,6 +15,7 @@
 
 // Import commands.js using ES2015 syntax:
 import 'cypress-axe';
+import 'cypress-pipe';
 import './commands';
 import './setup';
 

@@ -3,7 +3,6 @@
     "type": "Sales",
     "supplier": "Motech Development",
     "description": "Confirmed invoice",
-    "status": "confirmed",
     "amount": "2000",
     "vat": "310"
   },
@@ -11,7 +10,6 @@
     "type": "Purchase",
     "supplier": "Airport hotel",
     "description": "Business trip",
-    "status": "confirmed",
     "category": "5",
     "amount": "97.6",
     "vat": "16.27"
@@ -20,7 +18,6 @@
     "type": "Purchase",
     "supplier": "Low Cost Air",
     "description": "Return flight to London",
-    "status": "confirmed",
     "category": "6",
     "amount": "112",
     "vat": "0"
@@ -30,7 +27,6 @@
     "supplier": "Motech Development",
     "description": "Pending invoice",
     "scheduled": "true",
-    "status": "pending",
     "amount": "2000",
     "vat": "310"
   },
@@ -39,7 +35,6 @@
     "supplier": "Airport hotel",
     "description": "Business trip",
     "scheduled": "false",
-    "status": "pending",
     "category": "5",
     "amount": "97.6",
     "vat": "16.27"
@@ -49,7 +44,6 @@
     "supplier": "Low Cost Air",
     "description": "Return flight to London",
     "scheduled": "false",
-    "status": "pending",
     "category": "6",
     "amount": "112",
     "vat": "0"
@@ -58,7 +52,6 @@
     "type": "Sales",
     "supplier": "Motech Development",
     "description": "Confirmed invoice",
-    "status": "confirmed",
     "amount": "2500",
     "vat": "387.50"
   },
@@ -66,9 +59,32 @@
     "type": "Purchase",
     "supplier": "HMRC",
     "description": "VAT quarterly payment",
-    "status": "confirmed",
     "category": "4",
     "amount": "100",
+    "vat": "0"
+  },
+  {
+    "type": "Sales",
+    "supplier": "Motech Development",
+    "description": "Confirmed invoice",
+    "amount": "500",
+    "vat": "77.5"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "Airport hotel",
+    "description": "Business trip",
+    "scheduled": "false",
+    "category": "5",
+    "amount": "20",
+    "vat": "3.33"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "HMRC",
+    "description": "VAT quarterly payment",
+    "category": "4",
+    "amount": "77.5",
     "vat": "0"
   }
 ]

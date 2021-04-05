@@ -30,7 +30,7 @@ const Connected: FC<IConnectedProps> = ({ children, error, loading }) => {
     );
   }
 
-  return <>{children}</>;
+  return <div data-testid="connected-content">{children}</div>;
 };
 
 export default memo(Connected);
