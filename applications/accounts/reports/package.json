@@ -1,0 +1,21 @@
+{
+  "name": "@accounts/reports",
+  "version": "0.0.0",
+  "description": "Motech Development accounts report generator service",
+  "private": true,
+  "scripts": {
+    "deploy": "serverless deploy --verbose --force",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "precommit": "lint-staged",
+    "teardown": "serverless remove --verbose",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage --runInBand"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "testEnvironment": "node"
+  }
+}
