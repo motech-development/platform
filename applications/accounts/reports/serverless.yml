@@ -47,24 +47,24 @@ stepFunctions:
             authorizer: aws_iam
             path: api/v1/generate-report/start
             method: post
-    definition:
-      Comment: Export report for financial year
-      StartAt: GetTransactions
-      States:
-        GetTransactions:
-          Type: Task
-          Resource: !GetAtt GetTransactionsReportLambdaFunction.Arn
-          Next: TransformTransactions
+      definition:
+        Comment: Export report for financial year
+        StartAt: GetTransactions
+        States:
+          GetTransactions:
+            Type: Task
+            Resource: !GetAtt GetTransactionsReportLambdaFunction.Arn
+            Next: TransformTransactions
 
-        TransformTransactions:
-          Type: Task
-          Resource: !GetAtt TransformTransactionsLambdaFunction.Arn
-          Next: ConvertToCsv
+          TransformTransactions:
+            Type: Task
+            Resource: !GetAtt TransformTransactionsLambdaFunction.Arn
+            Next: ConvertToCsv
 
-        ConvertToCsv:
-          Type: Task
-          Resource: !GetAtt ConvertToCsvLambdaFunction.Arn
-          End: true
+          ConvertToCsv:
+            Type: Task
+            Resource: !GetAtt ConvertToCsvLambdaFunction.Arn
+            End: true
 
 resources:
   Resources:
