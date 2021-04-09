@@ -1,14 +1,17 @@
+import {
+  createDirectory,
+  downloadFile,
+} from '@motech-development/s3-file-operations';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { scanFile } from '../../shared/clam-av';
-import { createDirectory, downloadFile } from '../../shared/file-operations';
 import { handler, IEvent } from '../scan-file';
 
 jest.mock('../../shared/clam-av', () => ({
   scanFile: jest.fn().mockResolvedValue(true),
 }));
 
-jest.mock('../../shared/file-operations', () => ({
+jest.mock('@motech-development/s3-file-operations', () => ({
   createDirectory: jest.fn(),
   downloadFile: jest.fn(),
 }));

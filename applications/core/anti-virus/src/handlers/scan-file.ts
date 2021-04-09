@@ -1,7 +1,10 @@
+import {
+  createDirectory,
+  downloadFile,
+} from '@motech-development/s3-file-operations';
 import { Handler } from 'aws-lambda';
 import { join, resolve } from 'path';
 import { scanFile } from '../shared/clam-av';
-import { createDirectory, downloadFile } from '../shared/file-operations';
 import virusDefinitions from '../shared/virus-definitions';
 
 export interface IEvent {
@@ -10,7 +13,7 @@ export interface IEvent {
   to: string;
 }
 
-export const handler: Handler<IEvent> = async event => {
+export const handler: Handler<IEvent> = async (event) => {
   const { BUCKET } = process.env;
 
   if (!BUCKET) {
@@ -24,7 +27,7 @@ export const handler: Handler<IEvent> = async event => {
   const file = downloadFile(from, key, downloadsDir);
   const definitions = downloadsDirExists
     ? []
-    : virusDefinitions.map(definition =>
+    : virusDefinitions.map((definition) =>
         downloadFile(BUCKET, definition, tempDir),
       );
   const [downloadedFile] = await Promise.all([file, ...definitions]);

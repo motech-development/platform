@@ -1,10 +1,10 @@
+import { getFileData } from '@motech-development/s3-file-operations';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { SQS } from 'aws-sdk';
-import { getFileData } from '../../shared/file-operations';
 import { handler, IEvent } from '../failure-notification';
 
-jest.mock('../../shared/file-operations', () => ({
+jest.mock('@motech-development/s3-file-operations', () => ({
   getFileData: jest.fn(),
 }));
 

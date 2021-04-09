@@ -18,7 +18,11 @@ const condition = (compiler) => {
 module.exports = {
   devtool: 'source-map',
   entry: slsw.lib.entries,
-  externals: [nodeExternals()],
+  externals: [
+    nodeExternals({
+      allowlist: ['@motech-development/s3-file-operations'],
+    }),
+  ],
   mode: 'none',
   module: {
     rules: [
