@@ -16,6 +16,7 @@ describe('transform-transactions', () => {
     context.done();
 
     event = {
+      companyId: 'COMPANY-ID',
       currency: '£',
       items: [
         {
@@ -54,12 +55,14 @@ describe('transform-transactions', () => {
           vat: 166.67,
         },
       ],
+      owner: 'OWNER-ID',
     };
   });
 
   it('should generate the correct output', async () => {
     await expect(handler(event, context, callback)).resolves.toEqual({
       attachments: ['path/to/attchment-1.pdf', 'path/to/attchment-2.pdf'],
+      companyId: 'COMPANY-ID',
       csv: [
         {
           category: 'Sales',
@@ -86,6 +89,7 @@ describe('transform-transactions', () => {
           out: '-£2.40',
         },
       ],
+      owner: 'OWNER-ID',
     });
   });
 });

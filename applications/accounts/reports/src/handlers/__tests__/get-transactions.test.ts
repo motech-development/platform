@@ -82,8 +82,10 @@ describe('get-transactions', () => {
 
     it('should return the correct data', async () => {
       await expect(handler(event, context, callback)).resolves.toEqual({
+        companyId: 'COMPANY-ID',
         currency: '£',
         items: [],
+        owner: 'OWNER-ID',
       });
     });
   });

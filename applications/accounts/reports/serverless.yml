@@ -20,6 +20,12 @@ custom:
     serializedCompile: true
 
 functions:
+  ConvertToCsv:
+    handler: src/handlers/convert-to-csv.handler
+    environment:
+      BUCKET: !Ref ReportBucket
+    role: LambdaFunctionRole
+
   GetTransactionsReport:
     handler: src/handlers/get-transactions.handler
     environment:
@@ -32,6 +38,25 @@ functions:
 
 resources:
   Resources:
+    ReportBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.prefix}-reports
+        LifecycleConfiguration:
+          Rules:
+            - ExpirationInDays: 1
+              Status: Enabled
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+              AllowedOrigins:
+                - '*'
+              MaxAge: 3000
+
     LambdaFunctionRole:
       Type: AWS::IAM::Role
       Properties:
@@ -58,6 +83,14 @@ resources:
                       - ''
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                         - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - s3:PutObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !GetAtt ReportBucket.Arn
+                        - '/*'
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup

@@ -71,7 +71,9 @@ export const handler: Handler<IEvent> = async (event) => {
     .promise();
 
   return {
+    companyId: result.companyId,
     currency: result.currency,
     items: transactions.Items,
+    owner: result.owner,
   };
 };

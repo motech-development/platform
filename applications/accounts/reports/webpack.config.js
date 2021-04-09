@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { cpus } = require('os');
 const { join } = require('path');
@@ -7,7 +8,11 @@ const nodeExternals = require('webpack-node-externals');
 module.exports = {
   devtool: 'source-map',
   entry: slsw.lib.entries,
-  externals: [nodeExternals()],
+  externals: [
+    nodeExternals({
+      allowlist: ['@motech-development/s3-file-operations'],
+    }),
+  ],
   mode: 'none',
   module: {
     rules: [

@@ -4,6 +4,7 @@ import { array, number, object, string } from 'yup';
 import Status from '../shared/status';
 
 const schema = object({
+  companyId: string().required(),
   currency: string().required(),
   items: array(
     object({
@@ -16,6 +17,7 @@ const schema = object({
       vat: number().required(),
     }).required(),
   ).required(),
+  owner: string().required(),
 }).required();
 
 interface ITransaction {
@@ -37,6 +39,7 @@ const hasAttachment = (
 ): item is ITransactionWithAttachment => !!item.attachment;
 
 export interface IEvent {
+  companyId: string;
   currency: string;
   items: {
     amount: number;
@@ -50,6 +53,7 @@ export interface IEvent {
     status: Status;
     vat: number;
   }[];
+  owner: string;
 }
 
 export const handler: Handler<IEvent> = async (event) => {
@@ -78,6 +82,8 @@ export const handler: Handler<IEvent> = async (event) => {
 
   return {
     attachments,
+    companyId: result.companyId,
     csv,
+    owner: result.owner,
   };
 };

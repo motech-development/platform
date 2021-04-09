@@ -19,6 +19,8 @@
     "testEnvironment": "node"
   },
   "dependencies": {
+    "@motech-development/s3-file-operations": "^0.0.0",
+    "json-2-csv": "^3.10.3",
     "luxon": "^1.26.0"
   }
 }
