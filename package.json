@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "add": "lerna add",
+    "add:dep": "lerna add",
     "add:dev": "lerna add --dev",
     "add:peer": "lerna add --peer",
     "build": "lerna run build --stream",

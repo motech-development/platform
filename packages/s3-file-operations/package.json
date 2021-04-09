@@ -1,0 +1,34 @@
+{
+  "name": "@motech-development/s3-file-operations",
+  "version": "0.0.0",
+  "description": "A wrapper utility to manage file operations on AWS S3",
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "license": "ISC",
+  "main": "lib/s3-file-operations.cjs.js",
+  "module": "lib/s3-file-operations.esm.js",
+  "types": "lib/s3-file-operations.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "package": "yarn build",
+    "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
+    "prebuild": "rimraf ./lib",
+    "precommit": "lint-staged",
+    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage --runInBand"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.874.0"
+  },
+  "peerDependencies": {
+    "aws-sdk": "2.874.0"
+  }
+}
