@@ -30,6 +30,9 @@ export const createFile = async (
     .promise();
 };
 
+export const createSignedUrl = async (operation: string, params: unknown) =>
+  s3.getSignedUrlPromise(operation, params);
+
 export const deleteFile = async (bucket: string, key: string) => {
   const decodedKey = decodeURIComponent(key);
 

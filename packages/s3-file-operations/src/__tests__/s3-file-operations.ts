@@ -3,6 +3,7 @@ import { existsSync, mkdir } from 'fs';
 import {
   createDirectory,
   createFile,
+  createSignedUrl,
   deleteFile,
   getFileData,
   moveFile,
@@ -60,6 +61,23 @@ describe('file-operations', () => {
         Bucket: 'bucket',
         Key: 'file.txt',
       });
+    });
+  });
+
+  describe('createSignedUrl', () => {
+    it('should call getSignedUrlPromise with the correct params', async () => {
+      await createSignedUrl('getObject', {
+        Bucket: 'bucket',
+        Key: 'file.txt',
+      });
+
+      expect(S3.prototype.getSignedUrlPromise).toHaveBeenCalledWith(
+        'getObject',
+        {
+          Bucket: 'bucket',
+          Key: 'file.txt',
+        },
+      );
     });
   });
 

@@ -12,4 +12,6 @@ AWS.S3.prototype.headObject = mock;
 
 AWS.S3.prototype.putObject = mock;
 
+AWS.S3.prototype.getSignedUrlPromise = mock;
+
 module.exports = AWS;
