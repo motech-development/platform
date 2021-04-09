@@ -61,7 +61,16 @@ describe('transform-transactions', () => {
 
   it('should generate the correct output', async () => {
     await expect(handler(event, context, callback)).resolves.toEqual({
-      attachments: ['path/to/attchment-1.pdf', 'path/to/attchment-2.pdf'],
+      attachments: [
+        {
+          key: 'path/to/attchment-1.pdf',
+          path: 'assets/2021/April/09/ee-mobile.pdf',
+        },
+        {
+          key: 'path/to/attchment-2.pdf',
+          path: 'assets/2021/April/08/client-for-work.pdf',
+        },
+      ],
       companyId: 'COMPANY-ID',
       csv: [
         {

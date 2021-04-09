@@ -194,6 +194,12 @@ resources:
       Export:
         Name: ${self:provider.stage}-StorageUploadBucket
 
+    StorageDownloadBucket:
+      Description: Storage download bucket
+      Value: !Ref DownloadBucket
+      Export:
+        Name: ${self:provider.stage}-StorageDownloadBucket
+
     DeleteFileQueueArn:
       Description: Delete from downloads storage queue ARN
       Value: !GetAtt DeleteFileQueue.Arn

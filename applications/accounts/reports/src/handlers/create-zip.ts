@@ -1,6 +1,8 @@
 import { Handler } from 'aws-lambda';
-import { json2csvAsync } from 'json-2-csv';
+import { join } from 'path';
+import { v4 as uuid } from 'uuid';
 import { array, object, string } from 'yup';
+import archive from '../shared/archive';
 
 const schema = object({
   attachments: array(
@@ -10,16 +12,7 @@ const schema = object({
     }).required(),
   ).required(),
   companyId: string().required(),
-  csv: array(
-    object({
-      category: string().required(),
-      date: string().required(),
-      description: string().required(),
-      in: string().nullable(),
-      name: string().required(),
-      out: string().nullable(),
-    }).required(),
-  ).required(),
+  csv: string().required(),
   owner: string().required(),
 }).required();
 
@@ -29,30 +22,41 @@ export interface IEvent {
     path: string;
   }[];
   companyId: string;
-  csv: {
-    category: string;
-    date: string;
-    description: string;
-    in: string | null;
-    name: string;
-    out: string | null;
-  }[];
   owner: string;
 }
 
 export const handler: Handler<IEvent> = async (event) => {
+  const { DESTINATION_BUCKET, ORIGIN_BUCKET } = process.env;
+
+  if (!DESTINATION_BUCKET) {
+    throw new Error('No destination bucket set');
+  }
+
+  if (!ORIGIN_BUCKET) {
+    throw new Error('No origin bucket set');
+  }
+
   const { attachments, companyId, csv, owner } = await schema.validate(event, {
     abortEarly: true,
     stripUnknown: true,
   });
-  const report = await json2csvAsync(csv, {
-    checkSchemaDifferences: true,
-  });
+  const key = join(owner, companyId, uuid(), '.zip');
+
+  await archive(
+    csv,
+    {
+      bucket: DESTINATION_BUCKET,
+      key,
+    },
+    {
+      bucket: ORIGIN_BUCKET,
+      keys: attachments,
+    },
+  );
 
   return {
-    attachments,
     companyId,
-    csv: report,
+    key,
     owner,
   };
 };

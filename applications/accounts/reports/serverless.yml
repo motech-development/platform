@@ -23,8 +23,13 @@ custom:
 functions:
   ConvertToCsv:
     handler: src/handlers/convert-to-csv.handler
+    role: LambdaFunctionRole
+
+  CreateZip:
+    handler: src/handlers/create-zip.handler
     environment:
-      BUCKET: !Ref ReportBucket
+      DESTINATION_BUCKET: !Ref ReportBucket
+      ORIGIN_BUCKET: !ImportValue ${self:provider.stage}-StorageDownloadBucket
     role: LambdaFunctionRole
 
   GetTransactionsReport:
@@ -64,6 +69,11 @@ stepFunctions:
           ConvertToCsv:
             Type: Task
             Resource: !GetAtt ConvertToCsvLambdaFunction.Arn
+            Next: CreateZip
+
+          CreateZip:
+            Type: Task
+            Resource: !GetAtt CreateZipLambdaFunction.Arn
             End: true
 
 resources:
@@ -113,6 +123,7 @@ resources:
                       - ''
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                         - '/index/__typename-data-index'
+                # TODO: Add permissions to download files from download bucket and upload to report bucket
                 - Effect: Allow
                   Action:
                     - s3:PutObject

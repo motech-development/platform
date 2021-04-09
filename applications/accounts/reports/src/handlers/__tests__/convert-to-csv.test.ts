@@ -1,9 +1,6 @@
-import { createFile } from '@motech-development/s3-file-operations';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { handler, IEvent } from '../convert-to-csv';
-
-jest.mock('@motech-development/s3-file-operations');
 
 describe('convert-to-csv', () => {
   let callback: jest.Mock;
@@ -18,6 +15,16 @@ describe('convert-to-csv', () => {
     context.done();
 
     event = {
+      attachments: [
+        {
+          key: 'path/to/attchment-1.pdf',
+          path: 'assets/2021/April/09/ee-mobile.pdf',
+        },
+        {
+          key: 'path/to/attchment-2.pdf',
+          path: 'assets/2021/April/08/client-for-work.pdf',
+        },
+      ],
       companyId: 'COMPANY-ID',
       csv: [
         {
@@ -49,35 +56,21 @@ describe('convert-to-csv', () => {
     };
   });
 
-  it('should throw an error if no table is set', async () => {
-    await expect(handler(event, context, callback)).rejects.toThrow(
-      'No bucket set',
-    );
-  });
-
-  describe('with bucket set', () => {
-    let env: NodeJS.ProcessEnv;
-
-    beforeEach(() => {
-      env = {
-        ...process.env,
-      };
-
-      process.env.BUCKET = 'BUCKET-NAME';
-    });
-
-    afterEach(() => {
-      process.env = env;
-    });
-
-    it('should upload the CSV to the correct location', async () => {
-      await handler(event, context, callback);
-
-      expect(createFile).toHaveBeenCalledWith(
-        'BUCKET-NAME',
-        'OWNER-ID/COMPANY-ID/report.csv',
-        expect.any(String),
-      );
+  it('should return the correct data', async () => {
+    await expect(handler(event, context, callback)).resolves.toEqual({
+      attachments: [
+        {
+          key: 'path/to/attchment-1.pdf',
+          path: 'assets/2021/April/09/ee-mobile.pdf',
+        },
+        {
+          key: 'path/to/attchment-2.pdf',
+          path: 'assets/2021/April/08/client-for-work.pdf',
+        },
+      ],
+      companyId: 'COMPANY-ID',
+      csv: expect.any(String),
+      owner: 'OWNER-ID',
     });
   });
 });

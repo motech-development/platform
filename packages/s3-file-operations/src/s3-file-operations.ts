@@ -44,17 +44,23 @@ export const deleteFile = async (bucket: string, key: string) => {
     .promise();
 };
 
-export const downloadFile = async (bucket: string, key: string, to: string) => {
+export const downloadFileStream = (bucket: string, key: string) => {
   const decodedKey = decodeURIComponent(key);
+
+  return s3
+    .getObject({
+      Bucket: bucket,
+      Key: decodedKey,
+    })
+    .createReadStream();
+};
+
+export const downloadFile = async (bucket: string, key: string, to: string) => {
   const filePath = join(to, basename(key));
   const fileStream = createWriteStream(filePath);
 
   return new Promise<string>((resolve, reject) => {
-    s3.getObject({
-      Bucket: bucket,
-      Key: decodedKey,
-    })
-      .createReadStream()
+    downloadFileStream(bucket, key)
       .on('end', () => {
         resolve(filePath);
       })

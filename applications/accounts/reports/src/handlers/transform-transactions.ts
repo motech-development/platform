@@ -1,6 +1,8 @@
 import { Handler } from 'aws-lambda';
 import { DateTime } from 'luxon';
+import { extname, join } from 'path';
 import { array, number, object, string } from 'yup';
+import slug from '../shared/slug';
 import Status from '../shared/status';
 
 const schema = object({
@@ -78,7 +80,21 @@ export const handler: Handler<IEvent> = async (event) => {
 
   const attachments = result.items
     .filter(hasAttachment)
-    .map(({ attachment }) => attachment);
+    .map(({ attachment, date, description, name }) => {
+      const isoDate = DateTime.fromISO(date);
+      const extension = extname(attachment);
+
+      return {
+        key: attachment,
+        path: join(
+          'assets',
+          isoDate.toFormat('yyyy'),
+          isoDate.toFormat('MMMM'),
+          isoDate.toFormat('dd'),
+          `${slug(name)}-${slug(description)}${extension}`,
+        ),
+      };
+    });
 
   return {
     attachments,
