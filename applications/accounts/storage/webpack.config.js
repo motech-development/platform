@@ -10,7 +10,10 @@ module.exports = {
   entry: slsw.lib.entries,
   externals: [
     nodeExternals({
-      allowlist: ['@motech-development/api-gateway-handler'],
+      allowlist: [
+        '@motech-development/api-gateway-handler',
+        '@motech-development/s3-file-operations',
+      ],
     }),
   ],
   mode: 'none',
