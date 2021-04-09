@@ -1,0 +1,68 @@
+service: ${opt:appName, 'accounts'}
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-reports
+
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+
+  webpack:
+    includeModules: true
+    serializedCompile: true
+
+functions:
+  GetTransactionsReport:
+    handler: src/handlers/get-transactions.handler
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+    role: LambdaFunctionRole
+
+  TransformTransactions:
+    handler: src/handlers/transform-transactions.handler
+    role: LambdaFunctionRole
+
+resources:
+  Resources:
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-reports-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-reports-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:Query
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'

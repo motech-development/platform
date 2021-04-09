@@ -17,5 +17,8 @@
       "!src/**/*.d.ts"
     ],
     "testEnvironment": "node"
+  },
+  "dependencies": {
+    "luxon": "^1.26.0"
   }
 }

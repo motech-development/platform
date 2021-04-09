@@ -1,0 +1,83 @@
+import { Handler } from 'aws-lambda';
+import { DateTime } from 'luxon';
+import { array, number, object, string } from 'yup';
+import Status from '../shared/status';
+
+const schema = object({
+  currency: string().required(),
+  items: array(
+    object({
+      amount: number().required(),
+      attachment: string().optional(),
+      category: string().required(),
+      date: string().required(),
+      description: string().required(),
+      name: string().required(),
+      vat: number().required(),
+    }).required(),
+  ).required(),
+}).required();
+
+interface ITransaction {
+  amount: number;
+  attachment?: string;
+  category: string;
+  date: string;
+  description: string;
+  name: string;
+  vat: number;
+}
+
+interface ITransactionWithAttachment extends ITransaction {
+  attachment: string;
+}
+
+const hasAttachment = (
+  item: ITransaction,
+): item is ITransactionWithAttachment => !!item.attachment;
+
+export interface IEvent {
+  currency: string;
+  items: {
+    amount: number;
+    attachment?: string;
+    category: string;
+    companyId: string;
+    date: string;
+    description: string;
+    id: string;
+    name: string;
+    status: Status;
+    vat: number;
+  }[];
+}
+
+export const handler: Handler<IEvent> = async (event) => {
+  const result = await schema.validate(event, {
+    abortEarly: true,
+    stripUnknown: true,
+  });
+
+  /* eslint-disable sort-keys */
+  const csv = result.items
+    .map(({ amount, category, date, description, name }) => ({
+      date: DateTime.fromISO(date).toFormat('dd/LL/yyyy'),
+      category,
+      description,
+      name,
+      in: amount >= 0 ? `${result.currency}${amount.toFixed(2)}` : null,
+      out:
+        amount < 0 ? `-${result.currency}${Math.abs(amount).toFixed(2)}` : null,
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  /* eslint-enable sort-keys */
+
+  const attachments = result.items
+    .filter(hasAttachment)
+    .map(({ attachment }) => attachment);
+
+  return {
+    attachments,
+    csv,
+  };
+};

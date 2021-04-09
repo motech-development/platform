@@ -1,7 +1,4 @@
-const padNumber = (value: number, pad: number) => {
-  const result = value.toString().padStart(pad, '0');
-
-  return result;
-};
+const padNumber = (value: number, pad: number) =>
+  value.toString().padStart(pad, '0');
 
 export default padNumber;
