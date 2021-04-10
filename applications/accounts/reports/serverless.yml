@@ -49,8 +49,15 @@ stepFunctions:
       name: ${self:custom.prefix}-generate-report
       events:
         - http:
-            authorizer: aws_iam
+            # TODO: Revert authoriser
+            # authorizer: aws_iam
             path: api/v1/generate-report/start
+            method: post
+        - http:
+            action: DescribeExecution
+            # TODO: Revert authoriser
+            # authorizer: aws_iam
+            path: api/v1/generate-report/status
             method: post
       definition:
         Comment: Export report for financial year
@@ -123,7 +130,11 @@ resources:
                       - ''
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                         - '/index/__typename-data-index'
-                # TODO: Add permissions to download files from download bucket and upload to report bucket
+                - Effect: Allow
+                  Action:
+                    - dynamodb:PutItem
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                 - Effect: Allow
                   Action:
                     - s3:PutObject
@@ -131,6 +142,14 @@ resources:
                     - !Join
                       - ''
                       - - !GetAtt ReportBucket.Arn
+                        - '/*'
+                - Effect: Allow
+                  Action:
+                    - s3:GetObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-StorageDownloadBucketArn
                         - '/*'
                 - Effect: Allow
                   Action:
