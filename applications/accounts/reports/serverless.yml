@@ -166,7 +166,7 @@ resources:
 
   Outputs:
     AccountsReportsApiEndpoint:
-      Description: Open banking API endpoint
+      Description: Accounts reports API endpoint
       Value: !Join
         - ''
         - - 'https://'
@@ -178,7 +178,7 @@ resources:
         Name: ${self:provider.stage}-AccountsReportsApiEndpoint
 
     AccountsReportsApiArn:
-      Description: Open banking API ARN
+      Description: Accounts reports API ARN
       Value: !Join
         - ''
         - - 'arn:aws:execute-api:'
