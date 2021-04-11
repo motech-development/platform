@@ -17,6 +17,7 @@ type Mutation {
   deleteFile(id: ID!, path: String!): Storage!
   notificationBeacon(id: ID!, input: NotificationInput!): Notification! @aws_iam
   markAsRead(id: ID!, input: MarkNotificationsInput!): Notifications!
+  createReport(input: ReportInput!): ReportRequest!
 }
 
 type Query {

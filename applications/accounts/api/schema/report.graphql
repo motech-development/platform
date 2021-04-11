@@ -1,0 +1,17 @@
+type ReportRequest {
+  status: String
+}
+
+input ReportYearEndInput {
+  day: Int!
+  month: Int!
+}
+
+input ReportInput {
+  __typename: String
+  companyId: ID!
+  currency: String!
+  status: TransactionStatus!
+  year: Int!
+  yearEnd: ReportYearEndInput!
+}

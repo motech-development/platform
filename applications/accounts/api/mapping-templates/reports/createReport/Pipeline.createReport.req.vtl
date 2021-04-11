@@ -1,0 +1,24 @@
+#set($endpoint = "/${stage}/api/v1/generate-report/start")
+#set($owner = $ctx.identity.sub)
+
+{
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "$endpoint",
+  "params": {
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "companyId": "$ctx.args.input.companyId",
+      "currency": "$ctx.args.input.currency",
+      "owner": "$owner",
+      "status": "$ctx.args.input.status",
+      "year": $ctx.args.input.year,
+      "yearEnd": {
+        "day": $ctx.args.input.yearEnd.day,
+        "month": $ctx.args.input.yearEnd.month
+      }
+    }
+  }
+}
