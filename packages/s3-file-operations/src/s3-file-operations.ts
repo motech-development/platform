@@ -30,6 +30,7 @@ export const createFile = async (
     .promise();
 };
 
+// TODO: Make this easier to use
 export const createSignedUrl = async (operation: string, params: unknown) =>
   s3.getSignedUrlPromise(operation, params);
 
@@ -93,3 +94,16 @@ export const moveFile = async (from: string, to: string, key: string) => {
 
   await deleteFile(from, key);
 };
+
+export const uploader = (
+  bucket: string,
+  key: string,
+  body: S3.Body,
+  contentType: string,
+) =>
+  s3.upload({
+    Body: body,
+    Bucket: bucket,
+    ContentType: contentType,
+    Key: key,
+  });
