@@ -69,11 +69,16 @@ export const handler: Handler<IEvent> = async (event) => {
     .map(({ amount, category, date, description, name }) => ({
       date: DateTime.fromISO(date).toFormat('dd/LL/yyyy'),
       category,
-      description,
       name,
-      in: amount >= 0 ? `${result.currency}${amount.toFixed(2)}` : null,
+      description,
+      in:
+        amount >= 0
+          ? `${result.currency}${amount.toFixed(2)}`
+          : `${result.currency}0.00`,
       out:
-        amount < 0 ? `-${result.currency}${Math.abs(amount).toFixed(2)}` : null,
+        amount < 0
+          ? `-${result.currency}${Math.abs(amount).toFixed(2)}`
+          : `${result.currency}0.00`,
     }))
     .sort((a, b) => a.date.localeCompare(b.date));
   /* eslint-enable sort-keys */
@@ -85,8 +90,9 @@ export const handler: Handler<IEvent> = async (event) => {
       const extension = extname(attachment);
 
       return {
-        key: attachment,
+        key: join(result.owner, attachment),
         path: join(
+          'report',
           'assets',
           isoDate.toFormat('yyyy'),
           isoDate.toFormat('MMMM'),

@@ -63,12 +63,12 @@ describe('transform-transactions', () => {
     await expect(handler(event, context, callback)).resolves.toEqual({
       attachments: [
         {
-          key: 'path/to/attchment-1.pdf',
-          path: 'assets/2021/April/09/ee-mobile.pdf',
+          key: 'OWNER-ID/path/to/attchment-1.pdf',
+          path: 'report/assets/2021/April/09/ee-mobile.pdf',
         },
         {
-          key: 'path/to/attchment-2.pdf',
-          path: 'assets/2021/April/08/client-for-work.pdf',
+          key: 'OWNER-ID/path/to/attchment-2.pdf',
+          path: 'report/assets/2021/April/08/client-for-work.pdf',
         },
       ],
       companyId: 'COMPANY-ID',
@@ -79,13 +79,13 @@ describe('transform-transactions', () => {
           description: 'For work',
           in: '£1000.00',
           name: 'Client',
-          out: null,
+          out: '£0.00',
         },
         {
           category: 'Bills',
           date: '09/04/2021',
           description: 'Mobile',
-          in: null,
+          in: '£0.00',
           name: 'EE',
           out: '-£41.11',
         },
@@ -93,7 +93,7 @@ describe('transform-transactions', () => {
           category: 'Bills',
           date: '10/04/2021',
           description: 'Domain',
-          in: null,
+          in: '£0.00',
           name: 'GoDaddy',
           out: '-£2.40',
         },

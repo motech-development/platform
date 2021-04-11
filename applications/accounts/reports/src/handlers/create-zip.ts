@@ -22,6 +22,7 @@ export interface IEvent {
     path: string;
   }[];
   companyId: string;
+  csv: string;
   owner: string;
 }
 
@@ -40,9 +41,9 @@ export const handler: Handler<IEvent> = async (event) => {
     abortEarly: true,
     stripUnknown: true,
   });
-  const key = join(owner, companyId, uuid(), '.zip');
+  const key = join(owner, companyId, `${uuid()}.zip`);
 
-  await archive(
+  const { Key } = await archive(
     csv,
     {
       bucket: DESTINATION_BUCKET,
@@ -56,7 +57,7 @@ export const handler: Handler<IEvent> = async (event) => {
 
   return {
     companyId,
-    key,
+    key: Key,
     owner,
   };
 };

@@ -1,11 +1,11 @@
-import { downloadFileStream } from '@motech-development/s3-file-operations';
+import {
+  downloadFileStream,
+  uploader,
+} from '@motech-development/s3-file-operations';
 import Archiver from 'archiver';
-import { S3 } from 'aws-sdk';
-import { Stream } from 'stream';
+import { PassThrough } from 'stream';
 
 const archiver = Archiver('zip');
-const s3 = new S3();
-const streamPassThrough = new Stream.PassThrough();
 
 interface IArchiveDestination {
   bucket: string;
@@ -25,39 +25,34 @@ const archive = async (
   destination: IArchiveDestination,
   origin: IArchiveOrigin,
 ) => {
-  const upload = s3.upload({
-    Body: streamPassThrough,
-    Bucket: destination.bucket,
-    ContentType: 'application/zip',
-    Key: destination.key,
-  });
+  const passThrough = new PassThrough();
+  const upload = uploader(
+    destination.bucket,
+    destination.key,
+    passThrough,
+    'application/zip',
+  );
   const reportBuffer = Buffer.from(report);
   const downloadStreams = origin.keys.map(({ key, path }) => ({
     name: path,
     stream: downloadFileStream(origin.bucket, key),
   }));
 
-  await new Promise((resolve, reject) => {
-    streamPassThrough.on('close', resolve);
-    streamPassThrough.on('end', resolve);
-    streamPassThrough.on('error', reject);
+  archiver.pipe(passThrough);
 
-    archiver.pipe(streamPassThrough);
-
-    downloadStreams.forEach(({ name, stream }) => {
-      archiver.append(stream, {
-        name,
-      });
-    });
-
-    archiver.append(reportBuffer, {
-      name: 'report.csv',
-    });
-
-    archiver.finalize();
+  archiver.append(reportBuffer, {
+    name: 'report/accounts.csv',
   });
 
-  await upload.promise();
+  downloadStreams.forEach(({ name, stream }) => {
+    archiver.append(stream, {
+      name,
+    });
+  });
+
+  archiver.finalize();
+
+  return upload.promise();
 };
 
 export default archive;
