@@ -1,7 +1,6 @@
 import { Handler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { DateTime } from 'luxon';
-import { basename } from 'path';
 import { v4 as uuid } from 'uuid';
 import { object, string } from 'yup';
 
@@ -58,7 +57,7 @@ export const handler: Handler<IEvent> = async (event) => {
               Item: {
                 __typename: 'Report',
                 createdAt: now.toISO(),
-                data: `${owner}:${companyId}:Report:${basename(key, '.zip')}`,
+                data: `${owner}:${companyId}:${now.toISO()}`,
                 id: uuid(),
                 key,
                 owner,
