@@ -20,6 +20,11 @@
     "lead": "Update your company settings",
     "button": "Manage settings"
   },
+  "reports": {
+    "title": "Year end reports",
+    "lead": "Create and download year end reports",
+    "button": "Manage year end reports"
+  },
   "my-companies": {
     "title": "My companies",
     "lead": "Select another of your companies to manage",

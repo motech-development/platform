@@ -31,7 +31,7 @@ const Dashboard: FC = () => {
   });
   const { t } = useTranslation('dashboard');
   const cards = [
-    ...['accounts', 'clients', 'settings'].map((name) => ({
+    ...['accounts', 'clients', 'reports'].map((name) => ({
       button: t(`${name}.button`),
       colour: 'primary' as const,
       lead: t(`${name}.lead`),
@@ -44,6 +44,13 @@ const Dashboard: FC = () => {
       lead: t('company-details.lead'),
       link: `/my-companies/update-details/${companyId}`,
       title: t('company-details.title'),
+    },
+    {
+      button: t('settings.button'),
+      colour: 'primary' as const,
+      lead: t('settings.lead'),
+      link: `/my-companies/settings/${companyId}`,
+      title: t('settings.title'),
     },
     {
       button: t('my-companies.button'),

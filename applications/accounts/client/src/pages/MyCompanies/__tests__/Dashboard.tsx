@@ -89,6 +89,12 @@ describe('Dashboard', () => {
     await expect(findByText('settings.title')).resolves.toBeInTheDocument();
   });
 
+  it('should display the reports card', async () => {
+    const { findByText } = component;
+
+    await expect(findByText('reports.title')).resolves.toBeInTheDocument();
+  });
+
   it('should display the my companies card', async () => {
     const { findByText } = component;
 

@@ -5,5 +5,15 @@
     "typescript",
     "typescriptreact"
   ],
+  "eslint.workingDirectories": [
+    {
+      "pattern": "./applications/*/*/"
+    },
+    {
+      "pattern": "./packages/*/"
+    }
+  ],
+  "explorer.autoReveal": false,
+  "explorer.openEditors.visible": 0,
   "search.followSymlinks": false
 }
