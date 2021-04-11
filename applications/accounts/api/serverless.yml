@@ -202,6 +202,11 @@ custom:
             - createReport
           request: reports/createReport/Mutation.createReport.req.vtl
           response: reports/createReport/Mutation.createReport.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getReports
+          request: reports/getReports/Query.getReports.req.vtl
+          response: reports/getReports/Query.getReports.res.vtl
 
         - kind: PIPELINE
           type: Mutation

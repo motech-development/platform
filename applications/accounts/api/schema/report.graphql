@@ -1,3 +1,15 @@
+type Report {
+  createdAt: AWSDateTime
+  id: ID
+  key: String
+}
+
+type Reports {
+  id: ID
+  items: [Report]
+  nextToken: String
+}
+
 type ReportRequest {
   status: String
 }
