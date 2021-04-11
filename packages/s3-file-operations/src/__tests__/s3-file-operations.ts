@@ -66,15 +66,29 @@ describe('file-operations', () => {
 
   describe('createSignedUrl', () => {
     it('should call getSignedUrlPromise with the correct params', async () => {
-      await createSignedUrl('getObject', {
-        Bucket: 'bucket',
-        Key: 'file.txt',
+      await createSignedUrl('getObject', 'bucket', 'file.txt', 100);
+
+      expect(S3.prototype.getSignedUrlPromise).toHaveBeenCalledWith(
+        'getObject',
+        {
+          Bucket: 'bucket',
+          Expires: 100,
+          Key: 'file.txt',
+        },
+      );
+    });
+
+    it('should call getSignedUrlPromise with the correct additional params', async () => {
+      await createSignedUrl('getObject', 'bucket', 'file.txt', 100, {
+        ContentType: 'application/pdf',
       });
 
       expect(S3.prototype.getSignedUrlPromise).toHaveBeenCalledWith(
         'getObject',
         {
           Bucket: 'bucket',
+          ContentType: 'application/pdf',
+          Expires: 100,
           Key: 'file.txt',
         },
       );
