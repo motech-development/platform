@@ -16,6 +16,9 @@
       "src/**/*.{ts,tsx}",
       "!src/**/*.d.ts"
     ],
+    "setupFiles": [
+      "jest-date-mock"
+    ],
     "testEnvironment": "node"
   },
   "dependencies": {

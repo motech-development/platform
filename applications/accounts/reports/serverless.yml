@@ -21,6 +21,12 @@ custom:
     serializedCompile: true
 
 functions:
+  AddReport:
+    handler: src/handlers/add-report.handler
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+    role: LambdaFunctionRole
+
   ConvertToCsv:
     handler: src/handlers/convert-to-csv.handler
     role: LambdaFunctionRole
@@ -49,15 +55,8 @@ stepFunctions:
       name: ${self:custom.prefix}-generate-report
       events:
         - http:
-            # TODO: Revert authoriser
-            # authorizer: aws_iam
+            authorizer: aws_iam
             path: api/v1/generate-report/start
-            method: post
-        - http:
-            action: DescribeExecution
-            # TODO: Revert authoriser
-            # authorizer: aws_iam
-            path: api/v1/generate-report/status
             method: post
       definition:
         Comment: Export report for financial year
@@ -81,6 +80,11 @@ stepFunctions:
           CreateZip:
             Type: Task
             Resource: !GetAtt CreateZipLambdaFunction.Arn
+            Next: AddReport
+
+          AddReport:
+            Type: Task
+            Resource: !GetAtt AddReportLambdaFunction.Arn
             End: true
 
 resources:
@@ -132,7 +136,7 @@ resources:
                         - '/index/__typename-data-index'
                 - Effect: Allow
                   Action:
-                    - dynamodb:PutItem
+                    - dynamodb:BatchWriteItem
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                 - Effect: Allow

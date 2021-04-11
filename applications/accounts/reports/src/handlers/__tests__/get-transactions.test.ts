@@ -12,7 +12,7 @@ describe('get-transactions', () => {
   beforeEach(() => {
     callback = jest.fn();
 
-    DocumentClient.prototype.query = jest.fn().mockReturnValue({
+    (DocumentClient.prototype.query as jest.Mock).mockReturnValue({
       promise: jest.fn().mockResolvedValue({
         Items: [],
       }),
