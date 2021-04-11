@@ -36,21 +36,24 @@ export const handler = apiGatewayHandler(async (event) => {
     const id = uuid();
     const { companyId, contentType, extension, metadata, owner } = result;
     const expirationInSeconds = 30;
-
-    const url = await createSignedUrl('putObject', {
-      Bucket: bucket,
-      ContentType: contentType,
-      Expires: expirationInSeconds,
-      Key: `${owner}/${companyId}/${id}.${extension}`,
-      Metadata: {
-        ...(metadata.id
-          ? {
-              id: metadata.id,
-            }
-          : {}),
-        typename: metadata.typename,
+    const key = `${owner}/${companyId}/${id}.${extension}`;
+    const url = await createSignedUrl(
+      'putObject',
+      bucket,
+      key,
+      expirationInSeconds,
+      {
+        ContentType: contentType,
+        Metadata: {
+          ...(metadata.id
+            ? {
+                id: metadata.id,
+              }
+            : {}),
+          typename: metadata.typename,
+        },
       },
-    });
+    );
 
     return response(
       {

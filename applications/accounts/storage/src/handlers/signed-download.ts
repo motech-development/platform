@@ -27,12 +27,13 @@ export const handler = apiGatewayHandler(async (event) => {
 
     const { owner, path } = result;
     const expirationInSeconds = 30;
-
-    const url = await createSignedUrl('getObject', {
-      Bucket: bucket,
-      Expires: expirationInSeconds,
-      Key: join(owner, path),
-    });
+    const key = join(owner, path);
+    const url = await createSignedUrl(
+      'getObject',
+      bucket,
+      key,
+      expirationInSeconds,
+    );
 
     return response(
       {

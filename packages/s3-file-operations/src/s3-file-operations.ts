@@ -30,9 +30,24 @@ export const createFile = async (
     .promise();
 };
 
-// TODO: Make this easier to use
-export const createSignedUrl = async (operation: string, params: unknown) =>
-  s3.getSignedUrlPromise(operation, params);
+interface ICreateSignedUrlOpts {
+  ContentType?: string;
+  Metadata?: S3.Metadata;
+}
+
+export const createSignedUrl = async (
+  operation: string,
+  bucket: string,
+  key: string,
+  expires: number,
+  opts?: ICreateSignedUrlOpts,
+) =>
+  s3.getSignedUrlPromise(operation, {
+    Bucket: bucket,
+    Expires: expires,
+    Key: key,
+    ...opts,
+  });
 
 export const deleteFile = async (bucket: string, key: string) => {
   const decodedKey = decodeURIComponent(key);
