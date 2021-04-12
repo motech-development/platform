@@ -15,6 +15,7 @@ type ReportRequest {
 }
 
 input ReportYearEndInput {
+  __typename: String
   day: Int!
   month: Int!
 }

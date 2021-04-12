@@ -14,7 +14,23 @@
     }
   },
   "create-report": {
-    "title": "",
-    "sub-title": ""
+    "title": "Create report",
+    "sub-title": "Configure a report to export",
+    "currency": "£"
+  },
+  "export-form": {
+    "create": "Create report",
+    "cancel": "Cancel",
+    "status": {
+      "label": "Transaction status",
+      "options": {
+        "confirmed": "Confirmed",
+        "pending": "Pending"
+      }
+    },
+    "year": {
+      "label": "Financial year",
+      "placeholder": "Select financial year"
+    }
   }
 }

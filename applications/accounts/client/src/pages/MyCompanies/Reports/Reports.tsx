@@ -35,6 +35,10 @@ interface IGetReportsOutput {
   };
 }
 
+interface IReportsParams {
+  companyId: string;
+}
+
 export const GET_REPORTS = gql`
   query GetReports($id: ID!, $count: Int, $nextToken: String) {
     getReports(id: $id, count: $count, nextToken: $nextToken) {
@@ -47,10 +51,6 @@ export const GET_REPORTS = gql`
     }
   }
 `;
-
-interface IReportsParams {
-  companyId: string;
-}
 
 const Reports: FC = () => {
   const { companyId } = useParams<IReportsParams>();
