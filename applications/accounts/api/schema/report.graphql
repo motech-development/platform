@@ -1,7 +1,7 @@
 type Report {
   createdAt: AWSDateTime
   id: ID
-  ttl: String
+  ttl: Int
 }
 
 type Reports {

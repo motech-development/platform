@@ -78,7 +78,7 @@ describe('add-report', () => {
                   id: 'test-uuid',
                   key: 'PATH/TO/REPORT.zip',
                   owner: 'OWNER-ID',
-                  ttl: '2021-04-12T19:45:00.000Z',
+                  ttl: 1618256700,
                 },
               },
             },
