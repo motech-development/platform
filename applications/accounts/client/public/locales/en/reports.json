@@ -21,6 +21,7 @@
   "export-form": {
     "create": "Create report",
     "cancel": "Cancel",
+    "heading": "Export settings",
     "status": {
       "label": "Transaction status",
       "options": {

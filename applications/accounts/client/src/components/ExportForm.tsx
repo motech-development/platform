@@ -1,11 +1,10 @@
 import {
   Card,
-  Col,
   Form,
   LinkButton,
   Radio,
-  Row,
   Select,
+  Typography,
 } from '@motech-development/breeze-ui';
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +20,19 @@ const formSchema = {
     month: 0,
   },
 };
+
+const now = new Date().getFullYear();
+
+const yearOptions = [...new Array(5)].map((_, i) => {
+  const refYear = now - i;
+  const year = refYear.toString();
+  const next = (refYear + 1).toString().substr(2, 2);
+
+  return {
+    name: `${year}/${next}`,
+    value: year,
+  };
+});
 
 export type FormSchema = typeof formSchema;
 
@@ -75,29 +87,6 @@ const ExportForm: FC<IExportFormProps> = ({
       value: 'pending',
     },
   ];
-  // TODO: Make dynamic
-  const yearOptions = [
-    {
-      name: '2021/22',
-      value: '2021',
-    },
-    {
-      name: '2020/21',
-      value: '2020',
-    },
-    {
-      name: '2019/20',
-      value: '2019',
-    },
-    {
-      name: '2018/19',
-      value: '2018',
-    },
-    {
-      name: '2017/18',
-      value: '2017',
-    },
-  ];
 
   return (
     <Form
@@ -112,26 +101,23 @@ const ExportForm: FC<IExportFormProps> = ({
         </LinkButton>
       }
     >
-      <Card>
-        <Row>
-          <Col xs={12} md={6}>
-            <Select
-              label={t('export-form.year.label')}
-              name="year"
-              options={yearOptions}
-              placeholder={t('export-form.year.placeholder')}
-            />
-          </Col>
+      <Card padding="lg">
+        <Typography rule component="h3" variant="h3">
+          {t('export-form.heading')}
+        </Typography>
 
-          <Col xs={12} md={6}>
-            <Radio
-              name="status"
-              label={t('export-form.status.label')}
-              options={statusOptions}
-              // onChange={onStatusChange}
-            />
-          </Col>
-        </Row>
+        <Select
+          label={t('export-form.year.label')}
+          name="year"
+          options={yearOptions}
+          placeholder={t('export-form.year.placeholder')}
+        />
+
+        <Radio
+          name="status"
+          label={t('export-form.status.label')}
+          options={statusOptions}
+        />
       </Card>
     </Form>
   );
