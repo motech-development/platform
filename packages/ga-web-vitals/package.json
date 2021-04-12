@@ -2,6 +2,8 @@
   "name": "@motech-development/ga-web-vitals",
   "version": "0.0.0",
   "description": "Google Analytics Web Vitals reporter",
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "license": "ISC",
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",
   "types": "lib/ga-web-vitals.d.ts",

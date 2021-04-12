@@ -9,6 +9,7 @@ export default [
     input: 'src/ga-web-vitals.ts',
     output: [
       {
+        exports: 'default',
         file: pkg.main,
         format: 'cjs',
         sourcemap: true,
