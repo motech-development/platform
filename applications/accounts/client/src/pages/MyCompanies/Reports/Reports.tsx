@@ -30,7 +30,7 @@ interface IGetReportsOutput {
     items: {
       createdAt: string;
       id: string;
-      ttl: string;
+      ttl: number;
     }[];
   };
 }
@@ -99,7 +99,11 @@ const Reports: FC = () => {
                     </TableCell>
 
                     <TableCell>
-                      <DateTime format="DD/MM/YYYY HH:mm" value={ttl} />
+                      {/* TODO: Update DateTime to handle timestamps */}
+                      <DateTime
+                        format="DD/MM/YYYY HH:mm"
+                        value={new Date(ttl).toISOString()}
+                      />
                     </TableCell>
 
                     <TableCell>

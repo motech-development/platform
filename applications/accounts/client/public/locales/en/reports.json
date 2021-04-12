@@ -16,7 +16,8 @@
   "create-report": {
     "title": "Create report",
     "sub-title": "Configure a report to export",
-    "currency": "£"
+    "currency": "£",
+    "requested": "Report requested. You will be notified when it is ready to download"
   },
   "export-form": {
     "create": "Create report",

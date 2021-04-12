@@ -1,8 +1,8 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { PageTitle } from '@motech-development/breeze-ui';
+import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import ExportForm, { FormSchema } from '../../../components/ExportForm';
 import GET_SETTINGS, {
@@ -42,9 +42,11 @@ export const CREATE_REPORT = gql`
 `;
 
 const CreateReport: FC = () => {
+  const history = useHistory();
   const { companyId } = useParams<IReportsParams>();
+  const { add } = useToast();
   const { t } = useTranslation('reports');
-  const backTo = (id: string) => `/my-companies/reports/${id}`;
+  const backTo = `/my-companies/reports/${companyId}`;
   const { data, error, loading } = useQuery<
     IGetSettingsOutput,
     IGetSettingsInput
@@ -58,10 +60,12 @@ const CreateReport: FC = () => {
     { error: mutationError, loading: mutationLoading },
   ] = useMutation<ICreateReportOutput, ICreateReportInput>(CREATE_REPORT, {
     onCompleted: () => {
-      // TODO: Redirect back
-    },
-    onError: () => {
-      // TODO: Handle error
+      add({
+        colour: 'success',
+        message: t('create-report.requested'),
+      });
+
+      history.push(backTo);
     },
   });
   const save = async (input: FormSchema) => {
@@ -82,7 +86,7 @@ const CreateReport: FC = () => {
           />
 
           <ExportForm
-            backTo={backTo(companyId)}
+            backTo={backTo}
             companyId={companyId}
             currency={t('create-report.currency')}
             loading={mutationLoading}
