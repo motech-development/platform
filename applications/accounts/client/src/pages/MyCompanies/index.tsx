@@ -12,6 +12,7 @@ const AddCompany = lazy(() => import('./AddCompany'));
 const Clients = lazy(() => import('./Clients'));
 const Dashboard = lazy(() => import('./Dashboard'));
 const MyCompanies = lazy(() => import('./MyCompanies'));
+const Reports = lazy(() => import('./Reports'));
 const Settings = lazy(() => import('./Settings'));
 const UpdateDetails = lazy(() => import('./UpdateDetails'));
 
@@ -58,6 +59,10 @@ const Routes: FC = () => {
             <Route
               component={Clients}
               path="/my-companies/clients/:companyId"
+            />
+            <Route
+              component={Reports}
+              path="/my-companies/reports/:companyId"
             />
             <Route
               component={Settings}

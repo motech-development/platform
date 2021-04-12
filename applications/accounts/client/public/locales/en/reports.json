@@ -1,0 +1,20 @@
+{
+  "reports": {
+    "title": "Reports",
+    "sub-title": "Create and export your accounting data",
+    "expiry-message": "Reports are automatically deleted after 24 hours",
+    "no-reports-found": "No reports found",
+    "create-report": "Create new report",
+    "go-back": "Go back to dashboard",
+    "download": "Download",
+    "table": {
+      "created": "Created",
+      "expires": "Expires",
+      "actions": "Actions"
+    }
+  },
+  "create-report": {
+    "title": "",
+    "sub-title": ""
+  }
+}

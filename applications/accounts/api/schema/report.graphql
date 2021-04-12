@@ -1,7 +1,6 @@
 type Report {
   createdAt: AWSDateTime
   id: ID
-  key: String
   ttl: String
 }
 

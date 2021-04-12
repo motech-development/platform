@@ -21,9 +21,9 @@
     "button": "Manage settings"
   },
   "reports": {
-    "title": "Year end reports",
-    "lead": "Create and download year end reports",
-    "button": "Manage year end reports"
+    "title": "Reports",
+    "lead": "Create and download accounting reports",
+    "button": "Manage reports"
   },
   "my-companies": {
     "title": "My companies",
