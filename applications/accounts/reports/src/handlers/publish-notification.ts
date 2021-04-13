@@ -29,11 +29,13 @@ export const handler: Handler<IEvent> = async (event) => {
   const host = ENDPOINT.replace('https://', '');
   const path = `/${STAGE}/api/v1/notifications`;
   const url = ENDPOINT + path;
+  const data = {
+    message: 'REPORT_READY_TO_DOWNLOAD',
+    owner,
+  };
   const opts = {
-    body: JSON.stringify({
-      message: 'REPORT_READY_TO_DOWNLOAD',
-      owner,
-    }),
+    body: JSON.stringify(data),
+    data,
     headers: {
       'Content-Type': 'application/json',
     },

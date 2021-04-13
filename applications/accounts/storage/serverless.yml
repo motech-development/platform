@@ -15,11 +15,17 @@ package:
 plugins:
   - serverless-webpack
   - serverless-offline
+  - serverless-prune-plugin
 
 custom:
   prefix: ${self:service}-${self:provider.stage}
   downloads: ${self:custom.prefix}-downloads
   uploads: ${self:custom.prefix}-uploads
+
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 1
 
   webpack:
     includeModules: true

@@ -12,10 +12,16 @@ package:
 plugins:
   - serverless-appsync-plugin
   - serverless-webpack
+  - serverless-prune-plugin
   - '@motech-development/serverless-outputs-env'
 
 custom:
   prefix: ${self:service}-${self:provider.stage}
+
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 1
 
   names:
     develop: AccountsdevelopGraphQlApi
