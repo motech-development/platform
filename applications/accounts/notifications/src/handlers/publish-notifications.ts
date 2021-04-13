@@ -16,7 +16,7 @@ export const mutation = gql`
   }
 `;
 
-export const handler: DynamoDBStreamHandler = async event => {
+export const handler: DynamoDBStreamHandler = async (event) => {
   const { AWS_REGION, ENDPOINT } = process.env;
 
   if (!AWS_REGION) {
