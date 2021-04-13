@@ -34,6 +34,9 @@ export const handler: Handler<IEvent> = async (event) => {
       message: 'REPORT_READY_TO_DOWNLOAD',
       owner,
     }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
     host,
     method: 'POST',
     path,

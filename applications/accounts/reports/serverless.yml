@@ -148,7 +148,7 @@ resources:
                         - '/index/__typename-data-index'
                 - Effect: Allow
                   Action:
-                    - dynamodb:BatchWriteItem
+                    - dynamodb:PutItem
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                 - Effect: Allow
