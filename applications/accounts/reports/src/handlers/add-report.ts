@@ -33,7 +33,7 @@ export const handler: Handler<IEvent> = async (event) => {
     .plus({
       day: 1,
     })
-    .toSeconds();
+    .toMillis();
 
   await client
     .batchWrite({
