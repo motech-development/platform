@@ -44,6 +44,13 @@ functions:
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
     role: LambdaFunctionRole
 
+  PublishNotificationReport:
+    handler: src/handlers/publish-notification.handler
+    environment:
+      ENDPOINT: !ImportValue ${self:provider.stage}-NotificationsApiEndpoint
+      STAGE: ${self:provider.stage}
+    role: LambdaFunctionRole
+
   TransformTransactions:
     handler: src/handlers/transform-transactions.handler
     role: LambdaFunctionRole
@@ -85,6 +92,11 @@ stepFunctions:
           AddReport:
             Type: Task
             Resource: !GetAtt AddReportLambdaFunction.Arn
+            Next: PublishNotification
+
+          PublishNotification:
+            Type: Task
+            Resource: !GetAtt PublishNotificationReportLambdaFunction.Arn
             End: true
 
 resources:
@@ -155,6 +167,10 @@ resources:
                       - ''
                       - - !ImportValue ${self:provider.stage}-StorageDownloadBucketArn
                         - '/*'
+                - Effect: Allow
+                  Action:
+                    - execute-api:Invoke
+                  Resource: !ImportValue ${self:provider.stage}-NotificationsApiArn
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup

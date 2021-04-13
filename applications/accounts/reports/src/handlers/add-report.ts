@@ -36,41 +36,21 @@ export const handler: Handler<IEvent> = async (event) => {
     .toMillis();
 
   await client
-    .batchWrite({
-      RequestItems: {
-        [TABLE]: [
-          {
-            PutRequest: {
-              Item: {
-                __typename: 'Notification',
-                createdAt: now.toISO(),
-                data: `${owner}:Notification:${now.toISO()}`,
-                id: uuid(),
-                message: 'REPORT_READY_TO_DOWNLOAD',
-                owner,
-                read: false,
-              },
-            },
-          },
-          {
-            PutRequest: {
-              Item: {
-                __typename: 'Report',
-                createdAt: now.toISO(),
-                data: `${owner}:${companyId}:${now.toISO()}`,
-                id: uuid(),
-                key,
-                owner,
-                ttl,
-              },
-            },
-          },
-        ],
+    .put({
+      Item: {
+        __typename: 'Report',
+        createdAt: now.toISO(),
+        data: `${owner}:${companyId}:${now.toISO()}`,
+        id: uuid(),
+        key,
+        owner,
+        ttl,
       },
+      TableName: TABLE,
     })
     .promise();
 
   return {
-    complete: true,
+    owner,
   };
 };

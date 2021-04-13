@@ -50,46 +50,26 @@ describe('add-report', () => {
       process.env = env;
     });
 
-    it('should call batchWrite with the correct params', async () => {
+    it('should call put with the correct params', async () => {
       await handler(event, context, callback);
 
-      expect(DocumentClient.prototype.batchWrite).toHaveBeenCalledWith({
-        RequestItems: {
-          'TABLE-NAME': [
-            {
-              PutRequest: {
-                Item: {
-                  __typename: 'Notification',
-                  createdAt: '2021-04-11T19:45:00.000Z',
-                  data: 'OWNER-ID:Notification:2021-04-11T19:45:00.000Z',
-                  id: 'test-uuid',
-                  message: 'REPORT_READY_TO_DOWNLOAD',
-                  owner: 'OWNER-ID',
-                  read: false,
-                },
-              },
-            },
-            {
-              PutRequest: {
-                Item: {
-                  __typename: 'Report',
-                  createdAt: '2021-04-11T19:45:00.000Z',
-                  data: 'OWNER-ID:COMPANY-ID:2021-04-11T19:45:00.000Z',
-                  id: 'test-uuid',
-                  key: 'PATH/TO/REPORT.zip',
-                  owner: 'OWNER-ID',
-                  ttl: 1618256700000,
-                },
-              },
-            },
-          ],
+      expect(DocumentClient.prototype.put).toHaveBeenCalledWith({
+        Item: {
+          __typename: 'Report',
+          createdAt: '2021-04-11T19:45:00.000Z',
+          data: 'OWNER-ID:COMPANY-ID:2021-04-11T19:45:00.000Z',
+          id: 'test-uuid',
+          key: 'PATH/TO/REPORT.zip',
+          owner: 'OWNER-ID',
+          ttl: 1618256700000,
         },
+        TableName: 'TABLE-NAME',
       });
     });
 
-    it('should return true when complete', async () => {
+    it('should return owner id when complete', async () => {
       await expect(handler(event, context, callback)).resolves.toEqual({
-        complete: true,
+        owner: 'OWNER-ID',
       });
     });
   });
