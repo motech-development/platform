@@ -61,7 +61,7 @@ describe('add-report', () => {
           id: 'test-uuid',
           key: 'PATH/TO/REPORT.zip',
           owner: 'OWNER-ID',
-          ttl: 1618256700000,
+          ttl: 1618256700,
         },
         TableName: 'TABLE-NAME',
       });

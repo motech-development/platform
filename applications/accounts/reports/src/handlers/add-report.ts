@@ -29,11 +29,13 @@ export const handler: Handler<IEvent> = async (event) => {
     stripUnknown: true,
   });
   const now = DateTime.utc();
-  const ttl = now
-    .plus({
-      day: 1,
-    })
-    .toMillis();
+  const ttl = Math.floor(
+    now
+      .plus({
+        day: 1,
+      })
+      .toSeconds(),
+  );
 
   await client
     .put({
