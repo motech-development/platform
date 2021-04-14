@@ -1,13 +1,9 @@
+import { uploader } from '@motech-development/s3-file-operations';
+import Archiver from 'archiver';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import archive from '../../shared/archive';
+import { PassThrough } from 'stream';
 import { handler, IEvent } from '../create-zip';
-
-jest.mock('../../shared/archive', () =>
-  jest.fn().mockResolvedValue({
-    Key: 'PATH/TO/KEY.zip',
-  }),
-);
 
 describe('create-zip', () => {
   let callback: jest.Mock;
@@ -80,35 +76,33 @@ describe('create-zip', () => {
 
       process.env.DESTINATION_BUCKET = 'DESTINATION-BUCKET';
       process.env.ORIGIN_BUCKET = 'ORIGIN-BUCKET';
+
+      (uploader as jest.Mock).mockReturnValue({
+        promise: jest.fn().mockResolvedValue({
+          Key: 'PATH/TO/KEY.zip',
+        }),
+      });
     });
 
     afterEach(() => {
       process.env = env;
     });
 
-    it('should call the archiver with the correct params', async () => {
+    it('should upload with the correct params', async () => {
       await handler(event, context, callback);
 
-      expect(archive).toHaveBeenCalledWith(
-        event.csv,
-        {
-          bucket: 'DESTINATION-BUCKET',
-          key: 'OWNER-ID/COMPANY-ID/test-uuid.zip',
-        },
-        {
-          bucket: 'ORIGIN-BUCKET',
-          keys: [
-            {
-              key: 'OWNER-ID/COMPANY-ID/path/to/invice.pdf',
-              path: 'assets/2021/January/01/client-invoice.pdf',
-            },
-            {
-              key: 'OWNER-ID/COMPANY-ID/path/to/bill.pdf',
-              path: 'assets/2021/January/02/bt-broadband.pdf',
-            },
-          ],
-        },
+      expect(uploader).toHaveBeenCalledWith(
+        'DESTINATION-BUCKET',
+        'OWNER-ID/COMPANY-ID/test-uuid.zip',
+        expect.any(PassThrough),
+        'application/zip',
       );
+    });
+
+    it('should create a zip archive', async () => {
+      await handler(event, context, callback);
+
+      expect(Archiver).toHaveBeenCalledWith('zip');
     });
 
     it('should return the correct data', async () => {
