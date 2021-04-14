@@ -203,7 +203,7 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
             </Typography>
 
             <SupportText component="p" variant="p" margin="none">
-              <DateTime value={createdAt} format="DD/MM/YYYY HH:mm" />
+              <DateTime value={createdAt} format="dd/MM/yyyy HH:mm" />
             </SupportText>
           </TableCell>
         </>

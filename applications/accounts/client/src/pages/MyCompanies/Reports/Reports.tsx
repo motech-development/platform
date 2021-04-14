@@ -95,15 +95,11 @@ const Reports: FC = () => {
                 row={({ createdAt, ttl }) => (
                   <>
                     <TableCell>
-                      <DateTime format="DD/MM/YYYY HH:mm" value={createdAt} />
+                      <DateTime format="dd/MM/yyyy HH:mm" value={createdAt} />
                     </TableCell>
 
                     <TableCell>
-                      {/* TODO: Update DateTime to handle timestamps */}
-                      <DateTime
-                        format="DD/MM/YYYY HH:mm"
-                        value={new Date(ttl).toISOString()}
-                      />
+                      <DateTime format="dd/MM/yyyy HH:mm" value={ttl} />
                     </TableCell>
 
                     <TableCell>
