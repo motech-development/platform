@@ -252,7 +252,11 @@ const Calendar: FC<ICalendarProps> = ({
 
   useEffect(() => {
     if (date) {
-      onDateChange(date.toISO());
+      onDateChange(
+        date.toISO({
+          suppressMilliseconds: true,
+        }),
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);

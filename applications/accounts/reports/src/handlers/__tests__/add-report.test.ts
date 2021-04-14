@@ -56,8 +56,8 @@ describe('add-report', () => {
       expect(DocumentClient.prototype.put).toHaveBeenCalledWith({
         Item: {
           __typename: 'Report',
-          createdAt: '2021-04-11T19:45:00.000Z',
-          data: 'OWNER-ID:COMPANY-ID:2021-04-11T19:45:00.000Z',
+          createdAt: '2021-04-11T19:45:00Z',
+          data: 'OWNER-ID:COMPANY-ID:2021-04-11T19:45:00Z',
           id: 'test-uuid',
           key: 'PATH/TO/REPORT.zip',
           owner: 'OWNER-ID',

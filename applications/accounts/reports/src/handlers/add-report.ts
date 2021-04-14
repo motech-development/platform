@@ -41,8 +41,12 @@ export const handler: Handler<IEvent> = async (event) => {
     .put({
       Item: {
         __typename: 'Report',
-        createdAt: now.toISO(),
-        data: `${owner}:${companyId}:${now.toISO()}`,
+        createdAt: now.toISO({
+          suppressMilliseconds: true,
+        }),
+        data: `${owner}:${companyId}:${now.toISO({
+          suppressMilliseconds: true,
+        })}`,
         id: uuid(),
         key,
         owner,

@@ -23,7 +23,7 @@ describe('DateTime', () => {
       const { container } = component;
       const time = container.querySelector('time');
 
-      expect(time).toHaveAttribute('datetime', '2020-01-25T14:58:21.000+00:00');
+      expect(time).toHaveAttribute('datetime', '2020-01-25T14:58:21+00:00');
     });
   });
 
@@ -49,7 +49,7 @@ describe('DateTime', () => {
       const { container } = component;
       const time = container.querySelector('time');
 
-      expect(time).toHaveAttribute('datetime', '2020-01-25T14:58:21.000+00:00');
+      expect(time).toHaveAttribute('datetime', '2020-01-25T14:58:21+00:00');
     });
   });
 });

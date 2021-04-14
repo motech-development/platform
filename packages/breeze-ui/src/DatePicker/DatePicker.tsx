@@ -75,10 +75,14 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
   const { name, value } = field;
   const [date, setDate] = useState(() => {
     if (value === '') {
-      return Luxon.utc().toISO();
+      return Luxon.utc().toISO({
+        suppressMilliseconds: true,
+      });
     }
 
-    return Luxon.fromISO(value).toUTC().toISO();
+    return Luxon.fromISO(value).toUTC().toISO({
+      suppressMilliseconds: true,
+    });
   });
   const { errors, setFieldValue } = form;
   const markAsDisabled = disabled || readOnly;

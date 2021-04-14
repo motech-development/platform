@@ -106,7 +106,7 @@ describe('Calendar', () => {
         fireEvent.click(button);
       });
 
-      expect(onDateChange).toHaveBeenCalledWith('2020-04-03T05:00:00.000Z');
+      expect(onDateChange).toHaveBeenCalledWith('2020-04-03T05:00:00Z');
     });
   });
 
@@ -204,7 +204,7 @@ describe('Calendar', () => {
         fireEvent.click(button);
       });
 
-      expect(onDateChange).toHaveBeenCalledWith('2015-06-03T19:45:00.000Z');
+      expect(onDateChange).toHaveBeenCalledWith('2015-06-03T19:45:00Z');
     });
   });
 });
