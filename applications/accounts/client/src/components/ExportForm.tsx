@@ -78,10 +78,21 @@ const ExportForm: FC<IExportFormProps> = ({
         .required(),
     })
     .required();
+  const fullYearEnd = DateTime.fromObject({
+    day: yearEnd.day,
+    month: yearEnd.month + 1,
+    zone: 'utc',
+  });
+  const year = now
+    .minus({
+      year: fullYearEnd > now ? 2 : 1,
+    })
+    .toFormat('yyyy');
   const initialValues = {
     ...formSchema,
     companyId,
     currency,
+    year,
     yearEnd,
   };
   const statusOptions = [
