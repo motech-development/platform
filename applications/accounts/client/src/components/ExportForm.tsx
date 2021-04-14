@@ -6,6 +6,7 @@ import {
   Select,
   Typography,
 } from '@motech-development/breeze-ui';
+import { DateTime } from 'luxon';
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { number, object, string } from 'yup';
@@ -21,12 +22,18 @@ const formSchema = {
   },
 };
 
-const now = new Date().getFullYear();
+const now = DateTime.now();
 
 const yearOptions = [...new Array(5)].map((_, i) => {
-  const refYear = now - i;
-  const year = refYear.toString();
-  const next = (refYear + 1).toString().substr(2, 2);
+  const refYear = now.minus({
+    year: i,
+  });
+  const year = refYear.toFormat('yyyy');
+  const next = refYear
+    .plus({
+      year: 1,
+    })
+    .toFormat('yy');
 
   return {
     name: `${year}/${next}`,
