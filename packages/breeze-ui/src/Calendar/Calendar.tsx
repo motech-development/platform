@@ -6,7 +6,7 @@ import {
   faAngleRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import moment from 'moment';
+import { DateTime, Info } from 'luxon';
 import { FC, ReactNode, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonColour } from '../BaseButton/BaseButton';
@@ -43,8 +43,8 @@ const CalendarButton = styled(Button)<ICalendarButton>`
 `;
 
 const Weekdays: FC = () => {
-  const short = moment.weekdaysShort();
-  const abbrs = moment.weekdays();
+  const short = Info.weekdays('short');
+  const abbrs = Info.weekdays();
 
   return (
     <TableHead>
@@ -66,29 +66,31 @@ const Weekdays: FC = () => {
 };
 
 interface IDates {
-  date: moment.Moment;
+  date: DateTime;
   id: string;
-  view: moment.Moment;
+  view: DateTime;
   onSelect(day: number, month: number, year: number): void;
 }
 
 const Dates: FC<IDates> = ({ date, id, onSelect, view }) => {
-  const clone = view.clone();
-  const selectedClone = date.clone();
-  const currentDay = parseInt(selectedClone.format('D'), 10);
-  const daysInMonth = clone.daysInMonth();
-  const firstDayOfMonth = parseInt(clone.startOf('month').format('d'), 10);
-  const previousMonth = view.clone().subtract(1, 'months');
+  const currentDay = parseInt(date.toFormat('dd'), 10);
+  const { daysInMonth } = view;
+  const firstDayOfMonth = parseInt(view.startOf('month').toFormat('c'), 10);
+  const previousMonth = view.minus({
+    months: 1,
+  });
   const lastDayOfPreviousMonth = parseInt(
-    previousMonth.endOf('month').format('D'),
+    previousMonth.endOf('month').toFormat('dd'),
     10,
   );
-  const nextMonth = view.clone().add(1, 'months');
+  const nextMonth = view.plus({
+    months: 1,
+  });
 
-  const blanks = [...Array(firstDayOfMonth)]
+  const blanks = [...Array(firstDayOfMonth - 1)]
     .map((_, i) => {
       const day = lastDayOfPreviousMonth - i;
-      const thisMonth = date.isSame(previousMonth, 'month');
+      const thisMonth = date.hasSame(previousMonth, 'month');
 
       let colour: ButtonColour;
 
@@ -111,7 +113,7 @@ const Dates: FC<IDates> = ({ date, id, onSelect, view }) => {
     const day = i + 1;
     const month = view.get('month');
     const year = view.get('year');
-    const thisMonth = date.isSame(view, 'month');
+    const thisMonth = date.hasSame(view, 'month');
 
     let colour: ButtonColour;
 
@@ -153,7 +155,7 @@ const Dates: FC<IDates> = ({ date, id, onSelect, view }) => {
         const key = daysInMonth + fillerIndex + 1;
 
         const day = 1 + fillerIndex;
-        const thisMonth = date.isSame(nextMonth, 'month');
+        const thisMonth = date.hasSame(nextMonth, 'month');
 
         let colour: ButtonColour;
 
@@ -191,8 +193,7 @@ const Dates: FC<IDates> = ({ date, id, onSelect, view }) => {
 
 type JumpUnits = 'month' | 'year';
 
-const selectMoment = (start: moment.Moment, date?: moment.Moment) =>
-  date || start;
+const selectMoment = (start: DateTime, date?: DateTime) => date || start;
 
 export interface ICalendarProps {
   selectedDate?: string;
@@ -207,53 +208,51 @@ const Calendar: FC<ICalendarProps> = ({
 }) => {
   const [startDate] = useState(() => {
     if (selectedDate !== '') {
-      return moment.utc(selectedDate);
+      return DateTime.fromISO(selectedDate).toUTC();
     }
 
-    return moment.utc();
+    return DateTime.utc();
   });
-  const [date, setDate] = useState<moment.Moment>();
-  const [view, setView] = useState<moment.Moment>();
+  const [date, setDate] = useState<DateTime>();
+  const [view, setView] = useState<DateTime>();
   const [currentMonth, setCurrentMonth] = useState('');
-  const [currentYear, setCurrentYear] = useState(0);
+  const [currentYear, setCurrentYear] = useState('');
   const selected = selectMoment(startDate, date);
   const selectedView = selectMoment(startDate, view);
   const grid = `${id}-calendar`;
   const label = `${id}-dialog-label`;
   const setDay = (day: number, month: number, year: number) => {
-    const updated = selected.clone();
-
-    updated.set('date', day);
-    updated.set('month', month);
-    updated.set('year', year);
+    const updated = selected.set({
+      day,
+      month,
+      year,
+    });
 
     setDate(updated);
   };
   const next = (unit: JumpUnits) => {
-    const updated = selectedView.clone();
-
-    updated.add(1, unit);
+    const updated = selectedView.plus({
+      [unit]: 1,
+    });
 
     setView(updated);
   };
   const previous = (unit: JumpUnits) => {
-    const updated = selectedView.clone();
-
-    updated.subtract(1, unit);
+    const updated = selectedView.minus({
+      [unit]: 1,
+    });
 
     setView(updated);
   };
 
   useEffect(() => {
-    const clone = selectedView.clone();
-
-    setCurrentMonth(clone.format('MMMM'));
-    setCurrentYear(parseInt(clone.format('Y'), 10));
+    setCurrentMonth(selectedView.toFormat('MMMM'));
+    setCurrentYear(selectedView.toFormat('y'));
   }, [selectedView]);
 
   useEffect(() => {
     if (date) {
-      onDateChange(date.format());
+      onDateChange(date.toISO());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);

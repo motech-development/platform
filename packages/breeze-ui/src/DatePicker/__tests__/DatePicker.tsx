@@ -57,7 +57,7 @@ describe('DatePicker', () => {
       const { findByLabelText } = component;
 
       await expect(findByLabelText('Test')).resolves.toHaveValue(
-        '2015-06-06T19:45:00Z',
+        '2015-06-06T19:45:00.000Z',
       );
     });
 
@@ -121,7 +121,7 @@ describe('DatePicker', () => {
       });
 
       await expect(findByLabelText('Test')).resolves.toHaveValue(
-        '2015-06-03T19:45:00Z',
+        '2015-06-03T19:45:00.000Z',
       );
     });
 
@@ -169,7 +169,7 @@ describe('DatePicker', () => {
       const { findByLabelText } = component;
 
       await expect(findByLabelText('Test')).resolves.toHaveValue(
-        '2015-06-03T19:45:00Z',
+        '2015-06-03T19:45:00.000Z',
       );
     });
 
@@ -233,7 +233,7 @@ describe('DatePicker', () => {
       });
 
       await expect(findByLabelText('Test')).resolves.toHaveValue(
-        '2015-06-20T19:45:00Z',
+        '2015-06-20T19:45:00.000Z',
       );
     });
 
