@@ -1,5 +1,6 @@
 type Report {
   createdAt: AWSDateTime
+  downloadUrl: String
   id: ID
   ttl: AWSTimestamp
 }

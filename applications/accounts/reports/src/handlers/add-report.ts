@@ -7,12 +7,14 @@ import { object, string } from 'yup';
 const client = new DocumentClient();
 const schema = object({
   companyId: string().required(),
+  downloadUrl: string().required(),
   key: string().required(),
   owner: string().required(),
 }).required();
 
 export interface IEvent {
   companyId: string;
+  downloadUrl: string;
   key: string;
   owner: string;
 }
@@ -24,7 +26,7 @@ export const handler: Handler<IEvent> = async (event) => {
     throw new Error('No table set');
   }
 
-  const { companyId, key, owner } = await schema.validate(event, {
+  const { companyId, downloadUrl, key, owner } = await schema.validate(event, {
     abortEarly: true,
     stripUnknown: true,
   });
@@ -47,6 +49,7 @@ export const handler: Handler<IEvent> = async (event) => {
         data: `${owner}:${companyId}:${now.toISO({
           suppressMilliseconds: true,
         })}`,
+        downloadUrl,
         id: uuid(),
         key,
         owner,

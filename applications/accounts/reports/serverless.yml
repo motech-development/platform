@@ -44,6 +44,12 @@ functions:
       ORIGIN_BUCKET: !ImportValue ${self:provider.stage}-StorageDownloadBucket
     role: LambdaFunctionRole
 
+  GenerateDownloadLink:
+    handler: src/handlers/generate-download-link.hander
+    environment:
+      BUCKET: !Ref ReportBucket
+    role: LambdaFunctionRole
+
   GetTransactionsReport:
     handler: src/handlers/get-transactions.handler
     environment:
@@ -93,6 +99,11 @@ stepFunctions:
           CreateZip:
             Type: Task
             Resource: !GetAtt CreateZipLambdaFunction.Arn
+            Next: GenerateDownloadLink
+
+          GenerateDownloadLink:
+            Type: Task
+            Resource: !GetAtt GenerateDownloadLinkLambdaFunction.Arn
             Next: AddReport
 
           AddReport:

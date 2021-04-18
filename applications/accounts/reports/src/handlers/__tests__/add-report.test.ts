@@ -22,6 +22,7 @@ describe('add-report', () => {
 
     event = {
       companyId: 'COMPANY-ID',
+      downloadUrl: 'https://download.url/report.zip',
       key: 'PATH/TO/REPORT.zip',
       owner: 'OWNER-ID',
     };
@@ -58,6 +59,7 @@ describe('add-report', () => {
           __typename: 'Report',
           createdAt: '2021-04-11T19:45:00Z',
           data: 'OWNER-ID:COMPANY-ID:2021-04-11T19:45:00Z',
+          downloadUrl: 'https://download.url/report.zip',
           id: 'test-uuid',
           key: 'PATH/TO/REPORT.zip',
           owner: 'OWNER-ID',
