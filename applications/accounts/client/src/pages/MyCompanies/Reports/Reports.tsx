@@ -2,6 +2,7 @@
 import { gql, useQuery } from '@apollo/client';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useLazyGet } from '@motech-development/axios-hooks';
 import {
   Alert,
   Button,
@@ -12,7 +13,9 @@ import {
   PageTitle,
   Row,
   TableCell,
+  useToast,
 } from '@motech-development/breeze-ui';
+import { saveAs } from 'file-saver';
 import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -29,6 +32,7 @@ interface IGetReportsOutput {
     id: string;
     items: {
       createdAt: string;
+      downloadUrl: string;
       id: string;
       ttl: number;
     }[];
@@ -45,6 +49,7 @@ export const GET_REPORTS = gql`
       id
       items {
         createdAt
+        downloadUrl
         id
         ttl
       }
@@ -54,7 +59,25 @@ export const GET_REPORTS = gql`
 
 const Reports: FC = () => {
   const { companyId } = useParams<IReportsParams>();
+  const { add } = useToast();
   const { t } = useTranslation('reports');
+  const [download] = useLazyGet<Blob>({
+    onCompleted: (data) => {
+      saveAs(data, 'report.zip');
+
+      add({
+        colour: 'success',
+        message: t('download.success'),
+      });
+    },
+    onError: () => {
+      add({
+        colour: 'danger',
+        message: t('download.error'),
+      });
+    },
+    responseType: 'blob',
+  });
   const { data, error, loading } = useQuery<
     IGetReportsOutput,
     IGetReportsInput
@@ -92,7 +115,7 @@ const Reports: FC = () => {
                     <TableCell as="th">{t('reports.table.actions')}</TableCell>
                   </>
                 }
-                row={({ createdAt, ttl }) => (
+                row={({ createdAt, downloadUrl, ttl }) => (
                   <>
                     <TableCell>
                       <DateTime format="dd/MM/yyyy HH:mm" value={createdAt} />
@@ -103,8 +126,12 @@ const Reports: FC = () => {
                     </TableCell>
 
                     <TableCell>
-                      {/* TODO: Download report */}
-                      <Button size="sm">{t('reports.download')}</Button>
+                      <Button
+                        size="sm"
+                        onClick={async () => download(downloadUrl)}
+                      >
+                        {t('reports.download')}
+                      </Button>
                     </TableCell>
                   </>
                 )}

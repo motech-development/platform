@@ -45,7 +45,7 @@ functions:
     role: LambdaFunctionRole
 
   GenerateDownloadLink:
-    handler: src/handlers/generate-download-link.hander
+    handler: src/handlers/generate-download-link.handler
     environment:
       BUCKET: !Ref ReportBucket
     role: LambdaFunctionRole
@@ -170,6 +170,7 @@ resources:
                     - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                 - Effect: Allow
                   Action:
+                    - s3:GetObject
                     - s3:PutObject
                   Resource:
                     - !Join

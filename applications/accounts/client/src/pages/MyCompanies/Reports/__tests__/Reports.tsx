@@ -1,7 +1,9 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
+import axios from 'axios';
+import { saveAs } from 'file-saver';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import TestProvider from '../../../../utils/TestProvider';
 import Reports, { GET_REPORTS } from '../Reports';
@@ -16,6 +18,10 @@ describe('Reports', () => {
     });
 
     jest.spyOn(history, 'push');
+
+    axios.request = jest.fn().mockResolvedValue({
+      data: 'success',
+    });
   });
 
   describe('when there are are reports returned', () => {
@@ -35,12 +41,14 @@ describe('Reports', () => {
                 items: [
                   {
                     createdAt: '2021-04-11T21:05:33.303Z',
+                    downloadUrl: 'https://download.url/report-1.zip',
                     id: 'report-1',
                     ttl: 1618205610,
                   },
                   {
                     createdAt: '2021-04-11T21:05:33.303Z',
-                    id: 'report-1',
+                    downloadUrl: 'https://download.url/report-2.zip',
+                    id: 'report-2',
                     ttl: 1618205610,
                   },
                 ],
@@ -77,7 +85,15 @@ describe('Reports', () => {
       expect(alert).toHaveTextContent('reports.expiry-message');
     });
 
-    it.todo('should download a report');
+    it('should download a report', async () => {
+      const [button] = screen.getAllByRole('button');
+
+      userEvent.click(button);
+
+      await waitFor(() =>
+        expect(saveAs).toHaveBeenCalledWith('success', 'report.zip'),
+      );
+    });
 
     it('should go back to the dashboard', () => {
       const [, link] = screen.getAllByRole('link');

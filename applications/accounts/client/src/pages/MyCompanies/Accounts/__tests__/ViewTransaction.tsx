@@ -20,10 +20,6 @@ import TestProvider, { add } from '../../../../utils/TestProvider';
 import { DELETE_FILE, REQUEST_DOWNLOAD } from '../shared/ViewAttachment';
 import ViewTransaction, { VIEW_TRANSACTION } from '../ViewTransaction';
 
-jest.mock('file-saver', () => ({
-  saveAs: jest.fn(),
-}));
-
 describe('ViewTransaction', () => {
   let cache: InMemoryCache;
   let history: MemoryHistory;
