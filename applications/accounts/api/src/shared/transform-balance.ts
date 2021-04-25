@@ -65,7 +65,12 @@ const transformBalance = (
       currency,
       date: key,
     }))
-    .sort((a, b) => a.date.localeCompare(b.date))
+    .sort((a, b) => {
+      const d1 = DateTime.fromISO(a.date);
+      const d2 = DateTime.fromISO(b.date);
+
+      return d1 > d2 ? 1 : -1;
+    })
     .reduce<IBalance[]>((acc, current, i) => {
       const update = {
         ...current,
@@ -85,7 +90,12 @@ const transformBalance = (
 
       return acc;
     }, [])
-    .sort((a, b) => -a.date.localeCompare(b.date));
+    .sort((a, b) => {
+      const d1 = DateTime.fromISO(a.date);
+      const d2 = DateTime.fromISO(b.date);
+
+      return d1 > d2 ? -1 : 1;
+    });
 
   return {
     balance,

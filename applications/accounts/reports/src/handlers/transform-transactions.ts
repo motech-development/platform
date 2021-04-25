@@ -80,7 +80,12 @@ export const handler: Handler<IEvent> = async (event) => {
           ? `-${result.currency}${Math.abs(amount).toFixed(2)}`
           : `${result.currency}0.00`,
     }))
-    .sort((a, b) => a.date.localeCompare(b.date));
+    .sort((a, b) => {
+      const d1 = DateTime.fromISO(a.date);
+      const d2 = DateTime.fromISO(b.date);
+
+      return d1 > d2 ? 1 : -1;
+    });
   /* eslint-enable sort-keys */
 
   const attachments = result.items
