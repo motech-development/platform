@@ -14,7 +14,7 @@ describe('Calendar', () => {
     let selectedDate: string;
 
     beforeEach(() => {
-      selectedDate = '2020-04-30T05:00:00Z';
+      selectedDate = '2020-04-30T05:00:00.000Z';
 
       component = render(
         <Calendar
@@ -106,13 +106,13 @@ describe('Calendar', () => {
         fireEvent.click(button);
       });
 
-      expect(onDateChange).toHaveBeenCalledWith('2020-04-03T05:00:00Z');
+      expect(onDateChange).toHaveBeenCalledWith('2020-04-03T05:00:00.000Z');
     });
   });
 
   describe('with no date selected', () => {
     beforeAll(() => {
-      advanceTo('2015-06-06T19:45:00Z');
+      advanceTo('2015-06-06T19:45:00.000Z');
     });
 
     beforeEach(() => {
@@ -204,7 +204,7 @@ describe('Calendar', () => {
         fireEvent.click(button);
       });
 
-      expect(onDateChange).toHaveBeenCalledWith('2015-06-03T19:45:00Z');
+      expect(onDateChange).toHaveBeenCalledWith('2015-06-03T19:45:00.000Z');
     });
   });
 });

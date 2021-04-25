@@ -56,8 +56,8 @@ describe('create-notification', () => {
     expect(DocumentClient.prototype.put).toHaveBeenCalledWith({
       Item: {
         __typename: 'Notification',
-        createdAt: '2021-04-11T19:45:00Z',
-        data: 'OWNER-ID:Notification:2021-04-11T19:45:00Z',
+        createdAt: '2021-04-11T19:45:00.000Z',
+        data: 'OWNER-ID:Notification:2021-04-11T19:45:00.000Z',
         id: 'test-uuid',
         message: 'MY_MESSAGE_CODE',
         owner: 'OWNER-ID',

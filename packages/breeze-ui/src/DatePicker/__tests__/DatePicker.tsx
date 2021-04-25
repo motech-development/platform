@@ -57,7 +57,7 @@ describe('DatePicker', () => {
       const { findByLabelText } = component;
 
       await expect(findByLabelText('Test')).resolves.toHaveValue(
-        '2015-06-06T19:45:00Z',
+        '2015-06-06T19:45:00.000Z',
       );
     });
 
@@ -121,7 +121,7 @@ describe('DatePicker', () => {
       });
 
       await expect(findByLabelText('Test')).resolves.toHaveValue(
-        '2015-06-03T19:45:00Z',
+        '2015-06-03T19:45:00.000Z',
       );
     });
 
@@ -147,7 +147,7 @@ describe('DatePicker', () => {
   describe('with an initial value set', () => {
     beforeEach(() => {
       initialValues = {
-        test: '2015-06-03T19:45:00Z',
+        test: '2015-06-03T19:45:00.000Z',
       };
 
       component = render(
@@ -169,7 +169,7 @@ describe('DatePicker', () => {
       const { findByLabelText } = component;
 
       await expect(findByLabelText('Test')).resolves.toHaveValue(
-        '2015-06-03T19:45:00Z',
+        '2015-06-03T19:45:00.000Z',
       );
     });
 
@@ -233,7 +233,7 @@ describe('DatePicker', () => {
       });
 
       await expect(findByLabelText('Test')).resolves.toHaveValue(
-        '2015-06-20T19:45:00Z',
+        '2015-06-20T19:45:00.000Z',
       );
     });
 
@@ -259,7 +259,7 @@ describe('DatePicker', () => {
   describe('when disabled', () => {
     beforeEach(async () => {
       initialValues = {
-        test: '2015-06-03T19:45:00Z',
+        test: '2015-06-03T19:45:00.000Z',
       };
 
       await act(async () => {
@@ -296,7 +296,7 @@ describe('DatePicker', () => {
   describe('when read only', () => {
     beforeEach(async () => {
       initialValues = {
-        test: '2015-06-03T19:45:00Z',
+        test: '2015-06-03T19:45:00.000Z',
       };
 
       await act(async () => {
