@@ -129,7 +129,7 @@ describe('RecordTransaction', () => {
                       {
                         balance: 180,
                         currency: 'GBP',
-                        date: '2020-04-15T14:07:18Z',
+                        date: '2020-04-15T14:07:18.000Z',
                         items: [
                           {
                             amount: -20,
@@ -143,7 +143,7 @@ describe('RecordTransaction', () => {
                       {
                         balance: 200,
                         currency: 'GBP',
-                        date: '2020-04-13T14:07:18Z',
+                        date: '2020-04-13T14:07:18.000Z',
                         items: [
                           {
                             amount: 200,
@@ -206,7 +206,7 @@ describe('RecordTransaction', () => {
                     attachment: 'company-id/test-id.pdf',
                     category: 'Equipment',
                     companyId: 'company-id',
-                    date: '2020-05-07T10:58:17Z',
+                    date: '2020-05-07T10:58:17.000Z',
                     description: 'Laptop',
                     id: '',
                     name: 'Apple',
@@ -225,7 +225,7 @@ describe('RecordTransaction', () => {
                     attachment: 'company-id/test-id.pdf',
                     category: 'Equipment',
                     companyId: 'company-id',
-                    date: '2020-05-07T10:58:17Z',
+                    date: '2020-05-07T10:58:17.000Z',
                     description: 'Laptop',
                     id: 'transaction-id',
                     name: 'Apple',
@@ -611,7 +611,7 @@ describe('RecordTransaction', () => {
                       {
                         balance: 180,
                         currency: 'GBP',
-                        date: '2020-04-15T14:07:18Z',
+                        date: '2020-04-15T14:07:18.000Z',
                         items: [
                           {
                             amount: -20,
@@ -625,7 +625,7 @@ describe('RecordTransaction', () => {
                       {
                         balance: 200,
                         currency: 'GBP',
-                        date: '2020-04-13T14:07:18Z',
+                        date: '2020-04-13T14:07:18.000Z',
                         items: [
                           {
                             amount: 200,
@@ -688,7 +688,7 @@ describe('RecordTransaction', () => {
                     attachment: '',
                     category: 'Equipment',
                     companyId: 'company-id',
-                    date: '2020-05-07T10:58:17Z',
+                    date: '2020-05-07T10:58:17.000Z',
                     description: 'Laptop',
                     id: '',
                     name: 'Apple',
@@ -978,7 +978,7 @@ describe('RecordTransaction', () => {
                     {
                       balance: 180,
                       currency: 'GBP',
-                      date: '2020-04-15T14:07:18Z',
+                      date: '2020-04-15T14:07:18.000Z',
                       items: [
                         {
                           amount: -20,
@@ -992,7 +992,7 @@ describe('RecordTransaction', () => {
                     {
                       balance: 200,
                       currency: 'GBP',
-                      date: '2020-04-13T14:07:18Z',
+                      date: '2020-04-13T14:07:18.000Z',
                       items: [
                         {
                           amount: 200,
@@ -1055,7 +1055,7 @@ describe('RecordTransaction', () => {
                   attachment: '',
                   category: 'Equipment',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Laptop',
                   id: '',
                   name: 'Apple',
@@ -1074,7 +1074,7 @@ describe('RecordTransaction', () => {
                   attachment: '',
                   category: 'Equipment',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
@@ -1280,7 +1280,7 @@ describe('RecordTransaction', () => {
                     {
                       balance: 180,
                       currency: 'GBP',
-                      date: '2020-04-15T14:07:18Z',
+                      date: '2020-04-15T14:07:18.000Z',
                       items: [
                         {
                           amount: -20,
@@ -1294,7 +1294,7 @@ describe('RecordTransaction', () => {
                     {
                       balance: 200,
                       currency: 'GBP',
-                      date: '2020-04-13T14:07:18Z',
+                      date: '2020-04-13T14:07:18.000Z',
                       items: [
                         {
                           amount: 200,
@@ -1362,7 +1362,7 @@ describe('RecordTransaction', () => {
                   attachment: '',
                   category: 'Sales',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
                   id: '',
                   name: 'Motech Development',
@@ -1381,7 +1381,7 @@ describe('RecordTransaction', () => {
                   attachment: '',
                   category: 'Sales',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
@@ -1591,7 +1591,7 @@ describe('RecordTransaction', () => {
                     {
                       balance: 180,
                       currency: 'GBP',
-                      date: '2020-04-15T14:07:18Z',
+                      date: '2020-04-15T14:07:18.000Z',
                       items: [
                         {
                           amount: -20,
@@ -1605,7 +1605,7 @@ describe('RecordTransaction', () => {
                     {
                       balance: 200,
                       currency: 'GBP',
-                      date: '2020-04-13T14:07:18Z',
+                      date: '2020-04-13T14:07:18.000Z',
                       items: [
                         {
                           amount: 200,
@@ -1673,7 +1673,7 @@ describe('RecordTransaction', () => {
                   attachment: '',
                   category: 'Sales',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
                   id: '',
                   name: 'Motech Development',
@@ -1692,7 +1692,7 @@ describe('RecordTransaction', () => {
                   attachment: '',
                   category: 'Sales',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
