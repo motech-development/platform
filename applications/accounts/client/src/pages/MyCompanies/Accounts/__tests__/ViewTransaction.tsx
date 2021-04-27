@@ -96,7 +96,7 @@ describe('ViewTransaction', () => {
                     {
                       balance: 180,
                       currency: 'GBP',
-                      date: '2020-04-15T14:07:18+0000',
+                      date: '2020-04-15T14:07:18.000Z',
                       items: [
                         {
                           amount: -20,
@@ -110,7 +110,7 @@ describe('ViewTransaction', () => {
                     {
                       balance: 200,
                       currency: 'GBP',
-                      date: '2020-04-13T14:07:18+0000',
+                      date: '2020-04-13T14:07:18.000Z',
                       items: [
                         {
                           amount: 200,
@@ -165,7 +165,7 @@ describe('ViewTransaction', () => {
                   attachment: '',
                   category: 'Equipment',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
@@ -192,7 +192,7 @@ describe('ViewTransaction', () => {
                   attachment: '',
                   category: 'Equipment',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
@@ -211,7 +211,7 @@ describe('ViewTransaction', () => {
                   attachment: '',
                   category: 'Equipment',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
@@ -437,7 +437,7 @@ describe('ViewTransaction', () => {
                   attachment: 'path/to/attachment.pdf',
                   category: 'Equipment',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
@@ -464,7 +464,7 @@ describe('ViewTransaction', () => {
                   attachment: 'path/to/attachment.pdf',
                   category: 'Equipment',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
@@ -483,7 +483,7 @@ describe('ViewTransaction', () => {
                   attachment: 'path/to/attachment.pdf',
                   category: 'Equipment',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Laptop',
                   id: 'transaction-id',
                   name: 'Apple',
@@ -659,7 +659,7 @@ describe('ViewTransaction', () => {
                     {
                       balance: 180,
                       currency: 'GBP',
-                      date: '2020-04-15T14:07:18+0000',
+                      date: '2020-04-15T14:07:18.000Z',
                       items: [
                         {
                           amount: -20,
@@ -673,7 +673,7 @@ describe('ViewTransaction', () => {
                     {
                       balance: 200,
                       currency: 'GBP',
-                      date: '2020-04-13T14:07:18+0000',
+                      date: '2020-04-13T14:07:18.000Z',
                       items: [
                         {
                           amount: 200,
@@ -733,7 +733,7 @@ describe('ViewTransaction', () => {
                   attachment: 'path/to/attachment.pdf',
                   category: 'Sales',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
@@ -760,7 +760,7 @@ describe('ViewTransaction', () => {
                   attachment: 'path/to/attachment.pdf',
                   category: 'Sales',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
@@ -779,7 +779,7 @@ describe('ViewTransaction', () => {
                   attachment: 'path/to/attachment.pdf',
                   category: 'Sales',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
@@ -968,7 +968,7 @@ describe('ViewTransaction', () => {
                     {
                       balance: 180,
                       currency: 'GBP',
-                      date: '2020-04-15T14:07:18+0000',
+                      date: '2020-04-15T14:07:18.000Z',
                       items: [
                         {
                           amount: -20,
@@ -982,7 +982,7 @@ describe('ViewTransaction', () => {
                     {
                       balance: 200,
                       currency: 'GBP',
-                      date: '2020-04-13T14:07:18+0000',
+                      date: '2020-04-13T14:07:18.000Z',
                       items: [
                         {
                           amount: 200,
@@ -1042,7 +1042,7 @@ describe('ViewTransaction', () => {
                   attachment: 'path/to/attachment.pdf',
                   category: 'Sales',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
@@ -1069,7 +1069,7 @@ describe('ViewTransaction', () => {
                   attachment: 'path/to/attachment.pdf',
                   category: 'Sales',
                   companyId: 'company-id',
-                  date: '2020-05-07T10:58:17Z',
+                  date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
                   id: 'transaction-id',
                   name: 'Motech Development',
