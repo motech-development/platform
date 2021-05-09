@@ -12,6 +12,7 @@ const client = new DocumentClient();
 const schema = object({
   message: string().required(),
   owner: string().required(),
+  payload: string().optional(),
 }).required();
 
 export const handler = apiGatewayHandler(async (event) => {
@@ -22,7 +23,7 @@ export const handler = apiGatewayHandler(async (event) => {
   const createdAt = DateTime.utc().toISO();
 
   try {
-    const { message, owner } = await schema.validate(bodyParams, {
+    const { message, owner, payload } = await schema.validate(bodyParams, {
       stripUnknown: true,
     });
 
@@ -35,6 +36,7 @@ export const handler = apiGatewayHandler(async (event) => {
           id: uuid(),
           message,
           owner,
+          payload,
           read: false,
         },
         TableName,

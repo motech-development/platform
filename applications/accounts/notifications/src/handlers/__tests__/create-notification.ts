@@ -25,6 +25,7 @@ describe('create-notification', () => {
       body: JSON.stringify({
         message: 'MY_MESSAGE_CODE',
         owner: 'OWNER-ID',
+        payload: 'id=1&owner=me',
       }),
     } as APIGatewayProxyEvent;
 
@@ -61,6 +62,7 @@ describe('create-notification', () => {
         id: 'test-uuid',
         message: 'MY_MESSAGE_CODE',
         owner: 'OWNER-ID',
+        payload: 'id=1&owner=me',
         read: false,
       },
       TableName: 'TABLE-NAME',
