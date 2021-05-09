@@ -1,14 +1,27 @@
 import aws4 from 'aws4';
 import { Handler } from 'aws-lambda';
 import axios from 'axios';
-import { object, string } from 'yup';
+import { stringify } from 'qs';
+import { number, object, string } from 'yup';
 
 const schema = object({
   owner: string().required(),
+  payload: object({
+    createdAt: string().required(),
+    downloadUrl: string().required(),
+    id: string().required(),
+    ttl: number().required(),
+  }).required(),
 }).required();
 
 export interface IEvent {
   owner: string;
+  payload: {
+    createdAt: string;
+    downloadUrl: string;
+    id: string;
+    ttl: number;
+  };
 }
 
 export const handler: Handler<IEvent> = async (event) => {
@@ -22,7 +35,7 @@ export const handler: Handler<IEvent> = async (event) => {
     throw new Error('No stage set');
   }
 
-  const { owner } = await schema.validate(event, {
+  const { owner, payload } = await schema.validate(event, {
     abortEarly: true,
     stripUnknown: true,
   });
@@ -32,6 +45,7 @@ export const handler: Handler<IEvent> = async (event) => {
   const data = {
     message: 'REPORT_READY_TO_DOWNLOAD',
     owner,
+    payload: stringify(payload),
   };
   const opts = {
     body: JSON.stringify(data),

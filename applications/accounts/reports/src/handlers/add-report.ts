@@ -31,6 +31,7 @@ export const handler: Handler<IEvent> = async (event) => {
     stripUnknown: true,
   });
   const now = DateTime.utc();
+  const createdAt = now.toISO();
   const ttl = Math.floor(
     now
       .plus({
@@ -38,15 +39,16 @@ export const handler: Handler<IEvent> = async (event) => {
       })
       .toSeconds(),
   );
+  const id = uuid();
 
   await client
     .put({
       Item: {
         __typename: 'Report',
-        createdAt: now.toISO(),
+        createdAt,
         data: `${owner}:${companyId}:${now.toISO()}`,
         downloadUrl,
-        id: uuid(),
+        id,
         key,
         owner,
         ttl,
@@ -55,7 +57,15 @@ export const handler: Handler<IEvent> = async (event) => {
     })
     .promise();
 
+  const payload = {
+    createdAt,
+    downloadUrl,
+    id,
+    ttl,
+  };
+
   return {
     owner,
+    payload,
   };
 };
