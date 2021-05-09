@@ -11,32 +11,10 @@ import {
 import { FC, memo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-
-export const ON_NOTIFICATION = gql`
-  subscription OnNotification($owner: String!) {
-    onNotification(owner: $owner) {
-      createdAt
-      id
-      message
-      owner
-      read
-    }
-  }
-`;
-
-interface IOnNotificationInput {
-  owner: string;
-}
-
-interface IOnNotificationOutput {
-  onNotification?: {
-    createdAt: string;
-    id: string;
-    message: string;
-    owner: string;
-    read: boolean;
-  };
-}
+import ON_NOTIFICATION, {
+  IOnNotificationInput,
+  IOnNotificationOutput,
+} from '../../graphql/notifications/ON_NOTIFICATION';
 
 export const GET_NOTIFICATIONS = gql`
   query GetNotifications($id: ID!, $count: Int) {
@@ -152,7 +130,8 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
           owner: id,
         },
       }),
-    [id, subscribeToMore],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
 
   if (!data?.getNotifications) {

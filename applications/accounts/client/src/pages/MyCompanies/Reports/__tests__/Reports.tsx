@@ -5,6 +5,7 @@ import { waitForApollo } from '@motech-development/appsync-apollo';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import { createMemoryHistory, MemoryHistory } from 'history';
+import ON_NOTIFICATION from '../../../../graphql/notifications/ON_NOTIFICATION';
 import TestProvider from '../../../../utils/TestProvider';
 import Reports, { GET_REPORTS } from '../Reports';
 
@@ -52,6 +53,27 @@ describe('Reports', () => {
                     ttl: 1618205610,
                   },
                 ],
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: ON_NOTIFICATION,
+            variables: {
+              owner: 'user-id',
+            },
+          },
+          result: {
+            data: {
+              onNotification: {
+                createdAt: '2020-07-01T00:00:00.000Z',
+                id: 'notification-2',
+                message: 'Notification_2',
+                owner: 'user-id',
+                payload:
+                  'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
+                read: false,
               },
             },
           },
@@ -133,6 +155,17 @@ describe('Reports', () => {
                 items: [],
               },
             },
+          },
+        },
+        {
+          request: {
+            query: ON_NOTIFICATION,
+            variables: {
+              owner: 'user-id',
+            },
+          },
+          result: {
+            data: null,
           },
         },
       ];

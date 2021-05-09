@@ -1,7 +1,7 @@
-// TODO: Create a subscription to reload the list when report is ready
 import { gql, useQuery } from '@apollo/client';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useAuth } from '@motech-development/auth';
 import { useLazyGet } from '@motech-development/axios-hooks';
 import {
   Alert,
@@ -16,10 +16,22 @@ import {
   useToast,
 } from '@motech-development/breeze-ui';
 import { saveAs } from 'file-saver';
-import { FC, memo } from 'react';
+import { FC, memo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
+import ON_NOTIFICATION, {
+  IOnNotificationInput,
+  IOnNotificationOutput,
+} from '../../../graphql/notifications/ON_NOTIFICATION';
+import useQs from '../../../hooks/qs';
+
+interface IReport {
+  createdAt: string;
+  downloadUrl: string;
+  id: string;
+  ttl: number;
+}
 
 interface IGetReportsInput {
   id: string;
@@ -30,12 +42,7 @@ interface IGetReportsInput {
 interface IGetReportsOutput {
   getReports?: {
     id: string;
-    items: {
-      createdAt: string;
-      downloadUrl: string;
-      id: string;
-      ttl: number;
-    }[];
+    items: IReport[];
   };
 }
 
@@ -59,8 +66,10 @@ export const GET_REPORTS = gql`
 
 const Reports: FC = () => {
   const { companyId } = useParams<IReportsParams>();
+  const { user } = useAuth();
   const { add } = useToast();
   const { t } = useTranslation('reports');
+  const { parse } = useQs();
   const [download] = useLazyGet<Blob>({
     onCompleted: (data) => {
       saveAs(data, 'report.zip');
@@ -78,7 +87,7 @@ const Reports: FC = () => {
     },
     responseType: 'blob',
   });
-  const { data, error, loading } = useQuery<
+  const { data, error, loading, subscribeToMore } = useQuery<
     IGetReportsOutput,
     IGetReportsInput
   >(GET_REPORTS, {
@@ -86,6 +95,32 @@ const Reports: FC = () => {
       id: companyId,
     },
   });
+
+  useEffect(() => {
+    subscribeToMore<IOnNotificationOutput, IOnNotificationInput>({
+      document: ON_NOTIFICATION,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data?.onNotification || !prev.getReports) {
+          return prev;
+        }
+
+        const payload = parse<IReport>(
+          subscriptionData.data.onNotification.payload,
+        );
+
+        return {
+          getReports: {
+            ...prev.getReports,
+            items: [...prev.getReports.items, payload],
+          },
+        };
+      },
+      variables: {
+        owner: user!.sub,
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Connected error={error} loading={loading}>
