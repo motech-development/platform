@@ -84,7 +84,15 @@ stepFunctions:
           GetTransactions:
             Type: Task
             Resource: !GetAtt GetTransactionsReportLambdaFunction.Arn
-            Next: TransformTransactions
+            Next: ShouldTransformTransactions
+
+          ShouldTransformTransactions:
+            Type: Choice
+            Choices:
+              - Variable: $.complete
+                BooleanEquals: false
+                Next: TransformTransactions
+            Default: GenerateReportComplete
 
           TransformTransactions:
             Type: Task
@@ -114,6 +122,10 @@ stepFunctions:
           PublishNotification:
             Type: Task
             Resource: !GetAtt PublishNotificationReportLambdaFunction.Arn
+            Next: GenerateReportComplete
+
+          GenerateReportComplete:
+            Type: Pass
             End: true
 
 resources:

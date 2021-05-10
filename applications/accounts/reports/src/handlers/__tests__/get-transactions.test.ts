@@ -14,7 +14,32 @@ describe('get-transactions', () => {
 
     (DocumentClient.prototype.query as jest.Mock).mockReturnValue({
       promise: jest.fn().mockResolvedValue({
-        Items: [],
+        Items: [
+          {
+            category: 'Sales',
+            date: '08/04/2021',
+            description: 'For work',
+            in: '£1000.00',
+            name: 'Client',
+            out: null,
+          },
+          {
+            category: 'Bills',
+            date: '09/04/2021',
+            description: 'Mobile',
+            in: null,
+            name: 'EE',
+            out: '-£41.11',
+          },
+          {
+            category: 'Bills',
+            date: '10/04/2021',
+            description: 'Domain',
+            in: null,
+            name: 'GoDaddy',
+            out: '-£2.40',
+          },
+        ],
       }),
     });
 
@@ -80,12 +105,50 @@ describe('get-transactions', () => {
       });
     });
 
-    it('should return the correct data', async () => {
+    it('should return the correct data when items are returned', async () => {
       await expect(handler(event, context, callback)).resolves.toEqual({
         companyId: 'COMPANY-ID',
+        complete: false,
         currency: '£',
-        items: [],
+        items: [
+          {
+            category: 'Sales',
+            date: '08/04/2021',
+            description: 'For work',
+            in: '£1000.00',
+            name: 'Client',
+            out: null,
+          },
+          {
+            category: 'Bills',
+            date: '09/04/2021',
+            description: 'Mobile',
+            in: null,
+            name: 'EE',
+            out: '-£41.11',
+          },
+          {
+            category: 'Bills',
+            date: '10/04/2021',
+            description: 'Domain',
+            in: null,
+            name: 'GoDaddy',
+            out: '-£2.40',
+          },
+        ],
         owner: 'OWNER-ID',
+      });
+    });
+
+    it('should return the correct data when no items are returned', async () => {
+      (DocumentClient.prototype.query as jest.Mock).mockReturnValue({
+        promise: jest.fn().mockResolvedValue({
+          Items: [],
+        }),
+      });
+
+      await expect(handler(event, context, callback)).resolves.toEqual({
+        complete: true,
       });
     });
   });

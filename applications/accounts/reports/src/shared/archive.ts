@@ -14,7 +14,7 @@ interface IArchiveDestination {
 
 interface IArchiveOrigin {
   bucket: string;
-  keys: {
+  keys?: {
     key: string;
     path: string;
   }[];
@@ -33,10 +33,6 @@ const archive = async (
     'application/zip',
   );
   const reportBuffer = Buffer.from(report);
-  const downloadStreams = origin.keys.map(({ key, path }) => ({
-    name: path,
-    stream: downloadFileStream(origin.bucket, key),
-  }));
 
   archiver.pipe(passThrough);
 
@@ -44,11 +40,18 @@ const archive = async (
     name: 'report/accounts.csv',
   });
 
-  downloadStreams.forEach(({ name, stream }) => {
-    archiver.append(stream, {
-      name,
+  if (origin.keys) {
+    const downloadStreams = origin.keys.map(({ key, path }) => ({
+      name: path,
+      stream: downloadFileStream(origin.bucket, key),
+    }));
+
+    downloadStreams.forEach(({ name, stream }) => {
+      archiver.append(stream, {
+        name,
+      });
     });
-  });
+  }
 
   archiver.finalize();
 

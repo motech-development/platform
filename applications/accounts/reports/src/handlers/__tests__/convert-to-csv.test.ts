@@ -56,7 +56,7 @@ describe('convert-to-csv', () => {
     };
   });
 
-  it('should return the correct data', async () => {
+  it('should return the correct data when attachments are returned', async () => {
     await expect(handler(event, context, callback)).resolves.toEqual({
       attachments: [
         {
@@ -68,6 +68,17 @@ describe('convert-to-csv', () => {
           path: 'assets/2021/April/08/client-for-work.pdf',
         },
       ],
+      companyId: 'COMPANY-ID',
+      csv: expect.any(String),
+      owner: 'OWNER-ID',
+    });
+  });
+
+  it('should return the correct data when no attachments are returned', async () => {
+    event.attachments = [];
+
+    await expect(handler(event, context, callback)).resolves.toEqual({
+      attachments: [],
       companyId: 'COMPANY-ID',
       csv: expect.any(String),
       owner: 'OWNER-ID',

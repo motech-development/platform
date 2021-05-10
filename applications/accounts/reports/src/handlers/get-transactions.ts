@@ -70,10 +70,17 @@ export const handler: Handler<IEvent> = async (event) => {
     })
     .promise();
 
+  if (transactions.Items && transactions.Items.length > 0) {
+    return {
+      companyId: result.companyId,
+      complete: false,
+      currency: result.currency,
+      items: transactions.Items,
+      owner: result.owner,
+    };
+  }
+
   return {
-    companyId: result.companyId,
-    currency: result.currency,
-    items: transactions.Items,
-    owner: result.owner,
+    complete: true,
   };
 };

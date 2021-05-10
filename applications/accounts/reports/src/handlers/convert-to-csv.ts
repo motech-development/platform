@@ -8,7 +8,7 @@ const schema = object({
       key: string().required(),
       path: string().required(),
     }).required(),
-  ).required(),
+  ),
   companyId: string().required(),
   csv: array(
     object({

@@ -105,7 +105,17 @@ describe('create-zip', () => {
       expect(Archiver).toHaveBeenCalledWith('zip');
     });
 
-    it('should return the correct data', async () => {
+    it('should return the correct data when attachments are set', async () => {
+      await expect(handler(event, context, callback)).resolves.toEqual({
+        companyId: 'COMPANY-ID',
+        key: 'PATH/TO/KEY.zip',
+        owner: 'OWNER-ID',
+      });
+    });
+
+    it('should return the correct data when no attachments are set', async () => {
+      event.attachments = [];
+
       await expect(handler(event, context, callback)).resolves.toEqual({
         companyId: 'COMPANY-ID',
         key: 'PATH/TO/KEY.zip',

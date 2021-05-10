@@ -10,7 +10,7 @@ const schema = object({
       key: string().required(),
       path: string().required(),
     }).required(),
-  ).required(),
+  ),
   companyId: string().required(),
   csv: string().required(),
   owner: string().required(),
