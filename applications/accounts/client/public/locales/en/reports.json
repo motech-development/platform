@@ -34,5 +34,9 @@
       "label": "Financial year",
       "placeholder": "Select financial year"
     }
+  },
+  "download": {
+    "success": "The download has started",
+    "error": "Unable to download this file"
   }
 }
