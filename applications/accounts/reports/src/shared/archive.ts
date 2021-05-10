@@ -5,8 +5,6 @@ import {
 import Archiver from 'archiver';
 import { PassThrough } from 'stream';
 
-const archiver = Archiver('zip');
-
 interface IArchiveDestination {
   bucket: string;
   key: string;
@@ -25,6 +23,7 @@ const archive = async (
   destination: IArchiveDestination,
   origin: IArchiveOrigin,
 ) => {
+  const archiver = Archiver('zip');
   const passThrough = new PassThrough();
   const upload = uploader(
     destination.bucket,
