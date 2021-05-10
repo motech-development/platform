@@ -71,8 +71,8 @@ const Reports: FC = () => {
   const { t } = useTranslation('reports');
   const { parse } = useQs();
   const [download] = useLazyGet<Blob>({
-    onCompleted: (data) => {
-      saveAs(data, 'report.zip');
+    onCompleted: (blob) => {
+      saveAs(blob, 'report.zip');
 
       add({
         colour: 'success',

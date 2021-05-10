@@ -1086,6 +1086,96 @@ describe('VAT registered', () => {
     });
   });
 
+  describe('Exports', () => {
+    beforeEach(() => {
+      cy.fixture('data/company.json').then((res) => {
+        const { company } = res[0];
+
+        cy.findByTestId(company.name).should('be.visible').safeClick();
+
+        cy.findByTestId('connected-content').waitForElement();
+
+        cy.findByRole('heading', {
+          name: company.name,
+        }).should('be.visible');
+
+        cy.findByRole('link', {
+          name: 'Manage reports',
+        }).safeClick();
+
+        cy.findByTestId('connected-content').waitForElement();
+
+        cy.findByRole('heading', {
+          name: 'Reports',
+        }).should('be.visible');
+
+        cy.url({
+          timeout,
+        }).should('include', 'http://localhost:3000/my-companies/reports/');
+      });
+    });
+
+    afterEach(() => {
+      cy.url({
+        timeout,
+      }).should('include', 'http://localhost:3000/my-companies/reports/');
+    });
+
+    it('should generate and download report', () => {
+      cy.findByRole('link', {
+        name: 'Create new report',
+      }).safeClick();
+
+      cy.findByTestId('connected-content').waitForElement();
+
+      const date = new Date();
+      const year = date.getFullYear().toString();
+
+      cy.findByLabelText('Financial year')
+        .should('be.visible')
+        .focus()
+        .select(year);
+
+      cy.findByLabelText('Confirmed').check();
+
+      cy.findByRole('button', {
+        name: 'Create report',
+      }).safeClick();
+
+      cy.findByTestId('connected-content').waitForElement();
+
+      cy.waitUntil(() => Cypress.$('button:contains("Download")').length > 0, {
+        timeout,
+      });
+
+      cy.findByRole('button', {
+        name: 'Download',
+      }).click();
+
+      cy.get('div:contains("The download has started")').should('be.visible');
+    });
+  });
+
+  describe('Notifications', () => {
+    it('should display a notification', () => {
+      cy.findByRole('button', {
+        name: 'Notifications (1 unread)',
+      }).click();
+
+      cy.findAllByText('Your report is ready to download')
+        .first()
+        .should('be.visible');
+
+      cy.findByRole('button', {
+        name: 'Notifications (1 unread)',
+      }).click();
+
+      cy.findByRole('button', {
+        name: 'Notifications (0 unread)',
+      }).should('be.visible');
+    });
+  });
+
   describe('Delete company', () => {
     afterEach(() => {
       cy.url({
