@@ -43,17 +43,6 @@ describe('transform-transactions', () => {
           vat: 0.33,
         },
         {
-          amount: -20,
-          category: 'Bills',
-          companyId: 'COMPANY-ID',
-          date: '2020-10-11T19:41:31.705Z',
-          description: 'Cloud services',
-          id: '15ccfff6-1118-4b79-a6b8-1f8cce83677b',
-          name: 'AWS',
-          status: Status.Confirmed,
-          vat: 3.33,
-        },
-        {
           amount: -1,
           category: 'Equipment',
           companyId: 'COMPANY-ID',
@@ -63,6 +52,17 @@ describe('transform-transactions', () => {
           name: 'Microsoft',
           status: Status.Confirmed,
           vat: 0.17,
+        },
+        {
+          amount: -20,
+          category: 'Bills',
+          companyId: 'COMPANY-ID',
+          date: '2020-10-11T19:41:31.705Z',
+          description: 'Cloud services',
+          id: '15ccfff6-1118-4b79-a6b8-1f8cce83677b',
+          name: 'AWS',
+          status: Status.Confirmed,
+          vat: 3.33,
         },
         {
           amount: -200,
@@ -122,17 +122,6 @@ describe('transform-transactions', () => {
           vat: 825,
         },
         {
-          amount: -1,
-          category: 'Equipment',
-          companyId: 'COMPANY-ID',
-          date: '2020-06-30T22:04:51Z',
-          description: 'Cloud services',
-          id: 'b8bb3d14-40ca-4add-9bfc-1765a0cee35c',
-          name: 'AWS',
-          status: Status.Confirmed,
-          vat: 0.17,
-        },
-        {
           amount: -20,
           category: 'Bills',
           companyId: 'COMPANY-ID',
@@ -143,6 +132,17 @@ describe('transform-transactions', () => {
           status: Status.Confirmed,
           vat: 3.33,
         },
+        {
+          amount: -1,
+          category: 'Equipment',
+          companyId: 'COMPANY-ID',
+          date: '2020-06-30T22:04:51Z',
+          description: 'Cloud services',
+          id: 'b8bb3d14-40ca-4add-9bfc-1765a0cee35c',
+          name: 'AWS',
+          status: Status.Confirmed,
+          vat: 0.17,
+        },
       ],
       owner: 'OWNER-ID',
     };
@@ -152,13 +152,13 @@ describe('transform-transactions', () => {
     await expect(handler(event, context, callback)).resolves.toEqual({
       attachments: [
         {
-          key: 'OWNER-ID/COMPANY-ID/8215eaf2-0a7b-4096-80eb-eae21ad88eae.jpg',
-          path: 'report/assets/2020/October/12/aws-cloud-services.jpg',
-        },
-        {
           key: 'OWNER-ID/COMPANY-ID/a921a6f1-b250-4d22-9d19-65adb8d454f4.png',
           path:
             'report/assets/2020/July/16/qdos-public-and-employers-liability-insurance-+-professional-indemnity-insurance.png',
+        },
+        {
+          key: 'OWNER-ID/COMPANY-ID/8215eaf2-0a7b-4096-80eb-eae21ad88eae.jpg',
+          path: 'report/assets/2020/October/12/aws-cloud-services.jpg',
         },
       ],
       companyId: 'COMPANY-ID',

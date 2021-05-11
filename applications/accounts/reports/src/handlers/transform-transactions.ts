@@ -66,6 +66,12 @@ export const handler: Handler<IEvent> = async (event) => {
 
   /* eslint-disable sort-keys */
   const csv = result.items
+    .sort((a, b) => {
+      const d1 = DateTime.fromISO(a.date);
+      const d2 = DateTime.fromISO(b.date);
+
+      return d1 > d2 ? 1 : -1;
+    })
     .map(({ amount, category, date, description, name }) => ({
       date: DateTime.fromISO(date).toFormat('dd/LL/yyyy'),
       category,
@@ -79,13 +85,7 @@ export const handler: Handler<IEvent> = async (event) => {
         amount < 0
           ? `-${result.currency}${Math.abs(amount).toFixed(2)}`
           : `${result.currency}0.00`,
-    }))
-    .sort((a, b) => {
-      const d1 = DateTime.fromISO(a.date);
-      const d2 = DateTime.fromISO(b.date);
-
-      return d1 > d2 ? 1 : -1;
-    });
+    }));
   /* eslint-enable sort-keys */
 
   const attachments = result.items
