@@ -15,6 +15,7 @@ import {
   TableCell,
   useToast,
 } from '@motech-development/breeze-ui';
+import { useQs } from '@motech-development/query-string-hook';
 import { saveAs } from 'file-saver';
 import { FC, memo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +25,6 @@ import ON_NOTIFICATION, {
   IOnNotificationInput,
   IOnNotificationOutput,
 } from '../../../graphql/notifications/ON_NOTIFICATION';
-import useQs from '../../../hooks/qs';
 
 interface IReport {
   createdAt: string;

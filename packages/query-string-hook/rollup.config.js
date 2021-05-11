@@ -6,7 +6,7 @@ import pkg from './package.json';
 
 export default [
   {
-    input: 'src/useQueryString.ts',
+    input: 'src/index.ts',
     output: [
       {
         exports: 'named',

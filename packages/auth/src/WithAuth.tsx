@@ -1,4 +1,4 @@
-import useQueryString from '@motech-development/query-string-hook';
+import { useQueryString } from '@motech-development/query-string-hook';
 import { FC, ReactNode, useEffect } from 'react';
 import { useAuth } from './AuthProvider';
 
