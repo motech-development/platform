@@ -22,25 +22,6 @@ const formSchema = {
   },
 };
 
-const now = DateTime.now();
-
-const yearOptions = [...new Array(5)].map((_, i) => {
-  const refYear = now.minus({
-    year: i,
-  });
-  const year = refYear.toFormat('yyyy');
-  const next = refYear
-    .plus({
-      year: 1,
-    })
-    .toFormat('yy');
-
-  return {
-    name: `${year}/${next}`,
-    value: year,
-  };
-});
-
 export type FormSchema = typeof formSchema;
 
 export interface IExportFormProps {
@@ -78,6 +59,23 @@ const ExportForm: FC<IExportFormProps> = ({
         .required(),
     })
     .required();
+  const now = DateTime.now();
+  const yearOptions = [...new Array(5)].map((_, i) => {
+    const refYear = now.minus({
+      year: i,
+    });
+    const year = refYear.toFormat('yyyy');
+    const next = refYear
+      .plus({
+        year: 1,
+      })
+      .toFormat('yy');
+
+    return {
+      name: `${year}/${next}`,
+      value: year,
+    };
+  });
   const fullYearEnd = DateTime.fromObject({
     day: yearEnd.day,
     month: yearEnd.month + 1,

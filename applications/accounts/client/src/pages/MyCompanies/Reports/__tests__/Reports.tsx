@@ -6,7 +6,7 @@ import axios from 'axios';
 import { saveAs } from 'file-saver';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import ON_NOTIFICATION from '../../../../graphql/notifications/ON_NOTIFICATION';
-import TestProvider from '../../../../utils/TestProvider';
+import TestProvider, { add } from '../../../../utils/TestProvider';
 import Reports, { GET_REPORTS } from '../Reports';
 
 describe('Reports', () => {
@@ -114,6 +114,23 @@ describe('Reports', () => {
 
       await waitFor(() =>
         expect(saveAs).toHaveBeenCalledWith('success', 'report.zip'),
+      );
+    });
+
+    it('should display an alert if the report cannot be downloaded', async () => {
+      (axios.request as jest.Mock).mockRejectedValueOnce({
+        data: 'fail',
+      });
+
+      const [button] = screen.getAllByRole('button');
+
+      userEvent.click(button);
+
+      await waitFor(() =>
+        expect(add).toHaveBeenCalledWith({
+          colour: 'danger',
+          message: 'download.error',
+        }),
       );
     });
 
