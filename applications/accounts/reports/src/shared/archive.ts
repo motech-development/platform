@@ -39,7 +39,7 @@ const archive = async (
     name: 'report/accounts.csv',
   });
 
-  if (origin.keys) {
+  if (origin.keys && origin.keys.length > 0) {
     const downloadStreams = origin.keys.map(({ key, path }) => ({
       name: path,
       stream: downloadFileStream(origin.bucket, key),
