@@ -23,7 +23,7 @@ jobs:
 
       - name: Restore Node modules
         id: node-modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -36,7 +36,7 @@ jobs:
 
       - name: Restore packages
         id: packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -74,7 +74,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -86,7 +86,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -126,7 +126,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -138,7 +138,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -181,7 +181,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -193,7 +193,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -240,7 +240,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -252,7 +252,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -285,7 +285,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -297,7 +297,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -331,7 +331,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -343,7 +343,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -379,7 +379,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -391,7 +391,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -424,7 +424,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -436,7 +436,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -469,7 +469,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -481,7 +481,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -490,6 +490,54 @@ jobs:
 
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/data -- -- --stage $STAGE
+
+  deploy-accounts-reports:
+    runs-on: ubuntu-latest
+
+    needs:
+      - deploy-accounts-data
+      - deploy-accounts-notifications
+      - deploy-accounts-storage
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      STAGE: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.4
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.4
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Deploy
+        run: yarn deploy -- --scope=@accounts/reports -- -- --stage $STAGE
 
   deploy-accounts-api:
     runs-on: ubuntu-latest
@@ -519,7 +567,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -531,7 +579,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -539,7 +587,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore env vars
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-deploy-v1-${{ hashFiles('**/packages.txt') }}
@@ -573,7 +621,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -585,7 +633,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -618,7 +666,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -630,7 +678,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -645,6 +693,7 @@ jobs:
 
     needs:
       - deploy-accounts-notifications
+      - deploy-accounts-reports
       - deploy-accounts-infrastructure
 
     env:
@@ -670,7 +719,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: |
             ~/.npm
@@ -682,7 +731,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -690,7 +739,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore env vars
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-deploy-v1-${{ hashFiles('**/packages.txt') }}
