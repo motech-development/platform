@@ -63,32 +63,31 @@ export const handler: Handler<IEvent> = async (event) => {
     abortEarly: true,
     stripUnknown: true,
   });
+  const sorted = result.items.sort((a, b) => {
+    const d1 = DateTime.fromISO(a.date);
+    const d2 = DateTime.fromISO(b.date);
+
+    return d1 > d2 ? 1 : -1;
+  });
 
   /* eslint-disable sort-keys */
-  const csv = result.items
-    .sort((a, b) => {
-      const d1 = DateTime.fromISO(a.date);
-      const d2 = DateTime.fromISO(b.date);
-
-      return d1 > d2 ? 1 : -1;
-    })
-    .map(({ amount, category, date, description, name }) => ({
-      date: DateTime.fromISO(date).toFormat('dd/LL/yyyy'),
-      category,
-      name,
-      description,
-      in:
-        amount >= 0
-          ? `${result.currency}${amount.toFixed(2)}`
-          : `${result.currency}0.00`,
-      out:
-        amount < 0
-          ? `-${result.currency}${Math.abs(amount).toFixed(2)}`
-          : `${result.currency}0.00`,
-    }));
+  const csv = sorted.map(({ amount, category, date, description, name }) => ({
+    date: DateTime.fromISO(date).toFormat('dd/LL/yyyy'),
+    category,
+    name,
+    description,
+    in:
+      amount >= 0
+        ? `${result.currency}${amount.toFixed(2)}`
+        : `${result.currency}0.00`,
+    out:
+      amount < 0
+        ? `-${result.currency}${Math.abs(amount).toFixed(2)}`
+        : `${result.currency}0.00`,
+  }));
   /* eslint-enable sort-keys */
 
-  const attachments = result.items
+  const attachments = sorted
     .filter(hasAttachment)
     .map(({ attachment, date, description, name }) => {
       const isoDate = DateTime.fromISO(date);
