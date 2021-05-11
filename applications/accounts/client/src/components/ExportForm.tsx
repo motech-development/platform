@@ -64,7 +64,7 @@ const ExportForm: FC<IExportFormProps> = ({
     const refYear = now.minus({
       year: i,
     });
-    const year = refYear.toFormat('yyyy');
+    const current = refYear.toFormat('yyyy');
     const next = refYear
       .plus({
         year: 1,
@@ -72,8 +72,8 @@ const ExportForm: FC<IExportFormProps> = ({
       .toFormat('yy');
 
     return {
-      name: `${year}/${next}`,
-      value: year,
+      name: `${current}/${next}`,
+      value: current,
     };
   });
   const fullYearEnd = DateTime.fromObject({

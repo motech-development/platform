@@ -63,7 +63,7 @@ export const handler: Handler<IEvent> = async (event) => {
     abortEarly: true,
     stripUnknown: true,
   });
-  const sorted = result.items.sort((a, b) => {
+  const sorted = [...result.items].sort((a, b) => {
     const d1 = DateTime.fromISO(a.date);
     const d2 = DateTime.fromISO(b.date);
 
