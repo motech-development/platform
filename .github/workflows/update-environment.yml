@@ -1,9 +1,11 @@
-name: Teardown environment
+name: Deploy to environment
 
 on:
   pull_request:
     types:
-      - closed
+      - reopened
+      # TODO: Enable me
+      # - synchronize
 
 jobs:
   setup:
