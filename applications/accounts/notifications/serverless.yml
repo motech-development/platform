@@ -37,16 +37,6 @@ functions:
     environment:
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
-  PublishNotifications:
-    handler: src/handlers/publish-notifications.handler
-    role: LambdaFunctionRole
-    events:
-      - stream:
-          type: dynamodb
-          arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
-    environment:
-      ENDPOINT: !ImportValue ${self:provider.stage}-AccountsApiEndpoint
-
 resources:
   Resources:
     LambdaFunctionRole:
@@ -69,25 +59,9 @@ resources:
               Statement:
                 - Effect: Allow
                   Action:
-                    - dynamodb:DescribeStream
-                    - dynamodb:GetRecords
-                    - dynamodb:GetShardIterator
-                    - dynamodb:ListStreams
                     - dynamodb:PutItem
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
-                    - !Join
-                      - ''
-                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
-                        - '/stream/*'
-                - Effect: Allow
-                  Action:
-                    - appsync:GraphQL
-                  Resource:
-                    - !Join
-                      - ''
-                      - - !ImportValue ${self:provider.stage}-AccountsApiArn
-                        - '/types/Mutation/fields/notificationBeacon'
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup

@@ -29,6 +29,10 @@ api-gateway-handler:
   - packages/api-gateway-handler/*
   - packages/api-gateway-handler/**/*
 
+appsync-apollo:
+  - packages/appsync-apollo/*
+  - packages/appsync-apollo/**/*
+
 auth:
   - packages/auth/*
   - packages/auth/**/*
@@ -48,6 +52,10 @@ ga-web-vitals:
 query-string-hooks:
   - packages/query-string-hooks/*
   - packages/query-string-hooks/**/*
+
+s3-file-operations:
+  - packages/s3-file-operations/*
+  - packages/s3-file-operations/**/*
 
 serverless-outputs-env:
   - packages/serverless-outputs-env/*

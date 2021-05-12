@@ -1059,7 +1059,7 @@ describe('Non-VAT registered', () => {
   describe('Notifications', () => {
     it('should display a notification', () => {
       cy.findByRole('button', {
-        name: 'Notifications (2 unread)',
+        name: /Notifications \([0-3] unread\)/,
       }).click();
 
       cy.findAllByText('A scheduled transaction has been published')
@@ -1071,7 +1071,7 @@ describe('Non-VAT registered', () => {
         .should('be.visible');
 
       cy.findByRole('button', {
-        name: 'Notifications (2 unread)',
+        name: /Notifications \([0-3] unread\)/,
       }).click();
 
       cy.findByRole('button', {

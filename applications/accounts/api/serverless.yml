@@ -483,6 +483,19 @@ functions:
     environment:
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
+  PublishNotifications:
+    handler: src/handlers/publish-notifications.handler
+    role: PublishNotificationsRole
+    events:
+      - stream:
+          type: dynamodb
+          arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
+    environment:
+      ENDPOINT:
+        Fn::GetAtt:
+          - ${self:custom.names.${self:provider.stage}}
+          - GraphQLUrl
+
 resources:
   Resources:
     AppSyncOpenBankingServiceRole:
@@ -693,6 +706,53 @@ resources:
                       - ''
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                         - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+
+    PublishNotificationsRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-publish-notifications-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-publish-notifications-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:DescribeStream
+                    - dynamodb:GetRecords
+                    - dynamodb:GetShardIterator
+                    - dynamodb:ListStreams
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/stream/*'
+                - Effect: Allow
+                  Action:
+                    - appsync:GraphQL
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !Ref ${self:custom.names.${self:provider.stage}}
+                        - '/types/Mutation/fields/notificationBeacon'
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup
