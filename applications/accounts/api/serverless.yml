@@ -12,10 +12,16 @@ package:
 plugins:
   - serverless-appsync-plugin
   - serverless-webpack
+  - serverless-prune-plugin
   - '@motech-development/serverless-outputs-env'
 
 custom:
   prefix: ${self:service}-${self:provider.stage}
+
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 1
 
   names:
     develop: AccountsdevelopGraphQlApi
@@ -196,6 +202,20 @@ custom:
 
         - kind: PIPELINE
           type: Mutation
+          field: createReport
+          functions:
+            - getCompany
+            - createReport
+          request: reports/createReport/Mutation.createReport.req.vtl
+          response: reports/createReport/Mutation.createReport.res.vtl
+        - dataSource: Data
+          type: Query
+          field: getReports
+          request: reports/getReports/Query.getReports.req.vtl
+          response: reports/getReports/Query.getReports.res.vtl
+
+        - kind: PIPELINE
+          type: Mutation
           field: updateSettings
           functions:
             - vatRegistration
@@ -273,6 +293,7 @@ custom:
         - schema/contact.graphql
         - schema/expense-category.graphql
         - schema/notification.graphql
+        - schema/report.graphql
         - schema/schema.graphql
         - schema/settings.graphql
         - schema/storage.graphql
@@ -362,6 +383,12 @@ custom:
           request: company/updateCompany/Pipeline.updateCompany.req.vtl
           response: company/updateCompany/Pipeline.updateCompany.res.vtl
 
+        # Reports
+        - dataSource: Reports
+          name: createReport
+          request: reports/createReport/Pipeline.createReport.req.vtl
+          response: reports/createReport/Pipeline.createReport.res.vtl
+
         # Settings
         - dataSource: Data
           name: updateSettings
@@ -405,6 +432,16 @@ custom:
                 signingRegion: !Ref AWS::Region
                 signingServiceName: execute-api
             serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
+        - type: HTTP
+          name: Reports
+          config:
+            endpoint: !ImportValue ${self:provider.stage}-AccountsReportsApiEndpoint
+            authorizationConfig:
+              authorizationType: AWS_IAM
+              awsIamConfig:
+                signingRegion: !Ref AWS::Region
+                signingServiceName: execute-api
+            serviceRoleArn: !GetAtt AppSyncReportsServiceRole.Arn
         - type: HTTP
           name: StorageUpload
           config:
@@ -470,6 +507,29 @@ resources:
                   Action:
                     - execute-api:Invoke
                   Resource: !ImportValue ${self:provider.stage}-OpenBankingApiArn
+
+    AppSyncReportsServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-appsync-reports-service-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-appsync-reports-service-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - execute-api:Invoke
+                  Resource: !ImportValue ${self:provider.stage}-AccountsReportsApiArn
 
     AppSyncStorageUploadServiceRole:
       Type: AWS::IAM::Role

@@ -20,6 +20,11 @@
     "lead": "Update your company settings",
     "button": "Manage settings"
   },
+  "reports": {
+    "title": "Reports",
+    "lead": "Create and download accounting reports",
+    "button": "Manage reports"
+  },
   "my-companies": {
     "title": "My companies",
     "lead": "Select another of your companies to manage",

@@ -1,0 +1,52 @@
+extends:
+  - airbnb
+  - eslint:recommended
+  - plugin:@typescript-eslint/eslint-recommended
+  - plugin:@typescript-eslint/recommended
+  - prettier
+  - prettier/@typescript-eslint
+
+parser: '@typescript-eslint/parser'
+
+plugins:
+  - '@typescript-eslint'
+  - prettier
+
+rules:
+  '@typescript-eslint/no-shadow': error
+  import/extensions:
+    - error
+    - ignorePackages
+    - js: never
+      mjs: never
+      jsx: never
+      ts: never
+      tsx: never
+  import/no-extraneous-dependencies: off
+  import/no-unresolved: off
+  import/prefer-default-export: off
+  no-shadow: off
+  sort-keys:
+    - error
+    - asc
+    - caseSensitive: true
+      natural: false
+  spaced-comment:
+    - error
+    - always
+    - markers:
+        - /
+  '@typescript-eslint/explicit-function-return-type': off
+  '@typescript-eslint/explicit-module-boundary-types': off
+  '@typescript-eslint/interface-name-prefix': off
+  '@typescript-eslint/no-explicit-any':
+    - error
+
+settings:
+  import/resolver:
+    node:
+      extensions:
+        - .js
+        - .jsx
+        - .ts
+        - .tsx

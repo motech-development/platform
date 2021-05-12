@@ -1,7 +1,7 @@
+import { createFile } from '@motech-development/s3-file-operations';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { updateDefinitions } from '../../shared/clam-av';
-import { createFile } from '../../shared/file-operations';
 import { handler } from '../update-definitions';
 
 jest.mock('fs');
@@ -10,7 +10,7 @@ jest.mock('../../shared/clam-av', () => ({
   updateDefinitions: jest.fn(),
 }));
 
-jest.mock('../../shared/file-operations', () => ({
+jest.mock('@motech-development/s3-file-operations', () => ({
   createFile: jest.fn(),
 }));
 

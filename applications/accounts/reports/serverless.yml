@@ -1,0 +1,238 @@
+service: ${opt:appName, 'accounts'}
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-reports
+
+package:
+  individually: true
+
+plugins:
+  - serverless-step-functions
+  - serverless-webpack
+  - serverless-prune-plugin
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 1
+
+  webpack:
+    includeModules: true
+    serializedCompile: true
+
+functions:
+  AddReport:
+    handler: src/handlers/add-report.handler
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+    role: LambdaFunctionRole
+
+  ConvertToCsv:
+    handler: src/handlers/convert-to-csv.handler
+    role: LambdaFunctionRole
+
+  CreateZip:
+    handler: src/handlers/create-zip.handler
+    environment:
+      DESTINATION_BUCKET: !Ref ReportBucket
+      ORIGIN_BUCKET: !ImportValue ${self:provider.stage}-StorageDownloadBucket
+    role: LambdaFunctionRole
+
+  GenerateDownloadLink:
+    handler: src/handlers/generate-download-link.handler
+    environment:
+      BUCKET: !Ref ReportBucket
+    role: LambdaFunctionRole
+
+  GetTransactionsReport:
+    handler: src/handlers/get-transactions.handler
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+    role: LambdaFunctionRole
+
+  PublishNotificationReport:
+    handler: src/handlers/publish-notification.handler
+    environment:
+      ENDPOINT: !ImportValue ${self:provider.stage}-NotificationsApiEndpoint
+      STAGE: ${self:provider.stage}
+    role: LambdaFunctionRole
+
+  TransformTransactions:
+    handler: src/handlers/transform-transactions.handler
+    role: LambdaFunctionRole
+
+stepFunctions:
+  validate: true
+  stateMachines:
+    generateReport:
+      name: ${self:custom.prefix}-generate-report
+      events:
+        - http:
+            authorizer: aws_iam
+            path: api/v1/generate-report/start
+            method: post
+      definition:
+        Comment: Export report for financial year
+        StartAt: GetTransactions
+        States:
+          GetTransactions:
+            Type: Task
+            Resource: !GetAtt GetTransactionsReportLambdaFunction.Arn
+            Next: ShouldTransformTransactions
+
+          ShouldTransformTransactions:
+            Type: Choice
+            Choices:
+              - Variable: $.complete
+                BooleanEquals: false
+                Next: TransformTransactions
+            Default: GenerateReportComplete
+
+          TransformTransactions:
+            Type: Task
+            Resource: !GetAtt TransformTransactionsLambdaFunction.Arn
+            Next: ConvertToCsv
+
+          ConvertToCsv:
+            Type: Task
+            Resource: !GetAtt ConvertToCsvLambdaFunction.Arn
+            Next: CreateZip
+
+          CreateZip:
+            Type: Task
+            Resource: !GetAtt CreateZipLambdaFunction.Arn
+            Next: GenerateDownloadLink
+
+          GenerateDownloadLink:
+            Type: Task
+            Resource: !GetAtt GenerateDownloadLinkLambdaFunction.Arn
+            Next: AddReport
+
+          AddReport:
+            Type: Task
+            Resource: !GetAtt AddReportLambdaFunction.Arn
+            Next: PublishNotification
+
+          PublishNotification:
+            Type: Task
+            Resource: !GetAtt PublishNotificationReportLambdaFunction.Arn
+            Next: GenerateReportComplete
+
+          GenerateReportComplete:
+            Type: Pass
+            End: true
+
+resources:
+  Resources:
+    ReportBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.prefix}-reports
+        LifecycleConfiguration:
+          Rules:
+            - ExpirationInDays: 1
+              Status: Enabled
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+              AllowedOrigins:
+                - '*'
+              MaxAge: 3000
+
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.prefix}-reports-lambda-function-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-reports-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:Query
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                        - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - dynamodb:PutItem
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                - Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:PutObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !GetAtt ReportBucket.Arn
+                        - '/*'
+                - Effect: Allow
+                  Action:
+                    - s3:GetObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-StorageDownloadBucketArn
+                        - '/*'
+                - Effect: Allow
+                  Action:
+                    - execute-api:Invoke
+                  Resource: !ImportValue ${self:provider.stage}-NotificationsApiArn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+
+  Outputs:
+    AccountsReportsApiEndpoint:
+      Description: Accounts reports API endpoint
+      Value: !Join
+        - ''
+        - - 'https://'
+          - !Ref ApiGatewayRestApi
+          - '.execute-api.'
+          - !Ref AWS::Region
+          - '.amazonaws.com'
+      Export:
+        Name: ${self:provider.stage}-AccountsReportsApiEndpoint
+
+    AccountsReportsApiArn:
+      Description: Accounts reports API ARN
+      Value: !Join
+        - ''
+        - - 'arn:aws:execute-api:'
+          - !Ref AWS::Region
+          - ':'
+          - !Ref AWS::AccountId
+          - ':'
+          - !Ref ApiGatewayRestApi
+          - '/*'
+      Export:
+        Name: ${self:provider.stage}-AccountsReportsApiArn

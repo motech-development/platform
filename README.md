@@ -81,6 +81,13 @@ A hook to access query strings
 Build the package by running `yarn build --scope=@motech-development/query-string-hook`\
 Test the package by running `yarn test --scope=@motech-development/query-string-hook`
 
+### S3 file operations
+
+A wrapper utility to manage file operations on AWS S3
+
+Build the package by running `yarn build --scope=@motech-development/s3-file-operations`\
+Test the package by running `yarn test --scope=@motech-development/s3-file-operations`
+
 ### Serverless outputs env
 
 Serverless plugin to take AWS outputs and write them into `.env` files

@@ -165,7 +165,6 @@ awsmobilejs/\#current-backend-info
 # Project files
 build
 lib
-reports
 .build
 .dynamodb
 .webpack

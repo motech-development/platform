@@ -1,0 +1,35 @@
+{
+  "name": "@accounts/reports",
+  "version": "0.0.0",
+  "description": "Motech Development accounts report generator service",
+  "private": true,
+  "scripts": {
+    "deploy": "serverless deploy --verbose --force",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "precommit": "lint-staged",
+    "teardown": "serverless remove --verbose",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage --runInBand"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "setupFiles": [
+      "jest-date-mock"
+    ],
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "@motech-development/s3-file-operations": "^0.0.0",
+    "archiver": "^5.3.0",
+    "aws4": "^1.11.0",
+    "axios": "^0.21.1",
+    "json-2-csv": "^3.10.3",
+    "luxon": "^1.26.0",
+    "qs": "^6.10.1",
+    "uuid": "^8.3.2",
+    "yup": "^0.29.1"
+  }
+}

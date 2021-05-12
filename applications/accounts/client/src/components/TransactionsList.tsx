@@ -72,7 +72,7 @@ const TransactionsList: FC<ITransactionsListProps> = ({
           <TableBody key={date}>
             <TableRow colour="primary">
               <TableCell as="th" align="left" colSpan={2}>
-                <DateTime value={date} format="dddd, DD MMMM" />
+                <DateTime value={date} format="EEEE, dd MMMM" />
               </TableCell>
               <TableCell as="th" align="right">
                 <Currency currency={currency} value={balance} />

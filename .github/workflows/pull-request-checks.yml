@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
 
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
@@ -25,7 +25,7 @@ jobs:
 
       - name: Restore Node modules
         id: node-modules
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.npm
@@ -38,7 +38,7 @@ jobs:
 
       - name: Restore packages
         id: packages
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -47,7 +47,7 @@ jobs:
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cache-v1-${{ hashFiles('**/yarn.lock') }}
@@ -72,7 +72,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
         with:
           fetch-depth: 0
 
@@ -85,7 +85,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.npm
@@ -97,7 +97,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -129,7 +129,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
 
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
@@ -140,7 +140,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.npm
@@ -152,7 +152,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -160,7 +160,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore env vars
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-pr-v1-${{ hashFiles('**/packages.txt') }}
@@ -197,7 +197,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
 
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
@@ -208,7 +208,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.npm
@@ -220,7 +220,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
@@ -228,7 +228,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore cache
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cache-v1-${{ hashFiles('**/yarn.lock') }}
@@ -236,7 +236,7 @@ jobs:
             ${{ runner.os }}-cache-
 
       - name: Restore env vars
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-pr-v1-${{ hashFiles('**/packages.txt') }}

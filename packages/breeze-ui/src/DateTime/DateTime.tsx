@@ -1,20 +1,24 @@
-import moment from 'moment';
+import { DateTime as Luxon } from 'luxon';
 import { FC } from 'react';
 
-const defaultFormat = 'DD/MM/YYYY';
+const defaultFormat = 'dd/MM/yyyy';
 
-export const formatDateTime = (value: string, format = defaultFormat) => {
-  const date = moment.utc(value);
+export const formatDateTime = (
+  value: string | number,
+  format = defaultFormat,
+) => {
+  const date =
+    typeof value === 'string' ? Luxon.fromISO(value) : Luxon.fromSeconds(value);
 
   return {
-    ISOString: date.toISOString(),
-    formatted: date.format(format),
+    ISOString: date.toUTC().toISO(),
+    formatted: date.toFormat(format),
   };
 };
 
 export interface IDateTimeProps {
   format?: string;
-  value: string;
+  value: string | number;
 }
 
 const DateTime: FC<IDateTimeProps> = ({ format = defaultFormat, value }) => {

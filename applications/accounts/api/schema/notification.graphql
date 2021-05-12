@@ -3,6 +3,7 @@ type Notification @aws_iam @aws_oidc {
   id: ID
   message: String
   owner: String
+  payload: String
   read: Boolean
 }
 
@@ -16,6 +17,7 @@ input NotificationInput {
   id: ID!
   message: String!
   owner: String!
+  payload: String
   read: Boolean!
 }
 

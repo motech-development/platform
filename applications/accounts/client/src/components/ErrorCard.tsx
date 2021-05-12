@@ -9,6 +9,7 @@ import {
 import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import isProd from '../utils/isProd';
 
 export interface IErrorCardProps {
   backTo?: string;
@@ -47,17 +48,26 @@ const ErrorCard: FC<IErrorCardProps> = ({
             align="center"
             component="h3"
             variant="lead"
-            margin={errors ? 'lg' : 'none'}
+            margin={errors ? isProd('none', 'lg') : 'none'}
           >
             {description}
           </Typography>
 
-          {errors &&
-            errors.map((message) => (
-              <Typography key={message} component="p" variant="p" margin="none">
-                {message}
-              </Typography>
-            ))}
+          {isProd(
+            null,
+            errors &&
+              errors.map((message) => (
+                <Typography
+                  key={message}
+                  align="center"
+                  component="p"
+                  variant="p"
+                  margin="none"
+                >
+                  {message}
+                </Typography>
+              )),
+          )}
         </Card>
 
         {backTo ? (

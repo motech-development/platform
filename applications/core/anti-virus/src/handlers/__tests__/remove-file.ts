@@ -1,9 +1,9 @@
+import { deleteFile } from '@motech-development/s3-file-operations';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { deleteFile } from '../../shared/file-operations';
 import { handler, IEvent } from '../remove-file';
 
-jest.mock('../../shared/file-operations', () => ({
+jest.mock('@motech-development/s3-file-operations', () => ({
   deleteFile: jest.fn(),
 }));
 

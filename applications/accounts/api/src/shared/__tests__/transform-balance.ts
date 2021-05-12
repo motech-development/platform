@@ -61,8 +61,9 @@ describe('transform-balance', () => {
       id: 'company-id',
       items: {
         '2019-11-25T00:00:00.000Z': -190,
-        '2019-12-04T00:00:00.000Z': -2.2,
         '2019-12-15T00:00:00.000Z': -349,
+        // eslint-disable-next-line sort-keys
+        '2019-12-04T00:00:00.000Z': -2.2,
         '2019-12-31T00:00:00.000Z': 2960.91,
       },
       openingBalance: 0,
@@ -85,17 +86,6 @@ describe('transform-balance', () => {
         vat: 0.37,
       },
       {
-        amount: -190,
-        category: 'Accommodation',
-        companyId: 'company-id',
-        date: '2019-11-25T00:00:00.000Z',
-        description: 'Room',
-        id: 'transaction-2',
-        name: 'Hotel',
-        status: 'confirmed',
-        vat: 31.67,
-      },
-      {
         amount: -349,
         category: 'Equipment',
         companyId: 'company-id',
@@ -105,6 +95,17 @@ describe('transform-balance', () => {
         name: 'Apple',
         status: 'confirmed',
         vat: 66.5,
+      },
+      {
+        amount: -190,
+        category: 'Accommodation',
+        companyId: 'company-id',
+        date: '2019-11-25T00:00:00.000Z',
+        description: 'Room',
+        id: 'transaction-2',
+        name: 'Hotel',
+        status: 'confirmed',
+        vat: 31.67,
       },
       {
         amount: 2960.91,

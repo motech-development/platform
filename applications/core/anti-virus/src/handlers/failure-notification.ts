@@ -1,6 +1,6 @@
+import { getFileData } from '@motech-development/s3-file-operations';
 import { Handler } from 'aws-lambda';
 import { SQS } from 'aws-sdk';
-import { getFileData } from '../shared/file-operations';
 
 const sqs = new SQS();
 
@@ -9,7 +9,7 @@ export interface IEvent {
   key: string;
 }
 
-export const handler: Handler<IEvent> = async event => {
+export const handler: Handler<IEvent> = async (event) => {
   const { QUEUE_URL } = process.env;
 
   if (!QUEUE_URL) {

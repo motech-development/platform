@@ -1,17 +1,14 @@
 import { render, RenderResult } from '@testing-library/react';
-import moment from 'moment';
 import DateTime from '../DateTime';
 
 describe('DateTime', () => {
   let component: RenderResult;
-  let value: string;
-
-  beforeEach(() => {
-    value = moment('2020-01-25T14:58:21+0000').format();
-  });
+  let value: string | number;
 
   describe('with the default format', () => {
     beforeEach(() => {
+      value = '2020-01-25T14:58:21+0000';
+
       component = render(<DateTime value={value} />);
     });
 
@@ -34,7 +31,9 @@ describe('DateTime', () => {
     let format: string;
 
     beforeEach(() => {
-      format = 'DD/MM/YYYY HH:mm';
+      value = 1579964301;
+
+      format = 'dd/MM/yyyy HH:mm';
 
       component = render(<DateTime value={value} format={format} />);
     });

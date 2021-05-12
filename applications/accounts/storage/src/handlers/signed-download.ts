@@ -3,11 +3,10 @@ import {
   paramCheck,
   response,
 } from '@motech-development/api-gateway-handler';
-import { S3 } from 'aws-sdk';
+import { createSignedUrl } from '@motech-development/s3-file-operations';
 import { join } from 'path';
 import { object, string } from 'yup';
 
-const s3 = new S3();
 const schema = object()
   .shape({
     owner: string().required(),
@@ -15,7 +14,7 @@ const schema = object()
   })
   .required();
 
-export const handler = apiGatewayHandler(async event => {
+export const handler = apiGatewayHandler(async (event) => {
   const { DOWNLOAD_BUCKET } = process.env;
   const bucket = paramCheck(DOWNLOAD_BUCKET, 'No bucket set', 400);
   const body = paramCheck(event.body, 'No body found', 400);
@@ -28,12 +27,13 @@ export const handler = apiGatewayHandler(async event => {
 
     const { owner, path } = result;
     const expirationInSeconds = 30;
-
-    const url = await s3.getSignedUrlPromise('getObject', {
-      Bucket: bucket,
-      Expires: expirationInSeconds,
-      Key: join(owner, path),
-    });
+    const key = join(owner, path);
+    const url = await createSignedUrl(
+      'getObject',
+      bucket,
+      key,
+      expirationInSeconds,
+    );
 
     return response(
       {

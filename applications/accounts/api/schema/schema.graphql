@@ -17,6 +17,7 @@ type Mutation {
   deleteFile(id: ID!, path: String!): Storage!
   notificationBeacon(id: ID!, input: NotificationInput!): Notification! @aws_iam
   markAsRead(id: ID!, input: MarkNotificationsInput!): Notifications!
+  createReport(input: ReportInput!): ReportRequest!
 }
 
 type Query {
@@ -39,6 +40,7 @@ type Query {
   getTypeahead(id: ID!): Typeahead!
   requestDownload(id: ID!, path: String!): StorageDownload!
   getNotifications(id: ID!, count: Int, nextToken: String): Notifications!
+  getReports(id: ID!, count: Int, nextToken: String): Reports!
 }
 
 type Subscription {

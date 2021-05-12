@@ -11,12 +11,13 @@ export const mutation = gql`
       id
       message
       owner
+      payload
       read
     }
   }
 `;
 
-export const handler: DynamoDBStreamHandler = async event => {
+export const handler: DynamoDBStreamHandler = async (event) => {
   const { AWS_REGION, ENDPOINT } = process.env;
 
   if (!AWS_REGION) {
@@ -53,6 +54,7 @@ export const handler: DynamoDBStreamHandler = async event => {
         id,
         message,
         owner,
+        payload,
       } = DynamoDB.Converter.unmarshall(NewImage as DynamoDB.AttributeMap);
 
       return {
@@ -61,10 +63,11 @@ export const handler: DynamoDBStreamHandler = async event => {
         id,
         message,
         owner,
+        payload,
       };
     })
     .filter(({ __typename }) => __typename === 'Notification')
-    .map(({ createdAt, id, owner, message }) =>
+    .map(({ createdAt, id, owner, payload, message }) =>
       client.mutate({
         mutation,
         variables: {
@@ -74,6 +77,7 @@ export const handler: DynamoDBStreamHandler = async event => {
             id,
             message,
             owner,
+            payload,
             read: false,
           },
         },

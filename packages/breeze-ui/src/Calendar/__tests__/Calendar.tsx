@@ -14,7 +14,7 @@ describe('Calendar', () => {
     let selectedDate: string;
 
     beforeEach(() => {
-      selectedDate = '2020-04-30 05:00:00';
+      selectedDate = '2020-04-30T05:00:00.000Z';
 
       component = render(
         <Calendar
@@ -36,13 +36,13 @@ describe('Calendar', () => {
       const { findAllByRole } = component;
       const days = await findAllByRole('columnheader');
 
-      expect(days[0]).toHaveTextContent('Sun');
-      expect(days[1]).toHaveTextContent('Mon');
-      expect(days[2]).toHaveTextContent('Tue');
-      expect(days[3]).toHaveTextContent('Wed');
-      expect(days[4]).toHaveTextContent('Thu');
-      expect(days[5]).toHaveTextContent('Fri');
-      expect(days[6]).toHaveTextContent('Sat');
+      expect(days[0]).toHaveTextContent('Mon');
+      expect(days[1]).toHaveTextContent('Tue');
+      expect(days[2]).toHaveTextContent('Wed');
+      expect(days[3]).toHaveTextContent('Thu');
+      expect(days[4]).toHaveTextContent('Fri');
+      expect(days[5]).toHaveTextContent('Sat');
+      expect(days[6]).toHaveTextContent('Sun');
     });
 
     it('should go back a year', async () => {
@@ -106,13 +106,13 @@ describe('Calendar', () => {
         fireEvent.click(button);
       });
 
-      expect(onDateChange).toHaveBeenCalledWith('2020-04-03T05:00:00Z');
+      expect(onDateChange).toHaveBeenCalledWith('2020-04-03T05:00:00.000Z');
     });
   });
 
   describe('with no date selected', () => {
     beforeAll(() => {
-      advanceTo('2015-06-06T19:45:00Z');
+      advanceTo('2015-06-06T19:45:00.000Z');
     });
 
     beforeEach(() => {
@@ -134,13 +134,13 @@ describe('Calendar', () => {
       const { findAllByRole } = component;
       const days = await findAllByRole('columnheader');
 
-      expect(days[0]).toHaveTextContent('Sun');
-      expect(days[1]).toHaveTextContent('Mon');
-      expect(days[2]).toHaveTextContent('Tue');
-      expect(days[3]).toHaveTextContent('Wed');
-      expect(days[4]).toHaveTextContent('Thu');
-      expect(days[5]).toHaveTextContent('Fri');
-      expect(days[6]).toHaveTextContent('Sat');
+      expect(days[0]).toHaveTextContent('Mon');
+      expect(days[1]).toHaveTextContent('Tue');
+      expect(days[2]).toHaveTextContent('Wed');
+      expect(days[3]).toHaveTextContent('Thu');
+      expect(days[4]).toHaveTextContent('Fri');
+      expect(days[5]).toHaveTextContent('Sat');
+      expect(days[6]).toHaveTextContent('Sun');
     });
 
     it('should go back a year', async () => {
@@ -204,7 +204,7 @@ describe('Calendar', () => {
         fireEvent.click(button);
       });
 
-      expect(onDateChange).toHaveBeenCalledWith('2015-06-03T19:45:00Z');
+      expect(onDateChange).toHaveBeenCalledWith('2015-06-03T19:45:00.000Z');
     });
   });
 });

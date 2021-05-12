@@ -5,7 +5,7 @@ import {
   Select,
   TextBox,
 } from '@motech-development/breeze-ui';
-import moment from 'moment';
+import { Info } from 'luxon';
 import { FC, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -197,7 +197,7 @@ export const YearEndFields: FC<IYearEndFieldsProps> = ({ prefix }) => {
       value: day,
     };
   });
-  const months = moment.months().map((month, value) => ({
+  const months = Info.months().map((month, value) => ({
     name: month,
     value: value.toString(),
   }));

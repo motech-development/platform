@@ -1,5 +1,5 @@
 import { Decimal } from 'decimal.js';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 interface IBalance {
   balance: number;
@@ -56,7 +56,7 @@ const transformBalance = (
     vat,
   } = balanceItem;
   const transactions = Object.keys(items)
-    .filter(key => items[key] !== 0)
+    .filter((key) => items[key] !== 0)
     .map((key, i) => ({
       balance:
         i === 0
@@ -65,7 +65,12 @@ const transformBalance = (
       currency,
       date: key,
     }))
-    .sort((a, b) => a.date.localeCompare(b.date))
+    .sort((a, b) => {
+      const d1 = DateTime.fromISO(a.date);
+      const d2 = DateTime.fromISO(b.date);
+
+      return d1 > d2 ? 1 : -1;
+    })
     .reduce<IBalance[]>((acc, current, i) => {
       const update = {
         ...current,
@@ -73,18 +78,24 @@ const transformBalance = (
           i > 0
             ? new Decimal(acc[i - 1].balance).add(current.balance).toNumber()
             : current.balance,
-        items: transactionItems.filter(({ date }) =>
-          moment(date)
-            .startOf('day')
-            .isSame(moment(current.date).startOf('day')),
-        ),
+        items: transactionItems.filter(({ date }) => {
+          const transactionDate = DateTime.fromISO(date);
+          const currentDate = DateTime.fromISO(current.date);
+
+          return transactionDate.hasSame(currentDate, 'day');
+        }),
       };
 
       acc.push(update);
 
       return acc;
     }, [])
-    .sort((a, b) => -a.date.localeCompare(b.date));
+    .sort((a, b) => {
+      const d1 = DateTime.fromISO(a.date);
+      const d2 = DateTime.fromISO(b.date);
+
+      return d1 > d2 ? -1 : 1;
+    });
 
   return {
     balance,

@@ -11,10 +11,16 @@ package:
 
 plugins:
   - serverless-webpack
+  - serverless-prune-plugin
 
 custom:
   prefix: ${self:service}-${self:provider.stage}
   domainName: ${opt:domain-name}
+
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 1
 
   webpack:
     includeModules: true

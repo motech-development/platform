@@ -3,20 +3,16 @@ import {
   paramCheck,
   response,
 } from '@motech-development/api-gateway-handler';
-import { S3 } from 'aws-sdk';
+import { createSignedUrl } from '@motech-development/s3-file-operations';
 import { v4 as uuid } from 'uuid';
 import { object, string } from 'yup';
 
 const whitelist = ['gif', 'jpeg', 'jpg', 'pdf', 'png'];
-const s3 = new S3();
 const schema = object()
   .shape({
     companyId: string().required(),
     contentType: string().required(),
-    extension: string()
-      .lowercase()
-      .oneOf(whitelist)
-      .required(),
+    extension: string().lowercase().oneOf(whitelist).required(),
     metadata: object()
       .shape({
         id: string().nullable(),
@@ -27,7 +23,7 @@ const schema = object()
   })
   .required();
 
-export const handler = apiGatewayHandler(async event => {
+export const handler = apiGatewayHandler(async (event) => {
   const { UPLOAD_BUCKET } = process.env;
   const bucket = paramCheck(UPLOAD_BUCKET, 'No bucket set', 400);
   const body = paramCheck(event.body, 'No body found', 400);
@@ -40,21 +36,24 @@ export const handler = apiGatewayHandler(async event => {
     const id = uuid();
     const { companyId, contentType, extension, metadata, owner } = result;
     const expirationInSeconds = 30;
-
-    const url = await s3.getSignedUrlPromise('putObject', {
-      Bucket: bucket,
-      ContentType: contentType,
-      Expires: expirationInSeconds,
-      Key: `${owner}/${companyId}/${id}.${extension}`,
-      Metadata: {
-        ...(metadata.id
-          ? {
-              id: metadata.id,
-            }
-          : {}),
-        typename: metadata.typename,
+    const key = `${owner}/${companyId}/${id}.${extension}`;
+    const url = await createSignedUrl(
+      'putObject',
+      bucket,
+      key,
+      expirationInSeconds,
+      {
+        ContentType: contentType,
+        Metadata: {
+          ...(metadata.id
+            ? {
+                id: metadata.id,
+              }
+            : {}),
+          typename: metadata.typename,
+        },
       },
-    });
+    );
 
     return response(
       {

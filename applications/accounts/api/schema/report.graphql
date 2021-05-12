@@ -1,0 +1,31 @@
+type Report {
+  createdAt: AWSDateTime
+  downloadUrl: String
+  id: ID
+  ttl: AWSTimestamp
+}
+
+type Reports {
+  id: ID
+  items: [Report]
+  nextToken: String
+}
+
+type ReportRequest {
+  status: String
+}
+
+input ReportYearEndInput {
+  __typename: String
+  day: Int!
+  month: Int!
+}
+
+input ReportInput {
+  __typename: String
+  companyId: ID!
+  currency: String!
+  status: TransactionStatus!
+  year: Int!
+  yearEnd: ReportYearEndInput!
+}

@@ -1,0 +1,42 @@
+{
+  "reports": {
+    "title": "Reports",
+    "sub-title": "Create and export your accounting data",
+    "expiry-message": "Reports are automatically deleted after 24 hours",
+    "no-reports-found": "No reports found",
+    "create-report": "Create new report",
+    "go-back": "Go back to dashboard",
+    "download": "Download",
+    "table": {
+      "created": "Created",
+      "expires": "Expires",
+      "actions": "Actions"
+    }
+  },
+  "create-report": {
+    "title": "Create report",
+    "sub-title": "Configure a report to export",
+    "currency": "£",
+    "requested": "Report requested. You will be notified when it is ready to download"
+  },
+  "export-form": {
+    "create": "Create report",
+    "cancel": "Cancel",
+    "heading": "Export settings",
+    "status": {
+      "label": "Transaction status",
+      "options": {
+        "confirmed": "Confirmed",
+        "pending": "Pending"
+      }
+    },
+    "year": {
+      "label": "Financial year",
+      "placeholder": "Select financial year"
+    }
+  },
+  "download": {
+    "success": "The download has started",
+    "error": "Unable to download this file"
+  }
+}

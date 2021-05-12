@@ -9,6 +9,7 @@ export default [
     input: 'src/outputs-env-plugin.ts',
     output: [
       {
+        exports: 'default',
         file: pkg.main,
         format: 'cjs',
         sourcemap: true,

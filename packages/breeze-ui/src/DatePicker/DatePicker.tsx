@@ -1,7 +1,7 @@
 import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Field, FieldProps, getIn } from 'formik';
-import moment from 'moment';
+import { DateTime as Luxon } from 'luxon';
 import { FC, useEffect, useState } from 'react';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
@@ -75,10 +75,10 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
   const { name, value } = field;
   const [date, setDate] = useState(() => {
     if (value === '') {
-      return moment().utc().format();
+      return Luxon.utc().toISO();
     }
 
-    return value;
+    return Luxon.fromISO(value).toUTC().toISO();
   });
   const { errors, setFieldValue } = form;
   const markAsDisabled = disabled || readOnly;

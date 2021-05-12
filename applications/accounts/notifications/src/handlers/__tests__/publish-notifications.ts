@@ -43,6 +43,9 @@ describe('publish-notifications', () => {
               owner: {
                 S: 'owner-id',
               },
+              payload: {
+                S: 'id=1&owner=me',
+              },
             },
           },
           eventName: 'INSERT',
@@ -133,6 +136,7 @@ describe('publish-notifications', () => {
             id: 'notification-id',
             message: 'Notification message',
             owner: 'owner-id',
+            payload: 'id=1&owner=me',
             read: false,
           },
         },

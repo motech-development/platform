@@ -17,9 +17,15 @@ plugins:
   - serverless-webpack
   - serverless-dynamodb-local
   - serverless-offline
+  - serverless-prune-plugin
 
 custom:
   prefix: ${self:service}-${self:provider.stage}
+
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 1
 
   webpack:
     includeModules: true

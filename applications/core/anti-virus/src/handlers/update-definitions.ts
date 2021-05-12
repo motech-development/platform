@@ -1,8 +1,8 @@
+import { createFile } from '@motech-development/s3-file-operations';
 import { Handler } from 'aws-lambda';
 import { createReadStream } from 'fs';
 import { join } from 'path';
 import { updateDefinitions } from '../shared/clam-av';
-import { createFile } from '../shared/file-operations';
 import virusDefinitions from '../shared/virus-definitions';
 
 export const handler: Handler = async () => {
@@ -17,7 +17,7 @@ export const handler: Handler = async () => {
   try {
     await updateDefinitions(tmpDir);
 
-    const upload = virusDefinitions.map(definition => {
+    const upload = virusDefinitions.map((definition) => {
       const path = join(tmpDir, definition);
       const body = createReadStream(path);
       const key = definition;

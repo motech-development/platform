@@ -3,10 +3,13 @@ import { existsSync, mkdir } from 'fs';
 import {
   createDirectory,
   createFile,
+  createSignedUrl,
   deleteFile,
+  downloadFileStream,
   getFileData,
   moveFile,
-} from '../file-operations';
+  uploader,
+} from '../s3-file-operations';
 
 jest.mock('fs');
 
@@ -63,6 +66,37 @@ describe('file-operations', () => {
     });
   });
 
+  describe('createSignedUrl', () => {
+    it('should call getSignedUrlPromise with the correct params', async () => {
+      await createSignedUrl('getObject', 'bucket', 'file.txt', 100);
+
+      expect(S3.prototype.getSignedUrlPromise).toHaveBeenCalledWith(
+        'getObject',
+        {
+          Bucket: 'bucket',
+          Expires: 100,
+          Key: 'file.txt',
+        },
+      );
+    });
+
+    it('should call getSignedUrlPromise with the correct additional params', async () => {
+      await createSignedUrl('getObject', 'bucket', 'file.txt', 100, {
+        ContentType: 'application/pdf',
+      });
+
+      expect(S3.prototype.getSignedUrlPromise).toHaveBeenCalledWith(
+        'getObject',
+        {
+          Bucket: 'bucket',
+          ContentType: 'application/pdf',
+          Expires: 100,
+          Key: 'file.txt',
+        },
+      );
+    });
+  });
+
   describe('deleteFile', () => {
     it('should call deleteObject with the correct params', async () => {
       await deleteFile('bucket', 'file.txt');
@@ -74,9 +108,18 @@ describe('file-operations', () => {
     });
   });
 
-  describe('downloadFile', () => {
-    it.todo('should call getObject with the correct params');
+  describe('downloadFileStream', () => {
+    it('should call getObject with the correct params', () => {
+      downloadFileStream('bucket', 'file.txt');
 
+      expect(S3.prototype.getObject).toHaveBeenCalledWith({
+        Bucket: 'bucket',
+        Key: 'file.txt',
+      });
+    });
+  });
+
+  describe('downloadFile', () => {
     it.todo('should throw an error if file cannot be downloaded');
   });
 
@@ -118,6 +161,19 @@ describe('file-operations', () => {
       expect(S3.prototype.deleteObject).toHaveBeenCalledWith({
         Bucket: 'upload-bucket',
         Key: 'test.pdf',
+      });
+    });
+  });
+
+  describe('uploader', () => {
+    it('should call upload with the correct params', () => {
+      uploader('bucket', 'file.txt', 'hello world', 'text/plain');
+
+      expect(S3.prototype.upload).toHaveBeenCalledWith({
+        Body: 'hello world',
+        Bucket: 'bucket',
+        ContentType: 'text/plain',
+        Key: 'file.txt',
       });
     });
   });

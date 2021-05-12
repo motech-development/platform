@@ -30,6 +30,25 @@ export const createFile = async (
     .promise();
 };
 
+interface ICreateSignedUrlOpts {
+  ContentType?: string;
+  Metadata?: S3.Metadata;
+}
+
+export const createSignedUrl = async (
+  operation: string,
+  bucket: string,
+  key: string,
+  expires: number,
+  opts?: ICreateSignedUrlOpts,
+) =>
+  s3.getSignedUrlPromise(operation, {
+    Bucket: bucket,
+    Expires: expires,
+    Key: key,
+    ...opts,
+  });
+
 export const deleteFile = async (bucket: string, key: string) => {
   const decodedKey = decodeURIComponent(key);
 
@@ -41,17 +60,23 @@ export const deleteFile = async (bucket: string, key: string) => {
     .promise();
 };
 
-export const downloadFile = async (bucket: string, key: string, to: string) => {
+export const downloadFileStream = (bucket: string, key: string) => {
   const decodedKey = decodeURIComponent(key);
+
+  return s3
+    .getObject({
+      Bucket: bucket,
+      Key: decodedKey,
+    })
+    .createReadStream();
+};
+
+export const downloadFile = async (bucket: string, key: string, to: string) => {
   const filePath = join(to, basename(key));
   const fileStream = createWriteStream(filePath);
 
   return new Promise<string>((resolve, reject) => {
-    s3.getObject({
-      Bucket: bucket,
-      Key: decodedKey,
-    })
-      .createReadStream()
+    downloadFileStream(bucket, key)
       .on('end', () => {
         resolve(filePath);
       })
@@ -84,3 +109,16 @@ export const moveFile = async (from: string, to: string, key: string) => {
 
   await deleteFile(from, key);
 };
+
+export const uploader = (
+  bucket: string,
+  key: string,
+  body: S3.Body,
+  contentType: string,
+) =>
+  s3.upload({
+    Body: body,
+    Bucket: bucket,
+    ContentType: contentType,
+    Key: key,
+  });

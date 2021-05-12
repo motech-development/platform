@@ -9,6 +9,7 @@ export default [
     input: 'src/webpack-conditional-plugin.ts',
     output: [
       {
+        exports: 'default',
         file: pkg.main,
         format: 'cjs',
         sourcemap: true,
