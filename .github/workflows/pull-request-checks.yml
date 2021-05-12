@@ -122,7 +122,6 @@ jobs:
     needs:
       - deploy-accounts-data
       - deploy-accounts-queue
-      - deploy-accounts-reports
       - deploy-accounts-storage
       - deploy-open-banking
 
