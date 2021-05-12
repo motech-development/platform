@@ -68,7 +68,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    needs: setup
+    needs:
+      - setup
+      - accounts-queue
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -106,7 +108,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    needs: setup
+    needs:
+      - setup
+      - anti-virus
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -137,10 +141,114 @@ jobs:
         run: yarn teardown -- --scope=@core/anti-virus -- -- --stage $STAGE
 
   # Accounts (queue)
+  accounts-queue:
+    name: Teardown accounts queue
+
+    runs-on: ubuntu-latest
+
+    needs: setup
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      STAGE: ${{ github.event.pull_request.number }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Teardown
+        run: yarn teardown -- --scope=@accounts/queue -- -- --stage $STAGE
 
   # Accounts (storage)
+  accounts-storage:
+    name: Teardown accounts storage
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - setup
+      - accounts-data
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      STAGE: ${{ github.event.pull_request.number }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Teardown
+        run: yarn teardown -- --scope=@accounts/storage -- -- --stage $STAGE
 
   # Accounts (data)
+  accounts-data:
+    name: Teardown accounts data
+
+    runs-on: ubuntu-latest
+
+    needs: setup
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      STAGE: ${{ github.event.pull_request.number }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Restore Node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Teardown
+        run: yarn teardown -- --scope=@accounts/data -- -- --stage $STAGE
 
   # Accounts (notifications)
 
