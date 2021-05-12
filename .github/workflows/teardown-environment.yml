@@ -110,7 +110,7 @@ jobs:
 
     needs:
       - setup
-      - anti-virus
+      - accounts-storage
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
