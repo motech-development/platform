@@ -119,11 +119,7 @@ jobs:
   deploy-accounts-api:
     runs-on: ubuntu-latest
 
-    needs:
-      - deploy-accounts-data
-      - deploy-accounts-queue
-      - deploy-accounts-storage
-      - deploy-open-banking
+    needs: setup
 
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
