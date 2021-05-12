@@ -2,7 +2,8 @@ name: Teardown environment
 
 on:
   pull_request:
-    - closed
+    types:
+      - closed
 
 jobs:
   setup:

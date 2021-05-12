@@ -2,7 +2,8 @@ name: Deploy to environment
 
 on:
   pull_request:
-    - opened
+    types:
+      - opened
 
 jobs:
   setup:
