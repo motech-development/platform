@@ -80,8 +80,9 @@ jobs:
         if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
         run: yarn package
 
-      - name: Lint code
-        run: yarn lint
+      # TODO: Re-enable
+      # - name: Lint code
+      #   run: yarn lint
 
   # TODO: Re-enable unit tests
   # unit-tests:
