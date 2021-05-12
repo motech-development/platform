@@ -25,16 +25,11 @@ jobs:
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
       - name: Restore Node modules
         id: node-modules
         uses: actions/cache@v2.1.5
         with:
           path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
@@ -122,3 +117,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # Auth0 tenant
+
+  # Open banking
+
+  # Anti virus
+
+  # Accounts (queue)
+
+  # Accounts (storage)
+
+  # Accounts (data)
+
+  # Accounts (notifications)
+
+  # Accounts (reports)
+
+  # Accounts (API)
+
+  # Accounts (client)

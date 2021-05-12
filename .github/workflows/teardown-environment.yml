@@ -23,16 +23,11 @@ jobs:
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
       - name: Restore Node modules
         id: node-modules
         uses: actions/cache@v2.1.5
         with:
           path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
@@ -69,54 +64,22 @@ jobs:
       - name: Lint code
         run: yarn lint
 
-  unit-tests:
-    name: Unit tests
+  # Auth0 tenant
 
-    runs-on: ubuntu-latest
+  # Open banking
 
-    needs: setup
+  # Anti virus
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.3.4
-        with:
-          fetch-depth: 0
+  # Accounts (queue)
 
-      - name: Set Node version
-        uses: actions/setup-node@v2.1.5
-        with:
-          node-version: 12
+  # Accounts (storage)
 
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
+  # Accounts (data)
 
-      - name: Restore Node modules
-        uses: actions/cache@v2.1.5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
+  # Accounts (notifications)
 
-      - name: Restore packages
-        uses: actions/cache@v2.1.5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
+  # Accounts (reports)
 
-      - name: Unit test
-        run: yarn test:ci
+  # Accounts (API)
 
-      - name: Fix paths for SonarCloud Scan
-        run: ./scripts/sonar-scanner-path-fix.sh
-
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  # Accounts (client)
