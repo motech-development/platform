@@ -1,0 +1,13 @@
+name: Deploy to environment
+
+on:
+  pull_request:
+    - opened
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup
+        uses: actions/setup

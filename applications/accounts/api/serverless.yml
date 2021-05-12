@@ -761,19 +761,3 @@ resources:
                     - logs:DescribeLogStreams
                   Resource:
                     - 'arn:aws:logs:*:*:*'
-
-  Outputs:
-    AccountsApiArn:
-      Description: Accounts API ARN
-      Value: !Ref ${self:custom.names.${self:provider.stage}}
-      Export:
-        Name: ${self:provider.stage}-AccountsApiArn
-
-    AccountsApiEndpoint:
-      Description: Accounts API endpoint
-      Value:
-        Fn::GetAtt:
-          - ${self:custom.names.${self:provider.stage}}
-          - GraphQLUrl
-      Export:
-        Name: ${self:provider.stage}-AccountsApiEndpoint
