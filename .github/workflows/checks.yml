@@ -565,9 +565,7 @@ jobs:
   build-accounts-client:
     runs-on: ubuntu-latest
 
-    needs:
-      - deploy-accounts-notifications
-      - deploy-accounts-reports
+    needs: deploy-accounts-api
 
     env:
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}

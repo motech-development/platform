@@ -1159,7 +1159,7 @@ describe('VAT registered', () => {
   describe('Notifications', () => {
     it('should display a notification', () => {
       cy.findByRole('button', {
-        name: 'Notifications (1 unread)',
+        name: /Notifications \([0-3] unread\)/,
       }).click();
 
       cy.findAllByText('Your report is ready to download')
@@ -1167,7 +1167,7 @@ describe('VAT registered', () => {
         .should('be.visible');
 
       cy.findByRole('button', {
-        name: 'Notifications (1 unread)',
+        name: /Notifications \([0-3] unread\)/,
       }).click();
 
       cy.findByRole('button', {

@@ -693,8 +693,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - deploy-accounts-notifications
-      - deploy-accounts-reports
+      - deploy-accounts-api
       - deploy-accounts-infrastructure
 
     env:
