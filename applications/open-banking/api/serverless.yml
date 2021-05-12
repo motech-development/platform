@@ -241,7 +241,7 @@ resources:
       Properties:
         Description: Yapily app credentials
         Name: ${self:provider.stage}-YapilyCredentials
-        Value: ${opt:appId},${opt:appSecret}
+        Value: ${env:YAPILY_APPLICATION_KEY},${env:YAPILY_APPLICATION_SECRET}
         Type: StringList
 
   Outputs:
