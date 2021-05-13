@@ -23,19 +23,16 @@ custom:
     includeLayers: true
     number: 1
 
-  names:
-    develop: AccountsdevelopGraphQlApi
-    production: AccountsproductionGraphQlApi
+  resourceName: Accounts${self:provider.stage}GraphQlApi
 
   oidc:
-    issuer: https://${opt:issuer}/
+    issuer: https://${env:AUTH0_DOMAIN}/
 
   outputs:
     files:
       - ../client/.env.production
     env:
-      AccountsdevelopGraphQlApiUrl: REACT_APP_APPSYNC_URL
-      AccountsproductionGraphQlApiUrl: REACT_APP_APPSYNC_URL
+      AccountsApiUrl: REACT_APP_APPSYNC_URL
       AWS_REGION: REACT_APP_AWS_REGION
 
   appSync:
@@ -493,7 +490,7 @@ functions:
     environment:
       ENDPOINT:
         Fn::GetAtt:
-          - ${self:custom.names.${self:provider.stage}}
+          - ${self:custom.resourceName}
           - GraphQLUrl
 
 resources:
@@ -751,7 +748,7 @@ resources:
                   Resource:
                     - !Join
                       - ''
-                      - - !Ref ${self:custom.names.${self:provider.stage}}
+                      - - !Ref ${self:custom.resourceName}
                         - '/types/Mutation/fields/notificationBeacon'
                 - Effect: Allow
                   Action:
@@ -761,3 +758,11 @@ resources:
                     - logs:DescribeLogStreams
                   Resource:
                     - 'arn:aws:logs:*:*:*'
+
+  Outputs:
+    AccountsApiUrl:
+      Description: Accounts API URL
+      Value:
+        Fn::GetAtt:
+          - ${self:custom.resourceName}
+          - GraphQLUrl
