@@ -376,6 +376,17 @@ jobs:
         with:
           node-version: 12
 
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
       - name: Restore Node modules
         uses: actions/cache@v2.1.5
         with:
