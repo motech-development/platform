@@ -6,6 +6,7 @@
   "scripts": {
     "deploy": "serverless deploy --verbose --force",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "postdeploy": "serverless invoke -f UpdateDefinitions",
     "precommit": "lint-staged",
     "predeploy": "./scripts/build.sh",
     "teardown": "serverless remove --verbose",
