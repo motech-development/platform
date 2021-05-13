@@ -8,8 +8,8 @@ provider:
 
 custom:
   prefix: ${self:service}-${self:provider.stage}
-  domainName: ${opt:domain-name}
-  subDomain: ${opt:prefix, 'id'}.${self:custom.domainName}
+  domainName: ${env:PROD_DOMAIN}
+  subDomain: ${env:PREFIX, 'id'}.${self:custom.domainName}
 
 resources:
   Resources:

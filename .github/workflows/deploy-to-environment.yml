@@ -4,6 +4,7 @@ on:
   pull_request:
     types:
       - opened
+      - ready_for_review
       - reopened
       - synchronize
 
@@ -182,11 +183,10 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: |
-            ~/.npm
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -199,7 +199,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy ID infrastructure
-        run: yarn deploy -- --scope=@id/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
+        run: yarn deploy -- --scope=@id/infrastructure -- -- --stage $STAGE
 
       - name: Build ID client
         run: yarn build -- --scope=@id/client
@@ -208,7 +208,7 @@ jobs:
         run: yarn build --scope=@id/emails
 
       - name: Deploy client
-        run: yarn deploy -- --scope=@id/client -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
+        run: yarn deploy -- --scope=@id/client -- -- --stage $STAGE
 
       - name: Deploy to Auth0
         run: yarn deploy -- --scope=@id/tenant -- -- -c config.json
@@ -639,6 +639,13 @@ jobs:
             echo "$line" >> $GITHUB_ENV
           done < ./applications/accounts/client/.env.production
 
+      # TODO: Remove me
+      - name: DEBUG (REMOVE ME)
+        run: |
+          cat ./applications/accounts/client
+          echo $REACT_APP_APPSYNC_URL
+          echo $REACT_APP_AWS_REGION
+
       - name: Publish URL
         uses: mshick/add-pr-comment@v1
         with:
@@ -659,6 +666,7 @@ jobs:
     needs:
       # TODO: unit-tests
       - setup
+      - auth0-tenant
       - accounts-api
 
     env:
