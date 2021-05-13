@@ -625,7 +625,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ hashFiles('./applications/accounts/client/.env.production') }}
+          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-$GITHUB_RUN_ID
           restore-keys: |
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
@@ -639,18 +639,11 @@ jobs:
             echo "$line" >> $GITHUB_ENV
           done < ./applications/accounts/client/.env.production
 
-      # TODO: Remove me
-      - name: DEBUG (REMOVE ME)
-        run: |
-          ls -ltra ./applications/accounts
-          cat ./applications/accounts/client/.env.production
-          echo $REACT_APP_APPSYNC_URL
-          echo $REACT_APP_AWS_REGION
-
       - name: Publish URL
-        uses: mshick/add-pr-comment@v1
+        uses: unsplash/comment-on-pr@master
         with:
-          message: |
+          check_duplicate_msg: true
+          msg: |
             Add these params to your `.env.local` file
 
             ```
@@ -726,7 +719,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ hashFiles('./applications/accounts/client/.env.production') }}
+          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-$GITHUB_RUN_ID
           restore-keys: |
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
