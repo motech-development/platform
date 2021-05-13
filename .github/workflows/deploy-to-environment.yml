@@ -543,7 +543,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ hashFiles('./applications/accounts/client/.env.production') }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
@@ -617,7 +617,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ hashFiles('./applications/accounts/client/.env.production') }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-env-vars-checks-
 

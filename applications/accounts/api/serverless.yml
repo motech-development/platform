@@ -498,7 +498,6 @@ resources:
     AppSyncOpenBankingServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-open-banking-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -521,7 +520,6 @@ resources:
     AppSyncReportsServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-reports-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -544,7 +542,6 @@ resources:
     AppSyncStorageUploadServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-storage-upload-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -567,7 +564,6 @@ resources:
     AppSyncLoggingServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-logging-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -592,7 +588,6 @@ resources:
     AppSyncDynamoDbServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-dynamodb-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -625,7 +620,6 @@ resources:
     AppSyncQueueServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-queue-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -650,7 +644,6 @@ resources:
     AppSyncLambdaServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-lambda-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -678,7 +671,6 @@ resources:
     LambdaDataSourceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-lambda-data-source-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -715,7 +707,6 @@ resources:
     PublishNotificationsRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-publish-notifications-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
