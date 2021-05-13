@@ -642,7 +642,8 @@ jobs:
       # TODO: Remove me
       - name: DEBUG (REMOVE ME)
         run: |
-          cat ./applications/accounts/client
+          ls -ltra ./applications/accounts
+          cat ./applications/accounts/client/.env.production
           echo $REACT_APP_APPSYNC_URL
           echo $REACT_APP_AWS_REGION
 
@@ -650,7 +651,7 @@ jobs:
         uses: mshick/add-pr-comment@v1
         with:
           message: |
-            Add these params to your local `.env.local` file
+            Add these params to your `.env.local` file
 
             ```
             REACT_APP_APPSYNC_URL = "${{ env.REACT_APP_APPSYNC_URL }}"
