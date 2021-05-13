@@ -632,6 +632,13 @@ jobs:
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE
 
+      - name: Export env vars
+        shell: bash
+        run: |
+          while read line; do
+            echo "$line" >> $GITHUB_ENV
+          done < ./applications/accounts/client/.env.production
+
       - name: Publish URL
         uses: mshick/add-pr-comment@v1
         with:
@@ -639,7 +646,8 @@ jobs:
             Add these params to your local `.env.local` file
 
             ```
-            ${{ cat ./applications/accounts/client/.env.production }}
+            REACT_APP_APPSYNC_URL = "${{ env.REACT_APP_APPSYNC_URL }}"
+            REACT_APP_AWS_REGION = "${{ env.REACT_APP_AWS_REGION }}"
             ```
 
   # Accounts (client)
