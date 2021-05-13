@@ -188,6 +188,7 @@ jobs:
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       DOWNLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number }}-downloads
       STAGE: ${{ github.event.pull_request.number }}
@@ -215,9 +216,7 @@ jobs:
 
       - name: Clear bucket
         run: |
-          echo $DOWNLOAD_BUCKET
           aws s3 rm $DOWNLOAD_BUCKET --recursive
-          echo $UPLOAD_BUCKET
           aws s3 rm $UPLOAD_BUCKET --recursive
 
       - name: Teardown
