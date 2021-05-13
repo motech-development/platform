@@ -211,6 +211,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-modules-
 
+      - name: Clear bucket
+        run: |
+          aws s3 rm s3://accounts-$STAGE-downloads --recursive
+          aws s3 rm s3://accounts-$STAGE-uploads --recursive
+
       - name: Teardown
         run: yarn teardown -- --scope=@accounts/storage -- -- --stage $STAGE
 
