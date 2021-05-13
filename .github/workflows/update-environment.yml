@@ -241,6 +241,9 @@ jobs:
       - name: Deploy
         run: yarn deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
 
+      - name: Update definitions
+        run: yarn execute update:definitions -- --scope=@core/anti-virus -- -- --stage $STAGE
+
   # Accounts (queue)
   accounts-queue:
     name: Deploy accounts queue
