@@ -189,7 +189,9 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DOWNLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number }}-downloads
       STAGE: ${{ github.event.pull_request.number }}
+      UPLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number }}-uploads
 
     steps:
       - name: Checkout code
@@ -213,8 +215,10 @@ jobs:
 
       - name: Clear bucket
         run: |
-          aws s3 rm s3://accounts-$STAGE-downloads --recursive
-          aws s3 rm s3://accounts-$STAGE-uploads --recursive
+          echo $DOWNLOAD_BUCKET
+          aws s3 rm $DOWNLOAD_BUCKET --recursive
+          echo $UPLOAD_BUCKET
+          aws s3 rm $UPLOAD_BUCKET --recursive
 
       - name: Teardown
         run: yarn teardown -- --scope=@accounts/storage -- -- --stage $STAGE
