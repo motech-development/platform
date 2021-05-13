@@ -140,7 +140,8 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Clear bucket
-        run: aws s3 rm $DEFINITIONS_BUCKET --recursive
+        run: |
+          aws s3 rm $DEFINITIONS_BUCKET --recursive
 
       - name: Teardown
         run: yarn teardown -- --scope=@core/anti-virus -- -- --stage $STAGE
@@ -341,7 +342,8 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Clear bucket
-        run: aws s3 rm $REPORTS_BUCKET --recursive
+        run: |
+          aws s3 rm $REPORTS_BUCKET --recursive
 
       - name: Teardown
         run: yarn teardown -- --scope=@accounts/reports -- -- --stage $STAGE
