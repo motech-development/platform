@@ -1,21 +1,12 @@
-name: Update environment
+name: Deploy to production
 
-# TODO: Remove me
 on:
   push:
-    branches-ignore:
-      - '**'
-
-# TODO: Re-enable me
-# on:
-#   pull_request:
-#     types:
-#       - synchronize
+    branches:
+      - master
 
 jobs:
   setup:
-    name: Setup
-
     runs-on: ubuntu-latest
 
     steps:
@@ -30,23 +21,12 @@ jobs:
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Yarn cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
       - name: Restore Node modules
         id: node-modules
         uses: actions/cache@v2.1.5
         with:
           path: |
+            ~/.npm
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
@@ -63,97 +43,187 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
-      - name: Restore cache
-        id: cache
-        uses: actions/cache@v2.1.5
-        with:
-          path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cache-v1-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-
-
       - name: Install dependencies
-        if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
-        run: yarn
+        if: steps.node-modules.outputs.cache-hit != 'true'
+        run: yarn install
 
       - name: Build packages
         if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
         run: yarn package
 
-      # TODO: Re-enable
-      # - name: Lint code
-      #   run: yarn lint
+      - name: Lint code
+        run: yarn lint
 
-  # TODO: Re-enable unit tests
-  # unit-tests:
-  #   name: Unit tests
-
-  #   runs-on: ubuntu-latest
-
-  #   needs: setup
-
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2.3.4
-  #       with:
-  #         fetch-depth: 0
-
-  #     - name: Set Node version
-  #       uses: actions/setup-node@v2.1.5
-  #       with:
-  #         node-version: 12
-
-  #     - name: Generate packages cache key
-  #       run: ./scripts/checksum.sh ./packages.txt packages
-
-  #     - name: Restore Node modules
-  #       uses: actions/cache@v2.1.5
-  #       with:
-  #         path: |
-  #           ./node_modules
-  #           ./applications/*/*/node_modules
-  #           ./packages/*/node_modules
-  #         key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-modules-
-
-  #     - name: Restore packages
-  #       uses: actions/cache@v2.1.5
-  #       with:
-  #         path: ./packages/*/lib
-  #         key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-packages-
-
-  #     - name: Unit test
-  #       run: yarn test:ci
-
-  #     - name: Fix paths for SonarCloud Scan
-  #       run: ./scripts/sonar-scanner-path-fix.sh
-
-  #     - name: SonarCloud Scan
-  #       uses: sonarsource/sonarcloud-github-action@master
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  # Auth0 tenant
-
-  # Open banking
-  open-banking:
-    name: Deploy Open Banking API
-
-    if: contains(github.event.pull_request.labels.*.name, 'open-banking') || contains(github.event.pull_request.labels.*.name, 'packages')
-
+  unit-test:
     runs-on: ubuntu-latest
 
-    # TODO: unit-tests
     needs: setup
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Unit test
+        run: yarn test:ci
+
+      - name: Fix paths for SonarCloud Scan
+        run: ./scripts/sonar-scanner-path-fix.sh
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  deploy-storybook:
+    runs-on: ubuntu-latest
+
+    needs: unit-test
+
+    env:
+      GITHUB_TOKEN: ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Deploy
+        run: yarn deploy --scope=@motech-development/breeze-ui
+
+  deploy-auth0-tenant:
+    runs-on: ubuntu-latest
+
+    needs: unit-test
+
+    env:
+      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_PROD }}
+      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET_PROD }}
+      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
+      AUTH0_SES_ACCESS_KEY_ID: ${{ secrets.AUTH0_SES_ACCESS_KEY_ID }}
+      AUTH0_SES_ACCESS_SECRET_KEY: ${{ secrets.AUTH0_SES_ACCESS_SECRET_KEY }}
+      AUTH0_SES_REGION: ${{ secrets.AUTH0_SES_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PREFIX: id
+      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      PUBLIC_URL: https://id.${{ secrets.PROD_DOMAIN }}
+      REACT_APP_GA: ${{ secrets.GA_ID_PROD }}
+      STAGE: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Deploy ID infrastructure
+        run: yarn deploy -- --scope=@id/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
+
+      - name: Build ID client
+        run: yarn build --scope=@id/client
+
+      - name: Build ID emails
+        run: yarn build --scope=@id/emails
+
+      - name: Deploy client
+        run: yarn deploy -- --scope=@id/client -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
+
+      - name: Deploy to Auth0
+        run: yarn deploy -- --scope=@id/tenant -- -- -c config.json
+
+  deploy-open-banking:
+    runs-on: ubuntu-latest
+
+    needs: unit-test
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: production
       YAPILY_APPLICATION_KEY: ${{ secrets.YAPILY_APPLICATION_KEY }}
       YAPILY_APPLICATION_SECRET: ${{ secrets.YAPILY_APPLICATION_SECRET }}
 
@@ -173,6 +243,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: |
+            ~/.npm
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
@@ -189,23 +260,17 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@open-banking/api -- -- --stage $STAGE
+        run: yarn deploy -- --scope=@open-banking/api -- -- --stage $STAGE --appId $YAPILY_APPLICATION_KEY --appSecret $YAPILY_APPLICATION_SECRET
 
-  # Anti virus
-  anti-virus:
-    name: Deploy anti virus
-
-    if: contains(github.event.pull_request.labels.*.name, 'core') || contains(github.event.pull_request.labels.*.name, 'packages')
-
+  deploy-anti-virus:
     runs-on: ubuntu-latest
 
-    # TODO: unit-tests
-    needs: setup
+    needs: unit-test
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -223,6 +288,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: |
+            ~/.npm
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
@@ -241,24 +307,16 @@ jobs:
       - name: Deploy
         run: yarn deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
 
-      - name: Update definitions
-        run: yarn execute update:definitions -- --scope=@core/anti-virus -- -- --stage $STAGE
-
-  # Accounts (queue)
-  accounts-queue:
-    name: Deploy accounts queue
-
-    if: contains(github.event.pull_request.labels.*.name, 'accounts') || contains(github.event.pull_request.labels.*.name, 'packages')
-
+  deploy-infrastructure:
     runs-on: ubuntu-latest
 
-    # TODO: unit-tests
-    needs: setup
+    needs: unit-test
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -276,6 +334,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: |
+            ~/.npm
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
@@ -291,24 +350,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
-      - name: Deploy
-        run: yarn deploy -- --scope=@accounts/queue -- -- --stage $STAGE
+      - name: Deploy core infrastructure
+        run: yarn deploy -- --scope=@core/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN
 
-  # Accounts (storage)
-  accounts-storage:
-    name: Deploy accounts storage
+      - name: Deploy comms infrastructure
+        run: yarn deploy -- --scope=@core/comms -- -- --stage $STAGE --domain-name $PROD_DOMAIN
 
-    if: contains(github.event.pull_request.labels.*.name, 'accounts') || contains(github.event.pull_request.labels.*.name, 'packages')
-
+  deploy-accounts-storage:
     runs-on: ubuntu-latest
 
-    # TODO: unit-tests
-    needs: setup
+    needs: deploy-anti-virus
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -326,6 +382,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: |
+            ~/.npm
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
@@ -344,21 +401,60 @@ jobs:
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/storage -- -- --stage $STAGE
 
-  # Accounts (data)
-  accounts-data:
-    name: Deploy accounts data
-
-    if: contains(github.event.pull_request.labels.*.name, 'accounts') || contains(github.event.pull_request.labels.*.name, 'packages')
-
+  deploy-accounts-queue:
     runs-on: ubuntu-latest
 
-    # TODO: unit-tests
-    needs: setup
+    needs: deploy-open-banking
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Deploy
+        run: yarn deploy -- --scope=@accounts/queue -- -- --stage $STAGE
+
+  deploy-accounts-data:
+    runs-on: ubuntu-latest
+
+    needs: deploy-accounts-storage
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -376,6 +472,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            ~/.npm
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
@@ -394,71 +491,18 @@ jobs:
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/data -- -- --stage $STAGE
 
-  # Accounts (notifications)
-  accounts-notifications:
-    name: Deploy accounts notifications
-
-    if: contains(github.event.pull_request.labels.*.name, 'accounts') || contains(github.event.pull_request.labels.*.name, 'packages')
-
+  deploy-accounts-reports:
     runs-on: ubuntu-latest
 
-    # TODO: unit-tests
-    needs: setup
+    needs:
+      - deploy-accounts-data
+      - deploy-accounts-notifications
+      - deploy-accounts-storage
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.3.4
-
-      - name: Set Node version
-        uses: actions/setup-node@v2.1.5
-        with:
-          node-version: 12
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v2.1.5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v2.1.5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Deploy
-        run: yarn deploy -- --scope=@accounts/notifications -- -- --stage $STAGE
-
-  # Accounts (reports)
-  accounts-reports:
-    name: Deploy accounts reports
-
-    if: contains(github.event.pull_request.labels.*.name, 'accounts') || contains(github.event.pull_request.labels.*.name, 'packages')
-
-    runs-on: ubuntu-latest
-
-    # TODO: unit-tests
-    needs: setup
-
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -476,6 +520,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: |
+            ~/.npm
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
@@ -494,90 +539,21 @@ jobs:
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/reports -- -- --stage $STAGE
 
-  # Accounts (API)
-  accounts-api:
-    name: Deploy accounts API
-
-    if: contains(github.event.pull_request.labels.*.name, 'accounts') || contains(github.event.pull_request.labels.*.name, 'packages')
-
-    runs-on: ubuntu-latest
-
-    # TODO: unit-tests
-    needs: setup
-
-    env:
-      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.3.4
-
-      - name: Set Node version
-        uses: actions/setup-node@v2.1.5
-        with:
-          node-version: 12
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v2.1.5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v2.1.5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Restore env vars
-        uses: actions/cache@v2.1.5
-        with:
-          path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ hashFiles('./applications/accounts/client/.env.production') }}
-          restore-keys: |
-            ${{ runner.os }}-accounts-client-env-vars-checks-
-
-      - name: Deploy
-        run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE
-
-  # Accounts (client)
-  accounts-client:
-    name: Test accounts client
-
-    if: contains(github.event.pull_request.labels.*.name, 'accounts') || contains(github.event.pull_request.labels.*.name, 'packages')
-
+  deploy-accounts-api:
     runs-on: ubuntu-latest
 
     needs:
-      # TODO: unit-tests
-      - setup
-      - accounts-api
+      - deploy-accounts-data
+      - deploy-accounts-queue
+      - deploy-accounts-reports
+      - deploy-accounts-storage
+      - deploy-open-banking
 
     env:
-      CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
-      CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
-      CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
-      CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
-      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      REACT_APP_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
-      REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
-      REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
-      REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_DEV }}
+      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      STAGE: production
 
     steps:
       - name: Checkout code
@@ -595,6 +571,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: |
+            ~/.npm
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
@@ -610,55 +587,167 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
-      - name: Restore cache
+      - name: Restore env vars
         uses: actions/cache@v2.1.5
         with:
-          path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cache-v1-${{ hashFiles('**/yarn.lock') }}
+          path: ./applications/accounts/client/.env.production
+          key: ${{ runner.os }}-accounts-client-env-vars-deploy-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-cache-
+            ${{ runner.os }}-accounts-client-env-vars-deploy-
+
+      - name: Deploy
+        run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
+
+  deploy-accounts-infrastructure:
+    runs-on: ubuntu-latest
+
+    needs: deploy-infrastructure
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      STAGE: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Deploy
+        run: yarn deploy -- --scope=@accounts/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN
+
+  deploy-accounts-notifications:
+    runs-on: ubuntu-latest
+
+    needs: deploy-accounts-data
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      STAGE: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Deploy
+        run: yarn deploy -- --scope=@accounts/notifications -- -- --stage $STAGE
+
+  build-accounts-client:
+    runs-on: ubuntu-latest
+
+    needs:
+      - deploy-accounts-api
+      - deploy-accounts-infrastructure
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      REACT_APP_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
+      REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_PROD }}
+      REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
+      REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_PROD }}
+      STAGE: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
 
       - name: Restore env vars
         uses: actions/cache@v2.1.5
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ hashFiles('./applications/accounts/client/.env.production') }}
+          key: ${{ runner.os }}-accounts-client-env-vars-deploy-v1-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
-            ${{ runner.os }}-accounts-client-env-vars-checks-
+            ${{ runner.os }}-accounts-client-env-vars-deploy-
 
       - name: Build client
-        run: yarn build -- --scope=@accounts/client
+        run: yarn build --scope=@accounts/client
 
-      - name: Smoke tests (sequential)
-        if: github.event.pull_request.draft == true
-        uses: cypress-io/github-action@v2
-        with:
-          command: yarn e2e:ci -- --scope=@accounts/client -- -- --record false
-          config: defaultCommandTimeout=20000
-          install: false
-          start: npx serve -s ./applications/accounts/client/build --listen 3000
-          wait-on: http://localhost:3000
-
-      - name: Smoke tests (parallel)
-        if: github.event.pull_request.draft == false
-        uses: cypress-io/github-action@v2
-        with:
-          command: yarn e2e:ci -- --scope=@accounts/client -- -- --record --parallel
-          config: defaultCommandTimeout=20000
-          install: false
-          start: npx serve -s ./applications/accounts/client/build --listen 3000
-          wait-on: http://localhost:3000
-
-      - name: Upload error screenshots
-        if: github.event.pull_request.draft == true && failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-screenshots
-          path: applications/accounts/client/cypress/screenshots
-
-      - name: Upload error video
-        if: github.event.pull_request.draft == true && failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-videos
-          path: applications/accounts/client/cypress/videos
+      - name: Deploy
+        run: yarn deploy -- --scope=@accounts/client -- -- --stage $STAGE --domain-name $PROD_DOMAIN

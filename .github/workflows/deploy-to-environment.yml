@@ -5,8 +5,19 @@ on:
     types:
       - opened
       - reopened
+      - synchronize
 
 jobs:
+  label:
+    name: Label PR
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/labeler@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
   setup:
     name: Setup
 
@@ -132,6 +143,75 @@ jobs:
   #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # Auth0 tenant
+  auth0-tenant:
+    name: Deploy Auth0 tenant
+
+    runs-on: ubuntu-latest
+
+    # TODO: unit-tests
+    needs: setup
+
+    env:
+      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_DEV }}
+      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET_DEV }}
+      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+      AUTH0_SES_ACCESS_KEY_ID: ${{ secrets.AUTH0_SES_ACCESS_KEY_ID }}
+      AUTH0_SES_ACCESS_SECRET_KEY: ${{ secrets.AUTH0_SES_ACCESS_SECRET_KEY }}
+      AUTH0_SES_REGION: ${{ secrets.AUTH0_SES_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PREFIX: id-develop
+      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      PUBLIC_URL: https://id-develop.${{ secrets.PROD_DOMAIN }}
+      REACT_APP_GA: ${{ secrets.GA_ID_DEV }}
+      STAGE: develop
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Deploy ID infrastructure
+        run: yarn deploy -- --scope=@id/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
+
+      - name: Build ID client
+        run: yarn build -- --scope=@id/client
+
+      - name: Build ID emails
+        run: yarn build --scope=@id/emails
+
+      - name: Deploy client
+        run: yarn deploy -- --scope=@id/client -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
+
+      - name: Deploy to Auth0
+        run: yarn deploy -- --scope=@id/tenant -- -- -c config.json
 
   # Open banking
   open-banking:
@@ -496,16 +576,18 @@ jobs:
     needs:
       # TODO: unit-tests
       - setup
-      - open-banking
       - accounts-data
       - accounts-queue
       - accounts-reports
       - accounts-storage
+      - auth0-tenant
+      - open-banking
 
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       STAGE: ${{ github.event.pull_request.number }}
 
     steps:
@@ -549,6 +631,16 @@ jobs:
 
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE
+
+      - name: Publish URL
+        uses: mshick/add-pr-comment@v1
+        with:
+          message: |
+            Add these params to your local `.env.local` file
+
+            ```
+            ${{ cat ./applications/accounts/client/.env.production }}
+            ```
 
   # Accounts (client)
   accounts-client:
