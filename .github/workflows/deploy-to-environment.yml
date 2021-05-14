@@ -8,8 +8,6 @@ on:
       - reopened
       - synchronize
 
-if: github.actor != 'dependabot[bot]'
-
 jobs:
   label:
     name: Label PR
@@ -23,6 +21,8 @@ jobs:
 
   setup:
     name: Setup
+
+    if: github.actor != 'dependabot[bot]'
 
     runs-on: ubuntu-latest
 

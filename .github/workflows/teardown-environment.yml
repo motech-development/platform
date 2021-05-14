@@ -5,11 +5,11 @@ on:
     types:
       - closed
 
-if: github.actor != 'dependabot[bot]'
-
 jobs:
   setup:
     name: Setup
+
+    if: github.actor != 'dependabot[bot]'
 
     runs-on: ubuntu-latest
 
