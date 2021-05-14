@@ -190,7 +190,6 @@ resources:
     LambdaFunctionRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-lambda-function-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -241,7 +240,7 @@ resources:
       Properties:
         Description: Yapily app credentials
         Name: ${self:provider.stage}-YapilyCredentials
-        Value: ${opt:appId},${opt:appSecret}
+        Value: ${env:YAPILY_APPLICATION_KEY},${env:YAPILY_APPLICATION_SECRET}
         Type: StringList
 
   Outputs:

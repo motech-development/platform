@@ -23,19 +23,16 @@ custom:
     includeLayers: true
     number: 1
 
-  names:
-    develop: AccountsdevelopGraphQlApi
-    production: AccountsproductionGraphQlApi
+  resourceName: Accounts${self:provider.stage}GraphQlApi
 
   oidc:
-    issuer: https://${opt:issuer}/
+    issuer: https://${env:AUTH0_DOMAIN}/
 
   outputs:
     files:
       - ../client/.env.production
     env:
-      AccountsdevelopGraphQlApiUrl: REACT_APP_APPSYNC_URL
-      AccountsproductionGraphQlApiUrl: REACT_APP_APPSYNC_URL
+      AccountsApiUrl: REACT_APP_APPSYNC_URL
       AWS_REGION: REACT_APP_AWS_REGION
 
   appSync:
@@ -493,7 +490,7 @@ functions:
     environment:
       ENDPOINT:
         Fn::GetAtt:
-          - ${self:custom.names.${self:provider.stage}}
+          - ${self:custom.resourceName}
           - GraphQLUrl
 
 resources:
@@ -501,7 +498,6 @@ resources:
     AppSyncOpenBankingServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-open-banking-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -524,7 +520,6 @@ resources:
     AppSyncReportsServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-reports-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -547,7 +542,6 @@ resources:
     AppSyncStorageUploadServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-storage-upload-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -570,7 +564,6 @@ resources:
     AppSyncLoggingServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-logging-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -595,7 +588,6 @@ resources:
     AppSyncDynamoDbServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-dynamodb-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -628,7 +620,6 @@ resources:
     AppSyncQueueServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-queue-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -653,7 +644,6 @@ resources:
     AppSyncLambdaServiceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-appsync-lambda-service-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -681,7 +671,6 @@ resources:
     LambdaDataSourceRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-lambda-data-source-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -718,7 +707,6 @@ resources:
     PublishNotificationsRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-publish-notifications-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -751,7 +739,7 @@ resources:
                   Resource:
                     - !Join
                       - ''
-                      - - !Ref ${self:custom.names.${self:provider.stage}}
+                      - - !Ref ${self:custom.resourceName}
                         - '/types/Mutation/fields/notificationBeacon'
                 - Effect: Allow
                   Action:
@@ -763,17 +751,9 @@ resources:
                     - 'arn:aws:logs:*:*:*'
 
   Outputs:
-    AccountsApiArn:
-      Description: Accounts API ARN
-      Value: !Ref ${self:custom.names.${self:provider.stage}}
-      Export:
-        Name: ${self:provider.stage}-AccountsApiArn
-
-    AccountsApiEndpoint:
-      Description: Accounts API endpoint
+    AccountsApiUrl:
+      Description: Accounts API URL
       Value:
         Fn::GetAtt:
-          - ${self:custom.names.${self:provider.stage}}
+          - ${self:custom.resourceName}
           - GraphQLUrl
-      Export:
-        Name: ${self:provider.stage}-AccountsApiEndpoint

@@ -77,7 +77,6 @@ resources:
     LambdaFunctionRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${self:custom.prefix}-storage-lambda-function-role
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:

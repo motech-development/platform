@@ -10,7 +10,8 @@
     "predeploy": "./scripts/build.sh",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand"
+    "test:ci": "jest --coverage --runInBand",
+    "update:definitions": "serverless invoke -f UpdateDefinitions"
   },
   "jest": {
     "collectCoverageFrom": [
