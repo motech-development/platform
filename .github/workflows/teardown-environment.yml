@@ -5,6 +5,8 @@ on:
     types:
       - closed
 
+permissions: read-all
+
 jobs:
   setup:
     name: Setup
