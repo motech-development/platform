@@ -201,7 +201,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy ID infrastructure
-        run: yarn deploy -- --scope=@id/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
+        run: yarn deploy -- --scope=@id/infrastructure -- -- --stage $STAGE
 
       - name: Build ID client
         run: yarn build --scope=@id/client
@@ -210,7 +210,7 @@ jobs:
         run: yarn build --scope=@id/emails
 
       - name: Deploy client
-        run: yarn deploy -- --scope=@id/client -- -- --stage $STAGE --domain-name $PROD_DOMAIN --prefix $PREFIX
+        run: yarn deploy -- --scope=@id/client -- -- --stage $STAGE
 
       - name: Deploy to Auth0
         run: yarn deploy -- --scope=@id/tenant -- -- -c config.json
@@ -260,7 +260,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@open-banking/api -- -- --stage $STAGE --appId $YAPILY_APPLICATION_KEY --appSecret $YAPILY_APPLICATION_SECRET
+        run: yarn deploy -- --scope=@open-banking/api -- -- --stage $STAGE
 
   deploy-anti-virus:
     runs-on: ubuntu-latest
@@ -351,10 +351,10 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy core infrastructure
-        run: yarn deploy -- --scope=@core/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN
+        run: yarn deploy -- --scope=@core/infrastructure -- -- --stage $STAGE
 
       - name: Deploy comms infrastructure
-        run: yarn deploy -- --scope=@core/comms -- -- --stage $STAGE --domain-name $PROD_DOMAIN
+        run: yarn deploy -- --scope=@core/comms -- -- --stage $STAGE
 
   deploy-accounts-storage:
     runs-on: ubuntu-latest
@@ -596,7 +596,7 @@ jobs:
             ${{ runner.os }}-accounts-client-env-vars-deploy-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE --issuer $AUTH0_DOMAIN
+        run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE
 
   deploy-accounts-infrastructure:
     runs-on: ubuntu-latest
@@ -642,7 +642,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/infrastructure -- -- --stage $STAGE --domain-name $PROD_DOMAIN
+        run: yarn deploy -- --scope=@accounts/infrastructure -- -- --stage $STAGE
 
   deploy-accounts-notifications:
     runs-on: ubuntu-latest
@@ -750,4 +750,4 @@ jobs:
         run: yarn build --scope=@accounts/client
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/client -- -- --stage $STAGE --domain-name $PROD_DOMAIN
+        run: yarn deploy -- --scope=@accounts/client -- -- --stage $STAGE

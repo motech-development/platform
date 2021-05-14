@@ -86,62 +86,60 @@ jobs:
         if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
         run: yarn package
 
-      # TODO: Re-enable
-      # - name: Lint code
-      #   run: yarn lint
+      - name: Lint code
+        run: yarn lint
 
-  # TODO: Re-enable unit tests
-  # unit-tests:
-  #   name: Unit tests
+  unit-tests:
+    name: Unit tests
 
-  #   runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  #   needs: setup
+    needs: setup
 
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2.3.4
-  #       with:
-  #         fetch-depth: 0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
 
-  #     - name: Set Node version
-  #       uses: actions/setup-node@v2.1.5
-  #       with:
-  #         node-version: 12
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 12
 
-  #     - name: Generate packages cache key
-  #       run: ./scripts/checksum.sh ./packages.txt packages
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
-  #     - name: Restore Node modules
-  #       uses: actions/cache@v2.1.5
-  #       with:
-  #         path: |
-  #           ./node_modules
-  #           ./applications/*/*/node_modules
-  #           ./packages/*/node_modules
-  #         key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-modules-
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
 
-  #     - name: Restore packages
-  #       uses: actions/cache@v2.1.5
-  #       with:
-  #         path: ./packages/*/lib
-  #         key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-packages-
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
 
-  #     - name: Unit test
-  #       run: yarn test:ci
+      - name: Unit test
+        run: yarn test:ci
 
-  #     - name: Fix paths for SonarCloud Scan
-  #       run: ./scripts/sonar-scanner-path-fix.sh
+      - name: Fix paths for SonarCloud Scan
+        run: ./scripts/sonar-scanner-path-fix.sh
 
-  #     - name: SonarCloud Scan
-  #       uses: sonarsource/sonarcloud-github-action@master
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # Auth0 tenant
   auth0-tenant:
@@ -149,8 +147,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # TODO: unit-tests
-    needs: setup
+    needs: unit-tests
 
     env:
       AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_DEV }}
@@ -219,8 +216,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # TODO: unit-tests
-    needs: setup
+    needs: unit-tests
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -269,8 +265,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # TODO: unit-tests
-    needs: setup
+    needs: unit-tests
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -321,8 +316,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      # TODO: unit-tests
-      - setup
+      - unit-tests
       - accounts-data
       - open-banking
 
@@ -372,8 +366,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      # TODO: unit-tests
-      - setup
+      - unit-tests
       - anti-virus
 
     env:
@@ -422,8 +415,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      # TODO: unit-tests
-      - setup
+      - unit-tests
       - accounts-storage
 
     env:
@@ -472,8 +464,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      # TODO: unit-tests
-      - setup
+      - unit-tests
       - accounts-data
 
     env:
@@ -522,8 +513,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      # TODO: unit-tests
-      - setup
+      - unit-tests
       - accounts-data
       - accounts-notifications
       - accounts-storage
@@ -574,8 +564,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      # TODO: unit-tests
-      - setup
+      - unit-tests
       - accounts-data
       - accounts-queue
       - accounts-reports
@@ -656,8 +645,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      # TODO: unit-tests
-      - setup
+      - unit-tests
       - auth0-tenant
       - accounts-api
 

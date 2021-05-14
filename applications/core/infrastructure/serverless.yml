@@ -8,7 +8,7 @@ provider:
 
 custom:
   prefix: ${self:service}-${self:provider.stage}
-  domainName: ${opt:domain-name}
+  domainName: ${env:PROD_DOMAIN}
 
 resources:
   Resources:
