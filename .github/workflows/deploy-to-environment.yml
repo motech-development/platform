@@ -625,7 +625,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ env.GITHUB_RUN_ID }}
+          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
@@ -634,23 +634,22 @@ jobs:
 
       - name: Export env vars
         shell: bash
+        # TODO: REMOVE DEBUG
         run: |
           while read line; do
-            echo "$line" >> $GITHUB_ENV
+            echo $line
+            echo $line | sed -e "s/ = /=/" | tr -d '"' >> $GITHUB_ENV
           done < ./applications/accounts/client/.env.production
 
       - name: Publish URL
         uses: unsplash/comment-on-pr@master
-        env:
-          APP_APPSYNC_URL: ${{ env.REACT_APP_APPSYNC_URL }}
-          APP_AWS_REGION: ${{ env.REACT_APP_AWS_REGION }}
         with:
           msg: |
             Add these params to your `.env.local` file
 
             ```
-            REACT_APP_APPSYNC_URL = "${{ env.APP_APPSYNC_URL }}"
-            REACT_APP_AWS_REGION = "${{ env.APP_AWS_REGION }}"
+            REACT_APP_APPSYNC_URL = "${{ env.REACT_APP_APPSYNC_URL }}"
+            REACT_APP_AWS_REGION = "${{ env.REACT_APP_AWS_REGION }}"
             ```
 
   # Accounts (client)
@@ -721,7 +720,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ env.GITHUB_RUN_ID }}
+          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
