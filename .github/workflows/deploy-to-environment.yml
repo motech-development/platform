@@ -633,14 +633,10 @@ jobs:
         run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE
 
       - name: Export env vars
-        shell: bash
-        # TODO: REMOVE DEBUG
-        run: |
-          cat ./applications/accounts/client/.env.production
-          while read line; do
-            echo $line
-            echo $line | sed -e "s/ = /=/" | tr -d '"' >> $GITHUB_ENV
-          done < ./applications/accounts/client/.env.production
+        uses: xom9ikk/dotenv@v1.0.2
+        with:
+          path: ./applications/accounts/client
+          mode: production
 
       - name: Publish URL
         uses: unsplash/comment-on-pr@master
