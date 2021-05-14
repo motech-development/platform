@@ -8,6 +8,8 @@ on:
       - reopened
       - synchronize
 
+if: github.actor != 'dependabot[bot]'
+
 jobs:
   label:
     name: Label PR
