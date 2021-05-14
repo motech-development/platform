@@ -8,8 +8,6 @@ on:
       - reopened
       - synchronize
 
-permissions: read-all
-
 jobs:
   label:
     name: Label PR
