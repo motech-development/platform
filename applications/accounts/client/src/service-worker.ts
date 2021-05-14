@@ -66,7 +66,7 @@ registerRoute(
 );
 
 registerRoute(
-  new RegExp(/^https:\/\/fonts.(googleapis|gstatic).com/),
+  new RegExp(/^https:\/\/fonts\.(googleapis|gstatic).com/),
   new StaleWhileRevalidate({
     cacheName: 'fonts',
     plugins: [

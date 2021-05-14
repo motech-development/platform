@@ -8,21 +8,14 @@ on:
         required: true
         default: dependabot
 
-      mustBeGreen:
-        description: Only combine PRs that are green (status is success)
-        required: true
-        default: false
-
       combineBranchName:
         description: Name of the branch to combine PRs into
         required: true
 
-      ignoreLabel:
-        description: Exclude PRs with this label
-        required: true
-
 jobs:
   combine-prs:
+    name: Combine PRs
+
     runs-on: ubuntu-latest
 
     steps:
@@ -45,32 +38,6 @@ jobs:
               if (branch.startsWith('${{ github.event.inputs.branchPrefix }}')) {
                 console.log('Branch matched: ' + branch);
                 statusOK = true;
-                if(${{ github.event.inputs.mustBeGreen }}) {
-                  console.log('Checking green status: ' + branch);
-                  const statuses = await github.paginate('GET /repos/{owner}/{repo}/commits/{ref}/status', {
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    ref: branch
-                  });
-                  if(statuses.length > 0) {
-                    const latest_status = statuses[0]['state'];
-                    console.log('Validating status: ' + latest_status);
-                    if(latest_status != 'success') {
-                      console.log('Discarding ' + branch + ' with status ' + latest_status);
-                      statusOK = false;
-                    }
-                  }
-                }
-                console.log('Checking labels: ' + branch);
-                const labels = pull['labels'];
-                for(const label of labels) {
-                  const labelName = label['name'];
-                  console.log('Checking label: ' + labelName);
-                  if(labelName == '${{ github.event.inputs.ignoreLabel }}') {
-                    console.log('Discarding ' + branch + ' with label ' + labelName);
-                    statusOK = false;
-                  }
-                }
                 if (statusOK) {
                   console.log('Adding branch to array: ' + branch);
                   branches.push(branch);
@@ -132,5 +99,6 @@ jobs:
               title: 'Combined PR',
               head: '${{ github.event.inputs.combineBranchName }}',
               base: '${{ steps.fetch-branch-names.outputs.base-branch }}',
-              body: body
+              body: body,
+              draft: true
             });
