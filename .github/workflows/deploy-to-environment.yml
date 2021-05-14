@@ -636,6 +636,7 @@ jobs:
         shell: bash
         # TODO: REMOVE DEBUG
         run: |
+          cat ./applications/accounts/client/.env.production
           while read line; do
             echo $line
             echo $line | sed -e "s/ = /=/" | tr -d '"' >> $GITHUB_ENV
