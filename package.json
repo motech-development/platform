@@ -79,7 +79,7 @@
     "cache-loader": "^4.1.0",
     "commitizen": "^4.2.3",
     "copy-webpack-plugin": "6.4.0",
-    "cypress": "^6.8.0",
+    "cypress": "7.3.0",
     "cypress-axe": "^0.12.2",
     "cypress-file-upload": "^5.0.3",
     "cypress-localstorage-commands": "^1.4.1",
