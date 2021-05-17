@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "deploy": "serverless deploy --verbose --force",
+    "deploy:warm-up": "serverless invoke -f WarmUp",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
     "precommit": "lint-staged",
     "teardown": "serverless remove --verbose",
@@ -23,6 +24,7 @@
   },
   "dependencies": {
     "decimal.js": "^10.2.1",
+    "luxon": "^1.26.0",
     "uuid": "^8.3.2"
   }
 }

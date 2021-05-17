@@ -86,6 +86,12 @@ functions:
     environment:
       TABLE: !Ref ApplicationTable
 
+  WarmUp:
+    handler: src/warm-up.handler
+    role: DataLambdaFunctionRole
+    environment:
+      TABLE: !Ref ApplicationTable
+
 resources:
   Resources:
     ApplicationTable:

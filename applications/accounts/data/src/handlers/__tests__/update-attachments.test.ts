@@ -39,7 +39,7 @@ describe('update-attachments', () => {
 
     bucket = 'upload-bucket';
 
-    records = ([
+    records = [
       {
         messageAttributes: {
           key: {
@@ -101,7 +101,7 @@ describe('update-attachments', () => {
           },
         },
       },
-    ] as unknown) as SQSRecord[];
+    ] as unknown as SQSRecord[];
   });
 
   afterAll(() => {

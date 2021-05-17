@@ -26,7 +26,7 @@ describe('clear-attachments', () => {
       }),
     });
 
-    event = ({
+    event = {
       Records: [
         {
           messageAttributes: {
@@ -71,7 +71,7 @@ describe('clear-attachments', () => {
           },
         },
       ],
-    } as unknown) as SQSEvent;
+    } as unknown as SQSEvent;
   });
 
   it('should throw an error if no table is set', async () => {
