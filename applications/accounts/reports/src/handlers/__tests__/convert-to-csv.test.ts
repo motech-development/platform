@@ -41,7 +41,7 @@ describe('convert-to-csv', () => {
           description: 'Mobile',
           in: null,
           name: 'EE',
-          out: '-£41.11',
+          out: '£41.11',
         },
         {
           category: 'Bills',
@@ -49,7 +49,7 @@ describe('convert-to-csv', () => {
           description: 'Domain',
           in: null,
           name: 'GoDaddy',
-          out: '-£2.40',
+          out: '£2.40',
         },
       ],
       owner: 'OWNER-ID',
