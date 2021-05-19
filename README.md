@@ -1,4 +1,4 @@
-![Deploy](https://github.com/motech-development/platform/workflows/Deploy/badge.svg?branch=master)
+[![Deploy to production](https://github.com/motech-development/platform/actions/workflows/deploy-to-production.yml/badge.svg)](https://github.com/motech-development/platform/actions/workflows/deploy-to-production.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=motech-development_platform&metric=alert_status)](https://sonarcloud.io/dashboard?id=motech-development_platform)
 
 # Platform

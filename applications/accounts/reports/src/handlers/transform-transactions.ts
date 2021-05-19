@@ -72,17 +72,17 @@ export const handler: Handler<IEvent> = async (event) => {
 
   /* eslint-disable sort-keys */
   const csv = sorted.map(({ amount, category, date, description, name }) => ({
-    date: DateTime.fromISO(date).toFormat('dd/LL/yyyy'),
-    category,
-    name,
-    description,
-    in:
+    Date: DateTime.fromISO(date).toFormat('dd/LL/yyyy'),
+    Category: category,
+    Name: name,
+    Description: description,
+    In:
       amount >= 0
         ? `${result.currency}${amount.toFixed(2)}`
         : `${result.currency}0.00`,
-    out:
+    Out:
       amount < 0
-        ? `-${result.currency}${Math.abs(amount).toFixed(2)}`
+        ? `${result.currency}${Math.abs(amount).toFixed(2)}`
         : `${result.currency}0.00`,
   }));
   /* eslint-enable sort-keys */

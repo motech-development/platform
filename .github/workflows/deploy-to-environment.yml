@@ -459,6 +459,9 @@ jobs:
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/data -- -- --stage $STAGE
 
+      - name: Warm up
+        run: yarn execute deploy:warm-up -- --scope=@accounts/data -- -- --stage $STAGE
+
   # Accounts (notifications)
   accounts-notifications:
     name: Deploy accounts notifications

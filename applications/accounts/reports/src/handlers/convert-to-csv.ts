@@ -12,12 +12,12 @@ const schema = object({
   companyId: string().required(),
   csv: array(
     object({
-      category: string().required(),
-      date: string().required(),
-      description: string().required(),
-      in: string().nullable(),
-      name: string().required(),
-      out: string().nullable(),
+      Category: string().required(),
+      Date: string().required(),
+      Description: string().required(),
+      In: string().nullable(),
+      Name: string().required(),
+      Out: string().nullable(),
     }).required(),
   ).required(),
   owner: string().required(),
@@ -30,12 +30,12 @@ export interface IEvent {
   }[];
   companyId: string;
   csv: {
-    category: string;
-    date: string;
-    description: string;
-    in: string | null;
-    name: string;
-    out: string | null;
+    Category: string;
+    Date: string;
+    Description: string;
+    In: string | null;
+    Name: string;
+    Out: string | null;
   }[];
   owner: string;
 }

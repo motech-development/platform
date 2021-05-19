@@ -107,6 +107,12 @@ stepFunctions:
           CreateZip:
             Type: Task
             Resource: !GetAtt CreateZipLambdaFunction.Arn
+            Retry:
+              - ErrorEquals:
+                  - States.ALL
+                BackoffRate: 2
+                IntervalSeconds: 5
+                MaxAttempts: 3
             Next: GenerateDownloadLink
 
           GenerateDownloadLink:
