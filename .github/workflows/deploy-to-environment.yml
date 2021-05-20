@@ -656,6 +656,13 @@ jobs:
       - auth0-tenant
       - accounts-api
 
+    strategy:
+      fail-fast: false
+      matrix:
+        containers:
+          - 1
+          - 2
+
     env:
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
@@ -722,7 +729,7 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: yarn e2e:ci -- --scope=@accounts/client -- -- --record false
+          command: yarn e2e:ci -- --scope=@accounts/client -- -- --record false --parallel
           config: defaultCommandTimeout=20000
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
@@ -827,7 +834,7 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: yarn e2e:ci -- --scope=@accounts/client -- -- --parallel
+          command: yarn e2e:ci -- --scope=@accounts/client -- -- --record --parallel
           config: defaultCommandTimeout=20000
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
