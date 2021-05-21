@@ -4,7 +4,7 @@
   "description": "Cypress testing storage",
   "private": true,
   "scripts": {
-    "deploy": "serverless deploy --verbose --force",
+    "deploy": "serverless deploy --verbose",
     "teardown": "serverless remove --verbose"
   }
 }
