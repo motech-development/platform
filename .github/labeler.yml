@@ -13,6 +13,10 @@ core:
   - applications/core/*
   - applications/core/**/*
 
+cypress:
+  - applications/cypress/*
+  - applications/cypress/**/*
+
 id:
   - applications/id/*
   - applications/id/**/*

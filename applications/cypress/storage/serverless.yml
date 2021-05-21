@@ -1,0 +1,30 @@
+service: ${opt:appName, 'cypress'}
+
+provider:
+  name: aws
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-storage
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+
+resources:
+  Resources:
+    ResultsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.prefix}-results
+        AccessControl: PublicRead
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - POST
+                - GET
+                - PUT
+                - DELETE
+                - HEAD
+              AllowedOrigins:
+                - '*'
