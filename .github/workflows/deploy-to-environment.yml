@@ -664,6 +664,7 @@ jobs:
           - 2
 
     env:
+      CYPRESS_API_URL: ${{ secrets.CYPRESS_API_URL }}
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
       CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
@@ -729,7 +730,8 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: yarn e2e:ci -- --scope=@accounts/client -- -- --record false --parallel
+          # TODO: Use a secure key
+          command: yarn e2e:ci -- --scope=@accounts/client -- -- --key xxxx
           config: defaultCommandTimeout=20000
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
