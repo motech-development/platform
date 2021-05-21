@@ -4,7 +4,6 @@ on:
   pull_request:
     types:
       - opened
-      - ready_for_review
       - reopened
       - synchronize
 
@@ -772,24 +771,8 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          # TODO: Use a secure key
-          command: yarn e2e:ci -- --scope=@accounts/client -- -- --key xxxx
+          command: yarn e2e:ci -- --scope=@accounts/client
           config: defaultCommandTimeout=20000
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000
-
-      # TODO: Remove this and use the dashboard
-      - name: Upload error screenshots
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-screenshots
-          path: applications/accounts/client/cypress/screenshots
-
-      - name: Upload error video
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: cypress-videos
-          path: applications/accounts/client/cypress/videos
