@@ -666,9 +666,6 @@ jobs:
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE
 
-      - name: Warm up
-        run: yarn execute deploy:warm-up -- --scope=@accounts/data -- -- --stage $STAGE
-
       - name: Export env vars
         uses: xom9ikk/dotenv@v1.0.2
         with:
@@ -767,6 +764,9 @@ jobs:
 
       - name: Build client
         run: yarn build -- --scope=@accounts/client
+
+      - name: Warm up
+        run: yarn execute deploy:warm-up -- --scope=@accounts/data -- -- --stage $STAGE
 
       - name: Smoke tests
         uses: cypress-io/github-action@v2
