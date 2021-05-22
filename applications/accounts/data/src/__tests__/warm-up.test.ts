@@ -46,15 +46,131 @@ describe('warm up', () => {
     it('should input the correct data into the database', async () => {
       await handler(null, context, callback);
 
-      expect(DocumentClient.prototype.put).toHaveBeenCalledWith({
-        Item: {
-          __typename: 'WarmUp',
-          createdAt: '2021-04-11T19:45:00.000Z',
-          data: 'WarmUp:2021-04-11T19:45:00.000Z',
-          id: 'test-uuid',
-          ttl: 1618170300,
+      expect(DocumentClient.prototype.batchWrite).toHaveBeenCalledWith({
+        RequestItems: {
+          'TABLE-NAME': [
+            {
+              PutRequest: {
+                Item: {
+                  __typename: 'WarmUp',
+                  createdAt: '2021-04-11T19:45:00.000Z',
+                  data: 'WarmUp:2021-04-11T19:45:00.000Z',
+                  id: 'test-uuid',
+                  ttl: 1618170300,
+                },
+              },
+            },
+            {
+              PutRequest: {
+                Item: {
+                  __typename: 'WarmUp',
+                  createdAt: '2021-04-11T19:45:00.000Z',
+                  data: 'WarmUp:2021-04-11T19:45:00.000Z',
+                  id: 'test-uuid',
+                  ttl: 1618170300,
+                },
+              },
+            },
+            {
+              PutRequest: {
+                Item: {
+                  __typename: 'WarmUp',
+                  createdAt: '2021-04-11T19:45:00.000Z',
+                  data: 'WarmUp:2021-04-11T19:45:00.000Z',
+                  id: 'test-uuid',
+                  ttl: 1618170300,
+                },
+              },
+            },
+            {
+              PutRequest: {
+                Item: {
+                  __typename: 'WarmUp',
+                  createdAt: '2021-04-11T19:45:00.000Z',
+                  data: 'WarmUp:2021-04-11T19:45:00.000Z',
+                  id: 'test-uuid',
+                  ttl: 1618170300,
+                },
+              },
+            },
+            {
+              PutRequest: {
+                Item: {
+                  __typename: 'WarmUp',
+                  createdAt: '2021-04-11T19:45:00.000Z',
+                  data: 'WarmUp:2021-04-11T19:45:00.000Z',
+                  id: 'test-uuid',
+                  ttl: 1618170300,
+                },
+              },
+            },
+            {
+              PutRequest: {
+                Item: {
+                  __typename: 'Notification',
+                  createdAt: '2021-04-11T19:45:00.000Z',
+                  data: 'internal-user:Notification:2021-04-11T19:45:00.000Z',
+                  id: 'test-uuid',
+                  message: 'WARM_UP_NOTIFICATION',
+                  owner: 'internal-user',
+                  read: false,
+                },
+              },
+            },
+            {
+              PutRequest: {
+                Item: {
+                  __typename: 'Notification',
+                  createdAt: '2021-04-11T19:45:00.000Z',
+                  data: 'internal-user:Notification:2021-04-11T19:45:00.000Z',
+                  id: 'test-uuid',
+                  message: 'WARM_UP_NOTIFICATION',
+                  owner: 'internal-user',
+                  read: false,
+                },
+              },
+            },
+            {
+              PutRequest: {
+                Item: {
+                  __typename: 'Notification',
+                  createdAt: '2021-04-11T19:45:00.000Z',
+                  data: 'internal-user:Notification:2021-04-11T19:45:00.000Z',
+                  id: 'test-uuid',
+                  message: 'WARM_UP_NOTIFICATION',
+                  owner: 'internal-user',
+                  read: false,
+                },
+              },
+            },
+            {
+              PutRequest: {
+                Item: {
+                  __typename: 'Notification',
+                  createdAt: '2021-04-11T19:45:00.000Z',
+                  data: 'internal-user:Notification:2021-04-11T19:45:00.000Z',
+                  id: 'test-uuid',
+                  message: 'WARM_UP_NOTIFICATION',
+                  owner: 'internal-user',
+                  read: false,
+                },
+              },
+            },
+            {
+              PutRequest: {
+                Item: {
+                  __typename: 'Notification',
+                  createdAt: '2021-04-11T19:45:00.000Z',
+                  data: 'internal-user:Notification:2021-04-11T19:45:00.000Z',
+                  id: 'test-uuid',
+                  message: 'WARM_UP_NOTIFICATION',
+                  owner: 'internal-user',
+                  read: false,
+                },
+              },
+            },
+          ],
         },
-        TableName: 'TABLE-NAME',
       });
     });
 

@@ -1,4 +1,5 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 
 const publishNotification = (
@@ -7,7 +8,7 @@ const publishNotification = (
   owner: string,
   message: string,
 ) => {
-  const now = new Date();
+  const now = DateTime.utc();
 
   return documentClient
     .update({
@@ -19,8 +20,8 @@ const publishNotification = (
         '#read': 'read',
       },
       ExpressionAttributeValues: {
-        ':createdAt': now.toISOString(),
-        ':data': `${owner}:Notification:${now.toISOString()}`,
+        ':createdAt': now.toISO(),
+        ':data': `${owner}:Notification:${now.toISO()}`,
         ':message': message,
         ':owner': owner,
         ':read': false,

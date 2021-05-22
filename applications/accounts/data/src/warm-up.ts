@@ -12,21 +12,41 @@ export const handler: Handler = async () => {
     throw new Error('No table set');
   }
 
-  const id = uuid();
+  const owner = 'internal-user';
   const now = DateTime.utc();
   const createdAt = now.toISO();
   const ttl = Math.floor(now.toSeconds());
 
   await client
-    .put({
-      Item: {
-        __typename: 'WarmUp',
-        createdAt,
-        data: `WarmUp:${createdAt}`,
-        id,
-        ttl,
+    .batchWrite({
+      RequestItems: {
+        [TABLE]: [
+          ...[...Array(5)].map(() => ({
+            PutRequest: {
+              Item: {
+                __typename: 'WarmUp',
+                createdAt,
+                data: `WarmUp:${createdAt}`,
+                id: uuid(),
+                ttl,
+              },
+            },
+          })),
+          ...[...Array(5)].map(() => ({
+            PutRequest: {
+              Item: {
+                __typename: 'Notification',
+                createdAt,
+                data: `${owner}:Notification:${now.toISO()}`,
+                id: uuid(),
+                message: 'WARM_UP_NOTIFICATION',
+                owner,
+                read: false,
+              },
+            },
+          })),
+        ],
       },
-      TableName: TABLE,
     })
     .promise();
 
