@@ -147,11 +147,11 @@ resources:
               Statement:
                 - Effect: Allow
                   Action:
+                    - dynamodb:BatchWriteItem
                     - dynamodb:DescribeStream
                     - dynamodb:GetRecords
                     - dynamodb:GetShardIterator
                     - dynamodb:ListStreams
-                    - dynamodb:PutItem
                     - dynamodb:Query
                     - dynamodb:UpdateItem
                   Resource:
