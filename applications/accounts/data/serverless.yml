@@ -91,6 +91,7 @@ functions:
     role: DataLambdaFunctionRole
     environment:
       TABLE: !Ref ApplicationTable
+    timeout: 300
 
 resources:
   Resources:
