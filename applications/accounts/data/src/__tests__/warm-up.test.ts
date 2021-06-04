@@ -136,6 +136,14 @@ describe('warm up', () => {
 
       jest.runAllTimers();
 
+      await flushPromises();
+
+      jest.runAllTimers();
+
+      await flushPromises();
+
+      jest.runAllTimers();
+
       await expect(result).rejects.toThrow('Database has not warmed up');
     });
   });

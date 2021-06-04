@@ -1,3 +1,4 @@
+import logger from '@motech-development/logger';
 import { Handler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { DateTime } from 'luxon';
@@ -11,7 +12,7 @@ const wait = (delay: number) =>
 const poll = async (
   id: string,
   table: string,
-  maxAttempts = 4,
+  maxAttempts = 6,
   attempts = 1,
 ): Promise<boolean> => {
   const { Item } = await client
@@ -24,11 +25,23 @@ const poll = async (
     })
     .promise();
 
+  logger.info('Result from database', {
+    Item,
+    attempts,
+    maxAttempts,
+  });
+
   if (Item && attempts < maxAttempts) {
-    await wait(60000);
+    logger.info('Item found, sleeping for 3 minutes');
+
+    await wait(180000);
+
+    logger.info('Try polling again');
 
     return poll(id, table, maxAttempts, attempts + 1);
   }
+
+  logger.info('Polling complete');
 
   return !Item;
 };
@@ -45,6 +58,10 @@ export const handler: Handler = async () => {
   const createdAt = now.toISO();
   const ttl = Math.floor(now.toSeconds());
 
+  logger.info('Inserting warm up record', {
+    id,
+  });
+
   await client
     .put({
       Item: {
@@ -58,7 +75,13 @@ export const handler: Handler = async () => {
     })
     .promise();
 
+  logger.info('Starting to poll database');
+
   const complete = await poll(id, TABLE);
+
+  logger.info('Polling complete', {
+    complete,
+  });
 
   if (complete) {
     return {

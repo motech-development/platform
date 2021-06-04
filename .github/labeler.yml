@@ -53,6 +53,10 @@ ga-web-vitals:
   - packages/ga-web-vitals/*
   - packages/ga-web-vitals/**/*
 
+logger:
+  - packages/logger/*
+  - packages/logger/**/*
+
 query-string-hooks:
   - packages/query-string-hooks/*
   - packages/query-string-hooks/**/*

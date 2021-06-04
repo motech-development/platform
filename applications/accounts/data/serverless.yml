@@ -89,9 +89,9 @@ functions:
   WarmUp:
     handler: src/warm-up.handler
     role: DataLambdaFunctionRole
+    timeout: 900
     environment:
       TABLE: !Ref ApplicationTable
-    timeout: 300
 
 resources:
   Resources:
