@@ -503,6 +503,7 @@ jobs:
         run: yarn deploy -- --scope=@accounts/data -- -- --stage $STAGE
 
       - name: Warm up
+        if: github.event.action != 'synchronize'
         run: yarn execute deploy:warm-up -- --scope=@accounts/data -- -- --stage $STAGE
 
   # Accounts (notifications)
