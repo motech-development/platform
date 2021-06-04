@@ -1,5 +1,6 @@
 import winston from 'winston';
-import logger, { opts } from '../logger';
+import logger from '../logger';
+import opts from '../opts';
 
 describe('logger', () => {
   it('should configure Winston with the correct config', () => {
