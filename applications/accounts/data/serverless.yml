@@ -10,6 +10,7 @@ package:
   individually: true
 
 plugins:
+  - serverless-step-functions
   - serverless-webpack
   - serverless-prune-plugin
 
@@ -36,6 +37,12 @@ functions:
     environment:
       ATTACHMENT_QUEUE: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
 
+  CheckTtl:
+    handler: src/check-ttl.handler
+    role: DataLambdaFunctionRole
+    environment:
+      TABLE: !Ref ApplicationTable
+
   ClearAttachments:
     handler: src/clear-attachments.handler
     events:
@@ -44,6 +51,12 @@ functions:
     role: DataLambdaFunctionRole
     environment:
       BUCKET: !ImportValue ${self:provider.stage}-StorageUploadBucket
+      TABLE: !Ref ApplicationTable
+
+  InsertTtl:
+    handler: src/insert-ttl.handler
+    role: DataLambdaFunctionRole
+    environment:
       TABLE: !Ref ApplicationTable
 
   PublishTransactions:
@@ -86,12 +99,41 @@ functions:
     environment:
       TABLE: !Ref ApplicationTable
 
-  WarmUp:
-    handler: src/warm-up.handler
-    role: DataLambdaFunctionRole
-    timeout: 900
-    environment:
-      TABLE: !Ref ApplicationTable
+stepFunctions:
+  validate: true
+  stateMachines:
+    warmUp:
+      name: ${self:custom.prefix}-warm-up
+      definition:
+        Comment: Warm up DynamoDB TTL ahead of testing applications
+        StartAt: InsertTtl
+        States:
+          InsertTtl:
+            Type: Task
+            Resource: !GetAtt InsertTtlLambdaFunction.Arn
+            Next: WaitForCheck
+
+          WaitForCheck:
+            Type: Wait
+            Seconds: 180
+            Next: CheckTtl
+
+          CheckTtl:
+            Type: Task
+            Resource: !GetAtt CheckTtlLambdaFunction.Arn
+            Next: ShouldCheckTtl
+
+          ShouldCheckTtl:
+            Type: Choice
+            Choices:
+              - Variable: $.complete
+                BooleanEquals: false
+                Next: WaitForCheck
+            Default: WarmUpComplete
+
+          WarmUpComplete:
+            Type: Pass
+            End: true
 
 resources:
   Resources:
