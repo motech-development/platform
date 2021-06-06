@@ -1,0 +1,110 @@
+service: ${opt:appName, 'accounts'}
+
+provider:
+  name: aws
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}-warm-up
+
+package:
+  individually: true
+
+plugins:
+  - serverless-step-functions
+  - serverless-webpack
+  - serverless-prune-plugin
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 1
+
+  webpack:
+    includeModules: true
+    serializedCompile: true
+
+functions:
+  CheckTtl:
+    handler: src/check-ttl.handler
+    role: WarmUpLambdaFunctionRole
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+
+  InsertTtl:
+    handler: src/insert-ttl.handler
+    role: WarmUpLambdaFunctionRole
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+
+stepFunctions:
+  validate: true
+  stateMachines:
+    warmUp:
+      name: ${self:custom.prefix}-warm-up
+      definition:
+        Comment: Warm up DynamoDB TTL ahead of testing applications
+        StartAt: InsertTtl
+        States:
+          InsertTtl:
+            Type: Task
+            Resource: !GetAtt InsertTtlLambdaFunction.Arn
+            Next: WaitForCheck
+
+          WaitForCheck:
+            Type: Wait
+            Seconds: 180
+            Next: CheckTtl
+
+          CheckTtl:
+            Type: Task
+            Resource: !GetAtt CheckTtlLambdaFunction.Arn
+            Next: ShouldCheckTtl
+
+          ShouldCheckTtl:
+            Type: Choice
+            Choices:
+              - Variable: $.complete
+                BooleanEquals: false
+                Next: WaitForCheck
+            Default: WarmUpComplete
+
+          WarmUpComplete:
+            Type: Pass
+            End: true
+
+resources:
+  Resources:
+    WarmUpLambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-data-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:GetItem
+                    - dynamodb:PutItem
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
