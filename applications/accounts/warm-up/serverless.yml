@@ -28,13 +28,13 @@ custom:
 
 functions:
   CheckTtl:
-    handler: src/check-ttl.handler
+    handler: src/handlers/check-ttl.handler
     role: WarmUpLambdaFunctionRole
     environment:
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
   InsertTtl:
-    handler: src/insert-ttl.handler
+    handler: src/handlers/insert-ttl.handler
     role: WarmUpLambdaFunctionRole
     environment:
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
