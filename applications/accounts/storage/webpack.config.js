@@ -8,14 +8,7 @@ const nodeExternals = require('webpack-node-externals');
 module.exports = {
   devtool: 'source-map',
   entry: slsw.lib.entries,
-  externals: [
-    nodeExternals({
-      allowlist: [
-        '@motech-development/api-gateway-handler',
-        '@motech-development/s3-file-operations',
-      ],
-    }),
-  ],
+  externals: [nodeExternals()],
   mode: 'none',
   module: {
     rules: [
