@@ -552,7 +552,7 @@ jobs:
         run: yarn deploy -- --scope=@accounts/warm-up -- -- --stage $STAGE
 
       - name: Warm up
-        # if: github.event.action != 'synchronize'
+        if: github.event.action != 'synchronize'
         run: yarn start -- --scope=@accounts/warm-up -- -- --stage $STAGE
 
   # Accounts (notifications)
