@@ -1,6 +1,6 @@
-import { SSM } from 'aws-sdk';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit } from '@octokit/rest';
+import { SSM } from 'aws-sdk';
 import env from './env';
 
 const ssm = new SSM();
