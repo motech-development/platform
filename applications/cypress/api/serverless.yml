@@ -1,0 +1,95 @@
+service: cypress-api
+
+provider:
+  name: aws
+  lambdaHashingVersion: 20201221
+  region: ${opt:region, 'eu-west-1'}
+  stage: ${opt:stage, 'local'}
+  stackName: ${self:custom.prefix}
+  apiGateway:
+    apiKeys:
+      - value: ${env:CY_API_KEY}
+        description: Sorry-Cypress API key
+
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+  - serverless-prune-plugin
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 1
+
+  webpack:
+    includeModules: true
+    serializedCompile: true
+
+functions:
+  GithubStatus:
+    handler: src/handlers/github-status.handler
+    environment:
+      CY_API_GITHUB_APP_ID: ${env:CY_API_GITHUB_APP_ID}
+      CY_API_GITHUB_CLIENT_ID: ${env:CY_API_GITHUB_CLIENT_ID}
+      CY_API_GITHUB_INSTALLATION_ID: ${env:CY_API_GITHUB_INSTALLATION_ID}
+      GITHUB_APP_PRIVATE_KEY: !Ref GitHubAppPrivateKey
+    events:
+      - http:
+          method: post
+          path: api/v1/github-status
+          private: true
+    role: CypressApiLambdaFunctionRole
+
+resources:
+  Resources:
+    CypressApiLambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-lambda-function-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - ssm:GetParameter
+                  Resource:
+                    - !Join
+                      - ''
+                      - - 'arn:aws:ssm:'
+                        - !Ref AWS::Region
+                        - ':'
+                        - !Ref AWS::AccountId
+                        - ':parameter/'
+                        - !Ref GitHubAppPrivateKey
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+
+    # TODO: A more secure way of doing this
+    GitHubAppPrivateKey:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Description: GitHub app private key
+        Name: ${self:provider.stage}-GitHubAppPrivateKey
+        Value: ${env:CY_API_GITHUB_PRIVATE_KEY}
+        Type: String

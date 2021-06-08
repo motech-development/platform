@@ -1,0 +1,33 @@
+{
+  "name": "@cypress/api",
+  "version": "0.0.0",
+  "description": "Cypress API",
+  "private": true,
+  "scripts": {
+    "deploy": "serverless deploy --verbose --force",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "precommit": "lint-staged",
+    "start": "serverless offline start --env local",
+    "teardown": "serverless remove --verbose",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage --runInBand"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "setupFiles": [
+      "jest-date-mock"
+    ],
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "@motech-development/api-gateway-handler": "^0.0.0",
+    "@motech-development/logger": "^0.0.0",
+    "@octokit/auth-app": "^3.4.1",
+    "@octokit/rest": "^18.5.6",
+    "luxon": "^1.26.0",
+    "yup": "^0.29.1"
+  }
+}
