@@ -758,7 +758,6 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
       CYPRESS_API_URL: ${{ secrets.CYPRESS_API_URL }}
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL }}
@@ -828,8 +827,6 @@ jobs:
         with:
           command: yarn e2e:ci -- --scope=@accounts/client
           config: defaultCommandTimeout=20000
-          group: merge
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
-          tag: ${{ github.event_name }}
           wait-on: http://localhost:3000
