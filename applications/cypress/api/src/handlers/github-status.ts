@@ -53,12 +53,21 @@ export const handler = apiGatewayHandler(async (event) => {
     const [, sha] = data.commit.message.split(' ');
 
     switch (data.event) {
-      case Event.RUN_START: {
-        logger.info('Creating commit status after RUN_START event');
+      case Event.RUN_FINISH: {
+        logger.info('Creating commit status after RUN_FINISH event');
 
-        const state = State.Pending;
+        const duration = Duration.fromObject({
+          seconds: data.wallClockDurationSeconds,
+        }).toFormat('m:s');
+        const state = data.failures > 0 ? State.Failure : State.Success;
+        const test = (status: string) =>
+          data[status] === 1 ? 'test' : 'tests';
         const payload = {
           context,
+          description:
+            data.failures > 0
+              ? `${data.failures} ${test('failures')} failed`
+              : `${data.passes} ${test('passes')} passed in ${duration}`,
           owner,
           repo,
           sha,
@@ -78,21 +87,12 @@ export const handler = apiGatewayHandler(async (event) => {
           201,
         );
       }
-      case Event.RUN_FINISH: {
-        logger.info('Creating commit status after RUN_FINISH event');
+      case Event.RUN_START: {
+        logger.info('Creating commit status after RUN_START event');
 
-        const duration = Duration.fromObject({
-          seconds: data.wallClockDurationSeconds,
-        }).toFormat('m:s');
-        const state = data.failures > 0 ? State.Failure : State.Success;
+        const state = State.Pending;
         const payload = {
           context,
-          description:
-            data.failures > 0
-              ? `${data.failures} ${
-                  data.failures === 1 ? 'test' : 'tests'
-                } failed`
-              : `${data.passes} tests passed in ${duration}`,
           owner,
           repo,
           sha,
@@ -143,8 +143,13 @@ export const handler = apiGatewayHandler(async (event) => {
           event: data.event,
         });
 
-        // TODO: Work out why status code is incorrect
-        return response(null, 204);
+        return response(
+          {
+            message: 'Invalid request',
+            statusCode: 400,
+          },
+          400,
+        );
       }
     }
   } catch (e) {
