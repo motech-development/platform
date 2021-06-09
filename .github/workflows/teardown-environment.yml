@@ -121,7 +121,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DEFINITIONS_BUCKET: s3://anti-virus-${{ github.event.pull_request.number }}-definitions
+      DEFINITIONS_BUCKET: s3://anti-virus-119-definitions
       STAGE: 119
 
     steps:
@@ -208,9 +208,9 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DOWNLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number }}-downloads
+      DOWNLOAD_BUCKET: s3://accounts-119-downloads
       STAGE: 119
-      UPLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number }}-uploads
+      UPLOAD_BUCKET: s3://accounts-119-uploads
 
     steps:
       - name: Checkout code
@@ -378,7 +378,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      REPORTS_BUCKET: s3://accounts-${{ github.event.pull_request.number }}-reports
+      REPORTS_BUCKET: s3://accounts-119-reports
       STAGE: 119
 
     steps:
