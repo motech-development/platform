@@ -26,9 +26,7 @@ const schema = object({
     message: string().required(),
     remoteOrigin: string().url().required(),
   }).required(),
-  event: string()
-    .oneOf([Event.RUN_FINISH, Event.RUN_START, Event.RUN_TIMEOUT])
-    .required(),
+  event: string().required(),
   failures: number().required(),
   passes: number().required(),
   runUrl: string().url().required(),
@@ -93,6 +91,7 @@ export const handler = apiGatewayHandler(async (event) => {
         const state = State.Pending;
         const payload = {
           context,
+          description: 'In progress — This check has started...',
           owner,
           repo,
           sha,
