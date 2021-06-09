@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Fetch branch names
-        uses: actions/github-script@v3
+        uses: actions/github-script@v4.0.2
         id: fetch-branch-names
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
@@ -87,7 +87,7 @@ jobs:
           git push origin $COMBINE_BRANCH_NAME
 
       - name: Create Combined Pull Request
-        uses: actions/github-script@v3
+        uses: actions/github-script@v4.0.2
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
