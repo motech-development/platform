@@ -62,9 +62,15 @@ jobs:
         if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
         run: yarn
 
+      - name: Build packages
+        if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
+        run: yarn package
+
   # Open banking
   open-banking:
     name: Teardown Open Banking API
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -107,6 +113,8 @@ jobs:
   anti-virus:
     name: Teardown anti virus
 
+    if: always()
+
     runs-on: ubuntu-latest
 
     needs:
@@ -129,6 +137,9 @@ jobs:
         with:
           node-version: 12
 
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
       - name: Restore Node modules
         uses: actions/cache@v2.1.5
         with:
@@ -140,6 +151,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-modules-
 
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
       - name: Clear bucket
         run: aws s3 rm $DEFINITIONS_BUCKET --recursive
 
@@ -149,6 +168,8 @@ jobs:
   # Accounts (queue)
   accounts-queue:
     name: Teardown accounts queue
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -164,6 +185,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.3.4
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
@@ -181,12 +205,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-modules-
 
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
       - name: Teardown
         run: yarn teardown -- --scope=@accounts/queue -- -- --stage $STAGE
 
   # Accounts (storage)
   accounts-storage:
     name: Teardown accounts storage
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -208,6 +242,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2.3.4
 
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
         with:
@@ -224,6 +261,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-modules-
 
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
       - name: Clear bucket
         run: |
           aws s3 rm $DOWNLOAD_BUCKET --recursive
@@ -235,6 +280,8 @@ jobs:
   # Accounts (data)
   accounts-data:
     name: Teardown accounts data
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -259,6 +306,9 @@ jobs:
         with:
           node-version: 12
 
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
       - name: Restore Node modules
         uses: actions/cache@v2
         with:
@@ -270,12 +320,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-modules-
 
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
       - name: Teardown
         run: yarn teardown -- --scope=@accounts/data -- -- --stage $STAGE
 
   # Accounts (warm up)
   accounts-warm-up:
     name: Teardown accounts warm up
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -296,6 +356,9 @@ jobs:
         with:
           node-version: 12
 
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
       - name: Restore Node modules
         uses: actions/cache@v2
         with:
@@ -307,12 +370,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-modules-
 
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
       - name: Teardown
         run: yarn teardown -- --scope=@accounts/warm-up -- -- --stage $STAGE
 
   # Accounts (notifications)
   accounts-notifications:
     name: Teardown accounts notifications
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -334,6 +407,9 @@ jobs:
         with:
           node-version: 12
 
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
       - name: Restore Node modules
         uses: actions/cache@v2.1.5
         with:
@@ -345,12 +421,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-modules-
 
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
       - name: Teardown
         run: yarn teardown -- --scope=@accounts/notifications -- -- --stage $STAGE
 
   # Accounts (reports)
   accounts-reports:
     name: Teardown accounts reports
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -374,6 +460,9 @@ jobs:
         with:
           node-version: 12
 
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
       - name: Restore Node modules
         uses: actions/cache@v2.1.5
         with:
@@ -385,6 +474,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-modules-
 
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
       - name: Clear bucket
         run: aws s3 rm $REPORTS_BUCKET --recursive
 
@@ -394,6 +491,8 @@ jobs:
   # Accounts (API)
   accounts-api:
     name: Teardown accounts API
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -417,14 +516,6 @@ jobs:
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
-      - name: Restore packages
-        uses: actions/cache@v2.1.5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
       - name: Restore Node modules
         uses: actions/cache@v2.1.5
         with:
@@ -435,6 +526,14 @@ jobs:
           key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
 
       - name: Teardown
         run: yarn teardown -- --scope=@accounts/api -- -- --stage $STAGE
