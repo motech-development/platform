@@ -45,7 +45,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -54,7 +54,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -82,7 +82,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 112
+      STAGE: 124
       YAPILY_APPLICATION_KEY: ${{ secrets.YAPILY_APPLICATION_KEY }}
       YAPILY_APPLICATION_SECRET: ${{ secrets.YAPILY_APPLICATION_SECRET }}
 
@@ -102,7 +102,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -125,8 +125,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DEFINITIONS_BUCKET: s3://anti-virus-112-definitions
-      STAGE: 112
+      DEFINITIONS_BUCKET: s3://anti-virus-124-definitions
+      STAGE: 124
 
     steps:
       - name: Checkout code
@@ -147,7 +147,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -155,7 +155,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -180,7 +180,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 112
+      STAGE: 124
 
     steps:
       - name: Checkout code
@@ -201,7 +201,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -209,7 +209,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -234,9 +234,9 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DOWNLOAD_BUCKET: s3://accounts-112-downloads
-      STAGE: 112
-      UPLOAD_BUCKET: s3://accounts-112-uploads
+      DOWNLOAD_BUCKET: s3://accounts-124-downloads
+      STAGE: 124
+      UPLOAD_BUCKET: s3://accounts-124-uploads
 
     steps:
       - name: Checkout code
@@ -257,7 +257,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -265,7 +265,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -295,7 +295,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 112
+      STAGE: 124
 
     steps:
       - name: Checkout code
@@ -316,7 +316,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -324,7 +324,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -345,7 +345,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 112
+      STAGE: 124
 
     steps:
       - name: Checkout code
@@ -366,7 +366,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -374,7 +374,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -396,7 +396,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 112
+      STAGE: 124
 
     steps:
       - name: Checkout code
@@ -417,7 +417,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -425,7 +425,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -448,8 +448,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      REPORTS_BUCKET: s3://accounts-112-reports
-      STAGE: 112
+      REPORTS_BUCKET: s3://accounts-124-reports
+      STAGE: 124
 
     steps:
       - name: Checkout code
@@ -470,7 +470,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -478,7 +478,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -502,7 +502,7 @@ jobs:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 112
+      STAGE: 124
 
     steps:
       - name: Checkout code
@@ -523,7 +523,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -531,7 +531,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
