@@ -66,6 +66,8 @@ jobs:
   open-banking:
     name: Teardown Open Banking API
 
+    if: always()
+
     runs-on: ubuntu-latest
 
     needs:
@@ -106,6 +108,8 @@ jobs:
   # Anti virus
   anti-virus:
     name: Teardown anti virus
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -150,6 +154,8 @@ jobs:
   accounts-queue:
     name: Teardown accounts queue
 
+    if: always()
+
     runs-on: ubuntu-latest
 
     needs:
@@ -187,6 +193,8 @@ jobs:
   # Accounts (storage)
   accounts-storage:
     name: Teardown accounts storage
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -236,6 +244,8 @@ jobs:
   accounts-data:
     name: Teardown accounts data
 
+    if: always()
+
     runs-on: ubuntu-latest
 
     needs:
@@ -277,6 +287,8 @@ jobs:
   accounts-warm-up:
     name: Teardown accounts warm up
 
+    if: always()
+
     runs-on: ubuntu-latest
 
     needs:
@@ -313,6 +325,8 @@ jobs:
   # Accounts (notifications)
   accounts-notifications:
     name: Teardown accounts notifications
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -351,6 +365,8 @@ jobs:
   # Accounts (reports)
   accounts-reports:
     name: Teardown accounts reports
+
+    if: always()
 
     runs-on: ubuntu-latest
 
@@ -394,6 +410,8 @@ jobs:
   # Accounts (API)
   accounts-api:
     name: Teardown accounts API
+
+    if: always()
 
     runs-on: ubuntu-latest
 
