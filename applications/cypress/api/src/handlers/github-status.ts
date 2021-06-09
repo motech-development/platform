@@ -91,7 +91,7 @@ export const handler = apiGatewayHandler(async (event) => {
         const state = State.Pending;
         const payload = {
           context,
-          description: 'In progress — This check has started...',
+          description: 'This check has started...',
           owner,
           repo,
           sha,

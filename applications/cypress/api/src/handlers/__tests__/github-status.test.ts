@@ -164,7 +164,7 @@ describe('github-status', () => {
 
       expect(octokit.repos.createCommitStatus).toHaveBeenCalledWith({
         context: 'Cypress',
-        description: 'In progress — This check has started...',
+        description: 'This check has started...',
         owner: 'owner',
         repo: 'repo',
         sha: 'x',
