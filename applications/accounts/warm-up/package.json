@@ -1,0 +1,31 @@
+{
+  "name": "@accounts/warm-up",
+  "version": "0.0.0",
+  "description": "Motech Development accounts warm up service",
+  "private": true,
+  "scripts": {
+    "deploy": "serverless deploy --verbose --force",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "precommit": "lint-staged",
+    "start": "serverless invoke stepf --name warmUp",
+    "teardown": "serverless remove --verbose",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage --runInBand"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "setupFiles": [
+      "jest-date-mock"
+    ],
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "@motech-development/logger": "^0.0.0",
+    "luxon": "^1.26.0",
+    "uuid": "^8.3.2",
+    "yup": "^0.29.1"
+  }
+}

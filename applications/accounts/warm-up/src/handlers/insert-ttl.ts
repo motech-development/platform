@@ -1,3 +1,4 @@
+import logger from '@motech-development/logger';
 import { Handler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { DateTime } from 'luxon';
@@ -17,6 +18,10 @@ export const handler: Handler = async () => {
   const createdAt = now.toISO();
   const ttl = Math.floor(now.toSeconds());
 
+  logger.info('Inserting warm up record', {
+    id,
+  });
+
   await client
     .put({
       Item: {
@@ -30,7 +35,9 @@ export const handler: Handler = async () => {
     })
     .promise();
 
+  logger.info('Starting to poll database');
+
   return {
-    complete: true,
+    id,
   };
 };

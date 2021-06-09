@@ -1,0 +1,32 @@
+{
+  "name": "@motech-development/logger",
+  "version": "0.0.0",
+  "description": "Application logger",
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "license": "ISC",
+  "main": "lib/index.cjs.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/logger.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "package": "yarn build",
+    "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
+    "prebuild": "rimraf ./lib",
+    "precommit": "lint-staged",
+    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage --runInBand"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "winston": "^3.3.3",
+    "winston-transport": "^4.4.0"
+  }
+}

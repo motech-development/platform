@@ -2,9 +2,9 @@ import { Context } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import ctx from 'aws-lambda-mock-context';
 import { advanceTo, clear } from 'jest-date-mock';
-import { handler } from '../warm-up';
+import { handler } from '../insert-ttl';
 
-describe('warm up', () => {
+describe('insert-ttl', () => {
   let callback: jest.Mock;
   let context: Context;
 
@@ -37,6 +37,23 @@ describe('warm up', () => {
       };
 
       process.env.TABLE = 'TABLE-NAME';
+
+      (DocumentClient.prototype.get as jest.Mock).mockReturnValue({
+        promise: jest
+          .fn()
+          .mockResolvedValueOnce({
+            Item: {
+              __typename: 'WarmUp',
+              createdAt: '2021-04-11T19:45:00.000Z',
+              data: 'WarmUp:2021-04-11T19:45:00.000Z',
+              id: 'test-uuid',
+              ttl: 1618170300,
+            },
+          })
+          .mockResolvedValueOnce({
+            Item: undefined,
+          }),
+      });
     });
 
     afterEach(() => {
@@ -60,7 +77,7 @@ describe('warm up', () => {
 
     it('should complete correctly', async () => {
       await expect(handler(null, context, callback)).resolves.toEqual({
-        complete: true,
+        id: 'test-uuid',
       });
     });
   });

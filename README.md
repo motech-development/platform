@@ -74,6 +74,13 @@ Google Analytics Web Vitals reporter
 Build the package by running `yarn build --scope=@motech-development/ga-web-vitals`\
 Test the package by running `yarn test --scope=@motech-development/ga-web-vitals`
 
+### Logger
+
+Application logger
+
+Build the package by running `yarn build --scope=@motech-development/logger`\
+Test the package by running `yarn test --scope=@motech-development/logger`
+
 ### Query string hook
 
 A hook to access query strings

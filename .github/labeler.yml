@@ -13,6 +13,10 @@ core:
   - applications/core/*
   - applications/core/**/*
 
+cypress:
+  - applications/cypress/*
+  - applications/cypress/**/*
+
 id:
   - applications/id/*
   - applications/id/**/*
@@ -48,6 +52,10 @@ breeze-ui:
 ga-web-vitals:
   - packages/ga-web-vitals/*
   - packages/ga-web-vitals/**/*
+
+logger:
+  - packages/logger/*
+  - packages/logger/**/*
 
 query-string-hooks:
   - packages/query-string-hooks/*
