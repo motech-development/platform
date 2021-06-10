@@ -1,4 +1,4 @@
-service: ${opt:appName, 'accounts'}
+service: accounts
 
 variablesResolutionMode: 20210326
 

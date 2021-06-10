@@ -1,4 +1,4 @@
-service: ${opt:appName, 'cypress'}
+service: cypress
 
 variablesResolutionMode: 20210326
 

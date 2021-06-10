@@ -1,4 +1,4 @@
-service: ${opt:appName, 'id'}
+service: id
 
 variablesResolutionMode: 20210326
 

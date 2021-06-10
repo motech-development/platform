@@ -1,4 +1,4 @@
-service: ${opt:appName, 'anti-virus'}
+service: anti-virus
 
 variablesResolutionMode: 20210326
 

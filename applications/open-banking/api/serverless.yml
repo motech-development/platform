@@ -1,4 +1,4 @@
-service: ${opt:appName, 'open-banking'}
+service: open-banking
 
 variablesResolutionMode: 20210326
 
