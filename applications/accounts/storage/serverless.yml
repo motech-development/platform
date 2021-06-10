@@ -3,6 +3,7 @@ service: ${opt:appName, 'accounts'}
 provider:
   name: aws
   region: ${opt:region, 'eu-west-1'}
+  runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-storage
   environment:

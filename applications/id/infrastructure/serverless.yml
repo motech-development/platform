@@ -3,6 +3,7 @@ service: ${opt:appName, 'id'}
 provider:
   name: aws
   region: ${opt:region, 'us-east-1'}
+  runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-infrastructure
 

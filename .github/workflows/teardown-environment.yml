@@ -20,7 +20,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -93,7 +93,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Restore Node modules
         uses: actions/cache@v2.1.5
@@ -135,7 +135,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -192,7 +192,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Restore Node modules
         uses: actions/cache@v2.1.5
@@ -248,7 +248,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Restore Node modules
         uses: actions/cache@v2.1.5
@@ -304,7 +304,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -354,7 +354,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -405,7 +405,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -458,7 +458,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -511,7 +511,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
