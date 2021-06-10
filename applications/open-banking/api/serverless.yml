@@ -1,7 +1,10 @@
 service: ${opt:appName, 'open-banking'}
 
+variablesResolutionMode: 20210326
+
 provider:
   name: aws
+  lambdaHashingVersion: 20201221
   region: ${opt:region, 'eu-west-1'}
   runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
@@ -9,11 +12,12 @@ provider:
   environment:
     YapilyCredentials: !Ref YapilyCredentials
 
+useDotenv: true
+
 package:
   individually: true
 
 plugins:
-  - serverless-dotenv-plugin
   - serverless-step-functions
   - serverless-webpack
   - serverless-dynamodb-local

@@ -1,7 +1,10 @@
 service: ${opt:appName, 'anti-virus'}
 
+variablesResolutionMode: 20210326
+
 provider:
   name: aws
+  lambdaHashingVersion: 20201221
   region: ${opt:region, 'eu-west-1'}
   runtime: nodejs14.x
   stage: ${opt:stage, 'local'}

@@ -22666,15 +22666,6 @@ serverless-appsync-plugin@^1.8.0:
     moment "^2.29.1"
     ramda "^0.25.0"
 
-serverless-dotenv-plugin@^3.9.0:
-  version "3.9.0"
-  resolved "https://registry.yarnpkg.com/serverless-dotenv-plugin/-/serverless-dotenv-plugin-3.9.0.tgz#0d82704a3911c1051a1f566a30aaa5f278ad4ae3"
-  integrity sha512-T2fso08DSVfBVMUQX4UxjaCzB32IMD0GOTqncuLUek77YMPrJTmJlKOGr5z64Oe/ySZhR7SJZF9Jn0FJCq7cIg==
-  dependencies:
-    chalk "^4.1.0"
-    dotenv "^8.2.0"
-    dotenv-expand "^5.1.0"
-
 serverless-dynamodb-local@^0.2.39:
   version "0.2.39"
   resolved "https://registry.yarnpkg.com/serverless-dynamodb-local/-/serverless-dynamodb-local-0.2.39.tgz#9022bb8fa5d2271b1959bf8728b03c8680e66ca2"

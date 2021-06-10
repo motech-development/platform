@@ -1,5 +1,7 @@
 service: cypress-api
 
+variablesResolutionMode: 20210326
+
 provider:
   name: aws
   lambdaHashingVersion: 20201221
