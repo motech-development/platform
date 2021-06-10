@@ -1,4 +1,4 @@
-service: accounts
+service: accounts-api
 
 variablesResolutionMode: 20210326
 
@@ -20,7 +20,7 @@ plugins:
   - '@motech-development/serverless-outputs-env'
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: accounts-${self:provider.stage}
 
   prune:
     automatic: true

@@ -1,4 +1,4 @@
-service: accounts
+service: accounts-data
 
 variablesResolutionMode: 20210326
 
@@ -18,7 +18,7 @@ plugins:
   - serverless-prune-plugin
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: accounts-${self:provider.stage}
 
   prune:
     automatic: true

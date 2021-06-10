@@ -1,4 +1,4 @@
-service: accounts
+service: accounts-infrastructure
 
 variablesResolutionMode: 20210326
 
@@ -11,9 +11,9 @@ provider:
   stackName: ${self:custom.prefix}-infrastructure
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: accounts-${self:provider.stage}
   domainName: ${env:PROD_DOMAIN}
-  subDomain: ${self:service}.${self:custom.domainName}
+  subDomain: accounts.${self:custom.domainName}
 
 resources:
   Resources:

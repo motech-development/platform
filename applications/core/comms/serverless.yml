@@ -1,4 +1,4 @@
-service: platform
+service: platform-comms
 
 variablesResolutionMode: 20210326
 
@@ -18,7 +18,7 @@ plugins:
   - serverless-prune-plugin
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: platform-${self:provider.stage}
   domainName: ${env:PROD_DOMAIN}
 
   prune:

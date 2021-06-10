@@ -21,7 +21,7 @@ plugins:
   - serverless-prune-plugin
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: anti-virus-${self:provider.stage}
 
   prune:
     automatic: true

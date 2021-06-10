@@ -1,4 +1,4 @@
-service: accounts
+service: accounts-storage
 
 variablesResolutionMode: 20210326
 
@@ -22,7 +22,7 @@ plugins:
   - serverless-prune-plugin
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: accounts-${self:provider.stage}
   downloads: ${self:custom.prefix}-downloads
   uploads: ${self:custom.prefix}-uploads
 

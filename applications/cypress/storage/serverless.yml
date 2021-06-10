@@ -1,4 +1,4 @@
-service: cypress
+service: cypress-storage
 
 variablesResolutionMode: 20210326
 
@@ -11,7 +11,7 @@ provider:
   stackName: ${self:custom.prefix}-storage
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: cypress-${self:provider.stage}
 
 resources:
   Resources:

@@ -1,4 +1,4 @@
-service: id
+service: id-app
 
 variablesResolutionMode: 20210326
 
@@ -14,7 +14,7 @@ plugins:
   - serverless-finch
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: id-${self:provider.stage}
   domainName: ${env:PROD_DOMAIN}
   subDomain: ${env:PREFIX, 'id'}.${self:custom.domainName}
 

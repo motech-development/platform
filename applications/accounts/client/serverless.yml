@@ -1,4 +1,4 @@
-service: accounts
+service: accounts-app
 
 variablesResolutionMode: 20210326
 
@@ -14,9 +14,9 @@ plugins:
   - serverless-finch
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: accounts-${self:provider.stage}
   domainName: ${env:PROD_DOMAIN}
-  subDomain: ${self:service}.${self:custom.domainName}
+  subDomain: accounts.${self:custom.domainName}
 
   client:
     manageResources: false
