@@ -1,8 +1,12 @@
-service: ${opt:appName, 'accounts'}
+service: accounts-queue
+
+variablesResolutionMode: 20210326
 
 provider:
   name: aws
+  lambdaHashingVersion: 20201221
   region: ${opt:region, 'eu-west-1'}
+  runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-queue
   environment:
@@ -17,7 +21,7 @@ plugins:
   - serverless-prune-plugin
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: accounts-${self:provider.stage}
 
   prune:
     automatic: true

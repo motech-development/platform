@@ -1,13 +1,17 @@
-service: ${opt:appName, 'id'}
+service: id-infrastructure
+
+variablesResolutionMode: 20210326
 
 provider:
   name: aws
+  lambdaHashingVersion: 20201221
   region: ${opt:region, 'us-east-1'}
+  runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-infrastructure
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: id-${self:provider.stage}
   domainName: ${env:PROD_DOMAIN}
   subDomain: ${env:PREFIX, 'id'}.${self:custom.domainName}
 

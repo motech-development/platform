@@ -1,11 +1,14 @@
 service: cypress-api
 
+variablesResolutionMode: 20210326
+
 provider:
   name: aws
   lambdaHashingVersion: 20201221
   region: ${opt:region, 'eu-west-1'}
+  runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
-  stackName: ${self:custom.prefix}
+  stackName: ${self:custom.prefix}-api
   apiGateway:
     apiKeys:
       - value: ${env:CY_API_KEY}
@@ -19,7 +22,7 @@ plugins:
   - serverless-prune-plugin
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: cypress-${self:provider.stage}
 
   prune:
     automatic: true

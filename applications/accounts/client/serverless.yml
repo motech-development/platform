@@ -1,8 +1,12 @@
-service: ${opt:appName, 'accounts'}
+service: accounts-app
+
+variablesResolutionMode: 20210326
 
 provider:
   name: aws
+  lambdaHashingVersion: 20201221
   region: ${opt:region, 'us-east-1'}
+  runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-app
 
@@ -10,9 +14,9 @@ plugins:
   - serverless-finch
 
 custom:
-  prefix: ${self:service}-${self:provider.stage}
+  prefix: accounts-${self:provider.stage}
   domainName: ${env:PROD_DOMAIN}
-  subDomain: ${self:service}.${self:custom.domainName}
+  subDomain: accounts.${self:custom.domainName}
 
   client:
     manageResources: false
