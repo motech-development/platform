@@ -1,11 +1,11 @@
 name: Deploy to environment
 
-on:
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
+# on:
+#   pull_request:
+#     types:
+#       - opened
+#       - reopened
+#       - synchronize
 
 jobs:
   label:

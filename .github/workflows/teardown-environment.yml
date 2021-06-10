@@ -484,8 +484,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
-      - name: Clear bucket
-        run: aws s3 rm $REPORTS_BUCKET --recursive
+      # - name: Clear bucket
+      #   run: aws s3 rm $REPORTS_BUCKET --recursive
 
       - name: Teardown
         run: yarn teardown -- --scope=@accounts/reports -- -- --stage $STAGE
