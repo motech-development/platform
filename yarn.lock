@@ -22684,9 +22684,9 @@ serverless-prune-plugin@^1.5.0:
     bluebird "^3.4.7"
 
 serverless-step-functions@^2.29.0:
-  version "2.29.0"
-  resolved "https://registry.yarnpkg.com/serverless-step-functions/-/serverless-step-functions-2.29.0.tgz#3fcf5f581d34cd1ee207f9e77545f68018fa3040"
-  integrity sha512-4cUJCxKGvRBPdlCW1w/0b+GUUy7kKAyNc9/p5Qus91fhbh9RCLn1e6IhG3xKOUzzl6A8tAsi8PrLwP1PN23GCQ==
+  version "2.30.0"
+  resolved "https://registry.yarnpkg.com/serverless-step-functions/-/serverless-step-functions-2.30.0.tgz#57169d4f3744b223a6630a3d5918d96199d821e8"
+  integrity sha512-5/2Xga6FY3/IIJSnMRh1wIv2qQWJv25yHJN67bljj9y5yxVlubt4Xjx68lxA0YHh36lMj+O8ZMG6f55r9CZeig==
   dependencies:
     "@hapi/joi" "^15.0.2"
     asl-validator "^1.8.0"
