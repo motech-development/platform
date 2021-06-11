@@ -70,7 +70,7 @@
     "@types/serverless": "^1.78.23",
     "@types/styled-components": "^5.1.9",
     "@types/uuid": "^8.0.0",
-    "@types/webpack": "^4.41.27",
+    "@types/webpack": "^5.28.0",
     "@types/yup": "^0.29.3",
     "aws-lambda-mock-context": "^3.2.1",
     "aws-sdk": "^2.874.0",
