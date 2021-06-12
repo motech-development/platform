@@ -1,12 +1,8 @@
-name: Production E2E tests
+name: Production scheduled tests
 
-# TODO: Change to scheduled
 on:
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
+  schedule:
+    - cron: '30 */6 * * *'
 
 jobs:
   setup:
@@ -60,8 +56,8 @@ jobs:
         if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
         run: yarn
 
-  accounts-e2e-tests:
-    name: Accounts E2E tests
+  accounts-tests:
+    name: Accounts tests
 
     runs-on: ubuntu-latest
 
