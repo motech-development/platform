@@ -1,4 +1,3 @@
-# TODO: Remove packages stuff if not needed
 name: Production E2E tests
 
 # TODO: Change to scheduled
@@ -24,9 +23,6 @@ jobs:
         with:
           node-version: 14
 
-      # - name: Generate packages cache key
-      #   run: ./scripts/checksum.sh ./packages.txt packages
-
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -51,15 +47,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-modules-
 
-      # - name: Restore packages
-      #   id: packages
-      #   uses: actions/cache@v2.1.5
-      #   with:
-      #     path: ./packages/*/lib
-      #     key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-packages-
-
       - name: Restore cache
         id: cache
         uses: actions/cache@v2.1.5
@@ -73,16 +60,19 @@ jobs:
         if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
         run: yarn
 
-      # - name: Build packages
-      #   if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
-      #   run: yarn package
-
   accounts-e2e-tests:
     name: Accounts E2E tests
 
     runs-on: ubuntu-latest
 
     needs: setup
+
+    strategy:
+      fail-fast: false
+      matrix:
+        containers:
+          - 1
+          - 2
 
     env:
       CYPRESS_API_URL: ${{ secrets.CYPRESS_API_URL }}
@@ -104,9 +94,6 @@ jobs:
         with:
           node-version: 14
 
-      # - name: Generate packages cache key
-      #   run: ./scripts/checksum.sh ./packages.txt packages
-
       - name: Restore Node modules
         uses: actions/cache@v2.1.5
         with:
@@ -117,14 +104,6 @@ jobs:
           key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
-
-      # - name: Restore packages
-      #   uses: actions/cache@v2.1.5
-      #   with:
-      #     path: ./packages/*/lib
-      #     key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-packages-
 
       - name: Restore cache
         uses: actions/cache@v2.1.5

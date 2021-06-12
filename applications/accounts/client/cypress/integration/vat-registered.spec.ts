@@ -1,8 +1,10 @@
 /* eslint-disable jest/valid-expect-in-promise */
 describe('VAT registered', () => {
+  let baseUrl: string | null;
   let timeout: number;
 
   beforeEach(() => {
+    ({ baseUrl } = Cypress.config());
     timeout = 20000;
   });
 
@@ -10,7 +12,7 @@ describe('VAT registered', () => {
     afterEach(() => {
       cy.url({
         timeout,
-      }).should('include', 'http://localhost:3000/my-companies/dashboard/');
+      }).should('include', `${baseUrl}/my-companies/dashboard/`);
     });
 
     it('should create a company', () => {
@@ -133,7 +135,7 @@ describe('VAT registered', () => {
     afterEach(() => {
       cy.url({
         timeout,
-      }).should('include', 'http://localhost:3000/my-companies/dashboard/');
+      }).should('include', `${baseUrl}/my-companies/dashboard/`);
     });
 
     it('should update company details', () => {
@@ -254,7 +256,7 @@ describe('VAT registered', () => {
     afterEach(() => {
       cy.url({
         timeout,
-      }).should('include', 'http://localhost:3000/my-companies/dashboard/');
+      }).should('include', `${baseUrl}/my-companies/dashboard/`);
     });
 
     it('should update company settings', () => {
@@ -512,14 +514,14 @@ describe('VAT registered', () => {
 
         cy.url({
           timeout,
-        }).should('include', 'http://localhost:3000/my-companies/clients/');
+        }).should('include', `${baseUrl}/my-companies/clients/`);
       });
     });
 
     afterEach(() => {
       cy.url({
         timeout,
-      }).should('include', 'http://localhost:3000/my-companies/clients/');
+      }).should('include', `${baseUrl}/my-companies/clients/`);
     });
 
     it('should add client 1', () => {
@@ -606,14 +608,14 @@ describe('VAT registered', () => {
 
         cy.url({
           timeout,
-        }).should('include', 'http://localhost:3000/my-companies/accounts/');
+        }).should('include', `${baseUrl}/my-companies/accounts/`);
       });
     });
 
     afterEach(() => {
       cy.url({
         timeout,
-      }).should('include', 'http://localhost:3000/my-companies/accounts/');
+      }).should('include', `${baseUrl}/my-companies/accounts/`);
     });
 
     it('should add a confirmed sale', () => {
@@ -1111,14 +1113,14 @@ describe('VAT registered', () => {
 
         cy.url({
           timeout,
-        }).should('include', 'http://localhost:3000/my-companies/reports/');
+        }).should('include', `${baseUrl}/my-companies/reports/`);
       });
     });
 
     afterEach(() => {
       cy.url({
         timeout,
-      }).should('include', 'http://localhost:3000/my-companies/reports/');
+      }).should('include', `${baseUrl}/my-companies/reports/`);
     });
 
     it('should generate and download report', () => {
@@ -1180,7 +1182,7 @@ describe('VAT registered', () => {
     afterEach(() => {
       cy.url({
         timeout,
-      }).should('eq', 'http://localhost:3000/my-companies');
+      }).should('eq', `${baseUrl}/my-companies`);
     });
 
     it('should remove company', () => {
