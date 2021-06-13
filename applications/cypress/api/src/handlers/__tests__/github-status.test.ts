@@ -35,6 +35,7 @@ describe('github-status', () => {
           commit: {
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
+            sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 1,
@@ -63,6 +64,7 @@ describe('github-status', () => {
           commit: {
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
+            sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 2,
@@ -91,6 +93,7 @@ describe('github-status', () => {
           commit: {
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
+            sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 0,
@@ -119,6 +122,7 @@ describe('github-status', () => {
           commit: {
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
+            sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 0,
@@ -147,8 +151,9 @@ describe('github-status', () => {
       event = {
         body: JSON.stringify({
           commit: {
-            message: 'Merge x into y',
+            message: 'Merge pull request x from y',
             remoteOrigin: 'https://path.to.location/owner/repo',
+            sha: 'z',
           },
           event: 'RUN_START',
           failures: 0,
@@ -167,7 +172,7 @@ describe('github-status', () => {
         description: 'This check has started...',
         owner: 'owner',
         repo: 'repo',
-        sha: 'x',
+        sha: 'z',
         state: 'pending',
         target_url: 'https://path.to.location/',
       });
@@ -181,6 +186,7 @@ describe('github-status', () => {
           commit: {
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
+            sha: 'z',
           },
           event: 'RUN_TIMEOUT',
           failures: 0,
@@ -213,6 +219,7 @@ describe('github-status', () => {
           commit: {
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
+            sha: 'z',
           },
           event: 'UNKNOWN',
           failures: 0,
