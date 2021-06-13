@@ -1,0 +1,117 @@
+name: Production scheduled tests
+
+on:
+  schedule:
+    - cron: '30 */6 * * *'
+
+jobs:
+  setup:
+    name: Setup
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 14
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Yarn cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Restore Node modules
+        id: node-modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cache-v2-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
+
+      - name: Install dependencies
+        if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
+        run: yarn
+
+  accounts-tests:
+    name: Accounts tests
+
+    runs-on: ubuntu-latest
+
+    needs: setup
+
+    strategy:
+      fail-fast: false
+      matrix:
+        containers:
+          - 1
+          - 2
+
+    env:
+      CYPRESS_API_URL: ${{ secrets.CYPRESS_API_URL }}
+      CYPRESS_BASE_URL: https://accounts.motechdevelopment.co.uk
+      CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
+      CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL_PROD }}
+      CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_PROD }}
+      CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 14
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cache-v2-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
+
+      - name: Smoke tests
+        uses: cypress-io/github-action@v2
+        with:
+          command: yarn e2e:ci -- --scope=@accounts/client
+          config: defaultCommandTimeout=20000
+          install: false
