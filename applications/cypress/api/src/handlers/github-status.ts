@@ -25,6 +25,7 @@ const schema = object({
   commit: object({
     message: string().required(),
     remoteOrigin: string().url().required(),
+    sha: string().required(),
   }).required(),
   event: string().required(),
   failures: number().required(),
@@ -48,7 +49,9 @@ export const handler = apiGatewayHandler(async (event) => {
     const url = new URL(data.commit.remoteOrigin);
     const context = 'Cypress';
     const [, owner, repo] = url.pathname.split('/');
-    const [, sha] = data.commit.message.split(' ');
+    const sha = data.commit.message.startsWith('Merge pull request')
+      ? data.commit.sha
+      : data.commit.message.split(' ')[1];
 
     switch (data.event) {
       case Event.RUN_FINISH: {
