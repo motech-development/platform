@@ -1,4 +1,6 @@
 [![Deploy to production](https://github.com/motech-development/platform/actions/workflows/deploy-to-production.yml/badge.svg)](https://github.com/motech-development/platform/actions/workflows/deploy-to-production.yml)
+[![Deploy to develop](https://github.com/motech-development/platform/actions/workflows/deploy-to-develop.yml/badge.svg)](https://github.com/motech-development/platform/actions/workflows/deploy-to-develop.yml)
+[![Production scheduled tests](https://github.com/motech-development/platform/actions/workflows/production-scheduled-tests.yml/badge.svg)](https://github.com/motech-development/platform/actions/workflows/production-scheduled-tests.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=motech-development_platform&metric=alert_status)](https://sonarcloud.io/dashboard?id=motech-development_platform)
 
 # Platform

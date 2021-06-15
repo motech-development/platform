@@ -8,11 +8,15 @@ AWS.S3.prototype.copyObject = mock;
 
 AWS.S3.prototype.deleteObject = mock;
 
+AWS.S3.prototype.deleteObjects = mock;
+
 AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
   createReadStream: jest.fn(),
 });
 
 AWS.S3.prototype.headObject = mock;
+
+AWS.S3.prototype.listObjectsV2 = mock;
 
 AWS.S3.prototype.putObject = mock;
 

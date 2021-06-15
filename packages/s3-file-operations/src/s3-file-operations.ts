@@ -1,4 +1,5 @@
 import { S3 } from 'aws-sdk';
+import { ObjectIdentifier } from 'aws-sdk/clients/s3';
 import { createWriteStream, existsSync, mkdir, ReadStream } from 'fs';
 import { basename, join } from 'path';
 import { promisify } from 'util';
@@ -108,6 +109,38 @@ export const moveFile = async (from: string, to: string, key: string) => {
     .promise();
 
   await deleteFile(from, key);
+};
+
+export const removeFolder = async (bucket: string, key: string) => {
+  const decodedKey = decodeURIComponent(key);
+
+  const listedObjects = await s3
+    .listObjectsV2({
+      Bucket: bucket,
+      Prefix: decodedKey,
+    })
+    .promise();
+
+  if (listedObjects.Contents && listedObjects.Contents.length > 0) {
+    const Objects = listedObjects.Contents.filter(
+      (item): item is ObjectIdentifier => !!item.Key,
+    ).map(({ Key }) => ({
+      Key,
+    }));
+
+    await s3
+      .deleteObjects({
+        Bucket: bucket,
+        Delete: {
+          Objects,
+        },
+      })
+      .promise();
+
+    if (listedObjects.IsTruncated) {
+      await removeFolder(bucket, key);
+    }
+  }
 };
 
 export const uploader = (

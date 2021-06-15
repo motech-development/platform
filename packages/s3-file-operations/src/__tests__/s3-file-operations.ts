@@ -165,6 +165,16 @@ describe('file-operations', () => {
     });
   });
 
+  describe('removeFolder', () => {
+    it.todo('should do nothing if no files found');
+
+    it.todo('should delete the correct objects');
+
+    it.todo(
+      'should call deleteObjects the correct number of times if listObjects is truncated',
+    );
+  });
+
   describe('uploader', () => {
     it('should call upload with the correct params', () => {
       uploader('bucket', 'file.txt', 'hello world', 'text/plain');
