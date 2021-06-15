@@ -78,7 +78,7 @@
     "babel-loader": "8.1.0",
     "cache-loader": "^4.1.0",
     "commitizen": "^4.2.3",
-    "copy-webpack-plugin": "6.4.0",
+    "copy-webpack-plugin": "6.4.1",
     "cy2": "^1.2.1",
     "cypress": "7.3.0",
     "cypress-axe": "^0.12.2",
