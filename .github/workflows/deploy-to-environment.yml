@@ -878,7 +878,6 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           command: yarn e2e:ci -- --scope=@accounts/client
-          config: defaultCommandTimeout=20000
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000

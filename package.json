@@ -23,14 +23,14 @@
     "lint": "lerna run lint",
     "outdated:lerna": "lerna exec -- ncu -p yarn",
     "package": "lerna run package --stream",
+    "prepare": "husky install",
     "prettier": "lerna run prettier --stream",
     "start": "lerna run start --stream",
     "teardown": "lerna run teardown --stream",
     "teardown:infrastructure": "lerna run teardown:infrastructure --stream",
     "test": "lerna run test --stream",
     "test:ci": "lerna run test:ci",
-    "update:wizard": "lernaupdate",
-    "prepare": "husky install"
+    "update:wizard": "lernaupdate"
   },
   "repository": {
     "type": "git",
