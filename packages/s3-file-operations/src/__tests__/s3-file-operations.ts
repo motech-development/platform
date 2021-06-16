@@ -8,12 +8,17 @@ import {
   downloadFileStream,
   getFileData,
   moveFile,
+  removeFolder,
   uploader,
 } from '../s3-file-operations';
 
 jest.mock('fs');
 
-describe('file-operations', () => {
+describe('s3-file-operations', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('createDirectory', () => {
     let name: string;
 
@@ -162,6 +167,84 @@ describe('file-operations', () => {
         Bucket: 'upload-bucket',
         Key: 'test.pdf',
       });
+    });
+  });
+
+  describe('removeFolder', () => {
+    beforeEach(() => {
+      (S3.prototype.listObjectsV2 as jest.Mock).mockReturnValue({
+        promise: jest.fn().mockResolvedValue({
+          Contents: [],
+        }),
+      });
+    });
+
+    it('should call listObjectsV2 with the correct params', async () => {
+      await removeFolder('bucket', '/test');
+
+      expect(S3.prototype.listObjectsV2).toHaveBeenCalledWith({
+        Bucket: 'bucket',
+        Prefix: '/test',
+      });
+    });
+
+    it('should do nothing if no files found', async () => {
+      await removeFolder('bucket', '/test');
+
+      expect(S3.prototype.deleteObjects).not.toHaveBeenCalled();
+    });
+
+    it('should delete the correct objects', async () => {
+      (S3.prototype.listObjectsV2 as jest.Mock).mockReturnValue({
+        promise: jest.fn().mockResolvedValue({
+          Contents: [
+            {
+              Key: '/test/test-1.pdf',
+            },
+          ],
+          IsTruncated: false,
+        }),
+      });
+
+      await removeFolder('bucket', '/test');
+
+      expect(S3.prototype.deleteObjects).toHaveBeenCalledWith({
+        Bucket: 'bucket',
+        Delete: {
+          Objects: [
+            {
+              Key: '/test/test-1.pdf',
+            },
+          ],
+        },
+      });
+    });
+
+    it('should call deleteObjects the correct number of times if listObjects is truncated', async () => {
+      (S3.prototype.listObjectsV2 as jest.Mock).mockReturnValue({
+        promise: jest
+          .fn()
+          .mockResolvedValueOnce({
+            Contents: [
+              {
+                Key: '/test/test-1.pdf',
+              },
+            ],
+            IsTruncated: true,
+          })
+          .mockResolvedValueOnce({
+            Contents: [
+              {
+                Key: '/test/test-2.pdf',
+              },
+            ],
+            IsTruncated: false,
+          }),
+      });
+
+      await removeFolder('bucket', '/test');
+
+      expect(S3.prototype.deleteObjects).toHaveBeenCalledTimes(2);
     });
   });
 
