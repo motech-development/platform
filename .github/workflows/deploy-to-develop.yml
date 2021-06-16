@@ -132,6 +132,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/id/client/node_modules/.cache
+            ./applications/id/client/.serverless
+            ./applications/id/infrastructure/.serverless
+          key: ${{ runner.os }}-id-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-id-v2-
+
       - name: Deploy ID infrastructure
         run: yarn deploy -- --scope=@id/infrastructure -- -- --stage $STAGE
 
@@ -193,6 +204,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/open-banking/api/node_modules/.cache
+            ./applications/open-banking/api/.serverless
+          key: ${{ runner.os }}-open-banking-api-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-open-banking-api-v2-
+
       - name: Deploy
         run: yarn deploy -- --scope=@open-banking/api -- -- --stage $STAGE
 
@@ -240,6 +261,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/core/anti-virus/node_modules/.cache
+            ./applications/core/anti-virus/.serverless
+          key: ${{ runner.os }}-core-anti-virus-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-core-anti-virus-v2-
+
       - name: Deploy
         run: yarn deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
 
@@ -286,6 +317,16 @@ jobs:
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/cypress/storage/node_modules/.cache
+            ./applications/cypress/storage/.serverless
+          key: ${{ runner.os }}-cypress-storage-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-storage-v2-
 
       - name: Deploy
         run: yarn deploy -- --scope=@cypress/storage -- -- --stage $STAGE
@@ -338,6 +379,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/cypress/api/node_modules/.cache
+            ./applications/cypress/api/.serverless
+          key: ${{ runner.os }}-cypress-api-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-api-v2-
+
       - name: Deploy
         run: yarn deploy -- --scope=@cypress/api -- -- --stage $STAGE
 
@@ -388,6 +439,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/queue/node_modules/.cache
+            ./applications/accounts/queue/.serverless
+          key: ${{ runner.os }}-accounts-queue-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-queue-v2-
+
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/queue -- -- --stage $STAGE
 
@@ -436,6 +497,16 @@ jobs:
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/storage/node_modules/.cache
+            ./applications/accounts/storage/.serverless
+          key: ${{ runner.os }}-accounts-storage-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-storage-v2-
 
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/storage -- -- --stage $STAGE
@@ -486,6 +557,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/data/node_modules/.cache
+            ./applications/accounts/data/.serverless
+          key: ${{ runner.os }}-accounts-data-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-data-v2-
+
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/data -- -- --stage $STAGE
 
@@ -534,6 +615,16 @@ jobs:
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/notifications/node_modules/.cache
+            ./applications/accounts/notifications/.serverless
+          key: ${{ runner.os }}-accounts-notifications-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-notifications-v2-
 
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/notifications -- -- --stage $STAGE
@@ -585,6 +676,16 @@ jobs:
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/reports/node_modules/.cache
+            ./applications/accounts/reports/.serverless
+          key: ${{ runner.os }}-accounts-reports-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-reports-v2-
 
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/reports -- -- --stage $STAGE
@@ -649,6 +750,16 @@ jobs:
           key: ${{ runner.os }}-accounts-client-env-vars-checks-v2-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-env-vars-checks-
+
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/api/node_modules/.cache
+            ./applications/accounts/api/.serverless
+          key: ${{ runner.os }}-accounts-api-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-api-v2-
 
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE
