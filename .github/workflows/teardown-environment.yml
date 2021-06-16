@@ -70,7 +70,7 @@ jobs:
   open-banking:
     name: Teardown Open Banking API
 
-    if: always()
+    if: github.actor != 'dependabot[bot]' && always()
 
     runs-on: ubuntu-latest
 
@@ -113,7 +113,7 @@ jobs:
   anti-virus:
     name: Teardown anti virus
 
-    if: always()
+    if: github.actor != 'dependabot[bot]' && always()
 
     runs-on: ubuntu-latest
 
@@ -169,7 +169,7 @@ jobs:
   accounts-queue:
     name: Teardown accounts queue
 
-    if: always()
+    if: github.actor != 'dependabot[bot]' && always()
 
     runs-on: ubuntu-latest
 
@@ -220,7 +220,7 @@ jobs:
   accounts-storage:
     name: Teardown accounts storage
 
-    if: always()
+    if: github.actor != 'dependabot[bot]' && always()
 
     runs-on: ubuntu-latest
 
@@ -281,7 +281,7 @@ jobs:
   accounts-data:
     name: Teardown accounts data
 
-    if: always()
+    if: github.actor != 'dependabot[bot]' && always()
 
     runs-on: ubuntu-latest
 
@@ -335,7 +335,7 @@ jobs:
   accounts-warm-up:
     name: Teardown accounts warm up
 
-    if: always()
+    if: github.actor != 'dependabot[bot]' && always()
 
     runs-on: ubuntu-latest
 
@@ -385,7 +385,7 @@ jobs:
   accounts-notifications:
     name: Teardown accounts notifications
 
-    if: always()
+    if: github.actor != 'dependabot[bot]' && always()
 
     runs-on: ubuntu-latest
 
@@ -436,7 +436,7 @@ jobs:
   accounts-reports:
     name: Teardown accounts reports
 
-    if: always()
+    if: github.actor != 'dependabot[bot]' && always()
 
     runs-on: ubuntu-latest
 
@@ -492,7 +492,7 @@ jobs:
   accounts-api:
     name: Teardown accounts API
 
-    if: always()
+    if: github.actor != 'dependabot[bot]' && always()
 
     runs-on: ubuntu-latest
 
