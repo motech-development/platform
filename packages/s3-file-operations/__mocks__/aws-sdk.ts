@@ -1,27 +1,39 @@
 import * as AWS from 'aws-sdk';
 
-const mock = jest.fn().mockReturnValue({
+AWS.S3.prototype.copyObject = jest.fn().mockReturnValue({
   promise: jest.fn(),
 });
 
-AWS.S3.prototype.copyObject = mock;
+AWS.S3.prototype.deleteObject = jest.fn().mockReturnValue({
+  promise: jest.fn(),
+});
 
-AWS.S3.prototype.deleteObject = mock;
-
-AWS.S3.prototype.deleteObjects = mock;
+AWS.S3.prototype.deleteObjects = jest.fn().mockReturnValue({
+  promise: jest.fn(),
+});
 
 AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
   createReadStream: jest.fn(),
 });
 
-AWS.S3.prototype.headObject = mock;
+AWS.S3.prototype.headObject = jest.fn().mockReturnValue({
+  promise: jest.fn(),
+});
 
-AWS.S3.prototype.listObjectsV2 = mock;
+AWS.S3.prototype.listObjectsV2 = jest.fn().mockReturnValue({
+  promise: jest.fn(),
+});
 
-AWS.S3.prototype.putObject = mock;
+AWS.S3.prototype.putObject = jest.fn().mockReturnValue({
+  promise: jest.fn(),
+});
 
-AWS.S3.prototype.getSignedUrlPromise = mock;
+AWS.S3.prototype.getSignedUrlPromise = jest.fn().mockReturnValue({
+  promise: jest.fn(),
+});
 
-AWS.S3.prototype.upload = mock;
+AWS.S3.prototype.upload = jest.fn().mockReturnValue({
+  promise: jest.fn(),
+});
 
 module.exports = AWS;
