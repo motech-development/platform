@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const { cpus } = require('os');
 const { join } = require('path');
 const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
@@ -16,14 +15,6 @@ module.exports = {
         use: [
           {
             loader: 'cache-loader',
-          },
-          {
-            loader: 'thread-loader',
-            options: {
-              poolRespawn: true,
-              workerNodeArgs: ['--max-old-space-size=4096'],
-              workers: cpus().length - 1,
-            },
           },
           {
             loader: 'babel-loader',

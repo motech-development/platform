@@ -3,7 +3,6 @@ const ConditionalPlugin = require('@motech-development/webpack-conditional-plugi
 const PermissionsOutputPlugin = require('@motech-development/webpack-permissions-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const { cpus } = require('os');
 const { join, resolve } = require('path');
 const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
@@ -19,17 +18,11 @@ module.exports = {
   devtool: 'source-map',
   entry: slsw.lib.entries,
   externals: [nodeExternals()],
-  mode: 'none',
+  mode: 'production',
   module: {
     rules: [
       {
         loader: 'cache-loader',
-      },
-      {
-        loader: 'thread-loader',
-        options: {
-          workers: cpus().length - 1,
-        },
       },
       {
         test: /\.ts(x?)$/,
