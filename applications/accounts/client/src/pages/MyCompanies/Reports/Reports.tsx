@@ -107,11 +107,15 @@ const Reports: FC = () => {
         const payload = parse<IReport>(
           subscriptionData.data.onNotification.payload,
         );
+        const result = [...prev.getReports.items, payload];
+        const items = result.filter(
+          (a, index) => result.findIndex((b) => a.id === b.id) === index,
+        );
 
         return {
           getReports: {
             ...prev.getReports,
-            items: [...prev.getReports.items, payload],
+            items,
           },
         };
       },
