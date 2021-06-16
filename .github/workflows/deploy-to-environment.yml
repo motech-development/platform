@@ -503,6 +503,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/queue/node_modules/.cache
+            ./applications/accounts/queue/.serverless
+          key: ${{ runner.os }}-accounts-queue-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-queue-v2-
+
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/queue -- -- --stage $STAGE
 
@@ -551,6 +561,16 @@ jobs:
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/storage/node_modules/.cache
+            ./applications/accounts/storage/.serverless
+          key: ${{ runner.os }}-accounts-storage-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-storage-v2-
 
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/storage -- -- --stage $STAGE
@@ -601,6 +621,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/data/node_modules/.cache
+            ./applications/accounts/data/.serverless
+          key: ${{ runner.os }}-accounts-data-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-data-v2-
+
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/data -- -- --stage $STAGE
 
@@ -649,6 +679,16 @@ jobs:
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/warm-up/node_modules/.cache
+            ./applications/accounts/warm-up/.serverless
+          key: ${{ runner.os }}-accounts-warm-up-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-warm-up-v2-
 
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/warm-up -- -- --stage $STAGE
@@ -703,6 +743,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/notifications/node_modules/.cache
+            ./applications/accounts/notifications/.serverless
+          key: ${{ runner.os }}-accounts-notifications-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-notifications-v2-
+
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/notifications -- -- --stage $STAGE
 
@@ -753,6 +803,16 @@ jobs:
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/reports/node_modules/.cache
+            ./applications/accounts/reports/.serverless
+          key: ${{ runner.os }}-accounts-reports-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-reports-v2-
 
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/reports -- -- --stage $STAGE
@@ -817,6 +877,16 @@ jobs:
           key: ${{ runner.os }}-accounts-client-env-vars-checks-v2-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-env-vars-checks-
+
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/api/node_modules/.cache
+            ./applications/accounts/api/.serverless
+          key: ${{ runner.os }}-accounts-api-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-api-v2-
 
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE
@@ -921,6 +991,16 @@ jobs:
           key: ${{ runner.os }}-accounts-client-env-vars-checks-v2-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-env-vars-checks-
+
+      - name: Restore application cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            ./applications/accounts/client/node_modules/.cache
+            ./applications/accounts/client/.serverless
+          key: ${{ runner.os }}-accounts-client-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-client-v2-
 
       - name: Build client
         run: yarn build -- --scope=@accounts/client
