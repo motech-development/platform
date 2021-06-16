@@ -28,7 +28,6 @@ custom:
 
   webpack:
     includeModules: true
-    serializedCompile: true
 
 functions:
   VerifyDomain:
