@@ -475,7 +475,7 @@ custom:
 
   webpack:
     includeModules: true
-    serializedCompile: true
+    packager: yarn
 
 functions:
   LambdaDataSource:

@@ -30,7 +30,7 @@ custom:
 
   webpack:
     includeModules: true
-    serializedCompile: true
+    packager: yarn
 
 functions:
   FailureNotification:

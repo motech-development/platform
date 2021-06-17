@@ -4,7 +4,7 @@
   "description": "Motech Development open banking API",
   "private": true,
   "scripts": {
-    "deploy": "serverless deploy --verbose --force",
+    "deploy": "serverless deploy --verbose",
     "dynamodb": "sls dynamodb install",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
     "precommit": "lint-staged",

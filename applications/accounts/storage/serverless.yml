@@ -33,7 +33,7 @@ custom:
 
   webpack:
     includeModules: true
-    serializedCompile: true
+    packager: yarn
 
   serverless-offline:
     httpPort: 4100
