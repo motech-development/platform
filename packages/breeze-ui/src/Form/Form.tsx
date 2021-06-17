@@ -5,9 +5,8 @@ import Button from '../Button/Button';
 import Col from '../Col/Col';
 import Row from '../Row/Row';
 
-const isObject = (value: unknown) => {
-  return typeof value === 'object' && !Array.isArray(value) && value !== null;
-};
+const isObject = (value: unknown) =>
+  typeof value === 'object' && !Array.isArray(value) && value !== null;
 
 function encodeNullValues<T>(values: T) {
   const initialValues = {
