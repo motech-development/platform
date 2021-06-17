@@ -30,6 +30,7 @@ custom:
 
   webpack:
     includeModules: true
+    packager: yarn
 
 functions:
   FailureNotification:

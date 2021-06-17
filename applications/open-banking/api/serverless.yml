@@ -34,6 +34,7 @@ custom:
 
   webpack:
     includeModules: true
+    packager: yarn
 
   serverless-offline:
     httpPort: 4000
