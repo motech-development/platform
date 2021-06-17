@@ -1,6 +1,11 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
-import { waitForApollo } from '@motech-development/appsync-apollo';
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from '@testing-library/react';
 import ON_NOTIFICATION from '../../../graphql/notifications/ON_NOTIFICATION';
 import TestProvider from '../../../utils/TestProvider';
 import UserNotifications, {
@@ -13,7 +18,7 @@ describe('UserNotifications', () => {
   let mocks: MockedResponse[];
 
   describe('when there is no data', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       mocks = [
         {
           request: {
@@ -40,23 +45,21 @@ describe('UserNotifications', () => {
         },
       ];
 
-      await act(async () => {
-        component = render(
-          <TestProvider>
-            <MockedProvider mocks={mocks} addTypename={false}>
-              <UserNotifications id="user-id" />
-            </MockedProvider>
-          </TestProvider>,
-        );
-
-        await waitForApollo(0);
-      });
+      component = render(
+        <TestProvider>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <UserNotifications id="user-id" />
+          </MockedProvider>
+        </TestProvider>,
+      );
     });
 
-    it('should display nothing', () => {
+    it('should display nothing', async () => {
       const { queryByRole } = component;
 
-      expect(queryByRole('button')).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(queryByRole('button')).not.toBeInTheDocument(),
+      );
     });
   });
 
@@ -123,9 +126,11 @@ describe('UserNotifications', () => {
 
       fireEvent.click(button);
 
-      await expect(
-        findByText('messages.Notification_1'),
-      ).resolves.toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          findByText('messages.Notification_1'),
+        ).resolves.toBeInTheDocument(),
+      );
     });
 
     it('should not mark any messages as read', async () => {
@@ -136,12 +141,12 @@ describe('UserNotifications', () => {
 
       fireEvent.click(button);
 
-      expect(container).toBeInTheDocument();
+      await waitFor(() => expect(container).toBeInTheDocument());
     });
   });
 
   describe('when new notifications comes in', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       mocks = [
         {
           request: {
@@ -211,22 +216,23 @@ describe('UserNotifications', () => {
         },
       ];
 
-      await act(async () => {
-        component = render(
-          <TestProvider>
-            <MockedProvider mocks={mocks} addTypename={false}>
-              <UserNotifications id="user-id" />
-            </MockedProvider>
-          </TestProvider>,
-        );
-      });
+      component = render(
+        <TestProvider>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <UserNotifications id="user-id" />
+          </MockedProvider>
+        </TestProvider>,
+      );
     });
 
-    it('should display a the new notification flag', () => {
+    it('should display a the new notification flag', async () => {
       const { container } = component;
-      const icon = container.querySelector('svg[data-icon="asterisk"]');
 
-      expect(icon).toBeInTheDocument();
+      await waitFor(() => {
+        const icon = container.querySelector('svg[data-icon="asterisk"]');
+
+        return expect(icon).toBeInTheDocument();
+      });
     });
 
     it('should mark notification as read', async () => {
@@ -240,9 +246,7 @@ describe('UserNotifications', () => {
         fireEvent.click(button);
       });
 
-      await waitForApollo(0);
-
-      expect(container).toBeInTheDocument();
+      await waitFor(() => expect(container).toBeInTheDocument());
     });
   });
 });
