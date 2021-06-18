@@ -1,4 +1,12 @@
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { FormikValues } from 'formik';
 import { object, ObjectSchema, string } from 'yup';
 import TextBox from '../../TextBox/TextBox';
@@ -67,13 +75,12 @@ describe('Form', () => {
     });
 
     it('should enable save button if for is valid', async () => {
-      const { findByLabelText, findByRole } = component;
-      const input = await findByLabelText('Test');
+      const input = screen.getByLabelText('Test');
 
-      fireEvent.change(input, { target: { value: 'Hello world' } });
+      userEvent.type(input, 'Hello world');
 
-      await expect(findByRole('button')).resolves.not.toHaveAttribute(
-        'disabled',
+      await waitFor(() =>
+        expect(screen.getByRole('button')).toHaveAttribute('disabled'),
       );
     });
 
