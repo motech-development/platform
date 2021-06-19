@@ -14,7 +14,7 @@
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
-    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "prettier": "prettier --config ../../.prettierrc.yml --write 'src/**/*'",
     "test": "jest --watch",
     "test:ci": "jest --coverage --runInBand"
   },

@@ -42,12 +42,8 @@ describe('Stepper', () => {
     });
 
     it('should display the last step and the next button should not be visible', async () => {
-      const {
-        findAllByRole,
-        findAllByText,
-        findByTestId,
-        queryByText,
-      } = component;
+      const { findAllByRole, findAllByText, findByTestId, queryByText } =
+        component;
       const [, button] = await findAllByRole('button');
 
       fireEvent.click(button);

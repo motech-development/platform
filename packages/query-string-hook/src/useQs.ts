@@ -2,7 +2,7 @@ import qs from 'qs';
 
 const useQs = () => {
   const parse = <T>(value: string) =>
-    (qs.parse(value, {
+    qs.parse(value, {
       decoder: (str) => {
         if (/^(\d+|\d*\.\d+)$/.test(str)) {
           return parseFloat(str);
@@ -20,7 +20,7 @@ const useQs = () => {
 
         return decodeURIComponent(str);
       },
-    }) as unknown) as T;
+    }) as unknown as T;
 
   const stringify = <T>(value: T) => qs.stringify(value);
 

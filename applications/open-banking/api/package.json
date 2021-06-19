@@ -8,6 +8,7 @@
     "dynamodb": "sls dynamodb install",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
     "precommit": "lint-staged",
+    "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "start": "serverless offline start --env local",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",

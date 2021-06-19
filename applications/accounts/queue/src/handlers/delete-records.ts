@@ -9,7 +9,7 @@ export interface IEvent {
   items: string[][];
 }
 
-export const handler: Handler<IEvent> = async event => {
+export const handler: Handler<IEvent> = async (event) => {
   const { TABLE, TYPENAME } = process.env;
 
   if (!TABLE) {
@@ -26,7 +26,7 @@ export const handler: Handler<IEvent> = async event => {
     .batchWrite({
       RequestItems: {
         [TABLE]: [
-          ...items[current].map(id => ({
+          ...items[current].map((id) => ({
             DeleteRequest: {
               Key: {
                 __typename: TYPENAME,

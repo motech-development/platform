@@ -9,7 +9,7 @@ export interface IEvent {
   owner: string;
 }
 
-export const handler: Handler<IEvent> = async event => {
+export const handler: Handler<IEvent> = async (event) => {
   const { TABLE, TYPENAME } = process.env;
 
   if (!TABLE) {
@@ -45,7 +45,7 @@ export const handler: Handler<IEvent> = async event => {
 
   if (Items && Items.length > 0) {
     const items = chunk(
-      Items.map(item => item.id),
+      Items.map((item) => item.id),
       25,
     );
 

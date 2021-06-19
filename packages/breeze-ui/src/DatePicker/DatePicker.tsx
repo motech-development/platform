@@ -60,13 +60,10 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
   readOnly,
   spacing,
 }) => {
-  const [
-    referenceElement,
-    setReferenceElement,
-  ] = useState<HTMLDivElement | null>(null);
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
-    null,
-  );
+  const [referenceElement, setReferenceElement] =
+    useState<HTMLDivElement | null>(null);
+  const [popperElement, setPopperElement] =
+    useState<HTMLDivElement | null>(null);
   const { attributes, styles } = usePopper(referenceElement, popperElement, {
     placement: 'bottom-end',
   });
