@@ -10,7 +10,7 @@ import {
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import { FC, memo, useState } from 'react';
+import { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
@@ -35,14 +35,18 @@ const SelectAccount: FC = () => {
   const { t } = useTranslation('settings');
   const [selected, setSelected] = useState('');
   const { companyId } = useParams<ISelectAccountParams>();
-  const { data, error: bankError, loading } = useQuery<
-    IGetBankAccountsOutput,
-    IGetBankAccountsInput
-  >(GET_BANK_ACCOUNTS, {
-    variables: {
-      id: companyId,
+  const {
+    data,
+    error: bankError,
+    loading,
+  } = useQuery<IGetBankAccountsOutput, IGetBankAccountsInput>(
+    GET_BANK_ACCOUNTS,
+    {
+      variables: {
+        id: companyId,
+      },
     },
-  });
+  );
 
   const [mutation, { error }] = useMutation<
     IUpdateBankSettingsOutput,
@@ -177,4 +181,4 @@ const SelectAccount: FC = () => {
   );
 };
 
-export default memo(SelectAccount);
+export default SelectAccount;

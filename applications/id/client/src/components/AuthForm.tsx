@@ -1,6 +1,6 @@
 import { Card, TextBox, Typography } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
-import { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 import FormFooter from './FormFooter';
@@ -114,4 +114,4 @@ const AuthForm: FC<IAuthFormProps> = ({
   );
 };
 
-export default memo(AuthForm);
+export default AuthForm;

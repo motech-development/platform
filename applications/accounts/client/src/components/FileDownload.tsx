@@ -1,4 +1,4 @@
-import { FC, memo, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 
 export interface IFileDownload {
   loading: boolean;
@@ -18,4 +18,4 @@ const FileDownload: FC<IFileDownload> = ({ loading, onDownload }) => {
   return null;
 };
 
-export default memo(FileDownload);
+export default FileDownload;

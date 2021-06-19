@@ -6,7 +6,7 @@ import {
   TextBox,
 } from '@motech-development/breeze-ui';
 import { Info } from 'luxon';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const name = (value: string, prefix?: string) => {
@@ -21,7 +21,7 @@ export interface IAddressFieldsProps {
   prefix?: string;
 }
 
-export const AddressFields: FC<IAddressFieldsProps> = memo(({ prefix }) => {
+export const AddressFields: FC<IAddressFieldsProps> = ({ prefix }) => {
   const { t } = useTranslation('common-fields');
   const postcode = name('address.line5', prefix);
 
@@ -58,13 +58,13 @@ export const AddressFields: FC<IAddressFieldsProps> = memo(({ prefix }) => {
       />
     </>
   );
-});
+};
 
 export interface IBankFieldsProps {
   prefix?: string;
 }
 
-export const BankFields: FC<IBankFieldsProps> = memo(({ prefix }) => {
+export const BankFields: FC<IBankFieldsProps> = ({ prefix }) => {
   const { t } = useTranslation('common-fields');
 
   return (
@@ -82,56 +82,53 @@ export const BankFields: FC<IBankFieldsProps> = memo(({ prefix }) => {
       />
     </>
   );
-});
+};
 
 export interface ICompanyDetailsFieldsProps {
   prefix?: string;
 }
 
-export const CompanyDetailsFields: FC<ICompanyDetailsFieldsProps> = memo(
-  ({ prefix }) => {
-    const { t } = useTranslation('common-fields');
+export const CompanyDetailsFields: FC<ICompanyDetailsFieldsProps> = ({
+  prefix,
+}) => {
+  const { t } = useTranslation('common-fields');
 
-    return (
-      <>
-        <TextBox
-          name={name('name', prefix)}
-          label={t('company-details.name')}
-        />
+  return (
+    <>
+      <TextBox name={name('name', prefix)} label={t('company-details.name')} />
 
-        <TextBox
-          name={name('companyNumber', prefix)}
-          label={t('company-details.company-number')}
-          format="########"
-        />
-      </>
-    );
-  },
-);
+      <TextBox
+        name={name('companyNumber', prefix)}
+        label={t('company-details.company-number')}
+        format="########"
+      />
+    </>
+  );
+};
 
 export interface IContactDetailsFieldsProps {
   prefix?: string;
 }
 
-export const ContactDetailsFields: FC<IContactDetailsFieldsProps> = memo(
-  ({ prefix }) => {
-    const { t } = useTranslation('common-fields');
+export const ContactDetailsFields: FC<IContactDetailsFieldsProps> = ({
+  prefix,
+}) => {
+  const { t } = useTranslation('common-fields');
 
-    return (
-      <>
-        <TextBox
-          name={name('contact.email', prefix)}
-          label={t('contact-details.email')}
-        />
+  return (
+    <>
+      <TextBox
+        name={name('contact.email', prefix)}
+        label={t('contact-details.email')}
+      />
 
-        <TextBox
-          name={name('contact.telephone', prefix)}
-          label={t('contact-details.telephone')}
-        />
-      </>
-    );
-  },
-);
+      <TextBox
+        name={name('contact.telephone', prefix)}
+        label={t('contact-details.telephone')}
+      />
+    </>
+  );
+};
 
 export interface IVatSettingsFieldsProps {
   prefix?: string;

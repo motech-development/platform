@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import ErrorCard from '../components/ErrorCard';
 import Container from '../components/Container';
@@ -13,4 +13,4 @@ const NotFound: FC = () => {
   );
 };
 
-export default memo(NotFound);
+export default NotFound;

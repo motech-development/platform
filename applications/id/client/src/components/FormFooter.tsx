@@ -1,5 +1,5 @@
 import { Button, Col, Row } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 
 export interface IFormFooterProps {
   change: string;
@@ -38,4 +38,4 @@ const FormFooter: FC<IFormFooterProps> = ({
   </Row>
 );
 
-export default memo(FormFooter);
+export default FormFooter;

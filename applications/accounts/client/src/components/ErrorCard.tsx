@@ -6,7 +6,7 @@ import {
   Row,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import isProd from '../utils/isProd';
@@ -84,4 +84,4 @@ const ErrorCard: FC<IErrorCardProps> = ({
   );
 };
 
-export default memo(ErrorCard);
+export default ErrorCard;

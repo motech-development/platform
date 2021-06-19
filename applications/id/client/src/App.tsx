@@ -5,7 +5,7 @@ import {
   ToastProvider,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, lazy, memo, Suspense } from 'react';
+import { FC, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, Router, Switch } from 'react-router-dom';
 import history from './history';
@@ -41,4 +41,4 @@ const App: FC = () => {
   );
 };
 
-export default memo(App);
+export default App;

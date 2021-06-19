@@ -7,7 +7,7 @@ import {
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import TransactionsList from '../../../components/TransactionsList';
@@ -188,4 +188,4 @@ const Accounts: FC = () => {
   );
 };
 
-export default memo(Accounts);
+export default Accounts;

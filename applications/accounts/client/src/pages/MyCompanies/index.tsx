@@ -1,6 +1,6 @@
 import { ProtectedRoute, useAuth } from '@motech-development/auth';
 import { Loader } from '@motech-development/breeze-ui';
-import { FC, lazy, memo, Suspense } from 'react';
+import { FC, lazy, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import ApolloClient from '../../components/ApolloClient';
 import Container from '../../components/Container';
@@ -80,4 +80,4 @@ const Routes: FC = () => {
   );
 };
 
-export default memo(Routes);
+export default Routes;
