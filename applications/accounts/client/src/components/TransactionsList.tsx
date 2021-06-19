@@ -8,7 +8,7 @@ import {
   TableRow,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, memo, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Currency from './Currency';
 import DeleteItem from './DeleteItem';
@@ -142,4 +142,4 @@ const TransactionsList: FC<ITransactionsListProps> = ({
   );
 };
 
-export default memo(TransactionsList);
+export default TransactionsList;

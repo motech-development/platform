@@ -7,20 +7,20 @@ interface IRecord {
 
 const getRecords = (records: DynamoDBRecord[]) =>
   records
-    .filter(record => record.dynamodb !== undefined)
-    .map(record => record.dynamodb as StreamRecord);
+    .filter((record) => record.dynamodb !== undefined)
+    .map((record) => record.dynamodb as StreamRecord);
 
 export const unmarshallAllRecords = <T extends IRecord>(
   records: DynamoDBRecord[],
   typename: string,
 ) =>
   getRecords(records)
-    .filter(record => {
+    .filter((record) => {
       const { NewImage, OldImage } = record;
 
       return NewImage !== undefined && OldImage !== undefined;
     })
-    .map(record => {
+    .map((record) => {
       const { NewImage, OldImage } = record;
 
       return {
@@ -43,12 +43,12 @@ export const unmarshallNewRecords = <T extends IRecord>(
   typename: string,
 ) =>
   getRecords(records)
-    .filter(record => {
+    .filter((record) => {
       const { NewImage } = record;
 
       return NewImage !== undefined;
     })
-    .map(record => {
+    .map((record) => {
       const { NewImage } = record;
 
       return {
@@ -68,12 +68,12 @@ export const unmarshallOldRecords = <T extends IRecord>(
   typename: string,
 ) =>
   getRecords(records)
-    .filter(record => {
+    .filter((record) => {
       const { OldImage } = record;
 
       return OldImage !== undefined;
     })
-    .map(record => {
+    .map((record) => {
       const { OldImage } = record;
 
       return {

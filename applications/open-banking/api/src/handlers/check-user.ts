@@ -5,7 +5,7 @@ export interface IEvent {
   user: string;
 }
 
-export const handler: Handler<IEvent> = async event => {
+export const handler: Handler<IEvent> = async (event) => {
   const { user } = event;
   const endpoint = `/users/${user}`;
 

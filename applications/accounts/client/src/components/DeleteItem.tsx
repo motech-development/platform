@@ -4,7 +4,7 @@ import {
   Overlay,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import ConfirmDelete from './ConfirmDelete';
 
 export interface IDeleteItemProps {
@@ -49,4 +49,4 @@ const DeleteItem: FC<IDeleteItemProps> = ({
     </Modal>
   );
 
-export default memo(DeleteItem);
+export default DeleteItem;

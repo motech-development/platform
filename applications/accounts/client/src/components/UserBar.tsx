@@ -8,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
@@ -96,4 +96,4 @@ const UserBar: FC<IUserBarProps> = ({
   );
 };
 
-export default memo(UserBar);
+export default UserBar;

@@ -7,7 +7,7 @@ import extractStream from './shared/extract-stream';
 
 const documentClient = new DocumentClient();
 
-export const handler: DynamoDBStreamHandler = async event => {
+export const handler: DynamoDBStreamHandler = async (event) => {
   const { TABLE, inserts, removals, updates } = extractStream(event);
 
   try {

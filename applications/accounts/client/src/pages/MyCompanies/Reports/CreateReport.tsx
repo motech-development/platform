@@ -1,6 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -55,19 +55,17 @@ const CreateReport: FC = () => {
       id: companyId,
     },
   });
-  const [
-    mutation,
-    { error: mutationError, loading: mutationLoading },
-  ] = useMutation<ICreateReportOutput, ICreateReportInput>(CREATE_REPORT, {
-    onCompleted: () => {
-      add({
-        colour: 'success',
-        message: t('create-report.requested'),
-      });
+  const [mutation, { error: mutationError, loading: mutationLoading }] =
+    useMutation<ICreateReportOutput, ICreateReportInput>(CREATE_REPORT, {
+      onCompleted: () => {
+        add({
+          colour: 'success',
+          message: t('create-report.requested'),
+        });
 
-      history.push(backTo);
-    },
-  });
+        history.push(backTo);
+      },
+    });
   const save = async (input: FormSchema) => {
     await mutation({
       variables: {
@@ -99,4 +97,4 @@ const CreateReport: FC = () => {
   );
 };
 
-export default memo(CreateReport);
+export default CreateReport;

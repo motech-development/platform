@@ -6,7 +6,7 @@ import {
   PageTitle,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, Fragment, memo } from 'react';
+import { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../components/Connected';
@@ -92,4 +92,4 @@ const Dashboard: FC = () => {
   );
 };
 
-export default memo(Dashboard);
+export default Dashboard;

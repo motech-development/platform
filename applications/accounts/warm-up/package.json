@@ -7,6 +7,7 @@
     "deploy": "serverless deploy --verbose",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
     "precommit": "lint-staged",
+    "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "start": "serverless invoke stepf --name warmUp",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",

@@ -8,7 +8,7 @@
     "import": "a0deploy export -c config.local.json -f yaml -o ./",
     "lint": "eslint -c .eslintrc.yml './src/**/*.js'",
     "precommit": "lint-staged",
-    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "test": "jest --watch",
     "test:ci": "jest --coverage --runInBand"
   },

@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { FC } from 'react';
 
 const currencySymbol = (currency: string) => {
   switch (currency) {
@@ -36,4 +36,4 @@ const Currency: FC<ICurrencyProps> = ({ currency, value }) => {
   return <>{output}</>;
 };
 
-export default memo(Currency);
+export default Currency;

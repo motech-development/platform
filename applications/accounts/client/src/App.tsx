@@ -1,6 +1,6 @@
 import { useAuth, WithAuth } from '@motech-development/auth';
 import { Loader, useToast } from '@motech-development/breeze-ui';
-import { FC, memo, Suspense, useEffect } from 'react';
+import { FC, Suspense, useEffect } from 'react';
 import { pageview } from 'react-ga';
 import IdleTimer from 'react-idle-timer';
 import { useLocation } from 'react-router-dom';
@@ -42,4 +42,4 @@ const App: FC = () => {
   );
 };
 
-export default memo(App);
+export default App;

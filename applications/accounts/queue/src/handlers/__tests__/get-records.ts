@@ -74,7 +74,7 @@ describe('get-records', () => {
 
         DocumentClient.prototype.query = jest.fn().mockReturnValueOnce({
           promise: jest.fn().mockResolvedValue({
-            Items: Items.map(id => ({
+            Items: Items.map((id) => ({
               id,
             })),
           }),

@@ -3,7 +3,7 @@ import { StepFunctions } from 'aws-sdk';
 
 const stepFunctions = new StepFunctions();
 
-export const handler: Handler<SQSEvent> = async event => {
+export const handler: Handler<SQSEvent> = async (event) => {
   const { STATE_MACHINE_ARN } = process.env;
 
   if (!STATE_MACHINE_ARN) {
@@ -11,7 +11,7 @@ export const handler: Handler<SQSEvent> = async event => {
   }
 
   await Promise.all(
-    event.Records.map(record => {
+    event.Records.map((record) => {
       const { messageAttributes } = record;
 
       if (

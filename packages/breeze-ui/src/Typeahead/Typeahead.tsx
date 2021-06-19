@@ -34,13 +34,10 @@ export interface ITypeaheadProps
 const Typeahead: FC<ITypeaheadProps> = ({ suggestions, ...rest }) => {
   const { name } = rest;
   const [filteredSuggestions, setFilteredSuggestions] = useState(suggestions);
-  const [
-    referenceElement,
-    setReferenceElement,
-  ] = useState<HTMLDivElement | null>(null);
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
-    null,
-  );
+  const [referenceElement, setReferenceElement] =
+    useState<HTMLDivElement | null>(null);
+  const [popperElement, setPopperElement] =
+    useState<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
   const [form, setForm] = useState<FormikProps<FormikValues>>();
   const { attributes, styles } = usePopper(referenceElement, popperElement, {

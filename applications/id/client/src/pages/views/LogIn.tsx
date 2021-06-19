@@ -1,6 +1,6 @@
 import { ButtonLink } from '@motech-development/breeze-ui';
 import { Auth0Error, WebAuth } from 'auth0-js';
-import { FC, memo, useState } from 'react';
+import { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AuthForm, { FormSchema } from '../../components/AuthForm';
 
@@ -46,4 +46,4 @@ const LogIn: FC<ILogInProps> = ({ client, handleError, setView }) => {
   );
 };
 
-export default memo(LogIn);
+export default LogIn;

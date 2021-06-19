@@ -1,5 +1,5 @@
 import { Card, Typography } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const NoTransactions: FC = () => {
@@ -18,4 +18,4 @@ const NoTransactions: FC = () => {
   );
 };
 
-export default memo(NoTransactions);
+export default NoTransactions;

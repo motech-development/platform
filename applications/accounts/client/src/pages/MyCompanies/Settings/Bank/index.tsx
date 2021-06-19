@@ -1,5 +1,5 @@
 import { ProtectedRoute } from '@motech-development/auth';
-import { FC, lazy, memo } from 'react';
+import { FC, lazy } from 'react';
 import { Switch } from 'react-router-dom';
 
 const Callback = lazy(() => import('./Callback'));
@@ -26,4 +26,4 @@ const Routes: FC = () => (
   </Switch>
 );
 
-export default memo(Routes);
+export default Routes;

@@ -17,7 +17,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { useQs } from '@motech-development/query-string-hook';
 import { saveAs } from 'file-saver';
-import { FC, memo, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -214,4 +214,4 @@ const Reports: FC = () => {
   );
 };
 
-export default memo(Reports);
+export default Reports;

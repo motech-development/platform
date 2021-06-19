@@ -15,7 +15,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { Decimal } from 'decimal.js';
 import { FormikProps, FormikValues, getIn } from 'formik';
-import { ChangeEvent, FC, memo, ReactNode, useEffect, useState } from 'react';
+import { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { boolean, date, number, object, string } from 'yup';
 
@@ -177,7 +177,7 @@ const TransactionForm: FC<ITransactionForm> = ({
       value: 'Sales',
     },
   ];
-  const refundOptions = ([
+  const refundOptions = [
     {
       name: t('transaction-form.transaction-amount.refund.options.no'),
       value: false,
@@ -186,8 +186,8 @@ const TransactionForm: FC<ITransactionForm> = ({
       name: t('transaction-form.transaction-amount.refund.options.yes'),
       value: true,
     },
-  ] as unknown) as IRadioOption[];
-  const scheduleOptions = ([
+  ] as unknown as IRadioOption[];
+  const scheduleOptions = [
     {
       name: t('transaction-form.transaction-amount.schedule.options.yes'),
       value: true,
@@ -196,7 +196,7 @@ const TransactionForm: FC<ITransactionForm> = ({
       name: t('transaction-form.transaction-amount.schedule.options.no'),
       value: false,
     },
-  ] as unknown) as IRadioOption[];
+  ] as unknown as IRadioOption[];
   const statusOptions = [
     {
       name: t('transaction-form.transaction-amount.status.options.confirmed'),
@@ -265,15 +265,14 @@ const TransactionForm: FC<ITransactionForm> = ({
       setFieldValue('scheduled', false);
     }
   };
-  const onRadioChange = (name: string) => (
-    event: ChangeEvent<HTMLInputElement>,
-    form: FormikProps<FormikValues>,
-  ) => {
-    const { value } = event.target;
-    const { setFieldValue } = form;
+  const onRadioChange =
+    (name: string) =>
+    (event: ChangeEvent<HTMLInputElement>, form: FormikProps<FormikValues>) => {
+      const { value } = event.target;
+      const { setFieldValue } = form;
 
-    setFieldValue(name, value === 'true');
-  };
+      setFieldValue(name, value === 'true');
+    };
   const onPreSubmit = ({ transaction, ...value }: IFormValues) => {
     const isPurchase = transaction === 'Purchase';
     const category = isPurchase ? categories[value.category].name : transaction;
@@ -514,4 +513,4 @@ const TransactionForm: FC<ITransactionForm> = ({
   );
 };
 
-export default memo(TransactionForm);
+export default TransactionForm;

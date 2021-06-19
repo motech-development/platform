@@ -1,6 +1,6 @@
 import { ApolloError } from '@apollo/client';
 import { Loader } from '@motech-development/breeze-ui';
-import { FC, memo, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import ErrorCard from './ErrorCard';
 
@@ -33,4 +33,4 @@ const Connected: FC<IConnectedProps> = ({ children, error, loading }) => {
   return <div data-testid="connected-content">{children}</div>;
 };
 
-export default memo(Connected);
+export default Connected;

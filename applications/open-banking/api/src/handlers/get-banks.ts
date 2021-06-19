@@ -27,7 +27,7 @@ export const handler = apiGatewayHandler(async () => {
     .promise();
 
   const items = Items
-    ? Items.map(item => ({
+    ? Items.map((item) => ({
         id: item.pk,
         name: item.name,
       }))

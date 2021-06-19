@@ -4,7 +4,7 @@ import deleteAttachments from './handlers/delete-attachments';
 
 const sqs = new SQS();
 
-export const handler: DynamoDBStreamHandler = async event => {
+export const handler: DynamoDBStreamHandler = async (event) => {
   const { ATTACHMENT_QUEUE } = process.env;
 
   if (!ATTACHMENT_QUEUE) {

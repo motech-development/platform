@@ -10,18 +10,20 @@ type Handler = (
   context: Context,
 ) => Promise<APIGatewayProxyResult>;
 
-const apiGatewayHandler = (handler: Handler) => async (
-  event: APIGatewayProxyEvent,
-  context: Context,
-  callback: Callback<APIGatewayProxyResult>,
-) => {
-  try {
-    const result = await handler(event, context);
+const apiGatewayHandler =
+  (handler: Handler) =>
+  async (
+    event: APIGatewayProxyEvent,
+    context: Context,
+    callback: Callback<APIGatewayProxyResult>,
+  ) => {
+    try {
+      const result = await handler(event, context);
 
-    callback(null, result);
-  } catch (e) {
-    callback(null, e);
-  }
-};
+      callback(null, result);
+    } catch (e) {
+      callback(null, e);
+    }
+  };
 
 export default apiGatewayHandler;

@@ -5,7 +5,7 @@ import {
   IDateTimeProps,
   Tooltip,
 } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
 
 interface IClock {
@@ -62,4 +62,4 @@ const Scheduled: FC<IScheduledProps> = ({
   return <DateTime format={format} value={value} />;
 };
 
-export default memo(Scheduled);
+export default Scheduled;

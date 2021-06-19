@@ -10,7 +10,7 @@
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "postdeploy": "react-snap",
     "precommit": "lint-staged",
-    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "start": "react-scripts start",
     "teardown": "serverless client remove --verbose --no-confirm",
     "test": "react-scripts test",

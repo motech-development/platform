@@ -1,4 +1,4 @@
-import { FC, memo, ReactNode, useEffect, useRef } from 'react';
+import { FC, ReactNode, useEffect, useRef } from 'react';
 import { disableBodyScroll } from 'body-scroll-lock';
 
 export interface IWrapperProps {
@@ -18,4 +18,4 @@ const Wrapper: FC<IWrapperProps> = ({ children }) => {
   return <div ref={parentRef}>{children}</div>;
 };
 
-export default memo(Wrapper);
+export default Wrapper;

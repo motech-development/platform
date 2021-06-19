@@ -1,5 +1,5 @@
 import { Card, Typography } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const Success: FC = () => {
@@ -14,4 +14,4 @@ const Success: FC = () => {
   );
 };
 
-export default memo(Success);
+export default Success;

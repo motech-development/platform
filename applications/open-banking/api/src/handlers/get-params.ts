@@ -13,7 +13,7 @@ const schema = object()
   })
   .required();
 
-export const handler: Handler = async event => {
+export const handler: Handler = async (event) => {
   const result = await schema.validate(event, {
     stripUnknown: true,
   });

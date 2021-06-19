@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import ClientForm, { FormSchema } from '../../../components/ClientForm';
@@ -73,4 +73,4 @@ const AddClient: FC = () => {
   );
 };
 
-export default memo(AddClient);
+export default AddClient;

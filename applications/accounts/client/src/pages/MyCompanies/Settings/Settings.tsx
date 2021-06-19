@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import { FC, memo, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -37,12 +37,8 @@ const Settings: FC = () => {
       id: companyId,
     },
   });
-  const [
-    mutation,
-    { error: updateError, loading: updateLoading },
-  ] = useMutation<IUpdateSettingsOutput, IUpdateSettingsInput>(
-    UPDATE_SETTINGS,
-    {
+  const [mutation, { error: updateError, loading: updateLoading }] =
+    useMutation<IUpdateSettingsOutput, IUpdateSettingsInput>(UPDATE_SETTINGS, {
       onCompleted: ({ updateSettings }) => {
         if (updateSettings) {
           const { id } = updateSettings;
@@ -62,8 +58,7 @@ const Settings: FC = () => {
           history.push(backTo(companyId));
         }
       },
-    },
-  );
+    });
   const [disconnect, { loading: disconnectLoading }] = useMutation<
     IDeleteBankConnectionOutput,
     IDeleteBankConnectionInput
@@ -136,4 +131,4 @@ const Settings: FC = () => {
   );
 };
 
-export default memo(Settings);
+export default Settings;

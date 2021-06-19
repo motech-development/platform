@@ -46,7 +46,7 @@ const instrumentAsync = (content, location) =>
     });
   });
 
-const requireWithVersionSupport = moduleName => {
+const requireWithVersionSupport = (moduleName) => {
   const name = moduleName.split('@')[0];
 
   return require(name);

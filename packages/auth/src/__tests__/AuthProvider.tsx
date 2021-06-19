@@ -5,13 +5,8 @@ import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser, useAuth } from '../AuthProvider';
 
 const TestComponent: FC = () => {
-  const {
-    isAuthenticated,
-    isLoading,
-    loginWithRedirect,
-    logout,
-    user,
-  } = useAuth();
+  const { isAuthenticated, isLoading, loginWithRedirect, logout, user } =
+    useAuth();
 
   return (
     <div data-testid="test-component">
@@ -189,8 +184,9 @@ describe('AuthProvider', () => {
     });
 
     it("should show log in button when auth0 says you're not authorised", async () => {
-      (Auth0Client.prototype
-        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
+      (
+        Auth0Client.prototype.isAuthenticated as jest.Mock
+      ).mockResolvedValueOnce(false);
 
       const { findByTestId } = render(
         <MemoryRouter>
@@ -271,8 +267,9 @@ describe('AuthProvider', () => {
     });
 
     it('should call loginWithPopup', async () => {
-      (Auth0Client.prototype
-        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
+      (
+        Auth0Client.prototype.isAuthenticated as jest.Mock
+      ).mockResolvedValueOnce(false);
 
       const { findByTestId } = render(
         <MemoryRouter initialEntries={['?code=test']}>
@@ -319,8 +316,9 @@ describe('AuthProvider', () => {
     });
 
     it('should call loginWithRedirect', async () => {
-      (Auth0Client.prototype
-        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
+      (
+        Auth0Client.prototype.isAuthenticated as jest.Mock
+      ).mockResolvedValueOnce(false);
 
       const { findByTestId } = render(
         <MemoryRouter initialEntries={['?code=test']}>
@@ -367,8 +365,9 @@ describe('AuthProvider', () => {
     });
 
     it('should call buildAuthorizeUrl', async () => {
-      (Auth0Client.prototype
-        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
+      (
+        Auth0Client.prototype.isAuthenticated as jest.Mock
+      ).mockResolvedValueOnce(false);
 
       const { findByTestId } = render(
         <MemoryRouter initialEntries={['?code=test']}>
@@ -415,8 +414,9 @@ describe('AuthProvider', () => {
     });
 
     it('should call getIdTokenClaims', async () => {
-      (Auth0Client.prototype
-        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
+      (
+        Auth0Client.prototype.isAuthenticated as jest.Mock
+      ).mockResolvedValueOnce(false);
 
       const { findByTestId } = render(
         <MemoryRouter initialEntries={['?code=test']}>
@@ -463,8 +463,9 @@ describe('AuthProvider', () => {
     });
 
     it('should call getTokenSilently', async () => {
-      (Auth0Client.prototype
-        .isAuthenticated as jest.Mock).mockResolvedValueOnce(false);
+      (
+        Auth0Client.prototype.isAuthenticated as jest.Mock
+      ).mockResolvedValueOnce(false);
 
       const { findByTestId } = render(
         <MemoryRouter initialEntries={['?code=test']}>

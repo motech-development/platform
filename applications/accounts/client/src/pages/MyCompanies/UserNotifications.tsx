@@ -8,7 +8,7 @@ import {
   TableCell,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, memo, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import ON_NOTIFICATION, {
@@ -100,9 +100,8 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
       id,
     },
   });
-  const [markAsRead] = useMutation<IMarkAsReadOutput, IMarkAsReadInput>(
-    MARK_AS_READ,
-  );
+  const [markAsRead] =
+    useMutation<IMarkAsReadOutput, IMarkAsReadInput>(MARK_AS_READ);
 
   useEffect(
     () =>
@@ -192,4 +191,4 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
   );
 };
 
-export default memo(UserNotifications);
+export default UserNotifications;

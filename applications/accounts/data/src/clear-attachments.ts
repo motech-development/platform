@@ -4,7 +4,7 @@ import updateAttachments from './handlers/update-attachments';
 
 const documentClient = new DocumentClient();
 
-export const handler: SQSHandler = async event => {
+export const handler: SQSHandler = async (event) => {
   const { BUCKET, TABLE } = process.env;
 
   if (!TABLE) {

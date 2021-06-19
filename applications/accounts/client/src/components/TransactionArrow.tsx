@@ -1,7 +1,7 @@
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { TableCell } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const danger = {
@@ -42,4 +42,4 @@ const TransactionArrow: FC<ITransactionArrowProps> = ({ value }) => {
   );
 };
 
-export default memo(TransactionArrow);
+export default TransactionArrow;

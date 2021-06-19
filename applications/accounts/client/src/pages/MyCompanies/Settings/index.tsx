@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { ConditionalRoute, ProtectedRoute } from '@motech-development/auth';
-import { FC, lazy, memo } from 'react';
+import { FC, lazy } from 'react';
 import { Switch, useParams } from 'react-router-dom';
 import GET_BANK_SETTINGS, {
   IGetBankSettingsInput,
@@ -47,4 +47,4 @@ const Routes: FC = () => {
   );
 };
 
-export default memo(Routes);
+export default Routes;

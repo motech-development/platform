@@ -15,10 +15,8 @@ async function setName(user, context, callback) {
         ...user.user_metadata,
       },
     };
-    const {
-      family_name: familyName,
-      given_name: givenName,
-    } = user.user_metadata;
+    const { family_name: familyName, given_name: givenName } =
+      user.user_metadata;
 
     updated.family_name = familyName;
     updated.given_name = givenName;

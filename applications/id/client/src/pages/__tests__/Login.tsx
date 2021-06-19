@@ -212,7 +212,7 @@ describe('Login', () => {
         );
       });
 
-      it.only('should display a toast when sign up is successful and go to the log in view', async () => {
+      it('should display a toast when sign up is successful and go to the log in view', async () => {
         const { findAllByRole, findByLabelText, findByText } = component;
 
         await act(async () => {
@@ -248,10 +248,6 @@ describe('Login', () => {
           colour: 'success',
           message: 'success',
         });
-
-        // await waitFor(() =>
-        //   ,
-        // );
 
         await expect(
           findByText('forgotten-password'),

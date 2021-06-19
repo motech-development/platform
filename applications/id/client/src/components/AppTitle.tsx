@@ -1,5 +1,5 @@
 import { Typography } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
 
 const Text = styled(Typography)`
@@ -16,4 +16,4 @@ const AppTitle: FC = () => {
   );
 };
 
-export default memo(AppTitle);
+export default AppTitle;

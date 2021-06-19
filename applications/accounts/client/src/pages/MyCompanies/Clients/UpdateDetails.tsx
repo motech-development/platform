@@ -6,7 +6,7 @@ import {
   Row,
   useToast,
 } from '@motech-development/breeze-ui';
-import { FC, memo, useState } from 'react';
+import { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import ClientForm, { FormSchema } from '../../../components/ClientForm';
@@ -46,64 +46,60 @@ const UpdateDetails: FC = () => {
       },
     },
   );
-  const [
-    mutation,
-    { error: updateError, loading: updateLoading },
-  ] = useMutation<IUpdateClientOutput, IUpdateClientInput>(UPDATE_CLIENT, {
-    onCompleted: ({ updateClient }) => {
-      if (updateClient) {
-        const { companyId: id, name } = updateClient;
+  const [mutation, { error: updateError, loading: updateLoading }] =
+    useMutation<IUpdateClientOutput, IUpdateClientInput>(UPDATE_CLIENT, {
+      onCompleted: ({ updateClient }) => {
+        if (updateClient) {
+          const { companyId: id, name } = updateClient;
 
-        add({
-          colour: 'success',
-          message: t('update-details.success', {
-            name,
-          }),
-        });
+          add({
+            colour: 'success',
+            message: t('update-details.success', {
+              name,
+            }),
+          });
 
-        history.push(backTo(id));
-      } else {
+          history.push(backTo(id));
+        } else {
+          add({
+            colour: 'danger',
+            message: t('update-details.retry'),
+          });
+
+          history.push(backTo(companyId));
+        }
+      },
+    });
+  const [deleteMutation, { error: deleteError, loading: deleteLoading }] =
+    useMutation<IDeleteClientOutput, IDeleteClientInput>(DELETE_CLIENT, {
+      onCompleted: ({ deleteClient }) => {
+        if (deleteClient) {
+          const { companyId: id, name } = deleteClient;
+
+          add({
+            colour: 'success',
+            message: t('delete-client.success', {
+              name,
+            }),
+          });
+
+          history.push(backTo(id));
+        } else {
+          add({
+            colour: 'danger',
+            message: t('delete-client.retry'),
+          });
+
+          history.push(backTo(companyId));
+        }
+      },
+      onError: () => {
         add({
           colour: 'danger',
-          message: t('update-details.retry'),
+          message: t('delete-client.error'),
         });
-
-        history.push(backTo(companyId));
-      }
-    },
-  });
-  const [
-    deleteMutation,
-    { error: deleteError, loading: deleteLoading },
-  ] = useMutation<IDeleteClientOutput, IDeleteClientInput>(DELETE_CLIENT, {
-    onCompleted: ({ deleteClient }) => {
-      if (deleteClient) {
-        const { companyId: id, name } = deleteClient;
-
-        add({
-          colour: 'success',
-          message: t('delete-client.success', {
-            name,
-          }),
-        });
-
-        history.push(backTo(id));
-      } else {
-        add({
-          colour: 'danger',
-          message: t('delete-client.retry'),
-        });
-
-        history.push(backTo(companyId));
-      }
-    },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('delete-client.error'),
-      });
-    },
-  });
+      },
+    });
   const launchDeleteModal = () => {
     setModal(true);
   };
@@ -176,4 +172,4 @@ const UpdateDetails: FC = () => {
   );
 };
 
-export default memo(UpdateDetails);
+export default UpdateDetails;

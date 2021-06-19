@@ -5,7 +5,7 @@ import {
   Tooltip,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components';
 
 interface IWarningTriangle {
@@ -74,4 +74,4 @@ const Warning: FC<IWarningProps> = ({
   );
 };
 
-export default memo(Warning);
+export default Warning;
