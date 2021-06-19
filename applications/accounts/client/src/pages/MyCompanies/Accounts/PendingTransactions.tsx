@@ -31,17 +31,17 @@ import GET_TRANSACTIONS, {
   IGetTransactionsOutput,
 } from '../../../graphql/transaction/GET_TRANSACTIONS';
 
-interface IPendingTransactionParams {
+interface IPendingTransactionsParams {
   companyId: string;
 }
 
-const PendingTransaction: FC = () => {
+const PendingTransactions: FC = () => {
   const [transaction, setTransaction] = useState({
     id: '',
     name: '',
   });
   const { t } = useTranslation('accounts');
-  const { companyId } = useParams<IPendingTransactionParams>();
+  const { companyId } = useParams<IPendingTransactionsParams>();
   const { add } = useToast();
   const { data, error, loading } = useQuery<
     IGetTransactionsOutput,
@@ -242,4 +242,4 @@ const PendingTransaction: FC = () => {
   );
 };
 
-export default PendingTransaction;
+export default PendingTransactions;
