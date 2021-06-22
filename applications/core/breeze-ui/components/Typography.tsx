@@ -28,11 +28,13 @@ const styles = (align: TAlign, margin: TMargin, variant: TVariant) => {
     case 'sm':
       break;
     case 'md':
+      marginStyles = 'mb-4';
       break;
     case 'lg':
       marginStyles = 'mb-6';
       break;
     default:
+      marginStyles = 'mb-0';
   }
 
   switch (variant) {

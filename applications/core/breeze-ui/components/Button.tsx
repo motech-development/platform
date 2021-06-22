@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes } from 'react';
+import { FC, forwardRef, HTMLProps } from 'react';
 
 type TColour = 'danger' | 'primary' | 'secondary' | 'success';
 
@@ -38,31 +38,36 @@ const styles = (colour: TColour, size: TSize, block: boolean) => {
   return `${colourStyles} ${blockStyles} ${sizeStyles}`;
 };
 
-interface IButtonProps extends HTMLAttributes<HTMLButtonElement> {
+interface IButtonProps extends Omit<HTMLProps<HTMLButtonElement>, 'size'> {
   block?: boolean;
   colour?: TColour;
   size?: TSize;
-  disabled?: boolean;
   loading?: boolean;
   type?: 'submit' | 'reset' | 'button';
 }
 
-const Button: FC<IButtonProps> = ({
-  block = false,
-  colour = 'primary',
-  size = 'md',
-  type = 'button',
-  ...rest
-}) => (
-  <button
-    className={`group relative shadow-2xl flex font-display font-semibold justify-center text-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${styles(
-      colour,
-      size,
-      block,
-    )}`}
-    type={type}
-    {...rest}
-  ></button>
+const Button: FC<IButtonProps> = forwardRef<HTMLButtonElement, IButtonProps>(
+  (
+    {
+      block = false,
+      colour = 'primary',
+      size = 'md',
+      type = 'button',
+      ...rest
+    },
+    ref,
+  ) => (
+    <button
+      className={`group relative shadow-2xl flex font-display justify-center text-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${styles(
+        colour,
+        size,
+        block,
+      )}`}
+      type={type}
+      ref={ref}
+      {...rest}
+    ></button>
+  ),
 );
 
 export default Button;

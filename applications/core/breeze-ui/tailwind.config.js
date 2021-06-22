@@ -1,3 +1,6 @@
+const {
+  default: palette,
+} = require('tailwindcss/lib/util/flattenColorPalette');
 const plugin = require('tailwindcss/plugin');
 
 module.exports = {
@@ -33,17 +36,45 @@ module.exports = {
     extend: {},
   },
   plugins: [
-    plugin(({ addComponents }) => {
+    plugin(({ addComponents, addUtilities, e, theme, variants }) => {
       addComponents({
-        'input:focus-within ~ label': {
-          '@apply text-blue-500 transform scale-75 -translate-y-0 z-0 ml-1.5 px-1 py-0':
-            {},
-        },
-        'input:not(:placeholder-shown) ~ label': {
-          '@apply text-blue-500 transform scale-75 -translate-y-0 z-0 ml-1.5 px-1 py-0':
-            {},
+        input: {
+          '&::placeholder': {
+            '@apply text-white': {},
+          },
+          '&:focus-within': {
+            '&::placeholder': {
+              '@apply text-gray-400': {},
+            },
+            '~ label': {
+              '@apply text-blue-500 transform scale-75 translate-y-0.5 z-0 ml-3.5 px-1 py-0':
+                {},
+            },
+          },
+          '&:not(:placeholder-shown)': {
+            '~ label': {
+              '@apply text-blue-500 transform scale-75 translate-y-0.5 z-0 ml-3.5 px-1 py-0':
+                {},
+            },
+          },
         },
       });
+
+      const colours = palette(theme('borderColor'));
+
+      const colourMap = Object.keys(colours)
+        .filter((colour) => colour !== 'default')
+        .map((colour) => ({
+          [`.border-t-${colour}`]: { borderTopColor: colours[colour] },
+          [`.border-r-${colour}`]: { borderRightColor: colours[colour] },
+          [`.border-b-${colour}`]: { borderBottomColor: colours[colour] },
+          [`.border-l-${colour}`]: { borderLeftColor: colours[colour] },
+        }));
+      const utilities = {
+        ...colourMap,
+      };
+
+      addUtilities(utilities, variants('borderColor'));
     }),
   ],
 };

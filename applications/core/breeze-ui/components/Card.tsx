@@ -9,7 +9,7 @@ const styles = (padding: TPadding) => {
     case 'md':
       return '';
     case 'lg':
-      return 'px-5 py-9';
+      return 'p-5';
     default:
   }
 };
@@ -19,7 +19,7 @@ const Card: FC<{
   padding?: TPadding;
 }> = ({ children, padding = 'md' }) => (
   <div
-    className={`bg-gray-100 border-2 border-gray-300 text-gray-800 shadow-lg ${styles(
+    className={`bg-gray-100 border-b-2 border-gray-300 text-gray-800 shadow-lg ${styles(
       padding,
     )}`}
   >
