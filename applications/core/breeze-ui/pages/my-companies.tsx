@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AppBar from '../components/AppBar';
+import Avatar from '../components/Avatar';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import PageTitle from '../components/PageTitle';
@@ -11,6 +12,12 @@ const MyCompanies = () => (
       <Typography component="h1" variant="h4" margin="none">
         Accounts
       </Typography>
+
+      <Avatar
+        src="https://s.gravatar.com/avatar/8801091e665fdac669daa63d32167b7b?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fme.png"
+        alt="My avatar"
+        width="8"
+      />
     </AppBar>
 
     <main>
@@ -32,7 +39,7 @@ const MyCompanies = () => (
               New company
             </Typography>
 
-            <Typography component="p" variant="lead" align="center">
+            <Typography component="p" variant="lead" align="center" margin="lg">
               You can quickly enroll your company by clicking the button below.
               What are you waiting for?
             </Typography>
@@ -64,7 +71,7 @@ const MyCompanies = () => (
               Company number
             </Typography>
 
-            <Typography component="p" variant="p" align="center">
+            <Typography component="p" variant="p" align="center" margin="lg">
               12026537
             </Typography>
 
@@ -95,7 +102,7 @@ const MyCompanies = () => (
               Company number
             </Typography>
 
-            <Typography component="p" variant="p" align="center">
+            <Typography component="p" variant="p" align="center" margin="lg">
               65489485
             </Typography>
 
@@ -126,7 +133,7 @@ const MyCompanies = () => (
               Company number
             </Typography>
 
-            <Typography component="p" variant="p" align="center">
+            <Typography component="p" variant="p" align="center" margin="lg">
               56498555
             </Typography>
 
@@ -157,7 +164,7 @@ const MyCompanies = () => (
               Company number
             </Typography>
 
-            <Typography component="p" variant="p" align="center">
+            <Typography component="p" variant="p" align="center" margin="lg">
               82084780
             </Typography>
 
