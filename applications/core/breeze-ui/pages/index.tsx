@@ -31,7 +31,7 @@ const Home = () => (
         </div>
 
         <div>
-          <Link href="/dashboard">
+          <Link href="/my-companies">
             <Button block type="button" colour="success">
               Log in
             </Button>

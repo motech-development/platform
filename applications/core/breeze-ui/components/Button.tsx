@@ -58,7 +58,7 @@ const Button: FC<IButtonProps> = forwardRef<HTMLButtonElement, IButtonProps>(
     ref,
   ) => (
     <button
-      className={`group relative shadow-2xl flex font-display justify-center text-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${styles(
+      className={`group relative mt-auto shadow-2xl flex font-display justify-center text-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${styles(
         colour,
         size,
         block,
