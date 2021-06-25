@@ -132,7 +132,7 @@ const Typography: FC<ITypographyProps> = ({
   variant,
   ...rest
 }) => (
-  <div className="w-full">
+  <div>
     <Element
       align={align}
       component={component}
@@ -144,7 +144,7 @@ const Typography: FC<ITypographyProps> = ({
 
     {rule && (
       <hr
-        className={`w-1/5 border-0 border-b-4 border-red-600 shadow-md ${ruleStyles(
+        className={`w-12 border-0 border-b-4 border-red-600 shadow-md ${ruleStyles(
           align,
           margin,
         )}`}
