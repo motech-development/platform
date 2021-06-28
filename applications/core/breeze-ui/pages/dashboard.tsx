@@ -9,13 +9,47 @@ import Card from '../components/Card';
 import PageTitle from '../components/PageTitle';
 import Typography from '../components/Typography';
 
-const MyCompanies = () => (
+const Dashboard = () => (
   <div className="min-h-screen bg-gray-200">
     <AppBar>
       <div className="flex-shrink-0 flex-1 flex items-center">
         <Typography component="h1" variant="h4" margin="none">
           Accounts
         </Typography>
+
+        <div className="hidden md:block md:ml-6">
+          <div className="flex space-x-3">
+            <Link href="/accounts">
+              <a className="text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors px-3 py-2 text-sm font-medium">
+                Accounts
+              </a>
+            </Link>
+
+            <Link href="/dashboard">
+              <a className="text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors px-3 py-2 text-sm font-medium">
+                Clients
+              </a>
+            </Link>
+
+            <Link href="/dashboard">
+              <a className="text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors px-3 py-2 text-sm font-medium">
+                Reports
+              </a>
+            </Link>
+
+            <Link href="/form">
+              <a className="text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors px-3 py-2 text-sm font-medium">
+                Company details
+              </a>
+            </Link>
+
+            <Link href="/form">
+              <a className="text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors px-3 py-2 text-sm font-medium">
+                Settings
+              </a>
+            </Link>
+          </div>
+        </div>
       </div>
 
       <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
@@ -123,10 +157,7 @@ const MyCompanies = () => (
     </AppBar>
 
     <main>
-      <PageTitle
-        title="My companies"
-        subTitle="Select the company you wish to manage or add a new one"
-      />
+      <PageTitle title="Motech Development" subTitle="Dashboard" />
 
       <section className="max-w-7xl mx-auto pb-8 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -138,17 +169,83 @@ const MyCompanies = () => (
               align="center"
               margin="lg"
             >
-              New company
+              Accounts
             </Typography>
 
             <Typography component="p" variant="lead" align="center" margin="lg">
-              You can quickly enroll your company by clicking the button below.
-              What are you waiting for?
+              Keep on top of you company accounts by managing your incomings and
+              outgoings
+            </Typography>
+
+            <Link href="/accounts">
+              <Button block type="button">
+                Manage accounts
+              </Button>
+            </Link>
+          </Card>
+
+          <Card flex padding="lg">
+            <Typography
+              rule
+              component="h3"
+              variant="h3"
+              align="center"
+              margin="lg"
+            >
+              Clients
+            </Typography>
+
+            <Typography component="p" variant="lead" align="center" margin="lg">
+              Add your client details so that you always have them to hand
+            </Typography>
+
+            <Link href="/dashboard">
+              <Button block type="button">
+                Manage clients
+              </Button>
+            </Link>
+          </Card>
+
+          <Card flex padding="lg">
+            <Typography
+              rule
+              component="h3"
+              variant="h3"
+              align="center"
+              margin="lg"
+            >
+              Reports
+            </Typography>
+
+            <Typography component="p" variant="lead" align="center" margin="lg">
+              Create and download accounting reports
+            </Typography>
+
+            <Link href="/dashboard">
+              <Button block type="button">
+                Manage reports
+              </Button>
+            </Link>
+          </Card>
+
+          <Card flex padding="lg">
+            <Typography
+              rule
+              component="h3"
+              variant="h3"
+              align="center"
+              margin="lg"
+            >
+              Company details
+            </Typography>
+
+            <Typography component="p" variant="lead" align="center" margin="lg">
+              View your company details and update them
             </Typography>
 
             <Link href="/form">
               <Button block type="button">
-                Add a new company
+                Manage company details
               </Button>
             </Link>
           </Card>
@@ -161,25 +258,16 @@ const MyCompanies = () => (
               align="center"
               margin="lg"
             >
-              Motech Development
+              Settings
             </Typography>
 
-            <Typography
-              component="h4"
-              variant="h6"
-              align="center"
-              margin="none"
-            >
-              Company number
+            <Typography component="p" variant="lead" align="center" margin="lg">
+              Update company settings
             </Typography>
 
-            <Typography component="p" variant="p" align="center" margin="lg">
-              12026537
-            </Typography>
-
-            <Link href="/dashboard">
+            <Link href="/form">
               <Button block type="button">
-                Select company
+                Manage settings
               </Button>
             </Link>
           </Card>
@@ -192,87 +280,16 @@ const MyCompanies = () => (
               align="center"
               margin="lg"
             >
-              The Whitley Company
+              My companies
             </Typography>
 
-            <Typography
-              component="h4"
-              variant="h6"
-              align="center"
-              margin="none"
-            >
-              Company number
+            <Typography component="p" variant="lead" align="center" margin="lg">
+              Select another of your companies to manage
             </Typography>
 
-            <Typography component="p" variant="p" align="center" margin="lg">
-              65489485
-            </Typography>
-
-            <Link href="/dashboard">
-              <Button block type="button">
-                Select company
-              </Button>
-            </Link>
-          </Card>
-
-          <Card flex padding="lg">
-            <Typography
-              rule
-              component="h3"
-              variant="h3"
-              align="center"
-              margin="lg"
-            >
-              Breeze UI
-            </Typography>
-
-            <Typography
-              component="h4"
-              variant="h6"
-              align="center"
-              margin="none"
-            >
-              Company number
-            </Typography>
-
-            <Typography component="p" variant="p" align="center" margin="lg">
-              56498555
-            </Typography>
-
-            <Link href="/dashboard">
-              <Button block type="button">
-                Select company
-              </Button>
-            </Link>
-          </Card>
-
-          <Card flex padding="lg">
-            <Typography
-              rule
-              component="h3"
-              variant="h3"
-              align="center"
-              margin="lg"
-            >
-              FlexCard
-            </Typography>
-
-            <Typography
-              component="h4"
-              variant="h6"
-              align="center"
-              margin="none"
-            >
-              Company number
-            </Typography>
-
-            <Typography component="p" variant="p" align="center" margin="lg">
-              82084780
-            </Typography>
-
-            <Link href="/dashboard">
-              <Button block type="button">
-                Select company
+            <Link href="/my-companies">
+              <Button block type="button" colour="danger">
+                Back to my companies
               </Button>
             </Link>
           </Card>
@@ -282,4 +299,4 @@ const MyCompanies = () => (
   </div>
 );
 
-export default MyCompanies;
+export default Dashboard;

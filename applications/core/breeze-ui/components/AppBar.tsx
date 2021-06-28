@@ -50,7 +50,7 @@ const AppBar: FC<{
     <Parent colour={colour} element={element} fixed={fixed}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
-          className={`flex items-center justify-between h-16 border-b-2 ${innerStyles(
+          className={`flex items-center justify-between sm:items-stretch sm:justify-start h-16 border-b-2 ${innerStyles(
             colour,
           )}`}
         >
