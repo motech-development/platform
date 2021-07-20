@@ -137,12 +137,12 @@ const Form = () => (
                 Your company
               </Typography>
 
-              <Typography component="p" variant="lead">
+              <Typography component="p" variant="lead" margin="none">
                 Some basic information about your company
               </Typography>
             </div>
 
-            <div className="mt-5 md:mt-0 md:col-span-2">
+            <div className="mt-5 md:mt-0 -mb-4 md:col-span-2">
               <TextBox name="name" label="Name*" />
 
               <TextBox name="companyNumber" label="Company number*" />
@@ -157,12 +157,12 @@ const Form = () => (
                 Bank details
               </Typography>
 
-              <Typography component="p" variant="lead">
+              <Typography component="p" variant="lead" margin="none">
                 These bank details will be printed on any invoices you generate
               </Typography>
             </div>
 
-            <div className="mt-5 md:mt-0 md:col-span-2">
+            <div className="mt-5 md:mt-0 -mb-4 md:col-span-2">
               <TextBox name="bank.accountNumber" label="Account number*" />
 
               <TextBox name="bank.sortCode" label="Sort code*" />
@@ -177,12 +177,12 @@ const Form = () => (
                 Address
               </Typography>
 
-              <Typography component="p" variant="lead">
+              <Typography component="p" variant="lead" margin="none">
                 Your registered or correspondence address
               </Typography>
             </div>
 
-            <div className="mt-5 md:mt-0 md:col-span-2">
+            <div className="mt-5 md:mt-0 -mb-4 md:col-span-2">
               <TextBox name="address.line1" label="Address line 1*" />
 
               <TextBox name="address.line2" label="Address line 2" />
@@ -192,6 +192,31 @@ const Form = () => (
               <TextBox name="address.county" label="County" />
 
               <TextBox name="address.postcode" label="Postcode*" />
+            </div>
+          </div>
+        </Card>
+
+        <Card padding="lg">
+          <div className="md:grid md:grid-cols-3 md:gap-6">
+            <div className="md:col-span-1">
+              <Typography rule component="h3" variant="h3">
+                VAT settings
+              </Typography>
+
+              <Typography component="p" variant="lead" margin="none">
+                Company VAT information
+              </Typography>
+            </div>
+
+            <div className="mt-5 md:mt-0 -mb-4 md:col-span-2">
+              <TextBox
+                name="vat.registration"
+                label="VAT registration number"
+              />
+
+              <TextBox name="vat.charge" label="VAT to charge*" />
+
+              <TextBox name="vat.pay" label="VAT to pay*" />
             </div>
           </div>
         </Card>

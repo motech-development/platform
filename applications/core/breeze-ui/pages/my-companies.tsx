@@ -185,13 +185,7 @@ const MyCompanies = () => (
           </Card>
 
           <Card flex padding="lg">
-            <Typography
-              rule
-              component="h3"
-              variant="h3"
-              align="center"
-              margin="lg"
-            >
+            <Typography component="h3" variant="h3" align="center" margin="lg">
               The Whitley Company
             </Typography>
 
