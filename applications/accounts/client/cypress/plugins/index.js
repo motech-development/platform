@@ -39,11 +39,6 @@ module.exports = (on) => {
       ...launchOptions,
     };
 
-    if (browser.name === 'chrome' && browser.isHeadless) {
-      updatedLaunchOptions.args.push('--window-size=1920,1080');
-      updatedLaunchOptions.args.push('--force-device-scale-factor=1');
-    }
-
     updatedLaunchOptions.args = logToOutput.browserLaunchHandler(
       browser,
       launchOptions.args,
