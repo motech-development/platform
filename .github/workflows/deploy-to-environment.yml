@@ -1015,7 +1015,9 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: yarn e2e:ci -- --scope=@accounts/client
+          command: |
+            npm rebuild --update-binary
+            yarn e2e:ci -- --scope=@accounts/client
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000
