@@ -933,6 +933,8 @@ jobs:
           - 2
 
     env:
+      # TODO: Remove debug
+      DEBUG: cypress:server:util:process_profiler
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CYPRESS_API_URL: ${{ secrets.CYPRESS_API_URL }}
