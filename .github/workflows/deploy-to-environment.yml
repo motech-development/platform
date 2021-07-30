@@ -1009,15 +1009,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-client-v2-
 
+      - name: Rebuild binary
+        run: npm rebuild --update-binary
+
       - name: Build client
         run: yarn build -- --scope=@accounts/client
 
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: |
-            npm rebuild --update-binary
-            yarn e2e:ci -- --scope=@accounts/client
+          command: yarn e2e:ci -- --scope=@accounts/client
           install: false
           start: npx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000
