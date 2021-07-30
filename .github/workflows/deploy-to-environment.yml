@@ -950,6 +950,9 @@ jobs:
       STAGE: ${{ github.event.pull_request.number }}
 
     steps:
+      - name: Install Docker tools
+        run: apt-get update && apt-get install zstd -y
+
       - name: Checkout code
         uses: actions/checkout@v2.3.4
 
