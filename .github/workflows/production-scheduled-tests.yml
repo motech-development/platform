@@ -116,6 +116,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cache-
 
+      - name: Rebuild binary
+        run: npm rebuild --update-binary
+
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
