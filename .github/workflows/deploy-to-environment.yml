@@ -914,6 +914,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    container:
+      image: cypress/browsers:node14.17.0-chrome91-ff89
+      options: --shm-size=2g
+
     needs:
       - unit-tests
       - auth0-tenant
@@ -946,6 +950,9 @@ jobs:
       STAGE: ${{ github.event.pull_request.number }}
 
     steps:
+      - name: Install Docker tools
+        run: apt-get update && apt-get install zstd -y
+
       - name: Checkout code
         uses: actions/checkout@v2.3.4
 
@@ -1001,6 +1008,9 @@ jobs:
           key: ${{ runner.os }}-accounts-client-v2-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-v2-
+
+      - name: Rebuild binary
+        run: npm rebuild --update-binary
 
       - name: Build client
         run: yarn build -- --scope=@accounts/client
