@@ -2,7 +2,7 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useLazyGet } from '@motech-development/axios-hooks';
 import { Button, Col, Row, useToast } from '@motech-development/breeze-ui';
 import { saveAs } from 'file-saver';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import FileDownload from '../../../../components/FileDownload';
 
@@ -77,15 +77,13 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
     onError,
     responseType: 'blob',
   });
-  const [
-    request,
-    { data: requestData, loading: requestLoading },
-  ] = useLazyQuery<IRequestDownloadOutput, IRequestDownloadInput>(
-    REQUEST_DOWNLOAD,
-    {
-      onError,
-    },
-  );
+  const [request, { data: requestData, loading: requestLoading }] =
+    useLazyQuery<IRequestDownloadOutput, IRequestDownloadInput>(
+      REQUEST_DOWNLOAD,
+      {
+        onError,
+      },
+    );
   const [deleteFile, { loading: deleteFileLoading }] = useMutation<
     IDeleteFileOutput,
     IDeleteFileInput
@@ -162,4 +160,4 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
   );
 };
 
-export default memo(DeleteTransaction);
+export default DeleteTransaction;

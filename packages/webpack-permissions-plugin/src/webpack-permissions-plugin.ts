@@ -18,7 +18,7 @@ class WebpackPermissionsPlugin {
     compiler.hooks.done.tap('WebpackPermissionsPlugin', () => {
       const folders = this.options.folders(compiler);
 
-      folders.forEach(folder => this.setPermissions(folder));
+      folders.forEach((folder) => this.setPermissions(folder));
     });
   }
 
@@ -29,12 +29,9 @@ class WebpackPermissionsPlugin {
       throw new Error(`${path} does not exist`);
     }
 
-    const files = create()
-      .path(path)
-      .depth(0)
-      .findSync();
+    const files = create().path(path).depth(0).findSync();
 
-    files.forEach(file => {
+    files.forEach((file) => {
       chmodSync(file, this.options.file);
     });
   }

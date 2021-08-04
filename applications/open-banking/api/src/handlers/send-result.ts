@@ -16,7 +16,7 @@ const BankCallbackMutation = `
   }
 `;
 
-export const handler: Handler<IEvent> = async event => {
+export const handler: Handler<IEvent> = async (event) => {
   const { authorisationUrl, id, token, url } = event;
   const mutation = {
     operationName: 'BankCallback',

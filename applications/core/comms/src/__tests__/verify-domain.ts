@@ -21,13 +21,13 @@ describe('verify-domain', () => {
 
   describe('with an invalid event', () => {
     it('should fail if properties are invalid', async () => {
-      event = ({
+      event = {
         ResourceProperties: {
           Domain: 'domain.com',
           Region: 'eu-west-2',
           TTL: 1000,
         },
-      } as unknown) as CloudFormationCustomResourceEvent;
+      } as unknown as CloudFormationCustomResourceEvent;
 
       await handler(event, context, callback);
 
@@ -39,7 +39,7 @@ describe('verify-domain', () => {
 
   describe('with a valid event', () => {
     beforeEach(() => {
-      event = ({
+      event = {
         ResourceProperties: {
           DMARC: 'v=DMARC1; p=none; pct=100; sp=none; aspf=r;',
           Domain: 'domain.com',
@@ -49,7 +49,7 @@ describe('verify-domain', () => {
         },
         StackId:
           'arn:aws:cloudformation:eu-west-2:457934857934:stack/my-test-stack/89799bef-6c5e-4de4-b51d-f595365c1a71',
-      } as unknown) as CloudFormationCustomResourceEvent;
+      } as unknown as CloudFormationCustomResourceEvent;
     });
 
     it('should fail if request type is unrecognised', async () => {

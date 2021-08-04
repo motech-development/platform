@@ -7,7 +7,7 @@ import {
   PageTitle,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, Fragment, memo } from 'react';
+import { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import Connected from '../../components/Connected';
 import GET_COMPANIES, {
@@ -97,4 +97,4 @@ const MyCompanies: FC = () => {
   );
 };
 
-export default memo(MyCompanies);
+export default MyCompanies;

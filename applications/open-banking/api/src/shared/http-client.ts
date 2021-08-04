@@ -21,10 +21,8 @@ const authHeader = async () => {
     throw new Error('No credentials found');
   }
 
-  const [
-    YAPILY_APPLICATION_ID,
-    YAPILY_APPLICATION_SECRET,
-  ] = Parameter.Value.split(',');
+  const [YAPILY_APPLICATION_ID, YAPILY_APPLICATION_SECRET] =
+    Parameter.Value.split(',');
 
   if (!YAPILY_APPLICATION_ID || !YAPILY_APPLICATION_SECRET) {
     throw new Error('No credentials set');
@@ -41,7 +39,7 @@ const httpClient = axios.create();
 
 httpClient.defaults.baseURL = 'https://api.yapily.com';
 
-httpClient.interceptors.request.use(async config => {
+httpClient.interceptors.request.use(async (config) => {
   const output = {
     ...config,
   };

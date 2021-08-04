@@ -1,6 +1,6 @@
 import { Loader, useToast, Window } from '@motech-development/breeze-ui';
 import { Auth0Error } from 'auth0-js';
-import { FC, lazy, memo, useEffect, useState } from 'react';
+import { FC, lazy, useEffect, useState } from 'react';
 import { pageview } from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import AppTitle from '../components/AppTitle';
@@ -81,4 +81,4 @@ const Login: FC = () => {
   );
 };
 
-export default memo(Login);
+export default Login;

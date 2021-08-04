@@ -1,4 +1,4 @@
-import { FC, lazy, memo } from 'react';
+import { FC, lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 const MyCompanies = lazy(() => import('./MyCompanies'));
@@ -13,4 +13,4 @@ const Pages: FC = () => (
   </Switch>
 );
 
-export default memo(Pages);
+export default Pages;

@@ -5,7 +5,7 @@ import {
   Typography,
   Window,
 } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const LogIn: FC = () => {
@@ -41,4 +41,4 @@ const LogIn: FC = () => {
   );
 };
 
-export default memo(LogIn);
+export default LogIn;

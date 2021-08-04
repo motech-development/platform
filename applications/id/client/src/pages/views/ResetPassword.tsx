@@ -1,6 +1,6 @@
 import { usePost } from '@motech-development/axios-hooks';
 import { useToast } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import ResetPasswordForm, {
   FormSchema,
@@ -37,4 +37,4 @@ const ResetPassword: FC<IResetPasswordProps> = ({ setView }) => {
   );
 };
 
-export default memo(ResetPassword);
+export default ResetPassword;

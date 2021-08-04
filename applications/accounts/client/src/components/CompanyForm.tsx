@@ -6,7 +6,7 @@ import {
   Row,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object } from 'yup';
 import {
@@ -138,4 +138,4 @@ const CompanyForm: FC<ICompanyFormProps> = ({
   );
 };
 
-export default memo(CompanyForm);
+export default CompanyForm;
