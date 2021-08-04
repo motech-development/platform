@@ -27,12 +27,10 @@ const ProtectedRoute: FC<IProtectedRouteProps> = ({
     })();
   }, [isAuthenticated, isLoading, loginWithRedirect]);
 
-  const render = (props: {}) =>
+  return isAuthenticated ? (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    isAuthenticated ? <Component {...props} /> : null;
-
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return <Route path={path} component={render} {...rest} />;
+    <Route path={path} component={Component} {...rest} />
+  ) : null;
 };
 
 export default ProtectedRoute;
