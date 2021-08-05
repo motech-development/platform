@@ -365,7 +365,9 @@ describe('AddCompany', () => {
             },
           },
           result: {
-            data: {},
+            data: {
+              createCompany: null,
+            },
           },
         },
       ];

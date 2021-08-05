@@ -93,12 +93,12 @@ describe('Reports', () => {
       });
     });
 
-    it('should output the page title', () => {
+    it('should output the page title', async () => {
       const title = screen.getByRole('heading');
       const subTitle = screen.getByText('reports.sub-title');
 
-      expect(title).toHaveTextContent('reports.title');
-      expect(subTitle).toBeInTheDocument();
+      await waitFor(() => expect(title).toHaveTextContent('reports.title'));
+      await waitFor(() => expect(subTitle).toBeInTheDocument());
     });
 
     it('should output the 24 hour alert', () => {
@@ -263,7 +263,9 @@ describe('Reports', () => {
             },
           },
           result: {
-            data: null,
+            data: {
+              onNotification: null,
+            },
           },
         },
       ];

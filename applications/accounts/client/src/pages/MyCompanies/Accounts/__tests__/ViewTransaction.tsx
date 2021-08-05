@@ -34,11 +34,13 @@ describe('ViewTransaction', () => {
           __typename: 'Balance',
           currency: 'GBP',
           id: 'company-id',
+          transactions: [],
         },
         getTransactions: {
           __typename: 'Transactions',
           id: 'company-id',
           items: [],
+          status: 'pending',
         },
       },
       query: GET_TRANSACTIONS,
@@ -591,7 +593,9 @@ describe('ViewTransaction', () => {
           await waitForApollo(0);
         });
 
-        expect(saveAs).toHaveBeenCalledWith('success', 'attachment.pdf');
+        await waitFor(() =>
+          expect(saveAs).toHaveBeenCalledWith('success', 'attachment.pdf'),
+        );
       });
 
       it('should display a success toast when attachment is downloaded', async () => {
@@ -1081,7 +1085,9 @@ describe('ViewTransaction', () => {
               },
             },
             result: {
-              data: {},
+              data: {
+                updateTransaction: null,
+              },
             },
           },
           {
@@ -1092,7 +1098,9 @@ describe('ViewTransaction', () => {
               },
             },
             result: {
-              data: {},
+              data: {
+                deleteTransaction: null,
+              },
             },
           },
           {

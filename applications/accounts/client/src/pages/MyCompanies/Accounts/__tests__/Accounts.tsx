@@ -41,6 +41,7 @@ describe('Accounts', () => {
           __typename: 'Transactions',
           id: 'company-id',
           items: [],
+          status: 'pending',
         },
       },
       query: GET_TRANSACTIONS,

@@ -55,7 +55,9 @@ describe('Bank', () => {
             query: ON_BANK_CALLBACK,
           },
           result: {
-            data: null,
+            data: {
+              onBankCallback: null,
+            },
           },
         },
         {

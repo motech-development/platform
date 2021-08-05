@@ -170,7 +170,9 @@ describe('Callback', () => {
             },
           },
           result: {
-            data: {},
+            data: {
+              updateBankSettings: null,
+            },
           },
         },
       ];
