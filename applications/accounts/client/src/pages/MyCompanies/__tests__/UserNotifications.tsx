@@ -29,7 +29,9 @@ describe('UserNotifications', () => {
             },
           },
           result: {
-            data: null,
+            data: {
+              getNotifications: null,
+            },
           },
         },
         {
@@ -40,7 +42,9 @@ describe('UserNotifications', () => {
             },
           },
           result: {
-            data: null,
+            data: {
+              onNotification: null,
+            },
           },
         },
       ];
@@ -83,6 +87,7 @@ describe('UserNotifications', () => {
                     createdAt: '2020-07-01T00:00:00.000Z',
                     id: 'notification-1',
                     message: 'Notification_1',
+                    payload: null,
                     read: true,
                   },
                 ],
@@ -104,6 +109,7 @@ describe('UserNotifications', () => {
                 id: 'notification-2',
                 message: 'Notification_2',
                 owner: 'user-id',
+                payload: null,
                 read: true,
               },
             },
@@ -165,6 +171,7 @@ describe('UserNotifications', () => {
                     createdAt: '2020-07-01T00:00:00.000Z',
                     id: 'notification-1',
                     message: 'Notification_1',
+                    payload: null,
                     read: true,
                   },
                 ],
@@ -186,6 +193,7 @@ describe('UserNotifications', () => {
                 id: 'notification-2',
                 message: 'Notification_2',
                 owner: 'user-id',
+                payload: null,
                 read: false,
               },
             },
