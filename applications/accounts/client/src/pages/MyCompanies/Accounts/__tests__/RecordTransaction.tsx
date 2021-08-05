@@ -44,11 +44,13 @@ describe('RecordTransaction', () => {
           __typename: 'Balance',
           currency: 'GBP',
           id: 'company-id',
+          transactions: [],
         },
         getTransactions: {
           __typename: 'Transactions',
           id: 'company-id',
           items: [],
+          status: 'pending',
         },
       },
       query: GET_TRANSACTIONS,
@@ -64,11 +66,13 @@ describe('RecordTransaction', () => {
           __typename: 'Balance',
           currency: 'GBP',
           id: 'company-id',
+          transactions: [],
         },
         getTransactions: {
           __typename: 'Transactions',
           id: 'company-id',
           items: [],
+          status: 'confirmed',
         },
       },
       query: GET_TRANSACTIONS,
@@ -700,7 +704,9 @@ describe('RecordTransaction', () => {
                 },
               },
               result: {
-                data: {},
+                data: {
+                  addTransaction: null,
+                },
               },
             },
             {
@@ -719,7 +725,9 @@ describe('RecordTransaction', () => {
                 },
               },
               result: {
-                data: {},
+                data: {
+                  requestUpload: null,
+                },
               },
             },
           ];

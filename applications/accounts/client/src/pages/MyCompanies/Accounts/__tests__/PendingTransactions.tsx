@@ -21,31 +21,11 @@ describe('PendingTransactions', () => {
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    cache = new InMemoryCache();
-
-    cache.writeQuery({
-      data: {
-        getBalance: {
-          __typename: 'Balance',
-          currency: 'GBP',
-          id: 'company-id',
-          transactions: [
-            {
-              id: 'transaction-id',
-              items: [],
-            },
-          ],
+    cache = new InMemoryCache({
+      typePolicies: {
+        Transactions: {
+          keyFields: ['id', 'status'],
         },
-        getTransactions: {
-          __typename: 'Transactions',
-          id: 'company-id',
-          items: [],
-        },
-      },
-      query: GET_TRANSACTIONS,
-      variables: {
-        id: 'company-id',
-        status: 'pending',
       },
     });
 
@@ -134,6 +114,8 @@ describe('PendingTransactions', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await waitForApollo(0);
       });
     });
 

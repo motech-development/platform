@@ -381,7 +381,9 @@ describe('Settings', () => {
             },
           },
           result: {
-            data: {},
+            data: {
+              updateSettings: null,
+            },
           },
         },
       ];

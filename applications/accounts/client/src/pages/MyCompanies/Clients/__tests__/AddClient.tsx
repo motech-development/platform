@@ -292,7 +292,9 @@ describe('AddClient', () => {
             },
           },
           result: {
-            data: {},
+            data: {
+              createClient: null,
+            },
           },
         },
       ];

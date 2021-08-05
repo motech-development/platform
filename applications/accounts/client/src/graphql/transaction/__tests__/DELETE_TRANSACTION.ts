@@ -19,24 +19,43 @@ describe('DELETE_TRANSACTION', () => {
       data: {
         getBalance: {
           __typename: 'Balance',
+          balance: 50,
           currency: 'GBP',
           id: 'company-id',
           transactions: [
             {
+              balance: 50,
+              currency: 'GBP',
+              date: '2021-08-05T00:00:00.000Z',
               items: [
                 {
+                  amount: 50,
+                  attachment: null,
+                  description: 'Transaction description 1',
                   id: 'transaction-id-0',
+                  name: 'Transaction 1',
                 },
               ],
             },
             {
+              balance: 100,
+              currency: 'GBP',
+              date: '2021-08-04T00:00:00.000Z',
               items: [
                 {
+                  amount: 50,
+                  attachment: null,
+                  description: 'Transaction description 2',
                   id: 'transaction-id-1',
+                  name: 'Transaction 2',
                 },
               ],
             },
           ],
+          vat: {
+            owed: 0,
+            paid: 0,
+          },
         },
       },
       query: GET_BALANCE,
@@ -67,6 +86,10 @@ describe('DELETE_TRANSACTION', () => {
               ],
             },
           ],
+          vat: {
+            owed: 0,
+            paid: 0,
+          },
         },
         getTransactions: {
           __typename: 'Transactions',

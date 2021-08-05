@@ -235,12 +235,8 @@ describe('UpdateDetails', () => {
       });
 
       it('should hide the delete confirmation modal', async () => {
-        const {
-          findAllByRole,
-          findByRole,
-          findByText,
-          queryByRole,
-        } = component;
+        const { findAllByRole, findByRole, findByText, queryByRole } =
+          component;
 
         await act(async () => {
           await findByText('New company');
@@ -431,7 +427,9 @@ describe('UpdateDetails', () => {
             },
           },
           result: {
-            data: {},
+            data: {
+              deleteCompany: null,
+            },
           },
         },
         {
@@ -493,7 +491,9 @@ describe('UpdateDetails', () => {
             },
           },
           result: {
-            data: {},
+            data: {
+              updateCompany: null,
+            },
           },
         },
       ];
