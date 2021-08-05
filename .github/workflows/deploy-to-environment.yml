@@ -33,21 +33,10 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Yarn cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
 
       - name: Restore Node modules
         id: node-modules
@@ -107,6 +96,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -173,6 +163,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -245,6 +236,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -302,6 +294,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -362,6 +355,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Restore Node modules
         uses: actions/cache@v2.1.5
@@ -423,6 +417,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Restore Node modules
         uses: actions/cache@v2.1.5
@@ -480,6 +475,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -539,6 +535,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -598,6 +595,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -657,6 +655,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -720,6 +719,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -781,6 +781,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -847,6 +848,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
@@ -960,6 +962,7 @@ jobs:
         uses: actions/setup-node@v2.3.2
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
