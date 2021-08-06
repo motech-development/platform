@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Update Heroku CLI
+heroku update
+
 # Sign into Heroku Container Registry.
 heroku container:login
 
