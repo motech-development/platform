@@ -1,4 +1,3 @@
-import { InMemoryCache } from '@apollo/client/cache';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -15,20 +14,11 @@ import TestProvider, { add } from '../../../../utils/TestProvider';
 import PendingTransactions from '../PendingTransactions';
 
 describe('PendingTransactions', () => {
-  let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    cache = new InMemoryCache({
-      typePolicies: {
-        Transactions: {
-          keyFields: ['id', 'status'],
-        },
-      },
-    });
-
     history = createMemoryHistory({
       initialEntries: ['/accounts/company-id/pending-transactions'],
     });
@@ -109,7 +99,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks} cache={cache}>
+            <MockedProvider mocks={mocks}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,
@@ -285,7 +275,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks} cache={cache}>
+            <MockedProvider mocks={mocks}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,
@@ -367,7 +357,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks} cache={cache}>
+            <MockedProvider mocks={mocks}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,

@@ -1,4 +1,3 @@
-import { InMemoryCache } from '@apollo/client/cache';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -11,13 +10,11 @@ import {
 import { createMemoryHistory, MemoryHistory } from 'history';
 import DELETE_CLIENT from '../../../../graphql/client/DELETE_CLIENT';
 import GET_CLIENT from '../../../../graphql/client/GET_CLIENT';
-import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import UPDATE_CLIENT from '../../../../graphql/client/UPDATE_CLIENT';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import UpdateDetails from '../UpdateDetails';
 
 describe('UpdateDetails', () => {
-  let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
@@ -33,59 +30,6 @@ describe('UpdateDetails', () => {
   describe('when data is returned', () => {
     describe('success', () => {
       beforeEach(async () => {
-        cache = new InMemoryCache();
-
-        cache.writeQuery({
-          data: {
-            getClients: {
-              __typename: 'Clients',
-              id: 'company-id',
-              items: [
-                {
-                  address: {
-                    line1: '1 Street',
-                    line2: '',
-                    line3: 'Town',
-                    line4: 'County',
-                    line5: 'KT1 1NE',
-                  },
-                  companyId: 'company-id',
-                  contact: {
-                    email: 'info@contact.com',
-                    telephone: '07712345678',
-                  },
-                  id: 'client-id',
-                  name: 'New client',
-                },
-                {
-                  address: {
-                    line1: '1 Street',
-                    line2: '',
-                    line3: 'Town',
-                    line4: 'County',
-                    line5: 'KT1 1NE',
-                  },
-                  companyId: 'company-id',
-                  contact: {
-                    email: 'info@contact.com',
-                    telephone: '07712345678',
-                  },
-                  id: 'client-id-2',
-                  name: 'New client 2',
-                },
-              ],
-            },
-            getCompany: {
-              id: 'company-id',
-              name: 'Test Company',
-            },
-          },
-          query: GET_CLIENTS,
-          variables: {
-            id: 'company-id',
-          },
-        });
-
         mocks = [
           {
             request: {
@@ -183,7 +127,7 @@ describe('UpdateDetails', () => {
               path="/clients/:companyId/update-details/:clientId"
               history={history}
             >
-              <MockedProvider mocks={mocks} cache={cache}>
+              <MockedProvider mocks={mocks}>
                 <UpdateDetails />
               </MockedProvider>
             </TestProvider>,

@@ -104,6 +104,8 @@ describe('CreateReport', () => {
         );
 
         await waitForApollo(0);
+
+        await waitForApollo(0);
       });
     });
 
@@ -138,6 +140,8 @@ describe('CreateReport', () => {
         userEvent.click(button);
 
         await waitForApollo(0);
+
+        await waitForApollo(0);
       });
 
       await waitFor(() =>
@@ -162,6 +166,8 @@ describe('CreateReport', () => {
         const button = screen.getByRole('button');
 
         userEvent.click(button);
+
+        await waitForApollo(0);
 
         await waitForApollo(0);
       });
@@ -273,6 +279,8 @@ describe('CreateReport', () => {
         );
 
         await waitForApollo(0);
+
+        await waitForApollo(0);
       });
     });
 
@@ -291,6 +299,8 @@ describe('CreateReport', () => {
         const button = screen.getByRole('button');
 
         userEvent.click(button);
+
+        await waitForApollo(0);
 
         await waitForApollo(0);
       });
@@ -317,6 +327,8 @@ describe('CreateReport', () => {
         const button = screen.getByRole('button');
 
         userEvent.click(button);
+
+        await waitForApollo(0);
 
         await waitForApollo(0);
       });

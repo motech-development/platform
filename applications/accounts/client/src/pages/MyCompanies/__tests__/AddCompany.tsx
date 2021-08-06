@@ -1,4 +1,3 @@
-import { InMemoryCache } from '@apollo/client/cache';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -10,12 +9,10 @@ import {
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import ADD_COMPANY from '../../../graphql/company/ADD_COMPANY';
-import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
 import TestProvider, { add } from '../../../utils/TestProvider';
 import AddCompany from '../AddCompany';
 
 describe('AddCompany', () => {
-  let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
@@ -30,22 +27,6 @@ describe('AddCompany', () => {
 
   describe('when data is returned', () => {
     beforeEach(async () => {
-      cache = new InMemoryCache();
-
-      cache.writeQuery({
-        data: {
-          getCompanies: {
-            __typename: 'Companies',
-            id: 'user-id',
-            items: [],
-          },
-        },
-        query: GET_COMPANIES,
-        variables: {
-          id: 'user-id',
-        },
-      });
-
       mocks = [
         {
           request: {
@@ -124,7 +105,7 @@ describe('AddCompany', () => {
       await act(async () => {
         component = render(
           <TestProvider path="/add-company" history={history}>
-            <MockedProvider mocks={mocks} cache={cache}>
+            <MockedProvider mocks={mocks}>
               <AddCompany />
             </MockedProvider>
           </TestProvider>,
