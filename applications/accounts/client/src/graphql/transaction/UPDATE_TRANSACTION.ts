@@ -1,4 +1,5 @@
 import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
+import { findUnique, setItems, spread } from './utils';
 
 export interface IUpdateTransactionInput {
   input: {
@@ -32,19 +33,23 @@ export interface IUpdateTransactionOutput {
   };
 }
 
+const getStatus = (status: string) =>
+  status === 'confirmed' ? 'pending' : 'confirmed';
+
 export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
   cache,
   { data },
 ) => {
   if (data?.updateTransaction) {
     const { updateTransaction } = data;
-    const otherStatus =
-      updateTransaction.status === 'confirmed' ? 'pending' : 'confirmed';
+    const otherStatus = getStatus(updateTransaction.status);
 
     cache.modify({
       fields: {
         items: (refs: Reference[], { readField }) => {
-          if (refs.some(ref => readField('id', ref) === updateTransaction.id)) {
+          if (
+            refs.some((ref) => readField('id', ref) === updateTransaction.id)
+          ) {
             return refs;
           }
 
@@ -80,7 +85,7 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
     cache.modify({
       fields: {
         items: (refs: Reference[], { readField }) =>
-          refs.filter(ref => readField('id', ref) !== updateTransaction.id),
+          refs.filter((ref) => readField('id', ref) !== updateTransaction.id),
       },
       id: cache.identify({
         __typename: 'Transactions',
@@ -92,42 +97,38 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
     cache.modify({
       fields: {
         purchases: (items: string[] | null) => {
-          const descriptions = items || [];
+          const descriptions = setItems(items);
           const unique = !descriptions.some(
-            desciption => desciption === updateTransaction.description,
+            findUnique(updateTransaction, 'description'),
           );
 
-          if (updateTransaction.category !== 'Sales' && unique) {
-            return [
-              ...descriptions,
-              updateTransaction.description,
-            ].sort((a, b) => a.localeCompare(b));
+          if (spread(updateTransaction.category !== 'Sales', unique)) {
+            return [...descriptions, updateTransaction.description].sort(
+              (a, b) => a.localeCompare(b),
+            );
           }
 
           return descriptions;
         },
         sales: (items: string[] | null) => {
-          const descriptions = items || [];
+          const descriptions = setItems(items);
           const unique = !descriptions.some(
-            desciption => desciption === updateTransaction.description,
+            findUnique(updateTransaction, 'description'),
           );
 
-          if (updateTransaction.category === 'Sales' && unique) {
-            return [
-              ...descriptions,
-              updateTransaction.description,
-            ].sort((a, b) => a.localeCompare(b));
+          if (spread(updateTransaction.category === 'Sales', unique)) {
+            return [...descriptions, updateTransaction.description].sort(
+              (a, b) => a.localeCompare(b),
+            );
           }
 
           return descriptions;
         },
         suppliers: (items: string[] | null) => {
-          const suppliers = items || [];
-          const unique = !suppliers.some(
-            supplier => supplier === updateTransaction.name,
-          );
+          const suppliers = setItems(items);
+          const unique = !suppliers.some(findUnique(updateTransaction, 'name'));
 
-          if (updateTransaction.category !== 'Sales' && unique) {
+          if (spread(updateTransaction.category !== 'Sales', unique)) {
             return [...suppliers, updateTransaction.name].sort((a, b) =>
               a.localeCompare(b),
             );
