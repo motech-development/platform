@@ -563,6 +563,61 @@ jobs:
       - name: Deploy
         run: yarn deploy -- --scope=@accounts/data -- -- --stage $STAGE
 
+  deploy-accounts-warm-up:
+    runs-on: ubuntu-latest
+
+    needs: deploy-accounts-data
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      STAGE: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.4.0
+        with:
+          node-version: 14
+          cache: yarn
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v2.1.6
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v2.1.6
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v2.1.6
+        with:
+          path: |
+            ./applications/accounts/warm-up/node_modules/.cache
+            ./applications/accounts/warm-up/.serverless
+          key: ${{ runner.os }}-accounts-warm-up-v2-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-warm-up-v2-
+
+      - name: Deploy
+        run: yarn deploy -- --scope=@accounts/warm-up -- -- --stage $STAGE
+
   deploy-accounts-reports:
     runs-on: ubuntu-latest
 
