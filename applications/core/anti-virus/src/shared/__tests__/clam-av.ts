@@ -62,7 +62,7 @@ describe('clam-av', () => {
 
       expect(childProcess.execFile).toHaveBeenCalledWith(
         './freshclam',
-        ['--config-file', 'freshclam.conf', '--datadir', '/tmp'],
+        ['--config-file=freshclam.conf', '--datadir=/tmp'],
         expect.any(Function),
       );
     });

@@ -35,9 +35,7 @@ export const updateDefinitions = async (location: string) => {
   await execFileAsync('rm', ['-rf', cleanUp]);
 
   await execFileAsync('./freshclam', [
-    '--config-file',
-    'freshclam.conf',
-    '--datadir',
-    dataDir,
+    '--config-file=freshclam.conf',
+    `--datadir=${dataDir}`,
   ]);
 };
