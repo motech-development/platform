@@ -1,3 +1,4 @@
+import logger from '@motech-development/logger';
 import { createFile } from '@motech-development/s3-file-operations';
 import { Handler } from 'aws-lambda';
 import { createReadStream } from 'fs';
@@ -29,6 +30,8 @@ export const handler: Handler = async () => {
 
     return 'OK';
   } catch (e) {
+    logger.error(e);
+
     throw new Error('Unable to update virus definitions');
   }
 };
