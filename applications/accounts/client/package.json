@@ -20,7 +20,7 @@
     "test:ci": "react-scripts test --coverage --runInBand"
   },
   "dependencies": {
-    "@apollo/client": "3.4.4",
+    "@apollo/client": "3.4.5",
     "@auth0/auth0-spa-js": "^1.14.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
@@ -32,8 +32,8 @@
     "@motech-development/ga-web-vitals": "^0.0.0",
     "@motech-development/query-string-hook": "^0.0.0",
     "@popperjs/core": "^2.9.1",
-    "aws-appsync-auth-link": "^3.0.4",
-    "aws-appsync-subscription-link": "^3.0.6",
+    "aws-appsync-auth-link": "3.0.6",
+    "aws-appsync-subscription-link": "3.0.8",
     "axios": "^0.21.1",
     "decimal.js": "^10.2.1",
     "file-saver": "^2.0.5",
