@@ -4,7 +4,7 @@ import { scanFile, updateDefinitions } from '../clam-av';
 jest.mock('child_process');
 
 interface IChildProcess extends ChildProcess {
-  setExec(pass: boolean): void;
+  setExecFile(pass: boolean): void;
 }
 
 describe('clam-av', () => {
@@ -20,8 +20,9 @@ describe('clam-av', () => {
     it('should execute the correct command', async () => {
       await scanFile(file, outDir);
 
-      expect(childProcess.exec).toHaveBeenCalledWith(
-        "./clamscan -v -a --stdout -d /tmp '/tmp/downloads/file.pdf'",
+      expect(childProcess.execFile).toHaveBeenCalledWith(
+        './clamscan',
+        ['-v', '-a', '--stdout', '-d', '/tmp', '/tmp/downloads/file.pdf'],
         expect.any(Function),
       );
     });
@@ -31,7 +32,7 @@ describe('clam-av', () => {
     });
 
     it('should return false if file is not safe', async () => {
-      ((childProcess as unknown) as IChildProcess).setExec(false);
+      (childProcess as unknown as IChildProcess).setExecFile(false);
 
       await expect(scanFile(file, outDir)).resolves.toEqual(false);
     });
@@ -43,14 +44,15 @@ describe('clam-av', () => {
     beforeEach(() => {
       location = '/tmp';
 
-      ((childProcess as unknown) as IChildProcess).setExec(true);
+      (childProcess as unknown as IChildProcess).setExecFile(true);
     });
 
     it('should delete the data directory', async () => {
       await updateDefinitions(location);
 
-      expect(childProcess.exec).toHaveBeenCalledWith(
-        'rm -rf /tmp/*',
+      expect(childProcess.execFile).toHaveBeenCalledWith(
+        'rm',
+        ['-rf', '/tmp/*'],
         expect.any(Function),
       );
     });
@@ -58,8 +60,9 @@ describe('clam-av', () => {
     it('should execute the correct command', async () => {
       await updateDefinitions(location);
 
-      expect(childProcess.exec).toHaveBeenCalledWith(
-        './freshclam --config-file=freshclam.conf --datadir=/tmp',
+      expect(childProcess.execFile).toHaveBeenCalledWith(
+        './freshclam',
+        ['--config-file', 'freshclam.conf', '--datadir', '/tmp'],
         expect.any(Function),
       );
     });
