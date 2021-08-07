@@ -13,7 +13,8 @@ const updateTransactions = (
     records,
     'Transaction',
   );
-  const transactionItems = unmarshalledRecords
+
+  return unmarshalledRecords
     .filter(
       ({ NewImage, OldImage }) =>
         !(
@@ -24,8 +25,6 @@ const updateTransactions = (
     .map(({ NewImage, OldImage }) =>
       update(documentClient, tableName, OldImage, NewImage),
     );
-
-  return transactionItems;
 };
 
 export default updateTransactions;

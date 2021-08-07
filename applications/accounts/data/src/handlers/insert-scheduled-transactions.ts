@@ -13,11 +13,10 @@ const insertScheduledTransactions = (
     records,
     'Transaction',
   );
-  const transactionItems = unmarshalledRecords
+
+  return unmarshalledRecords
     .filter(({ NewImage }) => NewImage.scheduled)
     .map(({ NewImage }) => insert(documentClient, tableName, NewImage));
-
-  return transactionItems;
 };
 
 export default insertScheduledTransactions;

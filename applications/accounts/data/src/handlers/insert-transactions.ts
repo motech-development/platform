@@ -13,11 +13,10 @@ const insertTransactions = (
     records,
     'Transaction',
   );
-  const transactionItems = unmarshalledRecords
+
+  return unmarshalledRecords
     .filter(({ NewImage }) => NewImage.status === TransactionStatus.Confirmed)
     .map(({ NewImage }) => insert(documentClient, tableName, NewImage));
-
-  return transactionItems;
 };
 
 export default insertTransactions;

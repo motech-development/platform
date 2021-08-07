@@ -67,7 +67,7 @@ const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss, title }) => {
 
   useEffect(() => {
     const keyboardEvent = (e: KeyboardEvent) => {
-      if (e.keyCode === 27) {
+      if (e.key === 'Escape') {
         onDismiss();
       }
     };
