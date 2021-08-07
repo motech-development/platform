@@ -1,4 +1,3 @@
-import { InMemoryCache } from '@apollo/client/cache';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -13,14 +12,11 @@ import { createMemoryHistory, MemoryHistory } from 'history';
 import { advanceTo, clear } from 'jest-date-mock';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
-import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
-import GET_TYPEAHEAD from '../../../../graphql/typeahead/GET_TYPEAHEAD';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import RecordTransaction, { RECORD_TRANSACTION } from '../RecordTransaction';
 import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 
 describe('RecordTransaction', () => {
-  let cache: InMemoryCache;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
   let upload: File;
@@ -35,68 +31,6 @@ describe('RecordTransaction', () => {
     });
 
     jest.spyOn(history, 'push');
-
-    cache = new InMemoryCache();
-
-    cache.writeQuery({
-      data: {
-        getBalance: {
-          __typename: 'Balance',
-          currency: 'GBP',
-          id: 'company-id',
-          transactions: [],
-        },
-        getTransactions: {
-          __typename: 'Transactions',
-          id: 'company-id',
-          items: [],
-          status: 'pending',
-        },
-      },
-      query: GET_TRANSACTIONS,
-      variables: {
-        id: 'company-id',
-        status: 'pending',
-      },
-    });
-
-    cache.writeQuery({
-      data: {
-        getBalance: {
-          __typename: 'Balance',
-          currency: 'GBP',
-          id: 'company-id',
-          transactions: [],
-        },
-        getTransactions: {
-          __typename: 'Transactions',
-          id: 'company-id',
-          items: [],
-          status: 'confirmed',
-        },
-      },
-      query: GET_TRANSACTIONS,
-      variables: {
-        id: 'company-id',
-        status: 'confirmed',
-      },
-    });
-
-    cache.writeQuery({
-      data: {
-        getTypeahead: {
-          __typename: 'Typeahead',
-          id: 'company-id',
-          purchases: [],
-          sales: null,
-          suppliers: [],
-        },
-      },
-      query: GET_TYPEAHEAD,
-      variables: {
-        id: 'company-id',
-      },
-    });
 
     upload = new File(['dummy content'], 'invoice.PDF', {
       type: 'application/pdf',
@@ -273,7 +207,7 @@ describe('RecordTransaction', () => {
                 path="/accounts/:companyId/record-transaction"
                 history={history}
               >
-                <MockedProvider mocks={mocks} cache={cache}>
+                <MockedProvider mocks={mocks}>
                   <RecordTransaction />
                 </MockedProvider>
               </TestProvider>,
@@ -738,7 +672,7 @@ describe('RecordTransaction', () => {
                 path="/accounts/:companyId/record-transaction"
                 history={history}
               >
-                <MockedProvider mocks={mocks} cache={cache}>
+                <MockedProvider mocks={mocks}>
                   <RecordTransaction />
                 </MockedProvider>
               </TestProvider>,
@@ -1102,7 +1036,7 @@ describe('RecordTransaction', () => {
               path="/accounts/:companyId/record-transaction"
               history={history}
             >
-              <MockedProvider mocks={mocks} cache={cache}>
+              <MockedProvider mocks={mocks}>
                 <RecordTransaction />
               </MockedProvider>
             </TestProvider>,
@@ -1426,7 +1360,7 @@ describe('RecordTransaction', () => {
               path="/accounts/:companyId/record-transaction"
               history={history}
             >
-              <MockedProvider mocks={mocks} cache={cache}>
+              <MockedProvider mocks={mocks}>
                 <RecordTransaction />
               </MockedProvider>
             </TestProvider>,
@@ -1720,7 +1654,7 @@ describe('RecordTransaction', () => {
               path="/accounts/:companyId/record-transaction"
               history={history}
             >
-              <MockedProvider mocks={mocks} cache={cache}>
+              <MockedProvider mocks={mocks}>
                 <RecordTransaction />
               </MockedProvider>
             </TestProvider>,

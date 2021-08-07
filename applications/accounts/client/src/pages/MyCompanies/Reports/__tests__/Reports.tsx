@@ -90,6 +90,8 @@ describe('Reports', () => {
         );
 
         await waitForApollo(0);
+
+        await waitForApollo(0);
       });
     });
 
@@ -106,6 +108,10 @@ describe('Reports', () => {
     });
 
     it('should output the 24 hour alert', async () => {
+      await act(async () => {
+        await waitForApollo(0);
+      });
+
       const alert = screen.getByRole('alert');
 
       await waitFor(() =>
@@ -114,9 +120,13 @@ describe('Reports', () => {
     });
 
     it('should download a report', async () => {
-      const [button] = screen.getAllByRole('button');
+      await act(async () => {
+        const [button] = screen.getAllByRole('button');
 
-      userEvent.click(button);
+        userEvent.click(button);
+
+        await waitForApollo(0);
+      });
 
       await waitFor(() =>
         expect(saveAs).toHaveBeenCalledWith('success', 'report.zip'),
@@ -144,13 +154,19 @@ describe('Reports', () => {
       );
     });
 
-    it('should go back to the dashboard', () => {
-      const [, link] = screen.getAllByRole('link');
+    it('should go back to the dashboard', async () => {
+      await act(async () => {
+        const [, link] = screen.getAllByRole('link');
 
-      userEvent.click(link);
+        userEvent.click(link);
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/dashboard/company-id',
+        await waitForApollo(0);
+      });
+
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/dashboard/company-id',
+        ),
       );
     });
 
@@ -236,6 +252,8 @@ describe('Reports', () => {
         );
 
         await waitForApollo(0);
+
+        await waitForApollo(0);
       });
     });
 
@@ -288,6 +306,8 @@ describe('Reports', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await waitForApollo(0);
 
         await waitForApollo(0);
       });
