@@ -1,5 +1,4 @@
-import { faExclamation } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ExclamationCircleIcon } from '@heroicons/react/solid';
 import { FC } from 'react';
 
 const Select: FC<{
@@ -48,10 +47,10 @@ const Select: FC<{
           </div>
 
           <div
-            className="flex rounded-full w-5 h-5 mx-4 bg-red-600 items-center justify-center"
+            className="flex mx-4 text-red-600 items-center justify-center"
             role="alert"
           >
-            <FontAwesomeIcon icon={faExclamation} />
+            <ExclamationCircleIcon className="h-5 w-5" aria-hidden="true" />
           </div>
         </div>
       )}
