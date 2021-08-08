@@ -34,7 +34,7 @@ const headingStyles = (
       marginStyles = rule ? 'mb-1' : 'mb-2';
       break;
     case 'md':
-      marginStyles = rule ? 'mb-2' : 'mb-4';
+      marginStyles = rule ? 'mb-1.5' : 'mb-4';
       break;
     case 'lg':
       marginStyles = rule ? 'mb-3' : 'mb-6';
@@ -88,7 +88,7 @@ const ruleStyles = (align: TAlign, margin: TMargin) => {
 
   switch (margin) {
     case 'md':
-      marginStyles = 'mb-1';
+      marginStyles = 'mb-1.5';
       break;
     case 'lg':
       marginStyles = 'mb-2';
