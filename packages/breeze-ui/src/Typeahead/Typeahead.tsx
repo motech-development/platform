@@ -87,7 +87,7 @@ const Typeahead: FC<ITypeaheadProps> = ({ suggestions, ...rest }) => {
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...attributes.popper}
         >
-          {filteredSuggestions
+          {[...filteredSuggestions]
             .sort((a, b) => a.name.localeCompare(b.name))
             .map(({ name: suggestion, value }) => (
               <Suggestion

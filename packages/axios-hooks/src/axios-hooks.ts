@@ -3,9 +3,8 @@ import { useEffect, useState } from 'react';
 import {
   IHeaders,
   IOptions,
+  ISet,
   Method,
-  SetData,
-  SetError,
   SetLoading,
   UseWithInput,
   UseWithoutInput,
@@ -15,9 +14,7 @@ const client = axios.create();
 
 const executeGet = async <TData>(
   url: string,
-  setData: SetData<TData>,
-  setError: SetError,
-  setLoading: SetLoading,
+  { setData, setError, setLoading }: ISet<TData>,
   options: IOptions<TData> = {},
   additionalHeaders: IHeaders = {},
 ) => {
@@ -52,9 +49,7 @@ const executeForm = async <TData, TBody>(
   method: Method,
   url: string,
   body: TBody,
-  setData: SetData<TData>,
-  setError: SetError,
-  setLoading: SetLoading,
+  { setData, setError, setLoading }: ISet<TData>,
   options: IOptions<TData> = {},
   additionalHeaders: IHeaders = {},
 ) => {
@@ -125,7 +120,15 @@ export const useGet = <TData>(url: string, options?: IOptions<TData>) => {
 
   useEffect(() => {
     (async () => {
-      await executeGet(url, setData, setError, setLoading, options);
+      await executeGet(
+        url,
+        {
+          setData,
+          setError,
+          setLoading,
+        },
+        options,
+      );
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -148,7 +151,16 @@ export const useLazyGet = <TData>(
   const [error, setError] = useState<AxiosError>();
   const [loading, setLoading] = useState(false);
   const execute = async (url: string, headers?: IHeaders) =>
-    executeGet(url, setData, setError, setLoading, options, headers);
+    executeGet(
+      url,
+      {
+        setData,
+        setError,
+        setLoading,
+      },
+      options,
+      headers,
+    );
 
   useEffect(() => complete(setLoading), [data, error]);
 
@@ -176,9 +188,11 @@ const useFormAction = <TData, TBody>(
       method,
       url,
       body,
-      setData,
-      setError,
-      setLoading,
+      {
+        setData,
+        setError,
+        setLoading,
+      },
       options,
       headers,
     );

@@ -134,6 +134,14 @@ const ViewTransaction: FC = () => {
 
     return location;
   };
+  const refetchQueries = () => [
+    {
+      query: GET_BALANCE,
+      variables: {
+        id: companyId,
+      },
+    },
+  ];
   const { data, error, loading } = useQuery<
     IViewTransactionOutput,
     IViewTransactionInput
@@ -172,14 +180,7 @@ const ViewTransaction: FC = () => {
             history.push(backTo(companyId));
           }
         },
-        refetchQueries: () => [
-          {
-            query: GET_BALANCE,
-            variables: {
-              id: companyId,
-            },
-          },
-        ],
+        refetchQueries,
       },
     );
   const [deleteMutation, { loading: deleteLoading }] = useMutation<
@@ -212,14 +213,7 @@ const ViewTransaction: FC = () => {
         message: t('delete-transaction.error'),
       });
     },
-    refetchQueries: () => [
-      {
-        query: GET_BALANCE,
-        variables: {
-          id: companyId,
-        },
-      },
-    ],
+    refetchQueries,
   });
   const launchDeleteModal = () => {
     setModal(true);
