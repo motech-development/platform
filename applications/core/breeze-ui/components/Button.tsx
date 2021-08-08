@@ -14,6 +14,8 @@ const styles = (colour: TColour, size: TSize, block: boolean) => {
         'bg-red-600 hover:bg-red-700 focus:ring-red-500 text-gray-100';
       break;
     case 'secondary':
+      colourStyles =
+        'bg-gray-100 hover:bg-gray-300 focus:ring-gray-500 text-gray-500';
       break;
     case 'success':
       colourStyles =

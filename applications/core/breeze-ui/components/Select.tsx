@@ -2,29 +2,39 @@ import { faExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FC } from 'react';
 
-type TType = 'email' | 'number' | 'password' | 'text';
-
-const TextBox: FC<{
+const Select: FC<{
   error?: boolean;
   label: string;
   name: string;
+  options: {
+    name: string;
+    value: string;
+  }[];
   placeholder?: string;
-  type?: TType;
-}> = ({ error = false, label, name, placeholder, type = 'text' }) => (
+}> = ({ error = false, label, name, options, placeholder }) => (
   <div className="mb-4">
     <label className="block text-sm font-medium text-gray-700" htmlFor={name}>
       {label}
     </label>
 
     <div className="mt-1 relative shadow-sm">
-      <input
+      <select
         id={name}
-        className="focus:ring-blue-500 focus:border-blue-500 block w-full border-gray-300"
-        type={type}
+        className="block w-full py-2 px-3 border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         name={name}
-        placeholder={placeholder}
-        data-lpignore="true"
-      />
+      >
+        {placeholder && (
+          <option disabled value="">
+            {placeholder}
+          </option>
+        )}
+
+        {options.map(({ name, value }) => (
+          <option key={value} value={value}>
+            {name}
+          </option>
+        ))}
+      </select>
 
       {error && (
         <div className="text-white text-sm absolute inset-y-0 right-0 flex items-center">
@@ -49,4 +59,4 @@ const TextBox: FC<{
   </div>
 );
 
-export default TextBox;
+export default Select;

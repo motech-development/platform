@@ -7,6 +7,8 @@ import Avatar from '../components/Avatar';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import PageTitle from '../components/PageTitle';
+import Radio from '../components/Radio';
+import Select from '../components/Select';
 import TextBox from '../components/TextBox';
 import Typography from '../components/Typography';
 
@@ -209,6 +211,24 @@ const Form = () => (
             </div>
 
             <div className="mt-5 md:mt-0 -mb-4 md:col-span-2">
+              <Radio
+                label="VAT scheme"
+                options={[
+                  {
+                    name: 'None',
+                    value: 'none',
+                  },
+                  {
+                    name: 'Standard',
+                    value: 'standard',
+                  },
+                  {
+                    name: 'Flat rate',
+                    value: 'flat rate',
+                  },
+                ]}
+              />
+
               <TextBox
                 name="vat.registration"
                 label="VAT registration number"
@@ -220,6 +240,70 @@ const Form = () => (
             </div>
           </div>
         </Card>
+
+        <Card padding="lg">
+          <div className="md:grid md:grid-cols-3 md:gap-6">
+            <div className="md:col-span-1">
+              <Typography rule component="h3" variant="h3">
+                Year end
+              </Typography>
+
+              <Typography component="p" variant="lead" margin="none">
+                Set your company year end date
+              </Typography>
+            </div>
+
+            <div className="mt-5 md:mt-0 -mb-4 md:col-span-2">
+              <div className="grid grid-cols-3 gap-6">
+                <div className="col-span-1">
+                  <Select
+                    name="yearEnd.day"
+                    label="Day*"
+                    placeholder="Select day"
+                    options={[]}
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <Select
+                    name="yearEnd.month"
+                    label="Month*"
+                    placeholder="Select month"
+                    options={[]}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card padding="lg">
+          <div className="md:grid md:grid-cols-3 md:gap-6">
+            <div className="md:col-span-1">
+              <Typography rule component="h3" variant="h3">
+                Accounts
+              </Typography>
+
+              <Typography component="p" variant="lead" margin="none">
+                Your opening accounts
+              </Typography>
+            </div>
+
+            <div className="mt-5 md:mt-0 -mb-4 md:col-span-2">
+              <TextBox name="balance.balance" label="Opening balance*" />
+
+              <TextBox name="balance.vat.owed" label="VAT owed*" />
+
+              <TextBox name="balance.vat.paid" label="VAT paid*" />
+            </div>
+          </div>
+        </Card>
+
+        <div className="flex justify-end space-x-5">
+          <Button colour="secondary">Cancel</Button>
+
+          <Button colour="primary">Save</Button>
+        </div>
       </section>
     </main>
   </div>

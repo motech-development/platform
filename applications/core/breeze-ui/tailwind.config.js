@@ -1,3 +1,4 @@
+const forms = require('@tailwindcss/forms');
 const {
   default: palette,
 } = require('tailwindcss/lib/util/flattenColorPalette');
@@ -36,30 +37,8 @@ module.exports = {
     extend: {},
   },
   plugins: [
-    plugin(({ addComponents, addUtilities, e, theme, variants }) => {
-      addComponents({
-        input: {
-          '&::placeholder': {
-            '@apply text-white': {},
-          },
-          '&:focus-within': {
-            '&::placeholder': {
-              '@apply text-gray-400': {},
-            },
-            '~ label': {
-              '@apply text-blue-500 transform scale-75 translate-y-0.5 z-0 ml-3.5 px-1 py-0':
-                {},
-            },
-          },
-          '&:not(:placeholder-shown)': {
-            '~ label': {
-              '@apply text-blue-500 transform scale-75 translate-y-0.5 z-0 ml-3.5 px-1 py-0':
-                {},
-            },
-          },
-        },
-      });
-
+    forms,
+    plugin(({ addUtilities, theme, variants }) => {
       const colours = palette(theme('borderColor'));
 
       const colourMap = Object.keys(colours)
