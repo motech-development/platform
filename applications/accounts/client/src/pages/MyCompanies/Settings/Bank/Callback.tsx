@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { Loader } from '@motech-development/breeze-ui';
 import { useQueryString } from '@motech-development/query-string-hook';
-import { FC, memo, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import ErrorCard from '../../../../components/ErrorCard';
@@ -72,4 +72,4 @@ const Callback: FC = () => {
   return <Loader />;
 };
 
-export default memo(Callback);
+export default Callback;

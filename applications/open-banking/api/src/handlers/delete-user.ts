@@ -5,7 +5,7 @@ import {
 } from '@motech-development/api-gateway-handler';
 import httpClient from '../shared/http-client';
 
-export const handler = apiGatewayHandler(async event => {
+export const handler = apiGatewayHandler(async (event) => {
   const pathParameters = paramCheck(event.pathParameters, 'No params set', 400);
   const userId = paramCheck(pathParameters.userId, 'No user id', 400);
   const endpoint = `/users/${userId}`;

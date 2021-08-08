@@ -104,19 +104,29 @@ describe('CreateReport', () => {
         );
 
         await waitForApollo(0);
+
+        await waitForApollo(0);
       });
     });
 
-    it('should output the page title', () => {
+    it('should output the page title', async () => {
+      await act(async () => {
+        await waitForApollo(0);
+      });
+
       const [title] = screen.getAllByRole('heading');
       const subTitle = screen.getByText('create-report.sub-title');
 
-      expect(title).toHaveTextContent('create-report.title');
-      expect(subTitle).toBeInTheDocument();
+      await waitFor(() =>
+        expect(title).toHaveTextContent('create-report.title'),
+      );
+      await waitFor(() => expect(subTitle).toBeInTheDocument());
     });
 
     it('should redirect you back to the reports page on complete', async () => {
       await act(async () => {
+        await waitForApollo(0);
+
         const status = screen.getByLabelText(
           'export-form.status.options.confirmed',
         );
@@ -128,6 +138,10 @@ describe('CreateReport', () => {
         const button = screen.getByRole('button');
 
         userEvent.click(button);
+
+        await waitForApollo(0);
+
+        await waitForApollo(0);
       });
 
       await waitFor(() =>
@@ -139,6 +153,8 @@ describe('CreateReport', () => {
 
     it('should display a success toast on complete', async () => {
       await act(async () => {
+        await waitForApollo(0);
+
         const status = screen.getByLabelText(
           'export-form.status.options.confirmed',
         );
@@ -150,6 +166,10 @@ describe('CreateReport', () => {
         const button = screen.getByRole('button');
 
         userEvent.click(button);
+
+        await waitForApollo(0);
+
+        await waitForApollo(0);
       });
 
       await waitFor(() =>
@@ -161,6 +181,10 @@ describe('CreateReport', () => {
     });
 
     it('should redirect you back to the reports page if you cancel', async () => {
+      await act(async () => {
+        await waitForApollo(0);
+      });
+
       const link = screen.getByRole('link');
 
       userEvent.click(link);
@@ -255,11 +279,15 @@ describe('CreateReport', () => {
         );
 
         await waitForApollo(0);
+
+        await waitForApollo(0);
       });
     });
 
     it('should redirect you back to the reports page on complete', async () => {
       await act(async () => {
+        await waitForApollo(0);
+
         const status = screen.getByLabelText(
           'export-form.status.options.confirmed',
         );
@@ -271,6 +299,10 @@ describe('CreateReport', () => {
         const button = screen.getByRole('button');
 
         userEvent.click(button);
+
+        await waitForApollo(0);
+
+        await waitForApollo(0);
       });
 
       await waitFor(() =>
@@ -282,6 +314,8 @@ describe('CreateReport', () => {
 
     it('should display a success toast on complete', async () => {
       await act(async () => {
+        await waitForApollo(0);
+
         const status = screen.getByLabelText(
           'export-form.status.options.confirmed',
         );
@@ -293,6 +327,10 @@ describe('CreateReport', () => {
         const button = screen.getByRole('button');
 
         userEvent.click(button);
+
+        await waitForApollo(0);
+
+        await waitForApollo(0);
       });
 
       await waitFor(() =>

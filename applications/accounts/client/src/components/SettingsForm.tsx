@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { FieldArray, Form, Formik } from 'formik';
-import { FC, Fragment, memo } from 'react';
+import { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { array, boolean, object, string } from 'yup';
 import { useVatSettings, useYearEnd } from '../hooks/schema';
@@ -266,4 +266,4 @@ const SettingsForm: FC<ISettingsFormProps> = ({
   );
 };
 
-export default memo(SettingsForm);
+export default SettingsForm;

@@ -13,11 +13,10 @@ const removeScheduledTransactions = (
     records,
     'Transaction',
   );
-  const transactionItems = unmarshalledRecords
+
+  return unmarshalledRecords
     .filter(({ OldImage }) => OldImage.scheduled)
     .map(({ OldImage }) => remove(documentClient, tableName, OldImage));
-
-  return transactionItems;
 };
 
 export default removeScheduledTransactions;

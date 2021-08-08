@@ -30,28 +30,17 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Yarn cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
       - name: Restore Node modules
         id: node-modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -63,7 +52,7 @@ jobs:
 
       - name: Restore packages
         id: packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -72,7 +61,7 @@ jobs:
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cache-v2-${{ hashFiles('**/yarn.lock') }}
@@ -104,15 +93,16 @@ jobs:
           fetch-depth: 0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -123,7 +113,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -170,15 +160,16 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -189,7 +180,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -197,7 +188,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/id/client/node_modules/.cache
@@ -242,15 +233,16 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -261,7 +253,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -269,7 +261,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/open-banking/api/node_modules/.cache
@@ -299,15 +291,16 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -318,7 +311,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -326,7 +319,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/core/anti-virus/node_modules/.cache
@@ -359,12 +352,13 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -375,7 +369,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -383,7 +377,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/cypress/storage/node_modules/.cache
@@ -420,12 +414,13 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -436,7 +431,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -444,7 +439,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/cypress/api/node_modules/.cache
@@ -477,15 +472,16 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -496,7 +492,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -504,7 +500,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/accounts/queue/node_modules/.cache
@@ -536,15 +532,16 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -555,7 +552,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -563,7 +560,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/accounts/storage/node_modules/.cache
@@ -595,15 +592,16 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -614,7 +612,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -622,7 +620,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/accounts/data/node_modules/.cache
@@ -654,15 +652,16 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -673,7 +672,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -681,7 +680,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/accounts/warm-up/node_modules/.cache
@@ -717,15 +716,16 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -736,7 +736,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -744,7 +744,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/accounts/notifications/node_modules/.cache
@@ -778,15 +778,16 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -797,7 +798,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -805,7 +806,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/accounts/reports/node_modules/.cache
@@ -844,15 +845,16 @@ jobs:
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -863,7 +865,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -871,7 +873,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore env vars
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-checks-v2-${{ github.run_id }}
@@ -879,7 +881,7 @@ jobs:
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/accounts/api/node_modules/.cache
@@ -914,6 +916,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    container:
+      image: cypress/browsers:node14.17.0-chrome91-ff89
+      options: --shm-size=2g
+
     needs:
       - unit-tests
       - auth0-tenant
@@ -946,19 +952,23 @@ jobs:
       STAGE: ${{ github.event.pull_request.number }}
 
     steps:
+      - name: Install Docker tools
+        run: apt-get update && apt-get install zstd -y
+
       - name: Checkout code
         uses: actions/checkout@v2.3.4
 
       - name: Set Node version
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.4.0
         with:
           node-version: 14
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./node_modules
@@ -969,7 +979,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -977,7 +987,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cache-v2-${{ hashFiles('**/yarn.lock') }}
@@ -985,7 +995,7 @@ jobs:
             ${{ runner.os }}-cache-
 
       - name: Restore env vars
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-checks-v2-${{ github.run_id }}
@@ -993,7 +1003,7 @@ jobs:
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: |
             ./applications/accounts/client/node_modules/.cache
@@ -1001,6 +1011,9 @@ jobs:
           key: ${{ runner.os }}-accounts-client-v2-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-v2-
+
+      - name: Rebuild binary
+        run: npm rebuild --update-binary
 
       - name: Build client
         run: yarn build -- --scope=@accounts/client

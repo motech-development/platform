@@ -25,7 +25,7 @@ describe('Reports', () => {
     });
   });
 
-  describe('when there are are reports returned', () => {
+  describe('when there are reports returned', () => {
     beforeEach(async () => {
       mocks = [
         {
@@ -90,27 +90,43 @@ describe('Reports', () => {
         );
 
         await waitForApollo(0);
+
+        await waitForApollo(0);
       });
     });
 
-    it('should output the page title', () => {
+    it('should output the page title', async () => {
+      await act(async () => {
+        await waitForApollo(0);
+      });
+
       const title = screen.getByRole('heading');
       const subTitle = screen.getByText('reports.sub-title');
 
-      expect(title).toHaveTextContent('reports.title');
-      expect(subTitle).toBeInTheDocument();
+      await waitFor(() => expect(title).toHaveTextContent('reports.title'));
+      await waitFor(() => expect(subTitle).toBeInTheDocument());
     });
 
-    it('should output the 24 hour alert', () => {
+    it('should output the 24 hour alert', async () => {
+      await act(async () => {
+        await waitForApollo(0);
+      });
+
       const alert = screen.getByRole('alert');
 
-      expect(alert).toHaveTextContent('reports.expiry-message');
+      await waitFor(() =>
+        expect(alert).toHaveTextContent('reports.expiry-message'),
+      );
     });
 
     it('should download a report', async () => {
-      const [button] = screen.getAllByRole('button');
+      await act(async () => {
+        const [button] = screen.getAllByRole('button');
 
-      userEvent.click(button);
+        userEvent.click(button);
+
+        await waitForApollo(0);
+      });
 
       await waitFor(() =>
         expect(saveAs).toHaveBeenCalledWith('success', 'report.zip'),
@@ -120,6 +136,10 @@ describe('Reports', () => {
     it('should display an alert if the report cannot be downloaded', async () => {
       (axios.request as jest.Mock).mockRejectedValueOnce({
         data: 'fail',
+      });
+
+      await act(async () => {
+        await waitForApollo(0);
       });
 
       const [button] = screen.getAllByRole('button');
@@ -134,13 +154,19 @@ describe('Reports', () => {
       );
     });
 
-    it('should go back to the dashboard', () => {
-      const [, link] = screen.getAllByRole('link');
+    it('should go back to the dashboard', async () => {
+      await act(async () => {
+        const [, link] = screen.getAllByRole('link');
 
-      userEvent.click(link);
+        userEvent.click(link);
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/dashboard/company-id',
+        await waitForApollo(0);
+      });
+
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/dashboard/company-id',
+        ),
       );
     });
 
@@ -226,6 +252,8 @@ describe('Reports', () => {
         );
 
         await waitForApollo(0);
+
+        await waitForApollo(0);
       });
     });
 
@@ -263,7 +291,9 @@ describe('Reports', () => {
             },
           },
           result: {
-            data: null,
+            data: {
+              onNotification: null,
+            },
           },
         },
       ];
@@ -278,13 +308,21 @@ describe('Reports', () => {
         );
 
         await waitForApollo(0);
+
+        await waitForApollo(0);
       });
     });
 
-    it('should display an alert telling the user there are no reports available', () => {
+    it('should display an alert telling the user there are no reports available', async () => {
+      await act(async () => {
+        await waitForApollo(0);
+      });
+
       const [, alert] = screen.getAllByRole('alert');
 
-      expect(alert).toHaveTextContent('reports.no-reports-found');
+      await waitFor(() =>
+        expect(alert).toHaveTextContent('reports.no-reports-found'),
+      );
     });
   });
 });

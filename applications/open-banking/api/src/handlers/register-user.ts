@@ -6,7 +6,7 @@ export interface IEvent {
   id: string;
 }
 
-export const handler: Handler<IEvent> = async event => {
+export const handler: Handler<IEvent> = async (event) => {
   const { id, companyId } = event;
   const applicationUserId = `${id}:${companyId}`;
   const endpoint = '/users';

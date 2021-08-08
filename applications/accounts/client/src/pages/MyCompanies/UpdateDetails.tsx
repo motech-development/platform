@@ -6,7 +6,7 @@ import {
   Row,
   useToast,
 } from '@motech-development/breeze-ui';
-import { FC, memo, useState } from 'react';
+import { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import CompanyForm, { FormSchema } from '../../components/CompanyForm';
@@ -37,32 +37,30 @@ const UpdateDetails: FC = () => {
   const { t } = useTranslation('my-companies');
   const { companyId } = useParams<IUpdateDetailsParams>();
   const [modal, setModal] = useState(false);
-  const [
-    mutation,
-    { error: updateError, loading: updateLoading },
-  ] = useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY, {
-    onCompleted: ({ updateCompany }) => {
-      if (updateCompany) {
-        const { id, name } = updateCompany;
+  const [mutation, { error: updateError, loading: updateLoading }] =
+    useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY, {
+      onCompleted: ({ updateCompany }) => {
+        if (updateCompany) {
+          const { id, name } = updateCompany;
 
-        add({
-          colour: 'success',
-          message: t('update-details.success', {
-            name,
-          }),
-        });
+          add({
+            colour: 'success',
+            message: t('update-details.success', {
+              name,
+            }),
+          });
 
-        history.push(backTo(id));
-      } else {
-        add({
-          colour: 'danger',
-          message: t('update-details.retry'),
-        });
+          history.push(backTo(id));
+        } else {
+          add({
+            colour: 'danger',
+            message: t('update-details.retry'),
+          });
 
-        history.push(backTo(companyId));
-      }
-    },
-  });
+          history.push(backTo(companyId));
+        }
+      },
+    });
   const [deleteMutation, { loading: deleteLoading }] = useMutation<
     IDeleteCompanyOutput,
     IDeleteCompanyInput
@@ -173,4 +171,4 @@ const UpdateDetails: FC = () => {
   );
 };
 
-export default memo(UpdateDetails);
+export default UpdateDetails;

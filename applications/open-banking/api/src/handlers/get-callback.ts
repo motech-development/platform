@@ -7,7 +7,7 @@ export interface IEvent {
   user: string;
 }
 
-export const handler: Handler<IEvent> = async event => {
+export const handler: Handler<IEvent> = async (event) => {
   const { bank, callback, user } = event;
   const endpoint = '/account-auth-requests';
 

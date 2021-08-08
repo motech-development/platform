@@ -8,6 +8,7 @@
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
     "precommit": "lint-staged",
     "predeploy": "./scripts/build.sh",
+    "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
     "test:ci": "jest --coverage --runInBand",
@@ -21,6 +22,7 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
+    "@motech-development/logger": "^0.0.0",
     "@motech-development/webpack-conditional-plugin": "^0.0.0",
     "@motech-development/webpack-permissions-plugin": "^0.0.0",
     "filehound": "^1.17.4"

@@ -35,7 +35,6 @@ describe('UploadAttachment', () => {
           },
         },
         result: {
-          data: {},
           errors: [new GraphQLError('Error!')],
         },
       },

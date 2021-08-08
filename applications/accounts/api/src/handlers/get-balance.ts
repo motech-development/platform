@@ -61,9 +61,7 @@ const getBalance = async (event: IEvent) => {
   const balanceResult = balance.Item as IBalanceItem;
   const transactionsResult = transactions.Items as ITransactionItem[];
 
-  const result = transformBalance(balanceResult, transactionsResult);
-
-  return result;
+  return transformBalance(balanceResult, transactionsResult);
 };
 
 export default getBalance;

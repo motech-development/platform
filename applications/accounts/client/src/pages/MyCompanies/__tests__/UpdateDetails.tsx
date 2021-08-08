@@ -1,4 +1,3 @@
-import { InMemoryCache } from '@apollo/client/cache';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -10,14 +9,12 @@ import {
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import DELETE_COMPANY from '../../../graphql/company/DELETE_COMPANY';
-import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
 import GET_COMPANY from '../../../graphql/company/GET_COMPANY';
 import UPDATE_COMPANY from '../../../graphql/company/UPDATE_COMPANY';
 import TestProvider, { add } from '../../../utils/TestProvider';
 import UpdateDetails from '../UpdateDetails';
 
 describe('UpdateDetails', () => {
-  let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
@@ -33,43 +30,6 @@ describe('UpdateDetails', () => {
   describe('when data is returned', () => {
     describe('success', () => {
       beforeEach(async () => {
-        cache = new InMemoryCache();
-
-        cache.writeQuery({
-          data: {
-            getCompanies: {
-              __typename: 'Companies',
-              id: 'user-id',
-              items: [
-                {
-                  address: {
-                    line1: '1 Street',
-                    line2: '',
-                    line3: 'Town',
-                    line4: 'County',
-                    line5: 'KT1 1NE',
-                  },
-                  bank: {
-                    accountNumber: '12345678',
-                    sortCode: '12-34-56',
-                  },
-                  companyNumber: '12345678',
-                  contact: {
-                    email: 'info@contact.com',
-                    telephone: '07712345678',
-                  },
-                  id: 'company-uuid',
-                  name: 'New company',
-                },
-              ],
-            },
-          },
-          query: GET_COMPANIES,
-          variables: {
-            id: 'user-id',
-          },
-        });
-
         mocks = [
           {
             request: {
@@ -176,7 +136,7 @@ describe('UpdateDetails', () => {
         await act(async () => {
           component = render(
             <TestProvider path="/update-company/:companyId" history={history}>
-              <MockedProvider mocks={mocks} cache={cache}>
+              <MockedProvider mocks={mocks}>
                 <UpdateDetails />
               </MockedProvider>
             </TestProvider>,
@@ -235,12 +195,8 @@ describe('UpdateDetails', () => {
       });
 
       it('should hide the delete confirmation modal', async () => {
-        const {
-          findAllByRole,
-          findByRole,
-          findByText,
-          queryByRole,
-        } = component;
+        const { findAllByRole, findByRole, findByText, queryByRole } =
+          component;
 
         await act(async () => {
           await findByText('New company');
@@ -431,7 +387,9 @@ describe('UpdateDetails', () => {
             },
           },
           result: {
-            data: {},
+            data: {
+              deleteCompany: null,
+            },
           },
         },
         {
@@ -493,7 +451,9 @@ describe('UpdateDetails', () => {
             },
           },
           result: {
-            data: {},
+            data: {
+              updateCompany: null,
+            },
           },
         },
       ];

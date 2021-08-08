@@ -1,4 +1,3 @@
-import { InMemoryCache } from '@apollo/client/cache';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -10,12 +9,10 @@ import {
 } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import ADD_CLIENT from '../../../../graphql/client/ADD_CLIENT';
-import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import AddClient from '../AddClient';
 
 describe('AddClient', () => {
-  let cache: InMemoryCache;
   let component: RenderResult;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
@@ -30,26 +27,6 @@ describe('AddClient', () => {
 
   describe('when data is returned', () => {
     beforeEach(async () => {
-      cache = new InMemoryCache();
-
-      cache.writeQuery({
-        data: {
-          getClients: {
-            __typename: 'Clients',
-            id: 'company-id',
-            items: [],
-          },
-          getCompany: {
-            id: 'company-id',
-            name: 'Test company',
-          },
-        },
-        query: GET_CLIENTS,
-        variables: {
-          id: 'company-id',
-        },
-      });
-
       mocks = [
         {
           request: {
@@ -100,7 +77,7 @@ describe('AddClient', () => {
       await act(async () => {
         component = render(
           <TestProvider path="/clients/:companyId/add-client" history={history}>
-            <MockedProvider mocks={mocks} cache={cache}>
+            <MockedProvider mocks={mocks}>
               <AddClient />
             </MockedProvider>
           </TestProvider>,
@@ -292,7 +269,9 @@ describe('AddClient', () => {
             },
           },
           result: {
-            data: {},
+            data: {
+              createClient: null,
+            },
           },
         },
       ];

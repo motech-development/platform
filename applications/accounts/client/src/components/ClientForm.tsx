@@ -7,7 +7,7 @@ import {
   TextBox,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 import { useAddress, useContactDetails } from '../hooks/schema';
@@ -121,4 +121,4 @@ const ClientForm: FC<IClientFormProps> = ({
   );
 };
 
-export default memo(ClientForm);
+export default ClientForm;

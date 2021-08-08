@@ -1,6 +1,6 @@
 import { useToast } from '@motech-development/breeze-ui';
 import { WebAuth } from 'auth0-js';
-import { FC, memo, useState } from 'react';
+import { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ForgottenPasswordForm, {
   FormSchema,
@@ -51,4 +51,4 @@ const ForgottenPassword: FC<IForgottenPasswordProps> = ({
   );
 };
 
-export default memo(ForgottenPassword);
+export default ForgottenPassword;

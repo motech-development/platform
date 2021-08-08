@@ -192,7 +192,9 @@ describe('SelectAccount', () => {
               },
             },
             result: {
-              data: {},
+              data: {
+                updateBankSettings: null,
+              },
             },
           },
         ];
@@ -279,13 +281,13 @@ describe('SelectAccount', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await waitForApollo(0);
       });
     });
 
     it('should display an error card', async () => {
       const { findByText } = component;
-
-      await waitForApollo(0);
 
       await expect(
         findByText('select-account.errors.failure.title'),
@@ -294,8 +296,6 @@ describe('SelectAccount', () => {
 
     it('should have the correct back link', async () => {
       const { findByText } = component;
-
-      await waitForApollo(0);
 
       await expect(findByText('go-back')).resolves.toHaveAttribute(
         'href',

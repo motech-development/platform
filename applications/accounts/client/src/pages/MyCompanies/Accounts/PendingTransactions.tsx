@@ -10,7 +10,7 @@ import {
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import { FC, memo, useState } from 'react';
+import { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -31,17 +31,17 @@ import GET_TRANSACTIONS, {
   IGetTransactionsOutput,
 } from '../../../graphql/transaction/GET_TRANSACTIONS';
 
-interface IPendingTransactionParams {
+interface IPendingTransactionsParams {
   companyId: string;
 }
 
-const PendingTransaction: FC = () => {
+const PendingTransactions: FC = () => {
   const [transaction, setTransaction] = useState({
     id: '',
     name: '',
   });
   const { t } = useTranslation('accounts');
-  const { companyId } = useParams<IPendingTransactionParams>();
+  const { companyId } = useParams<IPendingTransactionsParams>();
   const { add } = useToast();
   const { data, error, loading } = useQuery<
     IGetTransactionsOutput,
@@ -242,4 +242,4 @@ const PendingTransaction: FC = () => {
   );
 };
 
-export default memo(PendingTransaction);
+export default PendingTransactions;

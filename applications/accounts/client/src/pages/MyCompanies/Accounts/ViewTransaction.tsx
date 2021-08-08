@@ -6,7 +6,7 @@ import {
   Row,
   useToast,
 } from '@motech-development/breeze-ui';
-import { FC, memo, useState } from 'react';
+import { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -134,6 +134,14 @@ const ViewTransaction: FC = () => {
 
     return location;
   };
+  const refetchQueries = () => [
+    {
+      query: GET_BALANCE,
+      variables: {
+        id: companyId,
+      },
+    },
+  ];
   const { data, error, loading } = useQuery<
     IViewTransactionOutput,
     IViewTransactionInput
@@ -148,42 +156,33 @@ const ViewTransaction: FC = () => {
       transactionId,
     },
   });
-  const [
-    mutation,
-    { error: mutationError, loading: mutationLoading },
-  ] = useMutation<IUpdateTransactionOutput, IUpdateTransactionInput>(
-    UPDATE_TRANSACTION,
-    {
-      awaitRefetchQueries: true,
-      onCompleted: ({ updateTransaction }) => {
-        if (updateTransaction) {
-          add({
-            colour: 'success',
-            message: t('view-transaction.success'),
-          });
+  const [mutation, { error: mutationError, loading: mutationLoading }] =
+    useMutation<IUpdateTransactionOutput, IUpdateTransactionInput>(
+      UPDATE_TRANSACTION,
+      {
+        awaitRefetchQueries: true,
+        onCompleted: ({ updateTransaction }) => {
+          if (updateTransaction) {
+            add({
+              colour: 'success',
+              message: t('view-transaction.success'),
+            });
 
-          history.push(
-            backTo(updateTransaction.companyId, updateTransaction.status),
-          );
-        } else {
-          add({
-            colour: 'danger',
-            message: t('view-transaction.retry'),
-          });
+            history.push(
+              backTo(updateTransaction.companyId, updateTransaction.status),
+            );
+          } else {
+            add({
+              colour: 'danger',
+              message: t('view-transaction.retry'),
+            });
 
-          history.push(backTo(companyId));
-        }
-      },
-      refetchQueries: () => [
-        {
-          query: GET_BALANCE,
-          variables: {
-            id: companyId,
-          },
+            history.push(backTo(companyId));
+          }
         },
-      ],
-    },
-  );
+        refetchQueries,
+      },
+    );
   const [deleteMutation, { loading: deleteLoading }] = useMutation<
     IDeleteTransactionOutput,
     IDeleteTransactionInput
@@ -214,14 +213,7 @@ const ViewTransaction: FC = () => {
         message: t('delete-transaction.error'),
       });
     },
-    refetchQueries: () => [
-      {
-        query: GET_BALANCE,
-        variables: {
-          id: companyId,
-        },
-      },
-    ],
+    refetchQueries,
   });
   const launchDeleteModal = () => {
     setModal(true);
@@ -323,4 +315,4 @@ const ViewTransaction: FC = () => {
   );
 };
 
-export default memo(ViewTransaction);
+export default ViewTransaction;

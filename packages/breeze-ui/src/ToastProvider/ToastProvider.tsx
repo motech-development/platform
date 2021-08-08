@@ -96,7 +96,7 @@ const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
         return t.id !== id;
       }),
     );
-  const alerts = toasts.length > 0 && (
+  const alerts = (
     <ToastContainer>
       {toasts.map(({ colour, id, message }) => (
         <Alert

@@ -12,16 +12,16 @@
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
-    "prettier": "prettier --config ../../.prettierrc.yml --check 'src/**/*'",
+    "prettier": "prettier --config ../../.prettierrc.yml --write 'src/**/*'",
     "test": "jest --watch",
     "test:ci": "jest --coverage --runInBand"
   },
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "dependencies": {
-    "@apollo/client": "^3.3.13",
-    "aws-appsync-auth-link": "^3.0.4",
-    "aws-appsync-subscription-link": "^3.0.6",
+    "@apollo/client": "3.4.5",
+    "aws-appsync-auth-link": "3.0.6",
+    "aws-appsync-subscription-link": "3.0.8",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
@@ -29,9 +29,9 @@
     "unfetch": "^4.2.0"
   },
   "peerDependencies": {
-    "@apollo/client": "3.3.13",
-    "aws-appsync-auth-link": "3.0.4",
-    "aws-appsync-subscription-link": "3.0.6",
+    "@apollo/client": "3.4.5",
+    "aws-appsync-auth-link": "3.0.6",
+    "aws-appsync-subscription-link": "3.0.8",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },

@@ -18,7 +18,7 @@ interface IAccounts {
   }[];
 }
 
-export const handler = apiGatewayHandler(async event => {
+export const handler = apiGatewayHandler(async (event) => {
   const Consent = paramCheck(event.headers.Consent, 'No consent', 401);
   const endpoint = '/accounts';
 

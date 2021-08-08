@@ -1,4 +1,3 @@
-import { InMemoryCache } from '@apollo/client/cache';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -13,57 +12,16 @@ import { saveAs } from 'file-saver';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
-import GET_TRANSACTIONS from '../../../../graphql/transaction/GET_TRANSACTIONS';
 import UPDATE_TRANSACTION from '../../../../graphql/transaction/UPDATE_TRANSACTION';
-import GET_TYPEAHEAD from '../../../../graphql/typeahead/GET_TYPEAHEAD';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import { DELETE_FILE, REQUEST_DOWNLOAD } from '../shared/ViewAttachment';
 import ViewTransaction, { VIEW_TRANSACTION } from '../ViewTransaction';
 
 describe('ViewTransaction', () => {
-  let cache: InMemoryCache;
   let history: MemoryHistory;
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    cache = new InMemoryCache();
-
-    cache.writeQuery({
-      data: {
-        getBalance: {
-          __typename: 'Balance',
-          currency: 'GBP',
-          id: 'company-id',
-        },
-        getTransactions: {
-          __typename: 'Transactions',
-          id: 'company-id',
-          items: [],
-        },
-      },
-      query: GET_TRANSACTIONS,
-      variables: {
-        id: 'company-id',
-        status: 'pending',
-      },
-    });
-
-    cache.writeQuery({
-      data: {
-        getTypeahead: {
-          __typename: 'Typeahead',
-          id: 'company-id',
-          purchases: [],
-          sales: null,
-          suppliers: [],
-        },
-      },
-      query: GET_TYPEAHEAD,
-      variables: {
-        id: 'company-id',
-      },
-    });
-
     history = createMemoryHistory({
       initialEntries: ['/accounts/company-id/view-transaction/transaction-id'],
     });
@@ -248,7 +206,7 @@ describe('ViewTransaction', () => {
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
             >
-              <MockedProvider mocks={mocks} cache={cache}>
+              <MockedProvider mocks={mocks}>
                 <ViewTransaction />
               </MockedProvider>
             </TestProvider>,
@@ -535,7 +493,7 @@ describe('ViewTransaction', () => {
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
             >
-              <MockedProvider mocks={mocks} cache={cache}>
+              <MockedProvider mocks={mocks}>
                 <ViewTransaction />
               </MockedProvider>
             </TestProvider>,
@@ -591,7 +549,9 @@ describe('ViewTransaction', () => {
           await waitForApollo(0);
         });
 
-        expect(saveAs).toHaveBeenCalledWith('success', 'attachment.pdf');
+        await waitFor(() =>
+          expect(saveAs).toHaveBeenCalledWith('success', 'attachment.pdf'),
+        );
       });
 
       it('should display a success toast when attachment is downloaded', async () => {
@@ -624,6 +584,8 @@ describe('ViewTransaction', () => {
           );
 
           fireEvent.click(downloadButton);
+
+          await waitForApollo(0);
 
           await waitForApollo(0);
         });
@@ -828,7 +790,7 @@ describe('ViewTransaction', () => {
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
             >
-              <MockedProvider mocks={mocks} cache={cache}>
+              <MockedProvider mocks={mocks}>
                 <ViewTransaction />
               </MockedProvider>
             </TestProvider>,
@@ -916,6 +878,8 @@ describe('ViewTransaction', () => {
           );
 
           fireEvent.click(downloadButton);
+
+          await waitForApollo(0);
 
           await waitForApollo(0);
         });
@@ -1081,7 +1045,9 @@ describe('ViewTransaction', () => {
               },
             },
             result: {
-              data: {},
+              data: {
+                updateTransaction: null,
+              },
             },
           },
           {
@@ -1092,7 +1058,9 @@ describe('ViewTransaction', () => {
               },
             },
             result: {
-              data: {},
+              data: {
+                deleteTransaction: null,
+              },
             },
           },
           {
@@ -1119,7 +1087,7 @@ describe('ViewTransaction', () => {
               path="/accounts/:companyId/view-transaction/:transactionId"
               history={history}
             >
-              <MockedProvider mocks={mocks} cache={cache}>
+              <MockedProvider mocks={mocks}>
                 <ViewTransaction />
               </MockedProvider>
             </TestProvider>,

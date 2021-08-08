@@ -1,6 +1,6 @@
 import { useToast } from '@motech-development/breeze-ui';
 import { Auth0Error, WebAuth } from 'auth0-js';
-import { FC, memo, useState } from 'react';
+import { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AuthForm, { FormSchema } from '../../components/AuthForm';
 
@@ -54,4 +54,4 @@ const SignUp: FC<ISignUpProps> = ({ client, handleError, setView }) => {
   );
 };
 
-export default memo(SignUp);
+export default SignUp;
