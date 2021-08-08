@@ -1,4 +1,5 @@
 import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
+import { findUnique, setItems, spread } from './utils';
 
 export interface IAddTransactionInput {
   input: {
@@ -44,12 +45,12 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
     cache.modify({
       fields: {
         purchases: (items: string[] | null) => {
-          const descriptions = items || [];
+          const descriptions = setItems(items);
           const unique = !descriptions.some(
-            (desciption) => desciption === addTransaction.description,
+            findUnique(addTransaction, 'description'),
           );
 
-          if (addTransaction.category !== 'Sales' && unique) {
+          if (spread(addTransaction.category !== 'Sales', unique)) {
             return [...descriptions, addTransaction.description].sort((a, b) =>
               a.localeCompare(b),
             );
@@ -58,12 +59,12 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
           return descriptions;
         },
         sales: (items: string[] | null) => {
-          const descriptions = items || [];
+          const descriptions = setItems(items);
           const unique = !descriptions.some(
-            (desciption) => desciption === addTransaction.description,
+            findUnique(addTransaction, 'description'),
           );
 
-          if (addTransaction.category === 'Sales' && unique) {
+          if (spread(addTransaction.category === 'Sales', unique)) {
             return [...descriptions, addTransaction.description].sort((a, b) =>
               a.localeCompare(b),
             );
@@ -72,12 +73,10 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
           return descriptions;
         },
         suppliers: (items: string[] | null) => {
-          const suppliers = items || [];
-          const unique = !suppliers.some(
-            (supplier) => supplier === addTransaction.name,
-          );
+          const suppliers = setItems(items);
+          const unique = !suppliers.some(findUnique(addTransaction, 'name'));
 
-          if (addTransaction.category !== 'Sales' && unique) {
+          if (spread(addTransaction.category !== 'Sales', unique)) {
             return [...suppliers, addTransaction.name].sort((a, b) =>
               a.localeCompare(b),
             );

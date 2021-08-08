@@ -13,7 +13,8 @@ const insertTypeahead = (
     'Transaction',
   );
   const now = new Date();
-  const insert = unmarshalledRecords.map(({ NewImage }) => {
+
+  return unmarshalledRecords.map(({ NewImage }) => {
     const isSale = NewImage.category === 'Sales';
 
     return documentClient
@@ -56,8 +57,6 @@ const insertTypeahead = (
       })
       .promise();
   });
-
-  return insert;
 };
 
 export default insertTypeahead;

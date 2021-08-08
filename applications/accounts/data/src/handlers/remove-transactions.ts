@@ -13,11 +13,10 @@ const removeTransactions = (
     records,
     'Transaction',
   );
-  const transactionItems = unmarshalledRecords
+
+  return unmarshalledRecords
     .filter(({ OldImage }) => OldImage.status === TransactionStatus.Confirmed)
     .map(({ OldImage }) => remove(documentClient, tableName, OldImage));
-
-  return transactionItems;
 };
 
 export default removeTransactions;

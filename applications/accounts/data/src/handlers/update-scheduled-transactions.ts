@@ -13,11 +13,10 @@ const updateScheduledTransactions = (
     records,
     'Transaction',
   );
-  const transactionItems = unmarshalledRecords.map(({ OldImage, NewImage }) =>
+
+  return unmarshalledRecords.map(({ OldImage, NewImage }) =>
     update(documentClient, tableName, OldImage, NewImage),
   );
-
-  return transactionItems;
 };
 
 export default updateScheduledTransactions;

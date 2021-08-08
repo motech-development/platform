@@ -36,3 +36,9 @@ export type SetData<TData> = (data: TData) => void;
 export type SetError = (error: AxiosError) => void;
 
 export type SetLoading = (loading: boolean) => void;
+
+export interface ISet<TData> {
+  setData: SetData<TData>;
+  setError: SetError;
+  setLoading: SetLoading;
+}
