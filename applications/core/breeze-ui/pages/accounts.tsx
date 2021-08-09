@@ -1,5 +1,9 @@
 import { Menu, Transition } from '@headlessui/react';
 import { BellIcon } from '@heroicons/react/outline';
+import {
+  ArrowCircleLeftIcon,
+  ArrowCircleRightIcon,
+} from '@heroicons/react/solid';
 import Link from 'next/link';
 import { Fragment } from 'react';
 import AppBar from '../components/AppBar';
@@ -10,7 +14,7 @@ import Logo from '../components/Logo';
 import PageTitle from '../components/PageTitle';
 import Typography from '../components/Typography';
 
-const Dashboard = () => (
+const Accounts = () => (
   <div className="min-h-screen bg-gray-200">
     <AppBar>
       <div className="flex-shrink-0 flex-1 flex items-center">
@@ -160,9 +164,12 @@ const Dashboard = () => (
     </AppBar>
 
     <main>
-      <PageTitle title="Motech Development" subTitle="Dashboard" />
+      <PageTitle
+        title="Accounts"
+        subTitle="Keep on top of your company finances"
+      />
 
-      <section className="max-w-7xl mx-auto pb-8 px-4 sm:px-6 lg:px-8">
+      <section className="max-w-7xl mx-auto pb-8 px-4 sm:px-6 lg:px-8 space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <Card flex padding="lg">
             <Typography
@@ -172,112 +179,175 @@ const Dashboard = () => (
               align="center"
               margin="lg"
             >
-              Accounts
+              New transaction
             </Typography>
 
             <Typography component="p" variant="lead" align="center" margin="lg">
-              Keep on top of you company accounts by managing your incomings and
-              outgoings
+              Record any money coming in or going out of your business.
+            </Typography>
+
+            <Link href="/transaction">
+              <Button block type="button">
+                Record new transaction
+              </Button>
+            </Link>
+          </Card>
+
+          <Card flex padding="lg">
+            <Typography
+              rule
+              component="h3"
+              variant="h3"
+              align="center"
+              margin="lg"
+            >
+              Pending transactions
+            </Typography>
+
+            <Typography component="p" variant="lead" align="center" margin="lg">
+              Manage any transactions that are waiting to be approved.
             </Typography>
 
             <Link href="/accounts">
               <Button block type="button">
-                Manage accounts
-              </Button>
-            </Link>
-          </Card>
-
-          <Card flex padding="lg">
-            <Typography
-              rule
-              component="h3"
-              variant="h3"
-              align="center"
-              margin="lg"
-            >
-              Clients
-            </Typography>
-
-            <Typography component="p" variant="lead" align="center" margin="lg">
-              Add your client details so that you always have them to hand
-            </Typography>
-
-            <Link href="/dashboard">
-              <Button block type="button">
-                Manage clients
-              </Button>
-            </Link>
-          </Card>
-
-          <Card flex padding="lg">
-            <Typography
-              rule
-              component="h3"
-              variant="h3"
-              align="center"
-              margin="lg"
-            >
-              Reports
-            </Typography>
-
-            <Typography component="p" variant="lead" align="center" margin="lg">
-              Create and download accounting reports
-            </Typography>
-
-            <Link href="/dashboard">
-              <Button block type="button">
-                Manage reports
-              </Button>
-            </Link>
-          </Card>
-
-          <Card flex padding="lg">
-            <Typography
-              rule
-              component="h3"
-              variant="h3"
-              align="center"
-              margin="lg"
-            >
-              Company details
-            </Typography>
-
-            <Typography component="p" variant="lead" align="center" margin="lg">
-              View your company details and update them
-            </Typography>
-
-            <Link href="/form">
-              <Button block type="button">
-                Manage company details
-              </Button>
-            </Link>
-          </Card>
-
-          <Card flex padding="lg">
-            <Typography
-              rule
-              component="h3"
-              variant="h3"
-              align="center"
-              margin="lg"
-            >
-              Settings
-            </Typography>
-
-            <Typography component="p" variant="lead" align="center" margin="lg">
-              Update company settings
-            </Typography>
-
-            <Link href="/form">
-              <Button block type="button">
-                Manage settings
+                View pending transactions
               </Button>
             </Link>
           </Card>
         </div>
+
+        <Card padding="none">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-blue-600">
+              <tr>
+                <th
+                  className="px-6 py-3 font-display text-left text-md text-gray-100"
+                  colSpan={2}
+                  scope="col"
+                >
+                  Monday, 09 August
+                </th>
+                <th
+                  className="px-6 py-3 font-display text-right text-md text-gray-100"
+                  scope="col"
+                >
+                  £3500.00
+                </th>
+                <th
+                  className="px-6 py-3 font-display text-left text-md text-gray-100"
+                  scope="col"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+
+            <tbody className="bg-gray-100 divide-y divide-gray-200">
+              <tr>
+                <td className="pl-6 pr-0 py-4 w-8 whitespace-nowrap font-display text-left text-gray-900">
+                  <ArrowCircleRightIcon
+                    className="w-8 h-8 text-green-600"
+                    aria-hidden="true"
+                  />
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap font-display text-left text-gray-900">
+                  <Typography component="p" variant="h6" margin="none">
+                    Some client
+                  </Typography>
+                  <Typography component="p" variant="p" margin="none">
+                    Invoice #88
+                  </Typography>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap font-display text-right text-gray-900">
+                  <Typography
+                    component="p"
+                    variant="p"
+                    margin="none"
+                    align="right"
+                  >
+                    £7000.00
+                  </Typography>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap font-display text-left text-gray-900">
+                  <div className="flex gap-4">
+                    <Button type="button" size="sm">
+                      View
+                    </Button>
+                    <Button type="button" colour="danger" size="sm">
+                      Delete
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+
+            <thead className="bg-blue-600">
+              <tr>
+                <th
+                  className="px-6 py-3 font-display text-left text-md text-gray-100"
+                  colSpan={2}
+                  scope="col"
+                >
+                  Monday, 09 August
+                </th>
+                <th
+                  className="px-6 py-3 font-display text-right text-md text-gray-100"
+                  scope="col"
+                >
+                  -£3500.00
+                </th>
+                <th
+                  className="px-6 py-3 font-display text-left text-md text-gray-100"
+                  scope="col"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+
+            <tbody className="bg-gray-100 divide-y divide-gray-200">
+              <tr>
+                <td className="pl-6 pr-0 py-4 w-8 whitespace-nowrap font-display text-left text-gray-900">
+                  <ArrowCircleLeftIcon
+                    className="w-8 h-8 text-red-600"
+                    aria-hidden="true"
+                  />
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap font-display text-left text-gray-900">
+                  <Typography component="p" variant="h6" margin="none">
+                    Mo Gusbi
+                  </Typography>
+                  <Typography component="p" variant="p" margin="none">
+                    Salary
+                  </Typography>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap font-display text-right text-gray-900">
+                  <Typography
+                    component="p"
+                    variant="p"
+                    margin="none"
+                    align="right"
+                  >
+                    -£3500.00
+                  </Typography>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap font-display text-left text-gray-900">
+                  <div className="flex gap-4">
+                    <Button type="button" size="sm">
+                      View
+                    </Button>
+                    <Button type="button" colour="danger" size="sm">
+                      Delete
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </Card>
       </section>
     </main>
   </div>
 );
 
-export default Dashboard;
+export default Accounts;

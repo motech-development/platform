@@ -6,6 +6,7 @@ import AppBar from '../components/AppBar';
 import Avatar from '../components/Avatar';
 import Button from '../components/Button';
 import Card from '../components/Card';
+import Logo from '../components/Logo';
 import PageTitle from '../components/PageTitle';
 import Radio from '../components/Radio';
 import Select from '../components/Select';
@@ -17,7 +18,9 @@ const Form = () => (
     <AppBar>
       <div className="flex-shrink-0 flex-1 flex items-center">
         <Typography component="h1" variant="h4" margin="none">
-          Accounts
+          <span className="sr-only">Accounts</span>
+
+          <Logo className="text-blue-600 w-10 h-10" alt="Accounts logo" />
         </Typography>
       </div>
 
@@ -300,9 +303,17 @@ const Form = () => (
         </Card>
 
         <div className="flex justify-end space-x-5">
-          <Button colour="secondary">Cancel</Button>
+          <Link href="/my-companies">
+            <Button type="button" colour="secondary">
+              Cancel
+            </Button>
+          </Link>
 
-          <Button colour="primary">Save</Button>
+          <Link href="/dashboard">
+            <Button type="button" colour="primary">
+              Save
+            </Button>
+          </Link>
         </div>
       </section>
     </main>

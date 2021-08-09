@@ -28,11 +28,12 @@ const styles = (colour: TColour, size: TSize, block: boolean) => {
 
   switch (size) {
     case 'sm':
+      sizeStyles = 'text-md py-1 px-2';
       break;
     case 'lg':
       break;
     default:
-      sizeStyles = 'py-2 px-4';
+      sizeStyles = 'text-lg py-2 px-4';
   }
 
   const blockStyles = block ? 'w-full' : '';
@@ -60,7 +61,7 @@ const Button: FC<IButtonProps> = forwardRef<HTMLButtonElement, IButtonProps>(
     ref,
   ) => (
     <button
-      className={`group relative mt-auto shadow-2xl flex font-display justify-center text-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${styles(
+      className={`group relative mt-auto shadow-2xl flex font-display justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${styles(
         colour,
         size,
         block,

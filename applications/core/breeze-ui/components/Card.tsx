@@ -23,11 +23,12 @@ const styles = (padding: TPadding, flex: boolean) => {
 
 const Card: FC<{
   children: ReactNode;
+  className?: string;
   flex?: boolean;
   padding?: TPadding;
-}> = ({ children, flex = false, padding = 'md' }) => (
+}> = ({ children, className, flex = false, padding = 'md' }) => (
   <div
-    className={`bg-gray-100 border-b-2 border-gray-300 text-gray-800 shadow-lg ${styles(
+    className={`bg-gray-100 border-b-2 border-gray-300 text-gray-800 shadow-lg ${className} ${styles(
       padding,
       flex,
     )}`}

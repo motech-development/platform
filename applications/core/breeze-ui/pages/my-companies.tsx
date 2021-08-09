@@ -6,6 +6,7 @@ import AppBar from '../components/AppBar';
 import Avatar from '../components/Avatar';
 import Button from '../components/Button';
 import Card from '../components/Card';
+import Logo from '../components/Logo';
 import PageTitle from '../components/PageTitle';
 import Typography from '../components/Typography';
 
@@ -14,7 +15,9 @@ const MyCompanies = () => (
     <AppBar>
       <div className="flex-shrink-0 flex-1 flex items-center">
         <Typography component="h1" variant="h4" margin="none">
-          Accounts
+          <span className="sr-only">Accounts</span>
+
+          <Logo className="text-blue-600 w-10 h-10" alt="Accounts logo" />
         </Typography>
       </div>
 

@@ -102,16 +102,26 @@ const ruleStyles = (align: TAlign, margin: TMargin) => {
 
 const Element: FC<{
   align: TAlign;
+  className?: string;
   component: TComponent;
   margin: TMargin;
   rule: boolean;
   variant: TVariant;
-}> = ({ align, children, component, margin, rule, variant, ...rest }) =>
+}> = ({
+  align,
+  children,
+  className,
+  component,
+  margin,
+  rule,
+  variant,
+  ...rest
+}) =>
   createElement(
     component,
     {
       ...rest,
-      className: `${headingStyles(align, margin, variant, rule)}`,
+      className: `${className} ${headingStyles(align, margin, variant, rule)}`,
     },
     children,
   );
