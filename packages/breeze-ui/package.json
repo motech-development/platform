@@ -12,7 +12,6 @@
     "package": "yarn build",
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
-    "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --write 'src/**/*'",
     "start": "start-storybook",
     "test": "jest --watch",
@@ -21,43 +20,22 @@
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.35",
-    "@fortawesome/free-solid-svg-icons": "^5.15.3",
-    "@fortawesome/react-fontawesome": "^0.1.14",
-    "@popperjs/core": "^2.9.1",
-    "formik": "^2.2.6",
+    "formik": "^2.2.9",
     "luxon": "^2.0.2",
-    "polished": "^4.1.1",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-number-format": "^4.5.2",
-    "react-popper": "^2.2.5",
-    "react-router-dom": "^5.2.0",
-    "styled-components": "^5.2.1",
-    "styled-reset": "^4.3.4"
+    "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^6.1.21",
     "@storybook/addon-knobs": "^6.1.21",
     "@storybook/react": "^6.1.21",
-    "@storybook/storybook-deployer": "^2.8.7",
-    "yup": "^0.29.1"
+    "@storybook/storybook-deployer": "^2.8.7"
   },
   "peerDependencies": {
-    "@fortawesome/fontawesome-svg-core": "1.2.35",
-    "@fortawesome/free-solid-svg-icons": "5.15.3",
-    "@fortawesome/react-fontawesome": "0.1.14",
-    "@popperjs/core": "2.9.1",
-    "formik": "2.2.6",
+    "formik": "^2.2.9",
     "luxon": "^2.0.2",
-    "polished": "4.1.1",
     "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-number-format": "4.5.2",
-    "react-popper": "2.2.5",
-    "react-router-dom": "5.2.0",
-    "styled-components": "5.2.1",
-    "styled-reset": "4.3.4"
+    "react-dom": "17.0.2"
   },
   "jest": {
     "collectCoverageFrom": [
