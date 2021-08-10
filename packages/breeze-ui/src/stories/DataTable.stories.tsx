@@ -1,7 +1,6 @@
 import { storiesOf } from '@storybook/react';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import DataTable from './DataTable';
-import TableCell from '../TableCell/TableCell';
+import DataTable from '../components/DataTable';
+import TableCell from '../components/TableCell';
 
 const data = [
   {
@@ -22,8 +21,6 @@ const stories = storiesOf('DataTable', module);
 
 stories.add('Basic data table', () => (
   <>
-    <BaseStyles />
-
     <DataTable
       items={data}
       header={

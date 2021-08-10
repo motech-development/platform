@@ -1,7 +1,6 @@
 import { number, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import Avatar from './Avatar';
+import Avatar from '../components/Avatar';
 
 const stories = storiesOf('Avatar', module);
 
@@ -9,7 +8,6 @@ stories.addDecorator(withKnobs);
 
 stories.add('Basic avatar', () => (
   <>
-    <BaseStyles />
     <Avatar
       alt={text('Alt text', 'Avatar')}
       src={text(

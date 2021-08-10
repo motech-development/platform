@@ -1,19 +1,19 @@
+// TODO: Schema stuff
 import { boolean, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { bool, date, object, string } from 'yup';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import Button from '../Button/Button';
-import Card from '../Card/Card';
-import CheckBox from '../CheckBox/CheckBox';
-import Col from '../Col/Col';
-import DatePicker from '../DatePicker/DatePicker';
-import FileUpload from '../FileUpload/FileUpload';
-import Row from '../Row/Row';
-import TextBox from '../TextBox/TextBox';
-import Typeahead from '../Typeahead/Typeahead';
-import Radio from '../Radio/Radio';
-import Select from '../Select/Select';
-import Form from './Form';
+// import { bool, date, object, string } from 'yup';
+import Button from '../components/Button';
+import Card from '../components/Card';
+import CheckBox from '../components/CheckBox';
+import Col from '../components/Col';
+import DatePicker from '../components/DatePicker';
+import FileUpload from '../components/FileUpload';
+import Row from '../components/Row';
+import TextBox from '../components/TextBox';
+import Typeahead from '../components/Typeahead';
+import Radio from '../components/Radio';
+import Select from '../components/Select';
+import Form from '../components/Form';
 
 const stories = storiesOf('Form', module);
 const initialValues = {
@@ -31,23 +31,23 @@ const initialValues = {
   typeahead: '',
   upload: '',
 };
-const validationSchema = object()
-  .shape({
-    category: string().required(),
-    choice: string().required(),
-    dob: date().required(),
-    email: string().email().required(),
-    extra: object().shape({
-      sortCode: string().required(),
-      telephone: string().required(),
-    }),
-    name: string().required(),
-    password: string().required(),
-    terms: bool().oneOf([true]).required(),
-    typeahead: string().required(),
-    upload: string().required(),
-  })
-  .required();
+// const validationSchema = object()
+//   .shape({
+//     category: string().required(),
+//     choice: string().required(),
+//     dob: date().required(),
+//     email: string().email().required(),
+//     extra: object().shape({
+//       sortCode: string().required(),
+//       telephone: string().required(),
+//     }),
+//     name: string().required(),
+//     password: string().required(),
+//     terms: bool().oneOf([true]).required(),
+//     typeahead: string().required(),
+//     upload: string().required(),
+//   })
+//   .required();
 const options = [
   {
     name: 'Travel',
@@ -66,15 +66,13 @@ stories.addDecorator(withKnobs);
 
 stories.add('Basic form', () => (
   <>
-    <BaseStyles />
-
     <Row>
       <Col md={6} mdOffset={4}>
         <Card padding="lg">
           <Form
             submitLabel="Register"
             initialValues={initialValues}
-            validationSchema={validationSchema}
+            // validationSchema={validationSchema}
             onSubmit={submit}
             cancel={
               <Button block colour="danger" size="lg">

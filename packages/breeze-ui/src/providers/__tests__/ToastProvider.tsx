@@ -1,12 +1,12 @@
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { FC } from 'react';
-import { AlertTheme } from '../../Alert/Alert';
+import TTheme from '../../utils/theme';
 import ToastProvider, { useToast } from '../ToastProvider';
 
 const onDismiss = jest.fn();
 const TestComponent: FC = () => {
   const { add } = useToast();
-  const addAlert = (colour: AlertTheme, dismiss = false) => {
+  const addAlert = (colour: TTheme, dismiss = false) => {
     add({
       colour,
       message: colour,

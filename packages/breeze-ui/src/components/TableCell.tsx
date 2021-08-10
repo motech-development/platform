@@ -1,48 +1,15 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import { FC, TdHTMLAttributes } from 'react';
-import styled from 'styled-components';
+import { FC, HTMLProps } from 'react';
 
-const baseStyles = (noWrap: boolean, align = 'inherit') => `
-  padding: 10px;
-  text-align: ${align};
-  vertical-align: middle;
-  ${noWrap ? 'white-space: nowrap;' : ''}
-`;
-
-interface ITableCell {
-  $noWrap: boolean;
-}
-
-const TableDataCell = styled.td<ITableCell>`
-  ${({ align, $noWrap }) => `
-    ${baseStyles($noWrap, align)}
-    font-weight: 300;
-  `}
-`;
-
-const TableHeadCell = styled.th<ITableCell>`
-  ${({ align, $noWrap }) => `
-    ${baseStyles($noWrap, align)}
-    font-family: 'Cabin', sans-serif;
-    font-weight: 600;
-  `}
-`;
-
-export interface ITableCellProps
-  extends TdHTMLAttributes<HTMLTableDataCellElement> {
+export interface ITableCellProps extends HTMLProps<HTMLTableDataCellElement> {
   as?: 'td' | 'th';
   noWrap?: boolean;
 }
 
-const TableCell: FC<ITableCellProps> = ({
-  as = 'td',
-  noWrap = true,
-  ...rest
-}) =>
-  as === 'td' ? (
-    <TableDataCell $noWrap={noWrap} {...rest} />
-  ) : (
-    <TableHeadCell $noWrap={noWrap} {...rest} />
-  );
+// {
+//   as = 'td',
+//   noWrap = true,
+//   ...rest
+// }
+const TableCell: FC<ITableCellProps> = () => <div />;
 
 export default TableCell;

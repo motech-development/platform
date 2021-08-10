@@ -1,9 +1,8 @@
 import { number, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import Card from '../Card/Card';
-import Typography from '../Typography/Typography';
-import Masonry from './Masonry';
+import Card from '../components/Card';
+import Typography from '../components/Typography';
+import Masonry from '../components/Masonry';
 
 const stories = storiesOf('Masonry', module);
 
@@ -11,8 +10,6 @@ stories.addDecorator(withKnobs);
 
 stories.add('Basic masonry', () => (
   <>
-    <BaseStyles />
-
     <Masonry
       xs={number('Columns in extra small viewport', 1)}
       sm={number('Columns in small viewport', 2)}

@@ -1,8 +1,7 @@
 import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import Card from '../Card/Card';
-import Typography from './Typography';
+import Card from '../components/Card';
+import Typography from '../components/Typography';
 
 type Components = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
 
@@ -37,8 +36,6 @@ stories.addDecorator(withKnobs);
 
 stories.add('Basic typography', () => (
   <>
-    <BaseStyles />
-
     <Card>
       <Typography
         align={

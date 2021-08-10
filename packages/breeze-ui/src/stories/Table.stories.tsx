@@ -1,9 +1,8 @@
 import { storiesOf } from '@storybook/react';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import TableBody from '../TableBody/TableBody';
-import TableCell from '../TableCell/TableCell';
-import TableRow from '../TableRow/TableRow';
-import Table from './Table';
+import TableBody from '../components/TableBody';
+import TableCell from '../components/TableCell';
+import TableRow from '../components/TableRow';
+import Table from '../components/Table';
 
 const data = [
   {
@@ -48,8 +47,6 @@ const stories = storiesOf('Table', module);
 
 stories.add('Basic table', () => (
   <>
-    <BaseStyles />
-
     <Table>
       {data.map((item) => (
         <TableBody key={item.date}>
@@ -76,8 +73,6 @@ stories.add('Basic table', () => (
           ))}
         </TableBody>
       ))}
-
-      <TableBody />
     </Table>
   </>
 ));

@@ -12,6 +12,7 @@
     "package": "yarn build",
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
+    "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --write 'src/**/*'",
     "start": "start-storybook",
     "test": "jest --watch",

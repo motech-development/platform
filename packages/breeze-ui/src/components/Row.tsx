@@ -1,18 +1,4 @@
 import { FC, ReactNode } from 'react';
-import styled from 'styled-components';
-
-interface IRowContainer {
-  $columns: number;
-  $gutter: string;
-}
-
-const RowContainer = styled.div<IRowContainer>`
-  ${({ $columns, $gutter }) => `
-    display: grid;
-    gap: ${$gutter};
-    grid-template-columns: repeat(${$columns},1fr);
-  `}
-`;
 
 export interface IRowProps {
   children: ReactNode;
@@ -20,10 +6,7 @@ export interface IRowProps {
   gutter?: string;
 }
 
-const Row: FC<IRowProps> = ({ children, columns = 12, gutter = '1rem' }) => (
-  <RowContainer $columns={columns} $gutter={gutter}>
-    {children}
-  </RowContainer>
-);
+// { children, columns = 12, gutter = '1rem' }
+const Row: FC<IRowProps> = () => <div />;
 
 export default Row;

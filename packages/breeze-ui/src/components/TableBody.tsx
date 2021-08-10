@@ -1,8 +1,11 @@
-import styled from 'styled-components';
+import { FC, ReactNode } from 'react';
 
-const TableBody = styled.tbody`
-  background-color: #fff;
-  color: #000;
-`;
+export interface ITableBodyProps {
+  children: ReactNode;
+}
+
+const TableBody: FC<ITableBodyProps> = ({ children }) => (
+  <tbody>{children}</tbody>
+);
 
 export default TableBody;

@@ -1,9 +1,8 @@
 import { boolean, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import Button from '../Button/Button';
-import Typography from '../Typography/Typography';
-import Modal from './Modal';
+import Button from '../components/Button';
+import Typography from '../components/Typography';
+import Modal from '../components/Modal';
 
 const stories = storiesOf('Modal', module);
 const onDismiss = () => {};
@@ -12,8 +11,6 @@ stories.addDecorator(withKnobs);
 
 stories.add('Basic modal', () => (
   <>
-    <BaseStyles />
-
     <Modal
       isOpen={boolean('Show', true)}
       title="My modal"

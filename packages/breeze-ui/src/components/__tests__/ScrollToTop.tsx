@@ -1,6 +1,5 @@
 import { fireEvent, render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import Link from '../../Link/Link';
+import Link from '../Link';
 import ScrollToTop from '../ScrollToTop';
 
 describe('ScrollToTop', () => {
@@ -10,13 +9,14 @@ describe('ScrollToTop', () => {
 
   it('should scroll to the top of page when navigating', async () => {
     const { findByRole } = render(
-      <MemoryRouter>
+      <>
         <ScrollToTop />
 
         <Link to="/test-page">Click me</Link>
-      </MemoryRouter>,
+      </>,
     );
-    const link = await findByRole('link');
+    // TODO: Revert to link
+    const link = await findByRole('button');
 
     fireEvent.click(link);
 

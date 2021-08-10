@@ -1,7 +1,6 @@
 import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import Button from './Button';
+import Button from '../components/Button';
 
 const stories = storiesOf('Button', module);
 const colour = {
@@ -20,7 +19,6 @@ stories.addDecorator(withKnobs);
 
 stories.add('Basic button', () => (
   <>
-    <BaseStyles />
     <Button
       block={boolean('Block display', false)}
       colour={

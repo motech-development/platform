@@ -1,15 +1,12 @@
 import { storiesOf } from '@storybook/react';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import Button from '../Button/Button';
-import Card from '../Card/Card';
-import Stepper from './Stepper';
+import Button from '../components/Button';
+import Card from '../components/Card';
+import Stepper from '../components/Stepper';
 
 const stories = storiesOf('Stepper', module);
 
 stories.add('Basic stepper', () => (
   <>
-    <BaseStyles />
-
     <Stepper
       previousLabel="Go back"
       nextLabel="Next"

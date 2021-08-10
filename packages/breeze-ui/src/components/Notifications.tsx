@@ -21,7 +21,7 @@ export interface INotificationsProps<T> {
 //   placement = 'bottom',
 //   row,
 // }
-function Notifications() {
+function Notifications<T>(_props: INotificationsProps<T>) {
   return <div />;
 }
 

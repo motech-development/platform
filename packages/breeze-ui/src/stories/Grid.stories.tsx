@@ -1,9 +1,8 @@
 import { number, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import Card from '../Card/Card';
-import Col from '../Col/Col';
-import Row from '../Row/Row';
+import Card from '../components/Card';
+import Col from '../components/Col';
+import Row from '../components/Row';
 
 const stories = storiesOf('Grid', module);
 
@@ -11,8 +10,6 @@ stories.addDecorator(withKnobs);
 
 stories.add('Basic grid', () => (
   <>
-    <BaseStyles />
-
     {[...Array(number('Rows', 1))].map((_, i) => (
       // eslint-disable-next-line react/no-array-index-key
       <Row gutter={text('Gutter', '1rem')} key={i}>

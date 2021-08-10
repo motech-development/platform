@@ -1,7 +1,7 @@
 import { select, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import Loader from './Loader';
+import Loader from '../components/Loader';
+import TTheme from '../utils/theme';
 
 const stories = storiesOf('Loader', module);
 const colour = {
@@ -13,10 +13,6 @@ stories.addDecorator(withKnobs);
 
 stories.add('Basic loader', () => (
   <>
-    <BaseStyles />
-
-    <Loader
-      colour={select('Colour', colour, 'default') as 'default' | 'secondary'}
-    />
+    <Loader colour={select('Colour', colour, 'default') as TTheme} />
   </>
 ));

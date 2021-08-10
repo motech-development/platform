@@ -1,17 +1,10 @@
 import { boolean, select, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import styled from 'styled-components';
-import BaseStyles from '../BaseStyles/BaseStyles';
-import Notifications from '../Notifications/Notifications';
-import TableCell from '../TableCell/TableCell';
-import Typography from '../Typography/Typography';
-import AppBar from './AppBar';
-
-const Title = styled(Typography)`
-  && {
-    margin: 0;
-  }
-`;
+import Notifications from '../components/Notifications';
+import TableCell from '../components/TableCell';
+import Typography from '../components/Typography';
+import AppBar from '../components/AppBar';
+import TTheme from '../utils/theme';
 
 const stories = storiesOf('AppBar', module);
 const elements = {
@@ -28,31 +21,27 @@ stories.addDecorator(withKnobs);
 stories
   .add('Basic app bar', () => (
     <>
-      <BaseStyles />
-
       <AppBar
-        colour={select('Colour', colours, 'primary')}
+        colour={select('Colour', colours, 'primary') as TTheme}
         element={select('Element', elements, 'header') as 'header' | 'div'}
         fixed={boolean('Fixed', false)}
       >
-        <Title component="h1" variant="h5">
+        <Typography component="h1" variant="h5" margin="none">
           Motech Development
-        </Title>
+        </Typography>
       </AppBar>
     </>
   ))
   .add('App bar with notifications', () => (
     <>
-      <BaseStyles />
-
       <AppBar
-        colour={select('Colour', colours, 'primary')}
+        colour={select('Colour', colours, 'primary') as TTheme}
         element={select('Element', elements, 'header') as 'header' | 'div'}
         fixed={boolean('Fixed', false)}
       >
-        <Title component="h1" variant="h5">
+        <Typography component="h1" variant="h5">
           Motech Development
-        </Title>
+        </Typography>
 
         <Notifications
           alert
