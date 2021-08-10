@@ -1,10 +1,4 @@
 import {
-  faExclamationCircle,
-  faExclamationTriangle,
-  faCheckCircle,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
   createContext,
   FC,
   ReactNode,
@@ -13,19 +7,11 @@ import {
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
-import styled from 'styled-components';
-import Alert, { AlertTheme } from '../Alert/Alert';
-
-const ToastContainer = styled.div`
-  bottom: 0;
-  left: 1rem;
-  position: fixed;
-  right: 1rem;
-  z-index: 1800;
-`;
+import Alert from '../components/Alert';
+import TTheme from '../utils/theme';
 
 interface IAddToast {
-  colour: AlertTheme;
+  colour: TTheme;
   message: string;
   onDismiss?(): void;
 }
@@ -53,18 +39,18 @@ const generateId = () => {
   );
 };
 
-const selectIcon = (alertType: AlertTheme) => {
-  switch (alertType) {
-    case 'danger':
-      return faExclamationTriangle;
-    case 'success':
-      return faCheckCircle;
-    case 'primary':
-    case 'secondary':
-    default:
-      return faExclamationCircle;
-  }
-};
+// const selectIcon = (alertType: AlertTheme) => {
+//   switch (alertType) {
+//     case 'danger':
+//       return faExclamationTriangle;
+//     case 'success':
+//       return faCheckCircle;
+//     case 'primary':
+//     case 'secondary':
+//     default:
+//       return faExclamationCircle;
+//   }
+// };
 
 export interface IToastProviderProps {
   children: ReactNode;
@@ -97,19 +83,19 @@ const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
       }),
     );
   const alerts = (
-    <ToastContainer>
+    <>
       {toasts.map(({ colour, id, message }) => (
         <Alert
           spacing="lg"
           key={id}
           dismissable={5000}
-          icon={<FontAwesomeIcon icon={selectIcon(colour)} />}
+          icon={<div />}
           colour={colour}
           message={message}
           onDismiss={() => remove(id)}
         />
       ))}
-    </ToastContainer>
+    </>
   );
 
   useEffect(() => {

@@ -5,7 +5,6 @@
 import '@testing-library/jest-dom';
 import { randomFillSync } from 'crypto';
 import 'jest-date-mock';
-import 'jest-styled-components';
 
 Object.defineProperty(window, 'crypto', {
   value: {

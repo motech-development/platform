@@ -70,7 +70,7 @@ export { default as ProgressBar } from './components/ProgressBar';
 export type { IProgressBarProps } from './components/ProgressBar';
 
 export { default as Radio } from './components/Radio';
-export type { IRadioOption, IRadioProps } from './components/Radio';
+export type { IRadioProps } from './components/Radio';
 
 export { default as Row } from './components/Row';
 export type { IRowProps } from './components/Row';
@@ -78,7 +78,7 @@ export type { IRowProps } from './components/Row';
 export { default as ScrollToTop } from './components/ScrollToTop';
 
 export { default as Select } from './components/Select';
-export type { ISelectOption, ISelectProps } from './components/Select';
+export type { ISelectProps } from './components/Select';
 
 export { default as Stepper } from './components/Stepper';
 export type { IStepperProps } from './components/Stepper';
@@ -102,10 +102,7 @@ export type { ITextBoxProps } from './components/TextBox';
 export { default as Tooltip } from './components/Tooltip';
 
 export { default as Typeahead } from './components/Typeahead';
-export type {
-  ITypeaheadProps,
-  ITypeaheadSuggestion,
-} from './components/Typeahead';
+export type { ITypeaheadProps } from './components/Typeahead';
 
 export { default as Typography } from './components/Typography';
 export type { ITypographyProps } from './components/Typography';
