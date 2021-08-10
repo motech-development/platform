@@ -52,6 +52,9 @@ export type { ILinkButtonProps } from './components/LinkButton';
 export { default as Loader } from './components/Loader';
 export type { ILoaderProps } from './components/Loader';
 
+export { default as Logo } from './components/Logo';
+export type { ILogoProps } from './components/Logo';
+
 export { default as Masonry } from './components/Masonry';
 export type { IMasonryProps } from './components/Masonry';
 
