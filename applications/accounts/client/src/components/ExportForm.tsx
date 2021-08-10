@@ -76,11 +76,15 @@ const ExportForm: FC<IExportFormProps> = ({
       value: current,
     };
   });
-  const fullYearEnd = DateTime.fromObject({
-    day: yearEnd.day,
-    month: yearEnd.month + 1,
-    zone: 'utc',
-  });
+  const fullYearEnd = DateTime.fromObject(
+    {
+      day: yearEnd.day,
+      month: yearEnd.month + 1,
+    },
+    {
+      zone: 'utc',
+    },
+  );
   const year = now
     .minus({
       year: fullYearEnd > now ? 2 : 1,

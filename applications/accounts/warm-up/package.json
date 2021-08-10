@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@motech-development/logger": "^0.0.0",
-    "luxon": "^1.26.0",
+    "luxon": "^2.0.2",
     "uuid": "^8.3.2",
     "yup": "^0.29.1"
   }
