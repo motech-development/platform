@@ -1013,7 +1013,7 @@ jobs:
             ${{ runner.os }}-accounts-client-v2-
 
       - name: Rebuild binary
-        run: npm rebuild --update-binary
+        run: yarn rebuild
 
       - name: Build client
         run: yarn build --scope=@accounts/client
@@ -1023,5 +1023,5 @@ jobs:
         with:
           command: yarn e2e:ci --scope=@accounts/client
           install: false
-          start: npx serve -s ./applications/accounts/client/build --listen 3000
+          start: yarn dlx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000

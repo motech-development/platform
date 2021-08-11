@@ -165,7 +165,7 @@ jobs:
             ${{ runner.os }}-cache-
 
       - name: Rebuild binary
-        run: npm rebuild --update-binary
+        run: yarn rebuild
 
       - name: Smoke tests
         uses: cypress-io/github-action@v2
