@@ -4,17 +4,17 @@
   "description": "Motech Development universal login client",
   "private": true,
   "scripts": {
-    "build": "react-scripts build",
-    "build:icons": "pwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --type png --padding '20%' --maskable false",
-    "deploy": "serverless client deploy --verbose --no-confirm && yarn postdeploy",
-    "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
-    "postdeploy": "react-snap",
-    "precommit": "lint-staged",
-    "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
-    "start": "react-scripts start",
-    "teardown": "serverless client remove --verbose --no-confirm",
-    "test": "react-scripts test",
-    "test:ci": "react-scripts test --coverage --runInBand"
+    "build": "yarn run -T react-scripts build",
+    "build:icons": "yarn run -T pwa-asset-generatorpwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --type png --padding '20%' --maskable false",
+    "deploy": "yarn run -T serverless client deploy --verbose --no-confirm && yarn postdeploy",
+    "lint": "yarn run -T eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
+    "postdeploy": "yarn run -T react-snap",
+    "precommit": "yarn run -T lint-staged",
+    "prettier": "yarn run -T prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
+    "start": "yarn run -T react-scripts start",
+    "teardown": "yarn run -T serverless client remove --verbose --no-confirm",
+    "test": "yarn run -T react-scripts test",
+    "test:ci": "yarn run -T react-scripts test --coverage --runInBand"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",

@@ -8,15 +8,15 @@
   "scripts": {
     "build": "yarn prebuild && NODE_ENV=production rollup -c && yarn postbuild",
     "deploy": "storybook-to-ghpages --ci --host-token-env-variable=GITHUB_TOKEN",
-    "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
+    "lint": "yarn run -T eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "package": "yarn build",
-    "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
-    "prebuild": "rimraf ./lib",
-    "precommit": "lint-staged",
-    "prettier": "prettier --config ../../.prettierrc.yml --write 'src/**/*'",
+    "postbuild": "yarn run -T tsc --project tsconfig.build.json --emitDeclarationOnly",
+    "prebuild": "yarn run -T rimraf ./lib",
+    "precommit": "yarn run -T lint-staged",
+    "prettier": "yarn run -T prettier --config ../../.prettierrc.yml --write 'src/**/*'",
     "start": "start-storybook",
-    "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand"
+    "test": "yarn run -T jest --watch",
+    "test:ci": "yarn run -T jest --coverage --runInBand"
   },
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",

@@ -134,19 +134,19 @@ jobs:
             ${{ runner.os }}-id-v2-
 
       - name: Deploy ID infrastructure
-        run: yarn deploy --scope=@id/infrastructure -- --stage $STAGE
+        run: yarn workspace @id/infrastructure deploy --stage $STAGE
 
       - name: Build ID client
-        run: yarn build --scope=@id/client
+        run: yarn workspace @id/client build
 
       - name: Build ID emails
-        run: yarn build --scope=@id/emails
+        run: yarn workspace @id/emails build
 
       - name: Deploy client
-        run: yarn deploy --scope=@id/client -- --stage $STAGE
+        run: yarn workspace @id/client deploy --stage $STAGE
 
       - name: Deploy to Auth0
-        run: yarn deploy --scope=@id/tenant -- -c config.json
+        run: yarn workspace @id/tenant deploy -c config.json
 
   # Open banking
   open-banking:
@@ -206,7 +206,7 @@ jobs:
             ${{ runner.os }}-open-banking-api-v2-
 
       - name: Deploy
-        run: yarn deploy --scope=@open-banking/api -- --stage $STAGE
+        run: yarn workspace @open-banking/api deploy --stage $STAGE
 
   # Anti virus
   anti-virus:
@@ -264,10 +264,10 @@ jobs:
             ${{ runner.os }}-core-anti-virus-v2-
 
       - name: Deploy
-        run: yarn deploy --scope=@core/anti-virus -- --stage $STAGE
+        run: yarn workspace @core/anti-virus deploy --stage $STAGE
 
       - name: Update definitions
-        run: yarn execute update:definitions --scope=@core/anti-virus -- --stage $STAGE
+        run: yarn workspace @core/anti-virus update:definitions --stage $STAGE
 
   # Cypress (storage)
   cypress-storage:
@@ -322,7 +322,7 @@ jobs:
             ${{ runner.os }}-cypress-storage-v2-
 
       - name: Deploy
-        run: yarn deploy --scope=@cypress/storage -- --stage $STAGE
+        run: yarn workspace @cypress/storage deploy --stage $STAGE
 
   # Cypress (API)
   cypress-api:
@@ -384,7 +384,7 @@ jobs:
             ${{ runner.os }}-cypress-api-v2-
 
       - name: Deploy
-        run: yarn deploy --scope=@cypress/api -- --stage $STAGE
+        run: yarn workspace @cypress/api deploy --stage $STAGE
 
   # Accounts (queue)
   accounts-queue:
@@ -445,7 +445,7 @@ jobs:
             ${{ runner.os }}-accounts-queue-v2-
 
       - name: Deploy
-        run: yarn deploy --scope=@accounts/queue -- --stage $STAGE
+        run: yarn workspace @accounts/queue deploy --stage $STAGE
 
   # Accounts (storage)
   accounts-storage:
@@ -505,7 +505,7 @@ jobs:
             ${{ runner.os }}-accounts-storage-v2-
 
       - name: Deploy
-        run: yarn deploy --scope=@accounts/storage -- --stage $STAGE
+        run: yarn workspace @accounts/storage deploy --stage $STAGE
 
   # Accounts (data)
   accounts-data:
@@ -565,7 +565,7 @@ jobs:
             ${{ runner.os }}-accounts-data-v2-
 
       - name: Deploy
-        run: yarn deploy --scope=@accounts/data -- --stage $STAGE
+        run: yarn workspace @accounts/data deploy --stage $STAGE
 
   # Accounts (notifications)
   accounts-notifications:
@@ -625,7 +625,7 @@ jobs:
             ${{ runner.os }}-accounts-notifications-v2-
 
       - name: Deploy
-        run: yarn deploy --scope=@accounts/notifications -- --stage $STAGE
+        run: yarn workspace @accounts/notifications deploy --stage $STAGE
 
   # Accounts (reports)
   accounts-reports:
@@ -687,7 +687,7 @@ jobs:
             ${{ runner.os }}-accounts-reports-v2-
 
       - name: Deploy
-        run: yarn deploy --scope=@accounts/reports -- --stage $STAGE
+        run: yarn workspace @accounts/reports deploy --stage $STAGE
 
   # Accounts (API)
   accounts-api:
@@ -762,4 +762,4 @@ jobs:
             ${{ runner.os }}-accounts-api-v2-
 
       - name: Deploy
-        run: yarn deploy --scope=@accounts/api -- --stage $STAGE
+        run: yarn workspace @accounts/api deploy --stage $STAGE
