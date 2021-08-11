@@ -8,7 +8,7 @@
   "module": "lib/s3-file-operations.esm.js",
   "types": "lib/s3-file-operations.d.ts",
   "scripts": {
-    "build": "yarn prebuild && rollup -c && yarn postbuild",
+    "build": "yarn prebuild && yarn run -T rollup -c && yarn postbuild",
     "lint": "yarn run -T eslint -c .eslintrc.yml './src/**/*.ts'",
     "package": "yarn build",
     "postbuild": "yarn run -T tsc --project tsconfig.build.json --emitDeclarationOnly",

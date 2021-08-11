@@ -6,7 +6,7 @@
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "yarn prebuild && NODE_ENV=production rollup -c && yarn postbuild",
+    "build": "yarn prebuild && NODE_ENV=production yarn run -T rollup -c && yarn postbuild",
     "deploy": "storybook-to-ghpages --ci --host-token-env-variable=GITHUB_TOKEN",
     "lint": "yarn run -T eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "package": "yarn build",
