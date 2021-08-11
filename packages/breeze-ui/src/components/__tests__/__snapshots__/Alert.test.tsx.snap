@@ -1,0 +1,375 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Alert spacing should have no spacing 1`] = `
+<div
+  class="p-4 bg-blue-50 mb-0"
+>
+  <div
+    class="flex"
+  >
+    <div
+      class="flex-shrink-0"
+    >
+      <div
+        class="h-5 w-5 text-blue-400"
+      />
+    </div>
+    <div
+      class="ml-3"
+    >
+      <p
+        class="text-sm font-medium text-blue-800"
+      >
+        Hello world
+      </p>
+    </div>
+    <div
+      class="ml-auto pl-3"
+    >
+      <div
+        class="-mx-1.5 -my-1.5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Alert spacing should have the correct large spacing 1`] = `
+<div
+  class="p-4 bg-blue-50 mb-6"
+>
+  <div
+    class="flex"
+  >
+    <div
+      class="flex-shrink-0"
+    >
+      <div
+        class="h-5 w-5 text-blue-400"
+      />
+    </div>
+    <div
+      class="ml-3"
+    >
+      <p
+        class="text-sm font-medium text-blue-800"
+      >
+        Hello world
+      </p>
+    </div>
+    <div
+      class="ml-auto pl-3"
+    >
+      <div
+        class="-mx-1.5 -my-1.5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Alert spacing should have the correct medium spacing 1`] = `
+<div
+  class="p-4 bg-blue-50 mb-4"
+>
+  <div
+    class="flex"
+  >
+    <div
+      class="flex-shrink-0"
+    >
+      <div
+        class="h-5 w-5 text-blue-400"
+      />
+    </div>
+    <div
+      class="ml-3"
+    >
+      <p
+        class="text-sm font-medium text-blue-800"
+      >
+        Hello world
+      </p>
+    </div>
+    <div
+      class="ml-auto pl-3"
+    >
+      <div
+        class="-mx-1.5 -my-1.5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Alert spacing should have the correct small spacing 1`] = `
+<div
+  class="p-4 bg-blue-50 mb-2"
+>
+  <div
+    class="flex"
+  >
+    <div
+      class="flex-shrink-0"
+    >
+      <div
+        class="h-5 w-5 text-blue-400"
+      />
+    </div>
+    <div
+      class="ml-3"
+    >
+      <p
+        class="text-sm font-medium text-blue-800"
+      >
+        Hello world
+      </p>
+    </div>
+    <div
+      class="ml-auto pl-3"
+    >
+      <div
+        class="-mx-1.5 -my-1.5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Alert spacing should have the correct spacing by default 1`] = `
+<div
+  class="p-4 bg-blue-50 mb-4 transition ease-in duration-100 opacity-0"
+>
+  <div
+    class="flex"
+  >
+    <div
+      class="flex-shrink-0"
+    >
+      <div
+        class="h-5 w-5 text-blue-400"
+      />
+    </div>
+    <div
+      class="ml-3"
+    >
+      <p
+        class="text-sm font-medium text-blue-800"
+      >
+        Hello world
+      </p>
+    </div>
+    <div
+      class="ml-auto pl-3"
+    >
+      <div
+        class="-mx-1.5 -my-1.5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Alert theming should have the correct colours by default 1`] = `
+<div
+  class="p-4 bg-blue-50 mb-4"
+>
+  <div
+    class="flex"
+  >
+    <div
+      class="flex-shrink-0"
+    >
+      <div
+        class="h-5 w-5 text-blue-400"
+      />
+    </div>
+    <div
+      class="ml-3"
+    >
+      <p
+        class="text-sm font-medium text-blue-800"
+      >
+        Hello world
+      </p>
+    </div>
+    <div
+      class="ml-auto pl-3"
+    >
+      <div
+        class="-mx-1.5 -my-1.5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Alert theming should have the correct colours by for danger 1`] = `
+<div
+  class="p-4 bg-red-50 mb-4"
+>
+  <div
+    class="flex"
+  >
+    <div
+      class="flex-shrink-0"
+    >
+      <div
+        class="h-5 w-5 text-red-400"
+      />
+    </div>
+    <div
+      class="ml-3"
+    >
+      <p
+        class="text-sm font-medium text-red-800"
+      >
+        Hello world
+      </p>
+    </div>
+    <div
+      class="ml-auto pl-3"
+    >
+      <div
+        class="-mx-1.5 -my-1.5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Alert theming should have the correct colours by for primary 1`] = `
+<div
+  class="p-4 bg-blue-50 mb-4"
+>
+  <div
+    class="flex"
+  >
+    <div
+      class="flex-shrink-0"
+    >
+      <div
+        class="h-5 w-5 text-blue-400"
+      />
+    </div>
+    <div
+      class="ml-3"
+    >
+      <p
+        class="text-sm font-medium text-blue-800"
+      >
+        Hello world
+      </p>
+    </div>
+    <div
+      class="ml-auto pl-3"
+    >
+      <div
+        class="-mx-1.5 -my-1.5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Alert theming should have the correct colours by for secondary 1`] = `
+<div
+  class="p-4 bg-gray-50 mb-4"
+>
+  <div
+    class="flex"
+  >
+    <div
+      class="flex-shrink-0"
+    >
+      <div
+        class="h-5 w-5 text-gray-400"
+      />
+    </div>
+    <div
+      class="ml-3"
+    >
+      <p
+        class="text-sm font-medium text-gray-800"
+      >
+        Hello world
+      </p>
+    </div>
+    <div
+      class="ml-auto pl-3"
+    >
+      <div
+        class="-mx-1.5 -my-1.5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Alert theming should have the correct colours by for success 1`] = `
+<div
+  class="p-4 bg-green-50 mb-4"
+>
+  <div
+    class="flex"
+  >
+    <div
+      class="flex-shrink-0"
+    >
+      <div
+        class="h-5 w-5 text-green-400"
+      />
+    </div>
+    <div
+      class="ml-3"
+    >
+      <p
+        class="text-sm font-medium text-green-800"
+      >
+        Hello world
+      </p>
+    </div>
+    <div
+      class="ml-auto pl-3"
+    >
+      <div
+        class="-mx-1.5 -my-1.5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Alert theming should have the correct colours by for warning 1`] = `
+<div
+  class="p-4 bg-yellow-50 mb-4"
+>
+  <div
+    class="flex"
+  >
+    <div
+      class="flex-shrink-0"
+    >
+      <div
+        class="h-5 w-5 text-yellow-400"
+      />
+    </div>
+    <div
+      class="ml-3"
+    >
+      <p
+        class="text-sm font-medium text-yellow-800"
+      >
+        Hello world
+      </p>
+    </div>
+    <div
+      class="ml-auto pl-3"
+    >
+      <div
+        class="-mx-1.5 -my-1.5"
+      />
+    </div>
+  </div>
+</div>
+`;

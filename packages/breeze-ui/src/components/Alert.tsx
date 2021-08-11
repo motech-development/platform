@@ -1,6 +1,13 @@
 import { Transition } from '@headlessui/react';
 import { XIcon } from '@heroicons/react/solid';
-import { FC, Fragment, ReactNode, useEffect, useState } from 'react';
+import {
+  FC,
+  Fragment,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { className, themeClass, spacingClass } from '../utils/className';
 import TSpacing from '../utils/spacing';
 import TTheme from '../utils/theme';
@@ -25,35 +32,32 @@ const Alert: FC<IAlertProps> = ({
   onDismiss,
 }) => {
   const [visible, setVisiblity] = useState(true);
-  const dismiss = () => {
+  const dismiss = useCallback(() => {
     setVisiblity(false);
 
     if (onDismiss) {
       onDismiss();
     }
-  };
-
-  useEffect(
-    () => () => {
-      setVisiblity(false);
-    },
-    [],
-  );
-
-  useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
+  }, [onDismiss]);
+  const timeoutCallback = useCallback(() => {
+    let timeout: ReturnType<typeof setTimeout> | null = null;
 
     if (typeof dismissable === 'number') {
       timeout = setTimeout(dismiss, dismissable);
     }
+
+    return timeout;
+  }, [dismiss, dismissable]);
+
+  useEffect(() => {
+    const timeout = timeoutCallback();
 
     return () => {
       if (timeout) {
         clearTimeout(timeout);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [timeoutCallback]);
 
   return (
     <Transition
@@ -118,7 +122,9 @@ const Alert: FC<IAlertProps> = ({
                   type="button"
                   onClick={dismiss}
                 >
-                  <span className="sr-only">{dismissText}</span>
+                  <span className="sr-only" data-testid="alert-dismiss-text">
+                    {dismissText}
+                  </span>
 
                   <XIcon className="h-5 w-5" aria-hidden="true" />
                 </button>
