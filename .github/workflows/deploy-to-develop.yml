@@ -267,7 +267,7 @@ jobs:
         run: yarn workspace @core/anti-virus deploy --stage $STAGE
 
       - name: Update definitions
-        run: yarn workspace @core/anti-virus update:definitions --stage $STAGE
+        run: yarn workspace @core/anti-virus update-definitions --stage $STAGE
 
   # Cypress (storage)
   cypress-storage:

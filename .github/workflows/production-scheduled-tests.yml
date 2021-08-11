@@ -170,5 +170,5 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: yarn workspace @accounts/client e2e:ci
+          command: yarn workspace @accounts/client e2e-ci
           install: false

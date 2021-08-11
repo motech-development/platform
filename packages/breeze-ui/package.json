@@ -16,7 +16,7 @@
     "prettier": "yarn run -T prettier --config ../../.prettierrc.yml --write 'src/**/*'",
     "start": "start-storybook",
     "test": "yarn run -T jest --watch",
-    "test:ci": "yarn run -T jest --coverage --runInBand"
+    "test-ci": "yarn run -T jest --coverage --runInBand"
   },
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",

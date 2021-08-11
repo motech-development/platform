@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "yarn run -T react-scripts build",
-    "build:icons": "yarn run -T pwa-asset-generatorpwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --type png --padding '20%' --maskable false",
+    "build-icons": "yarn run -T pwa-asset-generatorpwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --type png --padding '20%' --maskable false",
     "deploy": "yarn run -T serverless client deploy --verbose --no-confirm && yarn postdeploy",
     "lint": "yarn run -T eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "postdeploy": "yarn run -T react-snap",
@@ -14,7 +14,7 @@
     "start": "yarn run -T react-scripts start",
     "teardown": "yarn run -T serverless client remove --verbose --no-confirm",
     "test": "yarn run -T react-scripts test",
-    "test:ci": "yarn run -T react-scripts test --coverage --runInBand"
+    "test-ci": "yarn run -T react-scripts test --coverage --runInBand"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",

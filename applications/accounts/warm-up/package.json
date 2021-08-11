@@ -11,7 +11,7 @@
     "start": "yarn run -T serverless invoke stepf --name warmUp",
     "teardown": "yarn run -T serverless remove --verbose",
     "test": "yarn run -T jest --watch",
-    "test:ci": "yarn run -T jest --coverage --runInBand"
+    "test-ci": "yarn run -T jest --coverage --runInBand"
   },
   "jest": {
     "collectCoverageFrom": [

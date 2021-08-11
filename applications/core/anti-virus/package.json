@@ -11,8 +11,8 @@
     "prettier": "yarn run -T prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "teardown": "yarn run -T serverless remove --verbose",
     "test": "yarn run -T jest --watch",
-    "test:ci": "yarn run -T jest --coverage --runInBand",
-    "update:definitions": "yarn run -T serverless invoke -f UpdateDefinitions"
+    "test-ci": "yarn run -T jest --coverage --runInBand",
+    "update-definitions": "yarn run -T serverless invoke -f UpdateDefinitions"
   },
   "jest": {
     "collectCoverageFrom": [

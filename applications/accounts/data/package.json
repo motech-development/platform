@@ -10,7 +10,7 @@
     "prettier": "yarn run -T prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "teardown": "yarn run -T serverless remove --verbose",
     "test": "yarn run -T jest --watch",
-    "test:ci": "yarn run -T jest --coverage --runInBand"
+    "test-ci": "yarn run -T jest --coverage --runInBand"
   },
   "jest": {
     "collectCoverageFrom": [

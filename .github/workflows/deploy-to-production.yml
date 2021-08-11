@@ -94,7 +94,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Unit test
-        run: yarn test:ci
+        run: yarn test-ci
 
       - name: Fix paths for SonarCloud Scan
         run: ./scripts/sonar-scanner-path-fix.sh

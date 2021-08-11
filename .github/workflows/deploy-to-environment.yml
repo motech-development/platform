@@ -121,7 +121,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Unit test
-        run: yarn test:ci
+        run: yarn test-ci
 
       - name: Fix paths for SonarCloud Scan
         run: ./scripts/sonar-scanner-path-fix.sh
@@ -332,7 +332,7 @@ jobs:
         run: yarn workspace @core/anti-virus deploy --stage $STAGE
 
       - name: Update definitions
-        run: yarn workspace @core/anti-virus update:definitions --stage $STAGE
+        run: yarn workspace @core/anti-virus update-definitions --stage $STAGE
 
   # Cypress (storage)
   cypress-storage:
@@ -1021,7 +1021,7 @@ jobs:
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: yarn workspace @accounts/client e2e:ci
+          command: yarn workspace @accounts/client e2e-ci
           install: false
           start: yarn dlx serve -s ./applications/accounts/client/build --listen 3000
           wait-on: http://localhost:3000

@@ -8,12 +8,12 @@
     "packages/*"
   ],
   "scripts": {
-    "clean:git": "git branch --merged | egrep -v \"(^\\*|master|develop)\" | xargs git branch -d",
-    "lint": "yarn workspaces foreach -v -p -t run lint",
-    "package": "yarn workspaces foreach -v -p -t run package",
+    "clean-git": "git branch --merged | egrep -v \"(^\\*|master|develop)\" | xargs git branch -d",
+    "lint": "yarn workspaces foreach -p run lint",
+    "package": "yarn workspaces foreach -p -t run package",
     "prepare": "husky install",
-    "prettier": "yarn workspaces foreach -v -p -t run prettier",
-    "test:ci": "yarn workspaces foreach -v -t run test:ci"
+    "prettier": "yarn workspaces foreach -p run prettier",
+    "test-ci": "yarn workspaces foreach run test-ci"
   },
   "repository": {
     "type": "git",
