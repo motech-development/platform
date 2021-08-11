@@ -162,6 +162,15 @@ awsmobilejs/.awsmobile/backend-build
 awsmobilejs/\#current-backend-info
 ~awsmobilejs-*/
 
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
 # Project files
 build
 lib
