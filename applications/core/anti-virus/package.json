@@ -4,7 +4,7 @@
   "description": "Motech Development anit-virus service",
   "private": true,
   "scripts": {
-    "deploy": "serverless deploy --verbose",
+    "deploy": "yarn predeploy && serverless deploy --verbose",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
     "precommit": "lint-staged",
     "predeploy": "./scripts/build.sh",

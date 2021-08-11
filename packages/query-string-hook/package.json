@@ -6,7 +6,7 @@
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "NODE_ENV=production rollup -c",
+    "build": "yarn prebuild && NODE_ENV=production rollup -c && yarn postbuild",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "package": "yarn build",
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",

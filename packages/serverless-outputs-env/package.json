@@ -8,7 +8,7 @@
   "module": "lib/outputs-env-plugin.esm.js",
   "types": "lib/outputs-env-plugin.d.ts",
   "scripts": {
-    "build": "rollup -c",
+    "build": "yarn prebuild && rollup -c && yarn postbuild",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
     "package": "yarn build",
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",

@@ -8,7 +8,7 @@
   "module": "lib/index.esm.js",
   "types": "lib/logger.d.ts",
   "scripts": {
-    "build": "rollup -c",
+    "build": "yarn prebuild && rollup -c && yarn postbuild",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
     "package": "yarn build",
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
