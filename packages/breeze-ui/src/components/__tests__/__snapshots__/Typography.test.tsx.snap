@@ -1,0 +1,380 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Typography alignment should align to the centre 1`] = `
+<div>
+  <h1
+    class="mb-4 text-center font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography alignment should align to the left 1`] = `
+<div>
+  <h1
+    class="mb-4 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography alignment should align to the left by default 1`] = `
+<div>
+  <h1
+    class="mb-4 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography alignment should align to the right 1`] = `
+<div>
+  <h1
+    class="mb-4 text-right font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography break word should set the additional word break styles 1`] = `
+<div>
+  <h1
+    class="break-words mb-4 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography component should render an h1 element 1`] = `
+<div>
+  <h1
+    class="mb-4 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography component should render an h2 element 1`] = `
+<div>
+  <h2
+    class="mb-4 text-left font-display text-4xl font-semibold"
+  >
+    Hello world
+  </h2>
+</div>
+`;
+
+exports[`Typography component should render an h3 element 1`] = `
+<div>
+  <h3
+    class="mb-4 text-left font-display text-3xl font-semibold"
+  >
+    Hello world
+  </h3>
+</div>
+`;
+
+exports[`Typography component should render an h4 element 1`] = `
+<div>
+  <h4
+    class="mb-4 text-left font-display text-2xl font-semibold"
+  >
+    Hello world
+  </h4>
+</div>
+`;
+
+exports[`Typography component should render an h5 element 1`] = `
+<div>
+  <h5
+    class="mb-4 text-left font-display text-xl font-semibold"
+  >
+    Hello world
+  </h5>
+</div>
+`;
+
+exports[`Typography component should render an h6 element 1`] = `
+<div>
+  <h6
+    class="mb-4 text-left font-display text-lg font-semibold"
+  >
+    Hello world
+  </h6>
+</div>
+`;
+
+exports[`Typography component should render an p element 1`] = `
+<div>
+  <p
+    class="mb-4 text-left font-sans"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Typography id should have an id if set 1`] = `
+<div>
+  <h1
+    class="mb-6 text-left font-display text-5xl font-semibold"
+    id="test"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography id should not have an id by default 1`] = `
+<div>
+  <h1
+    class="mb-6 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography margin should have the correct margin by default 1`] = `
+<div>
+  <h1
+    class="mb-4 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography margin should have the correct margin when set to lg 1`] = `
+<div>
+  <h1
+    class="mb-6 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography margin should have the correct margin when set to md 1`] = `
+<div>
+  <h1
+    class="mb-4 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography margin should have the correct margin when set to none 1`] = `
+<div>
+  <h1
+    class="mb-0 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography margin should have the correct margin when set to sm 1`] = `
+<div>
+  <h1
+    class="mb-2 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography rule should display a horizontal rule 1`] = `
+<div>
+  <h1
+    class="mb-2.5 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+  <hr
+    class="w-12 border-t-4 border-red-600 shadow-md mr-auto mb-2.5"
+  />
+</div>
+`;
+
+exports[`Typography rule should have the correct margin by default 1`] = `
+<div>
+  <h1
+    class="mb-1.5 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+  <hr
+    class="w-12 border-t-4 border-red-600 shadow-md mr-auto mb-1.5"
+  />
+</div>
+`;
+
+exports[`Typography rule should have the correct margin when set to lg 1`] = `
+<div>
+  <h1
+    class="mb-2.5 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+  <hr
+    class="w-12 border-t-4 border-red-600 shadow-md mr-auto mb-2.5"
+  />
+</div>
+`;
+
+exports[`Typography rule should have the correct margin when set to md 1`] = `
+<div>
+  <h1
+    class="mb-1.5 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+  <hr
+    class="w-12 border-t-4 border-red-600 shadow-md mr-auto mb-1.5"
+  />
+</div>
+`;
+
+exports[`Typography rule should have the correct margin when set to none 1`] = `
+<div>
+  <h1
+    class="text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+  <hr
+    class="w-12 border-t-4 border-red-600 shadow-md mr-auto"
+  />
+</div>
+`;
+
+exports[`Typography rule should have the correct margin when set to sm 1`] = `
+<div>
+  <h1
+    class="mb-0.5 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+  <hr
+    class="w-12 border-t-4 border-red-600 shadow-md mr-auto mb-0.5"
+  />
+</div>
+`;
+
+exports[`Typography rule should not display a horizontal rule 1`] = `
+<div>
+  <h1
+    class="mb-6 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography rule should not display a horizontal rule by default 1`] = `
+<div>
+  <h1
+    class="mb-6 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography truncate should set the additional truncate styles 1`] = `
+<div>
+  <h1
+    class="truncate mb-4 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography variant should have the correct h1 styles 1`] = `
+<div>
+  <h1
+    class="mb-4 text-left font-display text-5xl font-semibold"
+  >
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Typography variant should have the correct h2 styles 1`] = `
+<div>
+  <h2
+    class="mb-4 text-left font-display text-4xl font-semibold"
+  >
+    Hello world
+  </h2>
+</div>
+`;
+
+exports[`Typography variant should have the correct h3 styles 1`] = `
+<div>
+  <h3
+    class="mb-4 text-left font-display text-3xl font-semibold"
+  >
+    Hello world
+  </h3>
+</div>
+`;
+
+exports[`Typography variant should have the correct h4 styles 1`] = `
+<div>
+  <h4
+    class="mb-4 text-left font-display text-2xl font-semibold"
+  >
+    Hello world
+  </h4>
+</div>
+`;
+
+exports[`Typography variant should have the correct h5 styles 1`] = `
+<div>
+  <h5
+    class="mb-4 text-left font-display text-xl font-semibold"
+  >
+    Hello world
+  </h5>
+</div>
+`;
+
+exports[`Typography variant should have the correct h6 styles 1`] = `
+<div>
+  <h6
+    class="mb-4 text-left font-display text-lg font-semibold"
+  >
+    Hello world
+  </h6>
+</div>
+`;
+
+exports[`Typography variant should have the correct lead styles 1`] = `
+<div>
+  <p
+    class="mb-4 text-left font-light text-xl"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Typography variant should have the correct p styles 1`] = `
+<div>
+  <p
+    class="mb-4 text-left font-sans"
+  >
+    Hello world
+  </p>
+</div>
+`;

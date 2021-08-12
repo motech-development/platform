@@ -1,7 +1,8 @@
+import TAlignment from './alignment';
 import TSpacing from './spacing';
 import TTheme from './theme';
 
-export const className = (...name: string[]) => name.filter(Boolean).join(' ');
+export const classNames = (...name: string[]) => name.filter(Boolean).join(' ');
 
 export const themeClass = (theme: TTheme, name: string) => {
   let mapping: string;
@@ -23,25 +24,36 @@ export const themeClass = (theme: TTheme, name: string) => {
       mapping = 'blue';
   }
 
-  return name.replace('{theme}', mapping);
+  return name.replace(/{theme}/, mapping);
 };
 
-export const spacingClass = (spacing: TSpacing, name: string) => {
+export const spacingClass = (spacing: TSpacing, name: string, offset = 0) => {
   let mapping: string;
 
   switch (spacing) {
     case 'lg':
-      mapping = '6';
+      mapping = `${6 - offset}`;
       break;
     case 'md':
-      mapping = '4';
+      mapping = `${4 - offset}`;
       break;
     case 'sm':
-      mapping = '2';
+      mapping = `${2 - offset}`;
       break;
     default:
       mapping = '0';
   }
 
-  return name.replace('{spacing}', mapping);
+  return name.replace(/{spacing}/, mapping);
+};
+
+export const textAlignmentClass = (alignment: TAlignment) => {
+  switch (alignment) {
+    case 'center':
+      return 'text-center';
+    case 'right':
+      return 'text-right';
+    default:
+      return 'text-left';
+  }
 };

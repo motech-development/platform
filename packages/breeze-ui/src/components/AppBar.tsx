@@ -1,5 +1,5 @@
 import { FC, ReactNode } from 'react';
-import { className, themeClass } from '../utils/className';
+import { classNames, themeClass } from '../utils/className';
 import TTheme from '../utils/theme';
 import Element from './Element';
 
@@ -23,7 +23,7 @@ const AppBar: FC<IAppBarProps> = ({
   <>
     {/* @tailwind: bg-blue-900 bg-gray-900 bg-green-900 bg-red-900 bg-yellow-900 */}
     <Element
-      className={className(
+      className={classNames(
         fixed ? 'fixed top-0 left-0 w-full' : 'relative',
         themeClass(colour, 'bg-{theme}-900'),
       )}
@@ -32,7 +32,7 @@ const AppBar: FC<IAppBarProps> = ({
       <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none">
         {/* @tailwind: border-blue-800 border-gray-800 border-green-800 border-red-800 border-yellow-800 */}
         <div
-          className={className(
+          className={classNames(
             border ? 'border-b' : '',
             border ? themeClass(colour, 'border-{theme}-800') : '',
           )}

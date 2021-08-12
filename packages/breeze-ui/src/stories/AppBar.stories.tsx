@@ -30,7 +30,7 @@ stories
         element={element()}
         fixed={fixed()}
       >
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 text-gray-100">
           <Typography component="h1" variant="h5" margin="none">
             Motech Development
           </Typography>

@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { className, themeClass, spacingClass } from '../utils/className';
+import { classNames, themeClass, spacingClass } from '../utils/className';
 import TSpacing from '../utils/spacing';
 import TTheme from '../utils/theme';
 
@@ -73,7 +73,7 @@ const Alert: FC<IAlertProps> = ({
       {/* @tailwind: bg-blue-50 bg-gray-50 bg-green-50 bg-red-50 bg-yellow-50 */}
       {/* @tailwind: mb-0 mb-2 mb-4 mb-6 */}
       <div
-        className={className(
+        className={classNames(
           'p-4',
           themeClass(colour, 'bg-{theme}-50'),
           spacingClass(spacing, 'mb-{spacing}'),
@@ -83,7 +83,7 @@ const Alert: FC<IAlertProps> = ({
           <div className="flex-shrink-0">
             {/* @tailwind: text-blue-400 text-gray-400 text-green-400 text-red-400 text-yellow-400 */}
             <div
-              className={className(
+              className={classNames(
                 'h-5 w-5',
                 themeClass(colour, 'text-{theme}-400'),
               )}
@@ -94,7 +94,7 @@ const Alert: FC<IAlertProps> = ({
           <div className="ml-3">
             {/* @tailwind: text-blue-800 text-gray-800 text-green-800 text-red-800 text-yellow-800  */}
             <p
-              className={className(
+              className={classNames(
                 'text-sm font-medium',
                 themeClass(colour, 'text-{theme}-800'),
               )}
@@ -111,7 +111,7 @@ const Alert: FC<IAlertProps> = ({
               {/* @tailwind: bg-yellow-50 text-yellow-500 hover:bg-yellow-100 focus:ring-offset-yellow-50 focus:ring-yellow-600 */}
               {dismissable && (
                 <button
-                  className={className(
+                  className={classNames(
                     'inline-flex p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2',
                     themeClass(colour, 'bg-{theme}-50'),
                     themeClass(colour, 'text-{theme}-500'),
