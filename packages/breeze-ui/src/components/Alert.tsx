@@ -78,6 +78,7 @@ const Alert: FC<IAlertProps> = ({
           themeClass(colour, 'bg-{theme}-50'),
           spacingClass(spacing, 'mb-{spacing}'),
         )}
+        role="alert"
       >
         <div className="flex">
           <div className="flex-shrink-0">
@@ -122,9 +123,7 @@ const Alert: FC<IAlertProps> = ({
                   type="button"
                   onClick={dismiss}
                 >
-                  <span className="sr-only" data-testid="alert-dismiss-text">
-                    {dismissText}
-                  </span>
+                  <span className="sr-only">{dismissText}</span>
 
                   <XIcon className="h-5 w-5" aria-hidden="true" />
                 </button>

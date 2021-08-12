@@ -1,0 +1,145 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Card padding should have the correct padding when set to "lg" 1`] = `
+<div
+  class="border-b-2 shadow-lg p-6 bg-gray-100 border-gray-300 text-gray-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Card padding should have the correct padding when set to "md" 1`] = `
+<div
+  class="border-b-2 shadow-lg p-4 bg-gray-100 border-gray-300 text-gray-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Card padding should have the correct padding when set to "none" 1`] = `
+<div
+  class="border-b-2 shadow-lg p-0 bg-gray-100 border-gray-300 text-gray-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Card padding should have the correct padding when set to "sm" 1`] = `
+<div
+  class="border-b-2 shadow-lg p-2 bg-gray-100 border-gray-300 text-gray-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Card should set correct custom classes 1`] = `
+<div
+  class="border-b-2 shadow-lg my-custom-class p-4 bg-gray-100 border-gray-300 text-gray-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Card should set flexbox classes 1`] = `
+<div
+  class="border-b-2 shadow-lg flex flex-col items-center p-4 bg-gray-100 border-gray-300 text-gray-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Card theme should have the correct theme when set to "danger" 1`] = `
+<div
+  class="border-b-2 shadow-lg p-4 bg-red-100 border-red-300 text-red-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Card theme should have the correct theme when set to "primary" 1`] = `
+<div
+  class="border-b-2 shadow-lg p-4 bg-blue-100 border-blue-300 text-blue-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Card theme should have the correct theme when set to "secondary" 1`] = `
+<div
+  class="border-b-2 shadow-lg p-4 bg-gray-100 border-gray-300 text-gray-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Card theme should have the correct theme when set to "success" 1`] = `
+<div
+  class="border-b-2 shadow-lg p-4 bg-green-100 border-green-300 text-green-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Card theme should have the correct theme when set to "warning" 1`] = `
+<div
+  class="border-b-2 shadow-lg p-4 bg-yellow-100 border-yellow-300 text-yellow-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;
+
+exports[`Card theme should set to "secondary" by default 1`] = `
+<div
+  class="border-b-2 shadow-lg p-4 bg-gray-100 border-gray-300 text-gray-800"
+>
+  <p
+    data-testid="content"
+  >
+    Hello world
+  </p>
+</div>
+`;

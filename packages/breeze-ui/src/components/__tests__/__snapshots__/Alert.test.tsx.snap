@@ -3,6 +3,7 @@
 exports[`Alert spacing should have no spacing 1`] = `
 <div
   class="p-4 bg-blue-50 mb-0"
+  role="alert"
 >
   <div
     class="flex"
@@ -37,6 +38,7 @@ exports[`Alert spacing should have no spacing 1`] = `
 exports[`Alert spacing should have the correct large spacing 1`] = `
 <div
   class="p-4 bg-blue-50 mb-6"
+  role="alert"
 >
   <div
     class="flex"
@@ -71,6 +73,7 @@ exports[`Alert spacing should have the correct large spacing 1`] = `
 exports[`Alert spacing should have the correct medium spacing 1`] = `
 <div
   class="p-4 bg-blue-50 mb-4"
+  role="alert"
 >
   <div
     class="flex"
@@ -105,6 +108,7 @@ exports[`Alert spacing should have the correct medium spacing 1`] = `
 exports[`Alert spacing should have the correct small spacing 1`] = `
 <div
   class="p-4 bg-blue-50 mb-2"
+  role="alert"
 >
   <div
     class="flex"
@@ -139,6 +143,7 @@ exports[`Alert spacing should have the correct small spacing 1`] = `
 exports[`Alert spacing should have the correct spacing by default 1`] = `
 <div
   class="p-4 bg-blue-50 mb-4 transition ease-in duration-100 opacity-0"
+  role="alert"
 >
   <div
     class="flex"
@@ -173,6 +178,7 @@ exports[`Alert spacing should have the correct spacing by default 1`] = `
 exports[`Alert theming should have the correct colours by default 1`] = `
 <div
   class="p-4 bg-blue-50 mb-4"
+  role="alert"
 >
   <div
     class="flex"
@@ -207,6 +213,7 @@ exports[`Alert theming should have the correct colours by default 1`] = `
 exports[`Alert theming should have the correct colours by for danger 1`] = `
 <div
   class="p-4 bg-red-50 mb-4"
+  role="alert"
 >
   <div
     class="flex"
@@ -241,6 +248,7 @@ exports[`Alert theming should have the correct colours by for danger 1`] = `
 exports[`Alert theming should have the correct colours by for primary 1`] = `
 <div
   class="p-4 bg-blue-50 mb-4"
+  role="alert"
 >
   <div
     class="flex"
@@ -275,6 +283,7 @@ exports[`Alert theming should have the correct colours by for primary 1`] = `
 exports[`Alert theming should have the correct colours by for secondary 1`] = `
 <div
   class="p-4 bg-gray-50 mb-4"
+  role="alert"
 >
   <div
     class="flex"
@@ -309,6 +318,7 @@ exports[`Alert theming should have the correct colours by for secondary 1`] = `
 exports[`Alert theming should have the correct colours by for success 1`] = `
 <div
   class="p-4 bg-green-50 mb-4"
+  role="alert"
 >
   <div
     class="flex"
@@ -343,6 +353,7 @@ exports[`Alert theming should have the correct colours by for success 1`] = `
 exports[`Alert theming should have the correct colours by for warning 1`] = `
 <div
   class="p-4 bg-yellow-50 mb-4"
+  role="alert"
 >
   <div
     class="flex"

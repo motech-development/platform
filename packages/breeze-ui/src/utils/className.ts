@@ -24,7 +24,7 @@ export const themeClass = (theme: TTheme, name: string) => {
       mapping = 'blue';
   }
 
-  return name.replace(/{theme}/, mapping);
+  return name.replace(/{theme}/g, mapping);
 };
 
 export const spacingClass = (spacing: TSpacing, name: string, offset = 0) => {
@@ -44,7 +44,7 @@ export const spacingClass = (spacing: TSpacing, name: string, offset = 0) => {
       mapping = '0';
   }
 
-  return name.replace(/{spacing}/, mapping);
+  return name.replace(/{spacing}/g, mapping);
 };
 
 export const textAlignmentClass = (alignment: TAlignment) => {

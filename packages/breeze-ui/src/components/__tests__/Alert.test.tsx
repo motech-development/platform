@@ -1,4 +1,4 @@
-import { act, fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import Alert from '../Alert';
 
 describe('Alert', () => {
@@ -111,30 +111,24 @@ describe('Alert', () => {
   });
 
   it('should display the dismiss button if dismissable', async () => {
-    const { findByTestId } = render(
-      <Alert dismissable message="Hello world" />,
-    );
+    const { findByRole } = render(<Alert dismissable message="Hello world" />);
 
-    await expect(findByTestId('alert-dismiss-text')).resolves.toHaveTextContent(
-      'Dismiss',
-    );
+    await expect(findByRole('button')).resolves.toHaveTextContent('Dismiss');
   });
 
   it('should display the correct dismissable text', async () => {
-    const { findByTestId } = render(
+    const { findByRole } = render(
       <Alert dismissable dismissText="Close me" message="Hello world" />,
     );
 
-    await expect(findByTestId('alert-dismiss-text')).resolves.toHaveTextContent(
-      'Close me',
-    );
+    await expect(findByRole('button')).resolves.toHaveTextContent('Close me');
   });
 
   it('should call onDismiss when one is set', async () => {
-    const { findByTestId } = render(
+    const { findByRole } = render(
       <Alert dismissable message="Hello world" onDismiss={onDismiss} />,
     );
-    const dismiss = await findByTestId('alert-dismiss-text');
+    const dismiss = await findByRole('button');
 
     fireEvent.click(dismiss);
 
@@ -152,17 +146,17 @@ describe('Alert', () => {
       jest.runOnlyPendingTimers();
     });
 
-    expect(queryByRole('alert')).not.toBeInTheDocument();
+    await waitFor(() => expect(queryByRole('alert')).not.toBeInTheDocument());
   });
 
   it('should not be displayed when dismissed', async () => {
-    const { findByTestId, queryByRole } = render(
+    const { findByRole, queryByRole } = render(
       <Alert dismissable message="Hello world" />,
     );
-    const dismiss = await findByTestId('alert-dismiss-text');
+    const dismiss = await findByRole('button');
 
     fireEvent.click(dismiss);
 
-    expect(queryByRole('alert')).not.toBeInTheDocument();
+    await waitFor(() => expect(queryByRole('alert')).not.toBeInTheDocument());
   });
 });
