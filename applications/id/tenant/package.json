@@ -6,11 +6,11 @@
   "scripts": {
     "deploy": "a0deploy import -i ./tenant.yaml",
     "import": "a0deploy export -c config.local.json -f yaml -o ./",
-    "lint": "eslint -c .eslintrc.yml './src/**/*.js'",
-    "precommit": "lint-staged",
-    "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
-    "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand"
+    "lint": "yarn run -T eslint -c .eslintrc.yml './src/**/*.js'",
+    "precommit": "yarn run -T lint-staged",
+    "prettier": "yarn run -T prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
+    "test": "yarn run -T jest --watch",
+    "test-ci": "yarn run -T jest --coverage --runInBand"
   },
   "jest": {
     "collectCoverageFrom": [

@@ -101,7 +101,7 @@ jobs:
             ${{ runner.os }}-accounts-warm-up-v2-
 
       - name: Warm up
-        run: yarn start -- --scope=@accounts/warm-up -- -- --stage $STAGE
+        run: yarn workspace @accounts/warm-up start --stage $STAGE
 
   accounts-tests:
     name: Accounts tests
@@ -165,10 +165,10 @@ jobs:
             ${{ runner.os }}-cache-
 
       - name: Rebuild binary
-        run: npm rebuild --update-binary
+        run: yarn rebuild
 
       - name: Smoke tests
         uses: cypress-io/github-action@v2
         with:
-          command: yarn e2e:ci -- --scope=@accounts/client
+          command: yarn workspace @accounts/client e2e-ci
           install: false

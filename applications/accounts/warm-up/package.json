@@ -4,14 +4,14 @@
   "description": "Motech Development accounts warm up service",
   "private": true,
   "scripts": {
-    "deploy": "serverless deploy --verbose",
-    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
-    "precommit": "lint-staged",
-    "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
-    "start": "serverless invoke stepf --name warmUp",
-    "teardown": "serverless remove --verbose",
-    "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand"
+    "deploy": "yarn run -T serverless deploy --verbose",
+    "lint": "yarn run -T eslint -c .eslintrc.yml './src/**/*.ts'",
+    "precommit": "yarn run -T lint-staged",
+    "prettier": "yarn run -T prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
+    "start": "yarn run -T serverless invoke stepf --name warmUp",
+    "teardown": "yarn run -T serverless remove --verbose",
+    "test": "yarn run -T jest --watch",
+    "test-ci": "yarn run -T jest --coverage --runInBand"
   },
   "jest": {
     "collectCoverageFrom": [

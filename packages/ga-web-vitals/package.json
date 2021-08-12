@@ -8,15 +8,15 @@
   "module": "lib/index.esm.js",
   "types": "lib/ga-web-vitals.d.ts",
   "scripts": {
-    "build": "rollup -c",
-    "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
+    "build": "yarn prebuild && yarn run -T rollup -c && yarn postbuild",
+    "lint": "yarn run -T eslint -c .eslintrc.yml './src/**/*.ts'",
     "package": "yarn build",
-    "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
-    "prebuild": "rimraf ./lib",
-    "precommit": "lint-staged",
-    "prettier": "prettier --config ../../.prettierrc.yml --write 'src/**/*'",
-    "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand"
+    "postbuild": "yarn run -T tsc --project tsconfig.build.json --emitDeclarationOnly",
+    "prebuild": "yarn run -T rimraf ./lib",
+    "precommit": "yarn run -T lint-staged",
+    "prettier": "yarn run -T prettier --config ../../.prettierrc.yml --write 'src/**/*'",
+    "test": "yarn run -T jest --watch",
+    "test-ci": "yarn run -T jest --coverage --runInBand"
   },
   "jest": {
     "collectCoverageFrom": [

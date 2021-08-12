@@ -97,7 +97,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Teardown
-        run: yarn teardown -- --scope=@open-banking/api -- -- --stage $STAGE
+        run: yarn workspace @open-banking/api teardown --stage $STAGE
 
   # Anti virus
   anti-virus:
@@ -154,7 +154,7 @@ jobs:
         run: aws s3 rm $DEFINITIONS_BUCKET --recursive
 
       - name: Teardown
-        run: yarn teardown -- --scope=@core/anti-virus -- -- --stage $STAGE
+        run: yarn workspace @core/anti-virus teardown --stage $STAGE
 
   # Accounts (queue)
   accounts-queue:
@@ -206,7 +206,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Teardown
-        run: yarn teardown -- --scope=@accounts/queue -- -- --stage $STAGE
+        run: yarn workspace @accounts/queue teardown --stage $STAGE
 
   # Accounts (storage)
   accounts-storage:
@@ -268,7 +268,7 @@ jobs:
           aws s3 rm $UPLOAD_BUCKET --recursive
 
       - name: Teardown
-        run: yarn teardown -- --scope=@accounts/storage -- -- --stage $STAGE
+        run: yarn workspace @accounts/storage teardown --stage $STAGE
 
   # Accounts (data)
   accounts-data:
@@ -323,7 +323,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Teardown
-        run: yarn teardown -- --scope=@accounts/data -- -- --stage $STAGE
+        run: yarn workspace @accounts/data teardown --stage $STAGE
 
   # Accounts (warm up)
   accounts-warm-up:
@@ -374,7 +374,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Teardown
-        run: yarn teardown -- --scope=@accounts/warm-up -- -- --stage $STAGE
+        run: yarn workspace @accounts/warm-up teardown --stage $STAGE
 
   # Accounts (notifications)
   accounts-notifications:
@@ -426,7 +426,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Teardown
-        run: yarn teardown -- --scope=@accounts/notifications -- -- --stage $STAGE
+        run: yarn workspace @accounts/notifications teardown --stage $STAGE
 
   # Accounts (reports)
   accounts-reports:
@@ -483,7 +483,7 @@ jobs:
         run: aws s3 rm $REPORTS_BUCKET --recursive
 
       - name: Teardown
-        run: yarn teardown -- --scope=@accounts/reports -- -- --stage $STAGE
+        run: yarn workspace @accounts/reports teardown --stage $STAGE
 
   # Accounts (API)
   accounts-api:
@@ -534,4 +534,4 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Teardown
-        run: yarn teardown -- --scope=@accounts/api -- -- --stage $STAGE
+        run: yarn workspace @accounts/api teardown --stage $STAGE

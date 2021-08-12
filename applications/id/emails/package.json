@@ -4,6 +4,6 @@
   "description": "Motech Development ID email templates",
   "private": true,
   "scripts": {
-    "build": "pug src --pretty --out build"
+    "build": "yarn run -T pug src --pretty --out build"
   }
 }

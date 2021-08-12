@@ -94,7 +94,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Unit test
-        run: yarn test:ci
+        run: yarn test-ci
 
       - name: Fix paths for SonarCloud Scan
         run: ./scripts/sonar-scanner-path-fix.sh
@@ -146,7 +146,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Deploy
-        run: yarn deploy --scope=@motech-development/breeze-ui
+        run: yarn workspace @motech-development/breeze-ui deploy
 
   deploy-auth0-tenant:
     runs-on: ubuntu-latest
@@ -212,19 +212,19 @@ jobs:
             ${{ runner.os }}-id-v2-
 
       - name: Deploy ID infrastructure
-        run: yarn deploy -- --scope=@id/infrastructure -- -- --stage $STAGE
+        run: yarn workspace @id/infrastructure deploy --stage $STAGE
 
       - name: Build ID client
-        run: yarn build --scope=@id/client
+        run: yarn workspace @id/client build
 
       - name: Build ID emails
-        run: yarn build --scope=@id/emails
+        run: yarn workspace @id/emails build
 
       - name: Deploy client
-        run: yarn deploy -- --scope=@id/client -- -- --stage $STAGE
+        run: yarn workspace @id/client deploy --stage $STAGE
 
       - name: Deploy to Auth0
-        run: yarn deploy -- --scope=@id/tenant -- -- -c config.json
+        run: yarn workspace @id/tenant deploy -c config.json
 
   deploy-open-banking:
     runs-on: ubuntu-latest
@@ -281,7 +281,7 @@ jobs:
             ${{ runner.os }}-open-banking-api-v2-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@open-banking/api -- -- --stage $STAGE
+        run: yarn workspace @open-banking/api deploy --stage $STAGE
 
   deploy-anti-virus:
     runs-on: ubuntu-latest
@@ -336,7 +336,7 @@ jobs:
             ${{ runner.os }}-core-anti-virus-v2-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
+        run: yarn workspace @core/anti-virus deploy --stage $STAGE
 
   deploy-infrastructure:
     runs-on: ubuntu-latest
@@ -393,10 +393,10 @@ jobs:
             ${{ runner.os }}-core-v2-
 
       - name: Deploy core infrastructure
-        run: yarn deploy -- --scope=@core/infrastructure -- -- --stage $STAGE
+        run: yarn workspace @core/infrastructure deploy --stage $STAGE
 
       - name: Deploy comms infrastructure
-        run: yarn deploy -- --scope=@core/comms -- -- --stage $STAGE
+        run: yarn workspace @core/comms deploy --stage $STAGE
 
   deploy-accounts-storage:
     runs-on: ubuntu-latest
@@ -451,7 +451,7 @@ jobs:
             ${{ runner.os }}-accounts-storage-v2-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/storage -- -- --stage $STAGE
+        run: yarn workspace @accounts/storage deploy --stage $STAGE
 
   deploy-accounts-queue:
     runs-on: ubuntu-latest
@@ -506,7 +506,7 @@ jobs:
             ${{ runner.os }}-accounts-queue-v2-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/queue -- -- --stage $STAGE
+        run: yarn workspace @accounts/queue deploy --stage $STAGE
 
   deploy-accounts-data:
     runs-on: ubuntu-latest
@@ -561,7 +561,7 @@ jobs:
             ${{ runner.os }}-accounts-data-v2-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/data -- -- --stage $STAGE
+        run: yarn workspace @accounts/data deploy --stage $STAGE
 
   deploy-accounts-warm-up:
     runs-on: ubuntu-latest
@@ -616,7 +616,7 @@ jobs:
             ${{ runner.os }}-accounts-warm-up-v2-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/warm-up -- -- --stage $STAGE
+        run: yarn workspace @accounts/warm-up deploy --stage $STAGE
 
   deploy-accounts-reports:
     runs-on: ubuntu-latest
@@ -674,7 +674,7 @@ jobs:
             ${{ runner.os }}-accounts-reports-v2-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/reports -- -- --stage $STAGE
+        run: yarn workspace @accounts/reports deploy --stage $STAGE
 
   deploy-accounts-api:
     runs-on: ubuntu-latest
@@ -743,7 +743,7 @@ jobs:
             ${{ runner.os }}-accounts-api-v2-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/api -- -- --stage $STAGE
+        run: yarn workspace @accounts/api deploy --stage $STAGE
 
   deploy-accounts-infrastructure:
     runs-on: ubuntu-latest
@@ -798,7 +798,7 @@ jobs:
             ${{ runner.os }}-accounts-infrastructure-v2-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/infrastructure -- -- --stage $STAGE
+        run: yarn workspace @accounts/infrastructure deploy --stage $STAGE
 
   deploy-accounts-notifications:
     runs-on: ubuntu-latest
@@ -853,7 +853,7 @@ jobs:
             ${{ runner.os }}-accounts-notifications-v2-
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/notifications -- -- --stage $STAGE
+        run: yarn workspace @accounts/notifications deploy --stage $STAGE
 
   build-accounts-client:
     runs-on: ubuntu-latest
@@ -923,7 +923,7 @@ jobs:
             ${{ runner.os }}-accounts-client-v2-
 
       - name: Build client
-        run: yarn build --scope=@accounts/client
+        run: yarn workspace @accounts/client build
 
       - name: Deploy
-        run: yarn deploy -- --scope=@accounts/client -- -- --stage $STAGE
+        run: yarn workspace @accounts/client deploy --stage $STAGE

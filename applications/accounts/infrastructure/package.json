@@ -4,7 +4,7 @@
   "description": "Motech Development accounts infrastructure",
   "private": true,
   "scripts": {
-    "deploy": "serverless deploy --verbose",
-    "teardown": "serverless remove --verbose"
+    "deploy": "yarn run -T serverless deploy --verbose",
+    "teardown": "yarn run -T serverless remove --verbose"
   }
 }
