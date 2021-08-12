@@ -24,6 +24,8 @@ plugins:
   - prettier
 
 rules:
+  '@typescript-eslint/no-shadow':
+    - error
   import/extensions:
     - error
     - ignorePackages
@@ -37,6 +39,7 @@ rules:
     - packageDir:
         - './'
         - '../../'
+  no-shadow: off
   react/jsx-filename-extension:
     - error
     - extensions:

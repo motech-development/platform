@@ -1,0 +1,145 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppBar theme should render the danger theme 1`] = `
+<nav
+  class="relative bg-red-900"
+>
+  <div
+    class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+  >
+    <div
+      class=""
+    >
+      <div
+        class="flex items-center justify-between h-16 px-4 sm:px-0"
+      >
+        <div
+          data-testid="content"
+        >
+          Hello
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+`;
+
+exports[`AppBar theme should render the primary theme 1`] = `
+<nav
+  class="relative bg-blue-900"
+>
+  <div
+    class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+  >
+    <div
+      class=""
+    >
+      <div
+        class="flex items-center justify-between h-16 px-4 sm:px-0"
+      >
+        <div
+          data-testid="content"
+        >
+          Hello
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+`;
+
+exports[`AppBar theme should render the primary theme by default 1`] = `
+<nav
+  class="relative bg-blue-900"
+>
+  <div
+    class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+  >
+    <div
+      class=""
+    >
+      <div
+        class="flex items-center justify-between h-16 px-4 sm:px-0"
+      >
+        <div
+          data-testid="content"
+        >
+          Hello
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+`;
+
+exports[`AppBar theme should render the secondary theme 1`] = `
+<nav
+  class="relative bg-gray-900"
+>
+  <div
+    class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+  >
+    <div
+      class=""
+    >
+      <div
+        class="flex items-center justify-between h-16 px-4 sm:px-0"
+      >
+        <div
+          data-testid="content"
+        >
+          Hello
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+`;
+
+exports[`AppBar theme should render the success theme 1`] = `
+<nav
+  class="relative bg-green-900"
+>
+  <div
+    class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+  >
+    <div
+      class=""
+    >
+      <div
+        class="flex items-center justify-between h-16 px-4 sm:px-0"
+      >
+        <div
+          data-testid="content"
+        >
+          Hello
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+`;
+
+exports[`AppBar theme should render the warning theme 1`] = `
+<nav
+  class="relative bg-yellow-900"
+>
+  <div
+    class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+  >
+    <div
+      class=""
+    >
+      <div
+        class="flex items-center justify-between h-16 px-4 sm:px-0"
+      >
+        <div
+          data-testid="content"
+        >
+          Hello
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+`;

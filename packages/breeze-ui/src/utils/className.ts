@@ -1,7 +1,7 @@
 import TSpacing from './spacing';
 import TTheme from './theme';
 
-export const className = (...name: string[]) => name.join(' ');
+export const className = (...name: string[]) => name.filter(Boolean).join(' ');
 
 export const themeClass = (theme: TTheme, name: string) => {
   let mapping: string;

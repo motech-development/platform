@@ -1,5 +1,10 @@
-import TSize from './size';
+export enum Spacing {
+  Large = 'lg',
+  Medium = 'md',
+  None = 'none',
+  Small = 'sm',
+}
 
-type TSpacing = TSize | 'none';
+type TSpacing = `${Spacing}`;
 
 export default TSpacing;

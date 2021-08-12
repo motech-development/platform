@@ -2,25 +2,13 @@ import { CheckCircleIcon } from '@heroicons/react/solid';
 import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import Alert from '../components/Alert';
-import TSpacing from '../utils/spacing';
-import TTheme from '../utils/theme';
+import TSpacing, { Spacing } from '../utils/spacing';
+import TTheme, { Theme } from '../utils/theme';
 
 const stories = storiesOf('Alert', module);
-const colours = {
-  Danger: 'danger',
-  Primary: 'primary',
-  Secondary: 'secondary',
-  Success: 'success',
-};
-const margins = {
-  Large: 'lg',
-  Medium: 'md',
-  None: 'none',
-  Small: 'sm',
-};
 const message = () => text('Message', 'Hello world');
-const colour = () => select('Colour', colours, 'primary') as TTheme;
-const spacing = () => select('Spacing', margins, 'md') as TSpacing;
+const colour = () => select<TTheme>('Colour', Theme, 'primary');
+const spacing = () => select<TSpacing>('Spacing', Spacing, 'md');
 const dismissable = () => boolean('Dismissable', false);
 
 stories.addDecorator(withKnobs);
