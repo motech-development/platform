@@ -12,7 +12,7 @@ describe('ScrollToTop', () => {
       <>
         <ScrollToTop />
 
-        <Link to="/test-page">Click me</Link>
+        <Link to="#test-page">Click me</Link>
       </>,
     );
     // TODO: Revert to link
