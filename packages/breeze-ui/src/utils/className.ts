@@ -4,7 +4,19 @@ import TTheme from './theme';
 
 export const classNames = (...name: string[]) => name.filter(Boolean).join(' ');
 
-export const themeClass = (theme: TTheme, name: string) => {
+interface IThemeClassOverride {
+  danger?: string;
+  prinary?: string;
+  secondary?: string;
+  success?: string;
+  warning?: string;
+}
+
+export const themeClass = (
+  theme: TTheme,
+  name: string,
+  override?: IThemeClassOverride,
+) => {
   let mapping: string;
 
   switch (theme) {
@@ -22,6 +34,10 @@ export const themeClass = (theme: TTheme, name: string) => {
       break;
     default:
       mapping = 'blue';
+  }
+
+  if (override && override[theme]) {
+    return override[theme].replace(/{theme}/g, mapping);
   }
 
   return name.replace(/{theme}/g, mapping);

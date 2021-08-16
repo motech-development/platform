@@ -1,0 +1,201 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Table when fixed should render the table correctly 1`] = `
+<div
+  class="flex flex-col"
+>
+  <div
+    class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"
+  >
+    <div
+      class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+    >
+      <div
+        class="shadow overflow-hidden border-b border-gray-200"
+      >
+        <table
+          class="min-w-full table-fixed"
+        >
+          <thead
+            class="font-display font-semibold"
+            data-testid="table-head"
+          >
+            <tr
+              class="border-b-2 bg-blue-700 border-blue-800 text-blue-100"
+            >
+              <th
+                class="px-6 py-3 whitespace-nowrap text-left"
+                colspan="2"
+              >
+                My table
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class="font-sans text-sm"
+            data-testid="table-body"
+          >
+            <tr
+              class="border-b-2 bg-blue-700 border-blue-800 text-blue-100"
+              data-testid="primary-row"
+            >
+              <th
+                class="px-6 py-3 whitespace-nowrap text-left"
+                colspan="2"
+              >
+                16th April 2019
+              </th>
+            </tr>
+            <tr
+              class="border-b-2 bg-gray-100 border-gray-200 text-gray-700"
+              data-testid="secondary-row"
+            >
+              <th
+                class="px-6 py-3 whitespace-nowrap text-left"
+                data-testid="table-cell-header"
+              >
+                Transaction
+              </th>
+              <th
+                class="px-6 py-3 whitespace-nowrap text-left"
+              >
+                Value
+              </th>
+            </tr>
+            <tr
+              class="border-b-2 bg-gray-100 border-gray-200 text-gray-700"
+              data-testid="default-row"
+            >
+              <td
+                class="px-6 py-3 bg-white bg-opacity-70 whitespace-nowrap text-left"
+              >
+                Payment from Joe Bloggs
+              </td>
+              <td
+                class="px-6 py-3 bg-white bg-opacity-70 whitespace-nowrap text-left"
+                data-testid="table-cell"
+              >
+                £150
+              </td>
+            </tr>
+            <tr
+              class="border-b-2 bg-gray-100 border-gray-200 text-gray-700"
+            >
+              <td
+                class="px-6 py-3 bg-white bg-opacity-70 whitespace-nowrap text-left"
+              >
+                Lunch
+              </td>
+              <td
+                class="px-6 py-3 bg-white bg-opacity-70 whitespace-nowrap text-left"
+              >
+                -£5.25
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Table when not fixed should render the table correctly 1`] = `
+<div
+  class="flex flex-col"
+>
+  <div
+    class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"
+  >
+    <div
+      class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+    >
+      <div
+        class="shadow overflow-hidden border-b border-gray-200"
+      >
+        <table
+          class="min-w-full table-auto"
+        >
+          <thead
+            class="font-display font-semibold"
+            data-testid="table-head"
+          >
+            <tr
+              class="border-b-2 bg-blue-700 border-blue-800 text-blue-100"
+            >
+              <th
+                class="px-6 py-3 whitespace-nowrap text-left"
+                colspan="2"
+              >
+                My table
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class="font-sans text-sm"
+            data-testid="table-body"
+          >
+            <tr
+              class="border-b-2 bg-blue-700 border-blue-800 text-blue-100"
+              data-testid="primary-row"
+            >
+              <th
+                class="px-6 py-3 whitespace-nowrap text-left"
+                colspan="2"
+              >
+                16th April 2019
+              </th>
+            </tr>
+            <tr
+              class="border-b-2 bg-gray-100 border-gray-200 text-gray-700"
+              data-testid="secondary-row"
+            >
+              <th
+                class="px-6 py-3 whitespace-nowrap text-left"
+                data-testid="table-cell-header"
+              >
+                Transaction
+              </th>
+              <th
+                class="px-6 py-3 whitespace-nowrap text-left"
+              >
+                Value
+              </th>
+            </tr>
+            <tr
+              class="border-b-2 bg-gray-100 border-gray-200 text-gray-700"
+              data-testid="default-row"
+            >
+              <td
+                class="px-6 py-3 bg-white bg-opacity-70 whitespace-nowrap text-left"
+              >
+                Payment from Joe Bloggs
+              </td>
+              <td
+                class="px-6 py-3 bg-white bg-opacity-70 whitespace-nowrap text-left"
+                data-testid="table-cell"
+              >
+                £150
+              </td>
+            </tr>
+            <tr
+              class="border-b-2 bg-gray-100 border-gray-200 text-gray-700"
+            >
+              <td
+                class="px-6 py-3 bg-white bg-opacity-70 whitespace-nowrap text-left"
+              >
+                Lunch
+              </td>
+              <td
+                class="px-6 py-3 bg-white bg-opacity-70 whitespace-nowrap text-left"
+              >
+                -£5.25
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+`;

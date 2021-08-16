@@ -4664,6 +4664,7 @@ __metadata:
   dependencies:
     "@headlessui/react": ^1.4.0
     "@heroicons/react": ^1.0.3
+    "@popperjs/core": ^2.9.3
     "@storybook/addon-a11y": ^6.3.7
     "@storybook/addon-knobs": ^6.2.9
     "@storybook/addon-postcss": ^2.0.0
@@ -4673,6 +4674,7 @@ __metadata:
     luxon: ^2.0.2
     react: ^17.0.2
     react-dom: ^17.0.2
+    react-popper: ^2.2.5
     tailwindcss: ^2.1.1
   peerDependencies:
     formik: ^2.2.9
@@ -5151,6 +5153,13 @@ __metadata:
   version: 2.9.2
   resolution: "@popperjs/core@npm:2.9.2"
   checksum: a5916302e706b7dfbbbcd8728bafc1682b450d5ec70dd10da84a07c89a419fa72f83cbf990798589e6e69e1b520d6768176ea4bd360d7450d08a2fbc25a14e1c
+  languageName: node
+  linkType: hard
+
+"@popperjs/core@npm:^2.9.3":
+  version: 2.9.3
+  resolution: "@popperjs/core@npm:2.9.3"
+  checksum: 4cb94c271eaa13416ab8169c6af778c5b6160614351a79c68e8219d6ee0a40b8f71080ca29e139591c7c0c8e08fc1627d0e18d40a64609713a42b58d683a009d
   languageName: node
   linkType: hard
 

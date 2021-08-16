@@ -48,9 +48,9 @@ exports[`AppBar theme should render the primary theme 1`] = `
 </nav>
 `;
 
-exports[`AppBar theme should render the primary theme by default 1`] = `
+exports[`AppBar theme should render the secondary theme 1`] = `
 <nav
-  class="relative bg-blue-900"
+  class="relative bg-gray-900"
 >
   <div
     class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
@@ -72,7 +72,7 @@ exports[`AppBar theme should render the primary theme by default 1`] = `
 </nav>
 `;
 
-exports[`AppBar theme should render the secondary theme 1`] = `
+exports[`AppBar theme should render the secondary theme by default 1`] = `
 <nav
   class="relative bg-gray-900"
 >

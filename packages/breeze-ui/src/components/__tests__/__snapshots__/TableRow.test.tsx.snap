@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TableRow should have the correct danger theme styles 1`] = `
+<table>
+  <tbody>
+    <tr
+      class="border-b-2 bg-red-700 border-red-800 text-red-100"
+    >
+      <td>
+        Test
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`TableRow should have the correct primary theme styles 1`] = `
+<table>
+  <tbody>
+    <tr
+      class="border-b-2 bg-blue-700 border-blue-800 text-blue-100"
+    >
+      <td>
+        Test
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`TableRow should have the correct secondary theme styles 1`] = `
+<table>
+  <tbody>
+    <tr
+      class="border-b-2 bg-gray-100 border-gray-200 text-gray-700"
+    >
+      <td>
+        Test
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`TableRow should have the correct success theme styles 1`] = `
+<table>
+  <tbody>
+    <tr
+      class="border-b-2 bg-green-700 border-green-800 text-green-100"
+    >
+      <td>
+        Test
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`TableRow should have the correct theme by default 1`] = `
+<table>
+  <tbody>
+    <tr
+      class="border-b-2 bg-gray-100 border-gray-200 text-gray-700"
+    >
+      <td>
+        Test
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`TableRow should have the correct warning theme styles 1`] = `
+<table>
+  <tbody>
+    <tr
+      class="border-b-2 bg-yellow-700 border-yellow-800 text-yellow-100"
+    >
+      <td>
+        Test
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;

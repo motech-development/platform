@@ -16,7 +16,7 @@ export interface IAppBarProps {
 const AppBar: FC<IAppBarProps> = ({
   border = false,
   children,
-  colour = 'primary',
+  colour = 'secondary',
   element = 'nav',
   fixed = false,
 }) => (

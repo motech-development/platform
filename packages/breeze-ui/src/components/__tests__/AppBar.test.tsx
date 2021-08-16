@@ -3,7 +3,7 @@ import AppBar from '../AppBar';
 
 describe('AppBar', () => {
   describe('theme', () => {
-    it('should render the primary theme by default', () => {
+    it('should render the secondary theme by default', () => {
       const { container } = render(
         <AppBar>
           <div data-testid="content">Hello</div>

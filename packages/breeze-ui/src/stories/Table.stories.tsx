@@ -1,8 +1,12 @@
+import { boolean, select, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
+import { Fragment } from 'react';
 import TableBody from '../components/TableBody';
 import TableCell from '../components/TableCell';
 import TableRow from '../components/TableRow';
 import Table from '../components/Table';
+import TableHead from '../components/TableHead';
+import TTheme, { Theme } from '../utils/theme';
 
 const data = [
   {
@@ -44,34 +48,41 @@ const data = [
 ];
 
 const stories = storiesOf('Table', module);
+const colour = () => select<TTheme>('Colour', Theme, 'primary');
+
+stories.addDecorator(withKnobs);
 
 stories.add('Basic table', () => (
   <>
-    <Table>
+    <Table fixed={boolean('Fixed', false)}>
       {data.map((item) => (
-        <TableBody key={item.date}>
-          <TableRow colour="primary">
-            <TableCell as="th">Date</TableCell>
-            <TableCell as="th">Balance</TableCell>
-          </TableRow>
-
-          <TableRow colour="primary">
-            <TableCell as="th">{item.date}</TableCell>
-            <TableCell as="th">£{item.balance.toString()}</TableCell>
-          </TableRow>
-
-          <TableRow colour="secondary">
-            <TableCell as="th">Transaction</TableCell>
-            <TableCell as="th">Value</TableCell>
-          </TableRow>
-
-          {item.transactions.map((transaction) => (
-            <TableRow key={transaction.id}>
-              <TableCell>{transaction.description}</TableCell>
-              <TableCell>£{transaction.amount}</TableCell>
+        <Fragment key={item.date}>
+          <TableHead>
+            <TableRow colour={colour()}>
+              <TableCell as="th">Date</TableCell>
+              <TableCell as="th">Balance</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
+
+            <TableRow colour={colour()}>
+              <TableCell as="th">{item.date}</TableCell>
+              <TableCell as="th">£{item.balance.toString()}</TableCell>
+            </TableRow>
+
+            <TableRow colour="secondary">
+              <TableCell as="th">Transaction</TableCell>
+              <TableCell as="th">Value</TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {item.transactions.map((transaction) => (
+              <TableRow key={transaction.id}>
+                <TableCell>{transaction.description}</TableCell>
+                <TableCell>£{transaction.amount}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Fragment>
       ))}
     </Table>
   </>

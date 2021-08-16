@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TableCell as a cell should have the word wrap style applied 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td
+        class="px-6 py-3 bg-white bg-opacity-70 whitespace-nowrap text-left"
+        data-testid="cell"
+      >
+        Test
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`TableCell as a cell should have the word wrap style applied by default 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td
+        class="px-6 py-3 bg-white bg-opacity-70 whitespace-nowrap text-left"
+        data-testid="cell"
+      >
+        Test
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`TableCell as a cell should not have the word wrap style applied 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td
+        class="px-6 py-3 bg-white bg-opacity-70 text-left"
+        data-testid="cell"
+      >
+        Test
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`TableCell as a header should have the word wrap style applied 1`] = `
+<table>
+  <thead>
+    <tr>
+      <th
+        class="px-6 py-3 whitespace-nowrap text-left"
+        data-testid="cell"
+      >
+        Test
+      </th>
+    </tr>
+  </thead>
+</table>
+`;
+
+exports[`TableCell as a header should have the word wrap style applied by default 1`] = `
+<table>
+  <thead>
+    <tr>
+      <th
+        class="px-6 py-3 whitespace-nowrap text-left"
+        data-testid="cell"
+      >
+        Test
+      </th>
+    </tr>
+  </thead>
+</table>
+`;
+
+exports[`TableCell as a header should not have the word wrap style applied 1`] = `
+<table>
+  <thead>
+    <tr>
+      <th
+        class="px-6 py-3 text-left"
+        data-testid="cell"
+      >
+        Test
+      </th>
+    </tr>
+  </thead>
+</table>
+`;

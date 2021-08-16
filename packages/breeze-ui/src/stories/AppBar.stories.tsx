@@ -14,6 +14,7 @@ enum Elements {
 }
 
 const stories = storiesOf('AppBar', module);
+const alert = () => boolean('Alert', true);
 const border = () => boolean('Border', true);
 const colour = () => select<TTheme>('Colour', Theme, 'secondary');
 const element = () => select<TAppBarElement>('Element', Elements, 'header');
@@ -51,7 +52,8 @@ stories
         </div>
 
         <Notifications
-          alert
+          alert={alert()}
+          colour={colour()}
           items={[
             {
               message: 'This is a notification',
