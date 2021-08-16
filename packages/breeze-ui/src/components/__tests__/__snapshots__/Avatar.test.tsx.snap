@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Avatar should correctly render component when custom styles are set 1`] = `
+<img
+  alt="Alt text"
+  class="rounded-full w-auto h-auto"
+  src="https://www.gravatar.com/avatar/8801091e665fdac669daa63d32167b7b"
+/>
+`;
+
+exports[`Avatar should correctly render component when no styles are set 1`] = `
+<img
+  alt="Alt text"
+  class="rounded-full h-8 w-8"
+  src="https://www.gravatar.com/avatar/8801091e665fdac669daa63d32167b7b"
+/>
+`;
