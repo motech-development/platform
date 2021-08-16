@@ -1,0 +1,99 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PageTitle should display only a title 1`] = `
+<div>
+  <h2
+    class="mb-2 text-left font-display text-4xl font-semibold"
+  >
+    <span
+      class="decoration-clone text-gray-100 px-2 py-1 bg-blue-600"
+    >
+      Page title
+    </span>
+  </h2>
+</div>
+`;
+
+exports[`PageTitle should render title and a sub title 1`] = `
+<div>
+  <h2
+    class="mb-2 text-left font-display text-4xl font-semibold"
+  >
+    <span
+      class="decoration-clone text-gray-100 px-2 py-1 bg-blue-600"
+    >
+      Page title
+    </span>
+  </h2>
+</div>
+`;
+
+exports[`PageTitle theme should render danger theme styles 1`] = `
+<div>
+  <h2
+    class="mb-2 text-left font-display text-4xl font-semibold"
+  >
+    <span
+      class="decoration-clone text-gray-100 px-2 py-1 bg-red-600"
+    >
+      Page title
+    </span>
+  </h2>
+</div>
+`;
+
+exports[`PageTitle theme should render primary theme styles 1`] = `
+<div>
+  <h2
+    class="mb-2 text-left font-display text-4xl font-semibold"
+  >
+    <span
+      class="decoration-clone text-gray-100 px-2 py-1 bg-blue-600"
+    >
+      Page title
+    </span>
+  </h2>
+</div>
+`;
+
+exports[`PageTitle theme should render secondary theme styles 1`] = `
+<div>
+  <h2
+    class="mb-2 text-left font-display text-4xl font-semibold"
+  >
+    <span
+      class="decoration-clone text-gray-100 px-2 py-1 bg-gray-600"
+    >
+      Page title
+    </span>
+  </h2>
+</div>
+`;
+
+exports[`PageTitle theme should render success theme styles 1`] = `
+<div>
+  <h2
+    class="mb-2 text-left font-display text-4xl font-semibold"
+  >
+    <span
+      class="decoration-clone text-gray-100 px-2 py-1 bg-green-600"
+    >
+      Page title
+    </span>
+  </h2>
+</div>
+`;
+
+exports[`PageTitle theme should render warning theme styles 1`] = `
+<div>
+  <h2
+    class="mb-2 text-left font-display text-4xl font-semibold"
+  >
+    <span
+      class="decoration-clone text-gray-100 px-2 py-1 bg-yellow-600"
+    >
+      Page title
+    </span>
+  </h2>
+</div>
+`;
