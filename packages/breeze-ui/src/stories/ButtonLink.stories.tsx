@@ -10,7 +10,7 @@ stories.addDecorator(withKnobs);
 stories.add('Basic button link', () => (
   <>
     <Card>
-      <ButtonLink>{text('Text', 'This is a button')}</ButtonLink>
+      <ButtonLink type="button">{text('Text', 'This is a button')}</ButtonLink>
     </Card>
   </>
 ));

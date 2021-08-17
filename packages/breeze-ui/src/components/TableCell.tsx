@@ -26,8 +26,8 @@ const TableCell: FC<ITableCellProps> = ({
       as === 'td' ? 'bg-white bg-opacity-70' : '',
       noWrap ? 'whitespace-nowrap' : '',
       textAlignmentClass(align),
-      // eslint-disable-next-line react/jsx-props-no-spreading
     )}
+    // eslint-disable-next-line react/jsx-props-no-spreading
     {...rest}
   />
 );

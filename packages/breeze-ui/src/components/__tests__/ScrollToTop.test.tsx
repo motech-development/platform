@@ -12,11 +12,13 @@ describe('ScrollToTop', () => {
       <>
         <ScrollToTop />
 
-        <Link to="#test-page">Click me</Link>
+        <Link as="a" href="#test-page">
+          Click me
+        </Link>
       </>,
     );
     // TODO: Revert to link
-    const link = await findByRole('button');
+    const link = await findByRole('link');
 
     fireEvent.click(link);
 

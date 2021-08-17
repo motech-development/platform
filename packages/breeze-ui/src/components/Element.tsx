@@ -1,10 +1,16 @@
-import { createElement, FC, HTMLProps, ReactHTML } from 'react';
+import { ComponentPropsWithoutRef, createElement, ElementType } from 'react';
 
-export interface IElementProps extends HTMLProps<HTMLElement> {
-  as: keyof ReactHTML;
+interface IElementProps<C extends ElementType> {
+  as: C;
 }
 
-const Element: FC<IElementProps> = ({ as, children, ...rest }) =>
-  createElement(as, rest, children);
+export type TElementProps<C extends ElementType> = IElementProps<C> &
+  Omit<ComponentPropsWithoutRef<C>, keyof IElementProps<C>>;
+
+const Element = <C extends ElementType>({
+  as,
+  children,
+  ...rest
+}: TElementProps<C>) => createElement(as, rest, children);
 
 export default Element;

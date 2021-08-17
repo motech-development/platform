@@ -95,10 +95,10 @@ function Notifications<T>({
         )}
       </Popover.Button>
 
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <Popover.Panel
         ref={setPopperElement}
         style={styles.popper}
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...attributes.popper}
       >
         <DataTable

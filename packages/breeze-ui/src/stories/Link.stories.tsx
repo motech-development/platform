@@ -9,6 +9,6 @@ stories.addDecorator(withKnobs);
 
 stories.add('Basic link', () => (
   <Card>
-    <Link to={text('To', '/home')}>{text('Text', 'This is a link')}</Link>
+    <Link href={text('To', '/home')}>{text('Text', 'This is a link')}</Link>
   </Card>
 ));
