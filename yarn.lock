@@ -4674,6 +4674,7 @@ __metadata:
     luxon: ^2.0.2
     react: ^17.0.2
     react-dom: ^17.0.2
+    react-polymorphic-box: ^3.0.3
     react-popper: ^2.2.5
     tailwindcss: ^2.1.1
   peerDependencies:
@@ -28114,6 +28115,15 @@ fsevents@^1.2.7:
     react: ^0.14 || ^15.0.0-0 || ^16.0.0-0 || ^17.0.0-0
     react-dom: ^0.14 || ^15.0.0-0 || ^16.0.0-0 || ^17.0.0-0
   checksum: 4a9408a274a27160621a30f96d7f2fbf30419f86cff9a249986606e08162c3af85e3424fb06dae78d920b41dfdbed46c0ec73720cf9d28201603b38218f9403e
+  languageName: node
+  linkType: hard
+
+"react-polymorphic-box@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "react-polymorphic-box@npm:3.0.3"
+  peerDependencies:
+    react: ">=16.3"
+  checksum: 3c1e91d737faf9590f6e76d750c7a5db0df54356509cddb4f7609148b055de2bc1a3a670e1c642048707123c19cee839e09b7400e4b49ad97204aa5416efb731
   languageName: node
   linkType: hard
 

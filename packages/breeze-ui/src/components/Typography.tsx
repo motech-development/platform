@@ -1,4 +1,5 @@
 import { FC, ReactNode } from 'react';
+import { Box } from 'react-polymorphic-box';
 import {
   classNames,
   spacingClass,
@@ -6,7 +7,6 @@ import {
 } from '../utils/className';
 import TAlignment from '../utils/alignment';
 import TSpacing from '../utils/spacing';
-import Element from './Element';
 
 export enum TypographyComponent {
   H1 = 'h1',
@@ -105,7 +105,7 @@ const Typography: FC<ITypographyProps> = ({
 }) => (
   <div>
     {/* @tailwind: mb-0 mb-2 mb-4 mb-6 */}
-    <Element
+    <Box
       id={id}
       className={classNames(
         className,
@@ -118,7 +118,7 @@ const Typography: FC<ITypographyProps> = ({
       as={component}
     >
       {children}
-    </Element>
+    </Box>
 
     {rule && (
       <hr

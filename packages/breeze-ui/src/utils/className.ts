@@ -1,4 +1,5 @@
 import TAlignment from './alignment';
+import TSize from './size';
 import TSpacing from './spacing';
 import TTheme from './theme';
 
@@ -71,5 +72,16 @@ export const textAlignmentClass = (alignment: TAlignment) => {
       return 'text-right';
     default:
       return 'text-left';
+  }
+};
+
+export const textSizingClass = (size: TSize) => {
+  switch (size) {
+    case 'sm':
+      return 'text-sm';
+    case 'lg':
+      return 'text-lg';
+    default:
+      return 'text-base';
   }
 };

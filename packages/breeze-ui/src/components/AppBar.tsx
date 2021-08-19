@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react';
+import { Box } from 'react-polymorphic-box';
 import { classNames, themeClass } from '../utils/className';
 import TTheme from '../utils/theme';
-import Element from './Element';
 
 export type TAppBarElement = 'header' | 'div' | 'nav';
 
@@ -22,7 +22,7 @@ const AppBar: FC<IAppBarProps> = ({
 }) => (
   <>
     {/* @tailwind: bg-blue-900 bg-gray-900 bg-green-900 bg-red-900 bg-yellow-900 */}
-    <Element
+    <Box
       className={classNames(
         fixed ? 'fixed top-0 left-0 w-full' : 'relative',
         themeClass(colour, 'bg-{theme}-900'),
@@ -42,7 +42,7 @@ const AppBar: FC<IAppBarProps> = ({
           </div>
         </div>
       </div>
-    </Element>
+    </Box>
   </>
 );
 

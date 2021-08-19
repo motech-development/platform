@@ -47,7 +47,7 @@ export type { IFormProps } from './components/Form';
 export { default as Link } from './components/Link';
 
 export { default as LinkButton } from './components/LinkButton';
-export type { ILinkButtonProps } from './components/LinkButton';
+export type { TLinkButtonProps } from './components/LinkButton';
 
 export { default as Loader } from './components/Loader';
 export type { ILoaderProps } from './components/Loader';

@@ -1,35 +1,20 @@
 // TODO: Everything
-import { boolean, /* select, */ text, withKnobs } from '@storybook/addon-knobs';
+import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import LinkButton from '../components/LinkButton';
+import TSize, { Size } from '../utils/size';
+import TTheme, { Theme } from '../utils/theme';
 
 const stories = storiesOf('LinkButton', module);
-// const colour = {
-//   Danger: 'danger',
-//   Primary: 'primary',
-//   Secondary: 'secondary',
-//   Success: 'success',
-// };
-// const size = {
-//   Large: 'lg',
-//   Medium: 'md',
-//   Small: 'sm',
-// };
 
 stories.addDecorator(withKnobs);
 
 stories.add('Basic link button', () => (
   <LinkButton
     block={boolean('Block display', false)}
-    // colour={
-    //   select('Colour', colour, 'primary') as
-    //     | 'danger'
-    //     | 'primary'
-    //     | 'secondary'
-    //     | 'success'
-    // }
-    // size={select('Size', size, 'md') as 'sm' | 'md' | 'lg'}
-    // to={text('To', '/home')}
+    colour={select<TTheme>('Colour', Theme, 'primary')}
+    size={select<TSize>('Size', Size, 'md')}
+    href={text('To', '/home')}
   >
     {text('Title', 'Button')}
   </LinkButton>

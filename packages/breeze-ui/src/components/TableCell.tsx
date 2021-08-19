@@ -1,7 +1,7 @@
 import { FC, HTMLProps } from 'react';
+import { Box } from 'react-polymorphic-box';
 import TAlignment from '../utils/alignment';
 import { classNames, textAlignmentClass } from '../utils/className';
-import Element from './Element';
 
 type TTableCellAs = 'td' | 'th';
 
@@ -18,7 +18,7 @@ const TableCell: FC<ITableCellProps> = ({
   noWrap = true,
   ...rest
 }) => (
-  <Element
+  <Box
     as={as}
     className={classNames(
       'px-6 py-3',
