@@ -1,16 +1,16 @@
-import { FC, HTMLProps } from 'react';
+import { FC, forwardRef, TableHTMLAttributes } from 'react';
 import { classNames, themeClass } from '../utils/className';
 import TTheme from '../utils/theme';
 
-export interface ITableRowProps extends HTMLProps<HTMLTableRowElement> {
+export interface ITableRowProps
+  extends TableHTMLAttributes<HTMLTableRowElement> {
   colour?: TTheme;
 }
 
-const TableRow: FC<ITableRowProps> = ({
-  className = '',
-  colour = 'secondary',
-  ...rest
-}) => (
+const TableRow: FC<ITableRowProps> = forwardRef<
+  HTMLTableRowElement,
+  ITableRowProps
+>(({ className = '', colour = 'secondary', ...rest }, ref) => (
   <>
     {/* @tailwind: bg-blue-700 bg-gray-100 bg-green-700 bg-red-700 bg-yellow-700 */}
     {/* @tailwind: border-blue-800 border-gray-200 border-green-800 border-red-800 border-yellow-800 */}
@@ -27,9 +27,10 @@ const TableRow: FC<ITableRowProps> = ({
           },
         ),
       )}
+      ref={ref}
       {...rest}
     />
   </>
-);
+));
 
 export default TableRow;

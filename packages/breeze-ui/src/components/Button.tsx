@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, DetailedHTMLProps, FC } from 'react';
+import { ButtonHTMLAttributes, FC, forwardRef } from 'react';
 import { classNames } from '../utils/className';
 import TSize from '../utils/size';
 import TTheme from '../utils/theme';
@@ -19,13 +19,7 @@ const loaderSize = (size: TSize) => {
 type TButtonType = 'submit' | 'reset' | 'button';
 
 export interface IButtonProps
-  extends Omit<
-    DetailedHTMLProps<
-      ButtonHTMLAttributes<HTMLButtonElement>,
-      HTMLButtonElement
-    >,
-    'size'
-  > {
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'size'> {
   block?: boolean;
   colour?: TTheme;
   disabled?: boolean;
@@ -34,34 +28,40 @@ export interface IButtonProps
   type?: TButtonType;
 }
 
-const Button: FC<IButtonProps> = ({
-  block = false,
-  children,
-  colour = 'primary',
-  disabled = false,
-  loading = false,
-  size = 'md',
-  type = 'button',
-  ...rest
-}) => (
-  <BaseButton
-    as="button"
-    block={block}
-    colour={colour}
-    disabled={disabled || loading}
-    size={size}
-    type={type}
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    {...rest}
-  >
-    {loading && (
-      <Loader
-        className={classNames('absolute top-2/4 left-2/4', loaderSize(size))}
-      />
-    )}
+const Button: FC<IButtonProps> = forwardRef<HTMLImageElement, IButtonProps>(
+  (
+    {
+      block = false,
+      children,
+      colour = 'primary',
+      disabled = false,
+      loading = false,
+      size = 'md',
+      type = 'button',
+      ...rest
+    },
+    ref,
+  ) => (
+    <BaseButton
+      as="button"
+      block={block}
+      colour={colour}
+      disabled={disabled || loading}
+      ref={ref}
+      size={size}
+      type={type}
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...rest}
+    >
+      {loading && (
+        <Loader
+          className={classNames('absolute top-2/4 left-2/4', loaderSize(size))}
+        />
+      )}
 
-    <span className={classNames(loading ? 'invisible' : '')}>{children}</span>
-  </BaseButton>
+      <span className={classNames(loading ? 'invisible' : '')}>{children}</span>
+    </BaseButton>
+  ),
 );
 
 export default Button;

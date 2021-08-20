@@ -1,4 +1,4 @@
-import { ElementType } from 'react';
+import { ElementType, forwardRef } from 'react';
 import { PolymorphicComponentProps } from 'react-polymorphic-box';
 import TSize from '../utils/size';
 import TTheme from '../utils/theme';
@@ -17,20 +17,26 @@ export type TLinkButtonProps<E extends ElementType> = PolymorphicComponentProps<
 
 const defaultElement = 'a';
 
-const LinkButton = <C extends ElementType = typeof defaultElement>({
-  block = false,
-  colour = 'primary',
-  size = 'md',
-  ...rest
-}: TLinkButtonProps<C>) => (
-  <BaseButton
-    as={defaultElement}
-    block={block}
-    colour={colour}
-    size={size}
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    {...rest}
-  />
+const LinkButton = forwardRef(
+  <C extends ElementType = typeof defaultElement>(
+    {
+      block = false,
+      colour = 'primary',
+      size = 'md',
+      ...rest
+    }: TLinkButtonProps<C>,
+    ref: typeof rest.ref,
+  ) => (
+    <BaseButton
+      as={defaultElement}
+      block={block}
+      colour={colour}
+      ref={ref}
+      size={size}
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...rest}
+    />
+  ),
 );
 
 export default LinkButton;

@@ -1,12 +1,12 @@
-import { ButtonHTMLAttributes, FC, DetailedHTMLProps } from 'react';
+import { ButtonHTMLAttributes, FC, forwardRef } from 'react';
 import Link from './Link';
 
-export type TButtonLink = DetailedHTMLProps<
-  ButtonHTMLAttributes<HTMLButtonElement>,
-  HTMLButtonElement
->;
+export type TButtonLinkProps = ButtonHTMLAttributes<HTMLButtonElement>;
 
 // eslint-disable-next-line react/jsx-props-no-spreading
-const ButtonLink: FC<TButtonLink> = (props) => <Link as="button" {...props} />;
+const ButtonLink: FC<TButtonLinkProps> = forwardRef<
+  HTMLButtonElement,
+  TButtonLinkProps
+>((props, ref) => <Link as="button" ref={ref} {...props} />);
 
 export default ButtonLink;

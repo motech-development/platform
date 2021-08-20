@@ -1,7 +1,7 @@
-import { FC, HTMLProps } from 'react';
+import { FC, TableHTMLAttributes } from 'react';
 import { classNames } from '../utils/className';
 
-export interface ITableProps extends HTMLProps<HTMLTableElement> {
+export interface ITableProps extends TableHTMLAttributes<HTMLTableElement> {
   fixed?: boolean;
 }
 
