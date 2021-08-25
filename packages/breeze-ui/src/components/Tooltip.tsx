@@ -12,6 +12,26 @@ export interface ITooltipProps {
   placement?: Placement;
 }
 
+const arrowClass = (placement?: Placement) => {
+  if (placement) {
+    if (placement.startsWith('top')) {
+      return '-bottom-1';
+    }
+
+    if (placement.startsWith('bottom')) {
+      return '-top-1';
+    }
+
+    if (placement.startsWith('left')) {
+      return '-right-1';
+    }
+
+    return '-left-1';
+  }
+
+  return '';
+};
+
 const Tooltip: FC<ITooltipProps> = ({
   colour = 'primary',
   message,
@@ -25,17 +45,28 @@ const Tooltip: FC<ITooltipProps> = ({
   const [referenceElement, setReferenceElement] =
     useState<HTMLDivElement | null>();
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    modifiers: [
-      {
-        name: 'offset',
-        options: {
-          offset: [0, 10],
+  const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>();
+  const { attributes, state, styles } = usePopper(
+    referenceElement,
+    popperElement,
+    {
+      modifiers: [
+        {
+          name: 'arrow',
+          options: {
+            element: arrowElement,
+          },
         },
-      },
-    ],
-    placement,
-  });
+        {
+          name: 'offset',
+          options: {
+            offset: [0, 10],
+          },
+        },
+      ],
+      placement,
+    },
+  );
   const hideTooltip = () => {
     timer = setTimeout(() => {
       if (mounted.current) {
@@ -71,13 +102,14 @@ const Tooltip: FC<ITooltipProps> = ({
       </div>
 
       {/* @tailwind: bg-blue-600 bg-gray-100 bg-green-600 bg-red-600 bg-yellow-600 */}
+      {/* @tailwind: border-blue-700 border-gray-200 border-green-700 border-red-700 border-yellow-700 */}
       {visible && (
         <div
           id={id}
           className={classNames(
-            'p-1 text-sm font-display rounded-sm',
-            themeClass(colour, 'bg-{theme}-600 text-white', {
-              secondary: 'bg-{theme}-100 text-gray-600',
+            'px-1 text-sm font-display border-b-2',
+            themeClass(colour, 'bg-{theme}-600 border-{theme}-700 text-white', {
+              secondary: 'bg-{theme}-100 border-{theme}-200 text-gray-600',
             }),
           )}
           ref={setPopperElement}
@@ -86,6 +118,19 @@ const Tooltip: FC<ITooltipProps> = ({
           {...attributes.popper}
         >
           <p className="whitespace-nowrap">{message}</p>
+
+          {/* @tailwind: before:bg-blue-600 before:bg-gray-100 before:bg-green-600 before:bg-red-600 before:bg-yellow-600 */}
+          <div
+            className={classNames(
+              'absolute w-2 h-2 invisible before:absolute before:w-2 before:h-2 before:visible before:rotate-45',
+              arrowClass(state?.placement),
+              themeClass(colour, 'bg-{theme}-600 before:bg-{theme}-600', {
+                secondary: 'bg-{theme}-100 before:bg-{theme}-600',
+              }),
+            )}
+            ref={setArrowElement}
+            style={styles.arrow}
+          />
         </div>
       )}
     </>

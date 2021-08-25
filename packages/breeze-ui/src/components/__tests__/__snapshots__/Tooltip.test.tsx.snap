@@ -2,7 +2,7 @@
 
 exports[`Tooltip danger should have the correct styles 1`] = `
 <div
-  class="p-1 text-sm font-display rounded-sm bg-red-600 text-white"
+  class="px-1 text-sm font-display border-b-2 bg-red-600 border-red-700 text-white"
   data-popper-escaped="true"
   data-popper-placement="top"
   data-popper-reference-hidden="true"
@@ -15,12 +15,16 @@ exports[`Tooltip danger should have the correct styles 1`] = `
   >
     Hello
   </p>
+  <div
+    class="absolute w-2 h-2 invisible before:absolute before:w-2 before:h-2 before:visible before:rotate-45 -bottom-1 bg-red-600 before:bg-red-600"
+    style="position: absolute; left: 0px; transform: translate(0px, 0px);"
+  />
 </div>
 `;
 
 exports[`Tooltip primary should have the correct styles 1`] = `
 <div
-  class="p-1 text-sm font-display rounded-sm bg-blue-600 text-white"
+  class="px-1 text-sm font-display border-b-2 bg-blue-600 border-blue-700 text-white"
   data-popper-escaped="true"
   data-popper-placement="top"
   data-popper-reference-hidden="true"
@@ -33,12 +37,16 @@ exports[`Tooltip primary should have the correct styles 1`] = `
   >
     Hello
   </p>
+  <div
+    class="absolute w-2 h-2 invisible before:absolute before:w-2 before:h-2 before:visible before:rotate-45 -bottom-1 bg-blue-600 before:bg-blue-600"
+    style="position: absolute; left: 0px; transform: translate(0px, 0px);"
+  />
 </div>
 `;
 
 exports[`Tooltip secondary should have the correct styles 1`] = `
 <div
-  class="p-1 text-sm font-display rounded-sm bg-gray-100 text-gray-600"
+  class="px-1 text-sm font-display border-b-2 bg-gray-100 border-gray-200 text-gray-600"
   data-popper-escaped="true"
   data-popper-placement="top"
   data-popper-reference-hidden="true"
@@ -51,12 +59,16 @@ exports[`Tooltip secondary should have the correct styles 1`] = `
   >
     Hello
   </p>
+  <div
+    class="absolute w-2 h-2 invisible before:absolute before:w-2 before:h-2 before:visible before:rotate-45 -bottom-1 bg-gray-100 before:bg-gray-600"
+    style="position: absolute; left: 0px; transform: translate(0px, 0px);"
+  />
 </div>
 `;
 
 exports[`Tooltip success should have the correct styles 1`] = `
 <div
-  class="p-1 text-sm font-display rounded-sm bg-green-600 text-white"
+  class="px-1 text-sm font-display border-b-2 bg-green-600 border-green-700 text-white"
   data-popper-escaped="true"
   data-popper-placement="top"
   data-popper-reference-hidden="true"
@@ -69,12 +81,16 @@ exports[`Tooltip success should have the correct styles 1`] = `
   >
     Hello
   </p>
+  <div
+    class="absolute w-2 h-2 invisible before:absolute before:w-2 before:h-2 before:visible before:rotate-45 -bottom-1 bg-green-600 before:bg-green-600"
+    style="position: absolute; left: 0px; transform: translate(0px, 0px);"
+  />
 </div>
 `;
 
 exports[`Tooltip warning should have the correct styles 1`] = `
 <div
-  class="p-1 text-sm font-display rounded-sm bg-yellow-600 text-white"
+  class="px-1 text-sm font-display border-b-2 bg-yellow-600 border-yellow-700 text-white"
   data-popper-escaped="true"
   data-popper-placement="top"
   data-popper-reference-hidden="true"
@@ -87,5 +103,9 @@ exports[`Tooltip warning should have the correct styles 1`] = `
   >
     Hello
   </p>
+  <div
+    class="absolute w-2 h-2 invisible before:absolute before:w-2 before:h-2 before:visible before:rotate-45 -bottom-1 bg-yellow-600 before:bg-yellow-600"
+    style="position: absolute; left: 0px; transform: translate(0px, 0px);"
+  />
 </div>
 `;
