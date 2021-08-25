@@ -27,7 +27,7 @@ export { default as Col } from './components/Col';
 export type { IColProps } from './components/Col';
 
 export { default as Content } from './components/Content';
-export type { IContentProps } from './components/Content';
+export type { TContentProps } from './components/Content';
 
 export { default as DataTable } from './components/DataTable';
 export type { IDataTableProps } from './components/DataTable';

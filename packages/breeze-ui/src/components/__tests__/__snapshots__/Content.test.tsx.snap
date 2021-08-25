@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Content should render correctly as a div by default 1`] = `
+<div
+  class="max-w-7xl mx-auto pb-12 px-4 sm:px-6 lg:px-8"
+>
+  <h1>
+    Hello world
+  </h1>
+</div>
+`;
+
+exports[`Content should render correctly as another element 1`] = `
+<section
+  class="max-w-7xl mx-auto pb-12 px-4 sm:px-6 lg:px-8 test-class"
+>
+  <h1>
+    Hello world
+  </h1>
+</section>
+`;
