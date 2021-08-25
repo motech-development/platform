@@ -1,7 +1,6 @@
-import { boolean, withKnobs } from '@storybook/addon-knobs';
+import { boolean, text, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import Button from '../components/Button';
-import Typography from '../components/Typography';
 import Modal from '../components/Modal';
 
 const stories = storiesOf('Modal', module);
@@ -12,18 +11,19 @@ stories.addDecorator(withKnobs);
 stories.add('Basic modal', () => (
   <>
     <Modal
+      content={text(
+        'Content',
+        'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius aliquam laudantium explicabo pariatur iste dolorem animi vitae error totam. At sapiente aliquam accusamus facere veritatis.',
+      )}
+      footer={
+        <>
+          <Button colour="secondary">Actually, don&#39;t bother</Button>
+          <Button colour="primary">Yes, go for it</Button>
+        </>
+      }
       isOpen={boolean('Show', true)}
-      title="My modal"
+      title="Are you sure you want to do this?"
       onDismiss={onDismiss}
-    >
-      <Typography rule component="h1" variant="h2" margin="lg">
-        Are you sure you want to do this?
-      </Typography>
-      <Typography component="p" variant="p" margin="lg">
-        Clicking OK will delete this permanently
-      </Typography>
-      <Button colour="danger">Delete</Button>{' '}
-      <Button>Actually, don&#39;t bother</Button>
-    </Modal>
+    />
   </>
 ));

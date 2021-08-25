@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Modal when open should show content 1`] = `
+<div
+  aria-labelledby="headlessui-dialog-title-6"
+  aria-modal="true"
+  class="fixed z-10 inset-0 overflow-y-auto"
+  id="headlessui-dialog-1"
+  role="dialog"
+>
+  <div
+    class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    />
+    <span
+      aria-hidden="true"
+      class="hidden sm:inline-block sm:align-middle sm:h-screen"
+    >
+      ​
+    </span>
+    <div
+      class="inline-block align-bottom bg-gray-100 px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
+    >
+      <div>
+        <div
+          class="text-center"
+        >
+          <div>
+            <h3
+              class="mb-2.5 text-center font-display text-3xl font-semibold"
+              id="headlessui-dialog-title-6"
+            >
+              Title
+            </h3>
+            <hr
+              class="w-12 border-t-4 border-red-600 shadow-md m-auto mb-2.5"
+            />
+          </div>
+          <div
+            class="mt-2"
+          >
+            <p
+              data-testid="content"
+            >
+              Content
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="mt-6 grid grid-cols-2 gap-3 grid-flow-row-dense"
+      >
+        <button
+          tabindex="0"
+          type="button"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

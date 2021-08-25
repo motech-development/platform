@@ -1,4 +1,4 @@
-import { FC, forwardRef, TableHTMLAttributes } from 'react';
+import { FC, forwardRef, ThHTMLAttributes } from 'react';
 import { Box } from 'react-polymorphic-box';
 import TAlignment from '../utils/alignment';
 import { classNames, textAlignmentClass } from '../utils/className';
@@ -6,7 +6,7 @@ import { classNames, textAlignmentClass } from '../utils/className';
 type TTableCellAs = 'td' | 'th';
 
 export interface ITableCellProps
-  extends TableHTMLAttributes<HTMLTableDataCellElement> {
+  extends ThHTMLAttributes<HTMLTableDataCellElement> {
   align?: TAlignment;
   as?: TTableCellAs;
   noWrap?: boolean;

@@ -12,3 +12,9 @@ Object.defineProperty(window, 'crypto', {
   },
   writable: true,
 });
+
+(window.IntersectionObserver as jest.Mock) = jest.fn(() => ({
+  disconnect: jest.fn(),
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+}));

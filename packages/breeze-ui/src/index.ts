@@ -59,7 +59,7 @@ export { default as Masonry } from './components/Masonry';
 export type { IMasonryProps } from './components/Masonry';
 
 export { default as Modal } from './components/Modal';
-export type { IModalProps } from './components/Modal';
+export type { TModalProps } from './components/Modal';
 
 export { default as Notifications } from './components/Notifications';
 export type { INotificationsProps } from './components/Notifications';
