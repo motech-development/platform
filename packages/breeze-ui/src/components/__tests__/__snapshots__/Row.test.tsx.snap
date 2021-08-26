@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Row should output the correct styles with custom sizes 1`] = `
+<div
+  class="grid grid-cols-10 gap-5"
+>
+  <div
+    data-testid="col"
+  />
+</div>
+`;
+
+exports[`Row should render content 1`] = `
+<div
+  class="grid grid-cols-10 gap-5"
+>
+  <div
+    data-testid="col"
+  />
+</div>
+`;
+
+exports[`Row should render with the default styles 1`] = `
+<div
+  class="grid grid-cols-12 gap-0"
+>
+  <div
+    data-testid="col"
+  />
+</div>
+`;

@@ -1,0 +1,157 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Col alignment should have the correct styles when alignment set to centre 1`] = `
+<div
+  class="relative text-center col-span-12"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col alignment should have the correct styles when alignment set to left 1`] = `
+<div
+  class="relative text-left col-span-12"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col alignment should have the correct styles when alignment set to right 1`] = `
+<div
+  class="relative text-right col-span-12"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col alignment should have the correct styles when vertical alignment set to middle 1`] = `
+<div
+  class="relative text-left flex items-center col-span-12"
+>
+  <div
+    class="flex-1"
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col lg should have the correct styles when size and offset is set 1`] = `
+<div
+  class="relative text-left col-span-12 lg:col-start-4 lg:col-span-6"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col lg should have the correct styles when size is set 1`] = `
+<div
+  class="relative text-left col-span-12 lg:col-span-6"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col md should have the correct styles when size and offset is set 1`] = `
+<div
+  class="relative text-left col-span-12 md:col-start-4 md:col-span-6"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col md should have the correct styles when size is set 1`] = `
+<div
+  class="relative text-left col-span-12 md:col-span-6"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col sm should have the correct styles when size and offset is set 1`] = `
+<div
+  class="relative text-left col-span-12 sm:col-start-4 sm:col-span-6"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col sm should have the correct styles when size is set 1`] = `
+<div
+  class="relative text-left col-span-12 sm:col-span-6"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col xs should have the correct default styles 1`] = `
+<div
+  class="relative text-left col-span-12"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col xs should have the correct styles when size and offset is set 1`] = `
+<div
+  class="relative text-left col-start-4 col-span-6"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;
+
+exports[`Col xs should have the correct styles when size is set 1`] = `
+<div
+  class="relative text-left col-span-6"
+>
+  <div
+    class=""
+  >
+    Hello
+  </div>
+</div>
+`;

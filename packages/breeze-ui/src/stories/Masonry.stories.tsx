@@ -3,6 +3,7 @@ import { storiesOf } from '@storybook/react';
 import Card from '../components/Card';
 import Typography from '../components/Typography';
 import Masonry from '../components/Masonry';
+import { TColumn, TGap } from '../utils/grid';
 
 const stories = storiesOf('Masonry', module);
 
@@ -11,10 +12,17 @@ stories.addDecorator(withKnobs);
 stories.add('Basic masonry', () => (
   <>
     <Masonry
-      xs={number('Columns in extra small viewport', 1)}
-      sm={number('Columns in small viewport', 2)}
-      md={number('Columns in medium viewport', 3)}
-      lg={number('Columns in large viewport', 4)}
+      gutter={
+        number('Gutter', 5, {
+          max: 5,
+          min: 0,
+          range: true,
+        }) as TGap
+      }
+      xs={number('Columns in extra small viewport', 1) as TColumn}
+      sm={number('Columns in small viewport', 2) as TColumn}
+      md={number('Columns in medium viewport', 3) as TColumn}
+      lg={number('Columns in large viewport', 4) as TColumn}
     >
       <Card>
         <div style={{ height: '200px' }}>

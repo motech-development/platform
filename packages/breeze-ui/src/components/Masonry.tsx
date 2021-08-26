@@ -1,32 +1,23 @@
 import { FC, ReactNode } from 'react';
-
 import useBreakpoint from '../hooks/useBreakpoint';
+import { TColumn, TGap } from '../utils/grid';
 import Col from './Col';
 import Row from './Row';
 
-interface IMasonryItemContainerProps {
-  children: ReactNode;
-  gutter: string;
-}
-
-const MasonryItem: FC<IMasonryItemContainerProps> = ({ children }) => (
-  <div>{children}</div>
-);
-
-const calculateCols = (cols: number) => 12 / cols;
+const calculateCols = (cols: number) => Math.round(12 / cols) as TColumn;
 
 export interface IMasonryProps {
   children: ReactNode | ReactNode[];
-  gutter?: string;
-  lg: number;
-  md: number;
-  sm: number;
-  xs: number;
+  gutter?: TGap;
+  lg: TColumn;
+  md: TColumn;
+  sm: TColumn;
+  xs: TColumn;
 }
 
 const Masonry: FC<IMasonryProps> = ({
   children,
-  gutter = '1rem',
+  gutter = 0,
   lg,
   md,
   sm,
@@ -47,10 +38,11 @@ const Masonry: FC<IMasonryProps> = ({
     const colIndex = i % columns;
 
     cols[colIndex].push(
+      // @tailwind: mb-0 mb-1 mb-2 mb-3 mb-4 mb-5
       // eslint-disable-next-line react/no-array-index-key
-      <MasonryItem key={i} gutter={gutter}>
+      <div className={`mb-${gutter}`} key={i}>
         {child}
-      </MasonryItem>,
+      </div>,
     );
   });
 
