@@ -1,8 +1,5 @@
-// TODO: Schema stuff
 import { boolean, withKnobs } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-// import { bool, date, object, string } from 'yup';
-import Button from '../components/Button';
 import Card from '../components/Card';
 import CheckBox from '../components/CheckBox';
 import Col from '../components/Col';
@@ -13,41 +10,8 @@ import TextBox from '../components/TextBox';
 import Typeahead from '../components/Typeahead';
 import Radio from '../components/Radio';
 import Select from '../components/Select';
-import Form from '../components/Form';
 
 const stories = storiesOf('Form', module);
-const initialValues = {
-  category: '',
-  choice: '',
-  dob: '',
-  email: '',
-  extra: {
-    sortCode: '',
-    telephone: '',
-  },
-  name: 'Mo Gusbi',
-  password: '',
-  terms: false,
-  typeahead: '',
-  upload: '',
-};
-// const validationSchema = object()
-//   .shape({
-//     category: string().required(),
-//     choice: string().required(),
-//     dob: date().required(),
-//     email: string().email().required(),
-//     extra: object().shape({
-//       sortCode: string().required(),
-//       telephone: string().required(),
-//     }),
-//     name: string().required(),
-//     password: string().required(),
-//     terms: bool().oneOf([true]).required(),
-//     typeahead: string().required(),
-//     upload: string().required(),
-//   })
-//   .required();
 const options = [
   {
     name: 'Travel',
@@ -58,7 +22,6 @@ const options = [
     value: 'sales',
   },
 ];
-const submit = () => {};
 const disabled = () => boolean('Disabled', false);
 const readOnly = () => boolean('Read only', false);
 
@@ -69,17 +32,7 @@ stories.add('Basic form', () => (
     <Row>
       <Col md={6} mdOffset={4}>
         <Card padding="lg">
-          <Form
-            submitLabel="Register"
-            initialValues={initialValues}
-            // validationSchema={validationSchema}
-            onSubmit={submit}
-            cancel={
-              <Button block colour="danger" size="lg">
-                Cancel
-              </Button>
-            }
-          >
+          <form>
             <TextBox
               disabled={disabled()}
               readOnly={readOnly()}
@@ -135,10 +88,31 @@ stories.add('Basic form', () => (
 
             <TextBox
               disabled={disabled()}
+              errorMessage="This field is required"
               readOnly={readOnly()}
               name="extra.telephone"
               type="text"
               label="Telephone"
+              prefix="+44"
+            />
+
+            <TextBox
+              disabled={disabled()}
+              readOnly={readOnly()}
+              name="extra.vat"
+              type="text"
+              label="VAT"
+              suffix="%"
+            />
+
+            <TextBox
+              disabled={disabled()}
+              decimalScale={2}
+              readOnly={readOnly()}
+              name="extra.price"
+              type="text"
+              label="Price"
+              prefix="£"
             />
 
             <TextBox
@@ -190,7 +164,7 @@ stories.add('Basic form', () => (
                 form.setFieldValue('upload', file.name);
               }}
             />
-          </Form>
+          </form>
         </Card>
       </Col>
     </Row>

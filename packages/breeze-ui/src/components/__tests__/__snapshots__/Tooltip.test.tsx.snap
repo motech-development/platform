@@ -8,7 +8,7 @@ exports[`Tooltip danger should have the correct styles 1`] = `
   data-popper-reference-hidden="true"
   id="test"
   role="tooltip"
-  style="position: absolute; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, -10px);"
+  style="position: fixed; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, -10px);"
 >
   <p
     class="whitespace-nowrap"
@@ -30,7 +30,7 @@ exports[`Tooltip primary should have the correct styles 1`] = `
   data-popper-reference-hidden="true"
   id="test"
   role="tooltip"
-  style="position: absolute; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, -10px);"
+  style="position: fixed; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, -10px);"
 >
   <p
     class="whitespace-nowrap"
@@ -52,7 +52,7 @@ exports[`Tooltip secondary should have the correct styles 1`] = `
   data-popper-reference-hidden="true"
   id="test"
   role="tooltip"
-  style="position: absolute; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, -10px);"
+  style="position: fixed; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, -10px);"
 >
   <p
     class="whitespace-nowrap"
@@ -74,7 +74,7 @@ exports[`Tooltip success should have the correct styles 1`] = `
   data-popper-reference-hidden="true"
   id="test"
   role="tooltip"
-  style="position: absolute; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, -10px);"
+  style="position: fixed; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, -10px);"
 >
   <p
     class="whitespace-nowrap"
@@ -96,7 +96,7 @@ exports[`Tooltip warning should have the correct styles 1`] = `
   data-popper-reference-hidden="true"
   id="test"
   role="tooltip"
-  style="position: absolute; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, -10px);"
+  style="position: fixed; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, -10px);"
 >
   <p
     class="whitespace-nowrap"

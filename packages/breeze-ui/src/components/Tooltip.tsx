@@ -5,6 +5,7 @@ import { classNames, themeClass } from '../utils/className';
 import TTheme from '../utils/theme';
 
 export interface ITooltipProps {
+  className?: string;
   colour?: TTheme;
   id: string;
   message: ReactNode;
@@ -33,6 +34,7 @@ const arrowClass = (placement?: Placement) => {
 };
 
 const Tooltip: FC<ITooltipProps> = ({
+  className = 'inline-block',
   colour = 'primary',
   message,
   id,
@@ -65,6 +67,7 @@ const Tooltip: FC<ITooltipProps> = ({
         },
       ],
       placement,
+      strategy: 'fixed',
     },
   );
   const hideTooltip = () => {
@@ -91,7 +94,7 @@ const Tooltip: FC<ITooltipProps> = ({
   return (
     <>
       <div
-        className="inline-block"
+        className={className}
         onBlur={hideTooltip}
         onFocus={showTooltip}
         onMouseOver={showTooltip}

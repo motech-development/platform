@@ -1,7 +1,9 @@
+const forms = require('@tailwindcss/forms');
+
 module.exports = {
   darkMode: false,
   mode: 'jit',
-  plugins: [],
+  plugins: [forms],
   purge: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {

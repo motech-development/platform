@@ -1,0 +1,1596 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TextBox danger should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox danger should correctly render when decimal scale is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="20.00"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox danger should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby="test-error"
+      class="block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TextBox danger should correctly render when format is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="00-00-00"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox danger should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby="test-description"
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="test-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`TextBox danger should correctly render when prefix is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="£20"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox danger should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox danger should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox danger should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox danger should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox danger should correctly render when suffix is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="20%"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox danger should correctly render when type is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="email"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox primary should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox primary should correctly render when decimal scale is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="20.00"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox primary should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby="test-error"
+      class="block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TextBox primary should correctly render when format is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="00-00-00"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox primary should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby="test-description"
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="test-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`TextBox primary should correctly render when prefix is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="£20"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox primary should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox primary should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox primary should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox primary should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox primary should correctly render when suffix is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="20%"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox primary should correctly render when type is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      id="test"
+      name="test"
+      type="email"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render when decimal scale is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="20.00"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby="test-error"
+      class="block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render when format is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="00-00-00"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby="test-description"
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="test-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render when prefix is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="£20"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render when suffix is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="20%"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox secondary should correctly render when type is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      id="test"
+      name="test"
+      type="email"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox success should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox success should correctly render when decimal scale is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="20.00"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox success should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby="test-error"
+      class="block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TextBox success should correctly render when format is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="00-00-00"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox success should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby="test-description"
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="test-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`TextBox success should correctly render when prefix is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="£20"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox success should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox success should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox success should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox success should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox success should correctly render when suffix is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="20%"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox success should correctly render when type is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      id="test"
+      name="test"
+      type="email"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox warning should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox warning should correctly render when decimal scale is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="20.00"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox warning should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby="test-error"
+      class="block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TextBox warning should correctly render when format is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="00-00-00"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox warning should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby="test-description"
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="test-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`TextBox warning should correctly render when prefix is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="£20"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox warning should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox warning should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox warning should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox warning should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      id="test"
+      name="test"
+      type="text"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox warning should correctly render when suffix is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      id="test"
+      inputmode="numeric"
+      name="test"
+      type="text"
+      value="20%"
+    />
+  </div>
+</div>
+`;
+
+exports[`TextBox warning should correctly render when type is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test input
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <input
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      id="test"
+      name="test"
+      type="email"
+    />
+  </div>
+</div>
+`;
