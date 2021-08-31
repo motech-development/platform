@@ -1,0 +1,1516 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Select danger should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select danger should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby="test-error"
+      class="block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Select danger should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby="test-description"
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="test-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`Select danger should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select danger should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select danger should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select danger should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select primary should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select primary should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby="test-error"
+      class="block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Select primary should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby="test-description"
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="test-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`Select primary should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select primary should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select primary should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select primary should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select secondary should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select secondary should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby="test-error"
+      class="block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Select secondary should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby="test-description"
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="test-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`Select secondary should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select secondary should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select secondary should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select secondary should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select success should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select success should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby="test-error"
+      class="block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Select success should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby="test-description"
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="test-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`Select success should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select success should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select success should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select success should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select warning should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select warning should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby="test-error"
+      class="block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Select warning should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby="test-description"
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="test-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`Select warning should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select warning should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select warning should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;
+
+exports[`Select warning should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="test"
+  >
+    Test select
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <select
+      aria-describedby=""
+      class="block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500 cursor-pointer pl-3 pr-10 py-2"
+      id="test"
+      name="test"
+    >
+      <option
+        disabled=""
+        value=""
+      >
+        Select item
+      </option>
+      <option
+        value="1"
+      >
+        Item 1
+      </option>
+      <option
+        value="2"
+      >
+        Item 2
+      </option>
+    </select>
+  </div>
+</div>
+`;

@@ -63,7 +63,6 @@ stories.add('Basic form', () => (
 
             <Select
               disabled={disabled()}
-              readOnly={readOnly()}
               options={options}
               name="category"
               label="Category"
