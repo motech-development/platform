@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProgressBar danger should render the progress bar with a max value 1`] = `
+<progress
+  class="appearance-none border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4 webkit-progress-value:bg-red-600 webkit-progress-bar:bg-red-200 moz-progress-bar:bg-red-600"
+  max="80"
+  value="40"
+/>
+`;
+
+exports[`ProgressBar danger should render the progress bar without a max value 1`] = `
+<progress
+  class="appearance-none border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4 webkit-progress-value:bg-red-600 webkit-progress-bar:bg-red-200 moz-progress-bar:bg-red-600"
+  max="100"
+  value="50"
+/>
+`;
+
+exports[`ProgressBar primary should render the progress bar with a max value 1`] = `
+<progress
+  class="appearance-none border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4 webkit-progress-value:bg-blue-600 webkit-progress-bar:bg-blue-200 moz-progress-bar:bg-blue-600"
+  max="80"
+  value="40"
+/>
+`;
+
+exports[`ProgressBar primary should render the progress bar without a max value 1`] = `
+<progress
+  class="appearance-none border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4 webkit-progress-value:bg-blue-600 webkit-progress-bar:bg-blue-200 moz-progress-bar:bg-blue-600"
+  max="100"
+  value="50"
+/>
+`;
+
+exports[`ProgressBar secondary should render the progress bar with a max value 1`] = `
+<progress
+  class="appearance-none border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4 webkit-progress-value:bg-gray-600 webkit-progress-bar:bg-gray-200 moz-progress-bar:bg-gray-600"
+  max="80"
+  value="40"
+/>
+`;
+
+exports[`ProgressBar secondary should render the progress bar without a max value 1`] = `
+<progress
+  class="appearance-none border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4 webkit-progress-value:bg-gray-600 webkit-progress-bar:bg-gray-200 moz-progress-bar:bg-gray-600"
+  max="100"
+  value="50"
+/>
+`;
+
+exports[`ProgressBar success should render the progress bar with a max value 1`] = `
+<progress
+  class="appearance-none border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4 webkit-progress-value:bg-green-600 webkit-progress-bar:bg-green-200 moz-progress-bar:bg-green-600"
+  max="80"
+  value="40"
+/>
+`;
+
+exports[`ProgressBar success should render the progress bar without a max value 1`] = `
+<progress
+  class="appearance-none border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4 webkit-progress-value:bg-green-600 webkit-progress-bar:bg-green-200 moz-progress-bar:bg-green-600"
+  max="100"
+  value="50"
+/>
+`;
+
+exports[`ProgressBar warning should render the progress bar with a max value 1`] = `
+<progress
+  class="appearance-none border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4 webkit-progress-value:bg-yellow-600 webkit-progress-bar:bg-yellow-200 moz-progress-bar:bg-yellow-600"
+  max="80"
+  value="40"
+/>
+`;
+
+exports[`ProgressBar warning should render the progress bar without a max value 1`] = `
+<progress
+  class="appearance-none border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4 webkit-progress-value:bg-yellow-600 webkit-progress-bar:bg-yellow-200 moz-progress-bar:bg-yellow-600"
+  max="100"
+  value="50"
+/>
+`;
