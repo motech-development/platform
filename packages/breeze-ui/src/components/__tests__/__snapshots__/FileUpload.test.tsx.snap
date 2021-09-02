@@ -1,0 +1,2091 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FileUpload danger should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload danger should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby="upload-error"
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload danger should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby="upload-description"
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="upload-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`FileUpload danger should correctly render when loading 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 z-10"
+        type="button"
+      >
+        <svg
+          class="animate-spin absolute top-2/4 left-2/4 w-5 h-5 -mt-2.5 -ml-2.5"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-50"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            fill="currentColor"
+          />
+        </svg>
+        <span
+          class="invisible"
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload danger should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload danger should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload danger should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload danger should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload primary should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload primary should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby="upload-error"
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload primary should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby="upload-description"
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="upload-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`FileUpload primary should correctly render when loading 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 z-10"
+        type="button"
+      >
+        <svg
+          class="animate-spin absolute top-2/4 left-2/4 w-5 h-5 -mt-2.5 -ml-2.5"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-50"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            fill="currentColor"
+          />
+        </svg>
+        <span
+          class="invisible"
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload primary should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload primary should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload primary should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload primary should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload secondary should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-gray-100 hover:bg-gray-300 focus:ring-gray-500 text-gray-600 py-2 px-4 text-base hover:bg-gray-700 focus:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload secondary should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby="upload-error"
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload secondary should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-gray-100 hover:bg-gray-300 focus:ring-gray-500 text-gray-600 py-2 px-4 text-base hover:bg-gray-700 focus:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby="upload-description"
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="upload-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`FileUpload secondary should correctly render when loading 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-gray-100 hover:bg-gray-300 focus:ring-gray-500 text-gray-600 py-2 px-4 text-base cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 z-10"
+        type="button"
+      >
+        <svg
+          class="animate-spin absolute top-2/4 left-2/4 w-5 h-5 -mt-2.5 -ml-2.5"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-50"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            fill="currentColor"
+          />
+        </svg>
+        <span
+          class="invisible"
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload secondary should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-gray-100 hover:bg-gray-300 focus:ring-gray-500 text-gray-600 py-2 px-4 text-base hover:bg-gray-700 focus:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload secondary should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-gray-100 hover:bg-gray-300 focus:ring-gray-500 text-gray-600 py-2 px-4 text-base hover:bg-gray-700 focus:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload secondary should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-gray-100 hover:bg-gray-300 focus:ring-gray-500 text-gray-600 py-2 px-4 text-base hover:bg-gray-700 focus:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload secondary should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-gray-100 hover:bg-gray-300 focus:ring-gray-500 text-gray-600 py-2 px-4 text-base hover:bg-gray-700 focus:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-gray-500 focus:border-gray-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload success should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-green-600 text-white py-2 px-4 text-base hover:bg-green-700 focus:ring-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload success should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby="upload-error"
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload success should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-green-600 text-white py-2 px-4 text-base hover:bg-green-700 focus:ring-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby="upload-description"
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="upload-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`FileUpload success should correctly render when loading 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-green-600 text-white py-2 px-4 text-base cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 z-10"
+        type="button"
+      >
+        <svg
+          class="animate-spin absolute top-2/4 left-2/4 w-5 h-5 -mt-2.5 -ml-2.5"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-50"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            fill="currentColor"
+          />
+        </svg>
+        <span
+          class="invisible"
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload success should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-green-600 text-white py-2 px-4 text-base hover:bg-green-700 focus:ring-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload success should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-green-600 text-white py-2 px-4 text-base hover:bg-green-700 focus:ring-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload success should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-green-600 text-white py-2 px-4 text-base hover:bg-green-700 focus:ring-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload success should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-green-600 text-white py-2 px-4 text-base hover:bg-green-700 focus:ring-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-green-500 focus:border-green-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload warning should correctly render 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-yellow-600 text-white py-2 px-4 text-base hover:bg-yellow-700 focus:ring-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload warning should correctly render when error message is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-red-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby="upload-error"
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-red-300 pr-10 focus:ring-red-500 focus:border-red-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+    <div
+      class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-5 w-5 text-red-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          fill-rule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload warning should correctly render when help text is set 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-yellow-600 text-white py-2 px-4 text-base hover:bg-yellow-700 focus:ring-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby="upload-description"
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+  <p
+    class="mt-2 text-sm text-gray-600"
+    id="upload-description"
+  >
+    This is some help text
+  </p>
+</div>
+`;
+
+exports[`FileUpload warning should correctly render when loading 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-yellow-600 text-white py-2 px-4 text-base cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 z-10"
+        type="button"
+      >
+        <svg
+          class="animate-spin absolute top-2/4 left-2/4 w-5 h-5 -mt-2.5 -ml-2.5"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-50"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            fill="currentColor"
+          />
+        </svg>
+        <span
+          class="invisible"
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload warning should correctly render when spacing is set to lg 1`] = `
+<div
+  class="mb-6"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-yellow-600 text-white py-2 px-4 text-base hover:bg-yellow-700 focus:ring-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload warning should correctly render when spacing is set to md 1`] = `
+<div
+  class="mb-4"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-yellow-600 text-white py-2 px-4 text-base hover:bg-yellow-700 focus:ring-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload warning should correctly render when spacing is set to none 1`] = `
+<div
+  class="mb-0"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-yellow-600 text-white py-2 px-4 text-base hover:bg-yellow-700 focus:ring-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileUpload warning should correctly render when spacing is set to sm 1`] = `
+<div
+  class="mb-2"
+>
+  <label
+    class="block text-sm font-medium text-gray-700"
+    for="upload"
+  >
+    Upload
+  </label>
+  <div
+    class="mt-1 relative shadow-sm"
+  >
+    <div
+      class="flex"
+    >
+      <button
+        class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-yellow-600 text-white py-2 px-4 text-base hover:bg-yellow-700 focus:ring-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 z-10"
+        type="button"
+      >
+        <span
+          class=""
+        >
+          Browse
+        </span>
+      </button>
+      <div
+        class="bg-white border px-3 py-2 relative overflow-hidden text-gray-500 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+      >
+        <p
+          class="truncate"
+        >
+          Select a file to upload
+        </p>
+        <input
+          aria-describedby=""
+          class="opacity-0 absolute top-0 left-0 bottom-0 block w-full sm:text-sm border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+          id="upload"
+          name="upload"
+          type="file"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;

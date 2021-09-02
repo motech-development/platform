@@ -1,4 +1,4 @@
-import { FC, ForwardedRef, forwardRef, InputHTMLAttributes } from 'react';
+import { ForwardedRef, forwardRef, InputHTMLAttributes } from 'react';
 import NumberFormat from 'react-number-format';
 import useInput from '../hooks/useInput';
 import TSpacing from '../utils/spacing';
@@ -22,10 +22,7 @@ export interface ITextBoxProps
   type?: TTextBoxType;
 }
 
-const TextBox: FC<ITextBoxProps> = forwardRef<
-  HTMLInputElement | NumberFormat,
-  ITextBoxProps
->(
+const TextBox = forwardRef<HTMLInputElement | NumberFormat, ITextBoxProps>(
   (
     {
       className = '',

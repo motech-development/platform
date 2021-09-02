@@ -19,6 +19,7 @@ const InputValidation: FC<IInputValidation> = ({ errorMessage, id }) => (
         aria-hidden="true"
       />
     }
+    placement="left"
   />
 );
 

@@ -1,4 +1,4 @@
-import { FC, forwardRef, SelectHTMLAttributes } from 'react';
+import { forwardRef, SelectHTMLAttributes } from 'react';
 import useInput from '../hooks/useInput';
 import { classNames } from '../utils/className';
 import IOption from '../utils/option';
@@ -18,7 +18,7 @@ export interface ISelectProps
   theme?: TTheme;
 }
 
-const Select: FC<ISelectProps> = forwardRef<HTMLSelectElement, ISelectProps>(
+const Select = forwardRef<HTMLSelectElement, ISelectProps>(
   (
     {
       className = '',

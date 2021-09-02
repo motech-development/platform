@@ -1,4 +1,4 @@
-import { FC, forwardRef, ThHTMLAttributes } from 'react';
+import { forwardRef, ThHTMLAttributes } from 'react';
 import { Box } from 'react-polymorphic-box';
 import TAlignment from '../utils/alignment';
 import { classNames, textAlignmentClass } from '../utils/className';
@@ -12,10 +12,7 @@ export interface ITableCellProps
   noWrap?: boolean;
 }
 
-const TableCell: FC<ITableCellProps> = forwardRef<
-  HTMLTableDataCellElement,
-  ITableCellProps
->(
+const TableCell = forwardRef<HTMLTableDataCellElement, ITableCellProps>(
   (
     { align = 'left', as = 'td', className = '', noWrap = true, ...rest },
     ref,

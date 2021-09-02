@@ -2,7 +2,7 @@
 
 exports[`Button block should be displayed as an block element 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base w-full hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base w-full hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -15,7 +15,7 @@ exports[`Button block should be displayed as an block element 1`] = `
 
 exports[`Button block should have the correct padding when lg 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-4 px-6 text-lg w-full hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-4 px-6 text-lg w-full hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -28,7 +28,7 @@ exports[`Button block should have the correct padding when lg 1`] = `
 
 exports[`Button block should have the correct padding when md 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base w-full hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base w-full hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -41,7 +41,7 @@ exports[`Button block should have the correct padding when md 1`] = `
 
 exports[`Button block should have the correct padding when sm 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-0 px-2 text-sm w-full hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-0 px-2 text-sm w-full hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -54,7 +54,7 @@ exports[`Button block should have the correct padding when sm 1`] = `
 
 exports[`Button block should not be displayed as a block element 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -67,7 +67,7 @@ exports[`Button block should not be displayed as a block element 1`] = `
 
 exports[`Button block should not be displayed as a block element by default 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -80,7 +80,7 @@ exports[`Button block should not be displayed as a block element by default 1`] 
 
 exports[`Button loading should render correctly when loading 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base cursor-not-allowed bg-opacity-75 hover:bg-opacity-75"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base cursor-not-allowed bg-opacity-75 hover:bg-opacity-75"
   type="button"
 >
   <svg
@@ -112,7 +112,7 @@ exports[`Button loading should render correctly when loading 1`] = `
 
 exports[`Button size should render when size is lg 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-4 px-6 text-lg hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-4 px-6 text-lg hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -125,7 +125,7 @@ exports[`Button size should render when size is lg 1`] = `
 
 exports[`Button size should render when size is md 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -138,7 +138,7 @@ exports[`Button size should render when size is md 1`] = `
 
 exports[`Button size should render when size is sm 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-0 px-2 text-sm hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-0 px-2 text-sm hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -151,7 +151,7 @@ exports[`Button size should render when size is sm 1`] = `
 
 exports[`Button theme should have the correct danger styles 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-red-600 text-white py-2 px-4 text-base hover:bg-red-700 focus:ring-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -164,7 +164,7 @@ exports[`Button theme should have the correct danger styles 1`] = `
 
 exports[`Button theme should have the correct primary styles 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base hover:bg-blue-700 focus:ring-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -177,7 +177,7 @@ exports[`Button theme should have the correct primary styles 1`] = `
 
 exports[`Button theme should have the correct secondary styles 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-gray-100 hover:bg-gray-300 focus:ring-gray-500 text-gray-600 py-2 px-4 text-base hover:bg-gray-700 focus:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-gray-100 hover:bg-gray-300 focus:ring-gray-500 text-gray-600 py-2 px-4 text-base hover:bg-gray-700 focus:ring-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -190,7 +190,7 @@ exports[`Button theme should have the correct secondary styles 1`] = `
 
 exports[`Button theme should have the correct success styles 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-green-600 text-white py-2 px-4 text-base hover:bg-green-700 focus:ring-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-green-600 text-white py-2 px-4 text-base hover:bg-green-700 focus:ring-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span
@@ -203,7 +203,7 @@ exports[`Button theme should have the correct success styles 1`] = `
 
 exports[`Button theme should have the correct warning styles 1`] = `
 <button
-  class="group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-yellow-600 text-white py-2 px-4 text-base hover:bg-yellow-700 focus:ring-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+  class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-yellow-600 text-white py-2 px-4 text-base hover:bg-yellow-700 focus:ring-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
   type="button"
 >
   <span

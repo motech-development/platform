@@ -1,17 +1,16 @@
-import { FC, forwardRef, TableHTMLAttributes } from 'react';
+import { forwardRef, TableHTMLAttributes } from 'react';
 import { classNames } from '../utils/className';
 
 export type TTableBodyProps = TableHTMLAttributes<HTMLTableSectionElement>;
 
-const TableBody: FC<TTableBodyProps> = forwardRef<
-  HTMLTableSectionElement,
-  TTableBodyProps
->(({ className = '', ...rest }, ref) => (
-  <tbody
-    className={classNames('font-sans text-sm', className)}
-    ref={ref}
-    {...rest}
-  />
-));
+const TableBody = forwardRef<HTMLTableSectionElement, TTableBodyProps>(
+  ({ className = '', ...rest }, ref) => (
+    <tbody
+      className={classNames('font-sans text-sm', className)}
+      ref={ref}
+      {...rest}
+    />
+  ),
+);
 
 export default TableBody;

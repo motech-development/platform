@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, FC, forwardRef } from 'react';
+import { ButtonHTMLAttributes, forwardRef } from 'react';
 import { classNames } from '../utils/className';
 import TSize from '../utils/size';
 import TTheme from '../utils/theme';
@@ -28,7 +28,7 @@ export interface IButtonProps
   type?: TButtonType;
 }
 
-const Button: FC<IButtonProps> = forwardRef<HTMLImageElement, IButtonProps>(
+const Button = forwardRef<HTMLImageElement, IButtonProps>(
   (
     {
       block = false,

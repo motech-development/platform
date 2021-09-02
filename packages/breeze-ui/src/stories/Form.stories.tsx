@@ -159,9 +159,7 @@ stories.add('Basic form', () => (
               helpText="Select a photo to upload"
               name="upload"
               label="Your photo"
-              onSelect={(file, form) => {
-                form.setFieldValue('upload', file.name);
-              }}
+              placeholder="Select file to upload"
             />
           </form>
         </Card>

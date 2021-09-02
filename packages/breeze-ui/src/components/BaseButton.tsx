@@ -44,7 +44,7 @@ const BaseButton = forwardRef(
       {/* @tailwind: px-2 px-4 px-6 */}
       <Box
         className={classNames(
-          'group items-center relative mt-auto shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none',
+          'group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none',
           themeClass(colour, 'bg-{theme}-600 text-white', {
             secondary:
               'bg-{theme}-100 hover:bg-{theme}-300 focus:ring-{theme}-500 text-{theme}-600',

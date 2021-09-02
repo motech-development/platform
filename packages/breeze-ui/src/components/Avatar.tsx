@@ -1,4 +1,4 @@
-import { FC, forwardRef, ImgHTMLAttributes } from 'react';
+import { forwardRef, ImgHTMLAttributes } from 'react';
 import { classNames } from '../utils/className';
 
 export interface IAvatarProps extends ImgHTMLAttributes<HTMLImageElement> {
@@ -6,7 +6,7 @@ export interface IAvatarProps extends ImgHTMLAttributes<HTMLImageElement> {
   src: string;
 }
 
-const Avatar: FC<IAvatarProps> = forwardRef<HTMLImageElement, IAvatarProps>(
+const Avatar = forwardRef<HTMLImageElement, IAvatarProps>(
   ({ alt, className = 'h-8 w-8', src, ...rest }, ref) => (
     <img
       className={classNames('rounded-full', className)}
