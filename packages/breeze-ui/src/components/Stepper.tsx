@@ -1,4 +1,9 @@
-import { FC, ReactNode } from 'react';
+import { Children, FC, ReactNode, useState } from 'react';
+import Button from './Button';
+import Card from './Card';
+import Col from './Col';
+import ProgressBar from './ProgressBar';
+import Row from './Row';
 
 export interface IStepperProps {
   children: ReactNode[];
@@ -7,18 +12,81 @@ export interface IStepperProps {
   onStart?: ReactNode;
   previousLabel: string;
   start?: number;
-  enableNext?(step: number): boolean;
+  enableNext?: (step: number) => boolean;
 }
 
-// {
-//   children,
-//   enableNext = () => true,
-//   nextLabel,
-//   onComplete,
-//   onStart,
-//   previousLabel,
-//   start = 0,
-// }
-const Stepper: FC<IStepperProps> = () => <div />;
+const Stepper: FC<IStepperProps> = ({
+  children,
+  enableNext = () => true,
+  nextLabel,
+  onComplete,
+  onStart,
+  previousLabel,
+  start = 0,
+}) => {
+  const [step, setStep] = useState(start);
+  const activeStep = Children.toArray(children)[step];
+  const steps = Children.count(children) - 1;
+  const next = () => {
+    setStep(step + 1);
+  };
+  const showNext = step < steps;
+  const previous = () => {
+    setStep(step - 1);
+  };
+  const disablePrevious = step === 0;
+  const progress = (step / steps) * 100;
+  const showOnStart = disablePrevious && onStart;
+
+  return (
+    <Row gutter={5}>
+      <Col>{activeStep}</Col>
+
+      <Col>
+        <Row>
+          <Col xs={12} md={6} mdOffset={7}>
+            <div className="bg-gray-100">
+              <ProgressBar progress={progress} />
+            </div>
+
+            <Card padding="md">
+              <Row gutter={4}>
+                <Col xs={12} md={6}>
+                  {showOnStart && onStart}
+
+                  {!showOnStart && (
+                    <Button
+                      block
+                      disabled={disablePrevious}
+                      size="md"
+                      onClick={previous}
+                    >
+                      {previousLabel}
+                    </Button>
+                  )}
+                </Col>
+
+                <Col xs={12} md={6} align="right">
+                  {showNext && (
+                    <Button
+                      block
+                      disabled={!enableNext(step)}
+                      size="md"
+                      onClick={next}
+                    >
+                      {nextLabel}
+                    </Button>
+                  )}
+
+                  {!showNext && onComplete}
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+        </Row>
+      </Col>
+    </Row>
+  );
+};
 
 export default Stepper;

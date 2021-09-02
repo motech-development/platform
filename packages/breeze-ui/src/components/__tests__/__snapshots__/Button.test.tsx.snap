@@ -81,6 +81,7 @@ exports[`Button block should not be displayed as a block element by default 1`] 
 exports[`Button loading should render correctly when loading 1`] = `
 <button
   class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none bg-blue-600 text-white py-2 px-4 text-base cursor-not-allowed bg-opacity-75 hover:bg-opacity-75"
+  disabled=""
   type="button"
 >
   <svg

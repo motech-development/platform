@@ -11,23 +11,23 @@ stories.add('Basic stepper', () => (
       previousLabel="Go back"
       nextLabel="Next"
       onComplete={
-        <Button block disabled colour="success" size="lg">
+        <Button block disabled colour="success">
           The end!
         </Button>
       }
       onStart={
-        <Button block colour="secondary" size="lg">
+        <Button block colour="secondary">
           Exit
         </Button>
       }
     >
-      <Card padding="lg">Step 1</Card>
+      <Card padding="md">Step 1</Card>
 
-      <Card padding="lg">Step 2</Card>
+      <Card padding="md">Step 2</Card>
 
-      <Card padding="lg">Step 3</Card>
+      <Card padding="md">Step 3</Card>
 
-      <Card padding="lg">Step 4</Card>
+      <Card padding="md">Step 4</Card>
     </Stepper>
   </>
 ));

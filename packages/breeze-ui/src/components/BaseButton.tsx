@@ -61,6 +61,7 @@ const BaseButton = forwardRef(
               ),
           className,
         )}
+        disabled={disabled}
         as={defaultElement}
         ref={ref}
         // eslint-disable-next-line react/jsx-props-no-spreading

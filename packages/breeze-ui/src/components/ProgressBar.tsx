@@ -20,7 +20,7 @@ const ProgressBar = forwardRef<HTMLProgressElement, IProgressBarProps>(
       {/* @tailwind: moz-progress-bar:bg-blue-600 moz-progress-bar:bg-gray-600 moz-progress-bar:bg-green-600 moz-progress-bar:bg-red-600 moz-progress-bar:bg-yellow-600 */}
       <progress
         className={classNames(
-          'appearance-none border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4',
+          'appearance-none block border-0 p-0 m-0 w-full h-4 webkit-progress-value:h-4 webkit-progress-bar:h-4 moz-progress-bar:h-4',
           themeClass(
             theme,
             'webkit-progress-value:bg-{theme}-600 webkit-progress-bar:bg-{theme}-200 moz-progress-bar:bg-{theme}-600',
