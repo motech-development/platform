@@ -2,6 +2,7 @@ import { babel } from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import external from 'rollup-plugin-exclude-dependencies-from-bundle';
+import postcss from 'rollup-plugin-postcss';
 import pkg from './package.json';
 
 export default [
@@ -28,6 +29,16 @@ export default [
       babel({
         babelHelpers: 'runtime',
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      }),
+      postcss({
+        config: {
+          path: './postcss.config.js',
+        },
+        extensions: ['.css'],
+        inject: {
+          insertAt: 'top',
+        },
+        minimize: true,
       }),
     ],
   },

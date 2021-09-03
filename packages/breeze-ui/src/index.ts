@@ -1,3 +1,5 @@
+import 'tailwindcss/tailwind.css';
+
 export { default as Alert } from './components/Alert';
 export type { IAlertProps } from './components/Alert';
 
@@ -124,3 +126,5 @@ export {
   ToastContext,
   useToast,
 } from './providers/ToastProvider';
+
+export type { default as IOption } from './utils/option';

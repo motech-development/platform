@@ -99,6 +99,7 @@
     "rimraf": "^3.0.2",
     "rollup": "^2.44.0",
     "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.18",
+    "rollup-plugin-postcss": "^4.0.1",
     "serverless": "^2.32.0",
     "serverless-appsync-plugin": "^1.8.0",
     "serverless-dynamodb-local": "^0.2.39",

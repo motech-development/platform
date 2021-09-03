@@ -10,7 +10,8 @@ export interface IFormProps {
   onSubmit(values: FormikValues): void | Promise<void>;
   submitLabel: string;
   // TODO: Use built in Yup types
-  // validationSchema: ObjectSchema<FormikValues>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  validationSchema: any;
 }
 
 // {
