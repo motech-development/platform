@@ -25648,7 +25648,7 @@ fsevents@^1.2.7:
     serverless-dynamodb-local: ^0.2.39
     serverless-finch: ^2.6.0
     serverless-offline: ^6.9.0
-    serverless-prune-plugin: ^1.5.0
+    serverless-prune-plugin: ^1.5.1
     serverless-step-functions: ^2.29.0
     serverless-webpack: ^5.4.0
     typescript: ^4.1.2
@@ -29826,12 +29826,14 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"serverless-prune-plugin@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "serverless-prune-plugin@npm:1.5.0"
+"serverless-prune-plugin@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "serverless-prune-plugin@npm:1.5.1"
   dependencies:
     bluebird: ^3.4.7
-  checksum: 6bd4787c89e0904ae17d4ca5b23f8ea18a217a03327d44e1018a08a455682b4e6d0c3ab98f3a81e2a62dd2659eae9e4b5476abf3cbff86178ab603a2be8064aa
+  peerDependencies:
+    serverless: 1 || 2
+  checksum: ef4f71a5a57db5389154b2dfd3f5c5f3019240c2ed549969b64987904e596d8d1db15cbf101582a7abe1d8816311cf60b50b3121abadf44bfe0ff33a469bda93
   languageName: node
   linkType: hard
 
