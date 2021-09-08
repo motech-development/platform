@@ -11969,24 +11969,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30000981, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001125, caniuse-lite@npm:^1.0.30001181":
-  version: 1.0.30001204
-  resolution: "caniuse-lite@npm:1.0.30001204"
-  checksum: 7b3ad68d6b38b4758a0b73504659b7e2bd016007d60d1b7c0913905985207753e99e5ea883d206b2260d48f07bacb96234f61e47d07b8af63de8a8e45350f073
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30000844":
-  version: 1.0.30001249
-  resolution: "caniuse-lite@npm:1.0.30001249"
-  checksum: d6a7b78e21258b27e238e997a70c3257aa02121a2e05f7636399a967503816af02fb0b11029f2f6e2e363d5267cf4366ca60f6fb33e206dfa6020836e4452a86
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001219":
-  version: 1.0.30001236
-  resolution: "caniuse-lite@npm:1.0.30001236"
-  checksum: e1f38df1d37d3f628d84f38487e7edad2c8c57b9ea934e06455a2c3e4d8f283fa3e5b420a61f29539e38abd64942ea201de76195659c0aabfa34a3775ac21cc2
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30000844, caniuse-lite@npm:^1.0.30000981, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001125, caniuse-lite@npm:^1.0.30001181, caniuse-lite@npm:^1.0.30001219":
+  version: 1.0.30001255
+  resolution: "caniuse-lite@npm:1.0.30001255"
+  checksum: 6889855b5e4d4496d183c52eb214327d8a8120b2c7b935948ae44cf64748c7b2f3c13d3917a10bb47697b9ba5e9a4bfd4b1ed8319f7f8e6609b3ebd3ba1184b3
   languageName: node
   linkType: hard
 
@@ -14073,15 +14059,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cy2@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "cy2@npm:1.2.1"
+"cy2@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "cy2@npm:1.3.0"
   dependencies:
+    debug: ^4.3.2
     js-yaml: ^4.0.0
     npm-which: ^3.0.1
   bin:
     cy2: bin/cy2
-  checksum: ee4255f6c80e5c1ba870276734086a438ec985db166670daea0a6c31fa37dfb574f00aa3edfe9d32cadf524f1db24ab4fea5959c766c57c77ece1984df0ba879
+  checksum: 36c0da62f543c9b5e88cdc9a4691bfcc926f7c5926a72aea9290289cb5bde97ef9ed6f33a5c522b06f648a20fdc096ed8a4e81257c20f5fe3eae0ef4b6c90757
   languageName: node
   linkType: hard
 
@@ -25622,7 +25609,7 @@ fsevents@^1.2.7:
     cache-loader: ^4.1.0
     commitizen: ^4.2.3
     copy-webpack-plugin: 6.4.1
-    cy2: ^1.2.1
+    cy2: ^1.3.0
     cypress: 8.2.0
     cypress-axe: ^0.12.2
     cypress-file-upload: ^5.0.3
