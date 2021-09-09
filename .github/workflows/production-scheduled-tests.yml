@@ -28,7 +28,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -37,7 +37,7 @@ jobs:
         uses: actions/cache@v2.1.6
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cache-v2-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-cache-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-cache-
 
@@ -78,7 +78,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -86,7 +86,7 @@ jobs:
         uses: actions/cache@v2.1.6
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -96,9 +96,9 @@ jobs:
           path: |
             ./applications/accounts/warm-up/node_modules/.cache
             ./applications/accounts/warm-up/.serverless
-          key: ${{ runner.os }}-accounts-warm-up-v2-${{ github.sha }}
+          key: ${{ runner.os }}-accounts-warm-up-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-accounts-warm-up-v2-
+            ${{ runner.os }}-accounts-warm-up-v3-
 
       - name: Warm up
         run: yarn workspace @accounts/warm-up start --stage $STAGE
@@ -152,7 +152,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v2-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -160,7 +160,7 @@ jobs:
         uses: actions/cache@v2.1.6
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cache-v2-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-cache-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-cache-
 
