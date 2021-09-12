@@ -332,6 +332,7 @@ jobs:
         run: yarn deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
 
       - name: Update definitions
+        if: github.event.action != 'synchronize'
         run: yarn execute update:definitions -- --scope=@core/anti-virus -- -- --stage $STAGE
 
   # Cypress (storage)
@@ -950,6 +951,11 @@ jobs:
       REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_DEV }}
       STAGE: ${{ github.event.pull_request.number }}
+
+    # TODO: Remove me
+    environment:
+      name: Accounts
+      url: https://accounts.${{ secrets.PROD_DOMAIN }}
 
     steps:
       - name: Install Docker tools
