@@ -951,13 +951,6 @@ jobs:
       REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_DEV }}
       STAGE: ${{ github.event.pull_request.number }}
-      # TODO: Remove me
-      GITHUB_ENVIRONMENT: https://accounts.${{ secrets.PROD_DOMAIN }}
-
-    # TODO: Remove me
-    environment:
-      name: Accounts
-      url: ${{ env.GITHUB_ENVIRONMENT }}
 
     steps:
       - name: Install Docker tools
