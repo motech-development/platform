@@ -862,19 +862,20 @@ jobs:
       - deploy-accounts-api
       - deploy-accounts-infrastructure
 
-    environment:
-      name: Accounts
-      url: https://accounts.${{ secrets.PROD_DOMAIN }}
-
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GITHUB_ENVIRONMENT: https://accounts.${{ secrets.PROD_DOMAIN }}
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       REACT_APP_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_PROD }}
       REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
       REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_PROD }}
       STAGE: production
+
+    environment:
+      name: Accounts
+      url: ${{ env.GITHUB_ENVIRONMENT }}
 
     steps:
       - name: Checkout code
