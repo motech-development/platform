@@ -332,6 +332,7 @@ jobs:
         run: yarn deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
 
       - name: Update definitions
+        if: github.event.action != 'synchronize'
         run: yarn execute update:definitions -- --scope=@core/anti-virus -- -- --stage $STAGE
 
   # Cypress (storage)

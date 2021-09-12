@@ -872,6 +872,10 @@ jobs:
       REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_PROD }}
       STAGE: production
 
+    environment:
+      name: Accounts
+      url: https://accounts.motechdevelopment.co.uk # TODO: Find a way to do this using env var or output
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.3.4
