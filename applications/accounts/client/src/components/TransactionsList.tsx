@@ -110,12 +110,14 @@ const TransactionsList: FC<ITransactionsListProps> = ({
 
                 <TableCell>
                   <LinkButton
+                    data-testid={`View ${item.name}`}
                     to={`/my-companies/accounts/${companyId}/view-transaction/${item.id}`}
                     size="sm"
                   >
                     {t('transactions-list.view')}
                   </LinkButton>{' '}
                   <Button
+                    data-testid={`Delete ${item.name}`}
                     colour="danger"
                     size="sm"
                     onClick={() => launchDeleteModal(item.id, item.name)}

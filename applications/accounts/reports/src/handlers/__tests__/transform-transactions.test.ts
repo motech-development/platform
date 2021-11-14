@@ -101,11 +101,24 @@ describe('transform-transactions', () => {
         },
         {
           amount: -20,
+          attachment: 'COMPANY-ID/033502c5-c41f-48af-8d23-2a29206b151c.pdf',
           category: 'Equipment',
           companyId: 'COMPANY-ID',
           date: '2020-07-12T15:44:56Z',
           description: 'Back support',
           id: '28313b9f-72e9-47ab-b499-b4702d0a5451',
+          name: 'Amazon',
+          status: Status.Confirmed,
+          vat: 3.33,
+        },
+        {
+          amount: -20,
+          attachment: 'COMPANY-ID/781ee046-1975-448d-9181-62a6ad7484ab.pdf',
+          category: 'Equipment',
+          companyId: 'COMPANY-ID',
+          date: '2020-07-12T15:44:56Z',
+          description: 'Back support',
+          id: '90298d73-94cc-4bde-a2ac-7f0195353bb1',
           name: 'Amazon',
           status: Status.Confirmed,
           vat: 3.33,
@@ -152,12 +165,20 @@ describe('transform-transactions', () => {
     await expect(handler(event, context, callback)).resolves.toEqual({
       attachments: [
         {
+          key: 'OWNER-ID/COMPANY-ID/781ee046-1975-448d-9181-62a6ad7484ab.pdf',
+          path: 'report/assets/2020/July/12/amazon-back-support-90298d73-94cc-4bde-a2ac-7f0195353bb1.pdf',
+        },
+        {
+          key: 'OWNER-ID/COMPANY-ID/033502c5-c41f-48af-8d23-2a29206b151c.pdf',
+          path: 'report/assets/2020/July/12/amazon-back-support-28313b9f-72e9-47ab-b499-b4702d0a5451.pdf',
+        },
+        {
           key: 'OWNER-ID/COMPANY-ID/a921a6f1-b250-4d22-9d19-65adb8d454f4.png',
-          path: 'report/assets/2020/July/16/qdos-public-and-employers-liability-insurance-+-professional-indemnity-insurance.png',
+          path: 'report/assets/2020/July/16/qdos-public-and-employers-liability-insurance-+-professional-indemnity-insurance-4a473186-2747-4cb5-868e-14f50db7a1e1.png',
         },
         {
           key: 'OWNER-ID/COMPANY-ID/8215eaf2-0a7b-4096-80eb-eae21ad88eae.jpg',
-          path: 'report/assets/2020/October/12/aws-cloud-services.jpg',
+          path: 'report/assets/2020/October/12/aws-cloud-services-d45b5afd-ede7-4add-b53b-1bbcb05b1bfe.jpg',
         },
       ],
       companyId: 'COMPANY-ID',
@@ -185,6 +206,14 @@ describe('transform-transactions', () => {
           In: '£5000.00',
           Name: 'Test Client',
           Out: '£0.00',
+        },
+        {
+          Category: 'Equipment',
+          Date: '12/07/2020',
+          Description: 'Back support',
+          In: '£0.00',
+          Name: 'Amazon',
+          Out: '£20.00',
         },
         {
           Category: 'Equipment',
@@ -254,5 +283,11 @@ describe('transform-transactions', () => {
       ],
       owner: 'OWNER-ID',
     });
+  });
+
+  it('should export the correct number of attachments', async () => {
+    const { attachments } = await handler(event, context, callback);
+
+    expect(attachments).toHaveLength(4);
   });
 });

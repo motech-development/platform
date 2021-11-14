@@ -182,12 +182,14 @@ const PendingTransactions: FC = () => {
 
                       <TableCell>
                         <LinkButton
+                          data-testid={`View ${name}`}
                           to={`/my-companies/accounts/${companyId}/view-transaction/${id}`}
                           size="sm"
                         >
                           {t('pending-transactions.transactions.view')}
                         </LinkButton>{' '}
                         <Button
+                          data-testid={`Delete ${name}`}
                           colour="danger"
                           size="sm"
                           onClick={() => launchDeleteModal(id, name)}

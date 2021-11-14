@@ -768,11 +768,7 @@ describe('Non-VAT registered', () => {
       cy.fixture('data/account.json').then((res) => {
         const transaction = res[2];
 
-        cy.findAllByRole('button', {
-          name: 'Delete',
-        })
-          .eq(0)
-          .click();
+        cy.findByTestId(`Delete ${transaction.supplier}`).click();
 
         cy.findByLabelText(`Please type ${transaction.supplier} to confirm`)
           .should('be.visible')
@@ -948,11 +944,7 @@ describe('Non-VAT registered', () => {
 
         cy.a11yWithLogs();
 
-        cy.findAllByRole('button', {
-          name: 'Delete',
-        })
-          .eq(1)
-          .click();
+        cy.findByTestId(`Delete ${transaction.supplier}`).click();
 
         cy.findByLabelText(`Please type ${transaction.supplier} to confirm`)
           .should('be.visible')

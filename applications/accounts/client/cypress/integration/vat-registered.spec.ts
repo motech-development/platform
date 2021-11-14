@@ -871,11 +871,7 @@ describe('VAT registered', () => {
         cy.fixture('upload/invoice.pdf').then((file) => {
           const transaction = res[6];
 
-          cy.findAllByRole('link', {
-            name: 'View',
-          })
-            .eq(3)
-            .safeClick();
+          cy.findAllByTestId(`View ${transaction.supplier}`).eq(1).safeClick();
 
           cy.findByRole('heading', {
             name: 'View transaction',
@@ -936,11 +932,7 @@ describe('VAT registered', () => {
       cy.fixture('data/account.json').then((res) => {
         const transaction = res[0];
 
-        cy.findAllByRole('button', {
-          name: 'Delete',
-        })
-          .eq(3)
-          .click();
+        cy.findAllByTestId(`Delete ${transaction.supplier}`).eq(1).click();
 
         cy.a11yWithLogs();
 
@@ -1070,21 +1062,21 @@ describe('VAT registered', () => {
     });
 
     it('should download attachment', () => {
-      cy.findAllByRole('link', {
-        name: 'View',
-      })
-        .eq(3)
-        .safeClick();
+      cy.fixture('data/account.json').then((res) => {
+        const transaction = res[1];
 
-      cy.findByRole('heading', {
-        name: 'View transaction',
-      }).should('be.visible');
+        cy.findByTestId(`View ${transaction.supplier}`).safeClick();
 
-      cy.findByRole('button', {
-        name: 'Download file',
-      }).click();
+        cy.findByRole('heading', {
+          name: 'View transaction',
+        }).should('be.visible');
 
-      cy.get('div:contains("The download has started")').should('be.visible');
+        cy.findByRole('button', {
+          name: 'Download file',
+        }).click();
+
+        cy.get('div:contains("The download has started")').should('be.visible');
+      });
     });
   });
 
