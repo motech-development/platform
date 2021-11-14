@@ -15,6 +15,7 @@ const schema = object({
       category: string().required(),
       date: string().required(),
       description: string().required(),
+      id: string().uuid().required(),
       name: string().required(),
       vat: number().required(),
     }).required(),
@@ -28,6 +29,7 @@ interface ITransaction {
   category: string;
   date: string;
   description: string;
+  id: string;
   name: string;
   vat: number;
 }
@@ -89,7 +91,7 @@ export const handler: Handler<IEvent> = async (event) => {
 
   const attachments = sorted
     .filter(hasAttachment)
-    .map(({ attachment, date, description, name }) => {
+    .map(({ attachment, date, description, id, name }) => {
       const isoDate = DateTime.fromISO(date);
       const extension = extname(attachment);
 
@@ -101,7 +103,7 @@ export const handler: Handler<IEvent> = async (event) => {
           isoDate.toFormat('yyyy'),
           isoDate.toFormat('MMMM'),
           isoDate.toFormat('dd'),
-          `${slug(name)}-${slug(description)}${extension}`,
+          `${slug(name)}-${slug(description)}-${id}${extension}`,
         ),
       };
     });
