@@ -9,11 +9,14 @@ provider:
   runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-api
+  deploymentBucket:
+    name: ${self:service}-deployment-bucket
 
 package:
   individually: true
 
 plugins:
+  - serverless-deployment-bucket
   - serverless-appsync-plugin
   - serverless-webpack
   - serverless-prune-plugin

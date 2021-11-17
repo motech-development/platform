@@ -9,11 +9,14 @@ provider:
   runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-warm-up
+  deploymentBucket:
+    name: ${self:service}-deployment-bucket
 
 package:
   individually: true
 
 plugins:
+  - serverless-deployment-bucket
   - serverless-step-functions
   - serverless-webpack
   - serverless-prune-plugin

@@ -9,6 +9,8 @@ provider:
   runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-api
+  deploymentBucket:
+    name: ${self:service}-deployment-bucket
   apiGateway:
     apiKeys:
       - value: ${env:CY_API_KEY}
@@ -18,6 +20,7 @@ package:
   individually: true
 
 plugins:
+  - serverless-deployment-bucket
   - serverless-webpack
   - serverless-prune-plugin
 
