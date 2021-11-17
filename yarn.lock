@@ -23372,6 +23372,13 @@ serverless-appsync-plugin@^1.8.0:
     moment "^2.29.1"
     ramda "^0.25.0"
 
+serverless-deployment-bucket@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/serverless-deployment-bucket/-/serverless-deployment-bucket-1.5.1.tgz#39e436b9239a9101dce31672a10349173b118d51"
+  integrity sha512-CoMpzSOLh1+xeEk7nnhp6Atu4hcVa8O/ayuoruPUg9R8oRgNzR1ZxKlOhMxoUozCNdgGp4viQ5YyO9Fblr0lrQ==
+  dependencies:
+    chalk "^2.4.2"
+
 serverless-dynamodb-local@^0.2.39:
   version "0.2.40"
   resolved "https://registry.yarnpkg.com/serverless-dynamodb-local/-/serverless-dynamodb-local-0.2.40.tgz#1c97f678244bfb581e5850d6d43335d3131b59ee"

@@ -9,7 +9,11 @@ provider:
   runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-storage
-  deploymentBucket: ${self:provider.stage}-serverless-deployment-bucket
+  deploymentBucket:
+    name: core-deployment-bucket
+
+plugins:
+  - serverless-deployment-bucket
 
 custom:
   prefix: cypress-${self:provider.stage}

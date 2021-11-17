@@ -9,7 +9,8 @@ provider:
   runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-queue
-  deploymentBucket: ${self:provider.stage}-serverless-deployment-bucket
+  deploymentBucket:
+    name: accounts-deployment-bucket
   environment:
     TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
@@ -17,6 +18,7 @@ package:
   individually: true
 
 plugins:
+  - serverless-deployment-bucket
   - serverless-step-functions
   - serverless-webpack
   - serverless-prune-plugin

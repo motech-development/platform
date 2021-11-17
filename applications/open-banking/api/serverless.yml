@@ -9,7 +9,8 @@ provider:
   runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}
-  deploymentBucket: ${self:provider.stage}-serverless-deployment-bucket
+  deploymentBucket:
+    name: open-banking-deployment-bucket
   environment:
     YapilyCredentials: !Ref YapilyCredentials
 
@@ -19,6 +20,7 @@ package:
   individually: true
 
 plugins:
+  - serverless-deployment-bucket
   - serverless-step-functions
   - serverless-webpack
   - serverless-dynamodb-local
