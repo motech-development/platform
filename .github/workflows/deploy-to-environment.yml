@@ -7,6 +7,8 @@ on:
       - reopened
       - synchronize
 
+concurrency: ephemeral_environment
+
 jobs:
   label:
     name: Label PR
