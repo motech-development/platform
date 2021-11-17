@@ -10,7 +10,7 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-warm-up
   deploymentBucket:
-    name: accounts-deployment-bucket
+    name: ${self:service}-deployment-bucket
 
 package:
   individually: true

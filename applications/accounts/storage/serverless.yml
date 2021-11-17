@@ -10,7 +10,7 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-storage
   deploymentBucket:
-    name: accounts-deployment-bucket
+    name: ${self:service}-deployment-bucket
   environment:
     DOWNLOAD_BUCKET: !Ref DownloadBucket
     UPLOAD_BUCKET: !Ref UploadBucket

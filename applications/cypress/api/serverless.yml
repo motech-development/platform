@@ -10,7 +10,7 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-api
   deploymentBucket:
-    name: cypress-deployment-bucket
+    name: ${self:service}-deployment-bucket
   apiGateway:
     apiKeys:
       - value: ${env:CY_API_KEY}

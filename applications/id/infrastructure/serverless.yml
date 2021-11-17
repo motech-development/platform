@@ -10,7 +10,7 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-infrastructure
   deploymentBucket:
-    name: core-deployment-bucket
+    name: ${self:service}-deployment-bucket
 
 plugins:
   - serverless-deployment-bucket

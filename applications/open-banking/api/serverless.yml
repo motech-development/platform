@@ -10,7 +10,7 @@ provider:
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}
   deploymentBucket:
-    name: open-banking-deployment-bucket
+    name: ${self:service}-deployment-bucket
   environment:
     YapilyCredentials: !Ref YapilyCredentials
 
