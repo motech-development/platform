@@ -73,7 +73,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 257
+      STAGE: 260
       YAPILY_APPLICATION_KEY: ${{ secrets.YAPILY_APPLICATION_KEY }}
       YAPILY_APPLICATION_SECRET: ${{ secrets.YAPILY_APPLICATION_SECRET }}
 
@@ -117,8 +117,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DEFINITIONS_BUCKET: s3://anti-virus-257-definitions
-      STAGE: 257
+      DEFINITIONS_BUCKET: s3://anti-virus-260-definitions
+      STAGE: 260
 
     steps:
       - name: Checkout code
@@ -173,7 +173,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 257
+      STAGE: 260
 
     steps:
       - name: Checkout code
@@ -228,9 +228,9 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DOWNLOAD_BUCKET: s3://accounts-257-downloads
-      STAGE: 257
-      UPLOAD_BUCKET: s3://accounts-257-uploads
+      DOWNLOAD_BUCKET: s3://accounts-260-downloads
+      STAGE: 260
+      UPLOAD_BUCKET: s3://accounts-260-uploads
 
     steps:
       - name: Checkout code
@@ -290,7 +290,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 257
+      STAGE: 260
 
     steps:
       - name: Checkout code
@@ -341,7 +341,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 257
+      STAGE: 260
 
     steps:
       - name: Checkout code
@@ -393,7 +393,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 257
+      STAGE: 260
 
     steps:
       - name: Checkout code
@@ -446,8 +446,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      REPORTS_BUCKET: s3://accounts-257-reports
-      STAGE: 257
+      REPORTS_BUCKET: s3://accounts-260-reports
+      STAGE: 260
 
     steps:
       - name: Checkout code
@@ -501,7 +501,7 @@ jobs:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: 257
+      STAGE: 260
 
     steps:
       - name: Checkout code
