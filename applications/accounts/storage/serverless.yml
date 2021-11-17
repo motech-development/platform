@@ -9,6 +9,7 @@ provider:
   runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-storage
+  deploymentBucket: ${self:provider.stage}-serverless-deployment-bucket
   environment:
     DOWNLOAD_BUCKET: !Ref DownloadBucket
     UPLOAD_BUCKET: !Ref UploadBucket

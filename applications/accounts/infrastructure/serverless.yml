@@ -9,6 +9,7 @@ provider:
   runtime: nodejs14.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-infrastructure
+  deploymentBucket: ${self:provider.stage}-serverless-deployment-bucket
 
 custom:
   prefix: accounts-${self:provider.stage}

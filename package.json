@@ -28,8 +28,7 @@
     "teardown": "lerna run teardown --stream",
     "teardown:infrastructure": "lerna run teardown:infrastructure --stream",
     "test": "lerna run test --stream",
-    "test:ci": "lerna run test:ci",
-    "update:wizard": "lernaupdate"
+    "test:ci": "lerna run test:ci"
   },
   "repository": {
     "type": "git",
