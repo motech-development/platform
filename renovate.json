@@ -5,5 +5,6 @@
       "automerge": true,
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
     }
-  ]
+  ],
+  "rebaseWhen": "behind-base-branch"
 }
