@@ -5,6 +5,12 @@ on:
     types:
       - closed
 
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: 'Stage'
+        required: true
+
 jobs:
   setup:
     name: Setup
@@ -71,7 +77,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
       YAPILY_APPLICATION_KEY: ${{ secrets.YAPILY_APPLICATION_KEY }}
       YAPILY_APPLICATION_SECRET: ${{ secrets.YAPILY_APPLICATION_SECRET }}
 
@@ -115,8 +121,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DEFINITIONS_BUCKET: s3://anti-virus-${{ github.event.pull_request.number }}-definitions
-      STAGE: ${{ github.event.pull_request.number }}
+      DEFINITIONS_BUCKET: s3://anti-virus-${{ github.event.pull_request.number || github.event.inputs.stage }}-definitions
+      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
       - name: Checkout code
@@ -171,7 +177,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
       - name: Checkout code
@@ -226,9 +232,9 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DOWNLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number }}-downloads
-      STAGE: ${{ github.event.pull_request.number }}
-      UPLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number }}-uploads
+      DOWNLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-downloads
+      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+      UPLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-uploads
 
     steps:
       - name: Checkout code
@@ -288,7 +294,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
       - name: Checkout code
@@ -339,7 +345,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
       - name: Checkout code
@@ -391,7 +397,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
       - name: Checkout code
@@ -444,8 +450,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      REPORTS_BUCKET: s3://accounts-${{ github.event.pull_request.number }}-reports
-      STAGE: ${{ github.event.pull_request.number }}
+      REPORTS_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-reports
+      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
       - name: Checkout code
@@ -499,7 +505,7 @@ jobs:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
       - name: Checkout code
