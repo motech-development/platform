@@ -22,7 +22,7 @@ describe('ViewTransaction', () => {
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    jest.setTimeout(60000);
+    jest.setTimeout(120000);
 
     history = createMemoryHistory({
       initialEntries: ['/accounts/company-id/view-transaction/transaction-id'],
