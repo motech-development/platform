@@ -6,5 +6,7 @@
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
     }
   ],
-  "rebaseWhen": "behind-base-branch"
+  "rebaseWhen": "behind-base-branch",
+  "schedule": ["every hour"],
+  "timezone": "Europe/London"
 }
