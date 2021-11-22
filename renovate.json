@@ -7,6 +7,5 @@
     }
   ],
   "rebaseWhen": "behind-base-branch",
-  "schedule": ["every 1 hour"],
   "timezone": "Europe/London"
 }
