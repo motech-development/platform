@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@apollo/client": "3.5.4",
-    "@auth0/auth0-spa-js": "^1.14.0",
+    "@auth0/auth0-spa-js": "1.19.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
