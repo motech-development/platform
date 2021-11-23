@@ -111,7 +111,7 @@
     "react-test-renderer": "^17.0.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.44.0",
-    "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.18",
+    "rollup-plugin-exclude-dependencies-from-bundle": "1.1.21",
     "serverless": "^2.32.0",
     "serverless-appsync-plugin": "^1.8.0",
     "serverless-deployment-bucket": "^1.5.1",
