@@ -103,7 +103,7 @@
     "lerna": "^4.0.0",
     "lint-staged": "^11.0.0",
     "prettier": "2.3.0",
-    "pretty-quick": "^3.1.0",
+    "pretty-quick": "3.1.2",
     "pug-cli": "^1.0.0-alpha6",
     "pwa-asset-generator": "^4.1.1",
     "react-scripts": "^4.0.3",
