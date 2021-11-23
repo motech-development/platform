@@ -5890,10 +5890,10 @@
   resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.50.tgz#117540e026d64e1846093abbd5adc7e27fda7bcb"
   integrity sha512-VMhZMMQgV1zsR+lX/0IBfAk+8Eb7dPVMWiQGFAt3qjo5x7Ml6b77jUo0e1C3ToD+XRDXqtrfw+6AB0uUsPEr3Q==
 
-"@types/auth0-js@^9.14.3":
-  version "9.14.4"
-  resolved "https://registry.yarnpkg.com/@types/auth0-js/-/auth0-js-9.14.4.tgz#cd358fa2ab5377f37f3ca56fc769877f75fc5ba3"
-  integrity sha512-cnGo/1qzZTtdqirNKn+HHO2g45gtxLwzOwCHhimPQZoR8cNlYertVeHqk0Zm7YXdJBskTkuJuOFVg4hHs27ovA==
+"@types/auth0-js@9.14.5":
+  version "9.14.5"
+  resolved "https://registry.yarnpkg.com/@types/auth0-js/-/auth0-js-9.14.5.tgz#f1f51677e8495a56a8052bd094db1efd08361a48"
+  integrity sha512-ZIHdtQ6Fkn7C+qAECtiP/+igb/vd0b+lOw018c+xEW2QDQFLSnDjtQAPLkdZopOsVdiXdC4JMS5w8ZHQfRGHtw==
 
 "@types/aws-lambda@8.10.85":
   version "8.10.85"
