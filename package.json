@@ -54,7 +54,7 @@
     "@testing-library/user-event": "^13.1.1",
     "@types/archiver": "^5.1.0",
     "@types/assert": "^1.5.1",
-    "@types/auth0-js": "^9.14.3",
+    "@types/auth0-js": "9.14.5",
     "@types/aws-lambda": "8.10.85",
     "@types/aws4": "^1.5.1",
     "@types/file-saver": "2.0.4",
