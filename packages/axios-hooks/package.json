@@ -23,7 +23,7 @@
     "react": "^17.0.2"
   },
   "peerDependencies": {
-    "axios": "0.21.2",
+    "axios": "0.24.0",
     "react": "17.0.2"
   },
   "jest": {
