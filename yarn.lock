@@ -8206,6 +8206,21 @@ aws-lambda-mock-context@^3.2.1:
     pinkie-defer "^1.0.0"
     uuid "^3.0.1"
 
+aws-sdk@2.1036.0:
+  version "2.1036.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1036.0.tgz#47f0d0a38b5bfbd4a7a382a6756a6aa7af627aad"
+  integrity sha512-K0f4uXL32ZdoPmWiuSQEAC5ae5v7gNmhjzoEB7VonE5E8l2umWsoU0Ahm8WPr14LgsvtkeyBuqBjphbxLz6hIw==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
 aws-sdk@^2.7.0, aws-sdk@^2.814.0, aws-sdk@^2.834.0, aws-sdk@^2.874.0, aws-sdk@^2.881.0, aws-sdk@^2.924.0:
   version "2.925.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.925.0.tgz#a352f3adc8274120fb31fa4fc04527d44b6107cf"
