@@ -20,7 +20,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "aws4": "^1.11.0",
+    "aws4": "1.11.0",
     "axios": "^0.21.1"
   }
 }
