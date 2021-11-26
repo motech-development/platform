@@ -22,7 +22,7 @@ jobs:
 
       - name: Restore Node modules
         id: node-modules
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: |
             ./node_modules
@@ -34,7 +34,7 @@ jobs:
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cache-v2-${{ hashFiles('**/yarn.lock') }}
@@ -72,7 +72,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: |
             ./node_modules
@@ -83,7 +83,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v2-${{ hashFiles('**/packages.txt') }}
@@ -91,7 +91,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: |
             ./applications/accounts/warm-up/node_modules/.cache
@@ -139,7 +139,7 @@ jobs:
           cache: yarn
 
       - name: Restore Node modules
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: |
             ./node_modules
@@ -150,7 +150,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore cache
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cache-v2-${{ hashFiles('**/yarn.lock') }}
