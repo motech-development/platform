@@ -8149,12 +8149,14 @@ available-typed-arrays@^1.0.2:
   dependencies:
     array-filter "^1.0.0"
 
-aws-appsync-auth-link@3.0.6, aws-appsync-auth-link@^3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/aws-appsync-auth-link/-/aws-appsync-auth-link-3.0.6.tgz#590e0f382bd0044c465ece7d40525640b2452569"
-  integrity sha512-a/LUBLLVmXnVsZLPMietZFjoQXdzqRVDk2qqv1R+MvZ5l/ZEoWNbfI3ZJy2IY1mAGj+cRzbJt18fnNLRMMEWwA==
+aws-appsync-auth-link@3.0.7, aws-appsync-auth-link@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/aws-appsync-auth-link/-/aws-appsync-auth-link-3.0.7.tgz#2b676b9198101055b91a15b367f9ef2805f2d766"
+  integrity sha512-Jsa53opryGFIOHGok74ICfboxhDN64o11Z+aXoCrAnE0TwzJMMK1F20ha6sYzUuozY9pGYeE+EQ3OVn6waYMog==
   dependencies:
-    aws-sdk "^2.814.0"
+    "@aws-crypto/sha256-js" "^1.2.0"
+    "@aws-sdk/types" "^3.25.0"
+    "@aws-sdk/util-hex-encoding" "^3.29.0"
     debug "2.6.9"
 
 aws-appsync-auth-link@^2.0.7:
@@ -8168,12 +8170,12 @@ aws-appsync-auth-link@^2.0.7:
     apollo-link "1.2.5"
     debug "2.6.9"
 
-aws-appsync-subscription-link@3.0.8:
-  version "3.0.8"
-  resolved "https://registry.yarnpkg.com/aws-appsync-subscription-link/-/aws-appsync-subscription-link-3.0.8.tgz#2585635c44963641becf3b373045a3281da34c14"
-  integrity sha512-KFEROiQX9+nHIG0UFV9rXo7P1vlqe26SRrb8uP23ivzQ3cpIk6rGqhIwecFj2+C0NDWjh3D4yrMYkmO3JbRAoA==
+aws-appsync-subscription-link@3.0.9:
+  version "3.0.9"
+  resolved "https://registry.yarnpkg.com/aws-appsync-subscription-link/-/aws-appsync-subscription-link-3.0.9.tgz#a94f6663e28d400484520bdd7f0527f362bef879"
+  integrity sha512-yaeici7WDMnj/yzATfruYitokJQbzR8cBztzPo1o8MUFUqTj6h36j34k9fwLV6kKd4aNizaDtyUKdFAjogMvaw==
   dependencies:
-    aws-appsync-auth-link "^3.0.6"
+    aws-appsync-auth-link "^3.0.7"
     debug "2.6.9"
     url "^0.11.0"
 
@@ -8239,7 +8241,7 @@ aws-sdk@2.1036.0:
     uuid "3.3.2"
     xml2js "0.4.19"
 
-aws-sdk@^2.7.0, aws-sdk@^2.814.0, aws-sdk@^2.834.0, aws-sdk@^2.874.0, aws-sdk@^2.881.0, aws-sdk@^2.924.0:
+aws-sdk@^2.7.0, aws-sdk@^2.834.0, aws-sdk@^2.874.0, aws-sdk@^2.881.0, aws-sdk@^2.924.0:
   version "2.925.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.925.0.tgz#a352f3adc8274120fb31fa4fc04527d44b6107cf"
   integrity sha512-dHXngzuSTZvIFWizWbU+ceZTAKmgodzEIi/AWbB+z0THKfxD3Iz/CJ7kZ7a9QyZv7X082L68vv3siMhXBMoTLA==
