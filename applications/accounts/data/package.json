@@ -23,7 +23,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "decimal.js": "10.2.1",
+    "decimal.js": "10.3.1",
     "luxon": "2.0.2",
     "uuid": "8.3.2"
   }
