@@ -7897,10 +7897,10 @@ asap@^2.0.0, asap@~2.0.3, asap@~2.0.6:
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
   integrity sha1-5QNHYR1+aQlDIIu9r+vLwvuGbUY=
 
-asl-validator@^1.8.0:
-  version "1.9.8"
-  resolved "https://registry.yarnpkg.com/asl-validator/-/asl-validator-1.9.8.tgz#d5b30d4fe2bc33ba3b195b713679d13fc277ecbc"
-  integrity sha512-t09Xw2JGAswoVHxBSTCO/acCCnDUi3C8zfVq0JNWivCW7+2wsmPU8TBV8iH6tpgjnGLSmCJgckalwOJ0bi3twg==
+asl-validator@^1.9.8:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/asl-validator/-/asl-validator-1.10.0.tgz#9ec7d5136a28dfed863151f2c8a9e29232b1fbb4"
+  integrity sha512-N7/ouOzYaEJqUNf82NarTs6Cg8sZMnHIDVGULjhzw7GLyXgoXkQUZrhvHXCyucvkU4FfeHmzY3TynEjl0/UN3Q==
   dependencies:
     ajv "^6.12.6"
     commander "^5.1.0"
@@ -24026,13 +24026,13 @@ serverless-prune-plugin@1.6.1:
   dependencies:
     bluebird "^3.4.7"
 
-serverless-step-functions@2.30.0:
-  version "2.30.0"
-  resolved "https://registry.yarnpkg.com/serverless-step-functions/-/serverless-step-functions-2.30.0.tgz#57169d4f3744b223a6630a3d5918d96199d821e8"
-  integrity sha512-5/2Xga6FY3/IIJSnMRh1wIv2qQWJv25yHJN67bljj9y5yxVlubt4Xjx68lxA0YHh36lMj+O8ZMG6f55r9CZeig==
+serverless-step-functions@2.32.0:
+  version "2.32.0"
+  resolved "https://registry.yarnpkg.com/serverless-step-functions/-/serverless-step-functions-2.32.0.tgz#7a999d3e4ad6f465f8e2e7681fe83096c1d38db7"
+  integrity sha512-KBc0uGrF4qcJF1KPDbQXRzzZdPZQ8gXhVwzl3GFk/XDYL2iuMrjiEv/1Q7geeRG3fkX3lYT9RVI1uxse3VpxVA==
   dependencies:
     "@hapi/joi" "^15.0.2"
-    asl-validator "^1.8.0"
+    asl-validator "^1.9.8"
     bluebird "^3.4.0"
     chalk "^1.1.1"
     lodash "^4.17.11"
