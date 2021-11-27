@@ -20,11 +20,11 @@
     "test:ci": "react-scripts test --coverage --runInBand"
   },
   "dependencies": {
-    "@apollo/client": "3.5.4",
+    "@apollo/client": "3.5.5",
     "@auth0/auth0-spa-js": "1.19.2",
-    "@fortawesome/fontawesome-svg-core": "^1.2.35",
-    "@fortawesome/free-solid-svg-icons": "^5.15.3",
-    "@fortawesome/react-fontawesome": "^0.1.14",
+    "@fortawesome/fontawesome-svg-core": "1.2.36",
+    "@fortawesome/free-solid-svg-icons": "5.15.4",
+    "@fortawesome/react-fontawesome": "0.1.14",
     "@motech-development/appsync-apollo": "^0.0.0",
     "@motech-development/auth": "^0.0.0",
     "@motech-development/axios-hooks": "^0.0.0",
