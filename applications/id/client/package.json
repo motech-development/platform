@@ -19,7 +19,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-solid-svg-icons": "5.15.4",
-    "@fortawesome/react-fontawesome": "0.1.14",
+    "@fortawesome/react-fontawesome": "0.1.16",
     "@motech-development/axios-hooks": "^0.0.0",
     "@motech-development/breeze-ui": "^0.0.0",
     "@motech-development/ga-web-vitals": "^0.0.0",
