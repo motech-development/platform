@@ -44,9 +44,9 @@
     "yup": "0.29.3"
   },
   "peerDependencies": {
-    "@fortawesome/fontawesome-svg-core": "1.2.35",
-    "@fortawesome/free-solid-svg-icons": "5.15.3",
-    "@fortawesome/react-fontawesome": "0.1.14",
+    "@fortawesome/fontawesome-svg-core": "1.2.36",
+    "@fortawesome/free-solid-svg-icons": "5.15.4",
+    "@fortawesome/react-fontawesome": "0.1.16",
     "@popperjs/core": "2.9.1",
     "formik": "2.2.6",
     "luxon": "^2.0.2",
