@@ -70,7 +70,7 @@
     "@types/styled-components": "5.1.9",
     "@types/uuid": "8.3.3",
     "@types/webpack": "4.41.27",
-    "@types/yup": "0.29.11",
+    "@types/yup": "0.29.13",
     "aws-lambda-mock-context": "3.2.1",
     "aws-sdk": "2.1036.0",
     "axe-core": "4.3.5",

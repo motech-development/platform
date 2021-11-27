@@ -25,6 +25,6 @@
     "@octokit/auth-app": "3.6.1",
     "@octokit/rest": "18.12.0",
     "luxon": "2.0.2",
-    "yup": "0.29.3"
+    "yup": "0.32.11"
   }
 }
