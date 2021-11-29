@@ -1,6 +1,6 @@
 {
   "extends": ["config:base"],
-  "ignoreDeps": ["babel", "jest", "prettier"],
+  "ignoreDeps": ["babel-loader", "eslint", "jest", "prettier"],
   "packageRules": [
     {
       "automerge": true,
