@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -66,7 +66,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -118,7 +118,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -173,7 +173,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -243,7 +243,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -298,7 +298,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -354,7 +354,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -413,7 +413,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -468,7 +468,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -523,7 +523,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -578,7 +578,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -636,7 +636,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -697,7 +697,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -761,7 +761,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -815,7 +815,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
@@ -881,7 +881,7 @@ jobs:
         uses: actions/checkout@v2.4.0
 
       - name: Set Node version
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: 14
           cache: yarn
