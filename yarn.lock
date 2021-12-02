@@ -21889,10 +21889,10 @@ puppeteer@^1.8.0:
     rimraf "^2.6.1"
     ws "^6.1.0"
 
-pwa-asset-generator@6.0.4:
-  version "6.0.4"
-  resolved "https://registry.yarnpkg.com/pwa-asset-generator/-/pwa-asset-generator-6.0.4.tgz#d3625f1d0baac23158fccdee2f17caaab6c0c731"
-  integrity sha512-ykXMnJvzS6qRoaKS+pYFR7vafpd6WfvKZ6nza2Cj877B8eSeP2OXmkXJNSW1gHeWmGB21+YaS8lcR8BDsH7J+A==
+pwa-asset-generator@6.0.5:
+  version "6.0.5"
+  resolved "https://registry.yarnpkg.com/pwa-asset-generator/-/pwa-asset-generator-6.0.5.tgz#11a22caa98546114d0cb95714ed67b7393fcf94d"
+  integrity sha512-Ts5RPjNVr/uhoa0yCqW89nV8txstbMj+strk9l1PJ+vrtOT94BWmE/934KXz/YIBliasoXMloqJF37jq1dF0kw==
   dependencies:
     chalk "4.1.2"
     cheerio "1.0.0-rc.10"
