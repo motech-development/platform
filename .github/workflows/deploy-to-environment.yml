@@ -34,7 +34,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -97,7 +97,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -165,7 +165,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -238,7 +238,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -296,7 +296,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -358,7 +358,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Restore Node modules
@@ -420,7 +420,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Restore Node modules
@@ -478,7 +478,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -538,7 +538,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -598,7 +598,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -658,7 +658,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -722,7 +722,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -784,7 +784,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -851,7 +851,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
@@ -958,7 +958,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           cache: yarn
 
       - name: Generate packages cache key
