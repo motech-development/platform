@@ -335,8 +335,7 @@ jobs:
         run: yarn deploy -- --scope=@core/anti-virus -- -- --stage $STAGE
 
       - name: Update definitions
-        # TODO: Restore
-        # if: github.event.action != 'synchronize' || github.actor == 'renovate[bot]'
+        if: github.event.action != 'synchronize' || github.actor == 'renovate[bot]'
         run: yarn execute update:definitions -- --scope=@core/anti-virus -- -- --stage $STAGE
 
   # Cypress (storage)
