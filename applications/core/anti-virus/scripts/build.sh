@@ -4,7 +4,7 @@ set -e
 mkdir -p clamav
 
 echo "-- Downloading AmazonLinux container --"
-docker pull amazonlinux
+docker pull amazonlinux:2018.03.0.20211015.1
 docker create -i -t -v /home/docker --name s3-antivirus-builder amazonlinux
 docker start s3-antivirus-builder
 
