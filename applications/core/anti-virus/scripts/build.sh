@@ -4,8 +4,8 @@ set -e
 mkdir -p clamav
 
 echo "-- Downloading AmazonLinux container --"
-docker pull amazonlinux
-docker create -i -t -v /home/docker --name s3-antivirus-builder amazonlinux
+docker pull amazonlinux@sha256:d8b4ba4fa093ca879d3af505f5e2083c4cfb42df3e83abf7bfad12ed208d26d2
+docker create -i -t -v /home/docker --name s3-antivirus-builder amazonlinux@sha256:d8b4ba4fa093ca879d3af505f5e2083c4cfb42df3e83abf7bfad12ed208d26d2
 docker start s3-antivirus-builder
 
 echo "-- Updating, downloading and unpacking clamAV and ClamAV update --"
