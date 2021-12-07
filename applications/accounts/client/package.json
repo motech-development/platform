@@ -20,7 +20,7 @@
     "test:ci": "react-scripts test --coverage --runInBand"
   },
   "dependencies": {
-    "@apollo/client": "3.5.5",
+    "@apollo/client": "3.5.6",
     "@auth0/auth0-spa-js": "1.19.3",
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-solid-svg-icons": "5.15.4",
