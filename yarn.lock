@@ -8136,21 +8136,7 @@ auth0-js@9.18.0:
     url-join "^4.0.1"
     winchan "^0.2.2"
 
-auth0@2.32.0:
-  version "2.32.0"
-  resolved "https://registry.yarnpkg.com/auth0/-/auth0-2.32.0.tgz#dd6731fb4c6d7a2a1261218ddbe9bc2326f87734"
-  integrity sha512-i7opuHn8MpOBCEQgS0DlAwT3J1G+MH/qfrnX7Xl5rO9amd8rgK9F/QJ8aRnqsHEgcfbj5UH6JD4gmpoarXokuQ==
-  dependencies:
-    axios "^0.21.1"
-    es6-promisify "^6.1.1"
-    form-data "^3.0.0"
-    jsonwebtoken "^8.5.1"
-    jwks-rsa "^1.10.0"
-    lru-memoizer "^2.1.0"
-    rest-facade "^1.13.0"
-    retry "^0.12.0"
-
-auth0@^2.36.2:
+auth0@2.37.0, auth0@^2.36.2:
   version "2.37.0"
   resolved "https://registry.yarnpkg.com/auth0/-/auth0-2.37.0.tgz#7147ead0e6bbbeada96bb4d5113eac3011ba7ea4"
   integrity sha512-6Kz/+7d3PRb1zKR6O7CVt0EHAu+dphLFbJcvCEn7z9mUyjM0kJp/RnkALfFLfVzmSsaWeBqQNi2uZmdjReCjzQ==
@@ -17335,7 +17321,7 @@ jwa@^1.4.1:
     ecdsa-sig-formatter "1.0.11"
     safe-buffer "^5.0.1"
 
-jwks-rsa@^1.10.0, jwks-rsa@^1.12.1:
+jwks-rsa@^1.12.1:
   version "1.12.3"
   resolved "https://registry.yarnpkg.com/jwks-rsa/-/jwks-rsa-1.12.3.tgz#40232f85d16734cb82837f38bb3e350a34435400"
   integrity sha512-cFipFDeYYaO9FhhYJcZWX/IyZgc0+g316rcHnDpT2dNRNIE/lMOmWKKqp09TkJoYlNFzrEVODsR4GgXJMgWhnA==
@@ -18179,7 +18165,7 @@ lru-cache@~4.0.0:
     pseudomap "^1.0.1"
     yallist "^2.0.0"
 
-lru-memoizer@^2.1.0, lru-memoizer@^2.1.2, lru-memoizer@^2.1.4:
+lru-memoizer@^2.1.2, lru-memoizer@^2.1.4:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/lru-memoizer/-/lru-memoizer-2.1.4.tgz#b864d92b557f00b1eeb322156a0409cb06dafac6"
   integrity sha512-IXAq50s4qwrOBrXJklY+KhgZF+5y98PDaNo0gi/v2KQBFLyWr+JyFvijZXkGKjQj/h9c0OwoE+JZbwUXce76hQ==
@@ -23123,7 +23109,7 @@ responselike@^2.0.0:
   dependencies:
     lowercase-keys "^2.0.0"
 
-rest-facade@^1.13.0, rest-facade@^1.13.1:
+rest-facade@^1.13.1:
   version "1.16.3"
   resolved "https://registry.yarnpkg.com/rest-facade/-/rest-facade-1.16.3.tgz#e4d4b44a4f6a4268f30f02e1f544dd49b040499e"
   integrity sha512-9BQTPLiwg23XZwcWi0ys1wTizfc//0b2G3U6vBWcgqh56ozs2K6CD+Jw4DYcw3AqdPQN7jj8nzRUcUXFVGzb0Q==
