@@ -23671,10 +23671,10 @@ serverless-dynamodb-local@0.2.40:
     dynamodb-localhost "0.0.9"
     lodash "^4.17.0"
 
-serverless-finch@2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/serverless-finch/-/serverless-finch-2.6.0.tgz#c74e7492dbfae52aa6383d4a21bac9138bcd9383"
-  integrity sha512-G5umIBoNyo3MKCtdtbbkkb/7Z84qNstbQnkdscG/VhukYUib+7BiWidAMI+WAFq+JEUf3PW7c3bvt/uFEiMnnA==
+serverless-finch@2.7.6:
+  version "2.7.6"
+  resolved "https://registry.yarnpkg.com/serverless-finch/-/serverless-finch-2.7.6.tgz#67503e0498441713ae491b6b9b8c0b0e32ba8679"
+  integrity sha512-1yaQC6Z3qYEAlEDGuQ7sBdnLngP8UPjwo0WtOygjdDS5ixRONLD1zs7snCuH0KKneAoq4cfBpkgJi1/gb50EmA==
   dependencies:
     is_js "^0.9.0"
     mime "^1.2.11"
