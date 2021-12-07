@@ -29,6 +29,6 @@
     "aws-sdk": "^2.874.0"
   },
   "peerDependencies": {
-    "aws-sdk": "2.1042.0"
+    "aws-sdk": "2.1044.0"
   }
 }
