@@ -56,7 +56,7 @@
     "react-number-format": "4.8.0",
     "react-popper": "2.2.5",
     "react-router-dom": "5.2.0",
-    "styled-components": "5.2.1",
+    "styled-components": "5.3.3",
     "styled-reset": "4.3.4"
   },
   "jest": {
