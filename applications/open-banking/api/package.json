@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@motech-development/api-gateway-handler": "^0.0.0",
-    "axios": "^0.21.1",
+    "axios": "0.21.2",
     "yup": "0.29.3"
   },
   "devDependencies": {
