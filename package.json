@@ -110,7 +110,7 @@
     "react-snap": "1.23.0",
     "react-test-renderer": "17.0.2",
     "rimraf": "3.0.2",
-    "rollup": "2.61.0",
+    "rollup": "2.61.1",
     "rollup-plugin-exclude-dependencies-from-bundle": "1.1.22",
     "serverless": "2.68.0",
     "serverless-appsync-plugin": "1.12.1",
