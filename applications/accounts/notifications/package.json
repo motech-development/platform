@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@motech-development/api-gateway-handler": "^0.0.0",
-    "luxon": "2.1.1",
+    "luxon": "2.2.0",
     "uuid": "8.3.2",
     "yup": "0.29.3"
   }
