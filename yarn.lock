@@ -8131,13 +8131,13 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-auth0-deploy-cli@7.3.1:
-  version "7.3.1"
-  resolved "https://registry.yarnpkg.com/auth0-deploy-cli/-/auth0-deploy-cli-7.3.1.tgz#912d5f7caa4dabe426b4277e3c5a83a6ace60b66"
-  integrity sha512-g1/VT8wixxet1Tdbq1GNuaOKnuJnXTnEHP8qNHuSMtk2Jgt5yCbc/QLgaw4pTlAOlLnjjxwm9nmO3pkcYqK5bQ==
+auth0-deploy-cli@7.3.2:
+  version "7.3.2"
+  resolved "https://registry.yarnpkg.com/auth0-deploy-cli/-/auth0-deploy-cli-7.3.2.tgz#8cad079ea60cd4714f10ba8dbe135b9ada639b6a"
+  integrity sha512-lawoGfrgU632FKpkF2ubxKI4U/l7F+eGn/4YQ4W9KkWXmsi1LpTxU9Wwajd94hv4fBS8kJzi0JR/s/C61qbtkg==
   dependencies:
     ajv "^6.12.6"
-    auth0 "^2.36.2"
+    auth0 "^2.37.0"
     dot-prop "^5.2.0"
     fs-extra "^7.0.0"
     global-agent "^2.1.12"
@@ -8163,7 +8163,7 @@ auth0-js@9.18.0:
     url-join "^4.0.1"
     winchan "^0.2.2"
 
-auth0@2.37.0, auth0@^2.36.2:
+auth0@2.37.0, auth0@^2.37.0:
   version "2.37.0"
   resolved "https://registry.yarnpkg.com/auth0/-/auth0-2.37.0.tgz#7147ead0e6bbbeada96bb4d5113eac3011ba7ea4"
   integrity sha512-6Kz/+7d3PRb1zKR6O7CVt0EHAu+dphLFbJcvCEn7z9mUyjM0kJp/RnkALfFLfVzmSsaWeBqQNi2uZmdjReCjzQ==
