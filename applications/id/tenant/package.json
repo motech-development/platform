@@ -25,7 +25,7 @@
     "auth0": "2.37.0"
   },
   "devDependencies": {
-    "auth0-deploy-cli": "7.3.1",
+    "auth0-deploy-cli": "7.3.2",
     "istanbul-lib-instrument": "5.1.0"
   }
 }
