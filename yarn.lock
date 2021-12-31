@@ -23350,10 +23350,10 @@ serverless-prune-plugin@1.6.1:
   dependencies:
     bluebird "^3.4.7"
 
-serverless-step-functions@3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/serverless-step-functions/-/serverless-step-functions-3.4.0.tgz#a62aea634018fe8e6f7ef77232a247e6c41e744a"
-  integrity sha512-Fb1T1fXmHrgz+83q2H+U/i3W4Rh0LpwC4fhW/OFIWFP893w7atL3CMEtHGP0VZ4TxVt83GGO77lo07NoJTyY5A==
+serverless-step-functions@3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/serverless-step-functions/-/serverless-step-functions-3.5.1.tgz#282e26ee59d21f2034aac75c96202ea8d92140d5"
+  integrity sha512-ACDGK6f0OerG7UH0QNZ8lO4f2t4MrSwuEyMjNWE0pUcD0GugS1aHJhdtGADfJ7yvL6yVA3BRU2x8IlaWNrvOrA==
   dependencies:
     "@hapi/joi" "^15.0.2"
     "@serverless/utils" "^5.20.1"
