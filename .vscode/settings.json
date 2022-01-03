@@ -15,5 +15,6 @@
   ],
   "explorer.autoReveal": false,
   "explorer.openEditors.visible": 0,
-  "search.followSymlinks": false
+  "search.followSymlinks": false,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
