@@ -484,6 +484,7 @@ functions:
   LambdaDataSource:
     handler: src/lambda.handler
     role: LambdaDataSourceRole
+    timeout: 30
     environment:
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 

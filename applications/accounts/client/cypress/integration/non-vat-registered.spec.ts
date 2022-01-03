@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 /* eslint-disable jest/valid-expect-in-promise */
 describe('Non-VAT registered', () => {
   let baseUrl: string | null;
@@ -1014,13 +1016,12 @@ describe('Non-VAT registered', () => {
 
       cy.findByTestId('connected-content').waitForElement();
 
-      const date = new Date();
-      const year = date.getFullYear().toString();
+      const financialYear = DateTime.now().year.toString();
 
       cy.findByLabelText('Financial year')
         .should('be.visible')
         .focus()
-        .select(year);
+        .select(financialYear);
 
       cy.findByLabelText('Confirmed').check();
 
