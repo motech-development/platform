@@ -31,7 +31,7 @@
     "@motech-development/breeze-ui": "^0.0.0",
     "@motech-development/ga-web-vitals": "^0.0.0",
     "@motech-development/query-string-hook": "^0.0.0",
-    "@popperjs/core": "2.11.0",
+    "@popperjs/core": "2.11.2",
     "aws-appsync-auth-link": "3.0.7",
     "aws-appsync-subscription-link": "3.0.9",
     "axios": "0.21.2",
