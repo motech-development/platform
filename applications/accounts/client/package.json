@@ -69,7 +69,7 @@
     "workbox-routing": "6.4.2",
     "workbox-strategies": "6.4.2",
     "workbox-streams": "6.4.2",
-    "yup": "0.29.3"
+    "yup": "0.32.11"
   },
   "eslintConfig": {
     "extends": "react-app"

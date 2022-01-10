@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "cfn-response-async": "1.0.0",
-    "yup": "0.29.3"
+    "yup": "0.32.11"
   },
   "jest": {
     "collectCoverageFrom": [

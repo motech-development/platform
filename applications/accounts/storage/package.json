@@ -23,6 +23,6 @@
     "@motech-development/api-gateway-handler": "^0.0.0",
     "@motech-development/s3-file-operations": "^0.0.0",
     "uuid": "8.3.2",
-    "yup": "0.29.3"
+    "yup": "0.32.11"
   }
 }
