@@ -68,7 +68,7 @@
     "@types/react-router-dom": "5.3.2",
     "@types/serverless": "1.78.40",
     "@types/styled-components": "5.1.9",
-    "@types/uuid": "8.3.3",
+    "@types/uuid": "8.3.4",
     "@types/webpack": "4.41.27",
     "@types/yup": "0.29.11",
     "aws-lambda-mock-context": "3.2.1",
