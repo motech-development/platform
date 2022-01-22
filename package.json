@@ -66,7 +66,7 @@
     "@types/react": "17.0.38",
     "@types/react-dom": "17.0.11",
     "@types/react-router-dom": "5.3.2",
-    "@types/serverless": "1.78.40",
+    "@types/serverless": "1.78.42",
     "@types/styled-components": "5.1.9",
     "@types/uuid": "8.3.4",
     "@types/webpack": "4.41.27",
