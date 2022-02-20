@@ -6145,10 +6145,10 @@
   resolved "https://registry.yarnpkg.com/@types/auth0-js/-/auth0-js-9.14.5.tgz#f1f51677e8495a56a8052bd094db1efd08361a48"
   integrity sha512-ZIHdtQ6Fkn7C+qAECtiP/+igb/vd0b+lOw018c+xEW2QDQFLSnDjtQAPLkdZopOsVdiXdC4JMS5w8ZHQfRGHtw==
 
-"@types/aws-lambda@8.10.89":
-  version "8.10.89"
-  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.89.tgz#22617ecc1eef9571abebb50c947553362da6051b"
-  integrity sha512-jwtSuEZj4rY4R2pAEOXi+RutS8RWbwMzoGlRVukdyOpnfqA/XPkAf8QoGWmg4o/UaNpQ8Mj0Xhkp5SZ1t/Zq4Q==
+"@types/aws-lambda@8.10.92":
+  version "8.10.92"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.92.tgz#645f769ff88b8eba1acd35542695ac322c7757c4"
+  integrity sha512-dB14TltT1SNq73z3MaZfKyyBZ37NAgAFl8jze59bisR4fJ6pB6AYGxItHFkooZbN7UcVJX/cFudM4p8wp1W4rA==
 
 "@types/aws4@1.5.1":
   version "1.5.1"
