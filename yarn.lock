@@ -6707,10 +6707,10 @@
     "@types/mime" "^1"
     "@types/node" "*"
 
-"@types/serverless@1.78.42":
-  version "1.78.42"
-  resolved "https://registry.yarnpkg.com/@types/serverless/-/serverless-1.78.42.tgz#2ac3b50117d6e4ef8af387ddaa6755130b5fc49d"
-  integrity sha512-XFrgbkqX4C1ZLHhufmfRJRc74eSDleAP+mgEMPvNSCDOvn5Gj1KnDEhE1CoikDpWctv/VZFfLjs75Zr1H8upNQ==
+"@types/serverless@1.78.44":
+  version "1.78.44"
+  resolved "https://registry.yarnpkg.com/@types/serverless/-/serverless-1.78.44.tgz#88e9a73f2c33498e4ecff9485dbfaefb8db45a6c"
+  integrity sha512-b73KXePyH6y885r3ojwdJwW9xkx/SqzK+jrXs7A17fKbbiYmpQ1RkKWwER3wbG5T7NnDoCes9dnGFVbS3zkrNA==
 
 "@types/sinonjs__fake-timers@8.1.1":
   version "8.1.1"
