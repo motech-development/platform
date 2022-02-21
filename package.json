@@ -114,7 +114,7 @@
     "rollup-plugin-exclude-dependencies-from-bundle": "1.1.22",
     "serverless": "2.70.0",
     "serverless-appsync-plugin": "1.12.1",
-    "serverless-deployment-bucket": "1.5.1",
+    "serverless-deployment-bucket": "1.5.2",
     "serverless-dynamodb-local": "0.2.40",
     "serverless-finch": "2.8.0",
     "serverless-offline": "8.3.1",
