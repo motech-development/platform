@@ -61,7 +61,7 @@
     "@types/google.analytics": "0.0.42",
     "@types/jest": "26.0.24",
     "@types/luxon": "2.0.9",
-    "@types/node": "12.20.46",
+    "@types/node": "12.20.47",
     "@types/qs": "6.9.7",
     "@types/react": "17.0.39",
     "@types/react-dom": "17.0.11",
