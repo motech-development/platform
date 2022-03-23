@@ -33,7 +33,7 @@
     "@motech-development/query-string-hook": "^0.0.0",
     "@popperjs/core": "2.11.4",
     "aws-appsync-auth-link": "3.0.7",
-    "aws-appsync-subscription-link": "3.0.9",
+    "aws-appsync-subscription-link": "3.0.10",
     "axios": "0.21.2",
     "decimal.js": "10.3.1",
     "file-saver": "2.0.5",
