@@ -1,5 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn lerna run --concurrency 1 --stream precommit
-yarn pretty-quick --staged
+yarn workspaces foreach -v run lint-staged
