@@ -6195,6 +6195,25 @@ __metadata:
 "@motech-development/api-gateway-handler@^0.0.0, @motech-development/api-gateway-handler@workspace:packages/api-gateway-handler":
   version: 0.0.0-use.local
   resolution: "@motech-development/api-gateway-handler@workspace:packages/api-gateway-handler"
+  dependencies:
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
+    "@types/jest": 26.0.24
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-prettier: 4.0.0
+    jest: 26.6.0
+    lint-staged: 12.3.7
+    prettier: 2.3.0
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    typescript: 4.2.3
   languageName: unknown
   linkType: soft
 
@@ -6203,17 +6222,35 @@ __metadata:
   resolution: "@motech-development/appsync-apollo@workspace:packages/appsync-apollo"
   dependencies:
     "@apollo/client": 3.5.10
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
+    "@testing-library/jest-dom": 5.16.4
+    "@testing-library/react": 12.1.4
+    "@types/jest": 26.0.24
+    "@types/react": 17.0.39
+    "@types/react-dom": 17.0.11
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
     aws-appsync-auth-link: 3.0.7
     aws-appsync-subscription-link: 3.0.10
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-config-react-app: 6.0.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-jsx-a11y: 6.5.1
+    eslint-plugin-prettier: 4.0.0
+    eslint-plugin-react: 7.28.0
+    jest: 26.6.0
+    lint-staged: 12.3.7
+    prettier: 2.3.0
     react: ^17.0.2
     react-dom: ^17.0.2
-    unfetch: 4.2.0
-  peerDependencies:
-    "@apollo/client": 3.5.10
-    aws-appsync-auth-link: 3.0.7
-    aws-appsync-subscription-link: 3.0.10
-    react: 17.0.2
-    react-dom: 17.0.2
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    typescript: 4.2.3
   languageName: unknown
   linkType: soft
 
@@ -6222,16 +6259,36 @@ __metadata:
   resolution: "@motech-development/auth@workspace:packages/auth"
   dependencies:
     "@auth0/auth0-spa-js": ^1.14.0
-    "@motech-development/query-string-hook": ^0.0.0
+    "@motech-development/query-string-hook": "workspace:packages/query-string-hook"
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
+    "@testing-library/jest-dom": 5.16.4
+    "@testing-library/react": 12.1.4
+    "@types/jest": 26.0.24
+    "@types/react": 17.0.39
+    "@types/react-dom": 17.0.11
+    "@types/react-router-dom": 5.3.3
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-config-react-app: 6.0.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-jsx-a11y: 6.5.1
+    eslint-plugin-prettier: 4.0.0
+    eslint-plugin-react: 7.28.0
+    jest: 26.6.0
+    lint-staged: 12.3.7
+    prettier: 2.3.0
     react: ^17.0.2
     react-dom: ^17.0.2
     react-router-dom: ^5.2.0
-  peerDependencies:
-    "@auth0/auth0-spa-js": 1.20.1
-    "@motech-development/query-string-hook": ^0.0.0
-    react: 17.0.2
-    react-dom: 17.0.2
-    react-router-dom: 5.2.0
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    typescript: 4.2.3
   languageName: unknown
   linkType: soft
 
@@ -6239,11 +6296,31 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/axios-hooks@workspace:packages/axios-hooks"
   dependencies:
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
+    "@testing-library/react-hooks": 7.0.2
+    "@types/jest": 26.0.24
+    "@types/react": 17.0.39
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
     axios: ^0.21.1
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-config-react-app: 6.0.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-jsx-a11y: 6.5.1
+    eslint-plugin-prettier: 4.0.0
+    eslint-plugin-react: 7.28.0
+    jest: 26.6.0
+    lint-staged: 12.3.7
+    prettier: 2.3.0
     react: ^17.0.2
-  peerDependencies:
-    axios: 0.24.0
-    react: 17.0.2
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    typescript: 4.2.3
   languageName: unknown
   linkType: soft
 
@@ -6255,42 +6332,78 @@ __metadata:
     "@fortawesome/free-solid-svg-icons": ^5.15.3
     "@fortawesome/react-fontawesome": ^0.1.14
     "@popperjs/core": ^2.9.1
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
     "@storybook/addon-a11y": 6.3.12
     "@storybook/addon-knobs": 6.4.0
     "@storybook/react": 6.3.12
     "@storybook/storybook-deployer": 2.8.11
+    "@testing-library/jest-dom": 5.16.4
+    "@testing-library/react": 12.1.4
+    "@testing-library/react-hooks": 7.0.2
+    "@testing-library/user-event": 13.5.0
+    "@types/jest": 26.0.24
+    "@types/luxon": 2.0.9
+    "@types/react": 17.0.39
+    "@types/react-dom": 17.0.11
+    "@types/react-router-dom": 5.3.3
+    "@types/styled-components": 5.1.9
+    "@types/yup": 0.29.11
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-config-react-app: 6.0.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-jsx-a11y: 6.5.1
+    eslint-plugin-prettier: 4.0.0
+    eslint-plugin-react: 7.28.0
     formik: ^2.2.6
+    jest: 26.6.0
+    lint-staged: 12.3.7
     luxon: ^2.0.2
     polished: ^4.1.1
+    prettier: 2.3.0
     react: ^17.0.2
     react-dom: ^17.0.2
     react-number-format: ^4.5.2
     react-popper: ^2.2.5
     react-router-dom: ^5.2.0
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
     styled-components: ^5.2.1
     styled-reset: ^4.3.4
+    typescript: 4.2.3
     yup: 0.29.3
-  peerDependencies:
-    "@fortawesome/fontawesome-svg-core": 1.2.36
-    "@fortawesome/free-solid-svg-icons": 5.15.4
-    "@fortawesome/react-fontawesome": 0.1.18
-    "@popperjs/core": 2.11.5
-    formik: 2.2.6
-    luxon: ^2.0.2
-    polished: 4.1.4
-    react: 17.0.2
-    react-dom: 17.0.2
-    react-number-format: 4.9.1
-    react-popper: 2.2.5
-    react-router-dom: 5.2.0
-    styled-components: 5.2.1
-    styled-reset: 4.3.4
   languageName: unknown
   linkType: soft
 
 "@motech-development/ga-web-vitals@^0.0.0, @motech-development/ga-web-vitals@workspace:packages/ga-web-vitals":
   version: 0.0.0-use.local
   resolution: "@motech-development/ga-web-vitals@workspace:packages/ga-web-vitals"
+  dependencies:
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
+    "@types/google.analytics": 0.0.42
+    "@types/jest": 26.0.24
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-prettier: 4.0.0
+    jest: 26.6.0
+    lint-staged: 12.3.7
+    prettier: 2.3.0
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    typescript: 4.2.3
   languageName: unknown
   linkType: soft
 
@@ -6298,6 +6411,24 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/logger@workspace:packages/logger"
   dependencies:
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
+    "@types/jest": 26.0.24
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-prettier: 4.0.0
+    jest: 26.6.0
+    lint-staged: 12.3.7
+    prettier: 2.3.0
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    typescript: 4.2.3
     winston: ^3.3.3
     winston-transport: ^4.4.0
   languageName: unknown
@@ -6307,13 +6438,34 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/query-string-hook@workspace:packages/query-string-hook"
   dependencies:
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
+    "@testing-library/react-hooks": 7.0.2
+    "@types/jest": 26.0.24
+    "@types/qs": 6.9.7
+    "@types/react": 17.0.39
+    "@types/react-router-dom": 5.3.3
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-config-react-app: 6.0.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-jsx-a11y: 6.5.1
+    eslint-plugin-prettier: 4.0.0
+    eslint-plugin-react: 7.28.0
+    jest: 26.6.0
+    lint-staged: 12.3.7
+    prettier: 2.3.0
     qs: ^6.10.1
     react: ^17.0.2
     react-router-dom: ^5.2.0
-  peerDependencies:
-    qs: ^6.10.1
-    react: 17.0.2
-    react-router-dom: 5.2.0
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    typescript: 4.2.3
   languageName: unknown
   linkType: soft
 
@@ -6321,9 +6473,25 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/s3-file-operations@workspace:packages/s3-file-operations"
   dependencies:
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
+    "@types/jest": 26.0.24
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
     aws-sdk: ^2.874.0
-  peerDependencies:
-    aws-sdk: 2.1046.0
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-prettier: 4.0.0
+    jest: 26.6.0
+    lint-staged: 12.3.7
+    prettier: 2.3.0
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    typescript: 4.2.3
   languageName: unknown
   linkType: soft
 
@@ -6331,17 +6499,56 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/serverless-outputs-env@workspace:packages/serverless-outputs-env"
   dependencies:
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
+    "@types/assert": 1.5.6
+    "@types/jest": 26.0.24
+    "@types/serverless": 1.78.44
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
     assert: ^2.0.0
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-prettier: 4.0.0
+    jest: 26.6.0
+    lint-staged: 12.3.7
+    prettier: 2.3.0
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    serverless: 2.70.0
     tomlify-j0.4: ^3.0.0
-  peerDependencies:
-    assert: 2.0.0
-    tomlify-j0.4: ^3.0.0
+    typescript: 4.2.3
   languageName: unknown
   linkType: soft
 
 "@motech-development/webpack-conditional-plugin@^0.0.0, @motech-development/webpack-conditional-plugin@workspace:packages/webpack-conditional-plugin":
   version: 0.0.0-use.local
   resolution: "@motech-development/webpack-conditional-plugin@workspace:packages/webpack-conditional-plugin"
+  dependencies:
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
+    "@types/jest": 26.0.24
+    "@types/webpack": 4.41.27
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-prettier: 4.0.0
+    jest: 26.6.0
+    lint-staged: 12.3.7
+    prettier: 2.3.0
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    typescript: 4.2.3
+    webpack: 4.44.2
   languageName: unknown
   linkType: soft
 
@@ -6349,9 +6556,27 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/webpack-permissions-plugin@workspace:packages/webpack-permissions-plugin"
   dependencies:
+    "@rollup/plugin-babel": 5.3.1
+    "@rollup/plugin-commonjs": 21.0.3
+    "@rollup/plugin-node-resolve": 13.1.3
+    "@types/jest": 26.0.24
+    "@types/webpack": 4.41.27
+    "@typescript-eslint/eslint-plugin": 4.20.0
+    "@typescript-eslint/parser": 4.20.0
+    eslint: 7.28.0
+    eslint-config-airbnb: 18.2.1
+    eslint-config-prettier: 8.3.0
+    eslint-plugin-import: 2.25.4
+    eslint-plugin-prettier: 4.0.0
     filehound: ^1.17.4
-  peerDependencies:
-    filehound: ^1.17.4
+    jest: 26.6.0
+    lint-staged: 12.3.7
+    prettier: 2.3.0
+    rimraf: 3.0.2
+    rollup: 2.63.0
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    typescript: 4.2.3
+    webpack: 4.44.2
   languageName: unknown
   linkType: soft
 
@@ -9601,7 +9826,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^4.5.0":
+"@typescript-eslint/eslint-plugin@npm:4.20.0, @typescript-eslint/eslint-plugin@npm:^4.5.0":
   version: 4.20.0
   resolution: "@typescript-eslint/eslint-plugin@npm:4.20.0"
   dependencies:
@@ -9654,7 +9879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^4.5.0":
+"@typescript-eslint/parser@npm:4.20.0, @typescript-eslint/parser@npm:^4.5.0":
   version: 4.20.0
   resolution: "@typescript-eslint/parser@npm:4.20.0"
   dependencies:
@@ -17302,7 +17527,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-react-app@npm:^6.0.0":
+"eslint-config-react-app@npm:6.0.0, eslint-config-react-app@npm:^6.0.0":
   version: 6.0.0
   resolution: "eslint-config-react-app@npm:6.0.0"
   dependencies:
@@ -34611,7 +34836,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unfetch@npm:4.2.0, unfetch@npm:^4.2.0":
+"unfetch@npm:^4.2.0":
   version: 4.2.0
   resolution: "unfetch@npm:4.2.0"
   checksum: 6a4b2557e1d921eaa80c4425ce27a404945ec26491ed06e62598f333996a91a44c7908cb26dc7c2746d735762b13276cf4aa41829b4c8f438dde63add3045d7a
