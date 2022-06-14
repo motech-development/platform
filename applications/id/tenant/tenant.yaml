@@ -19,6 +19,7 @@ hooks:
     triggerId: pre-user-registration
 pages:
   - name: login
+    html: ../client/build/login/index.html
     enabled: true
   - name: password_reset
     html: ../client/build/lo/reset/index.html
