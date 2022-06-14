@@ -296,8 +296,7 @@ branding:
     primary: '#007fa8'
 prompts:
   universal_login_experience: classic
-migrations:
-  issue_opaque_access_tokens: true
+migrations: {}
 actions: []
 triggers: {}
 organizations: []
