@@ -73,7 +73,7 @@
     "@types/yup": "0.29.11",
     "aws-lambda-mock-context": "3.2.1",
     "aws-sdk": "2.1046.0",
-    "axe-core": "4.4.1",
+    "axe-core": "4.4.2",
     "babel-loader": "8.1.0",
     "cache-loader": "4.1.0",
     "commitizen": "4.2.4",
