@@ -25,7 +25,7 @@
     "@motech-development/logger": "^0.0.0",
     "@motech-development/webpack-conditional-plugin": "^0.0.0",
     "@motech-development/webpack-permissions-plugin": "^0.0.0",
-    "filehound": "1.17.5"
+    "filehound": "1.17.6"
   },
   "dependencies": {
     "@motech-development/s3-file-operations": "^0.0.0"
