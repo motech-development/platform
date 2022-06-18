@@ -4302,7 +4302,7 @@ __metadata:
     "@motech-development/s3-file-operations": ^0.0.0
     "@motech-development/webpack-conditional-plugin": ^0.0.0
     "@motech-development/webpack-permissions-plugin": ^0.0.0
-    filehound: 1.17.5
+    filehound: 1.17.6
   languageName: unknown
   linkType: soft
 
@@ -8649,15 +8649,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/cypress@npm:8.0.2":
-  version: 8.0.2
-  resolution: "@testing-library/cypress@npm:8.0.2"
+"@testing-library/cypress@npm:8.0.3":
+  version: 8.0.3
+  resolution: "@testing-library/cypress@npm:8.0.3"
   dependencies:
     "@babel/runtime": ^7.14.6
     "@testing-library/dom": ^8.1.0
   peerDependencies:
-    cypress: ^2.1.0 || ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
-  checksum: 41561f68d3cb72348791734984510b5c3a5294ddb4d09f4f06be4c44cefccc67453de49c876de382794f3dd1232d2e8a7a44da198fa24e83902ad799bc7eac3b
+    cypress: ^2.1.0 || ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
+  checksum: 319f6c7297f85e5673882a71009b5d5b576006f986d87a6ca6f2f8c679d96d9779f3ddbc01654b5a943407fa91192814f250835ce01f153e33ef24818cf1bf20
   languageName: node
   linkType: hard
 
@@ -8743,6 +8743,20 @@ __metadata:
     react: "*"
     react-dom: "*"
   checksum: 944c5f8d4abb22c0650c25c7ae499651828c37c0e741ff67a4635d4cd99b307d486dabec05b372aba638bd359d29cd2af97393b5055ea294a201d80b4bc384b8
+  languageName: node
+  linkType: hard
+
+"@testing-library/react@npm:12.1.5":
+  version: 12.1.5
+  resolution: "@testing-library/react@npm:12.1.5"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+    "@testing-library/dom": ^8.0.0
+    "@types/react-dom": <18.0.0
+  peerDependencies:
+    react: <18.0.0
+    react-dom: <18.0.0
+  checksum: 4abd0490405e709a7df584a0db604e508a4612398bb1326e8fa32dd9393b15badc826dcf6d2f7525437886d507871f719f127b9860ed69ddd204d1fa834f576a
   languageName: node
   linkType: hard
 
@@ -8850,10 +8864,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/aws-lambda@npm:8.10.93":
-  version: 8.10.93
-  resolution: "@types/aws-lambda@npm:8.10.93"
-  checksum: 82eac08a9e1c77724708192ff5c487ffbef572d4dd3851908c56c8bd7f174dd3fa558090ff5c499e04c3e7afa0dc885fb8cf12cd1b1044542b55b17c61846d14
+"@types/aws-lambda@npm:8.10.100":
+  version: 8.10.100
+  resolution: "@types/aws-lambda@npm:8.10.100"
+  checksum: 458cc9928ee8844376ee509b557cc8c7cf936c0c85f2d9569dc7f6ca2912e876906c0dd9e07f76d17ba2836e039492de32f05b3af56f93612425e2a42ad7f98a
   languageName: node
   linkType: hard
 
@@ -9342,10 +9356,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:12.20.47":
-  version: 12.20.47
-  resolution: "@types/node@npm:12.20.47"
-  checksum: 97487af02fada4342e1bd47f9c9ebf601c12b85cbf17056ba73a315339ae996490403f2d4d1d799d8078cfe43a59e33370b4a5ae2d4fb79dd02359f4691934b4
+"@types/node@npm:12.20.55":
+  version: 12.20.55
+  resolution: "@types/node@npm:12.20.55"
+  checksum: e4f86785f4092706e0d3b0edff8dca5a13b45627e4b36700acd8dfe6ad53db71928c8dee914d4276c7fd3b6ccd829aa919811c9eb708a2c8e4c6eb3701178c37
   languageName: node
   linkType: hard
 
@@ -9465,6 +9479,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-dom@npm:<18.0.0":
+  version: 17.0.17
+  resolution: "@types/react-dom@npm:17.0.17"
+  dependencies:
+    "@types/react": ^17
+  checksum: 23caf98aa03e968811560f92a2c8f451694253ebe16b670929b24eaf0e7fa62ba549abe9db0ac028a9d8a9086acd6ab9c6c773f163fa21224845edbc00ba6232
+  languageName: node
+  linkType: hard
+
 "@types/react-dom@npm:>=16.9.0":
   version: 17.0.3
   resolution: "@types/react-dom@npm:17.0.3"
@@ -9532,6 +9555,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: bf04d3c2894559012710d595553e12b422d3b91cd8f4f7e122d8cb044ba9c2ba17f6e8a4e09581359cc5509ddc59cd8c8fabd6774f3505a40a45393f074d6e6e
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^17":
+  version: 17.0.47
+  resolution: "@types/react@npm:17.0.47"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: 2e7fe0eb630cb77da03b6da308c58728c01b38e878118e9ff5cd8045181c8d4f32dc936e328f46a62cadb56e1fe4c5a911b5113584f93a99e1f35df7f059246b
   languageName: node
   linkType: hard
 
@@ -11686,10 +11720,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:4.4.1":
-  version: 4.4.1
-  resolution: "axe-core@npm:4.4.1"
-  checksum: ad14c5b71059dc3d24ef2519b8cd96e98b4a572379396201ce449d1c4262181821d6ca9550df65b22371faf06d28bbe94d391fe5675f2a08e6550f7b5da8416d
+"axe-core@npm:4.4.2":
+  version: 4.4.2
+  resolution: "axe-core@npm:4.4.2"
+  checksum: 93fbb36c5ac8ab5e67e49678a6f7be0dc799a9f560edd95cca1f0a8183def8c50205972366b9941a3ea2b20224a1fe230e6d87ef38cb6db70472ed1b694febd1
   languageName: node
   linkType: hard
 
@@ -18764,17 +18798,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filehound@npm:1.17.5":
-  version: 1.17.5
-  resolution: "filehound@npm:1.17.5"
+"filehound@npm:1.17.6":
+  version: 1.17.6
+  resolution: "filehound@npm:1.17.6"
   dependencies:
     bluebird: ^3.7.2
     file-js: 0.3.0
     lodash: ^4.17.21
-    minimatch: ^3.0.4
+    minimatch: ^5.0.0
     moment: ^2.29.1
     unit-compare: ^1.0.1
-  checksum: 1574eb52f25a113505a7ad84cf90aa3449a2289755bc32d73c04688e9a234de4a1323d597fa1bae81d94fd4c2bfc06fb999523fd8a8c9f468ac5f63d268a911b
+  checksum: 2fd979a802304c6a28acc5d533efabfa06d683375d8fe1595734a2231b3d3bbfc2ba034260501ad62c9d67e2bb945e17754c200e5bd691cba5803489e6ec4579
   languageName: node
   linkType: hard
 
@@ -19146,9 +19180,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fork-ts-checker-webpack-plugin@npm:6.5.0":
-  version: 6.5.0
-  resolution: "fork-ts-checker-webpack-plugin@npm:6.5.0"
+"fork-ts-checker-webpack-plugin@npm:6.5.2":
+  version: 6.5.2
+  resolution: "fork-ts-checker-webpack-plugin@npm:6.5.2"
   dependencies:
     "@babel/code-frame": ^7.8.3
     "@types/json-schema": ^7.0.5
@@ -19173,7 +19207,7 @@ __metadata:
       optional: true
     vue-template-compiler:
       optional: true
-  checksum: 95d145ab7936445f3a9bfa4116ef73537f97196cfaa3f5b24473dff36d034e839d3b0e034a23beefc9619eceb7a9866816bfd55afd1968e955eb3b3f8cfc35ed
+  checksum: c823de02ee258a26ea5c0c488b2f1825b941f72292417478689862468a9140b209ad7df52f67bd134228fe9f40e9115b604fc8f88a69338929fe52be869469b6
   languageName: node
   linkType: hard
 
@@ -25370,6 +25404,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"minimatch@npm:^5.0.0":
+  version: 5.1.0
+  resolution: "minimatch@npm:5.1.0"
+  dependencies:
+    brace-expansion: ^2.0.1
+  checksum: 15ce53d31a06361e8b7a629501b5c75491bc2b59712d53e802b1987121d91b433d73fcc5be92974fde66b2b51d8fb28d75a9ae900d249feb792bb1ba2a4f0a90
+  languageName: node
+  linkType: hard
+
 "minimatch@npm:^5.0.1":
   version: 5.0.1
   resolution: "minimatch@npm:5.0.1"
@@ -27831,21 +27874,21 @@ __metadata:
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
-    "@testing-library/cypress": 8.0.2
+    "@testing-library/cypress": 8.0.3
     "@testing-library/jest-dom": 5.16.4
-    "@testing-library/react": 12.1.4
+    "@testing-library/react": 12.1.5
     "@testing-library/react-hooks": 7.0.2
     "@testing-library/user-event": 13.5.0
     "@types/archiver": 5.3.1
     "@types/assert": 1.5.6
     "@types/auth0-js": 9.14.5
-    "@types/aws-lambda": 8.10.93
+    "@types/aws-lambda": 8.10.100
     "@types/aws4": 1.5.1
     "@types/file-saver": 2.0.5
     "@types/google.analytics": 0.0.42
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
-    "@types/node": 12.20.47
+    "@types/node": 12.20.55
     "@types/qs": 6.9.7
     "@types/react": 17.0.39
     "@types/react-dom": 17.0.11
@@ -27857,7 +27900,7 @@ __metadata:
     "@types/yup": 0.29.11
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1046.0
-    axe-core: 4.4.1
+    axe-core: 4.4.2
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     commitizen: 4.2.4
@@ -27879,7 +27922,7 @@ __metadata:
     eslint-plugin-prettier: 4.0.0
     eslint-plugin-react: 7.28.0
     eslint-plugin-react-hooks: 4.3.0
-    fork-ts-checker-webpack-plugin: 6.5.0
+    fork-ts-checker-webpack-plugin: 6.5.2
     husky: 7.0.4
     jest: 26.6.0
     jest-date-mock: 1.0.8
@@ -27902,7 +27945,7 @@ __metadata:
     serverless-dynamodb-local: 0.2.40
     serverless-finch: 2.8.0
     serverless-offline: 8.3.1
-    serverless-prune-plugin: 1.6.1
+    serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.5.1
     serverless-webpack: 5.6.1
     typescript: 4.2.3
@@ -31998,14 +32041,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-prune-plugin@npm:1.6.1":
-  version: 1.6.1
-  resolution: "serverless-prune-plugin@npm:1.6.1"
+"serverless-prune-plugin@npm:2.0.1":
+  version: 2.0.1
+  resolution: "serverless-prune-plugin@npm:2.0.1"
   dependencies:
-    bluebird: ^3.4.7
+    bluebird: ^3.7.2
   peerDependencies:
-    serverless: 1 || 2
-  checksum: 06a2f755fddc1cac87f3828651ad7fd9b73f702c38c37ab20b732a8b2edcad6500198c11e171658a09160d55a5c1cff31bde174e8e8c57b4e5ea66cf2dec8ad1
+    serverless: 1 || 2 || 3
+  checksum: a5c756241d2bb20f49d19a71000d3acec7e9c16a896d33ee36b096123cedeeb6d1fb94e159b2356294836b6cac36975309a130735d97b9f998025c396ce53391
   languageName: node
   linkType: hard
 
