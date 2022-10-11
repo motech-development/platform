@@ -8254,19 +8254,20 @@ aws-appsync-auth-link@^2.0.8:
     apollo-link "1.2.5"
     debug "2.6.9"
 
-aws-appsync-subscription-link@3.0.11:
-  version "3.0.11"
-  resolved "https://registry.yarnpkg.com/aws-appsync-subscription-link/-/aws-appsync-subscription-link-3.0.11.tgz#fa66000cdda37ebb2df368a2243b730826889633"
-  integrity sha512-JHSYR4I9x0wtfm6aW+JGb654DzF25J4hp/vvm1ZhpVqd1jjnIAEBQvn2dg+SJO+46Js9f8b8QhEWyBnyAn0afg==
+aws-appsync-subscription-link@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/aws-appsync-subscription-link/-/aws-appsync-subscription-link-3.1.1.tgz#b003699f552a52a37a9ffa4d2bba728b40332775"
+  integrity sha512-x4fZqzKM/BTFIQ7QzWO6GZ/RTM6MgNeN++Y940YTTXjhGC4u1pHRQl4GDbl39ISXSgSOzWXu1zkQEUVwssHVFw==
   dependencies:
     aws-appsync-auth-link "^3.0.7"
     debug "2.6.9"
     url "^0.11.0"
+    zen-observable-ts "^1.2.5"
 
-aws-appsync-subscription-link@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/aws-appsync-subscription-link/-/aws-appsync-subscription-link-2.3.0.tgz#1c8f97da45fcfdbf3875b60550e5f02e9304c01d"
-  integrity sha512-uXezPMEsU70oRpm8fM1CRrZDn/dK4dq65LkNaXqQudLyhwaotCZObdy753Py2x/VDqoERm1AO25kxrFlAqqakw==
+aws-appsync-subscription-link@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/aws-appsync-subscription-link/-/aws-appsync-subscription-link-2.4.1.tgz#d5648e17a84480fa3da9550eeddf5da9da9c59d7"
+  integrity sha512-bGh5m442QKByg9/dYpyxONZZK6jAK0lDjM96yC9o3KmnCmDZUiKVH60tgf1Jwow+pONKFY+Nm4Ad0UrfEFmu2Q==
   dependencies:
     apollo-link "1.2.5"
     apollo-link-context "1.0.11"
@@ -8275,11 +8276,12 @@ aws-appsync-subscription-link@^2.3.0:
     aws-appsync-auth-link "^2.0.8"
     debug "2.6.9"
     url "^0.11.0"
+    zen-observable-ts "^1.2.5"
 
-aws-appsync@4.1.6:
-  version "4.1.6"
-  resolved "https://registry.yarnpkg.com/aws-appsync/-/aws-appsync-4.1.6.tgz#2aff30651dc0c1a937eaf3de0f4d4e600b5e3c70"
-  integrity sha512-yHeLOepDk6VyZrjO02g+QkxYev11hvbDy/6p9N827xhcn4Kk+JR6nclkzLpew5CXwI7OGX3c0RRyrkKcfLzYlg==
+aws-appsync@4.1.8:
+  version "4.1.8"
+  resolved "https://registry.yarnpkg.com/aws-appsync/-/aws-appsync-4.1.8.tgz#9a972fb82c555fddbaf6b8699ea2462c5ea6b593"
+  integrity sha512-dyLNFG0xpS+cZeVg6Lx7qEm+IeYCc3VldkHsuKv5GubEVsQrcnY2RcMhmi3Q+MnHC5YNfXjTV2IOKlsquAkuXg==
   dependencies:
     "@aws-crypto/sha256-universal" "^1.1.1"
     "@aws-sdk/client-s3" "^3.25.0"
@@ -8293,7 +8295,7 @@ aws-appsync@4.1.6:
     apollo-link-http "1.5.8"
     apollo-link-retry "2.2.7"
     aws-appsync-auth-link "^2.0.8"
-    aws-appsync-subscription-link "^2.3.0"
+    aws-appsync-subscription-link "^2.4.1"
     debug "2.6.9"
     redux "^3.7.2"
     redux-thunk "^2.2.0"
@@ -27661,6 +27663,13 @@ zen-observable-ts@^1.2.0:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/zen-observable-ts/-/zen-observable-ts-1.2.3.tgz#c2f5ccebe812faf0cfcde547e6004f65b1a6d769"
   integrity sha512-hc/TGiPkAWpByykMwDcem3SdUgA4We+0Qb36bItSuJC9xD0XVBZoFHYoadAomDSNf64CG8Ydj0Qb8Od8BUWz5g==
+  dependencies:
+    zen-observable "0.8.15"
+
+zen-observable-ts@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/zen-observable-ts/-/zen-observable-ts-1.2.5.tgz#6c6d9ea3d3a842812c6e9519209365a122ba8b58"
+  integrity sha512-QZWQekv6iB72Naeake9hS1KxHlotfRpe+WGNbNx5/ta+R3DNjVO2bswf63gXlWDcs+EMd7XY8HfVQyP1X6T4Zg==
   dependencies:
     zen-observable "0.8.15"
 
