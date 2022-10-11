@@ -9609,20 +9609,10 @@ caniuse-api@^3.0.0:
     lodash.memoize "^4.1.2"
     lodash.uniq "^4.5.0"
 
-caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001181, caniuse-lite@^1.0.30001219:
-  version "1.0.30001284"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001284.tgz"
-  integrity sha512-t28SKa7g6kiIQi6NHeOcKrOrGMzCRrXvlasPwWC26TH2QNdglgzQIRUuJ0cR3NeQPH+5jpuveeeSFDLm2zbkEw==
-
-caniuse-lite@^1.0.30001312:
-  version "1.0.30001312"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001312.tgz#e11eba4b87e24d22697dae05455d5aea28550d5f"
-  integrity sha512-Wiz1Psk2MEK0pX3rUzWaunLTZzqS2JYZFzNKqAiJGiuxIjRPLgV6+VDPOg6lQOUxmDwhTlh198JsTTi8Hzw6aQ==
-
-caniuse-lite@^1.0.30001366:
-  version "1.0.30001369"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001369.tgz#58ca6974acf839a72a02003258a005cbb0cb340d"
-  integrity sha512-OY1SBHaodJc4wflDIKnlkdqWzJZd1Ls/2zbVJHBSv3AT7vgOJ58yAhd2CN4d57l2kPJrgMb7P9+N1Mhy4tNSQA==
+caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001181, caniuse-lite@^1.0.30001219, caniuse-lite@^1.0.30001312, caniuse-lite@^1.0.30001366:
+  version "1.0.30001418"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001418.tgz"
+  integrity sha512-oIs7+JL3K9JRQ3jPZjlH6qyYDp+nBTCais7hjh0s+fuBwufc7uZ7hPYMXrDOJhV360KGMTcczMRObk0/iMqZRg==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -11421,10 +11411,10 @@ currently-unhandled@^0.4.1:
   dependencies:
     array-find-index "^1.0.1"
 
-cy2@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/cy2/-/cy2-1.3.0.tgz#b01e731e6bef5c053602088e71be45411188a974"
-  integrity sha512-VE0YOGw9LmQHnmND1RrtJ/BJaCNCCGeOF8C4FUcV5OgS8G2zZytND3TC1TKuwEuFM/br17KIfgheql/rNRfv3g==
+cy2@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/cy2/-/cy2-2.0.1.tgz#1d13bbec387ee31537a8a948bcbf608f06dd3441"
+  integrity sha512-vzLXnNj9LtqGyvsTx+qo4Zj5K8tVVIntXGPGAQE4w/ThZFtONTsGyc1kk29jtsHbJwZQ+zZu3o0GE+kPsSBlCA==
   dependencies:
     debug "^4.3.2"
     js-yaml "^4.0.0"
