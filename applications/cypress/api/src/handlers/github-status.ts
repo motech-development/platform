@@ -4,7 +4,6 @@ import {
   response,
 } from '@motech-development/api-gateway-handler';
 import logger from '@motech-development/logger';
-import { Duration } from 'luxon';
 import { URL } from 'url';
 import { number, object, string } from 'yup';
 import github from '../shared/github';
@@ -22,16 +21,24 @@ enum State {
 }
 
 const schema = object({
+  buildId: string().required(),
   commit: object({
+    authorEmail: string().required(),
+    authorName: string().required(),
+    branch: string().required(),
+    defaultBranch: string().required(),
     message: string().required(),
     remoteOrigin: string().url().required(),
     sha: string().required(),
   }).required(),
   event: string().required(),
   failures: number().required(),
+  flaky: number().required(),
+  overall: number().required(),
   passes: number().required(),
+  pending: number().required(),
   runUrl: string().url().required(),
-  wallClockDurationSeconds: number().required(),
+  skipped: number().required(),
 }).required();
 
 export const handler = apiGatewayHandler(async (event) => {
@@ -57,9 +64,6 @@ export const handler = apiGatewayHandler(async (event) => {
       case Event.RUN_FINISH: {
         logger.info('Creating commit status after RUN_FINISH event');
 
-        const duration = Duration.fromObject({
-          seconds: data.wallClockDurationSeconds,
-        }).toFormat('m:s');
         const state = data.failures > 0 ? State.Failure : State.Success;
         const test = (status: string) =>
           data[status] === 1 ? 'test' : 'tests';
@@ -68,7 +72,7 @@ export const handler = apiGatewayHandler(async (event) => {
           description:
             data.failures > 0
               ? `${data.failures} ${test('failures')} failed`
-              : `${data.passes} ${test('passes')} passed in ${duration}`,
+              : `${data.passes} ${test('passes')} passed`,
           owner,
           repo,
           sha,

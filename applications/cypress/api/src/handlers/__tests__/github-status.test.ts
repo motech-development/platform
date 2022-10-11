@@ -32,16 +32,24 @@ describe('github-status', () => {
     it('should send the correct payload when a single test has failed', async () => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 1,
+          flaky: 0,
+          overall: 1,
           passes: 0,
+          pending: 0,
           runUrl: 'https://path.to.location/',
-          wallClockDurationSeconds: 2500,
+          skipped: 0,
         }),
       } as APIGatewayProxyEvent;
 
@@ -61,16 +69,24 @@ describe('github-status', () => {
     it('should send the correct payload when a multiple tests have failed', async () => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 2,
+          flaky: 0,
+          overall: 2,
           passes: 0,
+          pending: 0,
           runUrl: 'https://path.to.location/',
-          wallClockDurationSeconds: 2500,
+          skipped: 0,
         }),
       } as APIGatewayProxyEvent;
 
@@ -90,16 +106,24 @@ describe('github-status', () => {
     it('should send the correct payload when a single test has passed', async () => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 0,
+          flaky: 0,
+          overall: 1,
           passes: 1,
+          pending: 0,
           runUrl: 'https://path.to.location/',
-          wallClockDurationSeconds: 39,
+          skipped: 0,
         }),
       } as APIGatewayProxyEvent;
 
@@ -107,7 +131,7 @@ describe('github-status', () => {
 
       expect(octokit.repos.createCommitStatus).toHaveBeenCalledWith({
         context: 'Cypress',
-        description: '1 test passed in 0:39',
+        description: '1 test passed',
         owner: 'owner',
         repo: 'repo',
         sha: 'x',
@@ -119,16 +143,24 @@ describe('github-status', () => {
     it('should send the correct payload when multiple tests have passed', async () => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 0,
+          flaky: 0,
+          overall: 12,
           passes: 12,
+          pending: 0,
           runUrl: 'https://path.to.location/',
-          wallClockDurationSeconds: 2500,
+          skipped: 0,
         }),
       } as APIGatewayProxyEvent;
 
@@ -136,7 +168,7 @@ describe('github-status', () => {
 
       expect(octokit.repos.createCommitStatus).toHaveBeenCalledWith({
         context: 'Cypress',
-        description: '12 tests passed in 41:40',
+        description: '12 tests passed',
         owner: 'owner',
         repo: 'repo',
         sha: 'x',
@@ -150,16 +182,24 @@ describe('github-status', () => {
     beforeEach(() => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge pull request x from y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_START',
           failures: 0,
+          flaky: 0,
+          overall: 0,
           passes: 0,
+          pending: 0,
           runUrl: 'https://path.to.location/',
-          wallClockDurationSeconds: 0,
+          skipped: 0,
         }),
       } as APIGatewayProxyEvent;
     });
@@ -183,16 +223,24 @@ describe('github-status', () => {
     beforeEach(() => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_TIMEOUT',
           failures: 0,
+          flaky: 0,
+          overall: 0,
           passes: 0,
+          pending: 0,
           runUrl: 'https://path.to.location/',
-          wallClockDurationSeconds: 0,
+          skipped: 0,
         }),
       } as APIGatewayProxyEvent;
     });
@@ -216,16 +264,24 @@ describe('github-status', () => {
     beforeEach(() => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'UNKNOWN',
           failures: 0,
+          flaky: 0,
+          overall: 0,
           passes: 0,
+          pending: 0,
           runUrl: 'https://path.to.location/',
-          wallClockDurationSeconds: 0,
+          skipped: 0,
         }),
       } as APIGatewayProxyEvent;
     });
