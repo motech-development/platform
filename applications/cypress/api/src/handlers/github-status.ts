@@ -4,7 +4,6 @@ import {
   response,
 } from '@motech-development/api-gateway-handler';
 import logger from '@motech-development/logger';
-import { Duration } from 'luxon';
 import { URL } from 'url';
 import { number, object, string } from 'yup';
 import github from '../shared/github';
