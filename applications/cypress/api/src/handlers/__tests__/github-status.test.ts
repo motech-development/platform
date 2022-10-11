@@ -50,7 +50,6 @@ describe('github-status', () => {
           pending: 0,
           runUrl: 'https://path.to.location/',
           skipped: 0,
-          wallClockDurationSeconds: 2500,
         }),
       } as APIGatewayProxyEvent;
 
@@ -88,7 +87,6 @@ describe('github-status', () => {
           pending: 0,
           runUrl: 'https://path.to.location/',
           skipped: 0,
-          wallClockDurationSeconds: 2500,
         }),
       } as APIGatewayProxyEvent;
 
@@ -126,7 +124,6 @@ describe('github-status', () => {
           pending: 0,
           runUrl: 'https://path.to.location/',
           skipped: 0,
-          wallClockDurationSeconds: 39,
         }),
       } as APIGatewayProxyEvent;
 
@@ -134,7 +131,7 @@ describe('github-status', () => {
 
       expect(octokit.repos.createCommitStatus).toHaveBeenCalledWith({
         context: 'Cypress',
-        description: '1 test passed in 0:39',
+        description: '1 test passed',
         owner: 'owner',
         repo: 'repo',
         sha: 'x',
@@ -164,7 +161,6 @@ describe('github-status', () => {
           pending: 0,
           runUrl: 'https://path.to.location/',
           skipped: 0,
-          wallClockDurationSeconds: 2500,
         }),
       } as APIGatewayProxyEvent;
 
@@ -172,7 +168,7 @@ describe('github-status', () => {
 
       expect(octokit.repos.createCommitStatus).toHaveBeenCalledWith({
         context: 'Cypress',
-        description: '12 tests passed in 41:40',
+        description: '12 tests passed',
         owner: 'owner',
         repo: 'repo',
         sha: 'x',
@@ -204,7 +200,6 @@ describe('github-status', () => {
           pending: 0,
           runUrl: 'https://path.to.location/',
           skipped: 0,
-          wallClockDurationSeconds: 0,
         }),
       } as APIGatewayProxyEvent;
     });
@@ -246,7 +241,6 @@ describe('github-status', () => {
           pending: 0,
           runUrl: 'https://path.to.location/',
           skipped: 0,
-          wallClockDurationSeconds: 0,
         }),
       } as APIGatewayProxyEvent;
     });
@@ -288,7 +282,6 @@ describe('github-status', () => {
           pending: 0,
           runUrl: 'https://path.to.location/',
           skipped: 0,
-          wallClockDurationSeconds: 0,
         }),
       } as APIGatewayProxyEvent;
     });

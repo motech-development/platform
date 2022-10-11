@@ -40,7 +40,6 @@ const schema = object({
   pending: number().required(),
   runUrl: string().url().required(),
   skipped: number().required(),
-  wallClockDurationSeconds: number().required(),
 }).required();
 
 export const handler = apiGatewayHandler(async (event) => {
@@ -66,9 +65,6 @@ export const handler = apiGatewayHandler(async (event) => {
       case Event.RUN_FINISH: {
         logger.info('Creating commit status after RUN_FINISH event');
 
-        const duration = Duration.fromObject({
-          seconds: data.wallClockDurationSeconds,
-        }).toFormat('m:s');
         const state = data.failures > 0 ? State.Failure : State.Success;
         const test = (status: string) =>
           data[status] === 1 ? 'test' : 'tests';
@@ -77,7 +73,7 @@ export const handler = apiGatewayHandler(async (event) => {
           description:
             data.failures > 0
               ? `${data.failures} ${test('failures')} failed`
-              : `${data.passes} ${test('passes')} passed in ${duration}`,
+              : `${data.passes} ${test('passes')} passed`,
           owner,
           repo,
           sha,
