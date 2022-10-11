@@ -32,15 +32,24 @@ describe('github-status', () => {
     it('should send the correct payload when a single test has failed', async () => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 1,
+          flaky: 0,
+          overall: 1,
           passes: 0,
+          pending: 0,
           runUrl: 'https://path.to.location/',
+          skipped: 0,
           wallClockDurationSeconds: 2500,
         }),
       } as APIGatewayProxyEvent;
@@ -61,15 +70,24 @@ describe('github-status', () => {
     it('should send the correct payload when a multiple tests have failed', async () => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 2,
+          flaky: 0,
+          overall: 2,
           passes: 0,
+          pending: 0,
           runUrl: 'https://path.to.location/',
+          skipped: 0,
           wallClockDurationSeconds: 2500,
         }),
       } as APIGatewayProxyEvent;
@@ -90,15 +108,24 @@ describe('github-status', () => {
     it('should send the correct payload when a single test has passed', async () => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 0,
+          flaky: 0,
+          overall: 1,
           passes: 1,
+          pending: 0,
           runUrl: 'https://path.to.location/',
+          skipped: 0,
           wallClockDurationSeconds: 39,
         }),
       } as APIGatewayProxyEvent;
@@ -119,15 +146,24 @@ describe('github-status', () => {
     it('should send the correct payload when multiple tests have passed', async () => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_FINISH',
           failures: 0,
+          flaky: 0,
+          overall: 12,
           passes: 12,
+          pending: 0,
           runUrl: 'https://path.to.location/',
+          skipped: 0,
           wallClockDurationSeconds: 2500,
         }),
       } as APIGatewayProxyEvent;
@@ -150,15 +186,24 @@ describe('github-status', () => {
     beforeEach(() => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge pull request x from y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_START',
           failures: 0,
+          flaky: 0,
+          overall: 0,
           passes: 0,
+          pending: 0,
           runUrl: 'https://path.to.location/',
+          skipped: 0,
           wallClockDurationSeconds: 0,
         }),
       } as APIGatewayProxyEvent;
@@ -183,15 +228,24 @@ describe('github-status', () => {
     beforeEach(() => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'RUN_TIMEOUT',
           failures: 0,
+          flaky: 0,
+          overall: 0,
           passes: 0,
+          pending: 0,
           runUrl: 'https://path.to.location/',
+          skipped: 0,
           wallClockDurationSeconds: 0,
         }),
       } as APIGatewayProxyEvent;
@@ -216,15 +270,24 @@ describe('github-status', () => {
     beforeEach(() => {
       event = {
         body: JSON.stringify({
+          buildId: 'build-id',
           commit: {
+            authorEmail: 'test@example.com',
+            authorName: 'Test User',
+            branch: 'x',
+            defaultBranch: 'y',
             message: 'Merge x into y',
             remoteOrigin: 'https://path.to.location/owner/repo',
             sha: 'z',
           },
           event: 'UNKNOWN',
           failures: 0,
+          flaky: 0,
+          overall: 0,
           passes: 0,
+          pending: 0,
           runUrl: 'https://path.to.location/',
+          skipped: 0,
           wallClockDurationSeconds: 0,
         }),
       } as APIGatewayProxyEvent;

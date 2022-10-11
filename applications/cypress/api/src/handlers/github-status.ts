@@ -22,15 +22,24 @@ enum State {
 }
 
 const schema = object({
+  buildId: string().required(),
   commit: object({
+    authorEmail: string().required(),
+    authorName: string().required(),
+    branch: string().required(),
+    defaultBranch: string().required(),
     message: string().required(),
     remoteOrigin: string().url().required(),
     sha: string().required(),
   }).required(),
   event: string().required(),
   failures: number().required(),
+  flaky: number().required(),
+  overall: number().required(),
   passes: number().required(),
+  pending: number().required(),
   runUrl: string().url().required(),
+  skipped: number().required(),
   wallClockDurationSeconds: number().required(),
 }).required();
 
