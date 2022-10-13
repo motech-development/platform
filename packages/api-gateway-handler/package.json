@@ -19,6 +19,7 @@
     "test:ci": "jest --coverage --runInBand"
   },
   "devDependencies": {
+    "@babel/plugin-transform-runtime": "7.18.9",
     "@rollup/plugin-babel": "5.3.1",
     "@rollup/plugin-commonjs": "21.0.3",
     "@rollup/plugin-node-resolve": "13.1.3",
