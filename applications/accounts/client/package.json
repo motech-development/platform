@@ -71,8 +71,26 @@
     "workbox-streams": "6.4.2",
     "yup": "0.29.3"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "devDependencies": {
+    "@testing-library/cypress": "8.0.3",
+    "@testing-library/jest-dom": "5.16.4",
+    "@testing-library/react": "12.1.5",
+    "@testing-library/user-event": "13.5.0",
+    "@types/react": "17.0.47",
+    "@types/react-dom": "17.0.17",
+    "@types/react-router-dom": "5.3.3",
+    "@types/styled-components": "5.1.9",
+    "axe-core": "4.4.3",
+    "cy2": "2.0.1",
+    "cypress": "10.9.0",
+    "cypress-axe": "0.14.0",
+    "cypress-file-upload": "5.0.8",
+    "cypress-localstorage-commands": "1.6.1",
+    "cypress-log-to-output": "1.1.2",
+    "cypress-pipe": "2.0.0",
+    "cypress-wait-until": "1.7.2",
+    "pwa-asset-generator": "6.0.6",
+    "react-scripts": "4.0.3"
   },
   "browserslist": {
     "production": [
