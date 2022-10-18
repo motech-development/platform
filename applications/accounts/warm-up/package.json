@@ -13,6 +13,18 @@
     "test": "jest --watch",
     "test:ci": "jest --coverage --runInBand"
   },
+  "dependencies": {
+    "@motech-development/logger": "^0.0.0",
+    "luxon": "2.3.0",
+    "uuid": "8.3.2",
+    "yup": "0.29.3"
+  },
+  "devDependencies": {
+    "@types/jest": "26.0.24",
+    "aws-lambda-mock-context": "3.2.1",
+    "jest": "26.6.0",
+    "jest-date-mock": "1.0.8"
+  },
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
@@ -22,11 +34,5 @@
       "jest-date-mock"
     ],
     "testEnvironment": "node"
-  },
-  "dependencies": {
-    "@motech-development/logger": "^0.0.0",
-    "luxon": "2.3.0",
-    "uuid": "8.3.2",
-    "yup": "0.29.3"
   }
 }

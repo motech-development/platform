@@ -5,5 +5,8 @@
   "private": true,
   "scripts": {
     "build": "pug src --pretty --out build"
+  },
+  "devDependencies": {
+    "pug-cli": "1.0.0-alpha6"
   }
 }

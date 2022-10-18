@@ -14,20 +14,23 @@
     "test:ci": "jest --coverage --runInBand",
     "update:definitions": "serverless invoke -f UpdateDefinitions"
   },
+  "dependencies": {
+    "@motech-development/s3-file-operations": "^0.0.0"
+  },
+  "devDependencies": {
+    "@motech-development/logger": "^0.0.0",
+    "@motech-development/webpack-conditional-plugin": "^0.0.0",
+    "@motech-development/webpack-permissions-plugin": "^0.0.0",
+    "@types/jest": "26.0.24",
+    "aws-lambda-mock-context": "3.2.1",
+    "filehound": "1.17.6",
+    "jest": "26.6.0"
+  },
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
       "!src/**/*.d.ts"
     ],
     "testEnvironment": "node"
-  },
-  "devDependencies": {
-    "@motech-development/logger": "^0.0.0",
-    "@motech-development/webpack-conditional-plugin": "^0.0.0",
-    "@motech-development/webpack-permissions-plugin": "^0.0.0",
-    "filehound": "1.17.6"
-  },
-  "dependencies": {
-    "@motech-development/s3-file-operations": "^0.0.0"
   }
 }

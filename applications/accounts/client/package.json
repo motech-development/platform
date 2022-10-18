@@ -76,6 +76,9 @@
     "@testing-library/jest-dom": "5.16.4",
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "13.5.0",
+    "@types/file-saver": "2.0.5",
+    "@types/jest": "26.0.24",
+    "@types/qs": "6.9.7",
     "@types/react": "17.0.47",
     "@types/react-dom": "17.0.17",
     "@types/react-router-dom": "5.3.3",
@@ -89,6 +92,7 @@
     "cypress-log-to-output": "1.1.2",
     "cypress-pipe": "2.0.0",
     "cypress-wait-until": "1.7.2",
+    "jest-styled-components": "7.0.8",
     "pwa-asset-generator": "6.0.6",
     "react-scripts": "4.0.3"
   },
