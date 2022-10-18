@@ -66,6 +66,7 @@
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-react": "7.28.0",
     "jest": "26.6.0",
+    "jest-date-mock": "1.0.8",
     "lint-staged": "12.3.7",
     "prettier": "2.3.0",
     "rimraf": "3.0.2",
@@ -78,6 +79,9 @@
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
       "!src/**/*.stories.{ts,tsx}"
+    ],
+    "setupFiles": [
+      "jest-date-mock"
     ],
     "setupFilesAfterEnv": [
       "<rootDir>/src/setupTests.ts"
