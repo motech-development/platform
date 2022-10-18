@@ -15,16 +15,29 @@
     "update:definitions": "serverless invoke -f UpdateDefinitions"
   },
   "dependencies": {
-    "@motech-development/s3-file-operations": "^0.0.0"
+    "@motech-development/s3-file-operations": "^0.0.0",
+    "aws-sdk": "2.1046.0"
   },
   "devDependencies": {
     "@motech-development/logger": "^0.0.0",
     "@motech-development/webpack-conditional-plugin": "^0.0.0",
     "@motech-development/webpack-permissions-plugin": "^0.0.0",
+    "@types/aws-lambda": "8.10.101",
     "@types/jest": "26.0.24",
     "aws-lambda-mock-context": "3.2.1",
+    "babel-loader": "8.1.0",
+    "cache-loader": "4.1.0",
+    "copy-webpack-plugin": "6.4.1",
     "filehound": "1.17.6",
-    "jest": "26.6.0"
+    "fork-ts-checker-webpack-plugin": "6.5.2",
+    "jest": "26.6.0",
+    "serverless": "2.70.0",
+    "serverless-deployment-bucket": "1.5.2",
+    "serverless-prune-plugin": "2.0.1",
+    "serverless-step-functions": "3.5.1",
+    "serverless-webpack": "5.6.1",
+    "webpack": "4.44.2",
+    "webpack-node-externals": "3.0.0"
   },
   "jest": {
     "collectCoverageFrom": [

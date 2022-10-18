@@ -26,11 +26,25 @@
   },
   "devDependencies": {
     "@types/archiver": "5.3.1",
+    "@types/aws-lambda": "8.10.101",
     "@types/jest": "26.0.24",
+    "@types/luxon": "2.0.9",
     "@types/qs": "6.9.7",
+    "@types/uuid": "8.3.4",
+    "@types/yup": "0.29.11",
     "aws-lambda-mock-context": "3.2.1",
+    "babel-loader": "8.1.0",
+    "cache-loader": "4.1.0",
+    "fork-ts-checker-webpack-plugin": "6.5.2",
     "jest": "26.6.0",
-    "jest-date-mock": "1.0.8"
+    "jest-date-mock": "1.0.8",
+    "serverless": "2.70.0",
+    "serverless-deployment-bucket": "1.5.2",
+    "serverless-prune-plugin": "2.0.1",
+    "serverless-step-functions": "3.5.1",
+    "serverless-webpack": "5.6.1",
+    "webpack": "4.44.2",
+    "webpack-node-externals": "3.0.0"
   },
   "jest": {
     "collectCoverageFrom": [

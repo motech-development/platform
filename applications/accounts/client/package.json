@@ -78,11 +78,13 @@
     "@testing-library/user-event": "13.5.0",
     "@types/file-saver": "2.0.5",
     "@types/jest": "26.0.24",
+    "@types/luxon": "2.0.9",
     "@types/qs": "6.9.7",
     "@types/react": "17.0.47",
     "@types/react-dom": "17.0.17",
     "@types/react-router-dom": "5.3.3",
     "@types/styled-components": "5.1.9",
+    "@types/yup": "0.29.11",
     "axe-core": "4.4.3",
     "cy2": "2.0.1",
     "cypress": "10.9.0",
@@ -95,7 +97,10 @@
     "jest-date-mock": "1.0.8",
     "jest-styled-components": "7.0.8",
     "pwa-asset-generator": "6.0.6",
-    "react-scripts": "4.0.3"
+    "react-scripts": "4.0.3",
+    "serverless": "2.70.0",
+    "serverless-deployment-bucket": "1.5.2",
+    "serverless-finch": "2.8.0"
   },
   "browserslist": {
     "production": [
