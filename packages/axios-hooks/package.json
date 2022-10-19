@@ -6,9 +6,9 @@
   "module": "lib/axios-hooks.esm.js",
   "types": "lib/axios-hooks.d.ts",
   "scripts": {
-    "build": "NODE_ENV=production rollup -c",
+    "build": "run prebuild && NODE_ENV=production rollup -c && run postbuild",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
-    "package": "yarn build",
+    "package": "run build",
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",

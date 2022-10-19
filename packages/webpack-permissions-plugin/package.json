@@ -8,9 +8,9 @@
   "module": "lib/webpack-permissions-plugin.esm.js",
   "types": "lib/webpack-permissions-plugin.d.ts",
   "scripts": {
-    "build": "rollup -c",
+    "build": "run prebuild && rollup -c && run postbuild",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
-    "package": "yarn build",
+    "package": "run build",
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
     "precommit": "lint-staged",
