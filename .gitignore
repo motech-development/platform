@@ -163,13 +163,13 @@ awsmobilejs/\#current-backend-info
 ~awsmobilejs-*/
 
 # Yarn
+.pnp.*
 .yarn/*
 !.yarn/patches
-!.yarn/releases
 !.yarn/plugins
+!.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-.pnp.*
 
 # Project files
 build
