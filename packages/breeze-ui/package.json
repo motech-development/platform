@@ -12,7 +12,6 @@
     "package": "run build",
     "postbuild": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "prebuild": "rimraf ./lib",
-    "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc.yml --write 'src/**/*'",
     "start": "start-storybook",
     "test": "jest --watch",
@@ -86,5 +85,9 @@
     "setupFilesAfterEnv": [
       "<rootDir>/src/setupTests.ts"
     ]
+  },
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write",
+    "src/**/*.{ts,tsx}": "eslint -c .eslintrc.yml --fix"
   }
 }

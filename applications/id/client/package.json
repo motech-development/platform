@@ -9,7 +9,6 @@
     "deploy": "serverless client deploy --verbose --no-confirm && run postdeploy",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "postdeploy": "react-snap",
-    "precommit": "lint-staged",
     "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "start": "react-scripts start",
     "teardown": "serverless client remove --verbose --no-confirm",
@@ -67,6 +66,8 @@
     "eslint-plugin-react": "7.28.0",
     "eslint-plugin-react-hooks": "4.3.0",
     "jest-styled-components": "7.0.8",
+    "lint-staged": "12.3.7",
+    "prettier": "2.3.0",
     "pwa-asset-generator": "6.0.6",
     "react-scripts": "4.0.3",
     "react-snap": "1.23.0",
@@ -105,5 +106,9 @@
     "minifyHtml": {
       "collapseWhitespace": false
     }
+  },
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write",
+    "src/**/*.{ts,tsx}": "eslint -c .eslintrc.yml --fix"
   }
 }
