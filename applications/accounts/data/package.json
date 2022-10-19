@@ -12,6 +12,36 @@
     "test": "jest --watch",
     "test:ci": "jest --coverage --runInBand"
   },
+  "dependencies": {
+    "aws-sdk": "2.1046.0",
+    "decimal.js": "10.3.1",
+    "luxon": "2.3.0",
+    "uuid": "8.3.2"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.101",
+    "@types/jest": "26.0.24",
+    "@types/luxon": "2.0.9",
+    "@types/uuid": "8.3.4",
+    "aws-lambda-mock-context": "3.2.1",
+    "babel-loader": "8.1.0",
+    "cache-loader": "4.1.0",
+    "eslint": "7.28.0",
+    "eslint-config-airbnb": "18.2.1",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.25.4",
+    "eslint-plugin-prettier": "4.0.0",
+    "fork-ts-checker-webpack-plugin": "6.5.2",
+    "jest": "26.6.0",
+    "jest-date-mock": "1.0.8",
+    "serverless": "2.70.0",
+    "serverless-deployment-bucket": "1.5.2",
+    "serverless-prune-plugin": "2.0.1",
+    "serverless-webpack": "5.6.1",
+    "webpack": "4.44.2",
+    "webpack-node-externals": "3.0.0",
+    "typescript": "4.2.3"
+  },
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
@@ -21,10 +51,5 @@
       "jest-date-mock"
     ],
     "testEnvironment": "node"
-  },
-  "dependencies": {
-    "decimal.js": "10.3.1",
-    "luxon": "2.3.0",
-    "uuid": "8.3.2"
   }
 }

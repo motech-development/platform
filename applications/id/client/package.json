@@ -46,8 +46,34 @@
     "web-vitals": "2.1.4",
     "yup": "0.29.3"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "devDependencies": {
+    "@testing-library/jest-dom": "5.16.4",
+    "@testing-library/react": "12.1.5",
+    "@testing-library/user-event": "13.5.0",
+    "@types/auth0-js": "9.14.5",
+    "@types/jest": "26.0.24",
+    "@types/luxon": "2.0.9",
+    "@types/react": "17.0.47",
+    "@types/react-dom": "17.0.17",
+    "@types/react-router-dom": "5.3.3",
+    "@types/styled-components": "5.1.9",
+    "@types/yup": "0.29.11",
+    "eslint": "7.28.0",
+    "eslint-config-airbnb": "18.2.1",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.25.4",
+    "eslint-plugin-jsx-a11y": "6.5.1",
+    "eslint-plugin-prettier": "4.0.0",
+    "eslint-plugin-react": "7.28.0",
+    "eslint-plugin-react-hooks": "4.3.0",
+    "jest-styled-components": "7.0.8",
+    "pwa-asset-generator": "6.0.6",
+    "react-scripts": "4.0.3",
+    "react-snap": "1.23.0",
+    "serverless": "2.70.0",
+    "serverless-deployment-bucket": "1.5.2",
+    "serverless-finch": "2.8.0",
+    "typescript": "4.2.3"
   },
   "browserslist": {
     "production": [
