@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations",
-    "@types/aws4": "1.5.1",
     "archiver": "5.3.1",
     "aws4": "1.11.0",
     "axios": "0.21.2",
@@ -24,8 +23,10 @@
     "yup": "0.29.3"
   },
   "devDependencies": {
+    "@babel/core": "7.12.3",
     "@types/archiver": "5.3.1",
     "@types/aws-lambda": "8.10.101",
+    "@types/aws4": "1.5.1",
     "@types/jest": "26.0.24",
     "@types/luxon": "2.0.9",
     "@types/qs": "6.9.7",

@@ -18,6 +18,7 @@
     "aws-sdk": "2.1046.0"
   },
   "devDependencies": {
+    "@babel/core": "7.12.3",
     "@motech-development/logger": "workspace:packages/logger",
     "@motech-development/webpack-conditional-plugin": "workspace:packages/webpack-conditional-plugin",
     "@motech-development/webpack-permissions-plugin": "workspace:packages/webpack-permissions-plugin",
