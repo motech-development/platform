@@ -11,10 +11,10 @@
   "scripts": {
     "clean-deps": "find . -name node_modules -exec rm -rf {} \\;",
     "clean-git": "git branch --merged | egrep -v \"(^\\*|master|develop)\" | xargs git branch -d",
+    "format": "yarn workspaces foreach -v run prettier --ignore-unknown --write .",
     "lint": "yarn workspaces foreach -p run lint",
     "package": "yarn workspaces foreach -pt run package",
     "prepare": "husky install",
-    "prettier": "yarn workspaces foreach -v run prettier --ignore-unknown --write .",
     "test": "yarn workspaces foreach run test-ci"
   },
   "repository": {
