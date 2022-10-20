@@ -33,6 +33,7 @@ custom:
     includeModules: true
     packager: yarn
     packagerOptions:
+      noFrozenLockfile: true
       noNonInteractive: true
 
 functions:
