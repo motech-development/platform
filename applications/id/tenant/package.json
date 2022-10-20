@@ -9,7 +9,7 @@
     "lint": "eslint -c .eslintrc.yml './src/**/*.js'",
     "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand"
+    "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
     "auth0": "2.37.0"

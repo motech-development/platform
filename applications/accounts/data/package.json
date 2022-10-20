@@ -9,7 +9,7 @@
     "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand"
+    "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
     "aws-sdk": "2.1046.0",

@@ -10,8 +10,8 @@
     "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand",
-    "update:definitions": "serverless invoke -f UpdateDefinitions"
+    "test-ci": "jest --coverage --runInBand",
+    "update-definitions": "serverless invoke -f UpdateDefinitions"
   },
   "dependencies": {
     "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations",

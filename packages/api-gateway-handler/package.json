@@ -15,7 +15,7 @@
     "prebuild": "rimraf ./lib",
     "prettier": "prettier --config ../../.prettierrc.yml --write 'src/**/*'",
     "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand"
+    "test-ci": "jest --coverage --runInBand"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "7.18.9",

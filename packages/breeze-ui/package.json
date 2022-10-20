@@ -15,7 +15,7 @@
     "prettier": "prettier --config ../../.prettierrc.yml --write 'src/**/*'",
     "start": "start-storybook",
     "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand"
+    "test-ci": "jest --coverage --runInBand"
   },
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",

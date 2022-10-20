@@ -10,7 +10,7 @@
     "start": "serverless invoke stepf --name warmUp",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand"
+    "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
     "@motech-development/logger": "workspace:packages/logger",
