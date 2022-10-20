@@ -26422,6 +26422,7 @@ __metadata:
     commitizen: 4.2.5
     cz-conventional-changelog: 3.3.0
     husky: 7.0.4
+    prettier: 2.3.0
   languageName: unknown
   linkType: soft
 

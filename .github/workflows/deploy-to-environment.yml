@@ -776,7 +776,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       STAGE: ${{ github.event.pull_request.number }}
-      SLS_DEBUG: *
+      SLS_DEBUG: '*'
 
     steps:
       - name: Checkout code

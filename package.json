@@ -12,6 +12,7 @@
     "clean-deps": "find . -name node_modules -exec rm -rf {} \\;",
     "clean-git": "git branch --merged | egrep -v \"(^\\*|master|develop)\" | xargs git branch -d",
     "format": "yarn workspaces foreach -v run prettier --ignore-unknown --write .",
+    "format-root": "prettier --ignore-unknown --write .",
     "lint": "yarn workspaces foreach -p run lint",
     "package": "yarn workspaces foreach -pt run package",
     "prepare": "husky install",
@@ -33,7 +34,8 @@
     "@types/node": "14.18.12",
     "commitizen": "4.2.5",
     "cz-conventional-changelog": "3.3.0",
-    "husky": "7.0.4"
+    "husky": "7.0.4",
+    "prettier": "2.3.0"
   },
   "resolutions": {
     "@types/react": "17.0.47"
