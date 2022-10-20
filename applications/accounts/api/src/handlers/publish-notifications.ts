@@ -48,14 +48,8 @@ export const handler: DynamoDBStreamHandler = async (event) => {
   )
     .map(({ dynamodb }) => {
       const { NewImage } = dynamodb as StreamRecord;
-      const {
-        __typename,
-        createdAt,
-        id,
-        message,
-        owner,
-        payload,
-      } = DynamoDB.Converter.unmarshall(NewImage as DynamoDB.AttributeMap);
+      const { __typename, createdAt, id, message, owner, payload } =
+        DynamoDB.Converter.unmarshall(NewImage as DynamoDB.AttributeMap);
 
       return {
         __typename,

@@ -15,7 +15,7 @@ describe('start-scan', () => {
 
     callback = jest.fn();
 
-    event = ({
+    event = {
       Records: [
         {
           messageAttributes: {
@@ -50,7 +50,7 @@ describe('start-scan', () => {
           },
         },
       ],
-    } as unknown) as SQSEvent;
+    } as unknown as SQSEvent;
   });
 
   it('should throw an error if state machine is not set', async () => {

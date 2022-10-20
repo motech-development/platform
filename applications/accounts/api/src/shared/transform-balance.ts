@@ -46,15 +46,8 @@ const transformBalance = (
     throw new Error('No transactions returned');
   }
 
-  const {
-    balance,
-    currency,
-    id,
-    items,
-    openingBalance,
-    owner,
-    vat,
-  } = balanceItem;
+  const { balance, currency, id, items, openingBalance, owner, vat } =
+    balanceItem;
   const transactions = Object.keys(items)
     .filter((key) => items[key] !== 0)
     .map((key, i) => ({

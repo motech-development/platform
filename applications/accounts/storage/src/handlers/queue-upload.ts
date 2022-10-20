@@ -4,7 +4,7 @@ import { basename, extname } from 'path';
 
 const sqs = new SQS();
 
-export const handler: S3Handler = async event => {
+export const handler: S3Handler = async (event) => {
   const { DOWNLOAD_BUCKET, QUEUE_URL } = process.env;
 
   if (!QUEUE_URL) {
@@ -15,7 +15,7 @@ export const handler: S3Handler = async event => {
     throw new Error('No destination bucket set');
   }
 
-  const entries = event.Records.map(record => {
+  const entries = event.Records.map((record) => {
     const bucket = record.s3.bucket.name;
     const file = record.s3.object.key;
     const ext = extname(file);

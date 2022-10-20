@@ -14,7 +14,7 @@
     "lint": "yarn workspaces foreach -p run lint",
     "package": "yarn workspaces foreach -pt run package",
     "prepare": "husky install",
-    "prettier": "yarn workspaces foreach -p run prettier",
+    "prettier": "yarn workspaces foreach -v run prettier --ignore-unknown --write .",
     "test": "yarn workspaces foreach run test-ci"
   },
   "repository": {

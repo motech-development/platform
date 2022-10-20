@@ -15,7 +15,7 @@ describe('process-delete', () => {
 
     callback = jest.fn();
 
-    event = ({
+    event = {
       Records: [
         {
           messageAttributes: {
@@ -39,7 +39,7 @@ describe('process-delete', () => {
           },
         },
       ],
-    } as unknown) as SQSEvent;
+    } as unknown as SQSEvent;
   });
 
   it('should throw error if no download bucket is set', async () => {

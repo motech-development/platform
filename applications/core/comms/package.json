@@ -6,7 +6,6 @@
   "scripts": {
     "deploy": "serverless deploy --verbose",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
-    "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
     "test-ci": "jest --coverage --runInBand"
@@ -38,7 +37,7 @@
     "serverless": "2.70.0",
     "serverless-deployment-bucket": "1.5.2",
     "serverless-prune-plugin": "2.0.1",
-    "serverless-webpack": "5.6.1",
+    "serverless-webpack": "5.10.0",
     "typescript": "4.2.3",
     "webpack": "4.44.2",
     "webpack-node-externals": "3.0.0"

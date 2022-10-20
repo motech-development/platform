@@ -9,7 +9,6 @@
     "deploy": "serverless client deploy --verbose --no-confirm && run postdeploy",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "postdeploy": "react-snap",
-    "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "start": "react-scripts start",
     "teardown": "serverless client remove --verbose --no-confirm",
     "test": "react-scripts test",
