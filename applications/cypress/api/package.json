@@ -12,8 +12,8 @@
     "test:ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@motech-development/api-gateway-handler": "^0.0.0",
-    "@motech-development/logger": "^0.0.0",
+    "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler",
+    "@motech-development/logger": "workspace:packages/logger",
     "@octokit/auth-app": "3.6.1",
     "@octokit/rest": "18.12.0",
     "aws-sdk": "2.1046.0",

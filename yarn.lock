@@ -19,7 +19,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/api@workspace:applications/accounts/api"
   dependencies:
-    "@motech-development/serverless-outputs-env": ^0.0.0
+    "@motech-development/serverless-outputs-env": "workspace:packages/serverless-outputs-env"
     "@types/assert": 1.5.6
     "@types/aws-lambda": 8.10.101
     "@types/jest": 26.0.24
@@ -64,13 +64,13 @@ __metadata:
     "@fortawesome/fontawesome-svg-core": 1.2.36
     "@fortawesome/free-solid-svg-icons": 5.15.4
     "@fortawesome/react-fontawesome": 0.1.18
-    "@motech-development/appsync-apollo": ^0.0.0
-    "@motech-development/auth": ^0.0.0
-    "@motech-development/axios-hooks": ^0.0.0
-    "@motech-development/breeze-ui": ^0.0.0
-    "@motech-development/ga-web-vitals": ^0.0.0
-    "@motech-development/query-string-hook": ^0.0.0
-    "@popperjs/core": 2.11.5
+    "@motech-development/appsync-apollo": "workspace:packages/appsync-apollo"
+    "@motech-development/auth": "workspace:packages/auth"
+    "@motech-development/axios-hooks": "workspace:packages/axios-hooks"
+    "@motech-development/breeze-ui": "workspace:packages/breeze-ui"
+    "@motech-development/ga-web-vitals": "workspace:packages/ga-web-vitals"
+    "@motech-development/query-string-hook": "workspace:packages/query-string-hook"
+    "@popperjs/core": 2.11.6
     "@testing-library/cypress": 8.0.3
     "@testing-library/jest-dom": 5.16.4
     "@testing-library/react": 12.1.5
@@ -200,7 +200,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/notifications@workspace:applications/accounts/notifications"
   dependencies:
-    "@motech-development/api-gateway-handler": ^0.0.0
+    "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
     "@types/aws-lambda": 8.10.101
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
@@ -268,7 +268,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/reports@workspace:applications/accounts/reports"
   dependencies:
-    "@motech-development/s3-file-operations": ^0.0.0
+    "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations"
     "@types/archiver": 5.3.1
     "@types/aws-lambda": 8.10.101
     "@types/aws4": 1.5.1
@@ -313,8 +313,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/storage@workspace:applications/accounts/storage"
   dependencies:
-    "@motech-development/api-gateway-handler": ^0.0.0
-    "@motech-development/s3-file-operations": ^0.0.0
+    "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
+    "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations"
     "@types/aws-lambda": 8.10.101
     "@types/jest": 26.0.24
     "@types/uuid": 8.3.4
@@ -349,7 +349,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/warm-up@workspace:applications/accounts/warm-up"
   dependencies:
-    "@motech-development/logger": ^0.0.0
+    "@motech-development/logger": "workspace:packages/logger"
     "@types/aws-lambda": 8.10.101
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
@@ -434,21 +434,6 @@ __metadata:
     promise-polyfill: ^8.2.3
     unfetch: ^4.2.0
   checksum: 24f3fed2eb38a5898dd07aabb61f42b220668d64d382b92c5187bd58d19bcff2f4974e6725684fc7b7d37ca713fd8bb990eef499ab3ab8af3b9f23e413f965b5
-  languageName: node
-  linkType: hard
-
-"@auth0/auth0-spa-js@npm:^1.14.0":
-  version: 1.17.0
-  resolution: "@auth0/auth0-spa-js@npm:1.17.0"
-  dependencies:
-    abortcontroller-polyfill: ^1.7.3
-    browser-tabs-lock: ^1.2.14
-    core-js: ^3.15.2
-    es-cookie: ^1.3.2
-    fast-text-encoding: ^1.0.3
-    promise-polyfill: ^8.2.0
-    unfetch: ^4.2.0
-  checksum: 402061abbf11a4175f1b1355ab4a8f4e78d7c5ca8a1bbc35624e3fbde380eb862a816df9416e128547eaed53ced4a60e8c9cfc8d7be39b0008e94710dc3e0598
   languageName: node
   linkType: hard
 
@@ -4522,10 +4507,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@core/anti-virus@workspace:applications/core/anti-virus"
   dependencies:
-    "@motech-development/logger": ^0.0.0
-    "@motech-development/s3-file-operations": ^0.0.0
-    "@motech-development/webpack-conditional-plugin": ^0.0.0
-    "@motech-development/webpack-permissions-plugin": ^0.0.0
+    "@motech-development/logger": "workspace:packages/logger"
+    "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations"
+    "@motech-development/webpack-conditional-plugin": "workspace:packages/webpack-conditional-plugin"
+    "@motech-development/webpack-permissions-plugin": "workspace:packages/webpack-permissions-plugin"
     "@types/aws-lambda": 8.10.101
     "@types/jest": 26.0.24
     aws-lambda-mock-context: 3.2.1
@@ -4622,8 +4607,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@cypress/api@workspace:applications/cypress/api"
   dependencies:
-    "@motech-development/api-gateway-handler": ^0.0.0
-    "@motech-development/logger": ^0.0.0
+    "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
+    "@motech-development/logger": "workspace:packages/logger"
     "@octokit/auth-app": 3.6.1
     "@octokit/rest": 18.12.0
     "@types/aws-lambda": 8.10.101
@@ -4880,7 +4865,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/fontawesome-svg-core@npm:1.2.36, @fortawesome/fontawesome-svg-core@npm:^1.2.35":
+"@fortawesome/fontawesome-svg-core@npm:1.2.36":
   version: 1.2.36
   resolution: "@fortawesome/fontawesome-svg-core@npm:1.2.36"
   dependencies:
@@ -4889,7 +4874,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/free-solid-svg-icons@npm:5.15.4, @fortawesome/free-solid-svg-icons@npm:^5.15.3":
+"@fortawesome/free-solid-svg-icons@npm:5.15.4":
   version: 5.15.4
   resolution: "@fortawesome/free-solid-svg-icons@npm:5.15.4"
   dependencies:
@@ -4907,18 +4892,6 @@ __metadata:
     "@fortawesome/fontawesome-svg-core": ~1 || ~6
     react: ">=16.x"
   checksum: eba711234541928e1877435905bcd94ab6aea1cf228833a55fc7c6a2fc18dd08d3f7f327ca4af0f3ba365188ad0869d7ecd31be5940d27f4e2bbe7e12cbcf520
-  languageName: node
-  linkType: hard
-
-"@fortawesome/react-fontawesome@npm:^0.1.14":
-  version: 0.1.14
-  resolution: "@fortawesome/react-fontawesome@npm:0.1.14"
-  dependencies:
-    prop-types: ^15.7.2
-  peerDependencies:
-    "@fortawesome/fontawesome-svg-core": ^1.2.32
-    react: ">=16.x"
-  checksum: fba8ee619ac77893fa119fc202d7807f2cc44c7093cb6ac7867a26536a62a6b62b71211bc5224378d48adcaede3d6fdf3e469139fab823717ae4031cec599342
   languageName: node
   linkType: hard
 
@@ -5345,10 +5318,10 @@ __metadata:
     "@fortawesome/fontawesome-svg-core": 1.2.36
     "@fortawesome/free-solid-svg-icons": 5.15.4
     "@fortawesome/react-fontawesome": 0.1.18
-    "@motech-development/axios-hooks": ^0.0.0
-    "@motech-development/breeze-ui": ^0.0.0
-    "@motech-development/ga-web-vitals": ^0.0.0
-    "@popperjs/core": 2.11.5
+    "@motech-development/axios-hooks": "workspace:packages/axios-hooks"
+    "@motech-development/breeze-ui": "workspace:packages/breeze-ui"
+    "@motech-development/ga-web-vitals": "workspace:packages/ga-web-vitals"
+    "@popperjs/core": 2.11.6
     "@testing-library/jest-dom": 5.16.4
     "@testing-library/react": 12.1.5
     "@testing-library/user-event": 13.5.0
@@ -6572,7 +6545,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@motech-development/api-gateway-handler@^0.0.0, @motech-development/api-gateway-handler@workspace:packages/api-gateway-handler":
+"@motech-development/api-gateway-handler@workspace:packages/api-gateway-handler":
   version: 0.0.0-use.local
   resolution: "@motech-development/api-gateway-handler@workspace:packages/api-gateway-handler"
   dependencies:
@@ -6598,7 +6571,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@motech-development/appsync-apollo@^0.0.0, @motech-development/appsync-apollo@workspace:packages/appsync-apollo":
+"@motech-development/appsync-apollo@workspace:packages/appsync-apollo":
   version: 0.0.0-use.local
   resolution: "@motech-development/appsync-apollo@workspace:packages/appsync-apollo"
   dependencies:
@@ -6609,8 +6582,8 @@ __metadata:
     "@testing-library/jest-dom": 5.16.4
     "@testing-library/react": 12.1.4
     "@types/jest": 26.0.24
-    "@types/react": 17.0.39
-    "@types/react-dom": 17.0.11
+    "@types/react": 17.0.47
+    "@types/react-dom": 17.0.17
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
     aws-appsync-auth-link: 3.0.7
@@ -6626,8 +6599,8 @@ __metadata:
     jest: 26.6.0
     lint-staged: 12.3.7
     prettier: 2.3.0
-    react: ^17.0.2
-    react-dom: ^17.0.2
+    react: 17.0.2
+    react-dom: 17.0.2
     rimraf: 3.0.2
     rollup: 2.63.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
@@ -6636,20 +6609,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@motech-development/auth@^0.0.0, @motech-development/auth@workspace:packages/auth":
+"@motech-development/auth@workspace:packages/auth":
   version: 0.0.0-use.local
   resolution: "@motech-development/auth@workspace:packages/auth"
   dependencies:
-    "@auth0/auth0-spa-js": ^1.14.0
-    "@motech-development/query-string-hook": ^0.0.0
+    "@auth0/auth0-spa-js": 1.22.2
+    "@motech-development/query-string-hook": "workspace:packages/query-string-hook"
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
     "@testing-library/jest-dom": 5.16.4
     "@testing-library/react": 12.1.4
     "@types/jest": 26.0.24
-    "@types/react": 17.0.39
-    "@types/react-dom": 17.0.11
+    "@types/react": 17.0.47
+    "@types/react-dom": 17.0.17
     "@types/react-router-dom": 5.3.3
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
@@ -6664,9 +6637,9 @@ __metadata:
     jest: 26.6.0
     lint-staged: 12.3.7
     prettier: 2.3.0
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    react-router-dom: ^5.2.0
+    react: 17.0.2
+    react-dom: 17.0.2
+    react-router-dom: 5.2.0
     rimraf: 3.0.2
     rollup: 2.63.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
@@ -6674,7 +6647,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@motech-development/axios-hooks@^0.0.0, @motech-development/axios-hooks@workspace:packages/axios-hooks":
+"@motech-development/axios-hooks@workspace:packages/axios-hooks":
   version: 0.0.0-use.local
   resolution: "@motech-development/axios-hooks@workspace:packages/axios-hooks"
   dependencies:
@@ -6683,10 +6656,10 @@ __metadata:
     "@rollup/plugin-node-resolve": 13.1.3
     "@testing-library/react-hooks": 7.0.2
     "@types/jest": 26.0.24
-    "@types/react": 17.0.39
+    "@types/react": 17.0.47
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
-    axios: ^0.21.1
+    axios: 0.21.2
     eslint: 7.28.0
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.3.0
@@ -6698,7 +6671,7 @@ __metadata:
     jest: 26.6.0
     lint-staged: 12.3.7
     prettier: 2.3.0
-    react: ^17.0.2
+    react: 17.0.2
     rimraf: 3.0.2
     rollup: 2.63.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
@@ -6706,14 +6679,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@motech-development/breeze-ui@^0.0.0, @motech-development/breeze-ui@workspace:packages/breeze-ui":
+"@motech-development/breeze-ui@workspace:packages/breeze-ui":
   version: 0.0.0-use.local
   resolution: "@motech-development/breeze-ui@workspace:packages/breeze-ui"
   dependencies:
-    "@fortawesome/fontawesome-svg-core": ^1.2.35
-    "@fortawesome/free-solid-svg-icons": ^5.15.3
-    "@fortawesome/react-fontawesome": ^0.1.14
-    "@popperjs/core": ^2.9.1
+    "@fortawesome/fontawesome-svg-core": 1.2.36
+    "@fortawesome/free-solid-svg-icons": 5.15.4
+    "@fortawesome/react-fontawesome": 0.1.18
+    "@popperjs/core": 2.11.6
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
@@ -6727,8 +6700,8 @@ __metadata:
     "@testing-library/user-event": 13.5.0
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
-    "@types/react": 17.0.39
-    "@types/react-dom": 17.0.11
+    "@types/react": 17.0.47
+    "@types/react-dom": 17.0.17
     "@types/react-router-dom": 5.3.3
     "@types/styled-components": 5.1.9
     "@types/yup": 0.29.11
@@ -6742,29 +6715,29 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-prettier: 4.0.0
     eslint-plugin-react: 7.28.0
-    formik: ^2.2.6
+    formik: 2.2.6
     jest: 26.6.0
     jest-date-mock: 1.0.8
     lint-staged: 12.3.7
-    luxon: ^2.0.2
-    polished: ^4.1.1
+    luxon: 2.3.0
+    polished: 4.1.4
     prettier: 2.3.0
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    react-number-format: ^4.5.2
-    react-popper: ^2.2.5
-    react-router-dom: ^5.2.0
+    react: 17.0.2
+    react-dom: 17.0.2
+    react-number-format: 4.9.3
+    react-popper: 2.2.5
+    react-router-dom: 5.2.0
     rimraf: 3.0.2
     rollup: 2.63.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    styled-components: ^5.2.1
-    styled-reset: ^4.3.4
+    styled-components: 5.3.0
+    styled-reset: 4.3.4
     typescript: 4.2.3
     yup: 0.29.3
   languageName: unknown
   linkType: soft
 
-"@motech-development/ga-web-vitals@^0.0.0, @motech-development/ga-web-vitals@workspace:packages/ga-web-vitals":
+"@motech-development/ga-web-vitals@workspace:packages/ga-web-vitals":
   version: 0.0.0-use.local
   resolution: "@motech-development/ga-web-vitals@workspace:packages/ga-web-vitals"
   dependencies:
@@ -6791,7 +6764,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@motech-development/logger@^0.0.0, @motech-development/logger@workspace:packages/logger":
+"@motech-development/logger@workspace:packages/logger":
   version: 0.0.0-use.local
   resolution: "@motech-development/logger@workspace:packages/logger"
   dependencies:
@@ -6814,12 +6787,12 @@ __metadata:
     rollup: 2.63.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
     typescript: 4.2.3
-    winston: ^3.3.3
-    winston-transport: ^4.4.0
+    winston: 3.3.3
+    winston-transport: 4.4.0
   languageName: unknown
   linkType: soft
 
-"@motech-development/query-string-hook@^0.0.0, @motech-development/query-string-hook@workspace:packages/query-string-hook":
+"@motech-development/query-string-hook@workspace:packages/query-string-hook":
   version: 0.0.0-use.local
   resolution: "@motech-development/query-string-hook@workspace:packages/query-string-hook"
   dependencies:
@@ -6829,7 +6802,7 @@ __metadata:
     "@testing-library/react-hooks": 7.0.2
     "@types/jest": 26.0.24
     "@types/qs": 6.9.7
-    "@types/react": 17.0.39
+    "@types/react": 17.0.47
     "@types/react-router-dom": 5.3.3
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
@@ -6844,9 +6817,9 @@ __metadata:
     jest: 26.6.0
     lint-staged: 12.3.7
     prettier: 2.3.0
-    qs: ^6.10.1
-    react: ^17.0.2
-    react-router-dom: ^5.2.0
+    qs: 6.10.5
+    react: 17.0.2
+    react-router-dom: 5.2.0
     rimraf: 3.0.2
     rollup: 2.63.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
@@ -6854,7 +6827,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@motech-development/s3-file-operations@^0.0.0, @motech-development/s3-file-operations@workspace:packages/s3-file-operations":
+"@motech-development/s3-file-operations@workspace:packages/s3-file-operations":
   version: 0.0.0-use.local
   resolution: "@motech-development/s3-file-operations@workspace:packages/s3-file-operations"
   dependencies:
@@ -6865,7 +6838,7 @@ __metadata:
     "@types/jest": 26.0.24
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
-    aws-sdk: ^2.874.0
+    aws-sdk: 2.1046.0
     eslint: 7.28.0
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.3.0
@@ -6881,7 +6854,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@motech-development/serverless-outputs-env@^0.0.0, @motech-development/serverless-outputs-env@workspace:packages/serverless-outputs-env":
+"@motech-development/serverless-outputs-env@workspace:packages/serverless-outputs-env":
   version: 0.0.0-use.local
   resolution: "@motech-development/serverless-outputs-env@workspace:packages/serverless-outputs-env"
   dependencies:
@@ -6894,7 +6867,7 @@ __metadata:
     "@types/serverless": 1.78.44
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
-    assert: ^2.0.0
+    assert: 2.0.0
     eslint: 7.28.0
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.3.0
@@ -6906,12 +6879,12 @@ __metadata:
     rimraf: 3.0.2
     rollup: 2.63.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    tomlify-j0.4: ^3.0.0
+    tomlify-j0.4: 3.0.0
     typescript: 4.2.3
   languageName: unknown
   linkType: soft
 
-"@motech-development/webpack-conditional-plugin@^0.0.0, @motech-development/webpack-conditional-plugin@workspace:packages/webpack-conditional-plugin":
+"@motech-development/webpack-conditional-plugin@workspace:packages/webpack-conditional-plugin":
   version: 0.0.0-use.local
   resolution: "@motech-development/webpack-conditional-plugin@workspace:packages/webpack-conditional-plugin"
   dependencies:
@@ -6939,7 +6912,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@motech-development/webpack-permissions-plugin@^0.0.0, @motech-development/webpack-permissions-plugin@workspace:packages/webpack-permissions-plugin":
+"@motech-development/webpack-permissions-plugin@workspace:packages/webpack-permissions-plugin":
   version: 0.0.0-use.local
   resolution: "@motech-development/webpack-permissions-plugin@workspace:packages/webpack-permissions-plugin"
   dependencies:
@@ -6956,7 +6929,7 @@ __metadata:
     eslint-config-prettier: 8.3.0
     eslint-plugin-import: 2.25.4
     eslint-plugin-prettier: 4.0.0
-    filehound: ^1.17.4
+    filehound: 1.17.6
     jest: 26.6.0
     lint-staged: 12.3.7
     prettier: 2.3.0
@@ -7429,7 +7402,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@open-banking/api@workspace:applications/open-banking/api"
   dependencies:
-    "@motech-development/api-gateway-handler": ^0.0.0
+    "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
     "@types/aws-lambda": 8.10.101
     "@types/jest": 26.0.24
     "@types/yup": 0.29.11
@@ -7498,14 +7471,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@popperjs/core@npm:2.11.5":
-  version: 2.11.5
-  resolution: "@popperjs/core@npm:2.11.5"
-  checksum: fd7f9dca3fb716d7426332b6ee283f88d2724c0ab342fb678865a640bad403dfb9eeebd8204a406986162f7e2b33394f104320008b74d0e9066d7322f70ea35d
+"@popperjs/core@npm:2.11.6":
+  version: 2.11.6
+  resolution: "@popperjs/core@npm:2.11.6"
+  checksum: 47fb328cec1924559d759b48235c78574f2d71a8a6c4c03edb6de5d7074078371633b91e39bbf3f901b32aa8af9b9d8f82834856d2f5737a23475036b16817f0
   languageName: node
   linkType: hard
 
-"@popperjs/core@npm:^2.5.4, @popperjs/core@npm:^2.6.0, @popperjs/core@npm:^2.9.1":
+"@popperjs/core@npm:^2.5.4, @popperjs/core@npm:^2.6.0":
   version: 2.9.2
   resolution: "@popperjs/core@npm:2.9.2"
   checksum: a5916302e706b7dfbbbcd8728bafc1682b450d5ec70dd10da84a07c89a419fa72f83cbf990798589e6e69e1b520d6768176ea4bd360d7450d08a2fbc25a14e1c
@@ -9893,15 +9866,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:17.0.11":
-  version: 17.0.11
-  resolution: "@types/react-dom@npm:17.0.11"
-  dependencies:
-    "@types/react": "*"
-  checksum: 4d5730dffbef86c887cecad7e3cecda424ce6a64d0b5441c63b5b015d48219868660a2bb1aa15e897e565ad8867fa6b885d4358b04e1c4e589ba4c07c3fda55c
-  languageName: node
-  linkType: hard
-
 "@types/react-dom@npm:17.0.17, @types/react-dom@npm:<18.0.0":
   version: 17.0.17
   resolution: "@types/react-dom@npm:17.0.17"
@@ -9959,29 +9923,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:>=16.9.0":
-  version: 17.0.3
-  resolution: "@types/react@npm:17.0.3"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: d29f2a33ed69fae9d9f42f8b39b40352e3209eb821f827d566330adfdffb48d2dc730982356cd50a7fda6171e6bc7deca793f7b105c95fce615a45ab313ecf41
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:17.0.39":
-  version: 17.0.39
-  resolution: "@types/react@npm:17.0.39"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: bf04d3c2894559012710d595553e12b422d3b91cd8f4f7e122d8cb044ba9c2ba17f6e8a4e09581359cc5509ddc59cd8c8fabd6774f3505a40a45393f074d6e6e
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:17.0.47, @types/react@npm:^17":
+"@types/react@npm:17.0.47":
   version: 17.0.47
   resolution: "@types/react@npm:17.0.47"
   dependencies:
@@ -11746,7 +11688,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"assert@npm:2.0.0, assert@npm:^2.0.0":
+"assert@npm:2.0.0":
   version: 2.0.0
   resolution: "assert@npm:2.0.0"
   dependencies:
@@ -12129,7 +12071,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:^2.7.0, aws-sdk@npm:^2.874.0, aws-sdk@npm:^2.881.0":
+"aws-sdk@npm:^2.7.0, aws-sdk@npm:^2.881.0":
   version: 2.925.0
   resolution: "aws-sdk@npm:2.925.0"
   dependencies:
@@ -12866,7 +12808,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:^3.3.5, bluebird@npm:^3.4.0, bluebird@npm:^3.4.6, bluebird@npm:^3.4.7, bluebird@npm:^3.5.1, bluebird@npm:^3.5.5, bluebird@npm:^3.7.2":
+"bluebird@npm:^3.3.5, bluebird@npm:^3.4.0, bluebird@npm:^3.4.6, bluebird@npm:^3.4.7, bluebird@npm:^3.5.5, bluebird@npm:^3.7.2":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 869417503c722e7dc54ca46715f70e15f4d9c602a423a02c825570862d12935be59ed9c7ba34a9b31f186c017c23cac6b54e35446f8353059c101da73eac22ef
@@ -13080,7 +13022,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browser-tabs-lock@npm:^1.2.14, browser-tabs-lock@npm:^1.2.15":
+"browser-tabs-lock@npm:^1.2.15":
   version: 1.2.15
   resolution: "browser-tabs-lock@npm:1.2.15"
   dependencies:
@@ -15381,7 +15323,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:^3.0.4, core-js@npm:^3.15.2, core-js@npm:^3.6.5, core-js@npm:^3.8.2":
+"core-js@npm:^3.0.4, core-js@npm:^3.6.5, core-js@npm:^3.8.2":
   version: 3.16.1
   resolution: "core-js@npm:3.16.1"
   checksum: 7924fa2a7f00e3a33bbe92fe42ba59fbbe7e01557a59824d000976300be3ba224cca20161f61654b3861ea80d244d6adfee6ed3ae6d6d9931210a37510fb7c9b
@@ -19086,13 +19028,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-text-encoding@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "fast-text-encoding@npm:1.0.3"
-  checksum: 3e51365896f06d0dcab128092d095a0037d274deec419fecbd2388bc236d7b387610e0c72f920c6126e00c885ab096fbfaa3645712f5b98f721bef6b064916a8
-  languageName: node
-  linkType: hard
-
 "fast-text-encoding@npm:^1.0.4":
   version: 1.0.4
   resolution: "fast-text-encoding@npm:1.0.4"
@@ -19312,20 +19247,6 @@ __metadata:
     moment: ^2.29.1
     unit-compare: ^1.0.1
   checksum: 2fd979a802304c6a28acc5d533efabfa06d683375d8fe1595734a2231b3d3bbfc2ba034260501ad62c9d67e2bb945e17754c200e5bd691cba5803489e6ec4579
-  languageName: node
-  linkType: hard
-
-"filehound@npm:^1.17.4":
-  version: 1.17.4
-  resolution: "filehound@npm:1.17.4"
-  dependencies:
-    bluebird: ^3.5.1
-    file-js: 0.3.0
-    lodash: ^4.17.10
-    minimatch: ^3.0.4
-    moment: ^2.22.1
-    unit-compare: ^1.0.1
-  checksum: f71356c24c5a09f31733edc5f6ba427074f4997c09c9848f849fbec6145e4fd15757a14e2b1a4a4b5db027536e927e570673f4029088408ae242db7f4c927a82
   languageName: node
   linkType: hard
 
@@ -19789,7 +19710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"formik@npm:2.2.6, formik@npm:^2.2.6":
+"formik@npm:2.2.6":
   version: 2.2.6
   resolution: "formik@npm:2.2.6"
   dependencies:
@@ -24949,7 +24870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:4.17.x, lodash@npm:>=3.5 <5, lodash@npm:>=4.17.21, lodash@npm:^4.15.0, lodash@npm:^4.17.0, lodash@npm:^4.17.10, lodash@npm:^4.17.11, lodash@npm:^4.17.12, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:^4.17.5, lodash@npm:^4.2.1, lodash@npm:^4.3.0, lodash@npm:^4.7.0":
+"lodash@npm:4.17.21, lodash@npm:4.17.x, lodash@npm:>=3.5 <5, lodash@npm:>=4.17.21, lodash@npm:^4.15.0, lodash@npm:^4.17.0, lodash@npm:^4.17.11, lodash@npm:^4.17.12, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:^4.17.5, lodash@npm:^4.2.1, lodash@npm:^4.3.0, lodash@npm:^4.7.0":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -25247,13 +25168,6 @@ __metadata:
   version: 1.28.0
   resolution: "luxon@npm:1.28.0"
   checksum: 5250cb9f138b6048eeb0b3a9044a4ac994d0058f680c72a0da4b6aeaec8612460385639cba2b1052ef6d5564879e9ed144d686f26d9d97b38ab920d82e18281c
-  languageName: node
-  linkType: hard
-
-"luxon@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "luxon@npm:2.0.2"
-  checksum: eb2e366cf41a129704ae3213e0aea3e1504390af2a84322a5bbb6a22c92d96c7cb70e58b941a109c5e1bfbed51784d08130278feeee6cdf169940af90a68ded5
   languageName: node
   linkType: hard
 
@@ -26268,7 +26182,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:>= 2.9.0, moment@npm:^2.10.5, moment@npm:^2.14.1, moment@npm:^2.22.1, moment@npm:^2.29.1":
+"moment@npm:>= 2.9.0, moment@npm:^2.10.5, moment@npm:^2.14.1, moment@npm:^2.29.1":
   version: 2.29.1
   resolution: "moment@npm:2.29.1"
   checksum: 1e14d5f422a2687996be11dd2d50c8de3bd577c4a4ca79ba5d02c397242a933e5b941655de6c8cb90ac18f01cc4127e55b4a12ae3c527a6c0a274e455979345e
@@ -28473,7 +28387,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"polished@npm:^4.0.5, polished@npm:^4.1.1":
+"polished@npm:^4.0.5":
   version: 4.1.3
   resolution: "polished@npm:4.1.3"
   dependencies:
@@ -29581,13 +29495,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"promise-polyfill@npm:^8.2.0":
-  version: 8.2.0
-  resolution: "promise-polyfill@npm:8.2.0"
-  checksum: e1edbf249259e64819d801b5cb59cf218e52d603bf7b23083a8f40ab4015f25b7de0c8373b26322643c7ab234fa37103f39f9c92b15d31249487546cd8e2be9b
-  languageName: node
-  linkType: hard
-
 "promise-polyfill@npm:^8.2.3":
   version: 8.2.3
   resolution: "promise-polyfill@npm:8.2.3"
@@ -30430,7 +30337,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:17.0.2, react-dom@npm:^17.0.2":
+"react-dom@npm:17.0.2":
   version: 17.0.2
   resolution: "react-dom@npm:17.0.2"
   dependencies:
@@ -30585,18 +30492,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-number-format@npm:^4.5.2":
-  version: 4.5.2
-  resolution: "react-number-format@npm:4.5.2"
-  dependencies:
-    prop-types: ^15.7.2
-  peerDependencies:
-    react: ^0.14 || ^15.0.0-0 || ^16.0.0-0 || ^17.0.0-0
-    react-dom: ^0.14 || ^15.0.0-0 || ^16.0.0-0 || ^17.0.0-0
-  checksum: 4a9408a274a27160621a30f96d7f2fbf30419f86cff9a249986606e08162c3af85e3424fb06dae78d920b41dfdbed46c0ec73720cf9d28201603b38218f9403e
-  languageName: node
-  linkType: hard
-
 "react-popper-tooltip@npm:^3.1.1":
   version: 3.1.1
   resolution: "react-popper-tooltip@npm:3.1.1"
@@ -30611,7 +30506,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-popper@npm:2.2.5, react-popper@npm:^2.2.4, react-popper@npm:^2.2.5":
+"react-popper@npm:2.2.5, react-popper@npm:^2.2.4":
   version: 2.2.5
   resolution: "react-popper@npm:2.2.5"
   dependencies:
@@ -30631,7 +30526,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:5.2.0, react-router-dom@npm:^5.2.0":
+"react-router-dom@npm:5.2.0":
   version: 5.2.0
   resolution: "react-router-dom@npm:5.2.0"
   dependencies:
@@ -30843,7 +30738,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:17.0.2, react@npm:^17.0.2":
+"react@npm:17.0.2":
   version: 17.0.2
   resolution: "react@npm:17.0.2"
   dependencies:
@@ -33982,7 +33877,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"styled-components@npm:5.3.0, styled-components@npm:^5.2.1":
+"styled-components@npm:5.3.0":
   version: 5.3.0
   resolution: "styled-components@npm:5.3.0"
   dependencies:
@@ -34004,7 +33899,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"styled-reset@npm:4.3.4, styled-reset@npm:^4.3.4":
+"styled-reset@npm:4.3.4":
   version: 4.3.4
   resolution: "styled-reset@npm:4.3.4"
   peerDependencies:
@@ -34754,7 +34649,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tomlify-j0.4@npm:3.0.0, tomlify-j0.4@npm:^3.0.0":
+"tomlify-j0.4@npm:3.0.0":
   version: 3.0.0
   resolution: "tomlify-j0.4@npm:3.0.0"
   checksum: e24aaf6d614abd24437669ac3bb90185d514f8c0cc9443e36264035b2381afecae1383d55a29551993842b01080ada7ba5bc1b9dab8f479a7057376634da233d
@@ -36615,7 +36510,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston-transport@npm:^4.3.0, winston-transport@npm:^4.4.0":
+"winston-transport@npm:4.4.0, winston-transport@npm:^4.3.0, winston-transport@npm:^4.4.0":
   version: 4.4.0
   resolution: "winston-transport@npm:4.4.0"
   dependencies:
@@ -36686,21 +36581,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:^2.3.0":
-  version: 2.4.5
-  resolution: "winston@npm:2.4.5"
-  dependencies:
-    async: ~1.0.0
-    colors: 1.0.x
-    cycle: 1.0.x
-    eyes: 0.1.x
-    isstream: 0.1.x
-    stack-trace: 0.0.x
-  checksum: aba54cae4c97df6f01c6ad98b5ecbf79eaa79326b5f99c379063e91a9bd6dd961b2958768d850546b7a54ef159ecc67bcaf08a6fec4029592be7436d955460f0
-  languageName: node
-  linkType: hard
-
-"winston@npm:^3.3.3":
+"winston@npm:3.3.3":
   version: 3.3.3
   resolution: "winston@npm:3.3.3"
   dependencies:
@@ -36714,6 +36595,20 @@ __metadata:
     triple-beam: ^1.3.0
     winston-transport: ^4.4.0
   checksum: 89a0a8db4e577d0df2bee8af67a751663fb80aaa782750b5a0a151a6bf97074dd0eb7c81780e196197735b851c12ea9c176952128fc51fae07a8a5ddba82913a
+  languageName: node
+  linkType: hard
+
+"winston@npm:^2.3.0":
+  version: 2.4.5
+  resolution: "winston@npm:2.4.5"
+  dependencies:
+    async: ~1.0.0
+    colors: 1.0.x
+    cycle: 1.0.x
+    eyes: 0.1.x
+    isstream: 0.1.x
+    stack-trace: 0.0.x
+  checksum: aba54cae4c97df6f01c6ad98b5ecbf79eaa79326b5f99c379063e91a9bd6dd961b2958768d850546b7a54ef159ecc67bcaf08a6fec4029592be7436d955460f0
   languageName: node
   linkType: hard
 

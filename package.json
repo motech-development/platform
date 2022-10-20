@@ -22,7 +22,7 @@
     "exec": "lerna exec",
     "execute": "lerna run --stream",
     "lint": "lerna run lint",
-    "package": "lerna run package --stream",
+    "package": "yarn workspaces foreach -pt run package",
     "prepare": "husky install",
     "prettier": "lerna run prettier --stream",
     "start": "lerna run start --stream",
@@ -49,6 +49,9 @@
     "cz-lerna-changelog": "2.0.3",
     "husky": "7.0.4",
     "lerna": "4.0.0"
+  },
+  "resolutions": {
+    "@types/react": "17.0.47"
   },
   "config": {
     "commitizen": {

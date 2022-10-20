@@ -13,7 +13,7 @@
     "test:ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@motech-development/logger": "^0.0.0",
+    "@motech-development/logger": "workspace:packages/logger",
     "luxon": "2.3.0",
     "uuid": "8.3.2",
     "yup": "0.29.3"

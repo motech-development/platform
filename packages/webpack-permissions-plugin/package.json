@@ -25,7 +25,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "filehound": "^1.17.4",
+    "filehound": "1.17.6",
     "webpack": "4.44.2"
   },
   "devDependencies": {

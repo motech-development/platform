@@ -14,13 +14,13 @@
     "update:definitions": "serverless invoke -f UpdateDefinitions"
   },
   "dependencies": {
-    "@motech-development/s3-file-operations": "^0.0.0",
+    "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations",
     "aws-sdk": "2.1046.0"
   },
   "devDependencies": {
-    "@motech-development/logger": "^0.0.0",
-    "@motech-development/webpack-conditional-plugin": "^0.0.0",
-    "@motech-development/webpack-permissions-plugin": "^0.0.0",
+    "@motech-development/logger": "workspace:packages/logger",
+    "@motech-development/webpack-conditional-plugin": "workspace:packages/webpack-conditional-plugin",
+    "@motech-development/webpack-permissions-plugin": "workspace:packages/webpack-permissions-plugin",
     "@types/aws-lambda": "8.10.101",
     "@types/jest": "26.0.24",
     "aws-lambda-mock-context": "3.2.1",
