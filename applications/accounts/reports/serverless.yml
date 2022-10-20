@@ -32,6 +32,8 @@ custom:
   webpack:
     includeModules: true
     packager: yarn
+    packagerOptions:
+      noNonInteractive: true
 
 functions:
   AddReport:
