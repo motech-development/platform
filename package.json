@@ -30,18 +30,17 @@
   "devDependencies": {
     "@commitlint/cli": "16.3.0",
     "@commitlint/config-conventional": "16.2.4",
-    "@types/node": "12.20.55",
+    "@types/node": "14.18.12",
     "commitizen": "4.2.5",
-    "cz-lerna-changelog": "2.0.3",
-    "husky": "7.0.4",
-    "lerna": "4.0.0"
+    "cz-conventional-changelog": "3.3.0",
+    "husky": "7.0.4"
   },
   "resolutions": {
     "@types/react": "17.0.47"
   },
   "config": {
     "commitizen": {
-      "path": "./node_modules/cz-lerna-changelog"
+      "path": "cz-conventional-changelog"
     }
   }
 }
