@@ -36,10 +36,12 @@
     "cz-conventional-changelog": "3.3.0",
     "husky": "7.0.4",
     "lint-staged": "12.3.7",
-    "prettier": "2.3.0"
+    "prettier": "2.3.0",
+    "typescript": "4.2.3"
   },
   "resolutions": {
-    "@types/react": "17.0.47"
+    "@types/react": "17.0.47",
+    "eslint-plugin-react": "7.28.0"
   },
   "config": {
     "commitizen": {
