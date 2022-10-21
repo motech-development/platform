@@ -3,10 +3,14 @@ import { DateTime } from 'luxon';
 /* eslint-disable jest/valid-expect-in-promise */
 describe('VAT registered', () => {
   let baseUrl: string | null;
+  let overrides: Cypress.TestConfigOverrides;
   let timeout: number;
 
   beforeEach(() => {
     ({ baseUrl } = Cypress.config());
+    overrides = {
+      retries: 3,
+    };
     timeout = 20000;
   });
 
@@ -17,7 +21,7 @@ describe('VAT registered', () => {
       }).should('include', `${baseUrl}/my-companies/dashboard/`);
     });
 
-    it('should create a company', () => {
+    it('should create a company', overrides, () => {
       cy.fixture('data/company.json').then((res) => {
         const data = res[0];
 
@@ -526,7 +530,7 @@ describe('VAT registered', () => {
       }).should('include', `${baseUrl}/my-companies/clients/`);
     });
 
-    it('should add client 1', () => {
+    it('should add client 1', overrides, () => {
       cy.fixture('data/client.json').then((res) => {
         const client = res[0];
 
@@ -1182,7 +1186,7 @@ describe('VAT registered', () => {
       }).should('eq', `${baseUrl}/my-companies`);
     });
 
-    it('should remove company', () => {
+    it('should remove company', overrides, () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[0];
 
