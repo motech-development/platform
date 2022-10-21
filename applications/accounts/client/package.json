@@ -130,6 +130,9 @@
       "src/**/*.{ts,tsx}",
       "!src/{history,index,i18n}.{ts,tsx}",
       "!src/**/*/index.{ts,tsx}"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(es-cookie))"
     ]
   },
   "lint-staged": {
