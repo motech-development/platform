@@ -48,7 +48,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -57,7 +57,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -66,7 +66,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cache-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-cache-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-cache-
 
@@ -110,7 +110,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -118,7 +118,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -178,7 +178,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -186,7 +186,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -197,9 +197,9 @@ jobs:
             ./applications/id/client/node_modules/.cache
             ./applications/id/client/.serverless
             ./applications/id/infrastructure/.serverless
-          key: ${{ runner.os }}-id-v1-${{ github.sha }}
+          key: ${{ runner.os }}-id-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-id-v1-
+            ${{ runner.os }}-id-v3-
 
       - name: Deploy ID infrastructure
         run: yarn workspace @id/infrastructure deploy --stage $STAGE
@@ -251,7 +251,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -259,7 +259,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -269,9 +269,9 @@ jobs:
           path: |
             ./applications/open-banking/api/node_modules/.cache
             ./applications/open-banking/api/.serverless
-          key: ${{ runner.os }}-open-banking-api-v1-${{ github.sha }}
+          key: ${{ runner.os }}-open-banking-api-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-open-banking-api-v1-
+            ${{ runner.os }}-open-banking-api-v3-
 
       - name: Deploy
         run: yarn workspace @open-banking/api deploy --stage $STAGE
@@ -309,7 +309,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -317,7 +317,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -327,9 +327,9 @@ jobs:
           path: |
             ./applications/core/anti-virus/node_modules/.cache
             ./applications/core/anti-virus/.serverless
-          key: ${{ runner.os }}-core-anti-virus-v1-${{ github.sha }}
+          key: ${{ runner.os }}-core-anti-virus-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-core-anti-virus-v1-
+            ${{ runner.os }}-core-anti-virus-v3-
 
       - name: Deploy
         run: yarn workspace @core/anti-virus deploy --stage $STAGE
@@ -368,7 +368,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -376,7 +376,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -386,9 +386,9 @@ jobs:
           path: |
             ./applications/cypress/storage/node_modules/.cache
             ./applications/cypress/storage/.serverless
-          key: ${{ runner.os }}-cypress-storage-v1-${{ github.sha }}
+          key: ${{ runner.os }}-cypress-storage-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-cypress-storage-v1-
+            ${{ runner.os }}-cypress-storage-v3-
 
       - name: Deploy
         run: yarn workspace @cypress/storage deploy --stage $STAGE
@@ -430,7 +430,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -438,7 +438,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -448,9 +448,9 @@ jobs:
           path: |
             ./applications/cypress/api/node_modules/.cache
             ./applications/cypress/api/.serverless
-          key: ${{ runner.os }}-cypress-api-v1-${{ github.sha }}
+          key: ${{ runner.os }}-cypress-api-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-cypress-api-v1-
+            ${{ runner.os }}-cypress-api-v3-
 
       - name: Deploy
         run: yarn workspace @cypress/api deploy --stage $STAGE
@@ -491,7 +491,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -499,7 +499,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -509,9 +509,9 @@ jobs:
           path: |
             ./applications/accounts/queue/node_modules/.cache
             ./applications/accounts/queue/.serverless
-          key: ${{ runner.os }}-accounts-queue-v1-${{ github.sha }}
+          key: ${{ runner.os }}-accounts-queue-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-accounts-queue-v1-
+            ${{ runner.os }}-accounts-queue-v3-
 
       - name: Deploy
         run: yarn workspace @accounts/queue deploy --stage $STAGE
@@ -551,7 +551,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -559,7 +559,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -569,9 +569,9 @@ jobs:
           path: |
             ./applications/accounts/storage/node_modules/.cache
             ./applications/accounts/storage/.serverless
-          key: ${{ runner.os }}-accounts-storage-v1-${{ github.sha }}
+          key: ${{ runner.os }}-accounts-storage-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-accounts-storage-v1-
+            ${{ runner.os }}-accounts-storage-v3-
 
       - name: Deploy
         run: yarn workspace @accounts/storage deploy --stage $STAGE
@@ -611,7 +611,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -619,7 +619,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -629,9 +629,9 @@ jobs:
           path: |
             ./applications/accounts/data/node_modules/.cache
             ./applications/accounts/data/.serverless
-          key: ${{ runner.os }}-accounts-data-v1-${{ github.sha }}
+          key: ${{ runner.os }}-accounts-data-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-accounts-data-v1-
+            ${{ runner.os }}-accounts-data-v3-
 
       - name: Deploy
         run: yarn workspace @accounts/data deploy --stage $STAGE
@@ -671,7 +671,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -679,7 +679,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -689,9 +689,9 @@ jobs:
           path: |
             ./applications/accounts/warm-up/node_modules/.cache
             ./applications/accounts/warm-up/.serverless
-          key: ${{ runner.os }}-accounts-warm-up-v1-${{ github.sha }}
+          key: ${{ runner.os }}-accounts-warm-up-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-accounts-warm-up-v1-
+            ${{ runner.os }}-accounts-warm-up-v3-
 
       - name: Deploy
         run: yarn workspace @accounts/warm-up deploy --stage $STAGE
@@ -735,7 +735,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -743,7 +743,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -753,9 +753,9 @@ jobs:
           path: |
             ./applications/accounts/notifications/node_modules/.cache
             ./applications/accounts/notifications/.serverless
-          key: ${{ runner.os }}-accounts-notifications-v1-${{ github.sha }}
+          key: ${{ runner.os }}-accounts-notifications-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-accounts-notifications-v1-
+            ${{ runner.os }}-accounts-notifications-v3-
 
       - name: Deploy
         run: yarn workspace @accounts/notifications deploy --stage $STAGE
@@ -776,7 +776,6 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       STAGE: ${{ github.event.pull_request.number }}
-      SLS_DEBUG: '*'
 
     steps:
       - name: Checkout code
@@ -798,7 +797,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -806,7 +805,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -816,9 +815,9 @@ jobs:
           path: |
             ./applications/accounts/reports/node_modules/.cache
             ./applications/accounts/reports/.serverless
-          key: ${{ runner.os }}-accounts-reports-v1-${{ github.sha }}
+          key: ${{ runner.os }}-accounts-reports-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-accounts-reports-v1-
+            ${{ runner.os }}-accounts-reports-v3-
 
       - name: Deploy
         run: yarn workspace @accounts/reports deploy --stage $STAGE
@@ -865,7 +864,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -873,7 +872,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -881,7 +880,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ github.run_id }}
+          key: ${{ runner.os }}-accounts-client-env-vars-checks-v3-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
@@ -891,9 +890,9 @@ jobs:
           path: |
             ./applications/accounts/api/node_modules/.cache
             ./applications/accounts/api/.serverless
-          key: ${{ runner.os }}-accounts-api-v1-${{ github.sha }}
+          key: ${{ runner.os }}-accounts-api-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-accounts-api-v1-
+            ${{ runner.os }}-accounts-api-v3-
 
       - name: Deploy
         run: yarn workspace @accounts/api deploy --stage $STAGE
@@ -972,7 +971,7 @@ jobs:
             ./node_modules
             ./applications/*/*/node_modules
             ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-modules-
 
@@ -980,7 +979,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v1-${{ hashFiles('**/packages.txt') }}
+          key: ${{ runner.os }}-packages-v3-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
 
@@ -988,7 +987,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cache-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-cache-v3-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-cache-
 
@@ -996,7 +995,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-checks-v1-${{ github.run_id }}
+          key: ${{ runner.os }}-accounts-client-env-vars-checks-v3-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
@@ -1006,9 +1005,9 @@ jobs:
           path: |
             ./applications/accounts/client/node_modules/.cache
             ./applications/accounts/client/.serverless
-          key: ${{ runner.os }}-accounts-client-v1-${{ github.sha }}
+          key: ${{ runner.os }}-accounts-client-v3-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-accounts-client-v1-
+            ${{ runner.os }}-accounts-client-v3-
 
       - name: Build client
         run: yarn workspace @accounts/client build
