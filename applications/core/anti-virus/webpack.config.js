@@ -19,10 +19,10 @@ module.exports = {
   entry: slsw.lib.entries,
   externals: [
     nodeExternals({
-      allowlist: [/^@motech-development\/[A-z]*$/],
+      allowlist: [/^@motech-development\/[^/]*$/],
     }),
     nodeExternals({
-      allowlist: [/^@motech-development\/[A-z]*$/],
+      allowlist: [/^@motech-development\/[^/]*$/],
       modulesDir: resolve(__dirname, '../../../node_modules'),
     }),
   ],

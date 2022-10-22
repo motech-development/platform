@@ -40,6 +40,8 @@ custom:
         - aws-sdk
       nodeModulesRelativeDir: ../../../
     packager: yarn
+    packagerOptions:
+      noFrozenLockfile: true
 
   serverless-offline:
     httpPort: 4100

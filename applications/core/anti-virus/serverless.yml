@@ -37,6 +37,8 @@ custom:
         - aws-sdk
       nodeModulesRelativeDir: ../../../
     packager: yarn
+    packagerOptions:
+      noFrozenLockfile: true
 
 functions:
   FailureNotification:
