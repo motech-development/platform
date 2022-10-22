@@ -8,8 +8,11 @@ module.exports = {
   devtool: 'source-map',
   entry: slsw.lib.entries,
   externals: [
-    nodeExternals(),
     nodeExternals({
+      allowlist: [/^@motech-development\/[A-z]*$/],
+    }),
+    nodeExternals({
+      allowlist: [/^@motech-development\/[A-z]*$/],
       modulesDir: resolve(__dirname, '../../../node_modules'),
     }),
   ],
