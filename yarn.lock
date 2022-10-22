@@ -28489,7 +28489,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-webpack@https://github.com/serverless-heaven/serverless-webpack.git#commit=1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15":
+"serverless-webpack@serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15":
   version: 5.10.0
   resolution: "serverless-webpack@https://github.com/serverless-heaven/serverless-webpack.git#commit=1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
   dependencies:
@@ -28509,29 +28509,6 @@ __metadata:
     ts-node:
       optional: true
   checksum: b56de6aa1ad47613c4c594aeb4b6a6f634c6b2934675c848b56b9a14ec620ec25ea58b36511dba55e051e83fa956dd34a3d4a928a81cb3672ca400a03ee792cb
-  languageName: node
-  linkType: hard
-
-"serverless-webpack@patch:serverless-webpack@https%3A//github.com/serverless-heaven/serverless-webpack.git%23commit=1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15#./.yarn/patches/serverless-webpack-https-3c8ae4bd41.patch::locator=platform%40workspace%3A.":
-  version: 5.10.0
-  resolution: "serverless-webpack@patch:serverless-webpack@https%3A//github.com/serverless-heaven/serverless-webpack.git%23commit=1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15#./.yarn/patches/serverless-webpack-https-3c8ae4bd41.patch::version=5.10.0&hash=2fa532&locator=platform%40workspace%3A."
-  dependencies:
-    archiver: ^5.3.1
-    bluebird: ^3.7.2
-    find-yarn-workspace-root: ^2.0.0
-    fs-extra: ^9.1.0
-    glob: ^7.2.3
-    is-builtin-module: ^3.2.0
-    lodash: ^4.17.21
-    semver: ^7.3.8
-    ts-node: ">= 8.3.0"
-  peerDependencies:
-    serverless: 1 || 2 || 3
-    webpack: ">= 3.0.0 < 6"
-  dependenciesMeta:
-    ts-node:
-      optional: true
-  checksum: 622b3bd354d4175911bd3f1ea90c5582bed9f28aeaa240900ec837b0e4fce00337fdf1b169c0ca90db5a1c7f5053842e83a56ec20758da0067d0a2984ccf5318
   languageName: node
   linkType: hard
 
