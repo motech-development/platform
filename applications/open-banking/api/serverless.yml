@@ -36,10 +36,11 @@ custom:
     number: 1
 
   webpack:
-    includeModules: true
+    includeModules:
+      forceExclude:
+        - aws-sdk
+      nodeModulesRelativeDir: ../../../
     packager: yarn
-    packagerOptions:
-      noNonInteractive: true
 
   serverless-offline:
     httpPort: 4000

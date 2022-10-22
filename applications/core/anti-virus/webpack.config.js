@@ -17,7 +17,12 @@ const condition = (compiler) => {
 module.exports = {
   devtool: 'source-map',
   entry: slsw.lib.entries,
-  externals: [nodeExternals()],
+  externals: [
+    nodeExternals(),
+    nodeExternals({
+      modulesDir: resolve(__dirname, '../../../node_modules'),
+    }),
+  ],
   mode: 'production',
   module: {
     rules: [
