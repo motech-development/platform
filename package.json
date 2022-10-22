@@ -41,7 +41,8 @@
   },
   "resolutions": {
     "@types/react": "17.0.47",
-    "eslint-plugin-react": "7.28.0"
+    "eslint-plugin-react": "7.28.0",
+    "serverless-webpack@serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15": "patch:serverless-webpack@https%3A//github.com/serverless-heaven/serverless-webpack.git%23commit=1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15#./.yarn/patches/serverless-webpack-https-3c8ae4bd41.patch"
   },
   "config": {
     "commitizen": {
