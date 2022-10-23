@@ -22,7 +22,7 @@ export const updateCache: MutationUpdaterFn<IDeleteCompanyOutput> = (
     cache.modify({
       fields: {
         items: (refs: Reference[], { readField }) =>
-          refs.filter(ref => readField('id', ref) !== deleteCompany.id),
+          refs.filter((ref) => readField('id', ref) !== deleteCompany.id),
       },
       id: cache.identify({
         __typename: 'Companies',

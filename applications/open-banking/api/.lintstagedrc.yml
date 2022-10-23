@@ -1,2 +1,0 @@
-src/**/*.{ts,tsx}:
-  - eslint -c .eslintrc.yml --fix

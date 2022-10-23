@@ -26,7 +26,7 @@ export const updateCache: MutationUpdaterFn<IDeleteTransactionOutput> = (
     cache.modify({
       fields: {
         items: (refs: Reference[], { readField }) =>
-          refs.filter(ref => readField('id', ref) !== deleteTransaction.id),
+          refs.filter((ref) => readField('id', ref) !== deleteTransaction.id),
       },
       id: cache.identify({
         __typename: 'Transactions',
@@ -38,9 +38,9 @@ export const updateCache: MutationUpdaterFn<IDeleteTransactionOutput> = (
     cache.modify({
       fields: {
         transactions: (transactions: ITransaction[], { readField }) =>
-          transactions.filter(transaction =>
+          transactions.filter((transaction) =>
             transaction.items.every(
-              item => readField('id', item) !== deleteTransaction.id,
+              (item) => readField('id', item) !== deleteTransaction.id,
             ),
           ),
       },

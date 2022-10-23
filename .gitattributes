@@ -7,6 +7,13 @@
 #
 # image files are treated as binary by default.
 ###############################################################################
-#*.jpg   binary
-#*.png   binary
-#*.gif   binary
+*.jpg   binary
+*.png   binary
+*.gif   binary
+###############################################################################
+# behavior for yarn files
+#
+# identify the release and plugin bundles as binary content
+###############################################################################
+/.yarn/releases/** binary
+/.yarn/plugins/** binary

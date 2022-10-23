@@ -4,43 +4,47 @@
   "description": "Motech Development anit-virus service",
   "private": true,
   "scripts": {
-    "deploy": "serverless deploy --verbose",
+    "deploy": "run predeploy && serverless deploy --verbose",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",
-    "precommit": "lint-staged",
     "predeploy": "./scripts/build.sh",
-    "prettier": "prettier --config ../../../.prettierrc.yml --write 'src/**/*'",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
-    "test:ci": "jest --coverage --runInBand",
-    "update:definitions": "serverless invoke -f UpdateDefinitions"
+    "test-ci": "jest --coverage --runInBand",
+    "update-definitions": "serverless invoke -f UpdateDefinitions"
   },
   "dependencies": {
-    "@motech-development/s3-file-operations": "^0.0.0",
+    "@motech-development/logger": "workspace:packages/logger",
+    "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations",
     "aws-sdk": "2.1046.0"
   },
   "devDependencies": {
-    "@motech-development/logger": "^0.0.0",
-    "@motech-development/webpack-conditional-plugin": "^0.0.0",
-    "@motech-development/webpack-permissions-plugin": "^0.0.0",
+    "@babel/core": "7.12.3",
+    "@babel/preset-env": "7.19.4",
+    "@babel/preset-typescript": "7.18.6",
+    "@motech-development/webpack-conditional-plugin": "workspace:packages/webpack-conditional-plugin",
+    "@motech-development/webpack-permissions-plugin": "workspace:packages/webpack-permissions-plugin",
     "@types/aws-lambda": "8.10.101",
     "@types/jest": "26.0.24",
+    "@typescript-eslint/eslint-plugin": "4.20.0",
+    "@typescript-eslint/parser": "4.20.0",
     "aws-lambda-mock-context": "3.2.1",
     "babel-loader": "8.1.0",
     "cache-loader": "4.1.0",
     "copy-webpack-plugin": "6.4.1",
     "eslint": "7.28.0",
-    "eslint-config-airbnb": "18.2.1",
+    "eslint-config-airbnb-base": "14.2.1",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.25.4",
     "eslint-plugin-prettier": "4.0.0",
     "filehound": "1.17.6",
     "fork-ts-checker-webpack-plugin": "6.5.2",
     "jest": "26.6.0",
+    "prettier": "2.3.0",
     "serverless": "2.70.0",
     "serverless-deployment-bucket": "1.5.2",
     "serverless-prune-plugin": "2.0.1",
     "serverless-step-functions": "3.5.1",
-    "serverless-webpack": "5.6.1",
+    "serverless-webpack": "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15",
     "typescript": "4.2.3",
     "webpack": "4.44.2",
     "webpack-node-externals": "3.0.0"
@@ -51,5 +55,9 @@
       "!src/**/*.d.ts"
     ],
     "testEnvironment": "node"
+  },
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write",
+    "src/**/*.{ts,tsx}": "eslint -c .eslintrc.yml --fix"
   }
 }

@@ -48,7 +48,7 @@ export const updateCache: MutationUpdaterFn<IAddClientOutput> = (
     cache.modify({
       fields: {
         items: (refs: Reference[], { readField }) => {
-          if (refs.some(ref => readField('id', ref) === createClient.id)) {
+          if (refs.some((ref) => readField('id', ref) === createClient.id)) {
             return refs;
           }
 

@@ -1,6 +1,9 @@
+/* eslint-disable jest/valid-expect-in-promise */
 import { DateTime } from 'luxon';
 
-/* eslint-disable jest/valid-expect-in-promise */
+const overrides = {
+  retries: 3,
+};
 describe('Non-VAT registered', () => {
   let baseUrl: string | null;
   let timeout: number;
@@ -17,7 +20,7 @@ describe('Non-VAT registered', () => {
       }).should('include', `${baseUrl}/my-companies/dashboard/`);
     });
 
-    it('should create a company', () => {
+    it('should create a company', overrides, () => {
       cy.fixture('data/company.json').then((res) => {
         const data = res[1];
 
@@ -279,7 +282,7 @@ describe('Non-VAT registered', () => {
       }).should('include', `${baseUrl}/my-companies/clients/`);
     });
 
-    it('should add client 1', () => {
+    it('should add client 1', overrides, () => {
       cy.fixture('data/client.json').then((res) => {
         const client = res[0];
 
@@ -327,7 +330,7 @@ describe('Non-VAT registered', () => {
       });
     });
 
-    it('should add client 2', () => {
+    it('should add client 2', overrides, () => {
       cy.fixture('data/client.json').then((res) => {
         const client = res[1];
 
@@ -385,7 +388,7 @@ describe('Non-VAT registered', () => {
       });
     });
 
-    it('should add client 3', () => {
+    it('should add client 3', overrides, () => {
       cy.fixture('data/client.json').then((res) => {
         const client = res[2];
 
@@ -438,7 +441,7 @@ describe('Non-VAT registered', () => {
       });
     });
 
-    it('should update client 2', () => {
+    it('should update client 2', overrides, () => {
       cy.fixture('data/client.json').then((res) => {
         const client = res[1];
         const updated = res[3];
@@ -494,7 +497,7 @@ describe('Non-VAT registered', () => {
       });
     });
 
-    it('should delete client 3', () => {
+    it('should delete client 3', overrides, () => {
       cy.fixture('data/client.json').then((res) => {
         const client = res[2];
 
@@ -787,7 +790,7 @@ describe('Non-VAT registered', () => {
       });
     });
 
-    it('should add a pending sale', () => {
+    it('should add a pending sale', overrides, () => {
       cy.fixture('data/account.json').then((res) => {
         const transaction = res[3];
 
@@ -832,7 +835,7 @@ describe('Non-VAT registered', () => {
       });
     });
 
-    it('should add a pending purchase', () => {
+    it('should add a pending purchase', overrides, () => {
       cy.fixture('data/account.json').then((res) => {
         const transaction = res[4];
 
@@ -882,7 +885,7 @@ describe('Non-VAT registered', () => {
       });
     });
 
-    it('should add a pending zero VAT rate purchase', () => {
+    it('should add a pending zero VAT rate purchase', overrides, () => {
       cy.fixture('data/account.json').then((res) => {
         const transaction = res[5];
 
@@ -932,7 +935,7 @@ describe('Non-VAT registered', () => {
       });
     });
 
-    it('should delete a pending transaction', () => {
+    it('should delete a pending transaction', overrides, () => {
       cy.fixture('data/account.json').then((res) => {
         const transaction = res[5];
 
@@ -1042,7 +1045,7 @@ describe('Non-VAT registered', () => {
       cy.get('div:contains("The download has started")').should('be.visible');
     });
 
-    it('should download a report', () => {
+    it('should download a report', overrides, () => {
       cy.findByRole('button', {
         name: 'Download',
       }).click();
@@ -1082,7 +1085,7 @@ describe('Non-VAT registered', () => {
       }).should('eq', `${baseUrl}/my-companies`);
     });
 
-    it('should remove company', () => {
+    it('should remove company', overrides, () => {
       cy.fixture('data/company.json').then((res) => {
         const { company } = res[1];
 

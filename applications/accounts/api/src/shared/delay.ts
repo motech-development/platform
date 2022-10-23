@@ -1,5 +1,5 @@
 const delay = async (timeout: number) =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     setTimeout(resolve, timeout);
   });
 

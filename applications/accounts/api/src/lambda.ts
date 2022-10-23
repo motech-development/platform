@@ -9,7 +9,7 @@ export interface IEvent {
   field: string;
 }
 
-export const handler: Handler<IEvent> = async event => {
+export const handler: Handler<IEvent> = async (event) => {
   const { args, field } = event;
 
   if (field === 'getBalance') {

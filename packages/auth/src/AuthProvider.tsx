@@ -21,7 +21,7 @@ export type AuthUser = Omit<IdToken, '__raw'>;
 
 export interface IAuthContext {
   buildAuthorizeUrl(o?: RedirectLoginOptions): Promise<string>;
-  getIdTokenClaims(o?: GetIdTokenClaimsOptions): Promise<IdToken>;
+  getIdTokenClaims(o?: GetIdTokenClaimsOptions): Promise<IdToken | undefined>;
   getTokenSilently(o?: GetTokenSilentlyOptions): Promise<string | undefined>;
   isAuthenticated: boolean;
   isLoading: boolean;

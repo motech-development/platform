@@ -1,12 +1,20 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const { join } = require('path');
+const { join, resolve } = require('path');
 const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   entry: slsw.lib.entries,
-  externals: [nodeExternals()],
+  externals: [
+    nodeExternals({
+      allowlist: [/^@motech-development\/[^/]*$/],
+    }),
+    nodeExternals({
+      allowlist: [/^@motech-development\/[^/]*$/],
+      modulesDir: resolve(__dirname, '../../../node_modules'),
+    }),
+  ],
   mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
   module: {
     rules: [
