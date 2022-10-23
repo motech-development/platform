@@ -1,16 +1,15 @@
+/* eslint-disable jest/valid-expect-in-promise */
 import { DateTime } from 'luxon';
 
-/* eslint-disable jest/valid-expect-in-promise */
+const overrides = {
+  retries: 3,
+};
 describe('Non-VAT registered', () => {
   let baseUrl: string | null;
-  let overrides: Cypress.TestConfigOverrides;
   let timeout: number;
 
   beforeEach(() => {
     ({ baseUrl } = Cypress.config());
-    overrides = {
-      retries: 3,
-    };
     timeout = 20000;
   });
 

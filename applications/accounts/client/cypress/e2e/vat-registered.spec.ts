@@ -1,16 +1,16 @@
 import { DateTime } from 'luxon';
 
+const overrides = {
+  retries: 3,
+};
+
 /* eslint-disable jest/valid-expect-in-promise */
 describe('VAT registered', () => {
   let baseUrl: string | null;
-  let overrides: Cypress.TestConfigOverrides;
   let timeout: number;
 
   beforeEach(() => {
     ({ baseUrl } = Cypress.config());
-    overrides = {
-      retries: 3,
-    };
     timeout = 20000;
   });
 
