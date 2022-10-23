@@ -10,7 +10,7 @@ describe('Non-VAT registered', () => {
 
   beforeEach(() => {
     ({ baseUrl } = Cypress.config());
-    timeout = 40000;
+    timeout = 20000;
   });
 
   describe('Register company', () => {
