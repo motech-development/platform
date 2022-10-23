@@ -77,7 +77,7 @@ __metadata:
     "@motech-development/query-string-hook": "workspace:packages/query-string-hook"
     "@popperjs/core": 2.11.6
     "@testing-library/cypress": 8.0.3
-    "@testing-library/jest-dom": 5.16.4
+    "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 12.1.5
     "@testing-library/user-event": 13.5.0
     "@types/file-saver": 2.0.5
@@ -412,6 +412,13 @@ __metadata:
     yup: 0.29.3
   languageName: unknown
   linkType: soft
+
+"@adobe/css-tools@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@adobe/css-tools@npm:4.0.1"
+  checksum: 80226e2229024c21da9ffa6b5cd4a34b931f071e06f45aba4777ade071d7a6c94605cf73b13718b0c4b34e8b124c65c607b82eaa53a326d3eb73d9682a04a593
+  languageName: node
+  linkType: hard
 
 "@ampproject/remapping@npm:^2.1.0":
   version: 2.2.0
@@ -4430,7 +4437,7 @@ __metadata:
     "@motech-development/breeze-ui": "workspace:packages/breeze-ui"
     "@motech-development/ga-web-vitals": "workspace:packages/ga-web-vitals"
     "@popperjs/core": 2.11.6
-    "@testing-library/jest-dom": 5.16.4
+    "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 12.1.5
     "@testing-library/user-event": 13.5.0
     "@types/auth0-js": 9.14.5
@@ -4926,7 +4933,7 @@ __metadata:
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
-    "@testing-library/jest-dom": 5.16.4
+    "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 12.1.4
     "@types/jest": 26.0.24
     "@types/react": 17.0.47
@@ -4965,7 +4972,7 @@ __metadata:
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
-    "@testing-library/jest-dom": 5.16.4
+    "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 12.1.4
     "@types/jest": 26.0.24
     "@types/react": 17.0.47
@@ -5041,7 +5048,7 @@ __metadata:
     "@storybook/addon-knobs": 6.4.0
     "@storybook/react": 6.3.12
     "@storybook/storybook-deployer": 2.8.12
-    "@testing-library/jest-dom": 5.16.4
+    "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 12.1.4
     "@testing-library/react-hooks": 7.0.2
     "@testing-library/user-event": 13.5.0
@@ -7269,20 +7276,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/jest-dom@npm:5.16.4":
-  version: 5.16.4
-  resolution: "@testing-library/jest-dom@npm:5.16.4"
+"@testing-library/jest-dom@npm:5.16.5":
+  version: 5.16.5
+  resolution: "@testing-library/jest-dom@npm:5.16.5"
   dependencies:
+    "@adobe/css-tools": ^4.0.1
     "@babel/runtime": ^7.9.2
     "@types/testing-library__jest-dom": ^5.9.1
     aria-query: ^5.0.0
     chalk: ^3.0.0
-    css: ^3.0.0
     css.escape: ^1.5.1
     dom-accessibility-api: ^0.5.6
     lodash: ^4.17.15
     redent: ^3.0.0
-  checksum: 4240501223b72b97a44d4e3c669f39b208c49fb645d11d08d5f178d607265c5dfad07efbe027f41a0e2458178ff1fd5bf437fc05661b9109dcd013b95a37079e
+  checksum: 94911f901a8031f3e489d04ac057cb5373621230f5d92bed80e514e24b069fb58a3166d1dd86963e55f078a1bd999da595e2ab96ed95f452d477e272937d792a
   languageName: node
   linkType: hard
 
