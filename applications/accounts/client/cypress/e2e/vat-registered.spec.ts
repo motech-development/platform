@@ -1,10 +1,10 @@
+/* eslint-disable jest/valid-expect-in-promise */
 import { DateTime } from 'luxon';
 
 const overrides = {
-  retries: 3,
+  retries: 10,
 };
 
-/* eslint-disable jest/valid-expect-in-promise */
 describe('VAT registered', () => {
   let baseUrl: string | null;
   let timeout: number;

@@ -2,7 +2,7 @@
 import { DateTime } from 'luxon';
 
 const overrides = {
-  retries: 3,
+  retries: 10,
 };
 describe('Non-VAT registered', () => {
   let baseUrl: string | null;
@@ -968,7 +968,7 @@ describe('Non-VAT registered', () => {
       });
     });
 
-    it('should have published the scheduled transaction', () => {
+    it('should have published the scheduled transaction', overrides, () => {
       cy.contains('Balance: £3922.40').should('be.visible');
 
       cy.contains('VAT owed: £0.00').should('be.visible');
