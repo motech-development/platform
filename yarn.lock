@@ -7896,14 +7896,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:14.18.12":
-  version: 14.18.12
-  resolution: "@types/node@npm:14.18.12"
-  checksum: 8a0273caa0584020adb8802784fc7d4f18f05e6c205335b7f3818a91d6b0c22736b9f51da3428d5bc54076ad47f1a4d6d57990a3ce8489a520ac66b2b3ff24bc
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^14.0.0, @types/node@npm:^14.0.10, @types/node@npm:^14.14.31":
+"@types/node@npm:14.18.32, @types/node@npm:^14.0.0, @types/node@npm:^14.0.10, @types/node@npm:^14.14.31":
   version: 14.18.32
   resolution: "@types/node@npm:14.18.32"
   checksum: 45463114bf85d06dc12925d876dd90b7fff43d9ee10a40e48fd16aece3d0201c76426c128e41230b2818d386422be06c5be33b3d94d90ee924b6fa4d54574035
@@ -24621,7 +24614,7 @@ __metadata:
   dependencies:
     "@commitlint/cli": 16.3.0
     "@commitlint/config-conventional": 16.2.4
-    "@types/node": 14.18.12
+    "@types/node": 14.18.32
     commitizen: 4.2.5
     cz-conventional-changelog: 3.3.0
     husky: 7.0.4
