@@ -23,7 +23,7 @@
     "@babel/preset-typescript": "7.18.6",
     "@motech-development/webpack-conditional-plugin": "workspace:packages/webpack-conditional-plugin",
     "@motech-development/webpack-permissions-plugin": "workspace:packages/webpack-permissions-plugin",
-    "@types/aws-lambda": "8.10.101",
+    "@types/aws-lambda": "8.10.108",
     "@types/jest": "26.0.24",
     "@typescript-eslint/eslint-plugin": "4.20.0",
     "@typescript-eslint/parser": "4.20.0",
