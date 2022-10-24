@@ -87,7 +87,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
     axe-core: 4.4.3
-    axios: 0.21.2
+    axios: 0.27.2
     cy2: 2.0.1
     cypress: 10.9.0
     cypress-axe: 0.14.0
@@ -249,7 +249,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1046.0
     aws4: 1.11.0
-    axios: 0.21.2
+    axios: 0.27.2
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
@@ -293,7 +293,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1046.0
     aws4: 1.11.0
-    axios: 0.21.2
+    axios: 0.27.2
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
@@ -4648,7 +4648,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
     auth0-js: 9.18.1
-    axios: 0.21.2
+    axios: 0.27.2
     body-scroll-lock: 3.1.5
     eslint: 7.28.0
     eslint-config-airbnb: 18.2.1
@@ -5462,7 +5462,7 @@ __metadata:
     "@types/react": 17.0.50
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
-    axios: 0.21.2
+    axios: 0.27.2
     eslint: 7.28.0
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.3.0
@@ -6171,7 +6171,7 @@ __metadata:
     "@typescript-eslint/parser": 4.20.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1046.0
-    axios: 0.21.2
+    axios: 0.27.2
     axios-mock-adapter: 1.20.0
     babel-loader: 8.1.0
     cache-loader: 4.1.0
@@ -11025,12 +11025,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:0.21.2":
-  version: 0.21.2
-  resolution: "axios@npm:0.21.2"
+"axios@npm:0.27.2, axios@npm:^0.27.2":
+  version: 0.27.2
+  resolution: "axios@npm:0.27.2"
   dependencies:
-    follow-redirects: ^1.14.0
-  checksum: 41299c21f77323e7c56ea49d2d5ed25407d24bb145a4ce3441a8db17359ae56554f9495dca6e15d343a9530e106212a684c75a4db3bedfbe19f6414a8d94378e
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
   languageName: node
   linkType: hard
 
@@ -11040,16 +11041,6 @@ __metadata:
   dependencies:
     follow-redirects: ^1.14.0
   checksum: 44245f24ac971e7458f3120c92f9d66d1fc695e8b97019139de5b0cc65d9b8104647db01e5f46917728edfc0cfd88eb30fc4c55e6053eef4ace76768ce95ff3c
-  languageName: node
-  linkType: hard
-
-"axios@npm:^0.27.2":
-  version: 0.27.2
-  resolution: "axios@npm:0.27.2"
-  dependencies:
-    follow-redirects: ^1.14.9
-    form-data: ^4.0.0
-  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
   languageName: node
   linkType: hard
 
