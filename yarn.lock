@@ -242,13 +242,12 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@types/aws-lambda": 8.10.108
-    "@types/aws4": 1.11.2
     "@types/jest": 26.0.24
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1046.0
-    aws4: 1.11.0
+    aws4-axios: 2.4.9
     axios: 0.27.2
     babel-loader: 8.1.0
     cache-loader: 4.1.0
@@ -281,7 +280,6 @@ __metadata:
     "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations"
     "@types/archiver": 5.3.1
     "@types/aws-lambda": 8.10.108
-    "@types/aws4": 1.11.2
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
     "@types/qs": 6.9.7
@@ -292,7 +290,7 @@ __metadata:
     archiver: 5.3.1
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1046.0
-    aws4: 1.11.0
+    aws4-axios: 2.4.9
     axios: 0.27.2
     babel-loader: 8.1.0
     cache-loader: 4.1.0
@@ -823,6 +821,51 @@ __metadata:
     fast-xml-parser: 4.0.11
     tslib: ^2.3.1
   checksum: 42774bd298abe166d91600b1371365152514f993446c4f4cfba1eb7a6e38c795bb1bf6900f07b534967a5ba9c9249fecd7264a823ac38677e408d4b3df1b11e3
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-sts@npm:^3.4.1":
+  version: 3.194.0
+  resolution: "@aws-sdk/client-sts@npm:3.194.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 2.0.0
+    "@aws-crypto/sha256-js": 2.0.0
+    "@aws-sdk/config-resolver": 3.193.0
+    "@aws-sdk/credential-provider-node": 3.193.0
+    "@aws-sdk/fetch-http-handler": 3.193.0
+    "@aws-sdk/hash-node": 3.193.0
+    "@aws-sdk/invalid-dependency": 3.193.0
+    "@aws-sdk/middleware-content-length": 3.193.0
+    "@aws-sdk/middleware-endpoint": 3.193.0
+    "@aws-sdk/middleware-host-header": 3.193.0
+    "@aws-sdk/middleware-logger": 3.193.0
+    "@aws-sdk/middleware-recursion-detection": 3.193.0
+    "@aws-sdk/middleware-retry": 3.193.0
+    "@aws-sdk/middleware-sdk-sts": 3.193.0
+    "@aws-sdk/middleware-serde": 3.193.0
+    "@aws-sdk/middleware-signing": 3.193.0
+    "@aws-sdk/middleware-stack": 3.193.0
+    "@aws-sdk/middleware-user-agent": 3.193.0
+    "@aws-sdk/node-config-provider": 3.193.0
+    "@aws-sdk/node-http-handler": 3.193.0
+    "@aws-sdk/protocol-http": 3.193.0
+    "@aws-sdk/smithy-client": 3.193.0
+    "@aws-sdk/types": 3.193.0
+    "@aws-sdk/url-parser": 3.193.0
+    "@aws-sdk/util-base64-browser": 3.188.0
+    "@aws-sdk/util-base64-node": 3.188.0
+    "@aws-sdk/util-body-length-browser": 3.188.0
+    "@aws-sdk/util-body-length-node": 3.188.0
+    "@aws-sdk/util-defaults-mode-browser": 3.193.0
+    "@aws-sdk/util-defaults-mode-node": 3.193.0
+    "@aws-sdk/util-endpoints": 3.194.0
+    "@aws-sdk/util-user-agent-browser": 3.193.0
+    "@aws-sdk/util-user-agent-node": 3.193.0
+    "@aws-sdk/util-utf8-browser": 3.188.0
+    "@aws-sdk/util-utf8-node": 3.188.0
+    fast-xml-parser: 4.0.11
+    tslib: ^2.3.1
+  checksum: 03e935d6f603abe6d9edfd5e4b0efa329d7f3c4d59a5e81b2e6cdcdac03273cda9671c3b30fc0e3419899c4d29acd150c6f5035d7b6b22a2b30161cb50743706
   languageName: node
   linkType: hard
 
@@ -1526,6 +1569,16 @@ __metadata:
     "@aws-sdk/types": 3.193.0
     tslib: ^2.3.1
   checksum: 16822764758c61235fda6dfae4932b3f566cd5cb566e1f23e03397b6dd2ba69e5f2636c92a777bc9275d6d5cfc9cc8a420e5801091a7018a621823d203a17538
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-endpoints@npm:3.194.0":
+  version: 3.194.0
+  resolution: "@aws-sdk/util-endpoints@npm:3.194.0"
+  dependencies:
+    "@aws-sdk/types": 3.193.0
+    tslib: ^2.3.1
+  checksum: 936979698c152500989be3f7cf3ed81cf0d58334da8a06699915303fea798b6dd168bb7b2c4788e38e3bfd9d6e82643a7b4c3fa83acf8f99e027582edd733c5e
   languageName: node
   linkType: hard
 
@@ -7977,7 +8030,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/aws4@npm:1.11.2":
+"@types/aws4@npm:^1.5.1":
   version: 1.11.2
   resolution: "@types/aws4@npm:1.11.2"
   dependencies:
@@ -11000,7 +11053,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws4@npm:1.11.0, aws4@npm:^1.8.0":
+"aws4-axios@npm:2.4.9":
+  version: 2.4.9
+  resolution: "aws4-axios@npm:2.4.9"
+  dependencies:
+    "@aws-sdk/client-sts": ^3.4.1
+    "@types/aws4": ^1.5.1
+    aws4: ^1.9.1
+  peerDependencies:
+    axios: ">=0.25.0"
+  checksum: 1d4807e1df95440651b75777154f0b72bdf3c495393efe1b57a5ffcb81df4c4320742244595e2857360d6ae9c45d446cbaafac1977482da486367c40028da909
+  languageName: node
+  linkType: hard
+
+"aws4@npm:^1.8.0, aws4@npm:^1.9.1":
   version: 1.11.0
   resolution: "aws4@npm:1.11.0"
   checksum: 5a00d045fd0385926d20ebebcfba5ec79d4482fe706f63c27b324d489a04c68edb0db99ed991e19eda09cb8c97dc2452059a34d97545cebf591d7a2b5a10999f

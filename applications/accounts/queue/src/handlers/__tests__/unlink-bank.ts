@@ -1,14 +1,9 @@
-import aws4 from 'aws4';
+import { aws4Interceptor } from 'aws4-axios';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import axios from 'axios';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { handler, IEvent } from '../unlink-bank';
-
-jest.mock('axios', () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
 
 describe('unlink-bank', () => {
   let callback: jest.Mock;
@@ -26,13 +21,6 @@ describe('unlink-bank', () => {
       id: 'company-id',
       owner: 'owner-id',
     };
-
-    aws4.sign = jest.fn().mockReturnValue({
-      headers: {
-        'Content-Length': 'Content-Length',
-        Host: 'HOST',
-      },
-    });
   });
 
   it('should throw if no table is set', async () => {
@@ -115,7 +103,7 @@ describe('unlink-bank', () => {
       it('should not call the endpoont', async () => {
         await handler(event, context, callback);
 
-        expect(axios).not.toHaveBeenCalled();
+        expect(axios.request).not.toHaveBeenCalled();
       });
 
       it('should return the event', async () => {
@@ -137,18 +125,18 @@ describe('unlink-bank', () => {
       it('should call the endpoint', async () => {
         await handler(event, context, callback);
 
-        expect(axios).toHaveBeenCalled();
+        expect(axios.request).toHaveBeenCalledWith({
+          method: 'DELETE',
+          url: 'https://api.location/test/api/v1/users/user-id',
+        });
       });
 
       it('should sign the request with the correct params', async () => {
         await handler(event, context, callback);
 
-        expect(aws4.sign).toHaveBeenCalledWith({
-          host: 'api.location',
-          method: 'DELETE',
-          path: '/test/api/v1/users/user-id',
-          url: 'https://api.location/test/api/v1/users/user-id',
-        });
+        expect(axios.interceptors.request.use).toHaveBeenCalledWith(
+          aws4Interceptor(),
+        );
       });
 
       it('should return the event', async () => {

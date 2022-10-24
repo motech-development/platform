@@ -1,8 +1,14 @@
-import aws4 from 'aws4';
+import { aws4Interceptor } from 'aws4-axios';
 import { Handler } from 'aws-lambda';
 import axios from 'axios';
 import { stringify } from 'qs';
 import { number, object, string } from 'yup';
+
+const axiosClient = axios.create();
+
+const interceptor = aws4Interceptor();
+
+axiosClient.interceptors.request.use(interceptor);
 
 const schema = object({
   owner: string().required(),
@@ -39,7 +45,6 @@ export const handler: Handler<IEvent> = async (event) => {
     abortEarly: true,
     stripUnknown: true,
   });
-  const host = ENDPOINT.replace('https://', '');
   const path = `/${STAGE}/api/v1/notifications`;
   const url = ENDPOINT + path;
   const data = {
@@ -47,24 +52,15 @@ export const handler: Handler<IEvent> = async (event) => {
     owner,
     payload: stringify(payload),
   };
-  const opts = {
-    body: JSON.stringify(data),
+
+  await axiosClient.request({
     data,
     headers: {
       'Content-Type': 'application/json',
     },
-    host,
     method: 'POST',
-    path,
     url,
-  };
-
-  const request = aws4.sign(opts);
-
-  delete request.headers.Host;
-  delete request.headers['Content-Length'];
-
-  await axios(request);
+  });
 
   return {
     complete: true,
