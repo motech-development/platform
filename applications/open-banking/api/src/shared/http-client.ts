@@ -43,6 +43,7 @@ httpClient.interceptors.request.use(async (config) => {
   const output = {
     ...config,
     headers: {
+      ...config.headers,
       Authorization: await authHeader(),
     },
   };
