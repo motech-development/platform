@@ -4,27 +4,27 @@ export interface IHeaders {
   [name: string]: string;
 }
 
-export interface IOptions<TData> {
+export interface IOptions<TData, TError> {
   headers?: IHeaders;
   responseType?: ResponseType;
   onCompleted?(data: TData): void;
-  onError?(error: AxiosError): void;
+  onError?(error: AxiosError<TError>): void;
 }
 
-export type UseWithInput<TData, TBody> = [
+export type UseWithInput<TData, TBody, TError> = [
   (url: string, body: TBody, headers?: IHeaders) => Promise<TData | undefined>,
   {
     data?: TData;
-    error?: AxiosError;
+    error?: AxiosError<TError>;
     loading: boolean;
   },
 ];
 
-export type UseWithoutInput<TData> = [
+export type UseWithoutInput<TData, TError> = [
   (url: string, headers?: IHeaders) => Promise<TData | undefined>,
   {
     data?: TData;
-    error?: AxiosError;
+    error?: AxiosError<TError>;
     loading: boolean;
   },
 ];
@@ -33,12 +33,12 @@ export type Method = 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT';
 
 export type SetData<TData> = (data: TData) => void;
 
-export type SetError = (error: AxiosError) => void;
+export type SetError<TError> = (error: AxiosError<TError>) => void;
 
 export type SetLoading = (loading: boolean) => void;
 
-export interface ISet<TData> {
+export interface ISet<TData, TError> {
   setData: SetData<TData>;
-  setError: SetError;
+  setError: SetError<TError>;
   setLoading: SetLoading;
 }

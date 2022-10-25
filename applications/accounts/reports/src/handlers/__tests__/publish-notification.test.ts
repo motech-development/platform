@@ -1,4 +1,4 @@
-import aws4 from 'aws4';
+import { aws4Interceptor } from 'aws4-axios';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import axios from 'axios';
@@ -62,73 +62,24 @@ describe('publish-notification', () => {
 
       process.env.ENDPOINT = 'https://api.com';
       process.env.STAGE = 'production';
-
-      (aws4.sign as jest.Mock).mockReturnValue({
-        body: JSON.stringify({
-          message: 'REPORT_READY_TO_DOWNLOAD',
-          owner: 'OWNER-ID',
-          payload:
-            'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
-        }),
-        data: {
-          message: 'REPORT_READY_TO_DOWNLOAD',
-          owner: 'OWNER-ID',
-          payload:
-            'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
-        },
-        headers: {
-          Authorization: 'Auth goes here...',
-          'Content-Length': '123',
-          'Content-Type': 'application/json',
-          Host: 'host-value',
-        },
-        host: 'api.com',
-        method: 'POST',
-        path: '/production/api/v1/notifications',
-        url: 'https://api.com/production/api/v1/notifications',
-      });
     });
 
     afterEach(() => {
       process.env = env;
     });
 
-    it('should sign the request with the correct params', async () => {
+    it('should apply the aws4 interceptor', async () => {
       await handler(event, context, callback);
 
-      expect(aws4.sign).toHaveBeenCalledWith({
-        body: JSON.stringify({
-          message: 'REPORT_READY_TO_DOWNLOAD',
-          owner: 'OWNER-ID',
-          payload:
-            'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
-        }),
-        data: {
-          message: 'REPORT_READY_TO_DOWNLOAD',
-          owner: 'OWNER-ID',
-          payload:
-            'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        host: 'api.com',
-        method: 'POST',
-        path: '/production/api/v1/notifications',
-        url: 'https://api.com/production/api/v1/notifications',
-      });
+      expect(axios.interceptors.request.use).toHaveBeenCalledWith(
+        aws4Interceptor(),
+      );
     });
 
     it('should make the correct request', async () => {
       await handler(event, context, callback);
 
-      expect(axios).toHaveBeenCalledWith({
-        body: JSON.stringify({
-          message: 'REPORT_READY_TO_DOWNLOAD',
-          owner: 'OWNER-ID',
-          payload:
-            'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
-        }),
+      expect(axios.request).toHaveBeenCalledWith({
         data: {
           message: 'REPORT_READY_TO_DOWNLOAD',
           owner: 'OWNER-ID',
@@ -136,12 +87,9 @@ describe('publish-notification', () => {
             'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
         },
         headers: {
-          Authorization: 'Auth goes here...',
           'Content-Type': 'application/json',
         },
-        host: 'api.com',
         method: 'POST',
-        path: '/production/api/v1/notifications',
         url: 'https://api.com/production/api/v1/notifications',
       });
     });

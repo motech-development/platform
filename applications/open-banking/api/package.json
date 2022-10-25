@@ -15,11 +15,11 @@
   "dependencies": {
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler",
     "aws-sdk": "2.1046.0",
-    "axios": "0.21.2",
+    "axios": "0.27.2",
     "yup": "0.29.3"
   },
   "devDependencies": {
-    "@babel/core": "7.12.3",
+    "@babel/core": "7.19.6",
     "@babel/preset-env": "7.19.4",
     "@babel/preset-typescript": "7.18.6",
     "@types/aws-lambda": "8.10.108",

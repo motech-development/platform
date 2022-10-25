@@ -83,7 +83,7 @@ describe('http-client', () => {
 
         const { config } = await httpClient.get('/test');
 
-        expect(config.headers.Authorization).toEqual(`Basic ${buffer}`);
+        expect(config.headers?.Authorization).toEqual(`Basic ${buffer}`);
       });
 
       it('should have the correct base url', async () => {

@@ -19,7 +19,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/api@workspace:applications/accounts/api"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/serverless-outputs-env": "workspace:packages/serverless-outputs-env"
@@ -87,7 +87,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
     axe-core: 4.4.3
-    axios: 0.21.2
+    axios: 0.27.2
     cy2: 2.0.1
     cypress: 10.9.0
     cypress-axe: 0.14.0
@@ -151,7 +151,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/data@workspace:applications/accounts/data"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@types/aws-lambda": 8.10.108
@@ -199,7 +199,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/notifications@workspace:applications/accounts/notifications"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
@@ -238,18 +238,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/queue@workspace:applications/accounts/queue"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@types/aws-lambda": 8.10.108
-    "@types/aws4": 1.5.1
     "@types/jest": 26.0.24
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1046.0
-    aws4: 1.11.0
-    axios: 0.21.2
+    aws4-axios: 2.4.9
+    axios: 0.27.2
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
@@ -275,13 +274,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/reports@workspace:applications/accounts/reports"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations"
     "@types/archiver": 5.3.1
     "@types/aws-lambda": 8.10.108
-    "@types/aws4": 1.5.1
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
     "@types/qs": 6.9.7
@@ -292,8 +290,8 @@ __metadata:
     archiver: 5.3.1
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1046.0
-    aws4: 1.11.0
-    axios: 0.21.2
+    aws4-axios: 2.4.9
+    axios: 0.27.2
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
@@ -325,7 +323,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/storage@workspace:applications/accounts/storage"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
@@ -365,7 +363,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/warm-up@workspace:applications/accounts/warm-up"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/logger": "workspace:packages/logger"
@@ -823,6 +821,51 @@ __metadata:
     fast-xml-parser: 4.0.11
     tslib: ^2.3.1
   checksum: 42774bd298abe166d91600b1371365152514f993446c4f4cfba1eb7a6e38c795bb1bf6900f07b534967a5ba9c9249fecd7264a823ac38677e408d4b3df1b11e3
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/client-sts@npm:^3.4.1":
+  version: 3.194.0
+  resolution: "@aws-sdk/client-sts@npm:3.194.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 2.0.0
+    "@aws-crypto/sha256-js": 2.0.0
+    "@aws-sdk/config-resolver": 3.193.0
+    "@aws-sdk/credential-provider-node": 3.193.0
+    "@aws-sdk/fetch-http-handler": 3.193.0
+    "@aws-sdk/hash-node": 3.193.0
+    "@aws-sdk/invalid-dependency": 3.193.0
+    "@aws-sdk/middleware-content-length": 3.193.0
+    "@aws-sdk/middleware-endpoint": 3.193.0
+    "@aws-sdk/middleware-host-header": 3.193.0
+    "@aws-sdk/middleware-logger": 3.193.0
+    "@aws-sdk/middleware-recursion-detection": 3.193.0
+    "@aws-sdk/middleware-retry": 3.193.0
+    "@aws-sdk/middleware-sdk-sts": 3.193.0
+    "@aws-sdk/middleware-serde": 3.193.0
+    "@aws-sdk/middleware-signing": 3.193.0
+    "@aws-sdk/middleware-stack": 3.193.0
+    "@aws-sdk/middleware-user-agent": 3.193.0
+    "@aws-sdk/node-config-provider": 3.193.0
+    "@aws-sdk/node-http-handler": 3.193.0
+    "@aws-sdk/protocol-http": 3.193.0
+    "@aws-sdk/smithy-client": 3.193.0
+    "@aws-sdk/types": 3.193.0
+    "@aws-sdk/url-parser": 3.193.0
+    "@aws-sdk/util-base64-browser": 3.188.0
+    "@aws-sdk/util-base64-node": 3.188.0
+    "@aws-sdk/util-body-length-browser": 3.188.0
+    "@aws-sdk/util-body-length-node": 3.188.0
+    "@aws-sdk/util-defaults-mode-browser": 3.193.0
+    "@aws-sdk/util-defaults-mode-node": 3.193.0
+    "@aws-sdk/util-endpoints": 3.194.0
+    "@aws-sdk/util-user-agent-browser": 3.193.0
+    "@aws-sdk/util-user-agent-node": 3.193.0
+    "@aws-sdk/util-utf8-browser": 3.188.0
+    "@aws-sdk/util-utf8-node": 3.188.0
+    fast-xml-parser: 4.0.11
+    tslib: ^2.3.1
+  checksum: 03e935d6f603abe6d9edfd5e4b0efa329d7f3c4d59a5e81b2e6cdcdac03273cda9671c3b30fc0e3419899c4d29acd150c6f5035d7b6b22a2b30161cb50743706
   languageName: node
   linkType: hard
 
@@ -1529,6 +1572,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/util-endpoints@npm:3.194.0":
+  version: 3.194.0
+  resolution: "@aws-sdk/util-endpoints@npm:3.194.0"
+  dependencies:
+    "@aws-sdk/types": 3.193.0
+    tslib: ^2.3.1
+  checksum: 936979698c152500989be3f7cf3ed81cf0d58334da8a06699915303fea798b6dd168bb7b2c4788e38e3bfd9d6e82643a7b4c3fa83acf8f99e027582edd733c5e
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/util-hex-encoding@npm:3.188.0, @aws-sdk/util-hex-encoding@npm:^3.29.0":
   version: 3.188.0
   resolution: "@aws-sdk/util-hex-encoding@npm:3.188.0"
@@ -1691,30 +1744,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.12.3":
-  version: 7.12.3
-  resolution: "@babel/core@npm:7.12.3"
-  dependencies:
-    "@babel/code-frame": ^7.10.4
-    "@babel/generator": ^7.12.1
-    "@babel/helper-module-transforms": ^7.12.1
-    "@babel/helpers": ^7.12.1
-    "@babel/parser": ^7.12.3
-    "@babel/template": ^7.10.4
-    "@babel/traverse": ^7.12.1
-    "@babel/types": ^7.12.1
-    convert-source-map: ^1.7.0
-    debug: ^4.1.0
-    gensync: ^1.0.0-beta.1
-    json5: ^2.1.2
-    lodash: ^4.17.19
-    resolve: ^1.3.2
-    semver: ^5.4.1
-    source-map: ^0.5.0
-  checksum: 29ee14dd7ae66c1af84d1b2864e1e9e1bec23b89f41e414917b10151ae1fcb6d3b6a8a25d028a7e22dba3bb7b69eb1f7f0d844797341357e36fa71ff967fb4a5
-  languageName: node
-  linkType: hard
-
 "@babel/core@npm:7.12.9":
   version: 7.12.9
   resolution: "@babel/core@npm:7.12.9"
@@ -1739,7 +1768,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.1.0, @babel/core@npm:^7.11.1, @babel/core@npm:^7.12.10, @babel/core@npm:^7.12.3, @babel/core@npm:^7.16.0, @babel/core@npm:^7.7.2, @babel/core@npm:^7.7.5, @babel/core@npm:^7.8.0":
+"@babel/core@npm:7.19.6, @babel/core@npm:^7.1.0, @babel/core@npm:^7.11.1, @babel/core@npm:^7.12.10, @babel/core@npm:^7.12.3, @babel/core@npm:^7.16.0, @babel/core@npm:^7.7.2, @babel/core@npm:^7.7.5, @babel/core@npm:^7.8.0":
   version: 7.19.6
   resolution: "@babel/core@npm:7.19.6"
   dependencies:
@@ -1776,7 +1805,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/generator@npm:^7.12.1, @babel/generator@npm:^7.12.11, @babel/generator@npm:^7.12.5, @babel/generator@npm:^7.19.6, @babel/generator@npm:^7.7.2":
+"@babel/generator@npm:^7.12.11, @babel/generator@npm:^7.12.5, @babel/generator@npm:^7.19.6, @babel/generator@npm:^7.7.2":
   version: 7.19.6
   resolution: "@babel/generator@npm:7.19.6"
   dependencies:
@@ -2062,7 +2091,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helpers@npm:^7.12.1, @babel/helpers@npm:^7.12.5, @babel/helpers@npm:^7.19.4":
+"@babel/helpers@npm:^7.12.5, @babel/helpers@npm:^7.19.4":
   version: 7.19.4
   resolution: "@babel/helpers@npm:7.19.4"
   dependencies:
@@ -2084,7 +2113,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.12.11, @babel/parser@npm:^7.12.3, @babel/parser@npm:^7.12.7, @babel/parser@npm:^7.14.7, @babel/parser@npm:^7.18.10, @babel/parser@npm:^7.19.6":
+"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.12.11, @babel/parser@npm:^7.12.7, @babel/parser@npm:^7.14.7, @babel/parser@npm:^7.18.10, @babel/parser@npm:^7.19.6":
   version: 7.19.6
   resolution: "@babel/parser@npm:7.19.6"
   bin:
@@ -3270,7 +3299,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/template@npm:^7.10.4, @babel/template@npm:^7.12.7, @babel/template@npm:^7.18.10, @babel/template@npm:^7.3.3":
+"@babel/template@npm:^7.12.7, @babel/template@npm:^7.18.10, @babel/template@npm:^7.3.3":
   version: 7.18.10
   resolution: "@babel/template@npm:7.18.10"
   dependencies:
@@ -3281,7 +3310,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/traverse@npm:^7.1.0, @babel/traverse@npm:^7.1.6, @babel/traverse@npm:^7.12.1, @babel/traverse@npm:^7.12.11, @babel/traverse@npm:^7.12.9, @babel/traverse@npm:^7.13.0, @babel/traverse@npm:^7.19.0, @babel/traverse@npm:^7.19.1, @babel/traverse@npm:^7.19.4, @babel/traverse@npm:^7.19.6, @babel/traverse@npm:^7.4.5, @babel/traverse@npm:^7.7.2":
+"@babel/traverse@npm:^7.1.0, @babel/traverse@npm:^7.1.6, @babel/traverse@npm:^7.12.11, @babel/traverse@npm:^7.12.9, @babel/traverse@npm:^7.13.0, @babel/traverse@npm:^7.19.0, @babel/traverse@npm:^7.19.1, @babel/traverse@npm:^7.19.4, @babel/traverse@npm:^7.19.6, @babel/traverse@npm:^7.4.5, @babel/traverse@npm:^7.7.2":
   version: 7.19.6
   resolution: "@babel/traverse@npm:7.19.6"
   dependencies:
@@ -3299,7 +3328,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/types@npm:^7.0.0, @babel/types@npm:^7.12.1, @babel/types@npm:^7.12.11, @babel/types@npm:^7.12.6, @babel/types@npm:^7.12.7, @babel/types@npm:^7.18.10, @babel/types@npm:^7.18.6, @babel/types@npm:^7.18.9, @babel/types@npm:^7.19.0, @babel/types@npm:^7.19.4, @babel/types@npm:^7.2.0, @babel/types@npm:^7.3.0, @babel/types@npm:^7.3.3, @babel/types@npm:^7.4.4, @babel/types@npm:^7.8.3":
+"@babel/types@npm:^7.0.0, @babel/types@npm:^7.12.11, @babel/types@npm:^7.12.6, @babel/types@npm:^7.12.7, @babel/types@npm:^7.18.10, @babel/types@npm:^7.18.6, @babel/types@npm:^7.18.9, @babel/types@npm:^7.19.0, @babel/types@npm:^7.19.4, @babel/types@npm:^7.2.0, @babel/types@npm:^7.3.0, @babel/types@npm:^7.3.3, @babel/types@npm:^7.4.4, @babel/types@npm:^7.8.3":
   version: 7.19.4
   resolution: "@babel/types@npm:7.19.4"
   dependencies:
@@ -3588,7 +3617,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@core/anti-virus@workspace:applications/core/anti-virus"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/logger": "workspace:packages/logger"
@@ -3627,7 +3656,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@core/comms@workspace:applications/core/comms"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@types/aws-lambda": 8.10.108
@@ -3855,7 +3884,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@cypress/api@workspace:applications/cypress/api"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
@@ -4648,7 +4677,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
     auth0-js: 9.18.1
-    axios: 0.21.2
+    axios: 0.27.2
     body-scroll-lock: 3.1.5
     eslint: 7.28.0
     eslint-config-airbnb: 18.2.1
@@ -5349,7 +5378,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/api-gateway-handler@workspace:packages/api-gateway-handler"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/plugin-transform-runtime": 7.18.9
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
@@ -5378,7 +5407,7 @@ __metadata:
   resolution: "@motech-development/appsync-apollo@workspace:packages/appsync-apollo"
   dependencies:
     "@apollo/client": 3.7.0
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
@@ -5416,7 +5445,7 @@ __metadata:
   resolution: "@motech-development/auth@workspace:packages/auth"
   dependencies:
     "@auth0/auth0-spa-js": 1.22.2
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@motech-development/query-string-hook": "workspace:packages/query-string-hook"
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
@@ -5453,7 +5482,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/axios-hooks@workspace:packages/axios-hooks"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
@@ -5462,7 +5491,7 @@ __metadata:
     "@types/react": 17.0.50
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
-    axios: 0.21.2
+    axios: 0.27.2
     eslint: 7.28.0
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.3.0
@@ -5485,7 +5514,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/breeze-ui@workspace:packages/breeze-ui"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@fortawesome/fontawesome-svg-core": 1.2.36
     "@fortawesome/free-solid-svg-icons": 5.15.4
     "@fortawesome/react-fontawesome": 0.1.18
@@ -5543,7 +5572,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/ga-web-vitals@workspace:packages/ga-web-vitals"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/plugin-transform-runtime": 7.18.9
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
@@ -5572,7 +5601,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/logger@workspace:packages/logger"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/plugin-transform-runtime": 7.18.9
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
@@ -5602,7 +5631,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/query-string-hook@workspace:packages/query-string-hook"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
@@ -5637,7 +5666,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/s3-file-operations@workspace:packages/s3-file-operations"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/plugin-transform-runtime": 7.18.9
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
@@ -5666,7 +5695,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/serverless-outputs-env@workspace:packages/serverless-outputs-env"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/plugin-transform-runtime": 7.18.9
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
@@ -5698,7 +5727,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/webpack-conditional-plugin@workspace:packages/webpack-conditional-plugin"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/plugin-transform-runtime": 7.18.9
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
@@ -5728,7 +5757,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/webpack-permissions-plugin@workspace:packages/webpack-permissions-plugin"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/plugin-transform-runtime": 7.18.9
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
@@ -6160,7 +6189,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@open-banking/api@workspace:applications/open-banking/api"
   dependencies:
-    "@babel/core": 7.12.3
+    "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
@@ -6171,7 +6200,7 @@ __metadata:
     "@typescript-eslint/parser": 4.20.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1046.0
-    axios: 0.21.2
+    axios: 0.27.2
     axios-mock-adapter: 1.20.0
     babel-loader: 8.1.0
     cache-loader: 4.1.0
@@ -7977,10 +8006,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/aws4@npm:1.5.1":
-  version: 1.5.1
-  resolution: "@types/aws4@npm:1.5.1"
-  checksum: 51248a5cf12d9b8cdcc7404da059d9639d8a473184447b46e8ebef929849c95c70445cd8bfa0cb841ccb1293fdb6d2412219d61e90bd5b2ef5f693649ec85b63
+"@types/aws4@npm:^1.5.1":
+  version: 1.11.2
+  resolution: "@types/aws4@npm:1.11.2"
+  dependencies:
+    "@types/node": "*"
+  checksum: dd2c33b59e91af171f211458fb128e296ff25d8be43a67c2110253d52c583f63d32c0216eb813cb74c0423a0587ce069a15576223d63860978c235669023f92c
   languageName: node
   linkType: hard
 
@@ -10998,7 +11029,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws4@npm:1.11.0, aws4@npm:^1.8.0":
+"aws4-axios@npm:2.4.9":
+  version: 2.4.9
+  resolution: "aws4-axios@npm:2.4.9"
+  dependencies:
+    "@aws-sdk/client-sts": ^3.4.1
+    "@types/aws4": ^1.5.1
+    aws4: ^1.9.1
+  peerDependencies:
+    axios: ">=0.25.0"
+  checksum: 1d4807e1df95440651b75777154f0b72bdf3c495393efe1b57a5ffcb81df4c4320742244595e2857360d6ae9c45d446cbaafac1977482da486367c40028da909
+  languageName: node
+  linkType: hard
+
+"aws4@npm:^1.8.0, aws4@npm:^1.9.1":
   version: 1.11.0
   resolution: "aws4@npm:1.11.0"
   checksum: 5a00d045fd0385926d20ebebcfba5ec79d4482fe706f63c27b324d489a04c68edb0db99ed991e19eda09cb8c97dc2452059a34d97545cebf591d7a2b5a10999f
@@ -11025,12 +11069,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:0.21.2":
-  version: 0.21.2
-  resolution: "axios@npm:0.21.2"
+"axios@npm:0.27.2, axios@npm:^0.27.2":
+  version: 0.27.2
+  resolution: "axios@npm:0.27.2"
   dependencies:
-    follow-redirects: ^1.14.0
-  checksum: 41299c21f77323e7c56ea49d2d5ed25407d24bb145a4ce3441a8db17359ae56554f9495dca6e15d343a9530e106212a684c75a4db3bedfbe19f6414a8d94378e
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
   languageName: node
   linkType: hard
 
@@ -11040,16 +11085,6 @@ __metadata:
   dependencies:
     follow-redirects: ^1.14.0
   checksum: 44245f24ac971e7458f3120c92f9d66d1fc695e8b97019139de5b0cc65d9b8104647db01e5f46917728edfc0cfd88eb30fc4c55e6053eef4ace76768ce95ff3c
-  languageName: node
-  linkType: hard
-
-"axios@npm:^0.27.2":
-  version: 0.27.2
-  resolution: "axios@npm:0.27.2"
-  dependencies:
-    follow-redirects: ^1.14.9
-    form-data: ^4.0.0
-  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
   languageName: node
   linkType: hard
 
