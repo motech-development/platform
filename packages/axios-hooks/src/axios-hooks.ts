@@ -12,10 +12,10 @@ import {
 
 const client = axios.create();
 
-const executeGet = async <TData>(
+const executeGet = async <TData, TError>(
   url: string,
-  { setData, setError, setLoading }: ISet<TData>,
-  options: IOptions<TData> = {},
+  { setData, setError, setLoading }: ISet<TData, TError>,
+  options: IOptions<TData, TError> = {},
   additionalHeaders: IHeaders = {},
 ) => {
   try {
@@ -45,12 +45,12 @@ const executeGet = async <TData>(
   }
 };
 
-const executeForm = async <TData, TBody>(
+const executeForm = async <TData, TBody, TError>(
   method: Method,
   url: string,
   body: TBody,
-  { setData, setError, setLoading }: ISet<TData>,
-  options: IOptions<TData> = {},
+  { setData, setError, setLoading }: ISet<TData, TError>,
+  options: IOptions<TData, TError> = {},
   additionalHeaders: IHeaders = {},
 ) => {
   try {
@@ -85,10 +85,10 @@ const complete = (setLoading: SetLoading) => {
   setLoading(false);
 };
 
-const useCallbacks = <TData>(
+const useCallbacks = <TData, TError>(
   data?: TData,
-  error?: AxiosError,
-  options?: IOptions<TData>,
+  error?: AxiosError<TError>,
+  options?: IOptions<TData, TError>,
 ) => {
   useEffect(() => {
     if (options) {
@@ -113,9 +113,12 @@ const useCallbacks = <TData>(
   }, [error]);
 };
 
-export const useGet = <TData>(url: string, options?: IOptions<TData>) => {
+export const useGet = <TData = unknown, TError = unknown>(
+  url: string,
+  options?: IOptions<TData, TError>,
+) => {
   const [data, setData] = useState<TData>();
-  const [error, setError] = useState<AxiosError>();
+  const [error, setError] = useState<AxiosError<TError>>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -144,11 +147,11 @@ export const useGet = <TData>(url: string, options?: IOptions<TData>) => {
   };
 };
 
-export const useLazyGet = <TData>(
-  options?: IOptions<TData>,
-): UseWithoutInput<TData> => {
+export const useLazyGet = <TData = unknown, TError = unknown>(
+  options?: IOptions<TData, TError>,
+): UseWithoutInput<TData, TError> => {
   const [data, setData] = useState<TData>();
-  const [error, setError] = useState<AxiosError>();
+  const [error, setError] = useState<AxiosError<TError>>();
   const [loading, setLoading] = useState(false);
   const execute = async (url: string, headers?: IHeaders) =>
     executeGet(
@@ -176,12 +179,12 @@ export const useLazyGet = <TData>(
   ];
 };
 
-const useFormAction = <TData, TBody>(
+const useFormAction = <TData, TBody, TError>(
   method: Method,
-  options?: IOptions<TData>,
-): UseWithInput<TData, TBody> => {
+  options?: IOptions<TData, TError>,
+): UseWithInput<TData, TBody, TError> => {
   const [data, setData] = useState<TData>();
-  const [error, setError] = useState<AxiosError>();
+  const [error, setError] = useState<AxiosError<TError>>();
   const [loading, setLoading] = useState(false);
   const execute = async (url: string, body: TBody, headers?: IHeaders) =>
     executeForm(
@@ -211,8 +214,10 @@ const useFormAction = <TData, TBody>(
   ];
 };
 
-export const usePost = <TData, TBody>(options?: IOptions<TData>) =>
-  useFormAction<TData, TBody>('POST', options);
+export const usePost = <TData = unknown, TBody = unknown, TError = unknown>(
+  options?: IOptions<TData, TError>,
+) => useFormAction<TData, TBody, TError>('POST', options);
 
-export const usePut = <TData, TBody>(options?: IOptions<TData>) =>
-  useFormAction<TData, TBody>('PUT', options);
+export const usePut = <TData = unknown, TBody = unknown, TError = unknown>(
+  options?: IOptions<TData, TError>,
+) => useFormAction<TData, TBody, TError>('PUT', options);

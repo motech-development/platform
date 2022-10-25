@@ -42,9 +42,10 @@ httpClient.defaults.baseURL = 'https://api.yapily.com';
 httpClient.interceptors.request.use(async (config) => {
   const output = {
     ...config,
+    headers: {
+      Authorization: await authHeader(),
+    },
   };
-
-  output.headers.Authorization = await authHeader();
 
   return output;
 });

@@ -6,6 +6,10 @@ import ResetPasswordForm, {
   FormSchema,
 } from '../../components/ResetPasswordForm';
 
+interface IError {
+  message: string;
+}
+
 export interface IResetPasswordProps {
   setView(view: string): void;
 }
@@ -13,7 +17,7 @@ export interface IResetPasswordProps {
 const ResetPassword: FC<IResetPasswordProps> = ({ setView }) => {
   const { t } = useTranslation('reset');
   const { add } = useToast();
-  const [reset, { loading }] = usePost({
+  const [reset, { loading }] = usePost<unknown, FormSchema, IError>({
     onCompleted: () => {
       setView('success');
     },
