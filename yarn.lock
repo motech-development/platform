@@ -5555,7 +5555,7 @@ __metadata:
     prettier: 2.3.0
     react: 17.0.2
     react-dom: 17.0.2
-    react-number-format: 4.9.3
+    react-number-format: 4.9.4
     react-popper: 2.2.5
     react-router-dom: 5.2.0
     rimraf: 3.0.2
@@ -28142,15 +28142,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-number-format@npm:4.9.3":
-  version: 4.9.3
-  resolution: "react-number-format@npm:4.9.3"
+"react-number-format@npm:4.9.4":
+  version: 4.9.4
+  resolution: "react-number-format@npm:4.9.4"
   dependencies:
     prop-types: ^15.7.2
   peerDependencies:
     react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 74460ee813284b78d37e4459891d63b49e3276e1e506ffe85057696b9b4793e0fc9b8a77222e50cdc4ecefddb764774a20d2cfc92dce26aed13316b3f2e3b9c9
+  checksum: 61df4ce5fecfcd3424309af65928327aebbe80094cda28941da324995e49152d71b28fedb4c6494ca2fdfb9be1879032da9077f4d33a41ecc999f251c604d5c9
   languageName: node
   linkType: hard
 
