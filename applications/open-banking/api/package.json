@@ -47,7 +47,7 @@
     "serverless-step-functions": "3.5.1",
     "serverless-webpack": "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15",
     "typescript": "4.2.3",
-    "webpack": "4.44.2",
+    "webpack": "4.46.0",
     "webpack-node-externals": "3.0.0"
   },
   "jest": {
