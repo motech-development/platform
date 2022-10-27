@@ -28,7 +28,7 @@
     "@typescript-eslint/eslint-plugin": "4.20.0",
     "@typescript-eslint/parser": "4.20.0",
     "aws-lambda-mock-context": "3.2.1",
-    "axios-mock-adapter": "1.20.0",
+    "axios-mock-adapter": "1.21.2",
     "babel-loader": "8.1.0",
     "cache-loader": "4.1.0",
     "eslint": "7.28.0",
