@@ -38,7 +38,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     fork-ts-checker-webpack-plugin: 6.5.2
     graphql: 15.7.0
@@ -100,7 +100,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-jest: 24.7.0
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-prettier: 4.0.0
@@ -168,7 +168,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
@@ -216,7 +216,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
@@ -254,7 +254,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
@@ -297,7 +297,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
@@ -341,7 +341,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
@@ -379,7 +379,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
@@ -3636,7 +3636,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
@@ -3672,7 +3672,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
@@ -3904,7 +3904,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
@@ -4682,7 +4682,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-prettier: 4.0.0
     eslint-plugin-react: 7.28.0
@@ -4739,7 +4739,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     istanbul-lib-instrument: 5.1.0
     jest: 26.6.0
@@ -5391,7 +5391,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     jest: 26.6.0
     prettier: 2.3.0
@@ -5424,7 +5424,7 @@ __metadata:
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.5.0
     eslint-config-react-app: 6.0.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-prettier: 4.0.0
     eslint-plugin-react: 7.28.0
@@ -5462,7 +5462,7 @@ __metadata:
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.5.0
     eslint-config-react-app: 6.0.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-prettier: 4.0.0
     eslint-plugin-react: 7.28.0
@@ -5496,7 +5496,7 @@ __metadata:
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.5.0
     eslint-config-react-app: 6.0.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-prettier: 4.0.0
     eslint-plugin-react: 7.28.0
@@ -5543,7 +5543,7 @@ __metadata:
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.5.0
     eslint-config-react-app: 6.0.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-prettier: 4.0.0
     eslint-plugin-react: 7.28.0
@@ -5586,7 +5586,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     jest: 26.6.0
     prettier: 2.3.0
@@ -5614,7 +5614,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     jest: 26.6.0
     prettier: 2.3.0
@@ -5646,7 +5646,7 @@ __metadata:
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.5.0
     eslint-config-react-app: 6.0.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-jsx-a11y: 6.5.1
     eslint-plugin-prettier: 4.0.0
     eslint-plugin-react: 7.28.0
@@ -5680,7 +5680,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     jest: 26.6.0
     prettier: 2.3.0
@@ -5711,7 +5711,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     jest: 26.6.0
     prettier: 2.3.0
@@ -5741,7 +5741,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     jest: 26.6.0
     prettier: 2.3.0
@@ -5771,7 +5771,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     filehound: 1.17.6
     jest: 26.6.0
@@ -6207,7 +6207,7 @@ __metadata:
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
-    eslint-plugin-import: 2.25.4
+    eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.0.0
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
@@ -16211,7 +16211,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-module-utils@npm:^2.7.2, eslint-module-utils@npm:^2.7.3":
+"eslint-module-utils@npm:^2.7.3":
   version: 2.7.4
   resolution: "eslint-module-utils@npm:2.7.4"
   dependencies:
@@ -16237,30 +16237,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-import@npm:2.25.4":
-  version: 2.25.4
-  resolution: "eslint-plugin-import@npm:2.25.4"
-  dependencies:
-    array-includes: ^3.1.4
-    array.prototype.flat: ^1.2.5
-    debug: ^2.6.9
-    doctrine: ^2.1.0
-    eslint-import-resolver-node: ^0.3.6
-    eslint-module-utils: ^2.7.2
-    has: ^1.0.3
-    is-core-module: ^2.8.0
-    is-glob: ^4.0.3
-    minimatch: ^3.0.4
-    object.values: ^1.1.5
-    resolve: ^1.20.0
-    tsconfig-paths: ^3.12.0
-  peerDependencies:
-    eslint: ^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8
-  checksum: 0af24f5c7c6ca692f42e3947127f0ae7dfe44f1e02740f7cbe988b510a9c52bab0065d7df04e2d953dcc88a4595a00cbdcf14018acf8cd75cfd47b72efcbb734
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-import@npm:^2.25.3":
+"eslint-plugin-import@npm:2.26.0, eslint-plugin-import@npm:^2.25.3":
   version: 2.26.0
   resolution: "eslint-plugin-import@npm:2.26.0"
   dependencies:
@@ -20017,7 +19994,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-core-module@npm:^2.5.0, is-core-module@npm:^2.8.0, is-core-module@npm:^2.8.1, is-core-module@npm:^2.9.0":
+"is-core-module@npm:^2.5.0, is-core-module@npm:^2.8.1, is-core-module@npm:^2.9.0":
   version: 2.11.0
   resolution: "is-core-module@npm:2.11.0"
   dependencies:
@@ -31973,7 +31950,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfig-paths@npm:^3.12.0, tsconfig-paths@npm:^3.14.1":
+"tsconfig-paths@npm:^3.14.1":
   version: 3.14.1
   resolution: "tsconfig-paths@npm:3.14.1"
   dependencies:
