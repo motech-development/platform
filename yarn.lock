@@ -107,7 +107,7 @@ __metadata:
     eslint-plugin-react: 7.28.0
     eslint-plugin-react-hooks: 4.6.0
     file-saver: 2.0.5
-    formik: 2.2.6
+    formik: 2.2.9
     graphql: 16.2.0
     history: 4.10.1
     i18next: 21.6.16
@@ -4657,7 +4657,7 @@ __metadata:
     eslint-plugin-prettier: 4.2.1
     eslint-plugin-react: 7.28.0
     eslint-plugin-react-hooks: 4.6.0
-    formik: 2.2.6
+    formik: 2.2.9
     history: 4.10.1
     i18next: 21.6.16
     i18next-browser-languagedetector: 6.1.8
@@ -5517,7 +5517,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.6.1
     eslint-plugin-prettier: 4.2.1
     eslint-plugin-react: 7.28.0
-    formik: 2.2.6
+    formik: 2.2.9
     jest: 26.6.0
     jest-date-mock: 1.0.8
     luxon: 2.3.0
@@ -17695,20 +17695,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"formik@npm:2.2.6":
-  version: 2.2.6
-  resolution: "formik@npm:2.2.6"
+"formik@npm:2.2.9":
+  version: 2.2.9
+  resolution: "formik@npm:2.2.9"
   dependencies:
     deepmerge: ^2.1.1
     hoist-non-react-statics: ^3.3.0
-    lodash: ^4.17.14
-    lodash-es: ^4.17.14
+    lodash: ^4.17.21
+    lodash-es: ^4.17.21
     react-fast-compare: ^2.0.1
     tiny-warning: ^1.0.2
     tslib: ^1.10.0
   peerDependencies:
     react: ">=16.8.0"
-  checksum: b3d79717b03e9aadc366bb83d29ef13d800caadd506ed3f097d500dfacf573ae8f7fc7913d6e240f8c6a70b1df925fdceae887be28706822e11b04190c94c95d
+  checksum: f07f80eee8423b4c5560546c48c4093c47530dae7d931a4e0d947d68ae1aab94291b1bf2e99ecaa5854ee50593b415fb5724c624c787338f0577f066009e8812
   languageName: node
   linkType: hard
 
@@ -22642,7 +22642,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash-es@npm:^4.17.11, lodash-es@npm:^4.17.14, lodash-es@npm:^4.17.4, lodash-es@npm:^4.2.1":
+"lodash-es@npm:^4.17.11, lodash-es@npm:^4.17.21, lodash-es@npm:^4.17.4, lodash-es@npm:^4.2.1":
   version: 4.17.21
   resolution: "lodash-es@npm:4.17.21"
   checksum: 05cbffad6e2adbb331a4e16fbd826e7faee403a1a04873b82b42c0f22090f280839f85b95393f487c1303c8a3d2a010048bf06151a6cbe03eee4d388fb0a12d2
