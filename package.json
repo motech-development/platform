@@ -35,7 +35,7 @@
     "commitizen": "4.2.5",
     "cz-conventional-changelog": "3.3.0",
     "husky": "7.0.4",
-    "lint-staged": "12.3.7",
+    "lint-staged": "12.5.0",
     "prettier": "2.3.0",
     "typescript": "4.2.3"
   },
