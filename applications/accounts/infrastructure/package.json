@@ -8,7 +8,7 @@
     "teardown": "serverless remove --verbose"
   },
   "devDependencies": {
-    "serverless": "2.70.0",
+    "serverless": "2.72.3",
     "serverless-deployment-bucket": "1.5.2"
   }
 }
