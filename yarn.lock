@@ -86,7 +86,7 @@ __metadata:
     "@types/yup": 0.29.11
     "@typescript-eslint/eslint-plugin": 4.20.0
     "@typescript-eslint/parser": 4.20.0
-    axe-core: 4.4.3
+    axe-core: 4.5.0
     axios: 0.27.2
     cy2: 2.1.0
     cypress: 10.10.0
@@ -10930,7 +10930,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:4.4.3, axe-core@npm:^4.2.0, axe-core@npm:^4.4.3":
+"axe-core@npm:4.5.0":
+  version: 4.5.0
+  resolution: "axe-core@npm:4.5.0"
+  checksum: 05b5fa52a8ed8498215cec4a43253d115cc2b43616e840768e05b1b00d6789e7480e5b29159920a45a9504489423836b2fe65a49a67b54cbc5d53b1b37245750
+  languageName: node
+  linkType: hard
+
+"axe-core@npm:^4.2.0, axe-core@npm:^4.4.3":
   version: 4.4.3
   resolution: "axe-core@npm:4.4.3"
   checksum: c3ea000d9ace3ba0bc747c8feafc24b0de62a0f7d93021d0f77b19c73fca15341843510f6170da563d51535d6cfb7a46c5fc0ea36170549dbb44b170208450a2
