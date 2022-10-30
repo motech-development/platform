@@ -64,7 +64,7 @@ __metadata:
     "@apollo/client": 3.7.1
     "@fortawesome/fontawesome-svg-core": 1.2.36
     "@fortawesome/free-solid-svg-icons": 5.15.4
-    "@fortawesome/react-fontawesome": 0.1.18
+    "@fortawesome/react-fontawesome": 0.2.0
     "@motech-development/appsync-apollo": "workspace:packages/appsync-apollo"
     "@motech-development/auth": "workspace:packages/auth"
     "@motech-development/axios-hooks": "workspace:packages/axios-hooks"
@@ -4142,15 +4142,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/react-fontawesome@npm:0.1.18":
-  version: 0.1.18
-  resolution: "@fortawesome/react-fontawesome@npm:0.1.18"
+"@fortawesome/react-fontawesome@npm:0.2.0":
+  version: 0.2.0
+  resolution: "@fortawesome/react-fontawesome@npm:0.2.0"
   dependencies:
     prop-types: ^15.8.1
   peerDependencies:
     "@fortawesome/fontawesome-svg-core": ~1 || ~6
-    react: ">=16.x"
-  checksum: eba711234541928e1877435905bcd94ab6aea1cf228833a55fc7c6a2fc18dd08d3f7f327ca4af0f3ba365188ad0869d7ecd31be5940d27f4e2bbe7e12cbcf520
+    react: ">=16.3"
+  checksum: f652a0c2172e7b209e2d9e7e511f9b8c17abad85f55e0bd09bb1175ea1927693215da47eb6cd95b1f3a23bd124368553c677907fa76cb17c5093afc1fcffe338
   languageName: node
   linkType: hard
 
@@ -5478,7 +5478,7 @@ __metadata:
     "@babel/core": 7.19.6
     "@fortawesome/fontawesome-svg-core": 1.2.36
     "@fortawesome/free-solid-svg-icons": 5.15.4
-    "@fortawesome/react-fontawesome": 0.1.18
+    "@fortawesome/react-fontawesome": 0.2.0
     "@popperjs/core": 2.11.6
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
