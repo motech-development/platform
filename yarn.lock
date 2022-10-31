@@ -79,7 +79,7 @@ __metadata:
     "@types/file-saver": 2.0.5
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
-    "@types/react": 17.0.50
+    "@types/react": 17.0.51
     "@types/react-dom": 17.0.17
     "@types/react-router-dom": 5.3.3
     "@types/styled-components": 5.1.26
@@ -4630,7 +4630,7 @@ __metadata:
     "@testing-library/user-event": 13.5.0
     "@types/auth0-js": 9.14.5
     "@types/jest": 26.0.24
-    "@types/react": 17.0.50
+    "@types/react": 17.0.51
     "@types/react-dom": 17.0.17
     "@types/react-router-dom": 5.3.3
     "@types/styled-components": 5.1.26
@@ -5375,7 +5375,7 @@ __metadata:
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 12.1.4
     "@types/jest": 26.0.24
-    "@types/react": 17.0.50
+    "@types/react": 17.0.51
     "@types/react-dom": 17.0.17
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
@@ -5414,7 +5414,7 @@ __metadata:
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 12.1.4
     "@types/jest": 26.0.24
-    "@types/react": 17.0.50
+    "@types/react": 17.0.51
     "@types/react-dom": 17.0.17
     "@types/react-router-dom": 5.3.3
     "@typescript-eslint/eslint-plugin": 4.33.0
@@ -5449,7 +5449,7 @@ __metadata:
     "@rollup/plugin-node-resolve": 13.1.3
     "@testing-library/react-hooks": 7.0.2
     "@types/jest": 26.0.24
-    "@types/react": 17.0.50
+    "@types/react": 17.0.51
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     axios: 0.27.2
@@ -5493,7 +5493,7 @@ __metadata:
     "@testing-library/user-event": 13.5.0
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
-    "@types/react": 17.0.50
+    "@types/react": 17.0.51
     "@types/react-dom": 17.0.17
     "@types/react-router-dom": 5.3.3
     "@types/styled-components": 5.1.26
@@ -5599,7 +5599,7 @@ __metadata:
     "@testing-library/react-hooks": 7.0.2
     "@types/jest": 26.0.24
     "@types/qs": 6.9.7
-    "@types/react": 17.0.50
+    "@types/react": 17.0.51
     "@types/react-router-dom": 5.3.3
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
@@ -8612,14 +8612,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:17.0.50":
-  version: 17.0.50
-  resolution: "@types/react@npm:17.0.50"
+"@types/react@npm:17.0.51":
+  version: 17.0.51
+  resolution: "@types/react@npm:17.0.51"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: b5629dff7c2f3e9fcba95a19b2b3bfd78d7cacc33ba5fc26413dba653d34afcac3b93ddabe563e8062382688a1eac7db68e93739bb8e712d27637a03aaafbbb8
+  checksum: a9680a17444df4edf89e91acb66fbe1eb8c3397ece0f279f67f3fd7f17c60460834e3be721947a7cddc916b76f7c62df3dbd1f6da1057643c5620e32a7a32ec5
   languageName: node
   linkType: hard
 
