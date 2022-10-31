@@ -110,7 +110,7 @@ __metadata:
     formik: 2.2.6
     graphql: 16.2.0
     history: 4.10.1
-    i18next: 21.6.16
+    i18next: 21.10.0
     i18next-browser-languagedetector: 6.1.8
     i18next-http-backend: 1.3.2
     jest-date-mock: 1.0.8
@@ -4650,7 +4650,7 @@ __metadata:
     eslint-plugin-react-hooks: 4.6.0
     formik: 2.2.6
     history: 4.10.1
-    i18next: 21.6.16
+    i18next: 21.10.0
     i18next-browser-languagedetector: 6.1.8
     i18next-http-backend: 1.3.2
     jest-styled-components: 7.1.1
@@ -19240,12 +19240,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:21.6.16":
-  version: 21.6.16
-  resolution: "i18next@npm:21.6.16"
+"i18next@npm:21.10.0":
+  version: 21.10.0
+  resolution: "i18next@npm:21.10.0"
   dependencies:
     "@babel/runtime": ^7.17.2
-  checksum: f210130fd835ebd90bfdc6a497d3c1d992261174e030e995a03d070b099acba680e495a376eb9255bb8eb68b4e518fe8ea96ec71507e194fd043aecb3397c9a2
+  checksum: f997985e2d4d15a62a0936a82ff6420b97f3f971e776fe685bdd50b4de0cb4dc2198bc75efe6b152844794ebd5040d8060d6d152506a687affad534834836d81
   languageName: node
   linkType: hard
 
