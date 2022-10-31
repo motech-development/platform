@@ -42,7 +42,7 @@
     "serverless": "2.72.3",
     "serverless-deployment-bucket": "1.5.2",
     "serverless-dynamodb-local": "0.2.40",
-    "serverless-offline": "8.3.1",
+    "serverless-offline": "8.8.1",
     "serverless-prune-plugin": "2.0.1",
     "serverless-step-functions": "3.10.0",
     "serverless-webpack": "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15",
