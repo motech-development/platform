@@ -302,7 +302,7 @@ __metadata:
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
     jest-date-mock: 1.0.8
-    json-2-csv: 3.16.1
+    json-2-csv: 3.17.2
     luxon: 2.3.0
     prettier: 2.3.0
     qs: 6.10.5
@@ -21814,13 +21814,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-2-csv@npm:3.16.1":
-  version: 3.16.1
-  resolution: "json-2-csv@npm:3.16.1"
+"json-2-csv@npm:3.17.2":
+  version: 3.17.2
+  resolution: "json-2-csv@npm:3.17.2"
   dependencies:
     deeks: 2.5.1
     doc-path: 3.0.2
-  checksum: 59841541ec73a6ee71f2ff3cb105a0ec44099afebe1b71e6b0439b01fe3ac1a6a7010972cabc1a393f2730b273993073dcf563c57f01868111f5edb15fafec66
+  checksum: 69536798dae42702e87fc7352941021c4677b65b2e3795c8d017283826f609a94fa9453a8ec77432fb7027860882a2310296c74adb0dcc242a11816255afd02c
   languageName: node
   linkType: hard
 
