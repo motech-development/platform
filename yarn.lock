@@ -34,7 +34,7 @@ __metadata:
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     cross-fetch: 3.1.5
-    decimal.js: 10.3.1
+    decimal.js: 10.4.2
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
@@ -96,7 +96,7 @@ __metadata:
     cypress-log-to-output: 1.1.2
     cypress-pipe: 2.0.0
     cypress-wait-until: 1.7.2
-    decimal.js: 10.3.1
+    decimal.js: 10.4.2
     eslint: 7.28.0
     eslint-config-airbnb: 18.2.1
     eslint-config-prettier: 8.5.0
@@ -164,7 +164,7 @@ __metadata:
     aws-sdk: 2.1046.0
     babel-loader: 8.1.0
     cache-loader: 4.1.0
-    decimal.js: 10.3.1
+    decimal.js: 10.4.2
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
@@ -14474,14 +14474,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decimal.js@npm:10.3.1":
-  version: 10.3.1
-  resolution: "decimal.js@npm:10.3.1"
-  checksum: 0351ac9f05fe050f23227aa6a4573bee2d58fa7378fcf28d969a8c789525032effb488a90320fd3fe86a66e17b4bc507d811b15eada5b7f0e7ec5d2af4c24a59
-  languageName: node
-  linkType: hard
-
-"decimal.js@npm:^10.2.1":
+"decimal.js@npm:10.4.2, decimal.js@npm:^10.2.1":
   version: 10.4.2
   resolution: "decimal.js@npm:10.4.2"
   checksum: 536cd6816a3197f2e1aa3da4860856cb5a2db73f6fafe8cb3b924ccc63f9b7d78296acc13dccbd419bd958ccc6357921fb15467f883b37cab04bfba7044cada2
