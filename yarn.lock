@@ -41,7 +41,7 @@ __metadata:
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
     fork-ts-checker-webpack-plugin: 6.5.2
-    graphql: 15.7.0
+    graphql: 15.8.0
     graphql-tag: 2.12.6
     jest: 26.6.0
     luxon: 2.3.0
@@ -18422,10 +18422,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:15.7.0":
-  version: 15.7.0
-  resolution: "graphql@npm:15.7.0"
-  checksum: e95027a63fc68444aa6079793c5f6902e9691dc0fff87ce7d5bf57a104cb100bc5763739e0d25ea08fbe5dedbb009479ebf11de1ebd3c8a0737605129bdaa2c2
+"graphql@npm:15.8.0":
+  version: 15.8.0
+  resolution: "graphql@npm:15.8.0"
+  checksum: 423325271db8858428641b9aca01699283d1fe5b40ef6d4ac622569ecca927019fce8196208b91dd1d8eb8114f00263fe661d241d0eb40c10e5bfd650f86ec5e
   languageName: node
   linkType: hard
 
