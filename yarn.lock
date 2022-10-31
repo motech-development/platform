@@ -4628,7 +4628,7 @@ __metadata:
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 12.1.5
     "@testing-library/user-event": 13.5.0
-    "@types/auth0-js": 9.14.5
+    "@types/auth0-js": 9.14.6
     "@types/jest": 26.0.24
     "@types/react": 17.0.51
     "@types/react-dom": 17.0.17
@@ -4637,7 +4637,7 @@ __metadata:
     "@types/yup": 0.29.11
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
-    auth0-js: 9.18.1
+    auth0-js: 9.19.1
     axios: 0.27.2
     body-scroll-lock: 3.1.5
     eslint: 7.28.0
@@ -8002,10 +8002,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/auth0-js@npm:9.14.5":
-  version: 9.14.5
-  resolution: "@types/auth0-js@npm:9.14.5"
-  checksum: 7208c8c773cb9b6c8f4c673334077d824a6975c26d4701ab656e596cf1fe8044e2e404b40a27c413df79734eba0606eab2bb793d1b3f267d3ccc10b0562c0c96
+"@types/auth0-js@npm:9.14.6":
+  version: 9.14.6
+  resolution: "@types/auth0-js@npm:9.14.6"
+  checksum: 62fe675fea61aaf873f182c5b4e0f9e08c0380a85872fd089dbfa08b2d74446a7b3466931fde6149809ffc72a761ce189a6e429bf1f81ac58a572abe5b07b9a4
   languageName: node
   linkType: hard
 
@@ -10642,9 +10642,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0-js@npm:9.18.1":
-  version: 9.18.1
-  resolution: "auth0-js@npm:9.18.1"
+"auth0-js@npm:9.19.1":
+  version: 9.19.1
+  resolution: "auth0-js@npm:9.19.1"
   dependencies:
     base64-js: ^1.5.1
     idtoken-verifier: ^2.2.2
@@ -10653,7 +10653,7 @@ __metadata:
     superagent: ^5.3.1
     url-join: ^4.0.1
     winchan: ^0.2.2
-  checksum: 676d0fea7a60ab54a2c0edc89e6a1d93f442a7267d8d046b2426d57088d4532767c1f59586dad7b24d5e470f9a6e70d56f901f1d8da462d834ea5cd2b85d4954
+  checksum: ecc159a7fae8aa36cee615eaf650775bcc4a86e25095dab79ffdd818a1232c750e7be372772a7b73b018c0f4e0b9af3e8fbd928a4280fea34b7f11948ed27c3b
   languageName: node
   linkType: hard
 
