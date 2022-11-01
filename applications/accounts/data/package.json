@@ -11,7 +11,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "aws-sdk": "2.1046.0",
+    "aws-sdk": "2.1241.0",
     "decimal.js": "10.4.2",
     "luxon": "2.3.0",
     "uuid": "8.3.2"

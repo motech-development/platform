@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler",
-    "aws-sdk": "2.1046.0",
+    "aws-sdk": "2.1241.0",
     "axios": "0.27.2",
     "yup": "0.29.3"
   },

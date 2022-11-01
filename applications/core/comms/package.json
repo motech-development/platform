@@ -11,7 +11,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "aws-sdk": "2.1046.0",
+    "aws-sdk": "2.1241.0",
     "cfn-response-async": "1.0.0",
     "yup": "0.29.3"
   },

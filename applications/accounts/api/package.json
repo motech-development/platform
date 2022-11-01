@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "aws-appsync": "4.1.8",
-    "aws-sdk": "2.1046.0",
+    "aws-sdk": "2.1241.0",
     "cross-fetch": "3.1.5",
     "decimal.js": "10.4.2",
     "graphql": "15.8.0",

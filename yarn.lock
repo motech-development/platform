@@ -30,7 +30,7 @@ __metadata:
     "@typescript-eslint/parser": 4.33.0
     aws-appsync: 4.1.8
     aws-lambda-mock-context: 3.2.1
-    aws-sdk: 2.1046.0
+    aws-sdk: 2.1241.0
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     cross-fetch: 3.1.5
@@ -161,7 +161,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     aws-lambda-mock-context: 3.2.1
-    aws-sdk: 2.1046.0
+    aws-sdk: 2.1241.0
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     decimal.js: 10.4.2
@@ -246,7 +246,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     aws-lambda-mock-context: 3.2.1
-    aws-sdk: 2.1046.0
+    aws-sdk: 2.1241.0
     aws4-axios: 2.4.9
     axios: 0.27.2
     babel-loader: 8.1.0
@@ -289,7 +289,7 @@ __metadata:
     "@typescript-eslint/parser": 4.33.0
     archiver: 5.3.1
     aws-lambda-mock-context: 3.2.1
-    aws-sdk: 2.1046.0
+    aws-sdk: 2.1241.0
     aws4-axios: 2.4.9
     axios: 0.27.2
     babel-loader: 8.1.0
@@ -335,7 +335,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     aws-lambda-mock-context: 3.2.1
-    aws-sdk: 2.1046.0
+    aws-sdk: 2.1241.0
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
@@ -3611,7 +3611,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     aws-lambda-mock-context: 3.2.1
-    aws-sdk: 2.1046.0
+    aws-sdk: 2.1241.0
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     copy-webpack-plugin: 6.4.1
@@ -3647,7 +3647,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     aws-lambda-mock-context: 3.2.1
-    aws-sdk: 2.1046.0
+    aws-sdk: 2.1241.0
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     cfn-response-async: 1.0.0
@@ -3880,7 +3880,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     aws-lambda-mock-context: 3.2.1
-    aws-sdk: 2.1046.0
+    aws-sdk: 2.1241.0
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
@@ -5637,7 +5637,7 @@ __metadata:
     "@types/jest": 26.0.24
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
-    aws-sdk: 2.1046.0
+    aws-sdk: 2.1241.0
     eslint: 7.28.0
     eslint-config-airbnb-base: 14.2.1
     eslint-config-prettier: 8.5.0
@@ -6160,7 +6160,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     aws-lambda-mock-context: 3.2.1
-    aws-sdk: 2.1046.0
+    aws-sdk: 2.1241.0
     axios: 0.27.2
     axios-mock-adapter: 1.21.2
     babel-loader: 8.1.0
@@ -10813,20 +10813,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:2.1046.0":
-  version: 2.1046.0
-  resolution: "aws-sdk@npm:2.1046.0"
+"aws-sdk@npm:2.1241.0":
+  version: 2.1241.0
+  resolution: "aws-sdk@npm:2.1241.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
     ieee754: 1.1.13
-    jmespath: 0.15.0
+    jmespath: 0.16.0
     querystring: 0.2.0
     sax: 1.2.1
     url: 0.10.3
-    uuid: 3.3.2
+    util: ^0.12.4
+    uuid: 8.0.0
     xml2js: 0.4.19
-  checksum: 35a79e4a77c06ff8f7725a7a1874766935a238eb7519374c4fb84ec52182e6bc842575a36fe1d5daf78241b378c9ef31ff5ac7c39edeaef298f3aa1bc9610373
+  checksum: b076a281c68c548a839cc8f4013728255b9cf784d44b407666f701d180af705aea690e9a4de7295e66c1b84d28bbb492f9a08fc019217c5181bf71397c5150c1
   languageName: node
   linkType: hard
 
@@ -21642,13 +21643,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jmespath@npm:0.15.0":
-  version: 0.15.0
-  resolution: "jmespath@npm:0.15.0"
-  checksum: 353bb9e69cc4c1560be0a4df43cb4020abc246e1c60cb5b55dcc76d8c858383f1633faf22ccaf6a5e09568a2077d0f4f1e989e6fcfd496b5cef87964cc8cb9e7
-  languageName: node
-  linkType: hard
-
 "jmespath@npm:0.16.0":
   version: 0.16.0
   resolution: "jmespath@npm:0.16.0"
@@ -32332,15 +32326,6 @@ __metadata:
   version: 1.0.1
   resolution: "utils-merge@npm:1.0.1"
   checksum: c81095493225ecfc28add49c106ca4f09cdf56bc66731aa8dabc2edbbccb1e1bfe2de6a115e5c6a380d3ea166d1636410b62ef216bb07b3feb1cfde1d95d5080
-  languageName: node
-  linkType: hard
-
-"uuid@npm:3.3.2":
-  version: 3.3.2
-  resolution: "uuid@npm:3.3.2"
-  bin:
-    uuid: ./bin/uuid
-  checksum: 8793629d2799f500aeea9fcd0aec6c4e9fbcc4d62ed42159ad96be345c3fffac1bbf61a23e18e2782600884fee05e6d4012ce4b70d0037c8e987533ae6a77870
   languageName: node
   linkType: hard
 
