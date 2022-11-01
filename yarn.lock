@@ -305,7 +305,7 @@ __metadata:
     json-2-csv: 3.17.2
     luxon: 2.3.0
     prettier: 2.3.0
-    qs: 6.10.5
+    qs: 6.11.0
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
@@ -5622,7 +5622,7 @@ __metadata:
     eslint-plugin-react: 7.28.0
     jest: 26.6.0
     prettier: 2.3.0
-    qs: 6.10.5
+    qs: 6.11.0
     react: 17.0.2
     react-router-dom: 5.3.4
     rimraf: 3.0.2
@@ -27163,15 +27163,6 @@ __metadata:
   bin:
     qrcode-terminal: ./bin/qrcode-terminal.js
   checksum: 51638d11d080e06ef79ef2d5cfe911202159e48d2873d6a80a3c5489b4b767acf4754811ceba4e113db8f41f61a06c163bcb17e6e18e6b34e04a7a5155dac974
-  languageName: node
-  linkType: hard
-
-"qs@npm:6.10.5":
-  version: 6.10.5
-  resolution: "qs@npm:6.10.5"
-  dependencies:
-    side-channel: ^1.0.4
-  checksum: b3873189a11bcf48445864b3ba66f7a76db0d9d874955d197779f561addfa604884f7b107971526ce1eca02c99bf7d1e47f28a3e7e6e29204d798fb279164226
   languageName: node
   linkType: hard
 
