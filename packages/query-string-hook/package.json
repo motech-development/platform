@@ -17,7 +17,7 @@
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "dependencies": {
-    "qs": "6.10.5",
+    "qs": "6.11.0",
     "react": "17.0.2",
     "react-router-dom": "5.3.4"
   },
