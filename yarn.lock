@@ -121,7 +121,7 @@ __metadata:
     react: 17.0.2
     react-dom: 17.0.2
     react-ga: 3.3.1
-    react-i18next: 11.15.4
+    react-i18next: 11.18.6
     react-idle-timer: 4.6.4
     react-router-dom: 5.3.4
     react-scripts: 5.0.1
@@ -4668,7 +4668,7 @@ __metadata:
     react: 17.0.2
     react-dom: 17.0.2
     react-ga: 3.3.1
-    react-i18next: 11.15.4
+    react-i18next: 11.18.6
     react-router-dom: 5.3.4
     react-scripts: 5.0.1
     react-snap: 1.23.0
@@ -18858,7 +18858,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-escaper@npm:^2.0.0, html-escaper@npm:^2.0.2":
+"html-escaper@npm:^2.0.0":
   version: 2.0.2
   resolution: "html-escaper@npm:2.0.2"
   checksum: d2df2da3ad40ca9ee3a39c5cc6475ef67c8f83c234475f24d8e9ce0dc80a2c82df8e1d6fa78ddd1e9022a586ea1bd247a615e80a5cd9273d90111ddda7d9e974
@@ -27512,12 +27512,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:11.15.4":
-  version: 11.15.4
-  resolution: "react-i18next@npm:11.15.4"
+"react-i18next@npm:11.18.6":
+  version: 11.18.6
+  resolution: "react-i18next@npm:11.18.6"
   dependencies:
     "@babel/runtime": ^7.14.5
-    html-escaper: ^2.0.2
     html-parse-stringify: ^3.0.1
   peerDependencies:
     i18next: ">= 19.0.0"
@@ -27527,7 +27526,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 1fa984c55ee252a7e5815deaf60a488aa8ef8508791c02c275290c6119a326be9491668e7a9a8e87e44a7dfef75b3c226e6e26ac79fe268576f9d4695860aed4
+  checksum: 624c0a0313fac4e0d18560b83c99a8bd0a83abc02e5db8d01984e0643ac409d178668aa3a4720d01f7a0d9520d38598dcbff801d6f69a970bae67461de6cd852
   languageName: node
   linkType: hard
 
