@@ -1,8 +1,7 @@
 {
   "name": "@id/emails",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "Motech Development ID email templates",
-  "private": true,
   "scripts": {
     "build": "pug src --pretty --out build"
   },
