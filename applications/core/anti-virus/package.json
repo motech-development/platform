@@ -1,8 +1,7 @@
 {
   "name": "@core/anti-virus",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "Motech Development anit-virus service",
-  "private": true,
   "scripts": {
     "deploy": "run predeploy && serverless deploy --verbose",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",

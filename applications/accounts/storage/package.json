@@ -1,8 +1,7 @@
 {
   "name": "@accounts/storage",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "Motech Development accounts file storage",
-  "private": true,
   "scripts": {
     "deploy": "serverless deploy --verbose",
     "lint": "eslint -c .eslintrc.yml './src/**/*.ts'",

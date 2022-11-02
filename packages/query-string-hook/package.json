@@ -1,7 +1,15 @@
 {
   "name": "@motech-development/query-string-hook",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "A hook to access query strings",
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib"
+  ],
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
@@ -14,8 +22,6 @@
     "test": "jest --watch",
     "test-ci": "jest --coverage --runInBand"
   },
-  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
-  "license": "ISC",
   "dependencies": {
     "qs": "6.11.0",
     "react": "17.0.2",

@@ -1,8 +1,7 @@
 {
   "name": "@id/tenant",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "Motech Development Auth0 tenant",
-  "private": true,
   "scripts": {
     "deploy": "a0deploy import -i ./tenant.yaml",
     "import": "a0deploy export -c config.local.json -f yaml -o ./",
