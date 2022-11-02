@@ -1,7 +1,7 @@
 {
   "name": "@motech-development/node-logger",
   "version": "0.0.0-development",
-  "description": "Application logger",
+  "description": "Logger for NodeJS applications",
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
   "publishConfig": {
