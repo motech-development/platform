@@ -51,7 +51,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
-    typescript: 4.2.3
+    typescript: 4.8.4
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
   languageName: unknown
@@ -129,7 +129,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-finch: 2.8.0
     styled-components: 5.3.6
-    typescript: 4.2.3
+    typescript: 4.8.4
     web-vitals: 2.1.4
     workbox-background-sync: 6.4.2
     workbox-broadcast-update: 6.4.2
@@ -179,7 +179,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
-    typescript: 4.2.3
+    typescript: 4.8.4
     uuid: 8.3.2
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
@@ -226,7 +226,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
-    typescript: 4.2.3
+    typescript: 4.8.4
     uuid: 8.3.2
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
@@ -264,7 +264,7 @@ __metadata:
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
-    typescript: 4.2.3
+    typescript: 4.8.4
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
   languageName: unknown
@@ -311,7 +311,7 @@ __metadata:
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
-    typescript: 4.2.3
+    typescript: 4.8.4
     uuid: 8.3.2
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
@@ -351,7 +351,7 @@ __metadata:
     serverless-offline: 8.8.1
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
-    typescript: 4.2.3
+    typescript: 4.8.4
     uuid: 8.3.2
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
@@ -391,7 +391,7 @@ __metadata:
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
-    typescript: 4.2.3
+    typescript: 4.8.4
     uuid: 8.3.2
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
@@ -3637,7 +3637,7 @@ __metadata:
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
-    typescript: 4.2.3
+    typescript: 4.8.4
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
   languageName: unknown
@@ -3672,7 +3672,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
-    typescript: 4.2.3
+    typescript: 4.8.4
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
     yup: 0.29.3
@@ -3905,7 +3905,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
-    typescript: 4.2.3
+    typescript: 4.8.4
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
     yup: 0.29.3
@@ -4676,7 +4676,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-finch: 2.8.0
     styled-components: 5.3.6
-    typescript: 4.2.3
+    typescript: 4.8.4
     web-vitals: 2.1.4
     yup: 0.29.3
   languageName: unknown
@@ -5368,7 +5368,7 @@ __metadata:
     rimraf: 3.0.2
     rollup: 2.79.1
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    typescript: 4.2.3
+    typescript: 4.8.4
   languageName: unknown
   linkType: soft
 
@@ -5405,7 +5405,7 @@ __metadata:
     rimraf: 3.0.2
     rollup: 2.79.1
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    typescript: 4.2.3
+    typescript: 4.8.4
     unfetch: 4.2.0
   languageName: unknown
   linkType: soft
@@ -5444,7 +5444,7 @@ __metadata:
     rimraf: 3.0.2
     rollup: 2.79.1
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    typescript: 4.2.3
+    typescript: 4.8.4
   languageName: unknown
   linkType: soft
 
@@ -5476,7 +5476,7 @@ __metadata:
     rimraf: 3.0.2
     rollup: 2.79.1
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    typescript: 4.2.3
+    typescript: 4.8.4
   languageName: unknown
   linkType: soft
 
@@ -5533,7 +5533,7 @@ __metadata:
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
     styled-components: 5.3.6
     styled-reset: 4.3.4
-    typescript: 4.2.3
+    typescript: 4.8.4
     yup: 0.29.3
   languageName: unknown
   linkType: soft
@@ -5563,7 +5563,7 @@ __metadata:
     rimraf: 3.0.2
     rollup: 2.79.1
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    typescript: 4.2.3
+    typescript: 4.8.4
   languageName: unknown
   linkType: soft
 
@@ -5591,7 +5591,7 @@ __metadata:
     rimraf: 3.0.2
     rollup: 2.79.1
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    typescript: 4.2.3
+    typescript: 4.8.4
     winston: 3.8.2
     winston-transport: 4.5.0
   languageName: unknown
@@ -5628,7 +5628,7 @@ __metadata:
     rimraf: 3.0.2
     rollup: 2.79.1
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    typescript: 4.2.3
+    typescript: 4.8.4
   languageName: unknown
   linkType: soft
 
@@ -5657,7 +5657,7 @@ __metadata:
     rimraf: 3.0.2
     rollup: 2.79.1
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    typescript: 4.2.3
+    typescript: 4.8.4
   languageName: unknown
   linkType: soft
 
@@ -5689,7 +5689,7 @@ __metadata:
     rollup: 2.79.1
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
     tomlify-j0.4: 3.0.0
-    typescript: 4.2.3
+    typescript: 4.8.4
   languageName: unknown
   linkType: soft
 
@@ -5718,7 +5718,7 @@ __metadata:
     rimraf: 3.0.2
     rollup: 2.79.1
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    typescript: 4.2.3
+    typescript: 4.8.4
     webpack: 4.46.0
   languageName: unknown
   linkType: soft
@@ -5749,7 +5749,7 @@ __metadata:
     rimraf: 3.0.2
     rollup: 2.79.1
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
-    typescript: 4.2.3
+    typescript: 4.8.4
     webpack: 4.46.0
   languageName: unknown
   linkType: soft
@@ -6189,7 +6189,7 @@ __metadata:
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
-    typescript: 4.2.3
+    typescript: 4.8.4
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
     yup: 0.29.3
@@ -25512,7 +25512,7 @@ __metadata:
     husky: 7.0.4
     lint-staged: 12.5.0
     prettier: 2.3.0
-    typescript: 4.2.3
+    typescript: 4.8.4
   languageName: unknown
   linkType: soft
 
@@ -31721,17 +31721,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:4.2.3":
-  version: 4.2.3
-  resolution: "typescript@npm:4.2.3"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: b4a2020c021211184ac15caf59936b2089c13e79685f340a31aaa839c9de2f73b44a5e3757292de6cdad2ed967aef80d4592161b814cc29c0570f261850c4bca
-  languageName: node
-  linkType: hard
-
-"typescript@npm:^4.4.3, typescript@npm:^4.6.4":
+"typescript@npm:4.8.4, typescript@npm:^4.4.3, typescript@npm:^4.6.4":
   version: 4.8.4
   resolution: "typescript@npm:4.8.4"
   bin:
@@ -31741,17 +31731,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@4.2.3#~builtin<compat/typescript>":
-  version: 4.2.3
-  resolution: "typescript@patch:typescript@npm%3A4.2.3#~builtin<compat/typescript>::version=4.2.3&hash=701156"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: f00e6e6e72c950865979d5beb66916c75d92eda09514eb2953828b95505cfd2ef3ae9ac776fdac9f841a9ce67744999b70d23779726e0072656a1841c8080860
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.6.4#~builtin<compat/typescript>":
+"typescript@patch:typescript@4.8.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.6.4#~builtin<compat/typescript>":
   version: 4.8.4
   resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=701156"
   bin:
