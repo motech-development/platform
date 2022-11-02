@@ -47,7 +47,7 @@ __metadata:
     luxon: 2.3.0
     prettier: 2.3.0
     serverless: 2.72.3
-    serverless-appsync-plugin: 1.12.1
+    serverless-appsync-plugin: 1.14.0
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
@@ -29101,9 +29101,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-appsync-plugin@npm:1.12.1":
-  version: 1.12.1
-  resolution: "serverless-appsync-plugin@npm:1.12.1"
+"serverless-appsync-plugin@npm:1.14.0":
+  version: 1.14.0
+  resolution: "serverless-appsync-plugin@npm:1.14.0"
   dependencies:
     "@graphql-tools/merge": ^6.2.11
     aws-sdk: ^2.881.0
@@ -29115,7 +29115,7 @@ __metadata:
     lodash: ^4.17.20
     moment: ^2.29.1
     ramda: ^0.25.0
-  checksum: 936b04aa39140d9aea87ab33103f52f52032610b7b5611b20c7f0e6be1e6a9253773e780c50bb4ae3068aa25305657c3cd7e7cd6fc5e39f85bb3cbccc935ebdc
+  checksum: 2fb044bbc8861d7de6f7f6c0c695a88586e43d2202d5c77a8b0fee6fec28092bac35674b7fc8003c7b88a7e19bd89bc4583acc9f8b3bdf4c70007b0833570a7c
   languageName: node
   linkType: hard
 
