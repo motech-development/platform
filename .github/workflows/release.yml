@@ -1,11 +1,9 @@
-# TODO: Update branch
-# TODO: Remove dry run flag
 name: Release
 
 on:
   push:
     branches:
-      - feature/semantic-release
+      - main
 
 jobs:
   release:
@@ -30,7 +28,7 @@ jobs:
         run: yarn package
 
       - name: Release
-        run: yarn release --dry-run
+        run: yarn release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
