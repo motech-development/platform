@@ -1,4 +1,4 @@
-import logger from '@motech-development/logger';
+import logger from '@motech-development/node-logger';
 import { Handler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { boolean, number, object, string } from 'yup';

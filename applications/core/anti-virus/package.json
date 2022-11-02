@@ -12,7 +12,7 @@
     "update-definitions": "serverless invoke -f UpdateDefinitions"
   },
   "dependencies": {
-    "@motech-development/logger": "workspace:packages/logger",
+    "@motech-development/node-logger": "workspace:packages/node-logger",
     "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations",
     "aws-sdk": "2.1241.0"
   },
