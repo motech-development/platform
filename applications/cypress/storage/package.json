@@ -9,6 +9,6 @@
   },
   "devDependencies": {
     "serverless": "2.72.3",
-    "serverless-deployment-bucket": "1.5.2"
+    "serverless-deployment-bucket": "1.6.0"
   }
 }

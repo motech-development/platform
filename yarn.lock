@@ -48,7 +48,7 @@ __metadata:
     prettier: 2.3.0
     serverless: 2.72.3
     serverless-appsync-plugin: 1.12.1
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
     typescript: 4.2.3
@@ -126,7 +126,7 @@ __metadata:
     react-router-dom: 5.3.4
     react-scripts: 5.0.1
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-finch: 2.8.0
     styled-components: 5.3.6
     typescript: 4.2.3
@@ -176,7 +176,7 @@ __metadata:
     luxon: 2.3.0
     prettier: 2.3.0
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
     typescript: 4.2.3
@@ -191,7 +191,7 @@ __metadata:
   resolution: "@accounts/infrastructure@workspace:applications/accounts/infrastructure"
   dependencies:
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
 
@@ -223,7 +223,7 @@ __metadata:
     luxon: 2.3.0
     prettier: 2.3.0
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
     typescript: 4.2.3
@@ -260,7 +260,7 @@ __metadata:
     jest: 26.6.0
     prettier: 2.3.0
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
@@ -307,7 +307,7 @@ __metadata:
     prettier: 2.3.0
     qs: 6.11.0
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
@@ -347,7 +347,7 @@ __metadata:
     jest: 26.6.0
     prettier: 2.3.0
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-offline: 8.8.1
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
@@ -387,7 +387,7 @@ __metadata:
     luxon: 2.3.0
     prettier: 2.3.0
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
@@ -3633,7 +3633,7 @@ __metadata:
     jest: 26.6.0
     prettier: 2.3.0
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
@@ -3669,7 +3669,7 @@ __metadata:
     jest: 26.6.0
     prettier: 2.3.0
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
     typescript: 4.2.3
@@ -3684,7 +3684,7 @@ __metadata:
   resolution: "@core/infrastructure@workspace:applications/core/infrastructure"
   dependencies:
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
 
@@ -3902,7 +3902,7 @@ __metadata:
     luxon: 2.3.0
     prettier: 2.3.0
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.1
     serverless-webpack: "serverless-heaven/serverless-webpack#1a6c72ffbbbaba5cd06bcdd27d0bca948cc1fc15"
     typescript: 4.2.3
@@ -3943,7 +3943,7 @@ __metadata:
   resolution: "@cypress/storage@workspace:applications/cypress/storage"
   dependencies:
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
 
@@ -4673,7 +4673,7 @@ __metadata:
     react-scripts: 5.0.1
     react-snap: 1.23.0
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-finch: 2.8.0
     styled-components: 5.3.6
     typescript: 4.2.3
@@ -4695,7 +4695,7 @@ __metadata:
   resolution: "@id/infrastructure@workspace:applications/id/infrastructure"
   dependencies:
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
 
@@ -6183,7 +6183,7 @@ __metadata:
     jest: 26.6.0
     prettier: 2.3.0
     serverless: 2.72.3
-    serverless-deployment-bucket: 1.5.2
+    serverless-deployment-bucket: 1.6.0
     serverless-dynamodb-local: 0.2.40
     serverless-offline: 8.8.1
     serverless-prune-plugin: 2.0.1
@@ -29119,12 +29119,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-deployment-bucket@npm:1.5.2":
-  version: 1.5.2
-  resolution: "serverless-deployment-bucket@npm:1.5.2"
+"serverless-deployment-bucket@npm:1.6.0":
+  version: 1.6.0
+  resolution: "serverless-deployment-bucket@npm:1.6.0"
   dependencies:
     chalk: ^2.4.2
-  checksum: 0c2409843715228f91dfc843a3b3bf3ab7ff0b76e31cffe1dfe5aae41b94eea0b275e3af2cc15da8cac7c3f314d59e328924c00f41c5457878b3b72f608b7dba
+  checksum: c275e8bee7d9a9acfbd722bdb905050b15945fefdc72860c142f2a2e01c3c9e07c570a4fdae2e084cc76c1e6c8f9875f94326f69104e291aa52c762e7b2bb2fc
   languageName: node
   linkType: hard
 
