@@ -3,7 +3,7 @@ import {
   paramCheck,
   response,
 } from '@motech-development/api-gateway-handler';
-import logger from '@motech-development/logger';
+import logger from '@motech-development/node-logger';
 import { URL } from 'url';
 import { number, object, string } from 'yup';
 import github from '../shared/github';

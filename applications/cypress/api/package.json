@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler",
-    "@motech-development/logger": "workspace:packages/logger",
+    "@motech-development/node-logger": "workspace:packages/node-logger",
     "@octokit/auth-app": "3.6.1",
     "@octokit/rest": "18.12.0",
     "aws-sdk": "2.1241.0",

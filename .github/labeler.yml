@@ -53,9 +53,9 @@ ga-web-vitals:
   - packages/ga-web-vitals/*
   - packages/ga-web-vitals/**/*
 
-logger:
-  - packages/logger/*
-  - packages/logger/**/*
+node-logger:
+  - packages/node-logger/*
+  - packages/node-logger/**/*
 
 query-string-hooks:
   - packages/query-string-hooks/*

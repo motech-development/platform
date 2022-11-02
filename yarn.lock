@@ -366,7 +366,7 @@ __metadata:
     "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
-    "@motech-development/logger": "workspace:packages/logger"
+    "@motech-development/node-logger": "workspace:packages/node-logger"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
@@ -3618,7 +3618,7 @@ __metadata:
     "@babel/core": 7.19.6
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
-    "@motech-development/logger": "workspace:packages/logger"
+    "@motech-development/node-logger": "workspace:packages/node-logger"
     "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations"
     "@motech-development/webpack-conditional-plugin": "workspace:packages/webpack-conditional-plugin"
     "@motech-development/webpack-permissions-plugin": "workspace:packages/webpack-permissions-plugin"
@@ -3886,7 +3886,7 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
-    "@motech-development/logger": "workspace:packages/logger"
+    "@motech-development/node-logger": "workspace:packages/node-logger"
     "@octokit/auth-app": 3.6.1
     "@octokit/rest": 18.12.0
     "@types/aws-lambda": 8.10.108
@@ -5607,9 +5607,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@motech-development/logger@workspace:packages/logger":
+"@motech-development/node-logger@workspace:packages/node-logger":
   version: 0.0.0-use.local
-  resolution: "@motech-development/logger@workspace:packages/logger"
+  resolution: "@motech-development/node-logger@workspace:packages/node-logger"
   dependencies:
     "@babel/core": 7.19.6
     "@babel/plugin-transform-runtime": 7.19.6

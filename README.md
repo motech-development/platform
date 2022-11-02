@@ -80,8 +80,8 @@ Test the package by running `yarn test --scope=@motech-development/ga-web-vitals
 
 Application logger
 
-Build the package by running `yarn build --scope=@motech-development/logger`\
-Test the package by running `yarn test --scope=@motech-development/logger`
+Build the package by running `yarn build --scope=@motech-development/node-logger`\
+Test the package by running `yarn test --scope=@motech-development/node-logger`
 
 ### Query string hook
 
