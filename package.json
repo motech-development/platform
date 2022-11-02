@@ -10,7 +10,7 @@
   "packageManager": "yarn@3.2.4",
   "scripts": {
     "clean-deps": "find . -name node_modules -exec rm -rf {} \\;",
-    "clean-git": "git branch --merged | egrep -v \"(^\\*|master|develop)\" | xargs git branch -d",
+    "clean-git": "git branch --merged | egrep -v \"(^\\*|main|develop)\" | xargs git branch -d",
     "format": "yarn workspaces foreach -v run prettier --ignore-unknown --write .",
     "format-root": "prettier --ignore-unknown --write .",
     "lint": "yarn workspaces foreach -p run lint",

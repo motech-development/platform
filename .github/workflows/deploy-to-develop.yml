@@ -3,7 +3,7 @@ name: Deploy to develop
 on:
   push:
     branches:
-      - master
+      - main
 
 concurrency: development_environment
 
