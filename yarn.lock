@@ -25,7 +25,7 @@ __metadata:
     "@motech-development/serverless-outputs-env": "workspace:packages/serverless-outputs-env"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     aws-appsync: 4.1.8
@@ -44,7 +44,7 @@ __metadata:
     graphql: 15.8.0
     graphql-tag: 2.12.6
     jest: 26.6.0
-    luxon: 2.3.0
+    luxon: 2.5.0
     prettier: 2.3.0
     serverless: 2.72.3
     serverless-appsync-plugin: 1.12.1
@@ -78,7 +78,7 @@ __metadata:
     "@testing-library/user-event": 13.5.0
     "@types/file-saver": 2.0.5
     "@types/jest": 26.0.24
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/react": 17.0.52
     "@types/react-dom": 17.0.18
     "@types/react-router-dom": 5.3.3
@@ -115,7 +115,7 @@ __metadata:
     i18next-http-backend: 1.3.2
     jest-date-mock: 1.0.8
     jest-styled-components: 7.1.1
-    luxon: 2.3.0
+    luxon: 2.5.0
     prettier: 2.3.0
     pwa-asset-generator: 6.2.0
     react: 17.0.2
@@ -156,7 +156,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/uuid": 8.3.4
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
@@ -173,7 +173,7 @@ __metadata:
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
     jest-date-mock: 1.0.8
-    luxon: 2.3.0
+    luxon: 2.5.0
     prettier: 2.3.0
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
@@ -205,7 +205,7 @@ __metadata:
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/uuid": 8.3.4
     "@types/yup": 0.29.11
     "@typescript-eslint/eslint-plugin": 4.33.0
@@ -220,7 +220,7 @@ __metadata:
     eslint-plugin-prettier: 4.2.1
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
-    luxon: 2.3.0
+    luxon: 2.5.0
     prettier: 2.3.0
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
@@ -281,7 +281,7 @@ __metadata:
     "@types/archiver": 5.3.1
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/qs": 6.9.7
     "@types/uuid": 8.3.4
     "@types/yup": 0.29.11
@@ -303,7 +303,7 @@ __metadata:
     jest: 26.6.0
     jest-date-mock: 1.0.8
     json-2-csv: 3.17.2
-    luxon: 2.3.0
+    luxon: 2.5.0
     prettier: 2.3.0
     qs: 6.11.0
     serverless: 2.72.3
@@ -369,7 +369,7 @@ __metadata:
     "@motech-development/logger": "workspace:packages/logger"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/uuid": 8.3.4
     "@types/yup": 0.29.11
     "@typescript-eslint/eslint-plugin": 4.33.0
@@ -384,7 +384,7 @@ __metadata:
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
     jest-date-mock: 1.0.8
-    luxon: 2.3.0
+    luxon: 2.5.0
     prettier: 2.3.0
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
@@ -3884,7 +3884,7 @@ __metadata:
     "@octokit/rest": 18.12.0
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/yup": 0.29.11
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
@@ -3899,7 +3899,7 @@ __metadata:
     eslint-plugin-prettier: 4.2.1
     fork-ts-checker-webpack-plugin: 6.5.2
     jest: 26.6.0
-    luxon: 2.3.0
+    luxon: 2.5.0
     prettier: 2.3.0
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
@@ -5501,7 +5501,7 @@ __metadata:
     "@testing-library/react-hooks": 7.0.2
     "@testing-library/user-event": 13.5.0
     "@types/jest": 26.0.24
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/react": 17.0.52
     "@types/react-dom": 17.0.18
     "@types/react-router-dom": 5.3.3
@@ -5520,7 +5520,7 @@ __metadata:
     formik: 2.2.6
     jest: 26.6.0
     jest-date-mock: 1.0.8
-    luxon: 2.3.0
+    luxon: 2.5.0
     polished: 4.2.2
     prettier: 2.3.0
     react: 17.0.2
@@ -8435,10 +8435,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/luxon@npm:2.0.9":
-  version: 2.0.9
-  resolution: "@types/luxon@npm:2.0.9"
-  checksum: 6c99741e1735aca5b784981ecec3a6ad9497b8e46cc3dd0ba625901bb5b34af4c7b1bf33e32b3e8468312ce2850b31f553f712283a8301a0ee1aacb633276738
+"@types/luxon@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@types/luxon@npm:2.4.0"
+  checksum: eeb16a1bfe5440464c1a9635700d103cd18d3cd8da6063a1938478e435cfba6ab8e893aa80c95a407e541187c1e997c3e4481322726bc1258551cb8606d0e5ad
   languageName: node
   linkType: hard
 
@@ -22988,10 +22988,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:2.3.0":
-  version: 2.3.0
-  resolution: "luxon@npm:2.3.0"
-  checksum: 3d00e1b812a31082cf0d97e844d7354c93891fbd14795756f396ee5656387e21d2c862edb841516114eb391f8314a6cf3848799acc6d59cf9560c88c909b91f0
+"luxon@npm:2.5.0, luxon@npm:^2.4.0":
+  version: 2.5.0
+  resolution: "luxon@npm:2.5.0"
+  checksum: 2fccce6bbdfc8f13c5a8c148ff045ab3b10f4f80cac28dd92575588fffce9b2d7197096d7fedcc61a6245b59f4233507797f530e63f22b9ae4c425dff2909ae3
   languageName: node
   linkType: hard
 
@@ -22999,13 +22999,6 @@ __metadata:
   version: 1.28.0
   resolution: "luxon@npm:1.28.0"
   checksum: 5250cb9f138b6048eeb0b3a9044a4ac994d0058f680c72a0da4b6aeaec8612460385639cba2b1052ef6d5564879e9ed144d686f26d9d97b38ab920d82e18281c
-  languageName: node
-  linkType: hard
-
-"luxon@npm:^2.4.0":
-  version: 2.5.0
-  resolution: "luxon@npm:2.5.0"
-  checksum: 2fccce6bbdfc8f13c5a8c148ff045ab3b10f4f80cac28dd92575588fffce9b2d7197096d7fedcc61a6245b59f4233507797f530e63f22b9ae4c425dff2909ae3
   languageName: node
   linkType: hard
 
