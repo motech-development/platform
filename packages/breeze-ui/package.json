@@ -32,7 +32,7 @@
     "react-popper": "2.3.0",
     "react-router-dom": "5.3.4",
     "styled-components": "5.3.6",
-    "styled-reset": "4.3.4"
+    "styled-reset": "4.4.2"
   },
   "devDependencies": {
     "@babel/core": "7.19.6",
