@@ -1,4 +1,4 @@
-import logger from '@motech-development/logger';
+import logger from '@motech-development/node-logger';
 import { execFile } from 'child_process';
 import { join, resolve } from 'path';
 import { promisify } from 'util';

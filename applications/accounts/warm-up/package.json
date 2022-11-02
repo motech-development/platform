@@ -11,7 +11,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@motech-development/logger": "workspace:packages/logger",
+    "@motech-development/node-logger": "workspace:packages/node-logger",
     "luxon": "2.3.0",
     "uuid": "8.3.2",
     "yup": "0.29.3"

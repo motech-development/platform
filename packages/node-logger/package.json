@@ -1,5 +1,5 @@
 {
-  "name": "@motech-development/logger",
+  "name": "@motech-development/node-logger",
   "version": "0.0.0-development",
   "description": "Application logger",
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",

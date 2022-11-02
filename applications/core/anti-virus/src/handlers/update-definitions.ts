@@ -1,4 +1,4 @@
-import logger from '@motech-development/logger';
+import logger from '@motech-development/node-logger';
 import { createFile } from '@motech-development/s3-file-operations';
 import { Handler } from 'aws-lambda';
 import { createReadStream } from 'fs';
