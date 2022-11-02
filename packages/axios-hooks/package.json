@@ -1,7 +1,15 @@
 {
   "name": "@motech-development/axios-hooks",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "Axios hooks for React",
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib"
+  ],
   "main": "lib/axios-hooks.cjs.js",
   "module": "lib/axios-hooks.esm.js",
   "types": "lib/axios-hooks.d.ts",
@@ -14,8 +22,6 @@
     "test": "jest --watch",
     "test-ci": "jest --coverage --runInBand"
   },
-  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
-  "license": "ISC",
   "dependencies": {
     "axios": "0.27.2",
     "react": "17.0.2"

@@ -16,6 +16,7 @@
     "lint": "yarn workspaces foreach -p run lint",
     "package": "yarn workspaces foreach -pt run package",
     "prepare": "husky install",
+    "release": "multi-semantic-release",
     "test": "yarn workspaces foreach run test-ci"
   },
   "repository": {
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@commitlint/cli": "16.3.0",
     "@commitlint/config-conventional": "16.2.4",
+    "@qiwi/multi-semantic-release": "^6.5.1",
     "@types/node": "14.18.33",
     "commitizen": "4.2.5",
     "cz-conventional-changelog": "3.3.0",

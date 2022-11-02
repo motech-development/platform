@@ -1,9 +1,15 @@
 {
   "name": "@motech-development/webpack-permissions-plugin",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "A Webpack plugin to set permissions for your output files and folders",
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib"
+  ],
   "main": "lib/webpack-permissions-plugin.cjs.js",
   "module": "lib/webpack-permissions-plugin.esm.js",
   "types": "lib/webpack-permissions-plugin.d.ts",

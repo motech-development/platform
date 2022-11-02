@@ -1,9 +1,15 @@
 {
   "name": "@motech-development/s3-file-operations",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "A wrapper utility to manage file operations on AWS S3",
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
   "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib"
+  ],
   "main": "lib/s3-file-operations.cjs.js",
   "module": "lib/s3-file-operations.esm.js",
   "types": "lib/s3-file-operations.d.ts",

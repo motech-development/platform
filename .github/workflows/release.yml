@@ -1,0 +1,36 @@
+# TODO: Update branch
+# TODO: Remove dry run flag
+name: Release
+
+on:
+  push:
+    branches:
+      - feature/semantic-release
+
+jobs:
+  release:
+    name: Packages
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.0.2
+
+      - name: Set Node version
+        uses: actions/setup-node@v2.5.1
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build packages
+        run: yarn package --dry-run
+
+      - name: Release
+        run: yarn release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
