@@ -12,16 +12,16 @@
     "update-definitions": "serverless invoke -f UpdateDefinitions"
   },
   "dependencies": {
-    "@motech-development/node-logger": "workspace:packages/node-logger",
-    "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations",
+    "@motech-development/node-logger": "workspace:*",
+    "@motech-development/s3-file-operations": "workspace:*",
     "aws-sdk": "2.1241.0"
   },
   "devDependencies": {
     "@babel/core": "7.20.2",
     "@babel/preset-env": "7.20.2",
     "@babel/preset-typescript": "7.18.6",
-    "@motech-development/webpack-conditional-plugin": "workspace:packages/webpack-conditional-plugin",
-    "@motech-development/webpack-permissions-plugin": "workspace:packages/webpack-permissions-plugin",
+    "@motech-development/webpack-conditional-plugin": "workspace:*",
+    "@motech-development/webpack-permissions-plugin": "workspace:*",
     "@types/aws-lambda": "8.10.108",
     "@types/jest": "27.5.2",
     "@typescript-eslint/eslint-plugin": "4.33.0",
