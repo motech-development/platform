@@ -12,7 +12,7 @@ class WebpackConditionalPlugin {
     this.plugin = plugin;
   }
 
-  public apply(compiler: Compiler) {
+  public apply(compiler: Compiler): void {
     if (this.condition(compiler)) {
       this.plugin.apply(compiler);
     }
