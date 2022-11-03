@@ -1,0 +1,3 @@
+{
+  "extends": "@motech-development/eslint-config-motech-base"
+}

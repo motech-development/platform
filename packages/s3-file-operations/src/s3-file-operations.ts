@@ -1,13 +1,15 @@
-import { S3 } from 'aws-sdk';
+import { AWSError, S3 } from 'aws-sdk';
 import { ObjectIdentifier } from 'aws-sdk/clients/s3';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import { createWriteStream, existsSync, mkdir, ReadStream } from 'fs';
 import { basename, join } from 'path';
+import { Readable } from 'stream';
 import { promisify } from 'util';
 
 const mkdirAsync = promisify(mkdir);
 const s3 = new S3();
 
-export const createDirectory = async (name: string) => {
+export const createDirectory = async (name: string): Promise<boolean> => {
   const directoryExists = existsSync(name);
 
   if (!directoryExists) {
@@ -21,7 +23,7 @@ export const createFile = async (
   to: string,
   key: string,
   body: string | ReadStream,
-) => {
+): Promise<void> => {
   await s3
     .putObject({
       Body: body,
@@ -42,7 +44,7 @@ export const createSignedUrl = async (
   key: string,
   expires: number,
   opts?: ICreateSignedUrlOpts,
-) =>
+): Promise<string> =>
   s3.getSignedUrlPromise(operation, {
     Bucket: bucket,
     Expires: expires,
@@ -50,7 +52,10 @@ export const createSignedUrl = async (
     ...opts,
   });
 
-export const deleteFile = async (bucket: string, key: string) => {
+export const deleteFile = async (
+  bucket: string,
+  key: string,
+): Promise<void> => {
   const decodedKey = decodeURIComponent(key);
 
   await s3
@@ -61,7 +66,7 @@ export const deleteFile = async (bucket: string, key: string) => {
     .promise();
 };
 
-export const downloadFileStream = (bucket: string, key: string) => {
+export const downloadFileStream = (bucket: string, key: string): Readable => {
   const decodedKey = decodeURIComponent(key);
 
   return s3
@@ -72,7 +77,11 @@ export const downloadFileStream = (bucket: string, key: string) => {
     .createReadStream();
 };
 
-export const downloadFile = async (bucket: string, key: string, to: string) => {
+export const downloadFile = async (
+  bucket: string,
+  key: string,
+  to: string,
+): Promise<string> => {
   const filePath = join(to, basename(key));
   const fileStream = createWriteStream(filePath);
 
@@ -86,7 +95,10 @@ export const downloadFile = async (bucket: string, key: string, to: string) => {
   });
 };
 
-export const getFileData = async (bucket: string, key: string) => {
+export const getFileData = async (
+  bucket: string,
+  key: string,
+): Promise<PromiseResult<S3.HeadObjectOutput, AWSError>> => {
   const decodedKey = decodeURIComponent(key);
 
   return s3
@@ -97,7 +109,11 @@ export const getFileData = async (bucket: string, key: string) => {
     .promise();
 };
 
-export const moveFile = async (from: string, to: string, key: string) => {
+export const moveFile = async (
+  from: string,
+  to: string,
+  key: string,
+): Promise<void> => {
   const decodedKey = decodeURIComponent(key);
 
   await s3
@@ -111,7 +127,10 @@ export const moveFile = async (from: string, to: string, key: string) => {
   await deleteFile(from, key);
 };
 
-export const removeFolder = async (bucket: string, key: string) => {
+export const removeFolder = async (
+  bucket: string,
+  key: string,
+): Promise<void> => {
   const decodedKey = decodeURIComponent(key);
 
   const listedObjects = await s3
@@ -148,7 +167,7 @@ export const uploader = (
   key: string,
   body: S3.Body,
   contentType: string,
-) =>
+): S3.ManagedUpload =>
   s3.upload({
     Body: body,
     Bucket: bucket,
