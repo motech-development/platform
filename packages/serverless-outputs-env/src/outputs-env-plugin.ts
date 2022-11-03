@@ -1,8 +1,12 @@
-import assert from 'assert';
+import assert, { AssertionError } from 'assert';
 import { writeFile } from 'fs';
 import Serverless from 'serverless';
 import tomlify from 'tomlify-j0.4';
 import { promisify } from 'util';
+
+interface IHook {
+  [name: string]: () => Promise<void>;
+}
 
 interface IOutput {
   [name: string]: string;
@@ -35,7 +39,7 @@ class OutputsEnvPlugin {
 
   private options: Serverless.Options;
 
-  public get hooks() {
+  public get hooks(): IHook {
     return {
       'after:deploy:deploy': this.process.bind(this),
     };
@@ -81,7 +85,7 @@ class OutputsEnvPlugin {
     const { name } = this.serverless.service.provider;
     const region = this.serverless.getProvider(name).getRegion();
     const stage = this.serverless.getProvider(name).getStage();
-    const { Stacks } = await this.serverless.getProvider(name).request(
+    const { Stacks } = (await this.serverless.getProvider(name).request(
       'CloudFormation',
       'describeStacks',
       {
@@ -90,12 +94,16 @@ class OutputsEnvPlugin {
       {
         region,
       },
-    );
-    const stack = Stacks.pop();
-    const output = stack.Outputs;
+    )) as {
+      Stacks: {
+        Outputs: IOutput[];
+      }[];
+    };
 
-    return output.reduce(
-      (obj: Record<string, unknown>, item: IOutput) => ({
+    const stack = Stacks.pop();
+
+    return stack?.Outputs.reduce(
+      (obj, item) => ({
         ...obj,
         [item.OutputKey]: item.OutputValue,
       }),
@@ -105,7 +113,11 @@ class OutputsEnvPlugin {
     );
   }
 
-  private async writeOutput(data: IOutput) {
+  private async writeOutput(data?: IOutput) {
+    if (!data) {
+      throw new Error('No output found.');
+    }
+
     const output = Object.keys(data);
     const config = Object.keys(this.output.env);
     const result = config.reduce((obj, item) => {
@@ -138,7 +150,11 @@ class OutputsEnvPlugin {
 
       await this.writeOutput(output);
     } catch (e) {
-      this.serverless.cli.log(`Cannot process Stack Output: ${e.message}!`);
+      if (e instanceof AssertionError) {
+        this.serverless.cli.log(`Cannot process Stack Output: ${e.message}!`);
+      } else {
+        this.serverless.cli.log('Unknown error encountered.');
+      }
     }
   }
 }
