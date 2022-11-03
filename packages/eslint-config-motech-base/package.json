@@ -20,7 +20,7 @@
   ],
   "main": "index.js",
   "scripts": {
-    "lint": "eslint \"index.js\""
+    "lint": "eslint --cache \"index.js\""
   },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "4.33.0",

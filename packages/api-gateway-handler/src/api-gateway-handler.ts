@@ -16,7 +16,7 @@ const apiGatewayHandler =
     event: APIGatewayProxyEvent,
     context: Context,
     callback: Callback<APIGatewayProxyResult>,
-  ) => {
+  ): Promise<void> => {
     try {
       const result = await handler(event, context);
 

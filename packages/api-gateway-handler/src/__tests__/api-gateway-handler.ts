@@ -20,10 +20,11 @@ describe('api-gateway-handler', () => {
   });
 
   it('should call the callback with the correct response', async () => {
-    const handler = async () => ({
-      body: '',
-      statusCode: 200,
-    });
+    const handler = async () =>
+      Promise.resolve({
+        body: '',
+        statusCode: 200,
+      });
 
     await proxyHandler(handler)(event, context, callback);
 
@@ -34,26 +35,13 @@ describe('api-gateway-handler', () => {
   });
 
   it('should return the error response when thrown', async () => {
+    const error = new Error('Something has gone wrong.');
     const handler = () => {
-      const response = {
-        body: JSON.stringify({
-          message: 'No table set',
-          statusCode: 500,
-        }),
-        statusCode: 500,
-      };
-
-      throw response;
+      throw error;
     };
 
     await proxyHandler(handler)(event, context, callback);
 
-    expect(callback).toHaveBeenCalledWith(null, {
-      body: JSON.stringify({
-        message: 'No table set',
-        statusCode: 500,
-      }),
-      statusCode: 500,
-    });
+    expect(callback).toHaveBeenCalledWith(null, error);
   });
 });
