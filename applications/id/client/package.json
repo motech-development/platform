@@ -14,10 +14,10 @@
     "test-ci": "react-scripts test --coverage --runInBand"
   },
   "dependencies": {
-    "@motech-development/axios-hooks": "workspace:packages/axios-hooks",
-    "@motech-development/breeze-ui": "workspace:packages/breeze-ui",
-    "@motech-development/ga-web-vitals": "workspace:packages/ga-web-vitals",
-    "auth0-js": "9.19.2",
+    "@motech-development/axios-hooks": "workspace:*",
+    "@motech-development/breeze-ui": "workspace:*",
+    "@motech-development/ga-web-vitals": "workspace:*",
+    "auth0-js": "9.19.1",
     "axios": "0.27.2",
     "body-scroll-lock": "3.1.5",
     "formik": "2.2.6",

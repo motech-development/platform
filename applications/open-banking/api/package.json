@@ -12,7 +12,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler",
+    "@motech-development/api-gateway-handler": "workspace:*",
     "aws-sdk": "2.1241.0",
     "axios": "0.27.2",
     "yup": "0.29.3"
