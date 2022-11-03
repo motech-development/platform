@@ -13,7 +13,7 @@
     "auth0": "2.44.0"
   },
   "devDependencies": {
-    "@types/jest": "26.0.24",
+    "@types/jest": "29.2.0",
     "auth0-deploy-cli": "7.15.1",
     "eslint": "7.28.0",
     "eslint-config-airbnb-base": "14.2.1",

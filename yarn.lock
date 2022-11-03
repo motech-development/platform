@@ -24,7 +24,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@motech-development/serverless-outputs-env": "workspace:packages/serverless-outputs-env"
     "@types/aws-lambda": 8.10.108
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/luxon": 2.0.9
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
@@ -77,7 +77,7 @@ __metadata:
     "@testing-library/react": 12.1.5
     "@testing-library/user-event": 13.5.0
     "@types/file-saver": 2.0.5
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/luxon": 2.0.9
     "@types/react": 17.0.52
     "@types/react-dom": 17.0.18
@@ -155,7 +155,7 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@types/aws-lambda": 8.10.108
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/luxon": 2.0.9
     "@types/uuid": 8.3.4
     "@typescript-eslint/eslint-plugin": 4.33.0
@@ -204,7 +204,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
     "@types/aws-lambda": 8.10.108
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/luxon": 2.0.9
     "@types/uuid": 8.3.4
     "@types/yup": 0.29.11
@@ -242,7 +242,7 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@types/aws-lambda": 8.10.108
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     aws-lambda-mock-context: 3.2.1
@@ -280,7 +280,7 @@ __metadata:
     "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations"
     "@types/archiver": 5.3.1
     "@types/aws-lambda": 8.10.108
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/luxon": 2.0.9
     "@types/qs": 6.9.7
     "@types/uuid": 8.3.4
@@ -329,7 +329,7 @@ __metadata:
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
     "@motech-development/s3-file-operations": "workspace:packages/s3-file-operations"
     "@types/aws-lambda": 8.10.108
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/uuid": 8.3.4
     "@types/yup": 0.29.11
     "@typescript-eslint/eslint-plugin": 4.33.0
@@ -368,7 +368,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@motech-development/node-logger": "workspace:packages/node-logger"
     "@types/aws-lambda": 8.10.108
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/luxon": 2.0.9
     "@types/uuid": 8.3.4
     "@types/yup": 0.29.11
@@ -3623,7 +3623,7 @@ __metadata:
     "@motech-development/webpack-conditional-plugin": "workspace:packages/webpack-conditional-plugin"
     "@motech-development/webpack-permissions-plugin": "workspace:packages/webpack-permissions-plugin"
     "@types/aws-lambda": 8.10.108
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     aws-lambda-mock-context: 3.2.1
@@ -3658,7 +3658,7 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@types/aws-lambda": 8.10.108
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/yup": 0.29.11
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
@@ -3890,7 +3890,7 @@ __metadata:
     "@octokit/auth-app": 3.6.1
     "@octokit/rest": 18.12.0
     "@types/aws-lambda": 8.10.108
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/luxon": 2.0.9
     "@types/yup": 0.29.11
     "@typescript-eslint/eslint-plugin": 4.33.0
@@ -4645,7 +4645,7 @@ __metadata:
     "@testing-library/react": 12.1.5
     "@testing-library/user-event": 13.5.0
     "@types/auth0-js": 9.14.6
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/react": 17.0.52
     "@types/react-dom": 17.0.18
     "@types/react-router-dom": 5.3.3
@@ -4710,7 +4710,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@id/tenant@workspace:applications/id/tenant"
   dependencies:
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     auth0: 2.44.0
     auth0-deploy-cli: 7.15.1
     eslint: 7.28.0
@@ -5395,7 +5395,7 @@ __metadata:
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     eslint: 7.28.0
@@ -5423,7 +5423,7 @@ __metadata:
     "@rollup/plugin-node-resolve": 13.1.3
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 12.1.4
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/react": 17.0.52
     "@types/react-dom": 17.0.18
     "@typescript-eslint/eslint-plugin": 4.33.0
@@ -5462,7 +5462,7 @@ __metadata:
     "@rollup/plugin-node-resolve": 13.1.3
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 12.1.4
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/react": 17.0.52
     "@types/react-dom": 17.0.18
     "@types/react-router-dom": 5.3.3
@@ -5497,7 +5497,7 @@ __metadata:
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
     "@testing-library/react-hooks": 7.0.2
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/react": 17.0.52
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
@@ -5540,7 +5540,7 @@ __metadata:
     "@testing-library/react": 12.1.4
     "@testing-library/react-hooks": 7.0.2
     "@testing-library/user-event": 13.5.0
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/luxon": 2.0.9
     "@types/react": 17.0.52
     "@types/react-dom": 17.0.18
@@ -5590,7 +5590,7 @@ __metadata:
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
     "@types/google.analytics": 0.0.42
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     eslint: 7.28.0
@@ -5618,7 +5618,7 @@ __metadata:
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     eslint: 7.28.0
@@ -5646,7 +5646,7 @@ __metadata:
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
     "@testing-library/react-hooks": 7.0.2
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/qs": 6.9.7
     "@types/react": 17.0.52
     "@types/react-router-dom": 5.3.3
@@ -5683,7 +5683,7 @@ __metadata:
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     aws-sdk: 2.1241.0
@@ -5713,7 +5713,7 @@ __metadata:
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
     "@types/assert": 1.5.6
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/serverless": 1.78.44
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
@@ -5744,7 +5744,7 @@ __metadata:
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/webpack": 4.41.33
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
@@ -5774,7 +5774,7 @@ __metadata:
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 21.0.3
     "@rollup/plugin-node-resolve": 13.1.3
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/webpack": 4.41.33
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
@@ -6470,7 +6470,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:packages/api-gateway-handler"
     "@types/aws-lambda": 8.10.108
-    "@types/jest": 26.0.24
+    "@types/jest": 29.2.0
     "@types/yup": 0.29.11
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
@@ -8802,23 +8802,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:*":
+"@types/jest@npm:*, @types/jest@npm:29.2.0":
   version: 29.2.0
   resolution: "@types/jest@npm:29.2.0"
   dependencies:
     expect: ^29.0.0
     pretty-format: ^29.0.0
   checksum: 6779e63d8d7507b116a61b2935a200e48531849fc1ac74090212759fe17716777ca6d2c3a8d927a563e9cfa474ae91d40b1688376ae80e3a08974b3c9e9691e1
-  languageName: node
-  linkType: hard
-
-"@types/jest@npm:26.0.24":
-  version: 26.0.24
-  resolution: "@types/jest@npm:26.0.24"
-  dependencies:
-    jest-diff: ^26.0.0
-    pretty-format: ^26.0.0
-  checksum: ae39675412f08d884926254e9b12bfd2b5a4e4d204c94d3148cb942174a474930d0c60540133c968f22241d4712b7940c96cbc883096eb326a4d5b206fb78bd0
   languageName: node
   linkType: hard
 
@@ -21678,7 +21668,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-diff@npm:^26.0.0, jest-diff@npm:^26.6.2":
+"jest-diff@npm:^26.6.2":
   version: 26.6.2
   resolution: "jest-diff@npm:26.6.2"
   dependencies:
@@ -28115,7 +28105,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-format@npm:^26.0.0, pretty-format@npm:^26.6.2":
+"pretty-format@npm:^26.6.2":
   version: 26.6.2
   resolution: "pretty-format@npm:26.6.2"
   dependencies:
