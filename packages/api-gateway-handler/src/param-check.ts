@@ -1,12 +1,12 @@
-import response from './response';
+import ErrorResponse from './error-response';
 
 const paramCheck = <T>(
   envVar: T | null | undefined,
   message: string,
   statusCode: number,
-) => {
+): T => {
   if (!envVar) {
-    throw response(
+    throw new ErrorResponse(
       {
         message,
         statusCode,
