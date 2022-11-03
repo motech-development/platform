@@ -2,7 +2,7 @@ import reporter from '../ga-web-vitals';
 
 describe('reporter', () => {
   beforeEach(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
     (global as any).ga = jest.fn();
   });
 

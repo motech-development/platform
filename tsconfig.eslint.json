@@ -1,14 +1,11 @@
 {
   "compilerOptions": {
-    "types": ["@types/node", "@types/jest"],
+    "types": ["@types/node", "@types/jest", "@types/google.analytics"],
     "noEmit": true
   },
   "extends": "./tsconfig.json",
   "include": [
     "packages/eslint-config-motech-base/index.js",
-    "packages/*/src/**/*",
-    "packages/*/babel.config.js",
-    "packages/*/rollup.config.js",
-    "services/*/src/**/*"
+    "packages/*/src/**/*"
   ]
 }

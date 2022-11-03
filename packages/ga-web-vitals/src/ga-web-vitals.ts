@@ -4,7 +4,7 @@ export interface IReporter {
   value: number;
 }
 
-const reporter = ({ id, name, value }: IReporter) => {
+const reporter = ({ id, name, value }: IReporter): void => {
   ga('send', 'event', {
     eventAction: name,
     eventCategory: 'Web Vitals',
