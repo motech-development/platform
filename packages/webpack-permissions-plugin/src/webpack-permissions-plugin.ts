@@ -14,7 +14,7 @@ class WebpackPermissionsPlugin {
     this.options = options;
   }
 
-  public apply(compiler: Compiler) {
+  public apply(compiler: Compiler): void {
     compiler.hooks.done.tap('WebpackPermissionsPlugin', () => {
       const folders = this.options.folders(compiler);
 
