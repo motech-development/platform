@@ -36,7 +36,7 @@ __metadata:
     cross-fetch: 3.1.5
     decimal.js: 10.4.2
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -166,7 +166,7 @@ __metadata:
     cache-loader: 4.1.0
     decimal.js: 10.4.2
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -214,7 +214,7 @@ __metadata:
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -252,7 +252,7 @@ __metadata:
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -295,7 +295,7 @@ __metadata:
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -339,7 +339,7 @@ __metadata:
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -377,7 +377,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     babel-loader: 8.1.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -3595,7 +3595,7 @@ __metadata:
     cache-loader: 4.1.0
     copy-webpack-plugin: 6.4.1
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -3631,7 +3631,7 @@ __metadata:
     cache-loader: 4.1.0
     cfn-response-async: 1.0.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -3863,7 +3863,7 @@ __metadata:
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -4677,7 +4677,7 @@ __metadata:
     auth0: 2.44.0
     auth0-deploy-cli: 7.15.1
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -5362,7 +5362,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -5557,7 +5557,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -5585,7 +5585,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -5651,7 +5651,7 @@ __metadata:
     "@typescript-eslint/parser": 4.33.0
     aws-sdk: 2.1241.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -5682,7 +5682,7 @@ __metadata:
     "@typescript-eslint/parser": 4.33.0
     assert: 2.0.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -5712,7 +5712,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -5742,7 +5742,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -6444,7 +6444,7 @@ __metadata:
     babel-loader: 8.1.0
     cache-loader: 4.1.0
     eslint: 7.28.0
-    eslint-config-airbnb-base: 14.2.1
+    eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
@@ -16659,7 +16659,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-airbnb-base@npm:14.2.1, eslint-config-airbnb-base@npm:^14.2.1":
+"eslint-config-airbnb-base@npm:15.0.0":
+  version: 15.0.0
+  resolution: "eslint-config-airbnb-base@npm:15.0.0"
+  dependencies:
+    confusing-browser-globals: ^1.0.10
+    object.assign: ^4.1.2
+    object.entries: ^1.1.5
+    semver: ^6.3.0
+  peerDependencies:
+    eslint: ^7.32.0 || ^8.2.0
+    eslint-plugin-import: ^2.25.2
+  checksum: 38626bad2ce2859fccac86b30cd2b86c9b7d8d71d458331860861dc05290a5b198bded2f4fb89efcb9046ec48f8ab4c4fb00365ba8916f27b172671da28b93ea
+  languageName: node
+  linkType: hard
+
+"eslint-config-airbnb-base@npm:^14.2.1":
   version: 14.2.1
   resolution: "eslint-config-airbnb-base@npm:14.2.1"
   dependencies:
