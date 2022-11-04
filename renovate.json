@@ -1,6 +1,6 @@
 {
   "extends": ["config:base"],
-  "ignoreDeps": ["babel-loader", "eslint", "jest", "prettier"],
+  "ignoreDeps": ["prettier"],
   "packageRules": [
     {
       "extends": ["schedule:monthly"],
