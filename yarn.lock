@@ -88,7 +88,7 @@ __metadata:
     "@typescript-eslint/parser": 4.33.0
     axe-core: 4.5.0
     axios: 0.27.2
-    cy2: 2.1.0
+    cy2: 3.1.7
     cypress: 10.11.0
     cypress-axe: 1.0.0
     cypress-file-upload: 5.0.8
@@ -14841,16 +14841,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cy2@npm:2.1.0":
-  version: 2.1.0
-  resolution: "cy2@npm:2.1.0"
+"cy2@npm:3.1.7":
+  version: 3.1.7
+  resolution: "cy2@npm:3.1.7"
   dependencies:
+    acorn: ^8.8.0
     debug: ^4.3.2
-    js-yaml: ^4.0.0
+    escodegen: ^2.0.0
+    estraverse: ^5.3.0
+    js-yaml: ^4.1.0
     npm-which: ^3.0.1
+    slash: 3.0.0
   bin:
     cy2: bin/cy2
-  checksum: a7ed5315d6f73be67db28dd32e627f1a0071f300f0c882ca1c4cd704445f25503fec26a77d68303eec8a89ace86feb4bcd411d6c45269d8a33988501949d61ff
+  checksum: 0fc54c29855079d601944473b9b45adef2f30de7e81fd454c7828ad51c5824b44f2235991cce58536cd35dabf824a583cc6ff44ab13bbb83adc9140816553e79
   languageName: node
   linkType: hard
 
@@ -22674,7 +22678,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^4.0.0, js-yaml@npm:^4.1.0":
+"js-yaml@npm:^4.1.0":
   version: 4.1.0
   resolution: "js-yaml@npm:4.1.0"
   dependencies:
@@ -31302,17 +31306,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"slash@npm:3.0.0, slash@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "slash@npm:3.0.0"
+  checksum: 94a93fff615f25a999ad4b83c9d5e257a7280c90a32a7cb8b4a87996e4babf322e469c42b7f649fd5796edd8687652f3fb452a86dc97a816f01113183393f11c
+  languageName: node
+  linkType: hard
+
 "slash@npm:^2.0.0":
   version: 2.0.0
   resolution: "slash@npm:2.0.0"
   checksum: 512d4350735375bd11647233cb0e2f93beca6f53441015eea241fe784d8068281c3987fbaa93e7ef1c38df68d9c60013045c92837423c69115297d6169aa85e6
-  languageName: node
-  linkType: hard
-
-"slash@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "slash@npm:3.0.0"
-  checksum: 94a93fff615f25a999ad4b83c9d5e257a7280c90a32a7cb8b4a87996e4babf322e469c42b7f649fd5796edd8687652f3fb452a86dc97a816f01113183393f11c
   languageName: node
   linkType: hard
 
