@@ -159,7 +159,7 @@ jobs:
             ${{ runner.os }}-cache-
 
       - name: Smoke tests
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         with:
           command: yarn workspace @accounts/client e2e-ci
           install: false
