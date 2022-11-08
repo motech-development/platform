@@ -3,6 +3,7 @@ import delay from '../shared/delay';
 import transformBalance, {
   IBalanceItem,
   ITransactionItem,
+  ITransformedBalance,
 } from '../shared/transform-balance';
 
 const client = new DocumentClient();
@@ -12,7 +13,7 @@ export interface IEvent {
   owner: string;
 }
 
-const getBalance = async (event: IEvent) => {
+const getBalance = async (event: IEvent): Promise<ITransformedBalance> => {
   const { TABLE } = process.env;
 
   if (!TABLE) {

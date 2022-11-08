@@ -1,3 +1,4 @@
+import logger from '@motech-development/node-logger';
 import { DynamoDBStreamHandler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import insertTypeahead from './handlers/insert-typeahead';
@@ -14,6 +15,6 @@ export const handler: DynamoDBStreamHandler = async (event) => {
       ...insertTypeahead(documentClient, TABLE, updates),
     ]);
   } catch (e) {
-    console.error(e.message);
+    logger.error('An error occurred', e);
   }
 };

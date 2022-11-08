@@ -4,8 +4,5 @@
     "noEmit": true
   },
   "extends": "./tsconfig.json",
-  "include": [
-    "packages/eslint-config-motech-base/index.js",
-    "packages/*/src/**/*"
-  ]
+  "include": ["applications/*/*/src/**/*", "packages/*/src/**/*"]
 }

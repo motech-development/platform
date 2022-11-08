@@ -2,7 +2,13 @@ import { Handler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import chunk from '../shared/chunk';
 
+interface IItem {
+  id: string;
+}
+
 const documentClient = new DocumentClient();
+
+const isItem = (item: DocumentClient.AttributeMap): item is IItem => !!item.id;
 
 export interface IEvent {
   id: string;
@@ -45,7 +51,7 @@ export const handler: Handler<IEvent> = async (event) => {
 
   if (Items && Items.length > 0) {
     const items = chunk(
-      Items.map((item) => item.id),
+      Items.filter(isItem).map((item) => item.id),
       25,
     );
 

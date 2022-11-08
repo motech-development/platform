@@ -1,0 +1,6 @@
+{
+  "extends": "@motech-development/eslint-config-motech-base",
+  "rules": {
+    "import/prefer-default-export": "off"
+  }
+}

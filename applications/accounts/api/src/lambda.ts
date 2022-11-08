@@ -1,5 +1,6 @@
 import { Handler } from 'aws-lambda';
 import getBalance from './handlers/get-balance';
+import { ITransformedBalance } from './shared/transform-balance';
 
 export interface IEvent {
   args: {
@@ -9,7 +10,7 @@ export interface IEvent {
   field: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent, ITransformedBalance> = async (event) => {
   const { args, field } = event;
 
   if (field === 'getBalance') {

@@ -3,6 +3,10 @@ import { Handler } from 'aws-lambda';
 import axios from 'axios';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
+interface IItem {
+  user: string;
+}
+
 const documentClient = new DocumentClient();
 
 const axiosClient = axios.create();
@@ -10,6 +14,9 @@ const axiosClient = axios.create();
 const interceptor = aws4Interceptor();
 
 axiosClient.interceptors.request.use(interceptor);
+
+const isUser = (item?: DocumentClient.AttributeMap): item is IItem =>
+  !!item?.user;
 
 export interface IEvent {
   id: string;
@@ -47,7 +54,7 @@ export const handler: Handler<IEvent> = async (event) => {
     })
     .promise();
 
-  if (Item?.user) {
+  if (isUser(Item)) {
     const { user } = Item;
     const path = `/${STAGE}/api/v1/users/${user}`;
     const url = ENDPOINT + path;

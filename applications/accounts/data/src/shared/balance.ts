@@ -1,7 +1,11 @@
+import { AWSError } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import { Decimal } from 'decimal.js';
 import aggregatedDay from './aggregated-day';
 import { ITransaction, TransactionStatus } from './transaction';
+
+export type TBalance = PromiseResult<DocumentClient.UpdateItemOutput, AWSError>;
 
 const vatUtility = (record: ITransaction) => {
   const value = record.category === 'VAT payment' ? record.amount : record.vat;
@@ -55,7 +59,7 @@ export const insert = (
   documentClient: DocumentClient,
   tableName: string,
   record: ITransaction,
-) =>
+): Promise<TBalance> =>
   documentClient
     .update({
       ...commonUpdate(tableName, record),
@@ -68,7 +72,7 @@ export const remove = (
   documentClient: DocumentClient,
   tableName: string,
   record: ITransaction,
-) =>
+): Promise<TBalance> =>
   documentClient
     .update({
       ...commonUpdate(tableName, record),
@@ -82,7 +86,7 @@ export const update = (
   tableName: string,
   oldRecord: ITransaction,
   newRecord: ITransaction,
-) => {
+): Promise<TBalance> => {
   if (
     oldRecord.status === TransactionStatus.Pending &&
     newRecord.status === TransactionStatus.Confirmed

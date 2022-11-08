@@ -1,14 +1,54 @@
-import { SQSRecord } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import {
+  SQSMessageAttribute,
+  SQSMessageAttributes,
+  SQSRecord,
+} from 'aws-lambda';
+import { AttributeValue, DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { join } from 'path';
-import publishNotification from '../shared/publish-notification';
+import publishNotification, {
+  TPublishNotification,
+} from '../shared/publish-notification';
+
+interface IData extends SQSMessageAttributes {
+  key: SQSMessageAttribute & {
+    stringValue: string;
+  };
+  metadata: SQSMessageAttribute & {
+    stringValue: string;
+  };
+  source: SQSMessageAttribute & {
+    stringValue: string;
+  };
+}
+
+interface IFilteredData extends DocumentClient.AttributeMap {
+  __typename: AttributeValue;
+  id: AttributeValue;
+}
+
+interface IMetadata {
+  id: string;
+  typename: string;
+}
+
+const hasStringValues = (
+  messageAttributes: SQSMessageAttributes,
+): messageAttributes is IData => {
+  const { key, metadata, source } = messageAttributes;
+
+  return !!key.stringValue && !!metadata.stringValue && !!source.stringValue;
+};
+
+const hasObjectAttributes = (
+  attribute: DocumentClient.AttributeMap,
+): attribute is IFilteredData => !!attribute.__typename && !!attribute.id;
 
 const updateAttachments = async (
   documentClient: DocumentClient,
   tableName: string,
   bucket: string,
   records: SQSRecord[],
-) => {
+): Promise<Promise<TPublishNotification>[]> => {
   const query = records
     .filter(({ messageAttributes }) => {
       const { key, metadata, source } = messageAttributes;
@@ -23,13 +63,13 @@ const updateAttachments = async (
 
       return true;
     })
-    .map(({ messageAttributes }) => {
+    .map(({ messageAttributes }) => messageAttributes)
+    .filter(hasStringValues)
+    .map((messageAttributes) => {
       const { key, metadata } = messageAttributes;
-      const [owner, id, name] = decodeURIComponent(
-        key.stringValue as string,
-      ).split('/');
+      const [owner, id, name] = decodeURIComponent(key.stringValue).split('/');
       const attachment = join(id, name);
-      const { typename } = JSON.parse(metadata.stringValue as string);
+      const { typename } = JSON.parse(metadata.stringValue) as IMetadata;
 
       return documentClient
         .query({
@@ -59,7 +99,8 @@ const updateAttachments = async (
   const filtered = results
     .filter(({ Items }) => Items && Items.length > 0)
     .map(({ Items }) => Items as DocumentClient.ItemList)
-    .reduce((acc, items) => acc.concat(items), []);
+    .reduce((acc, items) => acc.concat(items), [])
+    .filter(hasObjectAttributes);
 
   const update = filtered.map(({ __typename, id }) =>
     documentClient

@@ -104,7 +104,7 @@ describe('confirm-transactions', () => {
     });
   });
 
-  it('should create notification', async () => {
+  it('should create notification', () => {
     confirmTransactions(documentClient, tableName, records);
 
     expect(documentClient.update).toHaveBeenCalledWith({

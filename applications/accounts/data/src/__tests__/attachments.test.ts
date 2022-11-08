@@ -1,3 +1,4 @@
+import logger from '@motech-development/node-logger';
 import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { SQS } from 'aws-sdk';
@@ -290,20 +291,20 @@ describe('attachments', () => {
     });
 
     describe('when SQS throws an error', () => {
-      beforeEach(() => {
-        (SQS.prototype.sendMessageBatch as jest.Mock).mockReturnValue({
-          promise: jest
-            .fn()
-            .mockRejectedValue(new Error('Something has gone wrong')),
-        });
+      let error: Error;
 
-        jest.spyOn(console, 'error').mockReturnValue();
+      beforeEach(() => {
+        error = new Error('Something has gone wrong');
+
+        (SQS.prototype.sendMessageBatch as jest.Mock).mockReturnValue({
+          promise: jest.fn().mockRejectedValue(error),
+        });
       });
 
       it('should swallow the error', async () => {
         await handler(event, context, callback);
 
-        expect(console.error).toHaveBeenCalledWith('Something has gone wrong');
+        expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
       });
     });
   });

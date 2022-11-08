@@ -1,5 +1,7 @@
 import { DynamoDBRecord } from 'aws-lambda';
+import { AWSError } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import publishNotification from '../shared/publish-notification';
 import {
   confirm,
@@ -7,11 +9,16 @@ import {
 } from '../shared/scheduled-transactions';
 import { unmarshallOldRecords } from '../shared/unmarshall-records';
 
+export type TConfirmTransactions = PromiseResult<
+  DocumentClient.UpdateItemOutput,
+  AWSError
+>;
+
 const confirmTransactions = (
   documentClient: DocumentClient,
   tableName: string,
   records: DynamoDBRecord[],
-) => {
+): Promise<TConfirmTransactions>[] => {
   const unmarshalledRecords = unmarshallOldRecords<IScheduledTransaction>(
     records,
     'ScheduledTransaction',

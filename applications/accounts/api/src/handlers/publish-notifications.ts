@@ -1,8 +1,20 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+import logger from '@motech-development/node-logger';
 import { AWSAppSyncClient } from 'aws-appsync';
 import { DynamoDBStreamHandler, StreamRecord } from 'aws-lambda';
 import { config, DynamoDB } from 'aws-sdk';
 import 'cross-fetch/polyfill';
 import gql from 'graphql-tag';
+
+// TODO: Use generated types instead
+interface IRecord {
+  __typename: string;
+  createdAt: string;
+  id: string;
+  message: string;
+  owner: string;
+  payload: string;
+}
 
 export const mutation = gql`
   mutation NotificationBeacon($id: ID!, $input: NotificationInput!) {
@@ -49,7 +61,9 @@ export const handler: DynamoDBStreamHandler = async (event) => {
     .map(({ dynamodb }) => {
       const { NewImage } = dynamodb as StreamRecord;
       const { __typename, createdAt, id, message, owner, payload } =
-        DynamoDB.Converter.unmarshall(NewImage as DynamoDB.AttributeMap);
+        DynamoDB.Converter.unmarshall(
+          NewImage as DynamoDB.AttributeMap,
+        ) as IRecord;
 
       return {
         __typename,
@@ -81,7 +95,10 @@ export const handler: DynamoDBStreamHandler = async (event) => {
   try {
     await Promise.all(mutations);
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e.message);
+    if (e instanceof Error) {
+      logger.error(e.message);
+    } else {
+      logger.error('Unhandled exception', e);
+    }
   }
 };
