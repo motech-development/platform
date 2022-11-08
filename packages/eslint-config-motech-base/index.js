@@ -5,34 +5,44 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'airbnb-base',
-    'airbnb-typescript/base',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:jest/recommended',
     'prettier',
   ],
   overrides: [
     {
-      files: ['packages/*/rollup.config.js'],
-      rules: {
-        '@typescript-eslint/no-unsafe-call': 'off',
-        'import/no-extraneous-dependencies': 'off',
+      extends: [
+        'eslint:recommended',
+        'airbnb-base',
+        'airbnb-typescript/base',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/recommended-requiring-type-checking',
+        'plugin:jest/recommended',
+        'prettier',
+      ],
+      files: ['*.ts'],
+      overrides: [
+        {
+          files: ['**/__tests__/*.ts', '*.test.ts'],
+          rules: {
+            '@typescript-eslint/unbound-method': 'off',
+            'import/no-extraneous-dependencies': 'off',
+          },
+        },
+        {
+          files: ['setupTests.ts'],
+          rules: {
+            'import/no-extraneous-dependencies': 'off',
+          },
+        },
+      ],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: ['./tsconfig.eslint.json', './tsconfig.json'],
+        tsconfigRootDir: findWorkspaceRoot(),
       },
-    },
-    {
-      files: ['**/__tests__/*.ts'],
-      rules: {
-        '@typescript-eslint/unbound-method': 'off',
-        'import/no-extraneous-dependencies': 'off',
-      },
+      plugins: ['@typescript-eslint', 'jest'],
     },
   ],
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: ['./tsconfig.eslint.json', './tsconfig.json'],
-    tsconfigRootDir: findWorkspaceRoot(),
-  },
-  plugins: ['@typescript-eslint', 'jest'],
   root: true,
   rules: {
     'max-classes-per-file': ['error', 4],
