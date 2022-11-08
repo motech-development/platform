@@ -74,7 +74,7 @@ describe('start-scan', () => {
       process.env = env;
     });
 
-    it('it should start the correct number of executions', async () => {
+    it('should start the correct number of executions', async () => {
       await handler(event, context, callback);
 
       expect(StepFunctions.prototype.startExecution).toHaveBeenCalledTimes(2);

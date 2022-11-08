@@ -101,6 +101,7 @@ describe('get-accounts', () => {
 
   it('should return an error response if request fails', async () => {
     (httpClient.get as jest.Mock).mockRejectedValueOnce({
+      isAxiosError: true,
       response: {
         status: 404,
       },

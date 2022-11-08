@@ -1,4 +1,4 @@
-const env = (name: string) => {
+const env = (name: string): string => {
   const value = process.env[name];
 
   if (!value) {

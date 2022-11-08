@@ -32,7 +32,7 @@ describe('verify-domain', () => {
       await handler(event, context, callback);
 
       expect(send).toHaveBeenCalledWith(event, context, FAILED, {
-        reason: expect.any(String),
+        reason: 'SPF is a required field',
       });
     });
   });

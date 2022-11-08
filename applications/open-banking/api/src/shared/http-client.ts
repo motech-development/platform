@@ -1,6 +1,16 @@
 import { SSM } from 'aws-sdk';
 import axios from 'axios';
 
+export const getErrorStatus = (e: unknown): number => {
+  let status = 500;
+
+  if (axios.isAxiosError(e)) {
+    status = e.response?.status || 500;
+  }
+
+  return status;
+};
+
 const authHeader = async () => {
   const { YapilyCredentials } = process.env;
 

@@ -119,8 +119,14 @@ export const handler: CloudFormationCustomResourceHandler = async (
         });
     }
   } catch (e) {
-    await send(event, context, FAILED, {
-      reason: e.message,
-    });
+    if (e instanceof Error) {
+      await send(event, context, FAILED, {
+        reason: e.message,
+      });
+    } else {
+      await send(event, context, FAILED, {
+        reason: 'Unhandled exception',
+      });
+    }
   }
 };

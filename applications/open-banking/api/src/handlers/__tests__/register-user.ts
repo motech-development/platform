@@ -45,6 +45,7 @@ describe('register-user', () => {
 
   it('should throw if user cannot be registered', async () => {
     (httpClient.post as jest.Mock).mockRejectedValueOnce({
+      isAxiosError: true,
       response: {
         status: 409,
       },
