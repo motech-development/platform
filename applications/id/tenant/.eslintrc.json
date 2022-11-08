@@ -1,0 +1,13 @@
+{
+  "extends": "@motech-development/eslint-config-motech-base",
+  "globals": {
+    "auth0": "readonly",
+    "UnauthorizedError": "readonly"
+  },
+  "rules": {
+    "global-require": "off",
+    "import/no-unresolved": "off",
+    "no-console": "off",
+    "no-unused-vars": "off"
+  }
+}

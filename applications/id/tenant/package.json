@@ -5,23 +5,20 @@
   "scripts": {
     "deploy": "a0deploy import -i ./tenant.yaml",
     "import": "a0deploy export -c config.local.json -f yaml -o ./",
-    "lint": "eslint -c .eslintrc.yml './src/**/*.js'",
+    "lint": "eslint --cache './src/**/*.js'",
     "test": "jest --watch",
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "auth0": "2.44.0"
+    "auth0": "2.44.0",
+    "istanbul-lib-instrument": "5.1.0"
   },
   "devDependencies": {
-    "@types/jest": "27.5.2",
+    "@motech-development/eslint-config-motech-base": "workspace:*",
+    "@types/jest": "26.0.24",
     "auth0-deploy-cli": "7.15.1",
-    "eslint": "7.32.0",
-    "eslint-config-airbnb-base": "15.0.0",
-    "eslint-config-prettier": "8.5.0",
-    "eslint-plugin-import": "2.26.0",
-    "eslint-plugin-prettier": "4.2.1",
-    "istanbul-lib-instrument": "5.1.0",
-    "jest": "27.5.1",
+    "eslint": "7.28.0",
+    "jest": "26.6.0",
     "jest-date-mock": "1.0.8",
     "prettier": "2.3.0"
   },
@@ -36,6 +33,6 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "src/**/*.js": "eslint -c .eslintrc.yml --fix"
+    "src/**/*.js": "eslint --cache --fix"
   }
 }

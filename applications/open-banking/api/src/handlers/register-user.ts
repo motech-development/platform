@@ -1,5 +1,9 @@
 import { Handler } from 'aws-lambda';
-import httpClient from '../shared/http-client';
+import httpClient, { getErrorStatus } from '../shared/http-client';
+
+interface IEndpoint {
+  uuid: string;
+}
 
 export interface IEvent {
   companyId: string;
@@ -12,7 +16,7 @@ export const handler: Handler<IEvent> = async (event) => {
   const endpoint = '/users';
 
   try {
-    const { data } = await httpClient.post(endpoint, {
+    const { data } = await httpClient.post<IEndpoint>(endpoint, {
       applicationUserId,
     });
 
@@ -21,7 +25,7 @@ export const handler: Handler<IEvent> = async (event) => {
       user: data.uuid,
     };
   } catch (e) {
-    const { status } = e.response;
+    const status = getErrorStatus(e);
 
     throw new Error(`Unable to register (${status})`);
   }

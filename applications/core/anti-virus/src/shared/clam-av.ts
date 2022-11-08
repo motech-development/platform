@@ -5,7 +5,10 @@ import { promisify } from 'util';
 
 const execFileAsync = promisify(execFile);
 
-export const scanFile = async (file: string, outDir: string) => {
+export const scanFile = async (
+  file: string,
+  outDir: string,
+): Promise<boolean> => {
   const dataDir = resolve(outDir);
   const fileLocation = resolve(file);
 
@@ -28,7 +31,7 @@ export const scanFile = async (file: string, outDir: string) => {
   }
 };
 
-export const updateDefinitions = async (location: string) => {
+export const updateDefinitions = async (location: string): Promise<void> => {
   const dataDir = resolve(location);
   const cleanUp = join(dataDir, '*');
 

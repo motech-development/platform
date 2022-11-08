@@ -3,7 +3,7 @@ import {
   paramCheck,
   response,
 } from '@motech-development/api-gateway-handler';
-import httpClient from '../shared/http-client';
+import httpClient, { getErrorStatus } from '../shared/http-client';
 
 interface IAccounts {
   data: {
@@ -44,7 +44,7 @@ export const handler = apiGatewayHandler(async (event) => {
       200,
     );
   } catch (e) {
-    const { status } = e.response;
+    const status = getErrorStatus(e);
 
     return response(
       {

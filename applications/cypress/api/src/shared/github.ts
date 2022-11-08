@@ -5,7 +5,7 @@ import env from './env';
 
 const ssm = new SSM();
 
-const github = async () => {
+const github = async (): Promise<Octokit> => {
   const Name = env('GITHUB_APP_PRIVATE_KEY');
   const appId = env('CY_API_GITHUB_APP_ID');
   const clientId = env('CY_API_GITHUB_CLIENT_ID');

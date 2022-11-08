@@ -43,7 +43,7 @@ const schema = object({
 
 export const handler = apiGatewayHandler(async (event) => {
   const body = paramCheck(event.body, 'No body found', 400);
-  const eventPayload = JSON.parse(body);
+  const eventPayload = JSON.parse(body) as unknown;
 
   logger.debug('Event payload', eventPayload);
 
@@ -65,14 +65,14 @@ export const handler = apiGatewayHandler(async (event) => {
         logger.info('Creating commit status after RUN_FINISH event');
 
         const state = data.failures > 0 ? State.Failure : State.Success;
-        const test = (status: string) =>
+        const testStatus = (status: string) =>
           data[status] === 1 ? 'test' : 'tests';
         const payload = {
           context,
           description:
             data.failures > 0
-              ? `${data.failures} ${test('failures')} failed`
-              : `${data.passes} ${test('passes')} passed`,
+              ? `${data.failures} ${testStatus('failures')} failed`
+              : `${data.passes} ${testStatus('passes')} passed`,
           owner,
           repo,
           sha,

@@ -51,6 +51,7 @@ describe('get-callback', () => {
 
   it('should throw if unable to get callback', async () => {
     (httpClient.post as jest.Mock).mockRejectedValueOnce({
+      isAxiosError: true,
       response: {
         status: 403,
       },

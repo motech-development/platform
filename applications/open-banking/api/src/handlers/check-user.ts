@@ -1,6 +1,10 @@
 import { Handler } from 'aws-lambda';
 import httpClient from '../shared/http-client';
 
+interface IEndpoint {
+  uuid: string;
+}
+
 export interface IEvent {
   user: string;
 }
@@ -10,7 +14,7 @@ export const handler: Handler<IEvent> = async (event) => {
   const endpoint = `/users/${user}`;
 
   try {
-    const { data } = await httpClient.get(endpoint);
+    const { data } = await httpClient.get<IEndpoint>(endpoint);
 
     return {
       ...event,
