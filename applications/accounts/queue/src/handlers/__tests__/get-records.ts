@@ -70,7 +70,7 @@ describe('get-records', () => {
       let Items: string[];
 
       beforeEach(() => {
-        Items = [...new Array(50)].map((_, i) => `client-id-${i}`);
+        Items = [...new Array<unknown>(50)].map((_, i) => `client-id-${i}`);
 
         DocumentClient.prototype.query = jest.fn().mockReturnValueOnce({
           promise: jest.fn().mockResolvedValue({

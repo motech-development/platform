@@ -1,4 +1,4 @@
-function chunk<T>(arr: T[], size: number) {
+function chunk<T>(arr: T[], size: number): T[][] {
   return Array.from(
     {
       length: Math.ceil(arr.length / size),

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { join, resolve } = require('path');
 const slsw = require('serverless-webpack');

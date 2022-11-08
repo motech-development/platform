@@ -1,3 +1,4 @@
+import logger from '@motech-development/node-logger';
 import { AWSAppSyncClient } from 'aws-appsync';
 import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
@@ -116,8 +117,6 @@ describe('publish-notifications', () => {
 
       process.env.AWS_REGION = 'eu-west-2';
       process.env.ENDPOINT = 'https://my.api/graphql';
-
-      jest.spyOn(console, 'error').mockReturnValue();
     });
 
     afterEach(() => {
@@ -150,8 +149,7 @@ describe('publish-notifications', () => {
 
       await handler(event, context, callback);
 
-      // eslint-disable-next-line no-console
-      expect(console.error).toHaveBeenCalledWith('Something has gone wrong');
+      expect(logger.error).toHaveBeenCalledWith('Something has gone wrong');
     });
   });
 });

@@ -1,6 +1,13 @@
+import { AWSError } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import aggregatedDay from './aggregated-day';
 import { ITransaction, TransactionStatus } from './transaction';
+
+export type TScheduledTransaction = PromiseResult<
+  DocumentClient.UpdateItemOutput,
+  AWSError
+>;
 
 export interface IScheduledTransaction {
   __typename: string;
@@ -27,7 +34,7 @@ export const confirm = (
   documentClient: DocumentClient,
   tableName: string,
   record: IScheduledTransaction,
-) => {
+): Promise<TScheduledTransaction> => {
   const now = new Date();
   const { companyId, date, id, owner } = record;
 
@@ -60,7 +67,7 @@ export const insert = (
   documentClient: DocumentClient,
   tableName: string,
   record: ITransaction,
-) => {
+): Promise<TScheduledTransaction> => {
   const now = new Date();
   const { companyId, date, owner } = record;
   const startOfDay = aggregatedDay(date);
@@ -99,7 +106,7 @@ export const remove = (
   documentClient: DocumentClient,
   tableName: string,
   record: ITransaction,
-) => {
+): Promise<TScheduledTransaction> => {
   const { companyId, owner } = record;
   const now = new Date();
   const timestamp = Math.floor(now.getTime() / 1000);
@@ -131,7 +138,7 @@ export const update = (
   tableName: string,
   oldRecord: ITransaction,
   newRecord: ITransaction,
-) => {
+): Promise<TScheduledTransaction | void> => {
   if (newRecord.status === TransactionStatus.Confirmed) {
     return remove(documentClient, tableName, newRecord);
   }

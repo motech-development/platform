@@ -1,5 +1,6 @@
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import { json2csvAsync } from 'json-2-csv';
 import { handler, IEvent } from '../convert-to-csv';
 
 describe('convert-to-csv', () => {
@@ -54,6 +55,8 @@ describe('convert-to-csv', () => {
       ],
       owner: 'OWNER-ID',
     };
+
+    (json2csvAsync as jest.Mock).mockReturnValue('MOCKED-CSV-DATA');
   });
 
   it('should return the correct data when attachments are returned', async () => {
@@ -69,7 +72,7 @@ describe('convert-to-csv', () => {
         },
       ],
       companyId: 'COMPANY-ID',
-      csv: expect.any(String),
+      csv: 'MOCKED-CSV-DATA',
       owner: 'OWNER-ID',
     });
   });
@@ -80,8 +83,44 @@ describe('convert-to-csv', () => {
     await expect(handler(event, context, callback)).resolves.toEqual({
       attachments: [],
       companyId: 'COMPANY-ID',
-      csv: expect.any(String),
+      csv: 'MOCKED-CSV-DATA',
       owner: 'OWNER-ID',
     });
+  });
+
+  it('should generate CSV with the correct params', async () => {
+    await handler(event, context, callback);
+
+    expect(json2csvAsync).toHaveBeenCalledWith(
+      [
+        {
+          Category: 'Sales',
+          Date: '08/04/2021',
+          Description: 'For work',
+          In: '£1000.00',
+          Name: 'Client',
+          Out: null,
+        },
+        {
+          Category: 'Bills',
+          Date: '09/04/2021',
+          Description: 'Mobile',
+          In: null,
+          Name: 'EE',
+          Out: '£41.11',
+        },
+        {
+          Category: 'Bills',
+          Date: '10/04/2021',
+          Description: 'Domain',
+          In: null,
+          Name: 'GoDaddy',
+          Out: '£2.40',
+        },
+      ],
+      {
+        checkSchemaDifferences: true,
+      },
+    );
   });
 });

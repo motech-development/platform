@@ -1,6 +1,6 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { remove } from '../shared/balance';
+import { remove, TBalance } from '../shared/balance';
 import { ITransaction, TransactionStatus } from '../shared/transaction';
 import { unmarshallOldRecords } from '../shared/unmarshall-records';
 
@@ -8,7 +8,7 @@ const removeTransactions = (
   documentClient: DocumentClient,
   tableName: string,
   records: DynamoDBRecord[],
-) => {
+): Promise<TBalance>[] => {
   const unmarshalledRecords = unmarshallOldRecords<ITransaction>(
     records,
     'Transaction',

@@ -3,6 +3,7 @@ import {
   uploader,
 } from '@motech-development/s3-file-operations';
 import Archiver from 'archiver';
+import { ManagedUpload } from 'aws-sdk/clients/s3';
 import { PassThrough } from 'stream';
 
 interface IArchiveDestination {
@@ -22,7 +23,7 @@ const archive = async (
   report: string,
   destination: IArchiveDestination,
   origin: IArchiveOrigin,
-) => {
+): Promise<ManagedUpload.SendData> => {
   const archiver = Archiver('zip');
   const passThrough = new PassThrough();
   const upload = uploader(
@@ -52,7 +53,7 @@ const archive = async (
     });
   }
 
-  archiver.finalize();
+  await archiver.finalize();
 
   return upload.promise();
 };

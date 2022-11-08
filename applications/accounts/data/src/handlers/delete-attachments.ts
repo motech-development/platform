@@ -1,14 +1,20 @@
 import { DynamoDBRecord } from 'aws-lambda';
-import { SQS } from 'aws-sdk';
+import { AWSError, SQS } from 'aws-sdk';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import { join } from 'path';
 import { ITransaction } from '../shared/transaction';
 import { unmarshallOldRecords } from '../shared/unmarshall-records';
+
+export type TDeleteAttachments = PromiseResult<
+  SQS.SendMessageBatchResult,
+  AWSError
+> | void;
 
 const deleteAttachments = (
   sqs: SQS,
   queueUrl: string,
   records: DynamoDBRecord[],
-) => {
+): Promise<TDeleteAttachments> => {
   const unmarshalledRecords = unmarshallOldRecords<ITransaction>(
     records,
     'Transaction',

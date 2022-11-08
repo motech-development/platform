@@ -1,6 +1,13 @@
-import { DynamoDBStreamEvent } from 'aws-lambda';
+import { DynamoDBRecord, DynamoDBStreamEvent } from 'aws-lambda';
 
-const extractStream = (event: DynamoDBStreamEvent) => {
+interface IExtractStream {
+  TABLE: string;
+  inserts: DynamoDBRecord[];
+  removals: DynamoDBRecord[];
+  updates: DynamoDBRecord[];
+}
+
+const extractStream = (event: DynamoDBStreamEvent): IExtractStream => {
   const { TABLE } = process.env;
 
   if (!TABLE) {

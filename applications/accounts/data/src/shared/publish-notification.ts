@@ -1,13 +1,20 @@
+import { AWSError } from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
+
+export type TPublishNotification = PromiseResult<
+  DocumentClient.UpdateItemOutput,
+  AWSError
+>;
 
 const publishNotification = (
   documentClient: DocumentClient,
   tableName: string,
   owner: string,
   message: string,
-) => {
+): Promise<TPublishNotification> => {
   const now = DateTime.utc();
 
   return documentClient

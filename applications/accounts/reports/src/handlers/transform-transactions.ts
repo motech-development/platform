@@ -4,6 +4,7 @@ import { extname, join } from 'path';
 import { array, number, object, string } from 'yup';
 import slug from '../shared/slug';
 import Status from '../shared/status';
+import { IEvent as IOutput } from './convert-to-csv';
 
 const schema = object({
   companyId: string().required(),
@@ -60,7 +61,7 @@ export interface IEvent {
   owner: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent, IOutput> = async (event) => {
   const result = await schema.validate(event, {
     abortEarly: true,
     stripUnknown: true,

@@ -27,7 +27,7 @@ export const handler = apiGatewayHandler(async (event) => {
   const { UPLOAD_BUCKET } = process.env;
   const bucket = paramCheck(UPLOAD_BUCKET, 'No bucket set', 400);
   const body = paramCheck(event.body, 'No body found', 400);
-  const bodyParams = JSON.parse(body);
+  const bodyParams = JSON.parse(body) as unknown;
 
   try {
     const result = await schema.validate(bodyParams, {

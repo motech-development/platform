@@ -1,3 +1,4 @@
+import logger from '@motech-development/node-logger';
 import { DynamoDBStreamHandler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import insertScheduledTransactions from './handlers/insert-scheduled-transactions';
@@ -17,6 +18,6 @@ export const handler: DynamoDBStreamHandler = async (event) => {
       ...removeScheduledTransactions(documentClient, TABLE, removals),
     ]);
   } catch (e) {
-    console.error(e.message);
+    logger.error('An error occurred', e);
   }
 };

@@ -34,10 +34,22 @@ export interface ITransactionItem {
   vat: number;
 }
 
+export interface ITransformedBalance {
+  balance: number;
+  currency: string;
+  id: string;
+  transactions: IBalance[];
+  owner: string;
+  vat: {
+    owed: number;
+    paid: number;
+  };
+}
+
 const transformBalance = (
   balanceItem?: IBalanceItem,
   transactionItems?: ITransactionItem[],
-) => {
+): ITransformedBalance => {
   if (!balanceItem) {
     throw new Error('Balance not found');
   }

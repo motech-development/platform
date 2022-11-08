@@ -1,3 +1,4 @@
+import logger from '@motech-development/node-logger';
 import { DynamoDBStreamHandler } from 'aws-lambda';
 import { SQS } from 'aws-sdk';
 import deleteAttachments from './handlers/delete-attachments';
@@ -18,6 +19,6 @@ export const handler: DynamoDBStreamHandler = async (event) => {
   try {
     await deleteAttachments(sqs, ATTACHMENT_QUEUE, removals);
   } catch (e) {
-    console.error(e.message);
+    logger.error('An error occurred', e);
   }
 };

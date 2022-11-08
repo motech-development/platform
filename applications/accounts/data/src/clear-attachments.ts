@@ -1,3 +1,4 @@
+import logger from '@motech-development/node-logger';
 import { SQSHandler } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import updateAttachments from './handlers/update-attachments';
@@ -27,6 +28,6 @@ export const handler: SQSHandler = async (event) => {
 
     await Promise.all(updates);
   } catch (e) {
-    console.error(e.message);
+    logger.error('An error occurred', e);
   }
 };

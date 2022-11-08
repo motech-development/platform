@@ -1,6 +1,19 @@
 import { DynamoDBRecord, StreamRecord } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
 
+interface IUnmarshallAllRecords<T> {
+  NewImage: T;
+  OldImage: T;
+}
+
+interface IUnmarshallNewRecords<T> {
+  NewImage: T;
+}
+
+interface IUnmarshallOldRecords<T> {
+  OldImage: T;
+}
+
 interface IRecord {
   __typename: string;
 }
@@ -13,7 +26,7 @@ const getRecords = (records: DynamoDBRecord[]) =>
 export const unmarshallAllRecords = <T extends IRecord>(
   records: DynamoDBRecord[],
   typename: string,
-) =>
+): IUnmarshallAllRecords<T>[] =>
   getRecords(records)
     .filter((record) => {
       const { NewImage, OldImage } = record;
@@ -41,7 +54,7 @@ export const unmarshallAllRecords = <T extends IRecord>(
 export const unmarshallNewRecords = <T extends IRecord>(
   records: DynamoDBRecord[],
   typename: string,
-) =>
+): IUnmarshallNewRecords<T>[] =>
   getRecords(records)
     .filter((record) => {
       const { NewImage } = record;
@@ -66,7 +79,7 @@ export const unmarshallNewRecords = <T extends IRecord>(
 export const unmarshallOldRecords = <T extends IRecord>(
   records: DynamoDBRecord[],
   typename: string,
-) =>
+): IUnmarshallOldRecords<T>[] =>
   getRecords(records)
     .filter((record) => {
       const { OldImage } = record;
