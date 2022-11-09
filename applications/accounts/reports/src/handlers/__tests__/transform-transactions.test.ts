@@ -1,6 +1,7 @@
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import Status from '../../shared/status';
+import { IEvent as IOutput } from '../convert-to-csv';
 import { handler, IEvent } from '../transform-transactions';
 
 describe('transform-transactions', () => {
@@ -286,7 +287,11 @@ describe('transform-transactions', () => {
   });
 
   it('should export the correct number of attachments', async () => {
-    const { attachments } = await handler(event, context, callback);
+    const { attachments } = (await handler(
+      event,
+      context,
+      callback,
+    )) as IOutput;
 
     expect(attachments).toHaveLength(4);
   });
