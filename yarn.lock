@@ -5370,7 +5370,7 @@ __metadata:
     prettier: 2.3.0
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     typescript: 4.2.3
   languageName: unknown
   linkType: soft
@@ -5407,7 +5407,7 @@ __metadata:
     react-dom: 17.0.2
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     typescript: 4.2.3
     unfetch: 4.2.0
   languageName: unknown
@@ -5446,7 +5446,7 @@ __metadata:
     react-router-dom: 5.3.4
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     typescript: 4.2.3
   languageName: unknown
   linkType: soft
@@ -5478,7 +5478,7 @@ __metadata:
     react: 17.0.2
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     typescript: 4.2.3
   languageName: unknown
   linkType: soft
@@ -5533,7 +5533,7 @@ __metadata:
     react-router-dom: 5.3.4
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     styled-components: 5.3.6
     styled-reset: 4.3.4
     typescript: 4.2.3
@@ -5565,7 +5565,7 @@ __metadata:
     prettier: 2.3.0
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     typescript: 4.2.3
   languageName: unknown
   linkType: soft
@@ -5593,7 +5593,7 @@ __metadata:
     prettier: 2.3.0
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     typescript: 4.2.3
     winston: 3.8.2
     winston-transport: 4.5.0
@@ -5630,7 +5630,7 @@ __metadata:
     react-router-dom: 5.3.4
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     typescript: 4.2.3
   languageName: unknown
   linkType: soft
@@ -5659,7 +5659,7 @@ __metadata:
     prettier: 2.3.0
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     typescript: 4.2.3
   languageName: unknown
   linkType: soft
@@ -5690,7 +5690,7 @@ __metadata:
     prettier: 2.3.0
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     tomlify-j0.4: 3.0.0
     typescript: 4.2.3
   languageName: unknown
@@ -5720,7 +5720,7 @@ __metadata:
     prettier: 2.3.0
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     typescript: 4.2.3
     webpack: 4.46.0
   languageName: unknown
@@ -5751,7 +5751,7 @@ __metadata:
     prettier: 2.3.0
     rimraf: 3.0.2
     rollup: 2.79.1
-    rollup-plugin-exclude-dependencies-from-bundle: 1.1.22
+    rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     typescript: 4.2.3
     webpack: 4.46.0
   languageName: unknown
@@ -6644,7 +6644,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-babel@npm:^5.2.0, @rollup/plugin-babel@npm:^5.3.0":
+"@rollup/plugin-babel@npm:^5.2.0":
   version: 5.3.1
   resolution: "@rollup/plugin-babel@npm:5.3.1"
   dependencies:
@@ -6712,22 +6712,6 @@ __metadata:
   peerDependencies:
     rollup: ^1.20.0||^2.0.0
   checksum: 6f3b3ecf9a0596a5db4212984bdeb13bb7612693602407e9457ada075dea5a5f2e4e124c592352cf27066a88b194de9b9a95390149b52cf335d5b5e17b4e265b
-  languageName: node
-  linkType: hard
-
-"@rollup/plugin-node-resolve@npm:^13.0.6":
-  version: 13.3.0
-  resolution: "@rollup/plugin-node-resolve@npm:13.3.0"
-  dependencies:
-    "@rollup/pluginutils": ^3.1.0
-    "@types/resolve": 1.17.1
-    deepmerge: ^4.2.2
-    is-builtin-module: ^3.1.0
-    is-module: ^1.0.0
-    resolve: ^1.19.0
-  peerDependencies:
-    rollup: ^2.42.0
-  checksum: ec5418e6b3c23a9e30683056b3010e9d325316dcfae93fbc673ae64dad8e56a2ce761c15c48f5e2dcfe0c822fdc4a4905ee6346e3dcf90603ba2260afef5a5e6
   languageName: node
   linkType: hard
 
@@ -20642,7 +20626,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-builtin-module@npm:^3.1.0, is-builtin-module@npm:^3.2.0":
+"is-builtin-module@npm:^3.2.0":
   version: 3.2.0
   resolution: "is-builtin-module@npm:3.2.0"
   dependencies:
@@ -30303,15 +30287,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-plugin-exclude-dependencies-from-bundle@npm:1.1.22":
-  version: 1.1.22
-  resolution: "rollup-plugin-exclude-dependencies-from-bundle@npm:1.1.22"
-  dependencies:
-    "@rollup/plugin-babel": ^5.3.0
-    "@rollup/plugin-node-resolve": ^13.0.6
+"rollup-plugin-exclude-dependencies-from-bundle@npm:1.1.23":
+  version: 1.1.23
+  resolution: "rollup-plugin-exclude-dependencies-from-bundle@npm:1.1.23"
   peerDependencies:
     rollup: "*"
-  checksum: 05d8a8d65909c4e92abfccf2db5945e17d4addd416720e75dd18e4d32d285e8e822a903a9835a93e4032de7c5b50f7ff1d89780ac87355e43bc1b642ea9c437b
+  checksum: 1c6eb205d31a3f2d100b83d391d688bbb5a9b64e934c9aea9c90b30dcaefe0c148bbcb10557bcf22ebe1907b3a468b836611fb40a26df944b9ef35abf224be4c
   languageName: node
   linkType: hard
 
