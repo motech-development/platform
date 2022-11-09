@@ -4616,7 +4616,7 @@ __metadata:
     "@types/yup": 0.29.11
     "@typescript-eslint/eslint-plugin": 4.33.0
     "@typescript-eslint/parser": 4.33.0
-    auth0-js: 9.19.1
+    auth0-js: 9.19.2
     axios: 0.27.2
     body-scroll-lock: 3.1.5
     eslint: 7.28.0
@@ -11136,9 +11136,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0-js@npm:9.19.1":
-  version: 9.19.1
-  resolution: "auth0-js@npm:9.19.1"
+"auth0-js@npm:9.19.2":
+  version: 9.19.2
+  resolution: "auth0-js@npm:9.19.2"
   dependencies:
     base64-js: ^1.5.1
     idtoken-verifier: ^2.2.2
@@ -11147,7 +11147,7 @@ __metadata:
     superagent: ^5.3.1
     url-join: ^4.0.1
     winchan: ^0.2.2
-  checksum: ecc159a7fae8aa36cee615eaf650775bcc4a86e25095dab79ffdd818a1232c750e7be372772a7b73b018c0f4e0b9af3e8fbd928a4280fea34b7f11948ed27c3b
+  checksum: d216e072c17e85e9113aac690dacce2c8ca93285a4871ce577a3f6ac781d1420da04a6e378ea01425f65ed5d5385074967775d1599e33e40020cd91aa6f2bdee
   languageName: node
   linkType: hard
 
