@@ -50,7 +50,7 @@ __metadata:
     serverless-appsync-plugin: 1.12.1
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
-    serverless-webpack: "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+    serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
@@ -178,7 +178,7 @@ __metadata:
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
-    serverless-webpack: "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+    serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     uuid: 8.3.2
     webpack: 4.46.0
@@ -225,7 +225,7 @@ __metadata:
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
-    serverless-webpack: "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+    serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     uuid: 8.3.2
     webpack: 4.46.0
@@ -263,7 +263,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
-    serverless-webpack: "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+    serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
@@ -310,7 +310,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
-    serverless-webpack: "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+    serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     uuid: 8.3.2
     webpack: 4.46.0
@@ -350,7 +350,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-offline: 8.8.1
     serverless-prune-plugin: 2.0.1
-    serverless-webpack: "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+    serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     uuid: 8.3.2
     webpack: 4.46.0
@@ -390,7 +390,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
-    serverless-webpack: "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+    serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     uuid: 8.3.2
     webpack: 4.46.0
@@ -3919,7 +3919,7 @@ __metadata:
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
-    serverless-webpack: "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+    serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
@@ -3954,7 +3954,7 @@ __metadata:
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
-    serverless-webpack: "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+    serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
@@ -4187,7 +4187,7 @@ __metadata:
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
-    serverless-webpack: "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+    serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
@@ -6770,7 +6770,7 @@ __metadata:
     serverless-offline: 8.8.1
     serverless-prune-plugin: 2.0.1
     serverless-step-functions: 3.10.0
-    serverless-webpack: "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+    serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     webpack: 4.46.0
     webpack-node-externals: 3.0.0
@@ -31286,9 +31286,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-webpack@serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e":
+"serverless-webpack@serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe":
   version: 5.10.0
-  resolution: "serverless-webpack@https://github.com/serverless-heaven/serverless-webpack.git#commit=c593cfdf7aea186fbda13592a5b3564b8f28c52e"
+  resolution: "serverless-webpack@https://github.com/serverless-heaven/serverless-webpack.git#commit=d52701ce0d0e3e801a184662669f979dc5ea13fe"
   dependencies:
     archiver: ^5.3.1
     bluebird: ^3.7.2
@@ -31305,7 +31305,7 @@ __metadata:
   dependenciesMeta:
     ts-node:
       optional: true
-  checksum: 1811d333879976dc7bba247fbb44901314c89284727fdc1e14f61a65625a522e733be66a4e64a86b130ab097a139475544b314be9a0fc6258d0efd0e2d12de90
+  checksum: 6d3d9a9ef5077e1b9147fb88b8653af0fdfef5b9c97275a1e1f34d8e5bc844ec9dacd70eeeb7ba4df148b73976a4bd06fa102593813e5444bde71202de008af0
   languageName: node
   linkType: hard
 

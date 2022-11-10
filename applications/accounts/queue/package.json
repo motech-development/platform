@@ -37,7 +37,7 @@
     "serverless-deployment-bucket": "1.5.2",
     "serverless-prune-plugin": "2.0.1",
     "serverless-step-functions": "3.10.0",
-    "serverless-webpack": "serverless-heaven/serverless-webpack#c593cfdf7aea186fbda13592a5b3564b8f28c52e",
+    "serverless-webpack": "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe",
     "typescript": "4.2.3",
     "webpack": "4.46.0",
     "webpack-node-externals": "3.0.0"
