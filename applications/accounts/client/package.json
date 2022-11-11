@@ -84,7 +84,7 @@
     "cypress-log-to-output": "1.1.2",
     "cypress-pipe": "2.0.0",
     "cypress-wait-until": "1.7.2",
-    "eslint": "7.32.0",
+    "eslint": "8.27.0",
     "eslint-config-airbnb": "18.2.1",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-import": "2.26.0",
