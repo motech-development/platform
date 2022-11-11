@@ -262,7 +262,7 @@ __metadata:
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
-    serverless-step-functions: 3.10.0
+    serverless-step-functions: 3.11.0
     serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     webpack: 4.46.0
@@ -309,7 +309,7 @@ __metadata:
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
-    serverless-step-functions: 3.10.0
+    serverless-step-functions: 3.11.0
     serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     uuid: 8.3.2
@@ -389,7 +389,7 @@ __metadata:
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
-    serverless-step-functions: 3.10.0
+    serverless-step-functions: 3.11.0
     serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     uuid: 8.3.2
@@ -3918,7 +3918,7 @@ __metadata:
     serverless: 2.72.3
     serverless-deployment-bucket: 1.5.2
     serverless-prune-plugin: 2.0.1
-    serverless-step-functions: 3.10.0
+    serverless-step-functions: 3.11.0
     serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     webpack: 4.46.0
@@ -6780,7 +6780,7 @@ __metadata:
     serverless-dynamodb-local: 0.2.40
     serverless-offline: 8.8.1
     serverless-prune-plugin: 2.0.1
-    serverless-step-functions: 3.10.0
+    serverless-step-functions: 3.11.0
     serverless-webpack: "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe"
     typescript: 4.2.3
     webpack: 4.46.0
@@ -31282,9 +31282,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-step-functions@npm:3.10.0":
-  version: 3.10.0
-  resolution: "serverless-step-functions@npm:3.10.0"
+"serverless-step-functions@npm:3.11.0":
+  version: 3.11.0
+  resolution: "serverless-step-functions@npm:3.11.0"
   dependencies:
     "@hapi/joi": ^15.0.2
     "@serverless/utils": ^6.7.0
@@ -31294,7 +31294,7 @@ __metadata:
     lodash: ^4.17.11
   peerDependencies:
     serverless: ^2.32.0 || 3
-  checksum: f29a68ce959f6af0659e6a368a2a5a9fecd14a3c5ec7481739be2646ee55fa2b076476ac1b86279132f3bfc10b8111e070f73e4e81a4016b8128335ff0d9864b
+  checksum: 264294d06e083dc76377cb954af8eb8e0c834f755e090cc11f2dbba782737bf64fe7384b9af46f5ed0c994433c72cfe4488ec72b12125f507ad62270aa72441a
   languageName: node
   linkType: hard
 
