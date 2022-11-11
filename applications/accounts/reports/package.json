@@ -49,7 +49,7 @@
     "serverless": "2.72.3",
     "serverless-deployment-bucket": "1.5.2",
     "serverless-prune-plugin": "2.0.1",
-    "serverless-step-functions": "3.10.0",
+    "serverless-step-functions": "3.11.0",
     "serverless-webpack": "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe",
     "typescript": "4.2.3",
     "webpack": "4.46.0",
