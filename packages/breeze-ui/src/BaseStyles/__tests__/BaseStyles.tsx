@@ -3,6 +3,8 @@ import BaseStyles from '../BaseStyles';
 
 describe('BaseStyles', () => {
   it('should render', () => {
-    render(<BaseStyles />);
+    const { container } = render(<BaseStyles />);
+
+    expect(container).toBeInTheDocument();
   });
 });

@@ -1,7 +1,14 @@
 import qs from 'qs';
 
-const useQs = () => {
-  const parse = <T>(value: string) =>
+export interface IUseQs<T> {
+  parse: (value: string) => T;
+  stringify: (value: T) => string;
+}
+
+type TKeywords = boolean | null;
+
+const useQs = <T>(): IUseQs<T> => {
+  const parse = (value: string) =>
     qs.parse(value, {
       decoder: (str) => {
         if (/^(\d+|\d*\.\d+)$/.test(str)) {
@@ -15,14 +22,14 @@ const useQs = () => {
         };
 
         if (str in keywords) {
-          return keywords[str];
+          return keywords[str] as TKeywords;
         }
 
         return decodeURIComponent(str);
       },
     }) as unknown as T;
 
-  const stringify = <T>(value: T) => qs.stringify(value);
+  const stringify = (value: T) => qs.stringify(value);
 
   return {
     parse,

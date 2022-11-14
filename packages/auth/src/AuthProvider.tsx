@@ -33,7 +33,7 @@ export interface IAuthContext {
 
 export const AuthContext = createContext<IAuthContext | null>(null);
 
-export const useAuth = () => useContext(AuthContext)!;
+export const useAuth = (): IAuthContext => useContext(AuthContext)!;
 
 const defaultRedirectCallback = () => {
   window.history.replaceState({}, document.title, window.location.pathname);
@@ -66,24 +66,28 @@ const AuthProvider: FC<IAuthProviderProps> = ({
   const { pathname, search } = useLocation();
 
   useEffect(() => {
-    NODE_ENV !== 'test' &&
+    if (
+      NODE_ENV !== 'test' &&
       REACT_APP_AUTH0_AUDIENCE &&
       REACT_APP_AUTH0_CLIENT_ID &&
-      REACT_APP_AUTH0_DOMAIN &&
-      (async () => {
-        const config = {
-          audience: REACT_APP_AUTH0_AUDIENCE,
-          cacheLocation: 'localstorage' as const,
-          client_id: REACT_APP_AUTH0_CLIENT_ID,
-          domain: REACT_APP_AUTH0_DOMAIN,
-          redirect_uri: window.location.origin,
-          useRefreshTokens: true,
-        };
+      REACT_APP_AUTH0_DOMAIN
+    ) {
+      const config = {
+        audience: REACT_APP_AUTH0_AUDIENCE,
+        cacheLocation: 'localstorage' as const,
+        client_id: REACT_APP_AUTH0_CLIENT_ID,
+        domain: REACT_APP_AUTH0_DOMAIN,
+        redirect_uri: window.location.origin,
+        useRefreshTokens: true,
+      };
 
-        const client = await createAuth0Client(config);
-
-        setAuth0Client(client);
-      })();
+      createAuth0Client(config).then(
+        (client) => {
+          setAuth0Client(client);
+        },
+        () => {},
+      );
+    }
   }, [
     NODE_ENV,
     REACT_APP_AUTH0_AUDIENCE,
@@ -92,25 +96,31 @@ const AuthProvider: FC<IAuthProviderProps> = ({
   ]);
 
   useEffect(() => {
-    auth0Client &&
-      (async () => {
-        if (search.includes('code=')) {
-          const { appState } = await auth0Client.handleRedirectCallback();
+    if (auth0Client) {
+      if (search.includes('code=')) {
+        auth0Client.handleRedirectCallback().then(
+          ({ appState }) => {
+            onRedirectCallback(appState);
+          },
+          () => {},
+        );
+      }
 
-          onRedirectCallback(appState);
-        }
+      auth0Client.isAuthenticated().then(
+        async (authenticated) => {
+          if (authenticated) {
+            const retrievedUser = await auth0Client.getUser();
 
-        const authenticated = await auth0Client.isAuthenticated();
+            setIsAuthenticated(authenticated);
 
-        if (authenticated) {
-          const retrievedUser = await auth0Client.getUser();
+            setUser(retrievedUser);
+          }
 
-          setIsAuthenticated(authenticated);
-          setUser(retrievedUser);
-        }
-
-        setIsLoading(false);
-      })();
+          setIsLoading(false);
+        },
+        () => {},
+      );
+    }
   }, [auth0Client, onRedirectCallback, pathname, search]);
 
   if (NODE_ENV === 'test') {

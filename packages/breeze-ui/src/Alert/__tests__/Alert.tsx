@@ -139,6 +139,8 @@ describe('Alert', () => {
       jest.runOnlyPendingTimers();
     });
 
+    await Promise.resolve();
+
     expect(queryByRole('alert')).toBeNull();
   });
 

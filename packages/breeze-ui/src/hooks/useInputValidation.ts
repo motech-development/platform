@@ -5,7 +5,7 @@ const useInputValidation = <T>(
   name: string,
   errors: FormikErrors<T>,
   touched: FormikTouched<T>,
-) => {
+): boolean => {
   const [error, setError] = useState(false);
 
   useEffect(() => {

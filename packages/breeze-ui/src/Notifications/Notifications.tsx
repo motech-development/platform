@@ -78,7 +78,7 @@ function Notifications<T>({
   onClose,
   placement = 'bottom',
   row,
-}: INotificationsProps<T>) {
+}: INotificationsProps<T>): JSX.Element {
   const isFirstRun = useRef(true);
   const [visible, setVisible] = useState(false);
   const [referenceElement, setReferenceElement] =
@@ -114,9 +114,7 @@ function Notifications<T>({
     }
 
     if (!visible) {
-      (async () => {
-        await Promise.resolve(onClose());
-      })();
+      Promise.resolve().then(onClose, () => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);

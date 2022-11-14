@@ -64,6 +64,8 @@ describe('TextBox', () => {
 
         await act(async () => {
           fireEvent.focus(input);
+
+          await Promise.resolve();
         });
 
         await waitFor(() =>
@@ -268,6 +270,8 @@ describe('TextBox', () => {
 
         await act(async () => {
           fireEvent.focus(input);
+
+          await Promise.resolve();
         });
 
         await waitFor(() =>
@@ -371,6 +375,8 @@ describe('TextBox', () => {
 
         await act(async () => {
           fireEvent.focus(input);
+
+          await Promise.resolve();
         });
 
         await waitFor(() =>
@@ -579,6 +585,8 @@ describe('TextBox', () => {
 
         await act(async () => {
           fireEvent.focus(input);
+
+          await Promise.resolve();
         });
 
         await waitFor(() =>
