@@ -20,7 +20,7 @@ function DataTable<T>({
   noResults,
   row,
   theme = 'primary',
-}: IDataTableProps<T>) {
+}: IDataTableProps<T>): JSX.Element {
   if (items.length === 0) {
     return <>{noResults}</>;
   }

@@ -11,7 +11,7 @@ interface IInitialValues {
 describe('DatePicker', () => {
   let component: RenderResult;
   let initialValues: IInitialValues;
-  let validationSchema: Yup.ObjectSchema<{}>;
+  let validationSchema: Yup.ObjectSchema;
   let onSubmit: jest.Mock;
 
   beforeAll(() => {
@@ -76,12 +76,16 @@ describe('DatePicker', () => {
 
       await act(async () => {
         fireEvent.click(button);
+
+        await Promise.resolve();
       });
 
       await expect(findByRole('grid')).resolves.toBeInTheDocument();
 
       await act(async () => {
         fireEvent.click(button);
+
+        await Promise.resolve();
       });
 
       expect(queryByRole('grid')).not.toBeInTheDocument();
@@ -94,12 +98,16 @@ describe('DatePicker', () => {
 
       await act(async () => {
         fireEvent.click(button);
+
+        await Promise.resolve();
       });
 
       await expect(findByRole('grid')).resolves.toBeInTheDocument();
 
       await act(async () => {
         fireEvent.mouseDown(body);
+
+        await Promise.resolve();
       });
 
       expect(queryByRole('grid')).not.toBeInTheDocument();
@@ -188,12 +196,16 @@ describe('DatePicker', () => {
 
       await act(async () => {
         fireEvent.click(button);
+
+        await Promise.resolve();
       });
 
       await expect(findByRole('grid')).resolves.toBeInTheDocument();
 
       await act(async () => {
         fireEvent.click(button);
+
+        await Promise.resolve();
       });
 
       expect(queryByRole('grid')).not.toBeInTheDocument();
@@ -206,12 +218,16 @@ describe('DatePicker', () => {
 
       await act(async () => {
         fireEvent.click(button);
+
+        await Promise.resolve();
       });
 
       await expect(findByRole('grid')).resolves.toBeInTheDocument();
 
       await act(async () => {
         fireEvent.mouseDown(body);
+
+        await Promise.resolve();
       });
 
       expect(queryByRole('grid')).not.toBeInTheDocument();
@@ -276,6 +292,8 @@ describe('DatePicker', () => {
             )}
           </Formik>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -313,6 +331,8 @@ describe('DatePicker', () => {
             )}
           </Formik>,
         );
+
+        await Promise.resolve();
       });
     });
 

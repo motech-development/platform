@@ -21,7 +21,7 @@ const getBreakpoint = () => {
   return 'xs';
 };
 
-const useBreakpoint = () => {
+const useBreakpoint = (): string => {
   const [breakpoint, setBreakpoint] = useState('xs');
   const { width } = useWindowSize();
 

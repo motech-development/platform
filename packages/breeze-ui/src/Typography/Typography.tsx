@@ -1,6 +1,13 @@
 import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 
+const margins = {
+  lg: 1,
+  md: 0.5,
+  none: 0,
+  sm: 0.25,
+};
+
 type TypographyVariants = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
 
 interface IBaseTypographyProps {
@@ -78,13 +85,6 @@ const BaseTypography = styled.p<IBaseTypographyProps>`
     })()}
   `}
 `;
-
-const margins = {
-  lg: 1,
-  md: 0.5,
-  none: 0,
-  sm: 0.25,
-};
 
 interface ILineProps {
   $margin: keyof typeof margins;

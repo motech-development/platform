@@ -18,7 +18,8 @@ const margins = {
   Small: 'sm',
 };
 const message = () => text('Message', 'Hello world');
-const colour = () => select('Colour', colours, 'primary') as AlertTheme;
+const colour = (): AlertTheme =>
+  select('Colour', colours, 'primary') as AlertTheme;
 const spacing = () => select('Spacing', margins, 'md') as 'sm' | 'md' | 'lg';
 const dismissable = () => boolean('Dismissable', false);
 

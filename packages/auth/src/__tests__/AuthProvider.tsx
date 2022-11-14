@@ -21,11 +21,11 @@ const TestComponent: FC = () => {
               <button
                 type="button"
                 data-testid="log-out"
-                onClick={() =>
+                onClick={() => {
                   logout({
                     returnTo: 'somewhere',
-                  })
-                }
+                  });
+                }}
               >
                 Log out
               </button>
@@ -233,18 +233,20 @@ describe('AuthProvider', () => {
                   <button
                     type="button"
                     data-testid="no-opts"
-                    onClick={() => ctx!.logout()}
+                    onClick={() => {
+                      ctx?.logout();
+                    }}
                   >
                     No opts
                   </button>
                   <button
                     type="button"
                     data-testid="with-opts"
-                    onClick={() =>
-                      ctx!.logout({
+                    onClick={() => {
+                      ctx?.logout({
                         returnTo: 'test',
-                      })
-                    }
+                      });
+                    }}
                   >
                     With opts
                   </button>
@@ -280,18 +282,20 @@ describe('AuthProvider', () => {
                   <button
                     type="button"
                     data-testid="no-opts"
-                    onClick={() => ctx!.loginWithPopup()}
+                    onClick={() => {
+                      ctx?.loginWithPopup();
+                    }}
                   >
                     No opts
                   </button>
                   <button
                     type="button"
                     data-testid="with-opts"
-                    onClick={() =>
-                      ctx!.loginWithPopup({
+                    onClick={() => {
+                      ctx?.loginWithPopup({
                         audience: 'test',
-                      })
-                    }
+                      });
+                    }}
                   >
                     With opts
                   </button>
@@ -329,18 +333,20 @@ describe('AuthProvider', () => {
                   <button
                     type="button"
                     data-testid="no-opts"
-                    onClick={() => ctx!.loginWithRedirect()}
+                    onClick={() => {
+                      ctx?.loginWithRedirect();
+                    }}
                   >
                     No opts
                   </button>
                   <button
                     type="button"
                     data-testid="with-opts"
-                    onClick={() =>
-                      ctx!.loginWithRedirect({
+                    onClick={() => {
+                      ctx?.loginWithRedirect({
                         audience: 'test',
-                      })
-                    }
+                      });
+                    }}
                   >
                     With opts
                   </button>
@@ -378,18 +384,20 @@ describe('AuthProvider', () => {
                   <button
                     type="button"
                     data-testid="no-opts"
-                    onClick={() => ctx!.buildAuthorizeUrl()}
+                    onClick={() => {
+                      ctx?.buildAuthorizeUrl();
+                    }}
                   >
                     No opts
                   </button>
                   <button
                     type="button"
                     data-testid="with-opts"
-                    onClick={() =>
-                      ctx!.buildAuthorizeUrl({
+                    onClick={() => {
+                      ctx?.buildAuthorizeUrl({
                         audience: 'test',
-                      })
-                    }
+                      });
+                    }}
                   >
                     With opts
                   </button>
@@ -427,18 +435,20 @@ describe('AuthProvider', () => {
                   <button
                     type="button"
                     data-testid="no-opts"
-                    onClick={() => ctx!.getIdTokenClaims()}
+                    onClick={() => {
+                      ctx?.getIdTokenClaims();
+                    }}
                   >
                     No opts
                   </button>
                   <button
                     type="button"
                     data-testid="with-opts"
-                    onClick={() =>
-                      ctx!.getIdTokenClaims({
+                    onClick={() => {
+                      ctx?.getIdTokenClaims({
                         audience: 'test',
-                      })
-                    }
+                      });
+                    }}
                   >
                     With opts
                   </button>
@@ -476,18 +486,20 @@ describe('AuthProvider', () => {
                   <button
                     type="button"
                     data-testid="no-opts"
-                    onClick={() => ctx!.getTokenSilently()}
+                    onClick={() => {
+                      ctx?.getTokenSilently();
+                    }}
                   >
                     No opts
                   </button>
                   <button
                     type="button"
                     data-testid="with-opts"
-                    onClick={() =>
-                      ctx!.getTokenSilently({
+                    onClick={() => {
+                      ctx?.getTokenSilently({
                         audience: 'test',
-                      })
-                    }
+                      });
+                    }}
                   >
                     With opts
                   </button>

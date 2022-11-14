@@ -3,10 +3,15 @@ import { FC } from 'react';
 
 const defaultFormat = 'dd/MM/yyyy';
 
+interface IFormatDateTime {
+  ISOString: string;
+  formatted: string;
+}
+
 export const formatDateTime = (
   value: string | number,
   format = defaultFormat,
-) => {
+): IFormatDateTime => {
   const date =
     typeof value === 'string' ? Luxon.fromISO(value) : Luxon.fromSeconds(value);
 

@@ -41,7 +41,7 @@ interface IToastContext {
 
 export const ToastContext = createContext<IToastContext | null>(null);
 
-export const useToast = () => useContext(ToastContext)!;
+export const useToast = (): IToastContext => useContext(ToastContext)!;
 
 const generateId = () => {
   const array = new Uint32Array(2);

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import {
   IHeaders,
   IOptions,
+  IResults,
   ISet,
   Method,
   SetLoading,
@@ -116,23 +117,24 @@ const useCallbacks = <TData, TError>(
 export const useGet = <TData = unknown, TError = unknown>(
   url: string,
   options?: IOptions<TData, TError>,
-) => {
+): IResults<TData, TError> => {
   const [data, setData] = useState<TData>();
   const [error, setError] = useState<AxiosError<TError>>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      await executeGet(
-        url,
-        {
-          setData,
-          setError,
-          setLoading,
-        },
-        options,
-      );
-    })();
+    executeGet(
+      url,
+      {
+        setData,
+        setError,
+        setLoading,
+      },
+      options,
+    ).then(
+      () => {},
+      () => {},
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -216,8 +218,10 @@ const useFormAction = <TData, TBody, TError>(
 
 export const usePost = <TData = unknown, TBody = unknown, TError = unknown>(
   options?: IOptions<TData, TError>,
-) => useFormAction<TData, TBody, TError>('POST', options);
+): UseWithInput<TData, TBody, TError> =>
+  useFormAction<TData, TBody, TError>('POST', options);
 
 export const usePut = <TData = unknown, TBody = unknown, TError = unknown>(
   options?: IOptions<TData, TError>,
-) => useFormAction<TData, TBody, TError>('PUT', options);
+): UseWithInput<TData, TBody, TError> =>
+  useFormAction<TData, TBody, TError>('PUT', options);

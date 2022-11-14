@@ -40,7 +40,9 @@ describe('Typeahead', () => {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(value) => onSubmit(value)}
+          onSubmit={(value) => {
+            onSubmit(value);
+          }}
         >
           {() => (
             <Form>
@@ -58,6 +60,8 @@ describe('Typeahead', () => {
           )}
         </Formik>,
       );
+
+      await Promise.resolve();
     });
   });
 

@@ -18,13 +18,14 @@ const ProtectedRoute: FC<IProtectedRouteProps> = ({
       return;
     }
 
-    (async () => {
-      await loginWithRedirect({
-        appState: {
-          targetUrl: window.location.pathname,
-        },
-      });
-    })();
+    loginWithRedirect({
+      appState: {
+        targetUrl: window.location.pathname,
+      },
+    })?.then(
+      () => {},
+      () => {},
+    );
   }, [isAuthenticated, isLoading, loginWithRedirect]);
 
   return isAuthenticated ? (

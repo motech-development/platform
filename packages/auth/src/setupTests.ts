@@ -5,7 +5,7 @@
 import '@testing-library/jest-dom';
 
 Object.defineProperty(window, 'matchMedia', {
-  value: jest.fn().mockImplementation((query) => ({
+  value: jest.fn().mockImplementation((query: unknown) => ({
     addEventListener: jest.fn(),
     addListener: jest.fn(),
     dispatchEvent: jest.fn(),

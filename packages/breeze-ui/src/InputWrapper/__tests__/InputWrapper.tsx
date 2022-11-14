@@ -39,6 +39,8 @@ describe('InputWrapper', () => {
             <input type="test" data-testid="input" />
           </InputWrapper>,
         );
+
+        await Promise.resolve();
       });
     });
 

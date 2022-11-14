@@ -135,6 +135,8 @@ describe('Notifications', () => {
 
     fireEvent.click(button);
 
+    await Promise.resolve();
+
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
@@ -159,6 +161,8 @@ describe('Notifications', () => {
     fireEvent.click(button);
 
     fireEvent.mouseDown(body);
+
+    await Promise.resolve();
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });
