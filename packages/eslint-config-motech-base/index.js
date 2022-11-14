@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const findWorkspaceRoot = require('find-yarn-workspace-root');
 
 module.exports = {
@@ -43,6 +42,7 @@ module.exports = {
       plugins: ['@typescript-eslint', 'jest'],
     },
   ],
+  plugins: ['jest'],
   root: true,
   rules: {
     'max-classes-per-file': ['error', 4],
