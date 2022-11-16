@@ -47,7 +47,7 @@
     "jest-date-mock": "1.0.8",
     "prettier": "2.3.0",
     "serverless": "3.24.1",
-    "serverless-deployment-bucket": "1.5.2",
+    "serverless-deployment-bucket": "1.6.0",
     "serverless-prune-plugin": "2.0.1",
     "serverless-step-functions": "3.11.0",
     "serverless-webpack": "serverless-heaven/serverless-webpack#d52701ce0d0e3e801a184662669f979dc5ea13fe",
