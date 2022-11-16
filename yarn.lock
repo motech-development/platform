@@ -88,7 +88,7 @@ __metadata:
     "@typescript-eslint/parser": 4.33.0
     axe-core: 4.5.1
     axios: 0.27.2
-    cy2: 3.1.7
+    cy2: 3.2.0
     cypress: 10.11.0
     cypress-axe: 1.0.0
     cypress-file-upload: 5.0.8
@@ -15498,9 +15498,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cy2@npm:3.1.7":
-  version: 3.1.7
-  resolution: "cy2@npm:3.1.7"
+"cy2@npm:3.2.0":
+  version: 3.2.0
+  resolution: "cy2@npm:3.2.0"
   dependencies:
     acorn: ^8.8.0
     debug: ^4.3.2
@@ -15511,7 +15511,7 @@ __metadata:
     slash: 3.0.0
   bin:
     cy2: bin/cy2
-  checksum: 0fc54c29855079d601944473b9b45adef2f30de7e81fd454c7828ad51c5824b44f2235991cce58536cd35dabf824a583cc6ff44ab13bbb83adc9140816553e79
+  checksum: 65c43bc260f1d7436a2d72718418aedbab2996f82f459613f4c68e080790d1ec825e043281fca61765fbb57bc7e432c91958ae83c870a6db1a6abaa70e179e35
   languageName: node
   linkType: hard
 
