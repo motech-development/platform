@@ -6,7 +6,7 @@ provider:
   name: aws
   lambdaHashingVersion: 20201221
   region: ${opt:region, 'eu-west-1'}
-  runtime: nodejs14.x
+  runtime: nodejs16.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-storage
   deploymentBucket:
