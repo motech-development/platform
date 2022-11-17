@@ -24,7 +24,7 @@
     "@babel/preset-typescript": "7.18.6",
     "@motech-development/serverless-outputs-env": "workspace:packages/serverless-outputs-env",
     "@types/aws-lambda": "8.10.108",
-    "@types/jest": "29.2.2",
+    "@types/jest": "27.5.1",
     "@types/luxon": "2.0.9",
     "@typescript-eslint/eslint-plugin": "4.33.0",
     "@typescript-eslint/parser": "4.33.0",
