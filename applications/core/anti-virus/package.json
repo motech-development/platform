@@ -23,7 +23,7 @@
     "@motech-development/webpack-conditional-plugin": "workspace:packages/webpack-conditional-plugin",
     "@motech-development/webpack-permissions-plugin": "workspace:packages/webpack-permissions-plugin",
     "@types/aws-lambda": "8.10.108",
-    "@types/jest": "27.5.1",
+    "@types/jest": "27.5.2",
     "@typescript-eslint/eslint-plugin": "4.33.0",
     "@typescript-eslint/parser": "4.33.0",
     "aws-lambda-mock-context": "3.2.1",
