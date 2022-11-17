@@ -20,9 +20,6 @@ module.exports = {
   module: {
     rules: [
       {
-        loader: 'cache-loader',
-      },
-      {
         test: /\.ts(x?)$/,
         use: [
           {

@@ -22,9 +22,6 @@ module.exports = {
         test: /\.ts(x?)$/,
         use: [
           {
-            loader: 'cache-loader',
-          },
-          {
             loader: 'babel-loader',
           },
         ],
