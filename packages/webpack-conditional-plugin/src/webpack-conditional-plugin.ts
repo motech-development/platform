@@ -1,13 +1,13 @@
-import { Compiler, Plugin } from 'webpack';
+import { Compiler, WebpackPluginInstance } from 'webpack';
 
 type Condition = (compiler: Compiler) => boolean;
 
 class WebpackConditionalPlugin {
   private condition: Condition;
 
-  private plugin: Plugin;
+  private plugin: WebpackPluginInstance;
 
-  constructor(condition: Condition, plugin: Plugin) {
+  constructor(condition: Condition, plugin: WebpackPluginInstance) {
     this.condition = condition;
     this.plugin = plugin;
   }
