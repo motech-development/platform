@@ -33,7 +33,7 @@
     "@rollup/plugin-commonjs": "23.0.2",
     "@rollup/plugin-node-resolve": "15.0.1",
     "@testing-library/react-hooks": "8.0.1",
-    "@types/jest": "29.2.2",
+    "@types/jest": "27.5.1",
     "@types/qs": "6.9.7",
     "@types/react": "17.0.52",
     "@types/react-router-dom": "5.3.3",
