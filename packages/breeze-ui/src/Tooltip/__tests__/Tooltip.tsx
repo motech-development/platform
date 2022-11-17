@@ -57,6 +57,8 @@ describe('Tooltip', () => {
 
       jest.useFakeTimers();
 
+      jest.spyOn(global, 'setTimeout');
+
       fireEvent.blur(button);
 
       expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000);
