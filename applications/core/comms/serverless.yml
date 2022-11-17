@@ -1,10 +1,7 @@
 service: platform-comms
 
-variablesResolutionMode: 20210326
-
 provider:
   name: aws
-  lambdaHashingVersion: 20201221
   region: ${opt:region, 'us-east-1'}
   runtime: nodejs16.x
   stage: ${opt:stage, 'local'}
