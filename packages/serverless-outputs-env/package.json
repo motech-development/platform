@@ -35,7 +35,7 @@
     "@rollup/plugin-commonjs": "23.0.2",
     "@rollup/plugin-node-resolve": "15.0.1",
     "@types/assert": "1.5.6",
-    "@types/jest": "27.5.1",
+    "@types/jest": "27.5.2",
     "@types/serverless": "3.12.8",
     "@typescript-eslint/eslint-plugin": "4.33.0",
     "@typescript-eslint/parser": "4.33.0",
