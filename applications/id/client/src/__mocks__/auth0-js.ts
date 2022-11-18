@@ -1,5 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const auth0 = jest.genMockFromModule<any>('auth0-js');
+/* eslint-disable */
+const auth0 = jest.createMockFromModule<any>('auth0-js');
 
 auth0.WebAuth.prototype.redirect = {
   signupAndLogin: jest.fn(),

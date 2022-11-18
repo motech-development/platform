@@ -114,7 +114,7 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
         };
 
         await put(uploadData.url, file, headers);
-      })();
+      })().catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData, uploadData]);

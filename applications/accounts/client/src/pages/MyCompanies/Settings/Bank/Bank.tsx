@@ -49,7 +49,7 @@ const Bank: FC = () => {
   >(CREATE_BANK_CONNECTION);
   const { data: subscription, loading: subscriptionLoading } =
     useSubscription<IOnBankCallbackOutput>(ON_BANK_CALLBACK);
-  const connect = async (bank: string, user: string) => {
+  const connect = async (bank: string, user?: string) => {
     setSelected(bank);
 
     await mutation({
@@ -102,9 +102,11 @@ const Bank: FC = () => {
                         <Button
                           loading={selected === id}
                           disabled={selected !== ''}
-                          onClick={() =>
-                            connect(id, data.getBankSettings!.user)
-                          }
+                          onClick={() => {
+                            connect(id, data.getBankSettings?.user).catch(
+                              () => {},
+                            );
+                          }}
                           size="sm"
                         >
                           {t('select-bank.connect')}

@@ -11,12 +11,13 @@ import { useTranslation } from 'react-i18next';
 const LogIn: FC = () => {
   const { loginWithRedirect } = useAuth();
   const { t } = useTranslation('log-in');
-  const login = () =>
+  const login = () => {
     loginWithRedirect({
       appState: {
         targetUrl: '/my-companies',
       },
-    });
+    }).catch(() => {});
+  };
 
   return (
     <Window>

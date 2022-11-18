@@ -17,7 +17,7 @@ export type FormSchema = typeof formSchema;
 export interface IResetPasswordFormProps {
   loading: boolean;
   submit: string;
-  onSubmit(value: FormSchema): void;
+  onSubmit: (value: FormSchema) => Promise<void>;
 }
 
 const ResetPasswordForm: FC<IResetPasswordFormProps> = ({

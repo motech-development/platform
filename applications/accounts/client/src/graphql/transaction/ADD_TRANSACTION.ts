@@ -113,11 +113,16 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
             `,
           });
 
-          return [...refs, newRef].sort((a, b) =>
-            readField<string>('date', a)!.localeCompare(
-              readField<string>('date', b)!,
-            ),
-          );
+          return [...refs, newRef].sort((a, b) => {
+            const readA = readField<string>('date', a);
+            const readB = readField<string>('date', b);
+
+            if (readA && readB) {
+              return readA.localeCompare(readB);
+            }
+
+            return 0;
+          });
         },
       },
       id: cache.identify({

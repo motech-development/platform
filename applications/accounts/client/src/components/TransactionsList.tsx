@@ -32,7 +32,7 @@ export interface ITransactionsListProps {
       name: string;
     }[];
   }[];
-  onDelete(id: string): void;
+  onDelete: (id: string) => void;
 }
 
 const TransactionsList: FC<ITransactionsListProps> = ({
@@ -137,7 +137,7 @@ const TransactionsList: FC<ITransactionsListProps> = ({
         display={!!transaction.id}
         loading={loading}
         name={transaction.name}
-        onDelete={async () => onDelete(transaction.id)}
+        onDelete={() => onDelete(transaction.id)}
         onDismiss={onDismiss}
       />
     </>

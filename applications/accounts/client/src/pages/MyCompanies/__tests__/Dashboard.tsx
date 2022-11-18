@@ -54,6 +54,8 @@ describe('Dashboard', () => {
           </MockedProvider>
         </TestProvider>,
       );
+
+      await Promise.resolve();
     });
   });
 

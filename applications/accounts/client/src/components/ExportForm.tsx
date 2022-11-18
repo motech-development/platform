@@ -60,7 +60,7 @@ const ExportForm: FC<IExportFormProps> = ({
     })
     .required();
   const now = DateTime.now();
-  const yearOptions = [...new Array(5)].map((_, i) => {
+  const yearOptions = [...new Array<unknown>(5)].map((_, i) => {
     const refYear = now.minus({
       year: i,
     });

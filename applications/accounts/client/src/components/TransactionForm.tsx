@@ -241,7 +241,7 @@ const TransactionForm: FC<ITransactionForm> = ({
   ) => {
     const { setFieldValue, values } = form;
     const value = parseFloat(event.target.value.replace(currency, ''));
-    const i = getIn(values, 'category');
+    const i = getIn(values, 'category') as number;
     const vatRate = parseFloat(categories[i].value);
     const rate = new Decimal(vatRate).dividedBy(100).plus(1);
     const calculated = new Decimal(value)
@@ -275,7 +275,9 @@ const TransactionForm: FC<ITransactionForm> = ({
     };
   const onPreSubmit = ({ transaction, ...value }: IFormValues) => {
     const isPurchase = transaction === 'Purchase';
-    const category = isPurchase ? categories[value.category].name : transaction;
+    const category = isPurchase
+      ? categories[parseInt(value.category, 2)].name
+      : transaction;
 
     let amount: number;
 

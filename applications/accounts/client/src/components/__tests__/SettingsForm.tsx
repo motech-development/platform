@@ -5,7 +5,7 @@ import SettingsForm, { FormSchema } from '../SettingsForm';
 describe('SettingsForm', () => {
   let initialValues: FormSchema;
   let onDisconnect: jest.Mock;
-  let onSave: jest.Mock;
+  let onSave: jest.Mock<unknown>;
   let component: RenderResult;
 
   beforeEach(() => {

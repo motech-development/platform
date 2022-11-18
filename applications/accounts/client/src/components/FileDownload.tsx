@@ -8,9 +8,7 @@ export interface IFileDownload {
 const FileDownload: FC<IFileDownload> = ({ loading, onDownload }) => {
   useEffect(() => {
     if (!loading) {
-      (async () => {
-        await onDownload();
-      })();
+      onDownload().catch(() => {});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);

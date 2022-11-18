@@ -1,5 +1,9 @@
 import { AuthContext, AuthProvider } from '@motech-development/auth';
-import { ToastContext, ToastProvider } from '@motech-development/breeze-ui';
+import {
+  IAddToast,
+  ToastContext,
+  ToastProvider,
+} from '@motech-development/breeze-ui';
 import i18n from 'i18next';
 import { FC, ReactElement } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
@@ -18,7 +22,7 @@ export const loginWithRedirect = jest.fn();
 
 export const logout = jest.fn();
 
-export const add = jest.fn(({ onDismiss }) => {
+export const add = jest.fn<void, IAddToast[]>(({ onDismiss }) => {
   if (onDismiss) {
     onDismiss();
   }
@@ -50,16 +54,19 @@ const TestProvider: FC<ITestProviderProps> = ({
 }) => {
   const testI18n = i18n;
 
-  testI18n.use(initReactI18next).init({
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false,
-    },
-    lng: 'en',
-    resources: {
-      en: {},
-    },
-  });
+  testI18n
+    .use(initReactI18next)
+    .init({
+      fallbackLng: 'en',
+      interpolation: {
+        escapeValue: false,
+      },
+      lng: 'en',
+      resources: {
+        en: {},
+      },
+    })
+    .catch(() => {});
 
   return (
     <Router history={history}>

@@ -84,7 +84,7 @@ const SelectAccount: FC = () => {
           },
         },
       });
-    })();
+    })().catch(() => {});
   };
 
   if (bankError) {

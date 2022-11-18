@@ -39,6 +39,8 @@ describe('WarningText', () => {
             Hello world
           </WarningText>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -69,6 +71,8 @@ describe('WarningText', () => {
             Hello world
           </WarningText>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -77,6 +81,8 @@ describe('WarningText', () => {
       const icon = container.querySelector(
         'svg[data-icon="exclamation-triangle"]',
       );
+
+      await Promise.resolve();
 
       expect(icon).toBeInTheDocument();
     });

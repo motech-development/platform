@@ -280,6 +280,8 @@ describe('PendingTransactions', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -362,6 +364,8 @@ describe('PendingTransactions', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 

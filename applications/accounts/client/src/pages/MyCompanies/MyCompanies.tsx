@@ -23,7 +23,7 @@ const MyCompanies: FC = () => {
     IGetCompaniesInput
   >(GET_COMPANIES, {
     variables: {
-      id: user!.sub,
+      id: user?.sub as string,
     },
   });
 

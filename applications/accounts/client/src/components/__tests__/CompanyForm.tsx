@@ -4,7 +4,7 @@ import CompanyForm, { FormSchema } from '../CompanyForm';
 
 describe('CompanyForm', () => {
   let initialValues: FormSchema;
-  let onSave: jest.Mock;
+  let onSave: jest.Mock<unknown>;
 
   beforeEach(() => {
     initialValues = {

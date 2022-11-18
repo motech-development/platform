@@ -1,5 +1,5 @@
 export { default as Alert } from './Alert/Alert';
-export type { IAlertProps } from './Alert/Alert';
+export type { AlertTheme, IAlertProps } from './Alert/Alert';
 
 export { default as AppBar } from './AppBar/AppBar';
 export type { IAppBarProps } from './AppBar/AppBar';
@@ -112,6 +112,7 @@ export {
   ToastContext,
   useToast,
 } from './ToastProvider/ToastProvider';
+export type { IAddToast } from './ToastProvider/ToastProvider';
 
 export { default as Tooltip } from './Tooltip/Tooltip';
 

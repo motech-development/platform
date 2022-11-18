@@ -14,7 +14,7 @@ describe('UserBar', () => {
     picture = 'https://avatar.photo';
 
     Object.defineProperty(window, 'matchMedia', {
-      value: jest.fn().mockImplementation((query) => ({
+      value: jest.fn<unknown, unknown[]>().mockImplementation((query) => ({
         addEventListener: jest.fn(),
         addListener: jest.fn(),
         dispatchEvent: jest.fn(),
@@ -36,6 +36,8 @@ describe('UserBar', () => {
             <UserBar name={name} notifications={<div />} logOut={logOut} />
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -68,6 +70,8 @@ describe('UserBar', () => {
             />
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 

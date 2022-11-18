@@ -5,7 +5,7 @@ describe('FileDownload', () => {
   let onDownload: jest.Mock;
 
   beforeEach(() => {
-    onDownload = jest.fn();
+    onDownload = jest.fn().mockResolvedValue(null);
   });
 
   it('should not download if it is still loading', () => {

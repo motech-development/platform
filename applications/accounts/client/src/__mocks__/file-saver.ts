@@ -1,5 +1,2 @@
-const saveAs = jest.fn();
-
-exports.saveAs = saveAs;
-
-export {};
+/* eslint-disable import/prefer-default-export */
+export const saveAs = jest.fn();

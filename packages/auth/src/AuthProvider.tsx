@@ -17,23 +17,29 @@ import createAuth0Client, {
   RedirectLoginOptions,
 } from '@auth0/auth0-spa-js';
 
+export type TUseAuth = () => IAuthContext;
+
 export type AuthUser = Omit<IdToken, '__raw'>;
 
 export interface IAuthContext {
-  buildAuthorizeUrl(o?: RedirectLoginOptions): Promise<string>;
-  getIdTokenClaims(o?: GetIdTokenClaimsOptions): Promise<IdToken | undefined>;
-  getTokenSilently(o?: GetTokenSilentlyOptions): Promise<string | undefined>;
+  buildAuthorizeUrl: (o?: RedirectLoginOptions) => Promise<string>;
+  getIdTokenClaims: (
+    o?: GetIdTokenClaimsOptions,
+  ) => Promise<IdToken | undefined>;
+  getTokenSilently: (
+    o?: GetTokenSilentlyOptions,
+  ) => Promise<string | undefined>;
   isAuthenticated: boolean;
   isLoading: boolean;
-  loginWithPopup(o?: PopupLoginOptions): Promise<void>;
-  loginWithRedirect(o?: RedirectLoginOptions): Promise<void>;
-  logout(o?: LogoutOptions): void;
+  loginWithPopup: (o?: PopupLoginOptions) => Promise<void>;
+  loginWithRedirect: (o?: RedirectLoginOptions) => Promise<void>;
+  logout: (o?: LogoutOptions) => void | Promise<void>;
   user?: AuthUser;
 }
 
 export const AuthContext = createContext<IAuthContext | null>(null);
 
-export const useAuth = (): IAuthContext => useContext(AuthContext)!;
+export const useAuth: TUseAuth = () => useContext(AuthContext)!;
 
 const defaultRedirectCallback = () => {
   window.history.replaceState({}, document.title, window.location.pathname);
@@ -98,9 +104,11 @@ const AuthProvider: FC<IAuthProviderProps> = ({
   useEffect(() => {
     if (auth0Client) {
       if (search.includes('code=')) {
-        auth0Client.handleRedirectCallback().then(
+        auth0Client.handleRedirectCallback<IAppState>().then(
           ({ appState }) => {
-            onRedirectCallback(appState);
+            if (appState) {
+              onRedirectCallback(appState);
+            }
           },
           () => {},
         );

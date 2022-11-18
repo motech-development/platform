@@ -17,6 +17,7 @@ i18n
       escapeValue: false,
     },
     ns: ['global'],
-  });
+  })
+  .catch(() => {});
 
 export default i18n;

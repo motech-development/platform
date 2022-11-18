@@ -78,6 +78,8 @@ describe('Clients', () => {
           </MockedProvider>
         </TestProvider>,
       );
+
+      await Promise.resolve();
     });
   });
 

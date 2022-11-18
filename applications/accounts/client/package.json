@@ -10,7 +10,7 @@
     "deploy": "serverless client deploy --verbose --no-confirm",
     "e2e": "cypress open",
     "e2e-ci": "cy2 run --browser chrome --record --parallel --headless",
-    "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
+    "lint": "eslint --cache './src/**/*.{ts,tsx}'",
     "start": "react-scripts start",
     "teardown": "serverless client remove --verbose --no-confirm",
     "test": "react-scripts test",
@@ -60,6 +60,7 @@
     "yup": "0.29.3"
   },
   "devDependencies": {
+    "@motech-development/eslint-config-motech-react": "workspace:*",
     "@testing-library/cypress": "8.0.3",
     "@testing-library/dom": "8.19.0",
     "@testing-library/jest-dom": "5.16.5",
@@ -73,8 +74,6 @@
     "@types/react-router-dom": "5.3.3",
     "@types/styled-components": "5.1.26",
     "@types/yup": "0.29.11",
-    "@typescript-eslint/eslint-plugin": "4.33.0",
-    "@typescript-eslint/parser": "4.33.0",
     "axe-core": "4.5.1",
     "cy2": "3.2.0",
     "cypress": "11.0.1",
@@ -85,14 +84,6 @@
     "cypress-pipe": "2.0.0",
     "cypress-wait-until": "1.7.2",
     "eslint": "7.32.0",
-    "eslint-config-airbnb": "18.2.1",
-    "eslint-config-prettier": "8.5.0",
-    "eslint-plugin-import": "2.26.0",
-    "eslint-plugin-jest": "24.7.0",
-    "eslint-plugin-jsx-a11y": "6.6.1",
-    "eslint-plugin-prettier": "4.2.1",
-    "eslint-plugin-react": "7.28.0",
-    "eslint-plugin-react-hooks": "4.6.0",
     "jest-date-mock": "1.0.8",
     "jest-styled-components": "7.1.1",
     "prettier": "2.3.0",
@@ -127,6 +118,6 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "src/**/*.{ts,tsx}": "eslint -c .eslintrc.yml --fix"
+    "src/**/*.{ts,tsx}": "eslint --cache --fix"
   }
 }

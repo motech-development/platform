@@ -77,6 +77,8 @@ describe('MyCompanies', () => {
           </MockedProvider>
         </TestProvider>,
       );
+
+      await Promise.resolve();
     });
   });
 
