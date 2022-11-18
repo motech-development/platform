@@ -186,7 +186,7 @@ export interface IYearEndFieldsProps {
 
 export const YearEndFields: FC<IYearEndFieldsProps> = ({ prefix }) => {
   const { t } = useTranslation('common-fields');
-  const days = [...Array(31)].map((_, i) => {
+  const days = [...Array<unknown>(31)].map((_, i) => {
     const day = (i + 1).toString();
 
     return {

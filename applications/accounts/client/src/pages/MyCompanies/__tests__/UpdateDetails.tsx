@@ -141,6 +141,8 @@ describe('UpdateDetails', () => {
               </MockedProvider>
             </TestProvider>,
           );
+
+          await Promise.resolve();
         });
       });
 
@@ -337,6 +339,8 @@ describe('UpdateDetails', () => {
               </MockedProvider>
             </TestProvider>,
           );
+
+          await Promise.resolve();
         });
       });
 
@@ -466,6 +470,8 @@ describe('UpdateDetails', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 

@@ -18,18 +18,21 @@ const UpdateDetails = lazy(() => import('./UpdateDetails'));
 
 const Routes: FC = () => {
   const { logout, user } = useAuth();
-  const logOut = () =>
-    logout({
-      returnTo: window.location.origin,
-    });
+  const logOut = () => {
+    Promise.resolve(
+      logout({
+        returnTo: window.location.origin,
+      }),
+    ).catch(() => {});
+  };
 
   return (
     <ApolloClient>
       {user && (
         <UserBar
-          name={user.name}
-          notifications={<UserNotifications id={user.sub} />}
-          picture={user.picture}
+          name={user.name as string}
+          notifications={<UserNotifications id={user.sub as string} />}
+          picture={user.picture as string}
           logOut={logOut}
         />
       )}

@@ -47,6 +47,8 @@ describe('Reset', () => {
             <Reset />
           </TextProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 

@@ -12,6 +12,8 @@ import Login from '../Login';
 
 jest.mock('react-ga');
 
+type TAuth0Callback = (args: { code?: string; description?: string }) => void;
+
 describe('Login', () => {
   let component: RenderResult;
 
@@ -23,6 +25,8 @@ describe('Login', () => {
             <Login />
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -49,6 +53,8 @@ describe('Login', () => {
             <Login />
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -56,7 +62,12 @@ describe('Login', () => {
       it('should display a toast when request is unsuccessful', async () => {
         const { findAllByRole, findByLabelText } = component;
 
-        (WebAuth.prototype.login as jest.Mock).mockImplementationOnce((_, cb) =>
+        (
+          WebAuth.prototype.login as unknown as jest.Mock<
+            unknown,
+            TAuth0Callback[]
+          >
+        ).mockImplementationOnce((_, cb) =>
           cb({
             code: 'invalid_signup',
           }),
@@ -116,12 +127,16 @@ describe('Login', () => {
 
     describe('when signing up', () => {
       it('should display a toast when request is unsuccessful', async () => {
-        (WebAuth.prototype.signup as jest.Mock).mockImplementationOnce(
-          (_, cb) =>
-            cb({
-              code: 'invalid_user_password',
-              description: 'test',
-            }),
+        (
+          WebAuth.prototype.signup as unknown as jest.Mock<
+            unknown,
+            TAuth0Callback[]
+          >
+        ).mockImplementationOnce((_, cb) =>
+          cb({
+            code: 'invalid_user_password',
+            description: 'test',
+          }),
         );
 
         const { findAllByRole, findByLabelText } = component;
@@ -164,11 +179,15 @@ describe('Login', () => {
       it('should call signupAndLogin with the correct params', async () => {
         const { findAllByRole, findByLabelText } = component;
 
-        (WebAuth.prototype.signup as jest.Mock).mockImplementationOnce(
-          (_, cb) =>
-            cb({
-              code: 'invalid_signup',
-            }),
+        (
+          WebAuth.prototype.signup as unknown as jest.Mock<
+            unknown,
+            TAuth0Callback[]
+          >
+        ).mockImplementationOnce((_, cb) =>
+          cb({
+            code: 'invalid_signup',
+          }),
         );
 
         await act(async () => {

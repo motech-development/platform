@@ -69,7 +69,7 @@ const Reports: FC = () => {
   const { user } = useAuth();
   const { add } = useToast();
   const { t } = useTranslation('reports');
-  const { parse } = useQs();
+  const { parse } = useQs<IReport>();
   const [download] = useLazyGet<Blob>({
     onCompleted: (blob) => {
       saveAs(blob, 'report.zip');
@@ -104,9 +104,7 @@ const Reports: FC = () => {
           return prev;
         }
 
-        const payload = parse<IReport>(
-          subscriptionData.data.onNotification.payload,
-        );
+        const payload = parse(subscriptionData.data.onNotification.payload);
         const result = [...prev.getReports.items, payload];
         const items = result.filter(
           (a, index) => result.findIndex((b) => a.id === b.id) === index,
@@ -120,7 +118,7 @@ const Reports: FC = () => {
         };
       },
       variables: {
-        owner: user!.sub,
+        owner: user?.sub as string,
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -167,7 +165,9 @@ const Reports: FC = () => {
                     <TableCell>
                       <Button
                         size="sm"
-                        onClick={async () => download(downloadUrl)}
+                        onClick={() => {
+                          download(downloadUrl).catch(() => {});
+                        }}
                       >
                         {t('reports.download')}
                       </Button>

@@ -24,10 +24,10 @@ const ToastContainer = styled.div`
   z-index: 1800;
 `;
 
-interface IAddToast {
+export interface IAddToast {
   colour: AlertTheme;
   message: string;
-  onDismiss?(): void;
+  onDismiss?: () => void;
 }
 
 interface IToast extends IAddToast {
@@ -35,8 +35,8 @@ interface IToast extends IAddToast {
 }
 
 interface IToastContext {
-  add(alert: IAddToast): void;
-  remove(id: string): void;
+  add: (alert: IAddToast) => void;
+  remove: (id: string) => void;
 }
 
 export const ToastContext = createContext<IToastContext | null>(null);

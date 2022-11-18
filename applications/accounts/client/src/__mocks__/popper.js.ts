@@ -1,4 +1,7 @@
-const PopperJs = jest.requireActual('popper.js');
+const PopperJs =
+  jest.requireActual<{
+    placements: unknown;
+  }>('popper.js');
 
 export default class Popper {
   public static placements = PopperJs.placements;

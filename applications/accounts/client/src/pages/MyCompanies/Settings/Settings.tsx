@@ -76,21 +76,19 @@ const Settings: FC = () => {
       });
     },
   });
-  const save = async (input: FormSchema) => {
-    await mutation({
+  const save = (input: FormSchema) => {
+    mutation({
       variables: {
         input,
       },
-    });
+    }).catch(() => {});
   };
   const onDisconnect = (id: string) => {
-    (async () => {
-      await disconnect({
-        variables: {
-          id,
-        },
-      });
-    })();
+    disconnect({
+      variables: {
+        id,
+      },
+    }).catch(() => {});
   };
 
   useEffect(() => {

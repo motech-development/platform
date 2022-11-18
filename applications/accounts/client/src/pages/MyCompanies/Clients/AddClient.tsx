@@ -47,13 +47,13 @@ const AddClient: FC = () => {
       }
     },
   });
-  const save = async (input: FormSchema) => {
-    await mutation({
+  const save = (input: FormSchema) => {
+    mutation({
       update: updateCache,
       variables: {
         input,
       },
-    });
+    }).catch(() => {});
   };
 
   return (

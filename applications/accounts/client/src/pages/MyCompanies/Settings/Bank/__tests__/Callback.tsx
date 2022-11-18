@@ -57,6 +57,8 @@ describe('Callback', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -119,6 +121,8 @@ describe('Callback', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -188,6 +192,8 @@ describe('Callback', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 

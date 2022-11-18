@@ -74,6 +74,8 @@ describe('TransactionsList', () => {
             />
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 

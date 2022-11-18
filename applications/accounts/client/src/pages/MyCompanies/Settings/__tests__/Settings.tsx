@@ -133,6 +133,8 @@ describe('Settings', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -296,6 +298,8 @@ describe('Settings', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -396,6 +400,8 @@ describe('Settings', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 

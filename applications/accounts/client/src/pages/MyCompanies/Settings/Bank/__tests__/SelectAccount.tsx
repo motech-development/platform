@@ -93,6 +93,8 @@ describe('SelectAccount', () => {
               </MockedProvider>
             </TestProvider>,
           );
+
+          await Promise.resolve();
         });
       });
 
@@ -210,6 +212,8 @@ describe('SelectAccount', () => {
               </MockedProvider>
             </TestProvider>,
           );
+
+          await Promise.resolve();
         });
       });
 

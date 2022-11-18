@@ -6,7 +6,7 @@
     "build": "react-scripts build",
     "build-icons": "pwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --type png --padding '20%' --maskable false",
     "deploy": "serverless client deploy --verbose --no-confirm && run postdeploy",
-    "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
+    "lint": "eslint --cache './src/**/*.{ts,tsx}'",
     "postdeploy": "react-snap",
     "start": "react-scripts start",
     "teardown": "serverless client remove --verbose --no-confirm",
@@ -35,6 +35,7 @@
     "yup": "0.29.3"
   },
   "devDependencies": {
+    "@motech-development/eslint-config-motech-react": "workspace:*",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "13.5.0",
@@ -45,16 +46,7 @@
     "@types/react-router-dom": "5.3.3",
     "@types/styled-components": "5.1.26",
     "@types/yup": "0.29.11",
-    "@typescript-eslint/eslint-plugin": "4.33.0",
-    "@typescript-eslint/parser": "4.33.0",
     "eslint": "7.32.0",
-    "eslint-config-airbnb": "18.2.1",
-    "eslint-config-prettier": "8.5.0",
-    "eslint-plugin-import": "2.26.0",
-    "eslint-plugin-jsx-a11y": "6.6.1",
-    "eslint-plugin-prettier": "4.2.1",
-    "eslint-plugin-react": "7.28.0",
-    "eslint-plugin-react-hooks": "4.6.0",
     "jest-styled-components": "7.1.1",
     "prettier": "2.3.0",
     "pwa-asset-generator": "6.2.0",
@@ -102,6 +94,6 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "src/**/*.{ts,tsx}": "eslint -c .eslintrc.yml --fix"
+    "src/**/*.{ts,tsx}": "eslint --cache --fix"
   }
 }

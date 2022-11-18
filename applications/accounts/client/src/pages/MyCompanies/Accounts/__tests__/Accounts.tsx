@@ -148,6 +148,8 @@ describe('Accounts', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -426,6 +428,8 @@ describe('Accounts', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 

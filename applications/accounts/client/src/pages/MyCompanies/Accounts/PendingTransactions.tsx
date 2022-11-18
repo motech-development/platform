@@ -52,6 +52,12 @@ const PendingTransactions: FC = () => {
       status: 'pending',
     },
   });
+  const onDismiss = () => {
+    setTransaction({
+      id: '',
+      name: '',
+    });
+  };
   const [deleteMutation, { loading: deleteLoading }] = useMutation<
     IDeleteTransactionOutput,
     IDeleteTransactionInput
@@ -77,19 +83,13 @@ const PendingTransactions: FC = () => {
       name,
     });
   };
-  const onDismiss = () => {
-    setTransaction({
-      id: '',
-      name: '',
-    });
-  };
-  const onDelete = async (id: string) => {
-    await deleteMutation({
+  const onDelete = (id: string) => {
+    deleteMutation({
       update: updateCache,
       variables: {
         id,
       },
-    });
+    }).catch(() => {});
   };
 
   return (

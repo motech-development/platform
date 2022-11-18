@@ -66,12 +66,12 @@ const CreateReport: FC = () => {
         history.push(backTo);
       },
     });
-  const save = async (input: FormSchema) => {
-    await mutation({
+  const save = (input: FormSchema) => {
+    mutation({
       variables: {
         input,
       },
-    });
+    }).catch(() => {});
   };
 
   return (

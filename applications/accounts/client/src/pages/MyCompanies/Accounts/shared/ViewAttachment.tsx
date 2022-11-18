@@ -116,7 +116,7 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
                 id,
                 path,
               },
-            });
+            }).catch(() => {});
           }}
         >
           {t('transaction-form.upload.download-file')}
@@ -144,13 +144,13 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
           block
           colour="danger"
           loading={deleteFileLoading}
-          onClick={async () => {
-            await deleteFile({
+          onClick={() => {
+            deleteFile({
               variables: {
                 id,
                 path,
               },
-            });
+            }).catch(() => {});
           }}
         >
           {t('transaction-form.upload.delete-file')}

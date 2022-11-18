@@ -91,6 +91,8 @@ describe('Bank', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -197,6 +199,8 @@ describe('Bank', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 

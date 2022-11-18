@@ -41,13 +41,13 @@ const AddCompany: FC = () => {
       }
     },
   });
-  const save = async (input: FormSchema) => {
-    await addCompany({
+  const save = (input: FormSchema) => {
+    addCompany({
       update: updateCache,
       variables: {
         input,
       },
-    });
+    }).catch(() => {});
   };
 
   return (

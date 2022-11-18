@@ -21,7 +21,7 @@ const useAuth = () => {
     }
   }, []);
 
-  return client!;
+  return client as WebAuth;
 };
 
 export default useAuth;

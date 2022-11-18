@@ -12,10 +12,13 @@ const App: FC = () => {
   const { add } = useToast();
   const timeout = isProd(600000, 3600000);
   const location = useLocation();
-  const logOut = () =>
-    logout({
-      returnTo: window.location.origin,
-    });
+  const logOut = () => {
+    Promise.resolve(
+      logout({
+        returnTo: window.location.origin,
+      }),
+    ).catch(() => {});
+  };
   const onError = (message: string) => {
     add({
       colour: 'danger',

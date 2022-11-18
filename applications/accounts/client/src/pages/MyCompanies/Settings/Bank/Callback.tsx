@@ -55,7 +55,7 @@ const Callback: FC = () => {
           },
         },
       });
-    })();
+    })().catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

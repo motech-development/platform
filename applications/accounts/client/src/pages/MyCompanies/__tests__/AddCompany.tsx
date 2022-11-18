@@ -110,6 +110,8 @@ describe('AddCompany', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -361,6 +363,8 @@ describe('AddCompany', () => {
             </MockedProvider>
           </TestProvider>,
         );
+
+        await Promise.resolve();
       });
     });
 

@@ -46,6 +46,7 @@ describe('App', () => {
       expect(add).toHaveBeenCalledWith({
         colour: 'danger',
         message: 'Message',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         onDismiss: expect.any(Function),
       }),
     );

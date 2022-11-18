@@ -1,5 +1,5 @@
 const axios =
-  jest.genMockFromModule<{
+  jest.createMockFromModule<{
     create: jest.Mock;
   }>('axios');
 

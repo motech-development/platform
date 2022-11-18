@@ -40,7 +40,7 @@ export interface ISettingsFormProps {
     disconnectLoading: boolean;
     link: string;
     name: string;
-    onDisconnect(): void;
+    onDisconnect: () => void;
   };
   initialValues: FormSchema;
   loading: boolean;

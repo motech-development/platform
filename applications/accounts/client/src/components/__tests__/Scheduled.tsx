@@ -37,6 +37,8 @@ describe('Scheduled', () => {
             value={value}
           />,
         );
+
+        await Promise.resolve();
       });
     });
 
@@ -63,12 +65,16 @@ describe('Scheduled', () => {
             value={value}
           />,
         );
+
+        await Promise.resolve();
       });
     });
 
     it('should show clock', async () => {
       const { container } = component;
       const icon = container.querySelector('svg[data-icon="clock"]');
+
+      await Promise.resolve();
 
       expect(icon).toBeInTheDocument();
     });

@@ -104,11 +104,16 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
             `,
           });
 
-          return [...refs, newRef].sort((a, b) =>
-            readField<string>('name', a)!.localeCompare(
-              readField<string>('name', b)!,
-            ),
-          );
+          return [...refs, newRef].sort((a, b) => {
+            const readA = readField<string>('name', a);
+            const readB = readField<string>('name', b);
+
+            if (readA && readB) {
+              return readA.localeCompare(readB);
+            }
+
+            return 0;
+          });
         },
       },
       id: cache.identify({

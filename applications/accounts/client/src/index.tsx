@@ -56,8 +56,8 @@ render(
 );
 
 serviceWorkerRegistration.register({
-  onUpdate: async (registration) => {
-    await registration.update();
+  onUpdate: (registration) => {
+    registration.update().catch(() => {});
   },
 });
 

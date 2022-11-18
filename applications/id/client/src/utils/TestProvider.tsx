@@ -14,16 +14,19 @@ export interface ITestProviderProps {
 const TestProvider: FC<ITestProviderProps> = ({ children }) => {
   const testI18n = i18n;
 
-  testI18n.use(initReactI18next).init({
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false,
-    },
-    lng: 'en',
-    resources: {
-      en: {},
-    },
-  });
+  testI18n
+    .use(initReactI18next)
+    .init({
+      fallbackLng: 'en',
+      interpolation: {
+        escapeValue: false,
+      },
+      lng: 'en',
+      resources: {
+        en: {},
+      },
+    })
+    .catch(() => {});
 
   return (
     <ToastProvider>
