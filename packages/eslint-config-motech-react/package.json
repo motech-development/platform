@@ -33,8 +33,7 @@
     "eslint-plugin-jest": "24.7.0",
     "eslint-plugin-jsx-a11y": "6.6.1",
     "eslint-plugin-react": "7.31.10",
-    "eslint-plugin-react-hooks": "1.7.0",
-    "find-yarn-workspace-root": "2.0.0"
+    "eslint-plugin-react-hooks": "1.7.0"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",

@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { rules } = require('@motech-development/eslint-config-motech-base');
-const findWorkspaceRoot = require('find-yarn-workspace-root');
 
 module.exports = {
   extends: [
@@ -54,7 +53,6 @@ module.exports = {
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: ['./tsconfig.eslint.json', './tsconfig.json'],
-        tsconfigRootDir: findWorkspaceRoot(),
       },
       plugins: ['@typescript-eslint', 'jest'],
     },
