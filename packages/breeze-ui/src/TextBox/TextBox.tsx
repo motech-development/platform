@@ -147,13 +147,13 @@ const InternalTextBox: FC<IInternalTextBox> = ({
       setFieldValue(field.name, floatValue);
     }
   };
-  const doChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  const doChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!useNumberFormat) {
       handleChange(e);
     }
 
     if (onChange) {
-      await Promise.resolve(onChange(e, form));
+      Promise.resolve(onChange(e, form)).catch(() => {});
     }
 
     setFieldTouched(field.name, true);

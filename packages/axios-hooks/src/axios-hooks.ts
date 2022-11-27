@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 import {
   IHeaders,
@@ -10,8 +10,7 @@ import {
   UseWithInput,
   UseWithoutInput,
 } from './types';
-
-const client = axios.create();
+import { client, isAxiosError } from './utils';
 
 const executeGet = async <TData, TError>(
   url: string,
@@ -40,7 +39,9 @@ const executeGet = async <TData, TError>(
 
     return data;
   } catch (e) {
-    setError(e);
+    if (isAxiosError<TError>(e)) {
+      setError(e);
+    }
 
     return undefined;
   }
@@ -76,7 +77,9 @@ const executeForm = async <TData, TBody, TError>(
 
     return data;
   } catch (e) {
-    setError(e);
+    if (isAxiosError<TError>(e)) {
+      setError(e);
+    }
 
     return undefined;
   }

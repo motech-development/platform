@@ -29,7 +29,10 @@ const apiGatewayHandler =
           statusCode: e.statusCode,
         });
       } else {
-        callback(null, e);
+        callback(e as Error, {
+          body: 'Unhandled exception.',
+          statusCode: 500,
+        });
       }
     }
   };

@@ -7,11 +7,17 @@ import { ITransaction, TransactionStatus } from './transaction';
 
 export type TBalance = PromiseResult<DocumentClient.UpdateItemOutput, AWSError>;
 
-const vatUtility = (record: ITransaction) => {
+interface IVatUtility {
+  name: 'amount' | 'vat';
+  property: 'owed' | 'paid';
+  value: number;
+}
+
+const vatUtility = (record: ITransaction): IVatUtility => {
   const value = record.category === 'VAT payment' ? record.amount : record.vat;
   const name = record.category === 'VAT payment' ? 'amount' : 'vat';
 
-  let property: string;
+  let property: IVatUtility['property'];
 
   switch (record.category) {
     case 'VAT payment':
