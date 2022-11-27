@@ -66,15 +66,17 @@ const InternalFileUpload: FC<IInternalFileUpload> = ({
   const { name } = field;
   const [fileName, setFileName] = useState('');
   const error = useInputValidation(name, errors, touched);
-  const onChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
 
       setFileName(file.name);
 
-      await Promise.resolve(onSelect(file, form));
-
-      form.setFieldTouched(name, true);
+      Promise.resolve(onSelect(file, form))
+        .then(() => {
+          form.setFieldTouched(name, true);
+        })
+        .catch(() => {});
     }
   };
   const onClick = () => {

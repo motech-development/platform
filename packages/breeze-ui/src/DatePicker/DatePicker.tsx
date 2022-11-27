@@ -43,7 +43,7 @@ const CalendarWrapper = styled.div`
   z-index: 1000;
 `;
 
-interface IInnerDatePicker extends FieldProps {
+interface IInnerDatePicker extends FieldProps<string, string> {
   disabled: boolean;
   helpText: string;
   label: string;

@@ -3,7 +3,7 @@ import {
   SQSMessageAttributes,
   SQSRecord,
 } from 'aws-lambda';
-import { AttributeValue, DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { join } from 'path';
 import publishNotification, {
   TPublishNotification,
@@ -22,8 +22,9 @@ interface IData extends SQSMessageAttributes {
 }
 
 interface IFilteredData extends DocumentClient.AttributeMap {
-  __typename: AttributeValue;
-  id: AttributeValue;
+  __typename: string;
+  id: string;
+  owner: string;
 }
 
 interface IMetadata {
@@ -41,7 +42,8 @@ const hasStringValues = (
 
 const hasObjectAttributes = (
   attribute: DocumentClient.AttributeMap,
-): attribute is IFilteredData => !!attribute.__typename && !!attribute.id;
+): attribute is IFilteredData =>
+  !!attribute.__typename && !!attribute.id && !!attribute.owner;
 
 const updateAttachments = async (
   documentClient: DocumentClient,
