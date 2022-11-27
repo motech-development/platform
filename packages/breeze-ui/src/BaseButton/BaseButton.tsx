@@ -84,7 +84,7 @@ const BaseButton = styled('button').withConfig({
     })()}
 
     :hover {
-      background-color: ${darken(0.1, theme[colour].background)};
+      background-color: ${darken(0.1, theme[colour].background ?? '')};
     }
 
     :disabled {
