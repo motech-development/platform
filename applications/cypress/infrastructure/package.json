@@ -1,12 +1,13 @@
 {
-  "name": "@cypress/dashboard",
+  "name": "@cypress/infrastructure",
   "version": "0.0.0-development",
-  "description": "Cypress dashboard stack",
+  "description": "Cypress infrastructure",
   "scripts": {
     "deploy": "serverless deploy --verbose",
     "teardown": "serverless remove --verbose"
   },
   "devDependencies": {
+    "prettier": "2.3.0",
     "serverless": "3.24.1",
     "serverless-deployment-bucket": "1.6.0"
   }

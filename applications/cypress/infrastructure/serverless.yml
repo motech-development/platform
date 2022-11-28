@@ -1,10 +1,10 @@
-service: cypress-dashboard
+service: cypress-infrastructure
 
 provider:
   name: aws
-  region: ${opt:region, 'eu-west-1'}
+  region: ${opt:region, 'us-east-1'}
   stage: ${opt:stage, 'local'}
-  stackName: ${self:custom.prefix}-dashboard
+  stackName: ${self:custom.prefix}-infrastructure
   deploymentBucket:
     name: ${self:service}-deployment-bucket
 
@@ -12,10 +12,12 @@ plugins:
   - serverless-deployment-bucket
 
 custom:
-  directorPort: ${env:directorPort, 8080}
-  prefix: cypress
-  taskCpu: ${env:taskCpu, 1024}
-  taskMemory: ${env:taskMemory, 2048}
+  prefix: cypress-${self:provider.stage}
+  directorPort: ${env:DIRECTOR_PORT, 8080}
+  domainName: ${env:PROD_DOMAIN}
+  subDomain: cypress.${self:custom.domainName}
+  taskCpu: ${env:TASK_CPU, 1024}
+  taskMemory: ${env:TASK_MEMORY, 2048}
 
 resources:
   Mappings:
@@ -168,7 +170,7 @@ resources:
     PublicLoadBalancer:
       Type: AWS::ElasticLoadBalancingV2::LoadBalancer
       Properties:
-        Name: !Ref 'AWS::StackName'
+        Name: cypress-infrastructure
         Scheme: internet-facing
         LoadBalancerAttributes:
           - Key: idle_timeout.timeout_seconds
@@ -189,8 +191,10 @@ resources:
           - TargetGroupArn: !Ref 'TargetGroupDashboard'
             Type: 'forward'
         LoadBalancerArn: !Ref 'PublicLoadBalancer'
-        Port: 80
-        Protocol: HTTP
+        Port: 443
+        Protocol: HTTPS
+        Certificates:
+          - CertificateArn: !ImportValue Certificate
 
     PublicLoadBalancerListenerDirector:
       Type: AWS::ElasticLoadBalancingV2::Listener
@@ -216,7 +220,7 @@ resources:
         HealthCheckTimeoutSeconds: 5
         HealthyThresholdCount: 2
         TargetType: ip
-        Name: !Join ['-', [!Ref 'AWS::StackName', 'director-tg']]
+        Name: cypress-director-tg
         Port: 1234
         Matcher:
           HttpCode: 302
@@ -234,7 +238,7 @@ resources:
         HealthCheckTimeoutSeconds: 5
         HealthyThresholdCount: 2
         TargetType: ip
-        Name: !Join ['-', [!Ref 'AWS::StackName', 'api-tg']]
+        Name: cypress-api-tg
         Port: 4000
         Matcher:
           HttpCode: 400
@@ -252,7 +256,7 @@ resources:
         HealthCheckTimeoutSeconds: 5
         HealthyThresholdCount: 2
         TargetType: ip
-        Name: !Join ['-', [!Ref 'AWS::StackName', 'dashboard-tg']]
+        Name: cypress-dashboard-tg
         Port: 8080
         Protocol: HTTP
         UnhealthyThresholdCount: 2
@@ -314,7 +318,7 @@ resources:
     S3Bucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:custom.prefix}-${self:provider.stage}-results
+        BucketName: ${self:custom.prefix}-results
         AccessControl: PublicRead
         CorsConfiguration:
           CorsRules:
@@ -424,7 +428,7 @@ resources:
                 awslogs-stream-prefix: ecs
             Environment:
               - Name: DASHBOARD_URL
-                Value: !Join ['', ['http://', !GetAtt PublicLoadBalancer.DNSName]]
+                Value: !Join ['', ['https://', !Ref DnsRecord]]
               - Name: EXECUTION_DRIVER
                 Value: ../execution/mongo/driver
               - Name: SCREENSHOTS_DRIVER
@@ -434,7 +438,7 @@ resources:
               - Name: MONGODB_URI
                 Value: mongodb://sorry-cypress:sorry-cypress@127.0.0.1:27017
               - Name: S3_BUCKET
-                Value: !Join ['-', [!Ref 'AWS::StackName', 'test-results']]
+                Value: !Ref S3Bucket
               - Name: S3_REGION
                 Value: !Ref 'AWS::Region'
             DependsOn:
@@ -518,31 +522,21 @@ resources:
             ContainerPort: 8080
             TargetGroupArn: !Ref 'TargetGroupDashboard'
 
-    # These are the values output by the CloudFormation template. Be careful
+    # Route53 record set to map load balancer to sub domain
+    DnsRecord:
+      Type: AWS::Route53::RecordSet
+      Properties:
+        HostedZoneId: !ImportValue HostedZoneId
+        Name: ${self:custom.subDomain}
+        Type: A
+        AliasTarget:
+          HostedZoneId: !GetAtt PublicLoadBalancer.CanonicalHostedZoneID
+          DNSName: !GetAtt PublicLoadBalancer.DNSName
+
+  # These are the values output by the CloudFormation template. Be careful
   # about changing any of them, because of them are exported with specific
   # names so that the other task related CF templates can use them.
   Outputs:
-    DirectorURL:
-      Description: DirectorURL
-      Value:
-        !Join [
-          '',
-          [
-            'http://',
-            !GetAtt 'PublicLoadBalancer.DNSName',
-            ':',
-            '${self:custom.directorPort}',
-          ],
-        ]
-      Export:
-        Name: !Join [':', [!Ref 'AWS::StackName', 'DirectorURL']]
     DashboardURL:
-      Description: DashboardURL
-      Value: !Join ['', ['http://', !GetAtt 'PublicLoadBalancer.DNSName']]
-      Export:
-        Name: !Join [':', [!Ref 'AWS::StackName', 'DashboardURL']]
-    ApiURL:
-      Description: ApiURL
-      Value: !Join ['', ['http://', !GetAtt 'PublicLoadBalancer.DNSName', '/api']]
-      Export:
-        Name: !Join [':', [!Ref 'AWS::StackName', 'ApiURL']]
+      Description: Cypress dashboard URL
+      Value: !Ref DnsRecord
