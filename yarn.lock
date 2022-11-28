@@ -4922,10 +4922,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@cypress/dashboard@workspace:applications/cypress/dashboard":
+"@cypress/infrastructure@workspace:applications/cypress/infrastructure":
   version: 0.0.0-use.local
-  resolution: "@cypress/dashboard@workspace:applications/cypress/dashboard"
+  resolution: "@cypress/infrastructure@workspace:applications/cypress/infrastructure"
   dependencies:
+    prettier: 2.3.0
     serverless: 3.24.1
     serverless-deployment-bucket: 1.6.0
   languageName: unknown
