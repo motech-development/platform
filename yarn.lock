@@ -4922,6 +4922,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@cypress/dashboard@workspace:applications/cypress/dashboard":
+  version: 0.0.0-use.local
+  resolution: "@cypress/dashboard@workspace:applications/cypress/dashboard"
+  dependencies:
+    serverless: 3.24.1
+    serverless-deployment-bucket: 1.6.0
+  languageName: unknown
+  linkType: soft
+
 "@cypress/request@npm:^2.88.10":
   version: 2.88.10
   resolution: "@cypress/request@npm:2.88.10"
