@@ -948,7 +948,7 @@ jobs:
 
     env:
       # TODO: Replace with actual env var
-      CYPRESS_API_URL: https://cypress.motechdevelopment.co.uk/
+      CYPRESS_API_URL: https://cypress.motechdevelopment.co.uk:8080
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL_DEV }}
       CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
