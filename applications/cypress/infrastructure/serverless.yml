@@ -13,9 +13,10 @@ plugins:
 
 custom:
   prefix: cypress-${self:provider.stage}
+  dashboardSubDomain: cypress.${self:custom.domainName}
   directorPort: ${env:DIRECTOR_PORT, 8080}
+  directorSubDomain: cypress-director.${self:custom.domainName}
   domainName: ${env:PROD_DOMAIN}
-  subDomain: cypress.${self:custom.domainName}
   taskCpu: ${env:TASK_CPU, 1024}
   taskMemory: ${env:TASK_MEMORY, 2048}
 
@@ -196,18 +197,6 @@ resources:
         Certificates:
           - CertificateArn: !ImportValue Certificate
 
-    PublicLoadBalancerListenerDirector:
-      Type: AWS::ElasticLoadBalancingV2::Listener
-      DependsOn:
-        - PublicLoadBalancer
-      Properties:
-        DefaultActions:
-          - TargetGroupArn: !Ref 'TargetGroupDirector'
-            Type: 'forward'
-        LoadBalancerArn: !Ref 'PublicLoadBalancer'
-        Port: ${self:custom.directorPort}
-        Protocol: HTTP
-
     ### Routing load balancer to services
 
     # Director
@@ -272,6 +261,20 @@ resources:
           - Field: path-pattern
             Values:
               - /api
+        ListenerArn: !Ref 'PublicLoadBalancerListener'
+        Priority: 3
+
+    LoadBalancerRuleDirector:
+      Type: AWS::ElasticLoadBalancingV2::ListenerRule
+      Properties:
+        Actions:
+          - TargetGroupArn: !Ref 'TargetGroupDirector'
+            Type: 'forward'
+        Conditions:
+          - Field: host-header
+            HostHeaderConfig:
+              Values:
+                - ${self:custom.directorSubDomain}
         ListenerArn: !Ref 'PublicLoadBalancerListener'
         Priority: 2
 
@@ -428,7 +431,7 @@ resources:
                 awslogs-stream-prefix: ecs
             Environment:
               - Name: DASHBOARD_URL
-                Value: !Join ['', ['https://', !Ref DnsRecord]]
+                Value: !Join ['', ['https://', !Ref DashboardRecordSet]]
               - Name: EXECUTION_DRIVER
                 Value: ../execution/mongo/driver
               - Name: SCREENSHOTS_DRIVER
@@ -523,11 +526,21 @@ resources:
             TargetGroupArn: !Ref 'TargetGroupDashboard'
 
     # Route53 record set to map load balancer to sub domain
-    DnsRecord:
+    DashboardRecordSet:
       Type: AWS::Route53::RecordSet
       Properties:
         HostedZoneId: !ImportValue HostedZoneId
-        Name: ${self:custom.subDomain}
+        Name: ${self:custom.dashboardSubDomain}
+        Type: A
+        AliasTarget:
+          HostedZoneId: !GetAtt PublicLoadBalancer.CanonicalHostedZoneID
+          DNSName: !GetAtt PublicLoadBalancer.DNSName
+
+    DirectorRecordSet:
+      Type: AWS::Route53::RecordSet
+      Properties:
+        HostedZoneId: !ImportValue HostedZoneId
+        Name: ${self:custom.directorSubDomain}
         Type: A
         AliasTarget:
           HostedZoneId: !GetAtt PublicLoadBalancer.CanonicalHostedZoneID
@@ -539,4 +552,8 @@ resources:
   Outputs:
     DashboardURL:
       Description: Cypress dashboard URL
-      Value: !Ref DnsRecord
+      Value: !Ref DashboardRecordSet
+
+    DirectorURL:
+      Description: Cypress director URL
+      Value: !Ref DirectorRecordSet
