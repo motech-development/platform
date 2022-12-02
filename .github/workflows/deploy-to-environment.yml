@@ -212,7 +212,9 @@ jobs:
         run: yarn workspace @id/emails build
 
       - name: Deploy client
-        run: yarn workspace @id/client deploy --stage $STAGE
+        run: |
+          yarn workspace @id/client deploy --stage $STAGE
+          yarn workspace @id/client postdeploy
 
       - name: Deploy to Auth0
         run: yarn workspace @id/tenant deploy -c config.json
