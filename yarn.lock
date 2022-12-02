@@ -188,6 +188,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/infrastructure@workspace:applications/accounts/infrastructure"
   dependencies:
+    prettier: 2.3.0
     serverless: 3.24.1
     serverless-deployment-bucket: 1.6.0
   languageName: unknown
@@ -4694,6 +4695,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@core/infrastructure@workspace:applications/core/infrastructure"
   dependencies:
+    prettier: 2.3.0
     serverless: 3.24.1
     serverless-deployment-bucket: 1.6.0
   languageName: unknown
@@ -4957,15 +4959,6 @@ __metadata:
   checksum: 69c3e3b332e9be4866a900f6bcca5d274d8cea6c99707fbcce061de8dbab11c9b1e39f4c017f6e83e6e682717781d4f6106fd6b7cf9546580fcfac353b6676cf
   languageName: node
   linkType: hard
-
-"@cypress/storage@workspace:applications/cypress/storage":
-  version: 0.0.0-use.local
-  resolution: "@cypress/storage@workspace:applications/cypress/storage"
-  dependencies:
-    serverless: 3.24.1
-    serverless-deployment-bucket: 1.6.0
-  languageName: unknown
-  linkType: soft
 
 "@cypress/xvfb@npm:^1.2.4":
   version: 1.2.4
@@ -5724,6 +5717,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@id/emails@workspace:applications/id/emails"
   dependencies:
+    prettier: 2.3.0
     pug-cli: 1.0.0-alpha6
   languageName: unknown
   linkType: soft
@@ -5732,6 +5726,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@id/infrastructure@workspace:applications/id/infrastructure"
   dependencies:
+    prettier: 2.3.0
     serverless: 3.24.1
     serverless-deployment-bucket: 1.6.0
   languageName: unknown

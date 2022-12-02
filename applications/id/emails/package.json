@@ -6,6 +6,7 @@
     "build": "pug src --pretty --out build"
   },
   "devDependencies": {
+    "prettier": "2.3.0",
     "pug-cli": "1.0.0-alpha6"
   }
 }
