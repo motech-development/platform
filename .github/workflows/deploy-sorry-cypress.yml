@@ -1,0 +1,33 @@
+name: Deploy Sorry Cypress
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    name: Setup
+
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      STAGE: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3.1.0
+
+      - name: Set Node version
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - name: Install dependencies
+        if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
+        run: yarn
+
+      - name: Deploy
+        run: yarn workspace @cypress/infrastructure deploy --stage $STAGE
