@@ -2,6 +2,14 @@ name: Deploy Sorry Cypress
 
 on:
   workflow_dispatch:
+    taskCpu:
+      default: 512
+      description: 'Task CPU'
+      required: true
+    taskMemory:
+      default: 1024
+      description: 'Task memory'
+      required: true
 
 jobs:
   setup:
@@ -14,6 +22,8 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       STAGE: production
+      TASK_CPU: ${{ github.event.inputs.taskCpu }}
+      TASK_MEMORY: ${{ github.event.inputs.taskMemory }}
 
     steps:
       - name: Checkout code
