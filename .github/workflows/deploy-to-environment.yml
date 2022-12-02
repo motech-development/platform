@@ -947,8 +947,7 @@ jobs:
           - 2
 
     env:
-      # TODO: Replace with actual env var
-      CYPRESS_API_URL: https://cypress-director.motechdevelopment.co.uk
+      CYPRESS_API_URL: ${{ secrets.CYPRESS_API_URL }}
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL_DEV }}
       CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
