@@ -5,7 +5,7 @@
   "scripts": {
     "build": "react-scripts build",
     "build-icons": "pwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --type png --padding '20%' --maskable false",
-    "deploy": "serverless client deploy --verbose --no-confirm",
+    "deploy": "serverless client deploy --verbose --no-confirm && run postdeploy",
     "lint": "eslint -c .eslintrc.yml './src/**/*.{ts,tsx}'",
     "postdeploy": "react-snap",
     "start": "react-scripts start",
