@@ -94,7 +94,11 @@
     ],
     "minifyHtml": {
       "collapseWhitespace": false
-    }
+    },
+    "puppeteerArgs": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox"
+    ]
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
