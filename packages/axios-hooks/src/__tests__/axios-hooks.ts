@@ -288,6 +288,7 @@ describe('axios-hooks', () => {
     beforeEach(() => {
       axios.request = jest.fn().mockRejectedValue({
         data: failure,
+        isAxiosError: true,
       });
     });
 
@@ -301,6 +302,7 @@ describe('axios-hooks', () => {
           data: undefined,
           error: {
             data: failure,
+            isAxiosError: true,
           },
           loading: false,
         });
@@ -317,6 +319,7 @@ describe('axios-hooks', () => {
 
         expect(onError).toHaveBeenCalledWith({
           data: failure,
+          isAxiosError: true,
         });
       });
     });
@@ -338,6 +341,7 @@ describe('axios-hooks', () => {
           data: undefined,
           error: {
             data: failure,
+            isAxiosError: true,
           },
           loading: false,
         });
@@ -359,6 +363,7 @@ describe('axios-hooks', () => {
 
         expect(onError).toHaveBeenCalledWith({
           data: failure,
+          isAxiosError: true,
         });
       });
     });
@@ -380,6 +385,7 @@ describe('axios-hooks', () => {
           data: undefined,
           error: {
             data: failure,
+            isAxiosError: true,
           },
           loading: false,
         });
@@ -401,6 +407,7 @@ describe('axios-hooks', () => {
 
         expect(onError).toHaveBeenCalledWith({
           data: failure,
+          isAxiosError: true,
         });
       });
     });
@@ -422,6 +429,7 @@ describe('axios-hooks', () => {
           data: undefined,
           error: {
             data: failure,
+            isAxiosError: true,
           },
           loading: false,
         });
@@ -443,6 +451,7 @@ describe('axios-hooks', () => {
 
         expect(onError).toHaveBeenCalledWith({
           data: failure,
+          isAxiosError: true,
         });
       });
     });
