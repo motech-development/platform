@@ -128,6 +128,7 @@ describe('Reset', () => {
 
       it('should display an error toast with the supplied error message', async () => {
         (axios.request as jest.Mock).mockRejectedValueOnce({
+          isAxiosError: true,
           response: {
             data: {
               message: 'Ooops',
@@ -163,7 +164,9 @@ describe('Reset', () => {
       });
 
       it('should display an error toast when an error message is not supplied', async () => {
-        (axios.request as jest.Mock).mockRejectedValueOnce(new Error());
+        (axios.request as jest.Mock).mockRejectedValueOnce({
+          isAxiosError: true,
+        });
 
         const { findByLabelText, findByRole } = component;
 

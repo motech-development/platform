@@ -7,6 +7,7 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import ADD_CLIENT from '../../../../graphql/client/ADD_CLIENT';
 import TestProvider, { add } from '../../../../utils/TestProvider';
@@ -101,54 +102,19 @@ describe('AddClient', () => {
           'client-form.client-details.name.label',
         );
 
-        fireEvent.change(line1, {
-          target: {
-            focus: () => {},
-            value: '1 Street',
-          },
-        });
+        userEvent.type(line1, '1 Street');
 
-        fireEvent.change(line3, {
-          target: {
-            focus: () => {},
-            value: 'Town',
-          },
-        });
+        userEvent.type(line3, 'Town');
 
-        fireEvent.change(line4, {
-          target: {
-            focus: () => {},
-            value: 'County',
-          },
-        });
+        userEvent.type(line4, 'County');
 
-        fireEvent.change(line5, {
-          target: {
-            focus: () => {},
-            value: 'KT1 1NE',
-          },
-        });
+        userEvent.type(line5, 'KT1 1NE');
 
-        fireEvent.change(email, {
-          target: {
-            focus: () => {},
-            value: 'info@contact.com',
-          },
-        });
+        userEvent.type(email, 'info@contact.com');
 
-        fireEvent.change(telephone, {
-          target: {
-            focus: () => {},
-            value: '07712345678',
-          },
-        });
+        userEvent.type(telephone, '07712345678');
 
-        fireEvent.change(name, {
-          target: {
-            focus: () => {},
-            value: 'New company',
-          },
-        });
+        userEvent.type(name, 'New company');
       });
 
       await act(async () => {
@@ -156,6 +122,8 @@ describe('AddClient', () => {
 
         fireEvent.click(button);
       });
+
+      await Promise.resolve();
 
       await waitFor(() =>
         expect(history.push).toHaveBeenCalledWith(
@@ -178,54 +146,19 @@ describe('AddClient', () => {
           'client-form.client-details.name.label',
         );
 
-        fireEvent.change(line1, {
-          target: {
-            focus: () => {},
-            value: '1 Street',
-          },
-        });
+        userEvent.type(line1, '1 Street');
 
-        fireEvent.change(line3, {
-          target: {
-            focus: () => {},
-            value: 'Town',
-          },
-        });
+        userEvent.type(line3, 'Town');
 
-        fireEvent.change(line4, {
-          target: {
-            focus: () => {},
-            value: 'County',
-          },
-        });
+        userEvent.type(line4, 'County');
 
-        fireEvent.change(line5, {
-          target: {
-            focus: () => {},
-            value: 'KT1 1NE',
-          },
-        });
+        userEvent.type(line5, 'KT1 1NE');
 
-        fireEvent.change(email, {
-          target: {
-            focus: () => {},
-            value: 'info@contact.com',
-          },
-        });
+        userEvent.type(email, 'info@contact.com');
 
-        fireEvent.change(telephone, {
-          target: {
-            focus: () => {},
-            value: '07712345678',
-          },
-        });
+        userEvent.type(telephone, '07712345678');
 
-        fireEvent.change(name, {
-          target: {
-            focus: () => {},
-            value: 'New company',
-          },
-        });
+        userEvent.type(name, 'New company');
       });
 
       await act(async () => {
@@ -305,54 +238,19 @@ describe('AddClient', () => {
           'client-form.client-details.name.label',
         );
 
-        fireEvent.change(line1, {
-          target: {
-            focus: () => {},
-            value: '1 Street',
-          },
-        });
+        userEvent.type(line1, '1 Street');
 
-        fireEvent.change(line3, {
-          target: {
-            focus: () => {},
-            value: 'Town',
-          },
-        });
+        userEvent.type(line3, 'Town');
 
-        fireEvent.change(line4, {
-          target: {
-            focus: () => {},
-            value: 'County',
-          },
-        });
+        userEvent.type(line4, 'County');
 
-        fireEvent.change(line5, {
-          target: {
-            focus: () => {},
-            value: 'KT1 1NE',
-          },
-        });
+        userEvent.type(line5, 'KT1 1NE');
 
-        fireEvent.change(email, {
-          target: {
-            focus: () => {},
-            value: 'info@contact.com',
-          },
-        });
+        userEvent.type(email, 'info@contact.com');
 
-        fireEvent.change(telephone, {
-          target: {
-            focus: () => {},
-            value: '07712345678',
-          },
-        });
+        userEvent.type(telephone, '07712345678');
 
-        fireEvent.change(name, {
-          target: {
-            focus: () => {},
-            value: 'New company',
-          },
-        });
+        userEvent.type(name, 'New company');
       });
 
       await act(async () => {
@@ -385,54 +283,19 @@ describe('AddClient', () => {
           'client-form.client-details.name.label',
         );
 
-        fireEvent.change(line1, {
-          target: {
-            focus: () => {},
-            value: '1 Street',
-          },
-        });
+        userEvent.type(line1, '1 Street');
 
-        fireEvent.change(line3, {
-          target: {
-            focus: () => {},
-            value: 'Town',
-          },
-        });
+        userEvent.type(line3, 'Town');
 
-        fireEvent.change(line4, {
-          target: {
-            focus: () => {},
-            value: 'County',
-          },
-        });
+        userEvent.type(line4, 'County');
 
-        fireEvent.change(line5, {
-          target: {
-            focus: () => {},
-            value: 'KT1 1NE',
-          },
-        });
+        userEvent.type(line5, 'KT1 1NE');
 
-        fireEvent.change(email, {
-          target: {
-            focus: () => {},
-            value: 'info@contact.com',
-          },
-        });
+        userEvent.type(email, 'info@contact.com');
 
-        fireEvent.change(telephone, {
-          target: {
-            focus: () => {},
-            value: '07712345678',
-          },
-        });
+        userEvent.type(telephone, '07712345678');
 
-        fireEvent.change(name, {
-          target: {
-            focus: () => {},
-            value: 'New company',
-          },
-        });
+        userEvent.type(name, 'New company');
       });
 
       await act(async () => {

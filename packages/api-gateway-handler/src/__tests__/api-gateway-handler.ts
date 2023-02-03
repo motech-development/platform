@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import proxyHandler from '../api-gateway-handler';
+import ErrorResponse from '../error-response';
 
 describe('api-gateway-handler', () => {
   let callback: jest.Mock;
@@ -35,13 +36,16 @@ describe('api-gateway-handler', () => {
   });
 
   it('should return the error response when thrown', async () => {
-    const error = new Error('Something has gone wrong.');
+    const error = new ErrorResponse('Something has gone wrong.', 502);
     const handler = () => {
       throw error;
     };
 
     await proxyHandler(handler)(event, context, callback);
 
-    expect(callback).toHaveBeenCalledWith(null, error);
+    expect(callback).toHaveBeenCalledWith(null, {
+      body: 'Something has gone wrong.',
+      statusCode: 502,
+    });
   });
 });

@@ -9,6 +9,7 @@
     "outDir": "lib",
     "target": "es5"
   },
+  "exclude": ["lib"],
   "extends": "../../tsconfig.json",
   "include": ["src"]
 }

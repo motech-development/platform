@@ -136,6 +136,7 @@ describe('Reports', () => {
     it('should display an alert if the report cannot be downloaded', async () => {
       (axios.request as jest.Mock).mockRejectedValueOnce({
         data: 'fail',
+        isAxiosError: true,
       });
 
       await act(async () => {
