@@ -578,6 +578,7 @@ describe('ViewTransaction', () => {
       it('should display an error toast if file fails to download', async () => {
         (axios.request as jest.Mock).mockRejectedValueOnce({
           data: 'fail',
+          isAxiosError: true,
         });
 
         await act(async () => {

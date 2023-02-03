@@ -4,7 +4,11 @@ interface Auth0ClientOptions {
   domain: string;
 }
 
-export function Auth0Client() {}
+interface IMockFn {
+  new (): unknown;
+}
+
+export const Auth0Client = function MockFn() {} as unknown as IMockFn;
 
 Auth0Client.prototype.buildAuthorizeUrl = jest.fn();
 
@@ -35,7 +39,7 @@ Auth0Client.prototype.loginWithRedirect = jest.fn();
 
 Auth0Client.prototype.logout = jest.fn();
 
-const createAuth0Client = async ({ client_id }: Auth0ClientOptions) =>
-  client_id === 'AUTH0_CLIENT_ID' ? new Auth0Client() : null;
+const createAuth0Client = ({ client_id }: Auth0ClientOptions) =>
+  Promise.resolve(client_id === 'AUTH0_CLIENT_ID' ? new Auth0Client() : null);
 
 export default createAuth0Client;

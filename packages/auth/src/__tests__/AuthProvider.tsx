@@ -9,7 +9,9 @@ const TestComponent: FC = () => {
     useAuth();
 
   const doLogin = () => {
-    loginWithRedirect().catch(() => {});
+    if (loginWithRedirect) {
+      loginWithRedirect().catch(() => {});
+    }
   };
 
   return (
@@ -67,7 +69,7 @@ describe('AuthProvider', () => {
     getIdTokenClaims = jest.fn();
     getIdTokenClaims = jest.fn();
     loginWithPopup = jest.fn();
-    loginWithRedirect = jest.fn();
+    loginWithRedirect = jest.fn().mockResolvedValue(null);
     logout = jest.fn();
     user = {
       name: 'Mo Gusbi',
@@ -230,36 +232,34 @@ describe('AuthProvider', () => {
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {(ctx) => (
-                <>
-                  <button
-                    type="button"
-                    data-testid="no-opts"
-                    onClick={() => {
-                      if (ctx) {
-                        Promise.resolve(ctx.logout).catch(() => {});
-                      }
-                    }}
-                  >
-                    No opts
-                  </button>
-                  <button
-                    type="button"
-                    data-testid="with-opts"
-                    onClick={() => {
-                      if (ctx) {
+              {(ctx) =>
+                ctx && (
+                  <>
+                    <button
+                      type="button"
+                      data-testid="no-opts"
+                      onClick={() => {
+                        Promise.resolve(ctx.logout()).catch(() => {});
+                      }}
+                    >
+                      No opts
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="with-opts"
+                      onClick={() => {
                         Promise.resolve(
                           ctx.logout({
                             returnTo: 'test',
                           }),
                         ).catch(() => {});
-                      }
-                    }}
-                  >
-                    With opts
-                  </button>
-                </>
-              )}
+                      }}
+                    >
+                      With opts
+                    </button>
+                  </>
+                )
+              }
             </AuthContext.Consumer>
           </AuthProvider>
         </MemoryRouter>,
@@ -280,37 +280,42 @@ describe('AuthProvider', () => {
       (
         Auth0Client.prototype.isAuthenticated as jest.Mock
       ).mockResolvedValueOnce(false);
+      (Auth0Client.prototype.loginWithPopup as jest.Mock).mockResolvedValue(
+        null,
+      );
 
       const { findByTestId } = render(
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {(ctx) => (
-                <>
-                  <button
-                    type="button"
-                    data-testid="no-opts"
-                    onClick={() => {
-                      ctx?.loginWithPopup().catch(() => {});
-                    }}
-                  >
-                    No opts
-                  </button>
-                  <button
-                    type="button"
-                    data-testid="with-opts"
-                    onClick={() => {
-                      ctx
-                        ?.loginWithPopup({
-                          audience: 'test',
-                        })
-                        .catch(() => {});
-                    }}
-                  >
-                    With opts
-                  </button>
-                </>
-              )}
+              {(ctx) =>
+                ctx && (
+                  <>
+                    <button
+                      type="button"
+                      data-testid="no-opts"
+                      onClick={() => {
+                        ctx.loginWithPopup().catch(() => {});
+                      }}
+                    >
+                      No opts
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="with-opts"
+                      onClick={() => {
+                        ctx
+                          .loginWithPopup({
+                            audience: 'test',
+                          })
+                          .catch(() => {});
+                      }}
+                    >
+                      With opts
+                    </button>
+                  </>
+                )
+              }
             </AuthContext.Consumer>
           </AuthProvider>
         </MemoryRouter>,
@@ -333,37 +338,42 @@ describe('AuthProvider', () => {
       (
         Auth0Client.prototype.isAuthenticated as jest.Mock
       ).mockResolvedValueOnce(false);
+      (Auth0Client.prototype.loginWithRedirect as jest.Mock).mockResolvedValue(
+        null,
+      );
 
       const { findByTestId } = render(
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {(ctx) => (
-                <>
-                  <button
-                    type="button"
-                    data-testid="no-opts"
-                    onClick={() => {
-                      ctx?.loginWithRedirect().catch(() => {});
-                    }}
-                  >
-                    No opts
-                  </button>
-                  <button
-                    type="button"
-                    data-testid="with-opts"
-                    onClick={() => {
-                      ctx
-                        ?.loginWithRedirect({
-                          audience: 'test',
-                        })
-                        .catch(() => {});
-                    }}
-                  >
-                    With opts
-                  </button>
-                </>
-              )}
+              {(ctx) =>
+                ctx && (
+                  <>
+                    <button
+                      type="button"
+                      data-testid="no-opts"
+                      onClick={() => {
+                        ctx.loginWithRedirect().catch(() => {});
+                      }}
+                    >
+                      No opts
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="with-opts"
+                      onClick={() => {
+                        ctx
+                          .loginWithRedirect({
+                            audience: 'test',
+                          })
+                          .catch(() => {});
+                      }}
+                    >
+                      With opts
+                    </button>
+                  </>
+                )
+              }
             </AuthContext.Consumer>
           </AuthProvider>
         </MemoryRouter>,
@@ -386,37 +396,42 @@ describe('AuthProvider', () => {
       (
         Auth0Client.prototype.isAuthenticated as jest.Mock
       ).mockResolvedValueOnce(false);
+      (Auth0Client.prototype.buildAuthorizeUrl as jest.Mock).mockResolvedValue(
+        null,
+      );
 
       const { findByTestId } = render(
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {(ctx) => (
-                <>
-                  <button
-                    type="button"
-                    data-testid="no-opts"
-                    onClick={() => {
-                      ctx?.buildAuthorizeUrl().catch(() => {});
-                    }}
-                  >
-                    No opts
-                  </button>
-                  <button
-                    type="button"
-                    data-testid="with-opts"
-                    onClick={() => {
-                      ctx
-                        ?.buildAuthorizeUrl({
-                          audience: 'test',
-                        })
-                        .catch(() => {});
-                    }}
-                  >
-                    With opts
-                  </button>
-                </>
-              )}
+              {(ctx) =>
+                ctx && (
+                  <>
+                    <button
+                      type="button"
+                      data-testid="no-opts"
+                      onClick={() => {
+                        ctx.buildAuthorizeUrl().catch(() => {});
+                      }}
+                    >
+                      No opts
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="with-opts"
+                      onClick={() => {
+                        ctx
+                          .buildAuthorizeUrl({
+                            audience: 'test',
+                          })
+                          .catch(() => {});
+                      }}
+                    >
+                      With opts
+                    </button>
+                  </>
+                )
+              }
             </AuthContext.Consumer>
           </AuthProvider>
         </MemoryRouter>,
@@ -444,32 +459,34 @@ describe('AuthProvider', () => {
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {(ctx) => (
-                <>
-                  <button
-                    type="button"
-                    data-testid="no-opts"
-                    onClick={() => {
-                      ctx?.getIdTokenClaims().catch(() => {});
-                    }}
-                  >
-                    No opts
-                  </button>
-                  <button
-                    type="button"
-                    data-testid="with-opts"
-                    onClick={() => {
-                      ctx
-                        ?.getIdTokenClaims({
-                          audience: 'test',
-                        })
-                        .catch(() => {});
-                    }}
-                  >
-                    With opts
-                  </button>
-                </>
-              )}
+              {(ctx) =>
+                ctx && (
+                  <>
+                    <button
+                      type="button"
+                      data-testid="no-opts"
+                      onClick={() => {
+                        ctx.getIdTokenClaims().catch(() => {});
+                      }}
+                    >
+                      No opts
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="with-opts"
+                      onClick={() => {
+                        ctx
+                          ?.getIdTokenClaims({
+                            audience: 'test',
+                          })
+                          .catch(() => {});
+                      }}
+                    >
+                      With opts
+                    </button>
+                  </>
+                )
+              }
             </AuthContext.Consumer>
           </AuthProvider>
         </MemoryRouter>,
@@ -497,32 +514,34 @@ describe('AuthProvider', () => {
         <MemoryRouter initialEntries={['?code=test']}>
           <AuthProvider>
             <AuthContext.Consumer>
-              {(ctx) => (
-                <>
-                  <button
-                    type="button"
-                    data-testid="no-opts"
-                    onClick={() => {
-                      ctx?.getTokenSilently().catch(() => {});
-                    }}
-                  >
-                    No opts
-                  </button>
-                  <button
-                    type="button"
-                    data-testid="with-opts"
-                    onClick={() => {
-                      ctx
-                        ?.getTokenSilently({
-                          audience: 'test',
-                        })
-                        .catch(() => {});
-                    }}
-                  >
-                    With opts
-                  </button>
-                </>
-              )}
+              {(ctx) =>
+                ctx && (
+                  <>
+                    <button
+                      type="button"
+                      data-testid="no-opts"
+                      onClick={() => {
+                        ctx.getTokenSilently().catch(() => {});
+                      }}
+                    >
+                      No opts
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="with-opts"
+                      onClick={() => {
+                        ctx
+                          .getTokenSilently({
+                            audience: 'test',
+                          })
+                          .catch(() => {});
+                      }}
+                    >
+                      With opts
+                    </button>
+                  </>
+                )
+              }
             </AuthContext.Consumer>
           </AuthProvider>
         </MemoryRouter>,

@@ -43,7 +43,7 @@ const hasStringValues = (
 const hasObjectAttributes = (
   attribute: DocumentClient.AttributeMap,
 ): attribute is IFilteredData =>
-  !!attribute.__typename && !!attribute.id && !!attribute.owner;
+  !!attribute.__typename || !!attribute.id || !!attribute.owner;
 
 const updateAttachments = async (
   documentClient: DocumentClient,
@@ -98,6 +98,7 @@ const updateAttachments = async (
     });
 
   const results = await Promise.all(query);
+
   const filtered = results
     .filter(({ Items }) => Items && Items.length > 0)
     .map(({ Items }) => Items as DocumentClient.ItemList)

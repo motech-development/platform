@@ -454,6 +454,7 @@ describe('RecordTransaction', () => {
         it('should display an error toast if upload is unsuccessful', async () => {
           (axios.request as jest.Mock).mockRejectedValueOnce({
             data: 'fail',
+            isAxiosError: true,
           });
 
           await act(async () => {

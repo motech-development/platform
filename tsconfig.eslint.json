@@ -4,5 +4,5 @@
     "noEmit": true
   },
   "extends": "./tsconfig.json",
-  "include": ["applications/*/*/src/**/*", "packages/*/src/**/*"]
+  "include": ["applications/*/*/src/**/*", "packages/*/src/**/*", "__mocks__"]
 }
