@@ -55,6 +55,24 @@ module.exports = {
         project: ['./tsconfig.eslint.json', './tsconfig.json'],
       },
       plugins: ['@typescript-eslint', 'jest'],
+      rules: {
+        // TODO: Enable this rule
+        'react/function-component-definition': [
+          'off',
+          {
+            namedComponents: ['function-declaration', 'function-expression'],
+            unnamedComponents: 'function-expression',
+          },
+        ],
+        'react/jsx-no-useless-fragment': [
+          'error',
+          {
+            allowExpressions: true,
+          },
+        ],
+        // TODO: Enable this rule
+        'react/prop-types': 'off',
+      },
     },
   ],
   plugins: ['jest'],
