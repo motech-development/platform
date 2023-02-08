@@ -20,6 +20,8 @@ export interface IRowProps {
   gutter?: string;
 }
 
+export type TRowData<TInput, TOutput> = (input: TInput) => FC<TOutput>;
+
 const Row: FC<IRowProps> = ({ children, columns = 12, gutter = '1rem' }) => (
   <RowContainer $columns={columns} $gutter={gutter}>
     {children}

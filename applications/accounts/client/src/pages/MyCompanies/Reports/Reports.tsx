@@ -13,6 +13,7 @@ import {
   PageTitle,
   Row,
   TableCell,
+  TRowData,
   useToast,
 } from '@motech-development/breeze-ui';
 import { useQs } from '@motech-development/query-string-hook';
@@ -50,6 +51,11 @@ interface IReportsParams {
   companyId: string;
 }
 
+interface IDataRow {
+  download: (url: string) => Promise<Blob | undefined>;
+  label: string;
+}
+
 export const GET_REPORTS = gql`
   query GetReports($id: ID!, $count: Int, $nextToken: String) {
     getReports(id: $id, count: $count, nextToken: $nextToken) {
@@ -63,6 +69,32 @@ export const GET_REPORTS = gql`
     }
   }
 `;
+
+const row: TRowData<IDataRow, IReport> =
+  ({ download, label }) =>
+  ({ createdAt, downloadUrl, ttl }) =>
+    (
+      <>
+        <TableCell>
+          <DateTime format="dd/MM/yyyy HH:mm" value={createdAt} />
+        </TableCell>
+
+        <TableCell>
+          <DateTime format="dd/MM/yyyy HH:mm" value={ttl} />
+        </TableCell>
+
+        <TableCell>
+          <Button
+            size="sm"
+            onClick={() => {
+              download(downloadUrl).catch(() => {});
+            }}
+          >
+            {label}
+          </Button>
+        </TableCell>
+      </>
+    );
 
 const Reports: FC = () => {
   const { companyId } = useParams<IReportsParams>();
@@ -152,28 +184,10 @@ const Reports: FC = () => {
                     <TableCell as="th">{t('reports.table.actions')}</TableCell>
                   </>
                 }
-                row={({ createdAt, downloadUrl, ttl }) => (
-                  <>
-                    <TableCell>
-                      <DateTime format="dd/MM/yyyy HH:mm" value={createdAt} />
-                    </TableCell>
-
-                    <TableCell>
-                      <DateTime format="dd/MM/yyyy HH:mm" value={ttl} />
-                    </TableCell>
-
-                    <TableCell>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          download(downloadUrl).catch(() => {});
-                        }}
-                      >
-                        {t('reports.download')}
-                      </Button>
-                    </TableCell>
-                  </>
-                )}
+                row={row({
+                  download,
+                  label: t('reports.download'),
+                })}
                 noResults={
                   <Alert
                     colour="secondary"

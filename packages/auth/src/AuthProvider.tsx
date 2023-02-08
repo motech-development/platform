@@ -2,8 +2,10 @@ import {
   createContext,
   FC,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -131,6 +133,63 @@ const AuthProvider: FC<IAuthProviderProps> = ({
     }
   }, [auth0Client, onRedirectCallback, pathname, search]);
 
+  const buildAuthorizeUrl = useCallback(
+    (options?: RedirectLoginOptions) => auth0Client!.buildAuthorizeUrl(options),
+    [auth0Client],
+  );
+
+  const getIdTokenClaims = useCallback(
+    (options?: GetIdTokenClaimsOptions) =>
+      auth0Client!.getIdTokenClaims(options),
+    [auth0Client],
+  );
+
+  const getTokenSilently = useCallback(
+    (options?: GetTokenSilentlyOptions) =>
+      auth0Client!.getTokenSilently(options),
+    [auth0Client],
+  );
+
+  const loginWithPopup = useCallback(
+    (options?: PopupLoginOptions) => auth0Client!.loginWithPopup(options),
+    [auth0Client],
+  );
+
+  const loginWithRedirect = useCallback(
+    (options?: RedirectLoginOptions) => auth0Client!.loginWithRedirect(options),
+    [auth0Client],
+  );
+
+  const logout = useCallback(
+    (options?: LogoutOptions) => auth0Client!.logout(options),
+    [auth0Client],
+  );
+
+  const value = useMemo(
+    () => ({
+      buildAuthorizeUrl,
+      getIdTokenClaims,
+      getTokenSilently,
+      isAuthenticated,
+      isLoading,
+      loginWithPopup,
+      loginWithRedirect,
+      logout,
+      user,
+    }),
+    [
+      buildAuthorizeUrl,
+      getIdTokenClaims,
+      getTokenSilently,
+      isAuthenticated,
+      isLoading,
+      loginWithPopup,
+      loginWithRedirect,
+      logout,
+      user,
+    ],
+  );
+
   if (NODE_ENV === 'test') {
     return <>{children}</>;
   }
@@ -139,40 +198,7 @@ const AuthProvider: FC<IAuthProviderProps> = ({
     return null;
   }
 
-  const buildAuthorizeUrl = (options?: RedirectLoginOptions) =>
-    auth0Client.buildAuthorizeUrl(options);
-
-  const getIdTokenClaims = (options?: GetIdTokenClaimsOptions) =>
-    auth0Client.getIdTokenClaims(options);
-
-  const getTokenSilently = (options?: GetTokenSilentlyOptions) =>
-    auth0Client.getTokenSilently(options);
-
-  const loginWithPopup = (options?: PopupLoginOptions) =>
-    auth0Client.loginWithPopup(options);
-
-  const loginWithRedirect = (options?: RedirectLoginOptions) =>
-    auth0Client.loginWithRedirect(options);
-
-  const logout = (options?: LogoutOptions) => auth0Client.logout(options);
-
-  return (
-    <AuthContext.Provider
-      value={{
-        buildAuthorizeUrl,
-        getIdTokenClaims,
-        getTokenSilently,
-        isAuthenticated,
-        isLoading,
-        loginWithPopup,
-        loginWithRedirect,
-        logout,
-        user,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

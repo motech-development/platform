@@ -81,7 +81,7 @@ export { default as Radio } from './Radio/Radio';
 export type { IRadioOption, IRadioProps } from './Radio/Radio';
 
 export { default as Row } from './Row/Row';
-export type { IRowProps } from './Row/Row';
+export type { TRowData, IRowProps } from './Row/Row';
 
 export { default as ScrollToTop } from './ScrollToTop/ScrollToTop';
 

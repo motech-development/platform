@@ -7,6 +7,7 @@ import {
   PageTitle,
   Row,
   TableCell,
+  TRowData,
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
@@ -28,6 +29,59 @@ import UPDATE_BANK_SETTINGS, {
 interface ISelectAccountParams {
   companyId: string;
 }
+
+interface IDataRow {
+  balanceLabel: string;
+  linkAccountLabel: string;
+  selectAccount: (id: string) => void;
+  selected: string;
+}
+
+interface IDataRowComponent {
+  accountIdentifications: {
+    identification: string;
+    type: string;
+  }[];
+  balance: number;
+  currency: string;
+  id: string;
+  type: string;
+}
+
+const row: TRowData<IDataRow, IDataRowComponent> =
+  ({ balanceLabel, linkAccountLabel, selectAccount, selected }) =>
+  ({ balance, currency, id, type }) =>
+    (
+      <>
+        <TableCell>
+          <Typography
+            component="p"
+            variant="h6"
+            margin={balance ? 'md' : 'none'}
+          >
+            {type}
+          </Typography>
+
+          {balance && (
+            <Typography component="p" variant="p" margin="none">
+              {`${balanceLabel}: `}
+              <Currency currency={currency} value={balance} />
+            </Typography>
+          )}
+        </TableCell>
+
+        <TableCell>
+          <Button
+            loading={selected === id}
+            disabled={selected !== ''}
+            onClick={() => selectAccount(id)}
+            size="sm"
+          >
+            {linkAccountLabel}
+          </Button>
+        </TableCell>
+      </>
+    );
 
 const SelectAccount: FC = () => {
   const history = useHistory();
@@ -115,37 +169,12 @@ const SelectAccount: FC = () => {
                     {t('select-account.accounts')}
                   </TableCell>
                 }
-                row={({ balance, currency, id, type }) => (
-                  <>
-                    <TableCell>
-                      <Typography
-                        component="p"
-                        variant="h6"
-                        margin={balance ? 'md' : 'none'}
-                      >
-                        {type}
-                      </Typography>
-
-                      {balance && (
-                        <Typography component="p" variant="p" margin="none">
-                          {t('select-account.balance')}:{' '}
-                          <Currency currency={currency} value={balance} />
-                        </Typography>
-                      )}
-                    </TableCell>
-
-                    <TableCell>
-                      <Button
-                        loading={selected === id}
-                        disabled={selected !== ''}
-                        onClick={() => selectAccount(id)}
-                        size="sm"
-                      >
-                        {t('select-account.link-account')}
-                      </Button>
-                    </TableCell>
-                  </>
-                )}
+                row={row({
+                  balanceLabel: t('select-account.balance'),
+                  selectAccount,
+                  selected,
+                  linkAccountLabel: t('select-account.link-account'),
+                })}
                 noResults={
                   <ErrorCard
                     backTo={`/my-companies/settings/${companyId}`}

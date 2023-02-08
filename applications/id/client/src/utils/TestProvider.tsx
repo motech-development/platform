@@ -1,6 +1,6 @@
 import { ToastContext, ToastProvider } from '@motech-development/breeze-ui';
 import i18n from 'i18next';
-import { FC, ReactNode, Suspense } from 'react';
+import { FC, ReactNode, Suspense, useMemo } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 export const add = jest.fn();
@@ -28,14 +28,17 @@ const TestProvider: FC<ITestProviderProps> = ({ children }) => {
     })
     .catch(() => {});
 
+  const ctx = useMemo(
+    () => ({
+      add,
+      remove,
+    }),
+    [],
+  );
+
   return (
     <ToastProvider>
-      <ToastContext.Provider
-        value={{
-          add,
-          remove,
-        }}
-      >
+      <ToastContext.Provider value={ctx}>
         <I18nextProvider i18n={testI18n}>
           <Suspense fallback={<div />}>{children}</Suspense>
         </I18nextProvider>

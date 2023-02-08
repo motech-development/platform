@@ -5,7 +5,7 @@ import {
   ToastProvider,
 } from '@motech-development/breeze-ui';
 import i18n from 'i18next';
-import { FC, ReactElement } from 'react';
+import { FC, ReactElement, useMemo } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { Route, Router, Switch } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
@@ -72,34 +72,37 @@ const TestProvider: FC<ITestProviderProps> = ({
     <Router history={history}>
       <AuthProvider>
         <AuthContext.Provider
-          value={{
-            buildAuthorizeUrl,
-            getIdTokenClaims,
-            getTokenSilently,
-            isAuthenticated,
-            isLoading,
-            loginWithPopup,
-            loginWithRedirect,
-            logout,
-            user,
-          }}
+          value={useMemo(
+            () => ({
+              buildAuthorizeUrl,
+              getIdTokenClaims,
+              getTokenSilently,
+              isAuthenticated,
+              isLoading,
+              loginWithPopup,
+              loginWithRedirect,
+              logout,
+              user,
+            }),
+            [isAuthenticated, isLoading, user],
+          )}
         >
           <ToastProvider>
             <ToastContext.Provider
-              value={{
-                add,
-                remove,
-              }}
+              value={useMemo(
+                () => ({
+                  add,
+                  remove,
+                }),
+                [],
+              )}
             >
               <I18nextProvider i18n={testI18n}>
                 <Switch>
                   <Route exact path={path} component={() => children} />
-                  <Route
-                    path="*"
-                    component={() => (
-                      <div data-testid="next-page">The next page</div>
-                    )}
-                  />
+                  <Route path="*">
+                    <div data-testid="next-page">The next page</div>
+                  </Route>
                 </Switch>
               </I18nextProvider>
             </ToastContext.Provider>
