@@ -3,13 +3,10 @@ const PopperJs =
     placements: unknown;
   }>('popper.js');
 
-export default class Popper {
-  public static placements = PopperJs.placements;
+const Popper = {
+  destroy: () => {},
+  placements: PopperJs.placements,
+  scheduleUpdate: () => {},
+};
 
-  constructor() {
-    return {
-      destroy: () => {},
-      scheduleUpdate: () => {},
-    };
-  }
-}
+export default Popper;

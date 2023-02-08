@@ -32,7 +32,7 @@ precacheAndRoute(self.__WB_MANIFEST);
 // Set up App Shell-style routing, so that all navigation requests
 // are fulfilled with your index.html shell. Learn more at
 // https://developers.google.com/web/fundamentals/architecture/app-shell
-const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
+const fileExtensionRegexp = /\/[^/?]+\.[^/]+$/;
 registerRoute(
   // Return false to exempt requests from being fulfilled by index.html.
   ({ request, url }: { request: Request; url: URL }) => {
@@ -59,14 +59,14 @@ registerRoute(
 );
 
 registerRoute(
-  new RegExp(/locales.*\.json$/),
+  /locales.*\.json$/,
   new NetworkFirst({
     cacheName: 'i18n',
   }),
 );
 
 registerRoute(
-  new RegExp(/^https:\/\/fonts\.(googleapis|gstatic).com/),
+  /^https:\/\/fonts\.(googleapis|gstatic).com/,
   new StaleWhileRevalidate({
     cacheName: 'fonts',
     plugins: [
@@ -78,7 +78,7 @@ registerRoute(
 );
 
 registerRoute(
-  new RegExp(/^https:\/\/?[^/:]+\/.*?avatar(?:s)/),
+  /^https:\/\/?[^/:]+\/.*?avatar(?:s)/,
   new StaleWhileRevalidate({
     cacheName: 'avatar',
     plugins: [

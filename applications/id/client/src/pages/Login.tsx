@@ -48,36 +48,24 @@ const Login: FC = () => {
     pageview(view);
   }, [view]);
 
-  return (
-    <>
-      {window.config ? (
-        <Window>
-          <AppTitle />
+  return window.config ? (
+    <Window>
+      <AppTitle />
 
-          {view === 'forgotten-password' && (
-            <ForgottenPassword client={client} setView={setView} />
-          )}
-
-          {view === 'sign-up' && (
-            <SignUp
-              client={client}
-              handleError={handleError}
-              setView={setView}
-            />
-          )}
-
-          {view === 'log-in' && (
-            <LogIn
-              client={client}
-              handleError={handleError}
-              setView={setView}
-            />
-          )}
-        </Window>
-      ) : (
-        <Loader />
+      {view === 'forgotten-password' && (
+        <ForgottenPassword client={client} setView={setView} />
       )}
-    </>
+
+      {view === 'sign-up' && (
+        <SignUp client={client} handleError={handleError} setView={setView} />
+      )}
+
+      {view === 'log-in' && (
+        <LogIn client={client} handleError={handleError} setView={setView} />
+      )}
+    </Window>
+  ) : (
+    <Loader />
   );
 };
 

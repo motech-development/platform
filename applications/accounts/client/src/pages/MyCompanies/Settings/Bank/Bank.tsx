@@ -7,6 +7,7 @@ import {
   PageTitle,
   Row,
   TableCell,
+  TRowData,
   Typography,
 } from '@motech-development/breeze-ui';
 import { FC, useEffect, useState } from 'react';
@@ -29,6 +30,45 @@ import ON_BANK_CALLBACK, {
 interface ISelectBankParams {
   companyId: string;
 }
+
+interface IDataRow {
+  connect: (bank: string, user?: string) => Promise<void>;
+  connectLabel: string;
+  data: IGetBanksOutput;
+  selected: string;
+}
+
+interface IDataRowComponent {
+  id: string;
+  name: string;
+}
+
+const row: TRowData<IDataRow, IDataRowComponent> =
+  ({ connect, connectLabel, data, selected }) =>
+  ({ id, name }) =>
+    (
+      <>
+        <TableCell>
+          <Typography component="p" variant="h5" margin="none">
+            {name}
+          </Typography>
+        </TableCell>
+        <TableCell>
+          {data.getBankSettings && (
+            <Button
+              loading={selected === id}
+              disabled={selected !== ''}
+              onClick={() => {
+                connect(id, data.getBankSettings?.user).catch(() => {});
+              }}
+              size="sm"
+            >
+              {connectLabel}
+            </Button>
+          )}
+        </TableCell>
+      </>
+    );
 
 // TODO: Get to the bottom of the subscription error
 const Bank: FC = () => {
@@ -90,31 +130,12 @@ const Bank: FC = () => {
                     {t('select-bank.name')}
                   </TableCell>
                 }
-                row={({ id, name }) => (
-                  <>
-                    <TableCell>
-                      <Typography component="p" variant="h5" margin="none">
-                        {name}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      {data.getBankSettings && (
-                        <Button
-                          loading={selected === id}
-                          disabled={selected !== ''}
-                          onClick={() => {
-                            connect(id, data.getBankSettings?.user).catch(
-                              () => {},
-                            );
-                          }}
-                          size="sm"
-                        >
-                          {t('select-bank.connect')}
-                        </Button>
-                      )}
-                    </TableCell>
-                  </>
-                )}
+                row={row({
+                  connect,
+                  connectLabel: t('select-bank.connect'),
+                  data,
+                  selected,
+                })}
                 noResults={
                   <ErrorCard
                     backTo={`/my-companies/settings/${companyId}`}

@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
 import ProtectedRoute from '../ProtectedRoute';
@@ -47,27 +47,32 @@ describe('ProtectedRoute', () => {
     isLoading = false;
     isAuthenticated = false;
 
-    const { queryByTestId } = render(
+    const Component = () => (
       <MemoryRouter>
         <AuthProvider>
           <AuthContext.Provider
-            value={{
-              buildAuthorizeUrl,
-              getIdTokenClaims,
-              getTokenSilently,
-              isAuthenticated,
-              isLoading,
-              loginWithPopup,
-              loginWithRedirect,
-              logout,
-              user,
-            }}
+            value={useMemo(
+              () => ({
+                buildAuthorizeUrl,
+                getIdTokenClaims,
+                getTokenSilently,
+                isAuthenticated,
+                isLoading,
+                loginWithPopup,
+                loginWithRedirect,
+                logout,
+                user,
+              }),
+              [],
+            )}
           >
             <ProtectedRoute path="/" component={TestComponent} />
           </AuthContext.Provider>
         </AuthProvider>
-      </MemoryRouter>,
+      </MemoryRouter>
     );
+
+    const { queryByTestId } = render(<Component />);
 
     await waitFor(() => expect(queryByTestId('authenticated')).toBeNull());
   });
@@ -76,27 +81,32 @@ describe('ProtectedRoute', () => {
     isLoading = false;
     isAuthenticated = true;
 
-    const { findByTestId } = render(
+    const Component = () => (
       <MemoryRouter>
         <AuthProvider>
           <AuthContext.Provider
-            value={{
-              buildAuthorizeUrl,
-              getIdTokenClaims,
-              getTokenSilently,
-              isAuthenticated,
-              isLoading,
-              loginWithPopup,
-              loginWithRedirect,
-              logout,
-              user,
-            }}
+            value={useMemo(
+              () => ({
+                buildAuthorizeUrl,
+                getIdTokenClaims,
+                getTokenSilently,
+                isAuthenticated,
+                isLoading,
+                loginWithPopup,
+                loginWithRedirect,
+                logout,
+                user,
+              }),
+              [],
+            )}
           >
             <ProtectedRoute path="/" component={TestComponent} />
           </AuthContext.Provider>
         </AuthProvider>
-      </MemoryRouter>,
+      </MemoryRouter>
     );
+
+    const { findByTestId } = render(<Component />);
 
     await expect(findByTestId('authenticated')).resolves.toBeInTheDocument();
   });
@@ -105,27 +115,32 @@ describe('ProtectedRoute', () => {
     isLoading = false;
     isAuthenticated = false;
 
-    render(
+    const Component = () => (
       <MemoryRouter>
         <AuthProvider>
           <AuthContext.Provider
-            value={{
-              buildAuthorizeUrl,
-              getIdTokenClaims,
-              getTokenSilently,
-              isAuthenticated,
-              isLoading,
-              loginWithPopup,
-              loginWithRedirect,
-              logout,
-              user,
-            }}
+            value={useMemo(
+              () => ({
+                buildAuthorizeUrl,
+                getIdTokenClaims,
+                getTokenSilently,
+                isAuthenticated,
+                isLoading,
+                loginWithPopup,
+                loginWithRedirect,
+                logout,
+                user,
+              }),
+              [],
+            )}
           >
             <ProtectedRoute path="/" component={TestComponent} />
           </AuthContext.Provider>
         </AuthProvider>
-      </MemoryRouter>,
+      </MemoryRouter>
     );
+
+    render(<Component />);
 
     await waitFor(() =>
       expect(loginWithRedirect).toHaveBeenCalledWith({

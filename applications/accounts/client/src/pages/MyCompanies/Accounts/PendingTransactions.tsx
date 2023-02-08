@@ -7,6 +7,7 @@ import {
   PageTitle,
   Row,
   TableCell,
+  TRowData,
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
@@ -34,6 +35,95 @@ import GET_TRANSACTIONS, {
 interface IPendingTransactionsParams {
   companyId: string;
 }
+
+interface IDataRow {
+  companyId: string;
+  data: IGetTransactionsOutput;
+  deleteLabel: string;
+  launchDeleteModal: (id: string, name: string) => void;
+  noAttachmentLabel: string;
+  scheduledLabel: string;
+  viewLabel: string;
+}
+
+interface IDataRowComponent {
+  amount: number;
+  attachment: string;
+  date: string;
+  description: string;
+  id: string;
+  name: string;
+  scheduled: boolean;
+}
+
+const row: TRowData<IDataRow, IDataRowComponent> =
+  ({
+    companyId,
+    data,
+    deleteLabel,
+    launchDeleteModal,
+    noAttachmentLabel,
+    scheduledLabel,
+    viewLabel,
+  }) =>
+  ({ amount, attachment, date, description, id, name, scheduled }) =>
+    (
+      <>
+        <TransactionArrow value={amount} />
+
+        <TransactionDetailsCell>
+          <WarningText
+            id={id}
+            component="p"
+            margin="none"
+            message={noAttachmentLabel}
+            placement="right"
+            show={!attachment}
+            variant="h6"
+          >
+            {name}
+          </WarningText>
+
+          <Typography truncate component="p" variant="p" margin="none">
+            {description}
+          </Typography>
+        </TransactionDetailsCell>
+
+        <TableCell>
+          <Scheduled
+            id={id}
+            message={scheduledLabel}
+            placement="right"
+            show={scheduled}
+            value={date}
+          />
+        </TableCell>
+
+        {data.getBalance && (
+          <TableCell align="right">
+            <Currency currency={data.getBalance.currency} value={amount} />
+          </TableCell>
+        )}
+
+        <TableCell>
+          <LinkButton
+            data-testid={`View ${name}`}
+            to={`/my-companies/accounts/${companyId}/view-transaction/${id}`}
+            size="sm"
+          >
+            {viewLabel}
+          </LinkButton>{' '}
+          <Button
+            data-testid={`Delete ${name}`}
+            colour="danger"
+            size="sm"
+            onClick={() => launchDeleteModal(id, name)}
+          >
+            {deleteLabel}
+          </Button>
+        </TableCell>
+      </>
+    );
 
 const PendingTransactions: FC = () => {
   const [transaction, setTransaction] = useState({
@@ -122,83 +212,19 @@ const PendingTransactions: FC = () => {
                       </TableCell>
                     </>
                   }
-                  row={({
-                    amount,
-                    attachment,
-                    date,
-                    description,
-                    id,
-                    name,
-                    scheduled,
-                  }) => (
-                    <>
-                      <TransactionArrow value={amount} />
-
-                      <TransactionDetailsCell>
-                        <WarningText
-                          id={id}
-                          component="p"
-                          margin="none"
-                          message={t(
-                            'pending-transactions.transactions.no-attachment',
-                          )}
-                          placement="right"
-                          show={!attachment}
-                          variant="h6"
-                        >
-                          {name}
-                        </WarningText>
-
-                        <Typography
-                          truncate
-                          component="p"
-                          variant="p"
-                          margin="none"
-                        >
-                          {description}
-                        </Typography>
-                      </TransactionDetailsCell>
-
-                      <TableCell>
-                        <Scheduled
-                          id={id}
-                          message={t(
-                            'pending-transactions.transactions.scheduled',
-                          )}
-                          placement="right"
-                          show={scheduled}
-                          value={date}
-                        />
-                      </TableCell>
-
-                      {data.getBalance && (
-                        <TableCell align="right">
-                          <Currency
-                            currency={data.getBalance.currency}
-                            value={amount}
-                          />
-                        </TableCell>
-                      )}
-
-                      <TableCell>
-                        <LinkButton
-                          data-testid={`View ${name}`}
-                          to={`/my-companies/accounts/${companyId}/view-transaction/${id}`}
-                          size="sm"
-                        >
-                          {t('pending-transactions.transactions.view')}
-                        </LinkButton>{' '}
-                        <Button
-                          data-testid={`Delete ${name}`}
-                          colour="danger"
-                          size="sm"
-                          onClick={() => launchDeleteModal(id, name)}
-                        >
-                          {t('pending-transactions.transactions.delete')}
-                        </Button>
-                      </TableCell>
-                    </>
-                  )}
+                  row={row({
+                    companyId,
+                    data,
+                    deleteLabel: t('pending-transactions.transactions.delete'),
+                    launchDeleteModal,
+                    noAttachmentLabel: t(
+                      'pending-transactions.transactions.no-attachment',
+                    ),
+                    scheduledLabel: t(
+                      'pending-transactions.transactions.scheduled',
+                    ),
+                    viewLabel: t('pending-transactions.transactions.view'),
+                  })}
                   noResults={<NoTransactions />}
                 />
               </Col>

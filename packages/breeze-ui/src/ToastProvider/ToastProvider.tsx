@@ -8,8 +8,10 @@ import {
   createContext,
   FC,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
@@ -73,29 +75,35 @@ export interface IToastProviderProps {
 const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
   const output = document.createElement('div');
   const [toasts, setToasts] = useState<IToast[]>([]);
-  const add = ({ colour, message, onDismiss }: IAddToast) => {
-    const id = generateId();
+  const add = useCallback(
+    ({ colour, message, onDismiss }: IAddToast) => {
+      const id = generateId();
 
-    setToasts([
-      ...toasts,
-      {
-        colour,
-        id,
-        message,
-        onDismiss,
-      },
-    ]);
-  };
-  const remove = (id: string) =>
-    setToasts(
-      toasts.filter((t) => {
-        if (t.id === id && t.onDismiss) {
-          t.onDismiss();
-        }
+      setToasts([
+        ...toasts,
+        {
+          colour,
+          id,
+          message,
+          onDismiss,
+        },
+      ]);
+    },
+    [toasts],
+  );
+  const remove = useCallback(
+    (id: string) =>
+      setToasts(
+        toasts.filter((t) => {
+          if (t.id === id && t.onDismiss) {
+            t.onDismiss();
+          }
 
-        return t.id !== id;
-      }),
-    );
+          return t.id !== id;
+        }),
+      ),
+    [toasts],
+  );
   const alerts = (
     <ToastContainer>
       {toasts.map(({ colour, id, message }) => (
@@ -120,13 +128,16 @@ const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
     };
   }, [output]);
 
+  const value = useMemo(
+    () => ({
+      add,
+      remove,
+    }),
+    [add, remove],
+  );
+
   return (
-    <ToastContext.Provider
-      value={{
-        add,
-        remove,
-      }}
-    >
+    <ToastContext.Provider value={value}>
       {children}
 
       {createPortal(alerts, output)}

@@ -33,20 +33,16 @@ const Reset: FC = () => {
     pageview(view);
   }, [view]);
 
-  return (
-    <>
-      {window.passwordReset ? (
-        <Window>
-          <AppTitle />
+  return window.passwordReset ? (
+    <Window>
+      <AppTitle />
 
-          {view === 'success' && <Success />}
+      {view === 'success' && <Success />}
 
-          {view === 'reset' && <ResetPassword setView={setView} />}
-        </Window>
-      ) : (
-        <Loader />
-      )}
-    </>
+      {view === 'reset' && <ResetPassword setView={setView} />}
+    </Window>
+  ) : (
+    <Loader />
   );
 };
 

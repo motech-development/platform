@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
 import WithAuth from '../WithAuth';
@@ -51,59 +51,69 @@ describe('withAuth', () => {
     });
 
     it('should show component', async () => {
-      const { findByTestId } = render(
+      const Component = () => (
         <MemoryRouter>
           <AuthProvider>
             <AuthContext.Provider
-              value={{
-                buildAuthorizeUrl,
-                getIdTokenClaims,
-                getTokenSilently,
-                isAuthenticated,
-                isLoading,
-                loginWithPopup,
-                loginWithRedirect,
-                logout,
-                user,
-              }}
+              value={useMemo(
+                () => ({
+                  buildAuthorizeUrl,
+                  getIdTokenClaims,
+                  getTokenSilently,
+                  isAuthenticated,
+                  isLoading,
+                  loginWithPopup,
+                  loginWithRedirect,
+                  logout,
+                  user,
+                }),
+                [],
+              )}
             >
               <WithAuth fallback={<LoadingComponent />} onError={onError}>
                 <TestComponent />
               </WithAuth>
             </AuthContext.Provider>
           </AuthProvider>
-        </MemoryRouter>,
+        </MemoryRouter>
       );
+
+      const { findByTestId } = render(<Component />);
 
       await expect(findByTestId('content')).resolves.toBeInTheDocument();
     });
 
     it('should should handler error', async () => {
-      render(
+      const Component = () => (
         <MemoryRouter
           initialEntries={['?error=Error&error_description=Message']}
         >
           <AuthProvider>
             <AuthContext.Provider
-              value={{
-                buildAuthorizeUrl,
-                getIdTokenClaims,
-                getTokenSilently,
-                isAuthenticated,
-                isLoading,
-                loginWithPopup,
-                loginWithRedirect,
-                logout,
-                user,
-              }}
+              value={useMemo(
+                () => ({
+                  buildAuthorizeUrl,
+                  getIdTokenClaims,
+                  getTokenSilently,
+                  isAuthenticated,
+                  isLoading,
+                  loginWithPopup,
+                  loginWithRedirect,
+                  logout,
+                  user,
+                }),
+                [],
+              )}
             >
               <WithAuth fallback={<LoadingComponent />} onError={onError}>
                 <TestComponent />
               </WithAuth>
             </AuthContext.Provider>
           </AuthProvider>
-        </MemoryRouter>,
+        </MemoryRouter>
       );
+
+      render(<Component />);
 
       await waitFor(() => expect(onError).toHaveBeenCalledWith('Message'));
     });
@@ -113,29 +123,34 @@ describe('withAuth', () => {
     it('should show the loader', async () => {
       isLoading = true;
 
-      const { findByTestId } = render(
+      const Component = () => (
         <MemoryRouter>
           <AuthProvider>
             <AuthContext.Provider
-              value={{
-                buildAuthorizeUrl,
-                getIdTokenClaims,
-                getTokenSilently,
-                isAuthenticated,
-                isLoading,
-                loginWithPopup,
-                loginWithRedirect,
-                logout,
-                user,
-              }}
+              value={useMemo(
+                () => ({
+                  buildAuthorizeUrl,
+                  getIdTokenClaims,
+                  getTokenSilently,
+                  isAuthenticated,
+                  isLoading,
+                  loginWithPopup,
+                  loginWithRedirect,
+                  logout,
+                  user,
+                }),
+                [],
+              )}
             >
               <WithAuth fallback={<LoadingComponent />} onError={onError}>
                 <TestComponent />
               </WithAuth>
             </AuthContext.Provider>
           </AuthProvider>
-        </MemoryRouter>,
+        </MemoryRouter>
       );
+
+      const { findByTestId } = render(<Component />);
 
       await expect(findByTestId('loading')).resolves.toBeInTheDocument();
     });

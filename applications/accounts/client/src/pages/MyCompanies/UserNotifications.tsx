@@ -6,6 +6,7 @@ import {
   DateTime,
   Notifications,
   TableCell,
+  TRowData,
   Typography,
 } from '@motech-development/breeze-ui';
 import { FC, useEffect } from 'react';
@@ -84,6 +85,34 @@ const Icon = styled(FontAwesomeIcon)`
   color: #007fa8;
   font-size: 0.75rem;
 `;
+
+interface IDataRow {
+  t: (label: string) => string;
+}
+
+interface IDataRowComponent {
+  createdAt: string;
+  message: string;
+  read: boolean;
+}
+
+const row: TRowData<IDataRow, IDataRowComponent> =
+  ({ t }) =>
+  ({ createdAt, message, read }) =>
+    (
+      <>
+        <TableCell>{!read && <Icon icon={faCircle} />}</TableCell>
+        <TableCell noWrap={false}>
+          <Typography component="p" variant="h6" margin="none">
+            {t(`messages.${message}`)}
+          </Typography>
+
+          <SupportText component="p" variant="p" margin="none">
+            <DateTime value={createdAt} format="dd/MM/yyyy HH:mm" />
+          </SupportText>
+        </TableCell>
+      </>
+    );
 
 export interface IUserNotificationsProps {
   id: string;
@@ -172,20 +201,9 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
         </Card>
       }
       placement="bottom-end"
-      row={({ createdAt, message, read }) => (
-        <>
-          <TableCell>{!read && <Icon icon={faCircle} />}</TableCell>
-          <TableCell noWrap={false}>
-            <Typography component="p" variant="h6" margin="none">
-              {t(`messages.${message}`)}
-            </Typography>
-
-            <SupportText component="p" variant="p" margin="none">
-              <DateTime value={createdAt} format="dd/MM/yyyy HH:mm" />
-            </SupportText>
-          </TableCell>
-        </>
-      )}
+      row={row({
+        t,
+      })}
       onClose={onClose}
     />
   );
