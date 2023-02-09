@@ -20,6 +20,7 @@
     "@babel/preset-typescript": "7.18.6",
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
+    "@motech-development/semantic-release": "workspace:*",
     "@types/aws-lambda": "8.10.108",
     "@types/jest": "27.5.2",
     "aws-lambda-mock-context": "3.2.1",

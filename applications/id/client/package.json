@@ -37,6 +37,7 @@
   "devDependencies": {
     "@motech-development/eslint-config-motech-react": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
+    "@motech-development/semantic-release": "workspace:*",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "13.5.0",

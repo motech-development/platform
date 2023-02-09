@@ -9,13 +9,6 @@ module.exports = {
         npmPublish: false,
       },
     ],
-    [
-      '@semantic-release/github',
-      {
-        failComment: false,
-        labels: false,
-        successComment: false,
-      },
-    ],
+    '@semantic-release/github',
   ],
 };

@@ -22,6 +22,7 @@
     "@babel/preset-typescript": "7.18.6",
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
+    "@motech-development/semantic-release": "workspace:*",
     "@motech-development/webpack-conditional-plugin": "workspace:*",
     "@motech-development/webpack-permissions-plugin": "workspace:*",
     "@types/aws-lambda": "8.10.108",
