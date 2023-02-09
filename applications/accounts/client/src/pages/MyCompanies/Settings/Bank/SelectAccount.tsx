@@ -171,9 +171,9 @@ const SelectAccount: FC = () => {
                 }
                 row={row({
                   balanceLabel: t('select-account.balance'),
+                  linkAccountLabel: t('select-account.link-account'),
                   selectAccount,
                   selected,
-                  linkAccountLabel: t('select-account.link-account'),
                 })}
                 noResults={
                   <ErrorCard

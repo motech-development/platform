@@ -4,6 +4,16 @@ import 'cypress-file-upload';
 import 'cypress-localstorage-commands';
 import 'cypress-wait-until';
 
+Cypress.Commands.add('getBaseUrl', () => {
+  const { baseUrl } = Cypress.config();
+
+  if (baseUrl === null) {
+    throw new Error('BaseURL not found.');
+  }
+
+  return baseUrl;
+});
+
 Cypress.Commands.add(
   'login',
   (username = Cypress.env('USERNAME'), password = Cypress.env('PASSWORD')) => {

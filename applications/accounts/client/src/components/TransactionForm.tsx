@@ -275,8 +275,9 @@ const TransactionForm: FC<ITransactionForm> = ({
     };
   const onPreSubmit = ({ transaction, ...value }: IFormValues) => {
     const isPurchase = transaction === 'Purchase';
+
     const category = isPurchase
-      ? categories[parseInt(value.category, 2)].name
+      ? categories[parseInt(value.category, 10)].name
       : transaction;
 
     let amount: number;

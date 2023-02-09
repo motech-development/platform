@@ -1,15 +1,21 @@
-/* eslint-disable jest/valid-expect-in-promise */
 import { DateTime } from 'luxon';
+import type { TAccounts } from '../fixtures/models/account';
+import type { TClients } from '../fixtures/models/client';
+import type { TCompanies } from '../fixtures/models/company';
+import type { TSettings } from '../fixtures/models/setting';
 
 const overrides = {
   retries: 10,
 };
 describe('Non-VAT registered', () => {
-  let baseUrl: string | null;
+  let baseUrl: string;
   let timeout: number;
 
   beforeEach(() => {
-    ({ baseUrl } = Cypress.config());
+    cy.getBaseUrl().then((value) => {
+      baseUrl = value;
+    });
+
     timeout = 20000;
   });
 
@@ -21,7 +27,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should create a company', overrides, () => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const data = res[1];
 
         cy.findByRole('link', {
@@ -119,7 +125,7 @@ describe('Non-VAT registered', () => {
 
   describe('Settings', () => {
     beforeEach(() => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const { company } = res[1];
 
         cy.findByTestId(company.name).should('be.visible').safeClick();
@@ -149,8 +155,8 @@ describe('Non-VAT registered', () => {
     });
 
     it('should have correct default settings', () => {
-      cy.fixture('data/settings.json').then((res) => {
-        cy.fixture('data/company.json').then((companies) => {
+      cy.fixture<TSettings>('data/setting.json').then((res) => {
+        cy.fixture<TCompanies>('data/company.json').then((companies) => {
           const company = companies[1];
           const settings = res[1];
 
@@ -200,7 +206,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should update company settings', () => {
-      cy.fixture('data/settings.json').then((res) => {
+      cy.fixture<TSettings>('data/setting.json').then((res) => {
         const settings = res[1];
 
         cy.findByRole('button', {
@@ -249,7 +255,7 @@ describe('Non-VAT registered', () => {
 
   describe('Clients', () => {
     beforeEach(() => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const { company } = res[1];
 
         cy.findByTestId(company.name).should('be.visible').safeClick();
@@ -283,7 +289,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add client 1', overrides, () => {
-      cy.fixture('data/client.json').then((res) => {
+      cy.fixture<TClients>('data/client.json').then((res) => {
         const client = res[0];
 
         cy.findByRole('link', {
@@ -331,7 +337,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add client 2', overrides, () => {
-      cy.fixture('data/client.json').then((res) => {
+      cy.fixture<TClients>('data/client.json').then((res) => {
         const client = res[1];
 
         cy.findByRole('link', {
@@ -389,7 +395,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add client 3', overrides, () => {
-      cy.fixture('data/client.json').then((res) => {
+      cy.fixture<TClients>('data/client.json').then((res) => {
         const client = res[2];
 
         cy.findByRole('link', {
@@ -442,7 +448,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should update client 2', overrides, () => {
-      cy.fixture('data/client.json').then((res) => {
+      cy.fixture<TClients>('data/client.json').then((res) => {
         const client = res[1];
         const updated = res[3];
 
@@ -498,7 +504,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should delete client 3', overrides, () => {
-      cy.fixture('data/client.json').then((res) => {
+      cy.fixture<TClients>('data/client.json').then((res) => {
         const client = res[2];
 
         cy.findAllByRole('link', {
@@ -529,7 +535,7 @@ describe('Non-VAT registered', () => {
 
   describe('Accounts', () => {
     beforeEach(() => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const { company } = res[1];
 
         cy.findByTestId(company.name).should('be.visible').safeClick();
@@ -565,7 +571,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add a confirmed sale', () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[0];
 
         cy.findByRole('link', {
@@ -610,7 +616,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add a confirmed purchase', () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[1];
 
         cy.findByRole('link', {
@@ -660,7 +666,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add a confirmed purchase refund', () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[9];
 
         cy.findByRole('link', {
@@ -712,7 +718,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add a confirmed zero VAT rate purchase', () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[2];
 
         cy.findByRole('link', {
@@ -770,7 +776,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should delete a confirmed transaction', () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[2];
 
         cy.findByTestId(`Delete ${transaction.supplier}`).click();
@@ -791,7 +797,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add a pending sale', overrides, () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[3];
 
         cy.findByRole('link', {
@@ -836,7 +842,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add a pending purchase', overrides, () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[4];
 
         cy.findByRole('link', {
@@ -886,7 +892,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should add a pending zero VAT rate purchase', overrides, () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[5];
 
         cy.findByRole('link', {
@@ -936,7 +942,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should delete a pending transaction', overrides, () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[5];
 
         cy.findByRole('link', {
@@ -979,7 +985,7 @@ describe('Non-VAT registered', () => {
 
   describe('Exports', () => {
     beforeEach(() => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const { company } = res[1];
 
         cy.findByTestId(company.name).should('be.visible').safeClick();
@@ -1086,7 +1092,7 @@ describe('Non-VAT registered', () => {
     });
 
     it('should remove company', overrides, () => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const { company } = res[1];
 
         cy.findByTestId(company.name).safeClick();
