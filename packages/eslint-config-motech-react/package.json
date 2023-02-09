@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
+    "@motech-development/prettier-motech-config": "workspace:*",
     "prettier": "2.3.0",
     "typescript": "4.2.3"
   },

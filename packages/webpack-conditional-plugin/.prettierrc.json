@@ -1,5 +1,1 @@
-{
-  "endOfLine": "lf",
-  "singleQuote": true,
-  "trailingComma": "all"
-}
+"@motech-development/prettier-motech-config"

@@ -29,6 +29,7 @@
   "devDependencies": {
     "@babel/core": "7.20.2",
     "@motech-development/eslint-config-motech-react": "workspace:*",
+    "@motech-development/prettier-motech-config": "workspace:*",
     "@rollup/plugin-babel": "6.0.2",
     "@rollup/plugin-commonjs": "23.0.2",
     "@rollup/plugin-node-resolve": "15.0.1",
