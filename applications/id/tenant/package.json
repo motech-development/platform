@@ -16,6 +16,7 @@
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
+    "@motech-development/semantic-release": "workspace:*",
     "@types/jest": "27.5.2",
     "auth0-deploy-cli": "7.15.1",
     "eslint": "8.33.0",

@@ -62,6 +62,7 @@
   "devDependencies": {
     "@motech-development/eslint-config-motech-react": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
+    "@motech-development/semantic-release": "workspace:*",
     "@testing-library/cypress": "8.0.3",
     "@testing-library/dom": "8.19.0",
     "@testing-library/jest-dom": "5.16.5",

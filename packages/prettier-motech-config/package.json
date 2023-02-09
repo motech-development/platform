@@ -20,6 +20,7 @@
   ],
   "main": "index.json",
   "devDependencies": {
+    "@motech-development/semantic-release": "workspace:*",
     "prettier": "2.3.0"
   },
   "lint-staged": {

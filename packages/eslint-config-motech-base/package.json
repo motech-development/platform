@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@motech-development/prettier-motech-config": "workspace:*",
+    "@motech-development/semantic-release": "workspace:*",
     "prettier": "2.3.0",
     "typescript": "4.2.3"
   },
