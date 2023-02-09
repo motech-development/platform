@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "assert": "2.0.0",
-    "serverless": "2.72.3",
+    "serverless": "3.27.0",
     "tomlify-j0.4": "3.0.0"
   },
   "devDependencies": {
