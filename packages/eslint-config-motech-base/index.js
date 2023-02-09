@@ -1,12 +1,6 @@
 const findWorkspaceRoot = require('find-yarn-workspace-root');
 
 module.exports = {
-  extends: [
-    'eslint:recommended',
-    'airbnb-base',
-    'plugin:jest/recommended',
-    'prettier',
-  ],
   overrides: [
     {
       extends: [
@@ -15,13 +9,14 @@ module.exports = {
         'airbnb-typescript/base',
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
-        'plugin:jest/recommended',
         'prettier',
       ],
       files: ['*.ts'],
       overrides: [
         {
-          files: ['**/__tests__/*.ts', '*.test.ts'],
+          extends: ['plugin:jest/recommended'],
+          files: ['**/__tests__/*.ts', '*.spec.ts', '*.test.ts'],
+          plugins: ['jest'],
           rules: {
             '@typescript-eslint/unbound-method': 'off',
             'import/no-extraneous-dependencies': 'off',
@@ -39,20 +34,50 @@ module.exports = {
         project: ['./tsconfig.eslint.json', './tsconfig.json'],
         tsconfigRootDir: findWorkspaceRoot(),
       },
-      plugins: ['@typescript-eslint', 'jest'],
+      plugins: ['@typescript-eslint'],
+      rules: {
+        'max-classes-per-file': ['error', 4],
+        'sort-keys': [
+          'error',
+          'asc',
+          {
+            caseSensitive: true,
+            natural: false,
+          },
+        ],
+      },
+    },
+    {
+      extends: ['eslint:recommended', 'airbnb-base', 'prettier'],
+      files: ['*.js'],
+      overrides: [
+        {
+          extends: ['plugin:jest/recommended'],
+          files: ['**/__tests__/*.js', '*.spec.js', '*.test.js'],
+          plugins: ['jest'],
+          rules: {
+            'import/no-extraneous-dependencies': 'off',
+          },
+        },
+        {
+          files: ['setupTests.js'],
+          rules: {
+            'import/no-extraneous-dependencies': 'off',
+          },
+        },
+      ],
+      rules: {
+        'max-classes-per-file': ['error', 4],
+        'sort-keys': [
+          'error',
+          'asc',
+          {
+            caseSensitive: true,
+            natural: false,
+          },
+        ],
+      },
     },
   ],
-  plugins: ['jest'],
   root: true,
-  rules: {
-    'max-classes-per-file': ['error', 4],
-    'sort-keys': [
-      'error',
-      'asc',
-      {
-        caseSensitive: true,
-        natural: false,
-      },
-    ],
-  },
 };

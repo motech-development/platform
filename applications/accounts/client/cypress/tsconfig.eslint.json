@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "types": [
+      "@testing-library/cypress",
+      "cypress",
+      "cypress-axe",
+      "cypress-file-upload",
+      "cypress-localstorage-commands",
+      "cypress-wait-until"
+    ]
+  },
+  "extends": "./tsconfig.json"
+}

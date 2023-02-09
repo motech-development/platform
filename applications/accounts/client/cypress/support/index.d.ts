@@ -3,6 +3,12 @@
 declare namespace Cypress {
   interface Chainable {
     /**
+     * Returns Base Url from config
+     * @example cy.getBaseUrl()
+     */
+    getBaseUrl(): Chainable<string>;
+
+    /**
      * Log in helper
      * @example cy.login('username', 'password')
      */
@@ -18,7 +24,7 @@ declare namespace Cypress {
      * Injects Axe for a11y testing
      * @example cy.injectAxe()
      */
-    injectAxe(): Chainable<EventEmitter>;
+    injectAxe(): Chainable<void>;
 
     /**
      * Runs a11y checking with logs

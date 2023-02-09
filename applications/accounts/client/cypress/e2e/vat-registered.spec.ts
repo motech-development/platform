@@ -1,16 +1,22 @@
-/* eslint-disable jest/valid-expect-in-promise */
 import { DateTime } from 'luxon';
+import type { TAccounts } from '../fixtures/models/account';
+import type { TClients } from '../fixtures/models/client';
+import type { TCompanies } from '../fixtures/models/company';
+import type { TSettings } from '../fixtures/models/setting';
 
 const overrides = {
   retries: 10,
 };
 
 describe('VAT registered', () => {
-  let baseUrl: string | null;
+  let baseUrl: string;
   let timeout: number;
 
   beforeEach(() => {
-    ({ baseUrl } = Cypress.config());
+    cy.getBaseUrl().then((value) => {
+      baseUrl = value;
+    });
+
     timeout = 20000;
   });
 
@@ -22,7 +28,7 @@ describe('VAT registered', () => {
     });
 
     it('should create a company', overrides, () => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const data = res[0];
 
         cy.a11yWithLogs();
@@ -145,7 +151,7 @@ describe('VAT registered', () => {
     });
 
     it('should update company details', () => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const { company } = res[0];
         const updated = res[2].company;
 
@@ -236,7 +242,7 @@ describe('VAT registered', () => {
 
   describe('Settings', () => {
     beforeEach(() => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const { company } = res[0];
 
         cy.findByTestId(company.name).should('be.visible').safeClick();
@@ -266,8 +272,8 @@ describe('VAT registered', () => {
     });
 
     it('should update company settings', () => {
-      cy.fixture('data/settings.json').then((res) => {
-        cy.fixture('data/company.json').then((companies) => {
+      cy.fixture<TSettings>('data/setting.json').then((res) => {
+        cy.fixture<TCompanies>('data/company.json').then((companies) => {
           const settings = res[0];
           const company = companies[0];
 
@@ -362,7 +368,7 @@ describe('VAT registered', () => {
     });
 
     it('should remove expenses category', () => {
-      cy.fixture('data/settings.json').then((res) => {
+      cy.fixture<TSettings>('data/setting.json').then((res) => {
         const settings = res[0];
 
         cy.findAllByLabelText('Name')
@@ -456,7 +462,7 @@ describe('VAT registered', () => {
     });
 
     it('should re-add expense categories', () => {
-      cy.fixture('data/settings.json').then((res) => {
+      cy.fixture<TSettings>('data/setting.json').then((res) => {
         const settings = res[0];
 
         cy.findByRole('button', {
@@ -497,7 +503,7 @@ describe('VAT registered', () => {
 
   describe('Clients', () => {
     beforeEach(() => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const { company } = res[0];
 
         cy.findByTestId(company.name).should('be.visible').safeClick();
@@ -531,7 +537,7 @@ describe('VAT registered', () => {
     });
 
     it('should add client 1', overrides, () => {
-      cy.fixture('data/client.json').then((res) => {
+      cy.fixture<TClients>('data/client.json').then((res) => {
         const client = res[0];
 
         cy.a11yWithLogs();
@@ -589,7 +595,7 @@ describe('VAT registered', () => {
 
   describe('Accounts', () => {
     beforeEach(() => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const { company } = res[0];
 
         cy.findByTestId(company.name).should('be.visible').safeClick();
@@ -625,8 +631,8 @@ describe('VAT registered', () => {
     });
 
     it('should add a confirmed sale', () => {
-      cy.fixture('data/account.json').then((res) => {
-        cy.fixture('upload/invoice.pdf').then((file) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
+        cy.fixture<Blob>('upload/invoice.pdf').then((file) => {
           const transaction = res[0];
 
           cy.a11yWithLogs();
@@ -690,7 +696,7 @@ describe('VAT registered', () => {
     });
 
     it('should add a confirmed sale refund', () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[8];
 
         cy.findByRole('link', {
@@ -741,8 +747,8 @@ describe('VAT registered', () => {
     });
 
     it('should add a confirmed purchase', () => {
-      cy.fixture('data/account.json').then((res) => {
-        cy.fixture('upload/invoice.pdf').then((file) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
+        cy.fixture<Blob>('upload/invoice.pdf').then((file) => {
           const transaction = res[1];
 
           cy.findByRole('link', {
@@ -803,8 +809,8 @@ describe('VAT registered', () => {
     });
 
     it('should add a confirmed zero VAT rate purchase', () => {
-      cy.fixture('data/account.json').then((res) => {
-        cy.fixture('upload/invoice.pdf').then((file) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
+        cy.fixture<Blob>('upload/invoice.pdf').then((file) => {
           const transaction = res[2];
 
           cy.findByRole('link', {
@@ -873,8 +879,8 @@ describe('VAT registered', () => {
     });
 
     it('should update a transaction', () => {
-      cy.fixture('data/account.json').then((res) => {
-        cy.fixture('upload/invoice.pdf').then((file) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
+        cy.fixture<Blob>('upload/invoice.pdf').then((file) => {
           const transaction = res[6];
 
           cy.findAllByTestId(`View ${transaction.supplier}`).eq(1).safeClick();
@@ -935,7 +941,7 @@ describe('VAT registered', () => {
     });
 
     it('should delete a confirmed transaction', () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[0];
 
         cy.findAllByTestId(`Delete ${transaction.supplier}`).eq(1).click();
@@ -960,7 +966,7 @@ describe('VAT registered', () => {
     });
 
     it('should make a VAT payment', () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[7];
 
         cy.findByRole('link', {
@@ -1010,7 +1016,7 @@ describe('VAT registered', () => {
     });
 
     it('should make a VAT refund', () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[10];
 
         cy.findByRole('link', {
@@ -1068,7 +1074,7 @@ describe('VAT registered', () => {
     });
 
     it('should download attachment', () => {
-      cy.fixture('data/account.json').then((res) => {
+      cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[1];
 
         cy.findByTestId(`View ${transaction.supplier}`).safeClick();
@@ -1088,7 +1094,7 @@ describe('VAT registered', () => {
 
   describe('Exports', () => {
     beforeEach(() => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const { company } = res[0];
 
         cy.findByTestId(company.name).should('be.visible').safeClick();
@@ -1187,7 +1193,7 @@ describe('VAT registered', () => {
     });
 
     it('should remove company', overrides, () => {
-      cy.fixture('data/company.json').then((res) => {
+      cy.fixture<TCompanies>('data/company.json').then((res) => {
         const { company } = res[0];
 
         cy.findByTestId(company.name).should('be.visible').safeClick();
