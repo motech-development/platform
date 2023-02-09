@@ -21,6 +21,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/node-logger": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/serverless-outputs-env": "workspace:*"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
@@ -64,6 +65,7 @@ __metadata:
     "@motech-development/breeze-ui": "workspace:*"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/ga-web-vitals": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/query-string-hook": "workspace:*"
     "@testing-library/cypress": 8.0.3
     "@testing-library/dom": 8.19.0
@@ -141,6 +143,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/node-logger": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
@@ -171,6 +174,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/infrastructure@workspace:applications/accounts/infrastructure"
   dependencies:
+    "@motech-development/prettier-motech-config": "workspace:*"
     prettier: 2.3.0
     serverless: 3.24.1
     serverless-deployment-bucket: 1.6.0
@@ -186,6 +190,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:*"
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
@@ -219,6 +224,7 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
     aws-lambda-mock-context: 3.2.1
@@ -249,6 +255,7 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/s3-file-operations": "workspace:*"
     "@types/archiver": 5.3.1
     "@types/aws-lambda": 8.10.108
@@ -293,6 +300,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:*"
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/s3-file-operations": "workspace:*"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
@@ -327,6 +335,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/node-logger": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
     "@types/luxon": 2.0.9
@@ -3922,6 +3931,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/node-logger": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/s3-file-operations": "workspace:*"
     "@motech-development/webpack-conditional-plugin": "workspace:*"
     "@motech-development/webpack-permissions-plugin": "workspace:*"
@@ -3954,6 +3964,7 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
     "@types/yup": 0.29.11
@@ -3981,6 +3992,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@core/infrastructure@workspace:applications/core/infrastructure"
   dependencies:
+    "@motech-development/prettier-motech-config": "workspace:*"
     prettier: 2.3.0
     serverless: 3.24.1
     serverless-deployment-bucket: 1.6.0
@@ -4180,6 +4192,7 @@ __metadata:
     "@motech-development/api-gateway-handler": "workspace:*"
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/node-logger": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@octokit/auth-app": 3.6.1
     "@octokit/rest": 18.12.0
     "@types/aws-lambda": 8.10.108
@@ -4209,6 +4222,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@cypress/infrastructure@workspace:applications/cypress/infrastructure"
   dependencies:
+    "@motech-development/prettier-motech-config": "workspace:*"
     prettier: 2.3.0
     serverless: 3.24.1
     serverless-deployment-bucket: 1.6.0
@@ -4940,6 +4954,7 @@ __metadata:
     "@motech-development/breeze-ui": "workspace:*"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/ga-web-vitals": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 12.1.5
     "@testing-library/user-event": 13.5.0
@@ -4983,6 +4998,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@id/emails@workspace:applications/id/emails"
   dependencies:
+    "@motech-development/prettier-motech-config": "workspace:*"
     prettier: 2.3.0
     pug-cli: 1.0.0-alpha6
   languageName: unknown
@@ -4992,6 +5008,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@id/infrastructure@workspace:applications/id/infrastructure"
   dependencies:
+    "@motech-development/prettier-motech-config": "workspace:*"
     prettier: 2.3.0
     serverless: 3.24.1
     serverless-deployment-bucket: 1.6.0
@@ -5003,7 +5020,8 @@ __metadata:
   resolution: "@id/tenant@workspace:applications/id/tenant"
   dependencies:
     "@motech-development/eslint-config-motech-base": "workspace:*"
-    "@types/jest": 26.0.24
+    "@motech-development/prettier-motech-config": "workspace:*"
+    "@types/jest": 27.5.2
     auth0: 2.44.0
     auth0-deploy-cli: 7.15.1
     eslint: 8.33.0
@@ -5682,6 +5700,7 @@ __metadata:
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@rollup/plugin-babel": 6.0.2
     "@rollup/plugin-commonjs": 23.0.2
     "@rollup/plugin-node-resolve": 15.0.1
@@ -5704,6 +5723,7 @@ __metadata:
     "@apollo/client": 3.7.1
     "@babel/core": 7.19.6
     "@motech-development/eslint-config-motech-react": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@rollup/plugin-babel": 6.0.2
     "@rollup/plugin-commonjs": 23.0.2
     "@rollup/plugin-node-resolve": 15.0.1
@@ -5734,6 +5754,7 @@ __metadata:
     "@auth0/auth0-spa-js": 1.22.5
     "@babel/core": 7.19.6
     "@motech-development/eslint-config-motech-react": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/query-string-hook": "workspace:*"
     "@rollup/plugin-babel": 6.0.2
     "@rollup/plugin-commonjs": 23.0.2
@@ -5763,6 +5784,7 @@ __metadata:
   dependencies:
     "@babel/core": 7.19.6
     "@motech-development/eslint-config-motech-react": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@rollup/plugin-babel": 6.0.2
     "@rollup/plugin-commonjs": 23.0.2
     "@rollup/plugin-node-resolve": 15.0.1
@@ -5790,6 +5812,7 @@ __metadata:
     "@fortawesome/free-solid-svg-icons": 5.15.4
     "@fortawesome/react-fontawesome": 0.2.0
     "@motech-development/eslint-config-motech-react": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@popperjs/core": 2.11.6
     "@rollup/plugin-babel": 6.0.2
     "@rollup/plugin-commonjs": 23.0.2
@@ -5835,6 +5858,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/eslint-config-motech-base@workspace:packages/eslint-config-motech-base"
   dependencies:
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
     eslint: 8.33.0
@@ -5857,6 +5881,7 @@ __metadata:
   resolution: "@motech-development/eslint-config-motech-react@workspace:packages/eslint-config-motech-react"
   dependencies:
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
     eslint: 8.33.0
@@ -5884,9 +5909,10 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
-    "@rollup/plugin-babel": 5.3.1
-    "@rollup/plugin-commonjs": 21.0.3
-    "@rollup/plugin-node-resolve": 13.1.3
+    "@motech-development/prettier-motech-config": "workspace:*"
+    "@rollup/plugin-babel": 6.0.2
+    "@rollup/plugin-commonjs": 23.0.2
+    "@rollup/plugin-node-resolve": 15.0.1
     "@types/google.analytics": 0.0.42
     "@types/jest": 27.5.2
     eslint: 8.33.0
@@ -5908,6 +5934,7 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@rollup/plugin-babel": 6.0.2
     "@rollup/plugin-commonjs": 23.0.2
     "@rollup/plugin-node-resolve": 15.0.1
@@ -5924,12 +5951,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@motech-development/prettier-motech-config@workspace:*, @motech-development/prettier-motech-config@workspace:packages/prettier-motech-config":
+  version: 0.0.0-use.local
+  resolution: "@motech-development/prettier-motech-config@workspace:packages/prettier-motech-config"
+  dependencies:
+    prettier: 2.3.0
+  languageName: unknown
+  linkType: soft
+
 "@motech-development/query-string-hook@workspace:*, @motech-development/query-string-hook@workspace:packages/query-string-hook":
   version: 0.0.0-use.local
   resolution: "@motech-development/query-string-hook@workspace:packages/query-string-hook"
   dependencies:
     "@babel/core": 7.19.6
     "@motech-development/eslint-config-motech-react": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@rollup/plugin-babel": 6.0.2
     "@rollup/plugin-commonjs": 23.0.2
     "@rollup/plugin-node-resolve": 15.0.1
@@ -5960,10 +5996,11 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
-    "@rollup/plugin-babel": 5.3.1
-    "@rollup/plugin-commonjs": 21.0.3
-    "@rollup/plugin-node-resolve": 13.1.3
-    "@types/jest": 26.0.24
+    "@motech-development/prettier-motech-config": "workspace:*"
+    "@rollup/plugin-babel": 6.0.2
+    "@rollup/plugin-commonjs": 23.0.2
+    "@rollup/plugin-node-resolve": 15.0.1
+    "@types/jest": 27.5.2
     aws-sdk: 2.1241.0
     eslint: 8.33.0
     jest: 27.5.1
@@ -5984,9 +6021,10 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
-    "@rollup/plugin-babel": 5.3.1
-    "@rollup/plugin-commonjs": 21.0.3
-    "@rollup/plugin-node-resolve": 13.1.3
+    "@motech-development/prettier-motech-config": "workspace:*"
+    "@rollup/plugin-babel": 6.0.2
+    "@rollup/plugin-commonjs": 23.0.2
+    "@rollup/plugin-node-resolve": 15.0.1
     "@types/assert": 1.5.6
     "@types/jest": 26.0.24
     "@types/serverless": 1.78.44
@@ -6012,6 +6050,7 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@rollup/plugin-babel": 6.0.2
     "@rollup/plugin-commonjs": 23.0.2
     "@rollup/plugin-node-resolve": 15.0.1
@@ -6036,6 +6075,7 @@ __metadata:
     "@babel/preset-env": 7.19.4
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@rollup/plugin-babel": 6.0.2
     "@rollup/plugin-commonjs": 23.0.2
     "@rollup/plugin-node-resolve": 15.0.1
@@ -6728,6 +6768,7 @@ __metadata:
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:*"
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@types/aws-lambda": 8.10.108
     "@types/jest": 26.0.24
     "@types/yup": 0.29.11
@@ -27865,6 +27906,7 @@ __metadata:
   dependencies:
     "@commitlint/cli": 17.2.0
     "@commitlint/config-conventional": 17.2.0
+    "@motech-development/prettier-motech-config": "workspace:*"
     "@qiwi/multi-semantic-release": ^6.5.1
     "@types/is-ci": 3.0.0
     "@types/node": 14.18.33
