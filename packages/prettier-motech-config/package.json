@@ -1,0 +1,28 @@
+{
+  "name": "@motech-development/prettier-motech-config",
+  "description": "Reusable Prettier config",
+  "version": "0.0.0-development",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/motech-development/platform.git"
+  },
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "bugs": {
+    "url": "https://github.com/motech-development/platform/issues"
+  },
+  "homepage": "https://github.com/motech-development/platform/tree/main/packages/prettier-motech-config#readme",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "index.json"
+  ],
+  "main": "index.json",
+  "devDependencies": {
+    "prettier": "2.3.0"
+  },
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write"
+  }
+}
