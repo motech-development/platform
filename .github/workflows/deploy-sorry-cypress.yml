@@ -20,6 +20,8 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DB_CONNECTION_STRING: ${{ secrets.CYPRESS_DB_CONNECTION_STRING }}
+      DB_NAME: ${{ secrets.CYPRESS_DB_NAME }}
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       STAGE: production
       TASK_CPU: ${{ github.event.inputs.taskCpu }}

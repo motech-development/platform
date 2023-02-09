@@ -14,6 +14,8 @@ plugins:
 custom:
   prefix: cypress-${self:provider.stage}
   dashboardSubDomain: cypress.${self:custom.domainName}
+  dbConnectionString: ${env:DB_CONNECTION_STRING}
+  dbName: ${env:DB_NAME}
   directorPort: ${env:DIRECTOR_PORT, 8080}
   directorSubDomain: cypress-director.${self:custom.domainName}
   domainName: ${env:PROD_DOMAIN}
@@ -404,21 +406,6 @@ resources:
         RequiresCompatibilities:
           - FARGATE
         ContainerDefinitions:
-          - Image: docker.io/mongo:4
-            Essential: true
-            LogConfiguration:
-              LogDriver: awslogs
-              Options:
-                awslogs-group: !Ref CloudWatchGroup
-                awslogs-region: !Ref 'AWS::Region'
-                awslogs-stream-prefix: ecs
-            Environment:
-              - Name: MONGO_INITDB_ROOT_PASSWORD
-                Value: sorry-cypress
-              - Name: MONGO_INITDB_ROOT_USERNAME
-                Value: sorry-cypress
-            Name: mongo
-
           - Image: docker.io/agoldis/sorry-cypress-director
             Essential: true
             PortMappings:
@@ -437,16 +424,13 @@ resources:
               - Name: SCREENSHOTS_DRIVER
                 Value: ../screenshots/s3.driver
               - Name: MONGODB_DATABASE
-                Value: sorry-cypress
+                Value: ${self:custom.dbName}
               - Name: MONGODB_URI
-                Value: mongodb://sorry-cypress:sorry-cypress@127.0.0.1:27017
+                Value: ${self:custom.dbConnectionString}
               - Name: S3_BUCKET
                 Value: !Ref S3Bucket
               - Name: S3_REGION
                 Value: !Ref 'AWS::Region'
-            DependsOn:
-              - ContainerName: mongo
-                Condition: START
             Name: director
 
           - Image: docker.io/agoldis/sorry-cypress-api
@@ -460,9 +444,9 @@ resources:
                 awslogs-stream-prefix: ecs
             Environment:
               - Name: MONGODB_DATABASE
-                Value: sorry-cypress
+                Value: ${self:custom.dbName}
               - Name: MONGODB_URI
-                Value: mongodb://sorry-cypress:sorry-cypress@127.0.0.1:27017
+                Value: ${self:custom.dbConnectionString}
             DependsOn:
               - ContainerName: director
                 Condition: START
