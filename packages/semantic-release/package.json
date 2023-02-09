@@ -1,0 +1,38 @@
+{
+  "name": "@motech-development/semantic-release",
+  "description": "Reusable Semantic Release config",
+  "version": "0.0.0-development",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/motech-development/platform.git"
+  },
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "bugs": {
+    "url": "https://github.com/motech-development/platform/issues"
+  },
+  "homepage": "https://github.com/motech-development/platform/tree/main/packages/semantic-release#readme",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "application.js",
+    "index.js",
+    "package.js"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint --cache \"index.js\""
+  },
+  "devDependencies": {
+    "@motech-development/eslint-config-motech-base": "workspace:*",
+    "@motech-development/prettier-motech-config": "workspace:*",
+    "eslint": "8.33.0",
+    "prettier": "2.3.0",
+    "typescript": "4.2.3"
+  },
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write",
+    "*.{js,ts}": "eslint --cache --fix"
+  }
+}
