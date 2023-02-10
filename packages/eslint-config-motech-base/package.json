@@ -31,8 +31,7 @@
     "eslint-config-prettier": "8.5.0",
     "eslint-import-resolver-node": "0.3.6",
     "eslint-plugin-import": "2.25.2",
-    "eslint-plugin-jest": "27.2.1",
-    "find-yarn-workspace-root": "2.0.0"
+    "eslint-plugin-jest": "27.2.1"
   },
   "devDependencies": {
     "@motech-development/prettier-motech-config": "workspace:*",

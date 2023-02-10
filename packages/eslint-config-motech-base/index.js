@@ -1,5 +1,3 @@
-const findWorkspaceRoot = require('find-yarn-workspace-root');
-
 module.exports = {
   overrides: [
     {
@@ -32,7 +30,6 @@ module.exports = {
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: ['./tsconfig.eslint.json', './tsconfig.json'],
-        tsconfigRootDir: findWorkspaceRoot(),
       },
       plugins: ['@typescript-eslint'],
       rules: {
