@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`package should have the correct config 1`] = `
+Object {
+  "branches": Array [
+    "main",
+    "next",
+  ],
+  "plugins": Array [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/npm",
+    Array [
+      "@semantic-release/github",
+      Object {
+        "failComment": false,
+        "labels": false,
+        "successComment": false,
+      },
+    ],
+  ],
+}
+`;
