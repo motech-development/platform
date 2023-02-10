@@ -338,11 +338,10 @@ jobs:
         run: yarn workspace @core/anti-virus deploy --stage $STAGE
 
       - name: Check for definitions
-        id: definitions
         run: aws s3api head-object --bucket anti-virus-${{ github.event.pull_request.number }}-definitions --key daily.cvd
 
       - name: Update definitions
-        if: steps.definitions.outcome == 'failure'
+        if: failure()
         run: yarn workspace @core/anti-virus update-definitions --stage $STAGE
 
   # Cypress (API)
