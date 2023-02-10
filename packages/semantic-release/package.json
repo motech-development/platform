@@ -17,7 +17,9 @@
   },
   "files": [
     "src",
-    "index.js"
+    "application.js",
+    "index.js",
+    "package.js"
   ],
   "main": "index.js",
   "scripts": {
@@ -36,9 +38,6 @@
     "prettier": "2.3.0"
   },
   "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.js"
-    ],
     "testEnvironment": "node"
   },
   "lint-staged": {

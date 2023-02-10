@@ -1,4 +1,4 @@
-const { branches, plugins } = require('./utils');
+const { branches, plugins } = require('./src/utils');
 
 const { commitAnalyzer, github, npm, releaseNotesGenerator } = plugins;
 
