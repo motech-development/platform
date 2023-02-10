@@ -858,7 +858,7 @@ jobs:
         run: yarn workspace @accounts/api deploy --stage $STAGE
 
       - name: Export env vars
-        uses: xom9ikk/dotenv@v1.0.2
+        uses: xom9ikk/dotenv@v2
         with:
           path: ./applications/accounts/client
           mode: production
