@@ -1,3 +1,4 @@
 {
+  "ignorePackages": ["@motech-development/semantic-release"],
   "sequentialPrepare": false
 }
