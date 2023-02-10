@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "types": ["@types/node", "@types/jest", "@types/google.analytics"],
-    "noEmit": true
-  },
-  "extends": "./tsconfig.json",
-  "include": ["applications/*/*/src/**/*", "packages/*/src/**/*", "__mocks__"]
-}
