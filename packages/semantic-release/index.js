@@ -1,5 +1,5 @@
-const app = require('./src/application');
-const pkg = require('./src/package');
+const app = require('./application');
+const pkg = require('./package');
 
 exports.application = app;
 
