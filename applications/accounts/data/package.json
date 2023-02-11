@@ -13,7 +13,7 @@
     "@motech-development/node-logger": "workspace:*",
     "aws-sdk": "2.1241.0",
     "decimal.js": "10.4.2",
-    "luxon": "2.3.0",
+    "luxon": "2.5.2",
     "uuid": "8.3.2"
   },
   "devDependencies": {

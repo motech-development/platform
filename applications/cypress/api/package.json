@@ -15,7 +15,7 @@
     "@octokit/auth-app": "3.6.1",
     "@octokit/rest": "18.12.0",
     "aws-sdk": "2.1241.0",
-    "luxon": "2.3.0",
+    "luxon": "2.5.2",
     "yup": "0.29.3"
   },
   "devDependencies": {
