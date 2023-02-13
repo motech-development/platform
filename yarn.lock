@@ -19,7 +19,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/api@workspace:applications/accounts/api"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
@@ -142,7 +142,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/data@workspace:applications/accounts/data"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
@@ -190,7 +190,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/notifications@workspace:applications/accounts/notifications"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:*"
@@ -226,7 +226,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/queue@workspace:applications/accounts/queue"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
@@ -258,7 +258,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/reports@workspace:applications/accounts/reports"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
@@ -303,7 +303,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/storage@workspace:applications/accounts/storage"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:*"
@@ -339,7 +339,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/warm-up@workspace:applications/accounts/warm-up"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
@@ -1765,30 +1765,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.20.2":
-  version: 7.20.2
-  resolution: "@babel/core@npm:7.20.2"
-  dependencies:
-    "@ampproject/remapping": ^2.1.0
-    "@babel/code-frame": ^7.18.6
-    "@babel/generator": ^7.20.2
-    "@babel/helper-compilation-targets": ^7.20.0
-    "@babel/helper-module-transforms": ^7.20.2
-    "@babel/helpers": ^7.20.1
-    "@babel/parser": ^7.20.2
-    "@babel/template": ^7.18.10
-    "@babel/traverse": ^7.20.1
-    "@babel/types": ^7.20.2
-    convert-source-map: ^1.7.0
-    debug: ^4.1.0
-    gensync: ^1.0.0-beta.2
-    json5: ^2.2.1
-    semver: ^6.3.0
-  checksum: 98faaaef26103a276a30a141b951a93bc8418d100d1f668bf7a69d12f3e25df57958e8b6b9100d95663f720db62da85ade736f6629a5ebb1e640251a1b43c0e4
-  languageName: node
-  linkType: hard
-
-"@babel/core@npm:^7.1.0, @babel/core@npm:^7.11.1, @babel/core@npm:^7.11.6, @babel/core@npm:^7.12.10, @babel/core@npm:^7.12.3, @babel/core@npm:^7.16.0, @babel/core@npm:^7.7.2, @babel/core@npm:^7.7.5, @babel/core@npm:^7.8.0":
+"@babel/core@npm:7.20.12, @babel/core@npm:^7.1.0, @babel/core@npm:^7.11.1, @babel/core@npm:^7.11.6, @babel/core@npm:^7.12.10, @babel/core@npm:^7.12.3, @babel/core@npm:^7.16.0, @babel/core@npm:^7.7.2, @babel/core@npm:^7.7.5, @babel/core@npm:^7.8.0":
   version: 7.20.12
   resolution: "@babel/core@npm:7.20.12"
   dependencies:
@@ -1825,7 +1802,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/generator@npm:^7.12.11, @babel/generator@npm:^7.12.5, @babel/generator@npm:^7.20.2, @babel/generator@npm:^7.20.7, @babel/generator@npm:^7.7.2":
+"@babel/generator@npm:^7.12.11, @babel/generator@npm:^7.12.5, @babel/generator@npm:^7.20.7, @babel/generator@npm:^7.7.2":
   version: 7.20.14
   resolution: "@babel/generator@npm:7.20.14"
   dependencies:
@@ -1987,7 +1964,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-module-transforms@npm:^7.12.1, @babel/helper-module-transforms@npm:^7.18.6, @babel/helper-module-transforms@npm:^7.20.11, @babel/helper-module-transforms@npm:^7.20.2":
+"@babel/helper-module-transforms@npm:^7.12.1, @babel/helper-module-transforms@npm:^7.18.6, @babel/helper-module-transforms@npm:^7.20.11":
   version: 7.20.11
   resolution: "@babel/helper-module-transforms@npm:7.20.11"
   dependencies:
@@ -2114,7 +2091,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helpers@npm:^7.12.5, @babel/helpers@npm:^7.20.1, @babel/helpers@npm:^7.20.7":
+"@babel/helpers@npm:^7.12.5, @babel/helpers@npm:^7.20.7":
   version: 7.20.13
   resolution: "@babel/helpers@npm:7.20.13"
   dependencies:
@@ -2136,7 +2113,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.12.11, @babel/parser@npm:^7.12.7, @babel/parser@npm:^7.14.7, @babel/parser@npm:^7.20.13, @babel/parser@npm:^7.20.2, @babel/parser@npm:^7.20.7":
+"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.12.11, @babel/parser@npm:^7.12.7, @babel/parser@npm:^7.14.7, @babel/parser@npm:^7.20.13, @babel/parser@npm:^7.20.7":
   version: 7.20.15
   resolution: "@babel/parser@npm:7.20.15"
   bin:
@@ -3325,7 +3302,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/traverse@npm:^7.1.6, @babel/traverse@npm:^7.12.11, @babel/traverse@npm:^7.12.9, @babel/traverse@npm:^7.13.0, @babel/traverse@npm:^7.20.1, @babel/traverse@npm:^7.20.10, @babel/traverse@npm:^7.20.12, @babel/traverse@npm:^7.20.13, @babel/traverse@npm:^7.20.5, @babel/traverse@npm:^7.20.7, @babel/traverse@npm:^7.4.5, @babel/traverse@npm:^7.7.2":
+"@babel/traverse@npm:^7.1.6, @babel/traverse@npm:^7.12.11, @babel/traverse@npm:^7.12.9, @babel/traverse@npm:^7.13.0, @babel/traverse@npm:^7.20.10, @babel/traverse@npm:^7.20.12, @babel/traverse@npm:^7.20.13, @babel/traverse@npm:^7.20.5, @babel/traverse@npm:^7.20.7, @babel/traverse@npm:^7.4.5, @babel/traverse@npm:^7.7.2":
   version: 7.20.13
   resolution: "@babel/traverse@npm:7.20.13"
   dependencies:
@@ -3583,7 +3560,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@core/anti-virus@workspace:applications/core/anti-virus"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
@@ -3618,7 +3595,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@core/comms@workspace:applications/core/comms"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
@@ -3845,7 +3822,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@cypress/api@workspace:applications/cypress/api"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:*"
@@ -5342,7 +5319,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/api-gateway-handler@workspace:packages/api-gateway-handler"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/plugin-transform-runtime": 7.19.6
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
@@ -5369,7 +5346,7 @@ __metadata:
   resolution: "@motech-development/appsync-apollo@workspace:packages/appsync-apollo"
   dependencies:
     "@apollo/client": 3.7.1
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
@@ -5402,7 +5379,7 @@ __metadata:
   resolution: "@motech-development/auth@workspace:packages/auth"
   dependencies:
     "@auth0/auth0-spa-js": 1.22.5
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/query-string-hook": "workspace:*"
@@ -5434,7 +5411,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/axios-hooks@workspace:packages/axios-hooks"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
@@ -5460,7 +5437,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/breeze-ui@workspace:packages/breeze-ui"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@fortawesome/fontawesome-svg-core": 1.2.36
     "@fortawesome/free-solid-svg-icons": 5.15.4
     "@fortawesome/react-fontawesome": 0.2.0
@@ -5562,7 +5539,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/ga-web-vitals@workspace:packages/ga-web-vitals"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/plugin-transform-runtime": 7.19.6
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
@@ -5588,7 +5565,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/node-logger@workspace:packages/node-logger"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/plugin-transform-runtime": 7.19.6
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
@@ -5624,7 +5601,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/query-string-hook@workspace:packages/query-string-hook"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
@@ -5654,7 +5631,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/s3-file-operations@workspace:packages/s3-file-operations"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/plugin-transform-runtime": 7.19.6
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
@@ -5695,7 +5672,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/serverless-outputs-env@workspace:packages/serverless-outputs-env"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/plugin-transform-runtime": 7.19.6
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
@@ -5725,7 +5702,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/webpack-conditional-plugin@workspace:packages/webpack-conditional-plugin"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/plugin-transform-runtime": 7.19.6
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
@@ -5751,7 +5728,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/webpack-permissions-plugin@workspace:packages/webpack-permissions-plugin"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/plugin-transform-runtime": 7.19.6
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
@@ -6437,7 +6414,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@open-banking/api@workspace:applications/open-banking/api"
   dependencies:
-    "@babel/core": 7.20.2
+    "@babel/core": 7.20.12
     "@babel/preset-env": 7.20.2
     "@babel/preset-typescript": 7.18.6
     "@motech-development/api-gateway-handler": "workspace:*"
@@ -22510,7 +22487,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json5@npm:^2.1.2, json5@npm:^2.1.3, json5@npm:^2.2.0, json5@npm:^2.2.1, json5@npm:^2.2.2":
+"json5@npm:^2.1.2, json5@npm:^2.1.3, json5@npm:^2.2.0, json5@npm:^2.2.2":
   version: 2.2.3
   resolution: "json5@npm:2.2.3"
   bin:
