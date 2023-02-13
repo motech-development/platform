@@ -44,6 +44,7 @@
     "@types/react-dom": "17.0.18",
     "eslint": "8.33.0",
     "jest": "29.4.2",
+    "jest-environment-jsdom": "^29.4.2",
     "prettier": "2.3.0",
     "rimraf": "3.0.2",
     "rollup": "2.79.1",
@@ -56,6 +57,9 @@
       "src/**/*.{ts,tsx}",
       "!src/**/*.stories.{ts,tsx}"
     ],
+    "moduleNameMapper": {
+      "^uuid$": "uuid"
+    },
     "setupFilesAfterEnv": [
       "<rootDir>/src/setupTests.ts"
     ],
