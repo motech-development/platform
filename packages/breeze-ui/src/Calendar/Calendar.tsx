@@ -128,6 +128,7 @@ const Dates: FC<IDates> = ({ date, id, onSelect, view }) => {
         <CalendarButton
           block
           colour={colour}
+          data-testid={`calendar-day-${day}`}
           tabIndex={-1}
           onClick={() => onSelect(day, month, year)}
         >

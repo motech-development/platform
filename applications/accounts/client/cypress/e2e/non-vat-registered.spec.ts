@@ -901,6 +901,18 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('Purchase').check();
 
+        cy.findByTestId('date-picker')
+          .click()
+          .then(() => {
+            const day = DateTime.now()
+              .plus({
+                day: 1,
+              })
+              .day.toString();
+
+            cy.findByTestId(`calendar-day-${day}`).safeClick();
+          });
+
         cy.findByLabelText('Supplier')
           .should('be.visible')
           .focus()
