@@ -129,6 +129,7 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
 
         <IconOuter>
           <IconButton
+            data-testid="date-picker"
             disabled={markAsDisabled}
             type="button"
             aria-label={`Choose ${label}, selected date is ${formatted}`}
