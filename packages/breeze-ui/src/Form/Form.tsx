@@ -8,7 +8,7 @@ import Row from '../Row/Row';
 const isObject = (value: unknown) =>
   typeof value === 'object' && !Array.isArray(value) && value !== null;
 
-function encodeNullValues<T>(values: T) {
+function encodeNullValues<T extends object>(values: T) {
   const initialValues = {
     ...values,
   };
@@ -26,7 +26,7 @@ function encodeNullValues<T>(values: T) {
   return initialValues;
 }
 
-function formNormaliser<T>(values: T) {
+function formNormaliser<T extends object>(values: T) {
   let initialValues = {
     ...values,
   };
