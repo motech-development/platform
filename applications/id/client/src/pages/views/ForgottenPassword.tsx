@@ -1,6 +1,6 @@
 import { useToast } from '@motech-development/breeze-ui';
 import { WebAuth } from 'auth0-js';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ForgottenPasswordForm, {
   FormSchema,
@@ -11,10 +11,7 @@ export interface IForgottenPasswordProps {
   setView(view: string): void;
 }
 
-const ForgottenPassword: FC<IForgottenPasswordProps> = ({
-  client,
-  setView,
-}) => {
+function ForgottenPassword({ client, setView }: IForgottenPasswordProps) {
   const { add } = useToast();
   const { t } = useTranslation('forgotten-password');
   const [loading, setLoading] = useState(false);
@@ -49,6 +46,6 @@ const ForgottenPassword: FC<IForgottenPasswordProps> = ({
       onSubmit={sendEmail}
     />
   );
-};
+}
 
 export default ForgottenPassword;

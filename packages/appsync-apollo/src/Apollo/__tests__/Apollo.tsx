@@ -1,10 +1,17 @@
 import { render } from '@testing-library/react';
-import { FC } from 'react';
 import Apollo from '../Apollo';
 
-const Error: FC = () => <p data-testid="error">Error</p>;
-const Loading: FC = () => <div data-testid="loading" />;
-const Unauthorised: FC = () => <p data-testid="unauthorised">Unauthorised</p>;
+function Error() {
+  return <p data-testid="error">Error</p>;
+}
+
+function Loading() {
+  return <div data-testid="loading" />;
+}
+
+function Unauthorised() {
+  return <p data-testid="unauthorised">Unauthorised</p>;
+}
 
 describe('Apollo', () => {
   let getTokenSilently: jest.Mock;

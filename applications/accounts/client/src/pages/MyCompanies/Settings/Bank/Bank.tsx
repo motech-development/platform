@@ -7,10 +7,9 @@ import {
   PageTitle,
   Row,
   TableCell,
-  TRowData,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
@@ -43,10 +42,9 @@ interface IDataRowComponent {
   name: string;
 }
 
-const row: TRowData<IDataRow, IDataRowComponent> =
-  ({ connect, connectLabel, data, selected }) =>
-  ({ id, name }) =>
-    (
+function row({ connect, connectLabel, data, selected }: IDataRow) {
+  function DataRow({ id, name }: IDataRowComponent) {
+    return (
       <>
         <TableCell>
           <Typography component="p" variant="h5" margin="none">
@@ -69,9 +67,13 @@ const row: TRowData<IDataRow, IDataRowComponent> =
         </TableCell>
       </>
     );
+  }
+
+  return DataRow;
+}
 
 // TODO: Get to the bottom of the subscription error
-const Bank: FC = () => {
+function Bank() {
   const { companyId } = useParams<ISelectBankParams>();
   const { t } = useTranslation('settings');
   const [selected, setSelected] = useState('');
@@ -167,6 +169,6 @@ const Bank: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default Bank;

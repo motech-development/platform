@@ -6,7 +6,6 @@ import {
   Row,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object } from 'yup';
 import {
@@ -52,12 +51,12 @@ export interface ICompanyFormProps {
   onSave(value: FormSchema): void;
 }
 
-const CompanyForm: FC<ICompanyFormProps> = ({
+function CompanyForm({
   backTo,
   initialValues,
   loading,
   onSave,
-}) => {
+}: ICompanyFormProps) {
   const { t } = useTranslation('my-companies');
   const address = useAddress();
   const bank = useBank();
@@ -136,6 +135,6 @@ const CompanyForm: FC<ICompanyFormProps> = ({
       </Row>
     </Form>
   );
-};
+}
 
 export default CompanyForm;

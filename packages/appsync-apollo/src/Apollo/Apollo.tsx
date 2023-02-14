@@ -8,7 +8,7 @@ import {
 } from '@apollo/client';
 import { createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 export interface IApolloProps {
   cacheConfig?: InMemoryCacheConfig;
@@ -21,7 +21,7 @@ export interface IApolloProps {
   getTokenSilently(): Promise<string | undefined>;
 }
 
-const Apollo: FC<IApolloProps> = ({
+function Apollo({
   cacheConfig,
   children,
   error,
@@ -30,7 +30,7 @@ const Apollo: FC<IApolloProps> = ({
   isAuthenticated,
   isLoading,
   unauthorised,
-}) => {
+}: IApolloProps) {
   const [client, setClient] = useState<ApolloClient<NormalizedCacheObject>>();
   const { REACT_APP_APPSYNC_URL, REACT_APP_AWS_REGION } = process.env;
   const url = REACT_APP_APPSYNC_URL;
@@ -83,6 +83,6 @@ const Apollo: FC<IApolloProps> = ({
   }
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
-};
+}
 
 export default Apollo;

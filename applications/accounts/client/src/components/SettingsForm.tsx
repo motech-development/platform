@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { FieldArray, Form, Formik } from 'formik';
-import { FC, Fragment } from 'react';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { array, boolean, object, string } from 'yup';
 import { useVatSettings, useYearEnd } from '../hooks/schema';
@@ -47,13 +47,13 @@ export interface ISettingsFormProps {
   onSave(value: FormSchema): void;
 }
 
-const SettingsForm: FC<ISettingsFormProps> = ({
+function SettingsForm({
   backTo,
   bank,
   initialValues,
   loading,
   onSave,
-}) => {
+}: ISettingsFormProps) {
   const { t } = useTranslation('settings');
   const { connected, disconnectLoading, link, name, onDisconnect } = bank;
   const vat = useVatSettings();
@@ -264,6 +264,6 @@ const SettingsForm: FC<ISettingsFormProps> = ({
       )}
     </Formik>
   );
-};
+}
 
 export default SettingsForm;

@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { Loader } from '@motech-development/breeze-ui';
 import { useQueryString } from '@motech-development/query-string-hook';
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import ErrorCard from '../../../../components/ErrorCard';
@@ -14,7 +14,7 @@ interface ICallbackParams {
   companyId: string;
 }
 
-const Callback: FC = () => {
+function Callback() {
   const history = useHistory();
   const { companyId } = useParams<ICallbackParams>();
   const { t } = useTranslation('settings');
@@ -70,6 +70,6 @@ const Callback: FC = () => {
   }
 
   return <Loader />;
-};
+}
 
 export default Callback;

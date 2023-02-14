@@ -5,7 +5,6 @@ import {
   Tooltip,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import styled from 'styled-components';
 
 interface IWarningTriangle {
@@ -27,14 +26,14 @@ export interface IWarningProps extends ITypographyProps {
   show: boolean;
 }
 
-const Warning: FC<IWarningProps> = ({
+function Warning({
   children,
   id,
   message,
   placement,
   show,
   ...rest
-}) => {
+}: IWarningProps) {
   if (show) {
     return (
       <Tooltip
@@ -72,6 +71,6 @@ const Warning: FC<IWarningProps> = ({
     // eslint-disable-next-line react/jsx-props-no-spreading
     <Typography {...rest}>{children}</Typography>
   );
-};
+}
 
 export default Warning;

@@ -2,7 +2,6 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useLazyGet } from '@motech-development/axios-hooks';
 import { Button, Col, Row, useToast } from '@motech-development/breeze-ui';
 import { saveAs } from 'file-saver';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import FileDownload from '../../../../components/FileDownload';
 
@@ -50,11 +49,7 @@ export interface IDeleteTransactionProps {
   onDelete(name: string): void;
 }
 
-const DeleteTransaction: FC<IDeleteTransactionProps> = ({
-  id,
-  onDelete,
-  path,
-}) => {
+function DeleteTransaction({ id, onDelete, path }: IDeleteTransactionProps) {
   const { t } = useTranslation('accounts');
   const { add } = useToast();
   const onError = () => {
@@ -158,6 +153,6 @@ const DeleteTransaction: FC<IDeleteTransactionProps> = ({
       </Col>
     </Row>
   );
-};
+}
 
 export default DeleteTransaction;

@@ -7,11 +7,10 @@ import {
   PageTitle,
   Row,
   TableCell,
-  TRowData,
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -56,18 +55,25 @@ interface IDataRowComponent {
   scheduled: boolean;
 }
 
-const row: TRowData<IDataRow, IDataRowComponent> =
-  ({
-    companyId,
-    data,
-    deleteLabel,
-    launchDeleteModal,
-    noAttachmentLabel,
-    scheduledLabel,
-    viewLabel,
-  }) =>
-  ({ amount, attachment, date, description, id, name, scheduled }) =>
-    (
+function row({
+  companyId,
+  data,
+  deleteLabel,
+  launchDeleteModal,
+  noAttachmentLabel,
+  scheduledLabel,
+  viewLabel,
+}: IDataRow) {
+  function DataRow({
+    amount,
+    attachment,
+    date,
+    description,
+    id,
+    name,
+    scheduled,
+  }: IDataRowComponent) {
+    return (
       <>
         <TransactionArrow value={amount} />
 
@@ -124,8 +130,12 @@ const row: TRowData<IDataRow, IDataRowComponent> =
         </TableCell>
       </>
     );
+  }
 
-const PendingTransactions: FC = () => {
+  return DataRow;
+}
+
+function PendingTransactions() {
   const [transaction, setTransaction] = useState({
     id: '',
     name: '',
@@ -268,6 +278,6 @@ const PendingTransactions: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default PendingTransactions;

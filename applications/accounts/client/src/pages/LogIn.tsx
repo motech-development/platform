@@ -5,10 +5,9 @@ import {
   Typography,
   Window,
 } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const LogIn: FC = () => {
+function LogIn() {
   const { loginWithRedirect } = useAuth();
   const { t } = useTranslation('log-in');
   const login = () => {
@@ -40,6 +39,6 @@ const LogIn: FC = () => {
       </Button>
     </Window>
   );
-};
+}
 
 export default LogIn;

@@ -1,4 +1,4 @@
-import { ComponentType, FC, useEffect } from 'react';
+import { ComponentType, useEffect } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 
@@ -6,11 +6,11 @@ export interface IProtectedRouteProps extends RouteProps {
   component: ComponentType;
 }
 
-const ProtectedRoute: FC<IProtectedRouteProps> = ({
+function ProtectedRoute({
   component: Component,
   path,
   ...rest
-}) => {
+}: IProtectedRouteProps) {
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth();
 
   useEffect(() => {
@@ -32,6 +32,6 @@ const ProtectedRoute: FC<IProtectedRouteProps> = ({
     // eslint-disable-next-line react/jsx-props-no-spreading
     <Route path={path} component={Component} {...rest} />
   ) : null;
-};
+}
 
 export default ProtectedRoute;

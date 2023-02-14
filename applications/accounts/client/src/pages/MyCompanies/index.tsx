@@ -1,6 +1,6 @@
 import { ProtectedRoute, useAuth } from '@motech-development/auth';
 import { Loader } from '@motech-development/breeze-ui';
-import { FC, lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import ApolloClient from '../../components/ApolloClient';
 import Container from '../../components/Container';
@@ -16,7 +16,7 @@ const Reports = lazy(() => import('./Reports'));
 const Settings = lazy(() => import('./Settings'));
 const UpdateDetails = lazy(() => import('./UpdateDetails'));
 
-const Routes: FC = () => {
+function Routes() {
   const { logout, user } = useAuth();
   const logOut = () => {
     Promise.resolve(
@@ -81,6 +81,6 @@ const Routes: FC = () => {
       </Suspense>
     </ApolloClient>
   );
-};
+}
 
 export default Routes;

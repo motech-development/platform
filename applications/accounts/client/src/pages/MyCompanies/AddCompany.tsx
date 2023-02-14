@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import CompanyWizard, { FormSchema } from '../../components/CompanyWizard';
@@ -11,7 +10,7 @@ import ADD_COMPANY, {
   updateCache,
 } from '../../graphql/company/ADD_COMPANY';
 
-const AddCompany: FC = () => {
+function AddCompany() {
   const history = useHistory();
   const { t } = useTranslation('my-companies');
   const { add } = useToast();
@@ -60,6 +59,6 @@ const AddCompany: FC = () => {
       <CompanyWizard backTo="/my-companies" loading={loading} onSave={save} />
     </Connected>
   );
-};
+}
 
 export default AddCompany;

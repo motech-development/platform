@@ -1,11 +1,14 @@
 import { render } from '@testing-library/react';
-import { FC } from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import ConditionalRoute from '../ConditionalRoute';
 
-const TestComponent: FC = () => <p data-testid="success">Success</p>;
+function TestComponent() {
+  return <p data-testid="success">Success</p>;
+}
 
-const RedirectComponent: FC = () => <p data-testid="fail">Fail</p>;
+function RedirectComponent() {
+  return <p data-testid="fail">Fail</p>;
+}
 
 describe('ConditionalRoute', () => {
   let condition: boolean;

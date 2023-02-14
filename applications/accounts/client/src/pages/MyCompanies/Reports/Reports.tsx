@@ -13,12 +13,11 @@ import {
   PageTitle,
   Row,
   TableCell,
-  TRowData,
   useToast,
 } from '@motech-development/breeze-ui';
 import { useQs } from '@motech-development/query-string-hook';
 import { saveAs } from 'file-saver';
-import { FC, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -70,10 +69,9 @@ export const GET_REPORTS = gql`
   }
 `;
 
-const row: TRowData<IDataRow, IReport> =
-  ({ download, label }) =>
-  ({ createdAt, downloadUrl, ttl }) =>
-    (
+function row({ download, label }: IDataRow) {
+  function DataRow({ createdAt, downloadUrl, ttl }: Exclude<IReport, 'id'>) {
+    return (
       <>
         <TableCell>
           <DateTime format="dd/MM/yyyy HH:mm" value={createdAt} />
@@ -95,8 +93,12 @@ const row: TRowData<IDataRow, IReport> =
         </TableCell>
       </>
     );
+  }
 
-const Reports: FC = () => {
+  return DataRow;
+}
+
+function Reports() {
   const { companyId } = useParams<IReportsParams>();
   const { user } = useAuth();
   const { add } = useToast();
@@ -226,6 +228,6 @@ const Reports: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default Reports;

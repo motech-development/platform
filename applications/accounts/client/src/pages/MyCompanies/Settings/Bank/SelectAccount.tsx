@@ -7,11 +7,10 @@ import {
   PageTitle,
   Row,
   TableCell,
-  TRowData,
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
@@ -38,20 +37,20 @@ interface IDataRow {
 }
 
 interface IDataRowComponent {
-  accountIdentifications: {
-    identification: string;
-    type: string;
-  }[];
   balance: number;
   currency: string;
   id: string;
   type: string;
 }
 
-const row: TRowData<IDataRow, IDataRowComponent> =
-  ({ balanceLabel, linkAccountLabel, selectAccount, selected }) =>
-  ({ balance, currency, id, type }) =>
-    (
+function row({
+  balanceLabel,
+  linkAccountLabel,
+  selectAccount,
+  selected,
+}: IDataRow) {
+  function DataRow({ balance, currency, id, type }: IDataRowComponent) {
+    return (
       <>
         <TableCell>
           <Typography
@@ -82,8 +81,12 @@ const row: TRowData<IDataRow, IDataRowComponent> =
         </TableCell>
       </>
     );
+  }
 
-const SelectAccount: FC = () => {
+  return DataRow;
+}
+
+function SelectAccount() {
   const history = useHistory();
   const { add } = useToast();
   const { t } = useTranslation('settings');
@@ -208,6 +211,6 @@ const SelectAccount: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default SelectAccount;

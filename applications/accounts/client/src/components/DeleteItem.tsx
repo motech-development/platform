@@ -4,7 +4,6 @@ import {
   Overlay,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import ConfirmDelete from './ConfirmDelete';
 
 export interface IDeleteItemProps {
@@ -17,7 +16,7 @@ export interface IDeleteItemProps {
   onDismiss(): void;
 }
 
-const DeleteItem: FC<IDeleteItemProps> = ({
+function DeleteItem({
   display,
   loading,
   name,
@@ -25,8 +24,8 @@ const DeleteItem: FC<IDeleteItemProps> = ({
   onDismiss,
   title,
   warning,
-}) =>
-  loading ? (
+}: IDeleteItemProps) {
+  return loading ? (
     <Overlay>
       <Loader />
     </Overlay>
@@ -48,5 +47,6 @@ const DeleteItem: FC<IDeleteItemProps> = ({
       />
     </Modal>
   );
+}
 
 export default DeleteItem;

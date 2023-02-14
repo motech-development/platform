@@ -1,11 +1,11 @@
-import { FC, useEffect } from 'react';
+import { useEffect } from 'react';
 
 export interface IFileDownload {
   loading: boolean;
   onDownload(): Promise<void>;
 }
 
-const FileDownload: FC<IFileDownload> = ({ loading, onDownload }) => {
+function FileDownload({ loading, onDownload }: IFileDownload) {
   useEffect(() => {
     if (!loading) {
       onDownload().catch(() => {});
@@ -14,6 +14,6 @@ const FileDownload: FC<IFileDownload> = ({ loading, onDownload }) => {
   }, [loading]);
 
   return null;
-};
+}
 
 export default FileDownload;

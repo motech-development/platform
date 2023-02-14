@@ -1,11 +1,16 @@
 import { render, waitFor } from '@testing-library/react';
-import { FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
 import WithAuth from '../WithAuth';
 
-const TestComponent: FC = () => <div data-testid="content">Loaded</div>;
-const LoadingComponent: FC = () => <div data-testid="loading">Loading</div>;
+function TestComponent() {
+  return <div data-testid="content">Loaded</div>;
+}
+
+function LoadingComponent() {
+  return <div data-testid="loading">Loading</div>;
+}
 
 describe('withAuth', () => {
   let buildAuthorizeUrl: jest.Mock;
@@ -51,32 +56,34 @@ describe('withAuth', () => {
     });
 
     it('should show component', async () => {
-      const Component = () => (
-        <MemoryRouter>
-          <AuthProvider>
-            <AuthContext.Provider
-              value={useMemo(
-                () => ({
-                  buildAuthorizeUrl,
-                  getIdTokenClaims,
-                  getTokenSilently,
-                  isAuthenticated,
-                  isLoading,
-                  loginWithPopup,
-                  loginWithRedirect,
-                  logout,
-                  user,
-                }),
-                [],
-              )}
-            >
-              <WithAuth fallback={<LoadingComponent />} onError={onError}>
-                <TestComponent />
-              </WithAuth>
-            </AuthContext.Provider>
-          </AuthProvider>
-        </MemoryRouter>
-      );
+      function Component() {
+        return (
+          <MemoryRouter>
+            <AuthProvider>
+              <AuthContext.Provider
+                value={useMemo(
+                  () => ({
+                    buildAuthorizeUrl,
+                    getIdTokenClaims,
+                    getTokenSilently,
+                    isAuthenticated,
+                    isLoading,
+                    loginWithPopup,
+                    loginWithRedirect,
+                    logout,
+                    user,
+                  }),
+                  [],
+                )}
+              >
+                <WithAuth fallback={<LoadingComponent />} onError={onError}>
+                  <TestComponent />
+                </WithAuth>
+              </AuthContext.Provider>
+            </AuthProvider>
+          </MemoryRouter>
+        );
+      }
 
       const { findByTestId } = render(<Component />);
 
@@ -84,34 +91,36 @@ describe('withAuth', () => {
     });
 
     it('should should handler error', async () => {
-      const Component = () => (
-        <MemoryRouter
-          initialEntries={['?error=Error&error_description=Message']}
-        >
-          <AuthProvider>
-            <AuthContext.Provider
-              value={useMemo(
-                () => ({
-                  buildAuthorizeUrl,
-                  getIdTokenClaims,
-                  getTokenSilently,
-                  isAuthenticated,
-                  isLoading,
-                  loginWithPopup,
-                  loginWithRedirect,
-                  logout,
-                  user,
-                }),
-                [],
-              )}
-            >
-              <WithAuth fallback={<LoadingComponent />} onError={onError}>
-                <TestComponent />
-              </WithAuth>
-            </AuthContext.Provider>
-          </AuthProvider>
-        </MemoryRouter>
-      );
+      function Component() {
+        return (
+          <MemoryRouter
+            initialEntries={['?error=Error&error_description=Message']}
+          >
+            <AuthProvider>
+              <AuthContext.Provider
+                value={useMemo(
+                  () => ({
+                    buildAuthorizeUrl,
+                    getIdTokenClaims,
+                    getTokenSilently,
+                    isAuthenticated,
+                    isLoading,
+                    loginWithPopup,
+                    loginWithRedirect,
+                    logout,
+                    user,
+                  }),
+                  [],
+                )}
+              >
+                <WithAuth fallback={<LoadingComponent />} onError={onError}>
+                  <TestComponent />
+                </WithAuth>
+              </AuthContext.Provider>
+            </AuthProvider>
+          </MemoryRouter>
+        );
+      }
 
       render(<Component />);
 
@@ -123,32 +132,34 @@ describe('withAuth', () => {
     it('should show the loader', async () => {
       isLoading = true;
 
-      const Component = () => (
-        <MemoryRouter>
-          <AuthProvider>
-            <AuthContext.Provider
-              value={useMemo(
-                () => ({
-                  buildAuthorizeUrl,
-                  getIdTokenClaims,
-                  getTokenSilently,
-                  isAuthenticated,
-                  isLoading,
-                  loginWithPopup,
-                  loginWithRedirect,
-                  logout,
-                  user,
-                }),
-                [],
-              )}
-            >
-              <WithAuth fallback={<LoadingComponent />} onError={onError}>
-                <TestComponent />
-              </WithAuth>
-            </AuthContext.Provider>
-          </AuthProvider>
-        </MemoryRouter>
-      );
+      function Component() {
+        return (
+          <MemoryRouter>
+            <AuthProvider>
+              <AuthContext.Provider
+                value={useMemo(
+                  () => ({
+                    buildAuthorizeUrl,
+                    getIdTokenClaims,
+                    getTokenSilently,
+                    isAuthenticated,
+                    isLoading,
+                    loginWithPopup,
+                    loginWithRedirect,
+                    logout,
+                    user,
+                  }),
+                  [],
+                )}
+              >
+                <WithAuth fallback={<LoadingComponent />} onError={onError}>
+                  <TestComponent />
+                </WithAuth>
+              </AuthContext.Provider>
+            </AuthProvider>
+          </MemoryRouter>
+        );
+      }
 
       const { findByTestId } = render(<Component />);
 

@@ -9,7 +9,6 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { number, object } from 'yup';
 import {
@@ -79,11 +78,7 @@ export interface ICompanyWizardProps {
   onSave(value: FormSchema): void;
 }
 
-const CompanyWizard: FC<ICompanyWizardProps> = ({
-  backTo,
-  loading,
-  onSave,
-}) => {
+function CompanyWizard({ backTo, loading, onSave }: ICompanyWizardProps) {
   const { t } = useTranslation('my-companies');
   const currency = t('company-form.currency');
   const address = useAddress();
@@ -267,6 +262,6 @@ const CompanyWizard: FC<ICompanyWizardProps> = ({
       )}
     </Formik>
   );
-};
+}
 
 export default CompanyWizard;

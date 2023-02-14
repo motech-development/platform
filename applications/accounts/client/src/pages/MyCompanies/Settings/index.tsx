@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { ConditionalRoute, ProtectedRoute } from '@motech-development/auth';
-import { FC, lazy } from 'react';
+import { lazy } from 'react';
 import { Switch, useParams } from 'react-router-dom';
 import GET_BANK_SETTINGS, {
   IGetBankSettingsInput,
@@ -15,7 +15,7 @@ interface IRouteParams {
   companyId: string;
 }
 
-const Routes: FC = () => {
+function Routes() {
   const { companyId } = useParams<IRouteParams>();
   const { data, error, loading } = useQuery<
     IGetBankSettingsOutput,
@@ -45,6 +45,6 @@ const Routes: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default Routes;

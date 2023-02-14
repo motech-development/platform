@@ -8,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
@@ -46,12 +46,7 @@ export interface IUserBarProps {
   logOut(): void;
 }
 
-const UserBar: FC<IUserBarProps> = ({
-  logOut,
-  name,
-  notifications,
-  picture,
-}) => {
+function UserBar({ logOut, name, notifications, picture }: IUserBarProps) {
   const { t } = useTranslation(['global', 'user-bar']);
 
   return (
@@ -94,6 +89,6 @@ const UserBar: FC<IUserBarProps> = ({
       </Toolbar>
     </AppBar>
   );
-};
+}
 
 export default UserBar;

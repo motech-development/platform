@@ -1,6 +1,6 @@
 import { Loader, useToast, Window } from '@motech-development/breeze-ui';
 import { Auth0Error } from 'auth0-js';
-import { FC, lazy, useEffect, useState } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import { pageview } from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import AppTitle from '../components/AppTitle';
@@ -11,7 +11,7 @@ const ForgottenPassword = lazy(() => import('./views/ForgottenPassword'));
 const LogIn = lazy(() => import('./views/LogIn'));
 const SignUp = lazy(() => import('./views/SignUp'));
 
-const Login: FC = () => {
+function Login() {
   const { add } = useToast();
   const { t } = useTranslation('validation');
   const [view, setView] = useState('log-in');
@@ -67,6 +67,6 @@ const Login: FC = () => {
   ) : (
     <Loader />
   );
-};
+}
 
 export default Login;

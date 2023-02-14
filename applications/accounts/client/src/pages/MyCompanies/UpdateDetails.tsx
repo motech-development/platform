@@ -6,7 +6,7 @@ import {
   Row,
   useToast,
 } from '@motech-development/breeze-ui';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import CompanyForm, { FormSchema } from '../../components/CompanyForm';
@@ -30,7 +30,7 @@ interface IUpdateDetailsParams {
   companyId: string;
 }
 
-const UpdateDetails: FC = () => {
+function UpdateDetails() {
   const backTo = (id: string) => `/my-companies/dashboard/${id}`;
   const history = useHistory();
   const { add } = useToast();
@@ -169,6 +169,6 @@ const UpdateDetails: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default UpdateDetails;

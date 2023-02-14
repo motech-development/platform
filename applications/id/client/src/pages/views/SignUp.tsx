@@ -1,6 +1,6 @@
 import { useToast } from '@motech-development/breeze-ui';
 import { Auth0Error, WebAuth } from 'auth0-js';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AuthForm, { FormSchema } from '../../components/AuthForm';
 
@@ -10,7 +10,7 @@ export interface ISignUpProps {
   setView(view: string): void;
 }
 
-const SignUp: FC<ISignUpProps> = ({ client, handleError, setView }) => {
+function SignUp({ client, handleError, setView }: ISignUpProps) {
   const { t } = useTranslation('sign-up');
   const [loading, setLoading] = useState(false);
   const { add } = useToast();
@@ -52,6 +52,6 @@ const SignUp: FC<ISignUpProps> = ({ client, handleError, setView }) => {
       onSubmit={signUp}
     />
   );
-};
+}
 
 export default SignUp;

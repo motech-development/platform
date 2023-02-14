@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -22,7 +22,7 @@ interface ISettingsParams {
   companyId: string;
 }
 
-const Settings: FC = () => {
+function Settings() {
   const backTo = (id: string) => `/my-companies/dashboard/${id}`;
   const [connected, setConnected] = useState(false);
   const { companyId } = useParams<ISettingsParams>();
@@ -127,6 +127,6 @@ const Settings: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default Settings;

@@ -1,6 +1,6 @@
 import { ApolloError } from '@apollo/client';
 import { Loader } from '@motech-development/breeze-ui';
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import ErrorCard from './ErrorCard';
 
@@ -10,7 +10,7 @@ export interface IConnectedProps {
   loading: boolean;
 }
 
-const Connected: FC<IConnectedProps> = ({ children, error, loading }) => {
+function Connected({ children, error, loading }: IConnectedProps) {
   const { t } = useTranslation('connected');
 
   if (loading) {
@@ -31,6 +31,6 @@ const Connected: FC<IConnectedProps> = ({ children, error, loading }) => {
   }
 
   return <div data-testid="connected-content">{children}</div>;
-};
+}
 
 export default Connected;

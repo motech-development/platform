@@ -1,12 +1,11 @@
 import { Typography } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import styled from 'styled-components';
 
 const Text = styled(Typography)`
   white-space: pre-wrap;
 `;
 
-const AppTitle: FC = () => {
+function AppTitle() {
   const title = window.config?.dict?.signin?.title || ' ';
 
   return (
@@ -14,6 +13,6 @@ const AppTitle: FC = () => {
       {title}
     </Text>
   );
-};
+}
 
 export default AppTitle;

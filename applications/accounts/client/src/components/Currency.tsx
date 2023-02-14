@@ -1,5 +1,3 @@
-import { FC } from 'react';
-
 const currencySymbol = (currency: string) => {
   switch (currency) {
     case 'GBP':
@@ -30,10 +28,10 @@ export interface ICurrencyProps {
   value: number;
 }
 
-const Currency: FC<ICurrencyProps> = ({ currency, value }) => {
+function Currency({ currency, value }: ICurrencyProps) {
   const output = formatCurrency(currency, value);
 
   return <>{output}</>;
-};
+}
 
 export default Currency;

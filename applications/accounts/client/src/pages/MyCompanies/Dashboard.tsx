@@ -6,7 +6,7 @@ import {
   PageTitle,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, Fragment } from 'react';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../components/Connected';
@@ -19,7 +19,7 @@ interface IDashboardParams {
   companyId: string;
 }
 
-const Dashboard: FC = () => {
+function Dashboard() {
   const { companyId } = useParams<IDashboardParams>();
   const { data, error, loading } = useQuery<
     IGetCompanyOutput,
@@ -90,6 +90,6 @@ const Dashboard: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default Dashboard;

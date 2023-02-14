@@ -1,12 +1,12 @@
 import { render, waitFor } from '@testing-library/react';
-import { FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
 import ProtectedRoute from '../ProtectedRoute';
 
-const TestComponent: FC = () => (
-  <p data-testid="authenticated">Authenticated</p>
-);
+function TestComponent() {
+  return <p data-testid="authenticated">Authenticated</p>;
+}
 
 describe('ProtectedRoute', () => {
   let buildAuthorizeUrl: jest.Mock;
@@ -47,30 +47,32 @@ describe('ProtectedRoute', () => {
     isLoading = false;
     isAuthenticated = false;
 
-    const Component = () => (
-      <MemoryRouter>
-        <AuthProvider>
-          <AuthContext.Provider
-            value={useMemo(
-              () => ({
-                buildAuthorizeUrl,
-                getIdTokenClaims,
-                getTokenSilently,
-                isAuthenticated,
-                isLoading,
-                loginWithPopup,
-                loginWithRedirect,
-                logout,
-                user,
-              }),
-              [],
-            )}
-          >
-            <ProtectedRoute path="/" component={TestComponent} />
-          </AuthContext.Provider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
+    function Component() {
+      return (
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthContext.Provider
+              value={useMemo(
+                () => ({
+                  buildAuthorizeUrl,
+                  getIdTokenClaims,
+                  getTokenSilently,
+                  isAuthenticated,
+                  isLoading,
+                  loginWithPopup,
+                  loginWithRedirect,
+                  logout,
+                  user,
+                }),
+                [],
+              )}
+            >
+              <ProtectedRoute path="/" component={TestComponent} />
+            </AuthContext.Provider>
+          </AuthProvider>
+        </MemoryRouter>
+      );
+    }
 
     const { queryByTestId } = render(<Component />);
 
@@ -81,30 +83,32 @@ describe('ProtectedRoute', () => {
     isLoading = false;
     isAuthenticated = true;
 
-    const Component = () => (
-      <MemoryRouter>
-        <AuthProvider>
-          <AuthContext.Provider
-            value={useMemo(
-              () => ({
-                buildAuthorizeUrl,
-                getIdTokenClaims,
-                getTokenSilently,
-                isAuthenticated,
-                isLoading,
-                loginWithPopup,
-                loginWithRedirect,
-                logout,
-                user,
-              }),
-              [],
-            )}
-          >
-            <ProtectedRoute path="/" component={TestComponent} />
-          </AuthContext.Provider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
+    function Component() {
+      return (
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthContext.Provider
+              value={useMemo(
+                () => ({
+                  buildAuthorizeUrl,
+                  getIdTokenClaims,
+                  getTokenSilently,
+                  isAuthenticated,
+                  isLoading,
+                  loginWithPopup,
+                  loginWithRedirect,
+                  logout,
+                  user,
+                }),
+                [],
+              )}
+            >
+              <ProtectedRoute path="/" component={TestComponent} />
+            </AuthContext.Provider>
+          </AuthProvider>
+        </MemoryRouter>
+      );
+    }
 
     const { findByTestId } = render(<Component />);
 
@@ -115,30 +119,32 @@ describe('ProtectedRoute', () => {
     isLoading = false;
     isAuthenticated = false;
 
-    const Component = () => (
-      <MemoryRouter>
-        <AuthProvider>
-          <AuthContext.Provider
-            value={useMemo(
-              () => ({
-                buildAuthorizeUrl,
-                getIdTokenClaims,
-                getTokenSilently,
-                isAuthenticated,
-                isLoading,
-                loginWithPopup,
-                loginWithRedirect,
-                logout,
-                user,
-              }),
-              [],
-            )}
-          >
-            <ProtectedRoute path="/" component={TestComponent} />
-          </AuthContext.Provider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
+    function Component() {
+      return (
+        <MemoryRouter>
+          <AuthProvider>
+            <AuthContext.Provider
+              value={useMemo(
+                () => ({
+                  buildAuthorizeUrl,
+                  getIdTokenClaims,
+                  getTokenSilently,
+                  isAuthenticated,
+                  isLoading,
+                  loginWithPopup,
+                  loginWithRedirect,
+                  logout,
+                  user,
+                }),
+                [],
+              )}
+            >
+              <ProtectedRoute path="/" component={TestComponent} />
+            </AuthContext.Provider>
+          </AuthProvider>
+        </MemoryRouter>
+      );
+    }
 
     render(<Component />);
 

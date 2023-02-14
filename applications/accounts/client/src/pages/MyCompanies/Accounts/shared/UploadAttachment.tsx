@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client';
 import { usePut } from '@motech-development/axios-hooks';
 import { FileUpload, useToast } from '@motech-development/breeze-ui';
 import { FormikProps, FormikValues } from 'formik';
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface IRequestUploadInput {
@@ -51,12 +51,12 @@ interface IUploadData {
   url: string;
 }
 
-const UploadAttachment: FC<IUploadAttachmentProps> = ({
+function UploadAttachment({
   id,
   name,
   onUpload,
   transactionId,
-}) => {
+}: IUploadAttachmentProps) {
   const [formData, setFormData] = useState<IFormData>();
   const [uploadData, setUploadData] = useState<IUploadData>();
   const { t } = useTranslation('accounts');
@@ -155,6 +155,6 @@ const UploadAttachment: FC<IUploadAttachmentProps> = ({
       }}
     />
   );
-};
+}
 
 export default UploadAttachment;

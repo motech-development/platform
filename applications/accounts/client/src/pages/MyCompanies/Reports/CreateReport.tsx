@@ -1,6 +1,5 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -41,7 +40,7 @@ export const CREATE_REPORT = gql`
   }
 `;
 
-const CreateReport: FC = () => {
+function CreateReport() {
   const history = useHistory();
   const { companyId } = useParams<IReportsParams>();
   const { add } = useToast();
@@ -95,6 +94,6 @@ const CreateReport: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default CreateReport;
