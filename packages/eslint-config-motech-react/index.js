@@ -17,14 +17,12 @@ module.exports = {
       files: ['*.ts', '*.tsx'],
       overrides: [
         {
-          // TODO: Add Cypress eslint rules
+          extends: ['plugin:cypress/recommended'],
           files: ['cypress/**/*.ts'],
           parserOptions: {
             project: ['./cypress/tsconfig.eslint.json', './tsconfig.json'],
           },
-          rules: {
-            'import/no-extraneous-dependencies': 'off',
-          },
+          plugins: ['cypress'],
         },
         {
           extends: ['plugin:jest/recommended'],
