@@ -34,7 +34,7 @@ module.exports = (on) => {
     },
   );
 
-  on('before:browser:launch', (browser = {}, launchOptions) => {
+  on('before:browser:launch', (browser, launchOptions) => {
     const updatedLaunchOptions = {
       ...launchOptions,
     };
