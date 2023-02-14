@@ -23,6 +23,9 @@ module.exports = {
             project: ['./cypress/tsconfig.eslint.json', './tsconfig.json'],
           },
           plugins: ['cypress'],
+          rules: {
+            'import/no-extraneous-dependencies': 'off',
+          },
         },
         {
           extends: ['plugin:jest/recommended'],
@@ -58,22 +61,12 @@ module.exports = {
       plugins: ['@typescript-eslint', 'react'],
       rules: {
         ...overrides[0].rules,
-        // TODO: Enable this rule
-        'react/function-component-definition': [
-          'off',
-          {
-            namedComponents: ['function-declaration', 'function-expression'],
-            unnamedComponents: 'function-expression',
-          },
-        ],
         'react/jsx-no-useless-fragment': [
           'error',
           {
             allowExpressions: true,
           },
         ],
-        // TODO: Enable this rule
-        'react/prop-types': 'off',
       },
     },
     {
@@ -87,8 +80,9 @@ module.exports = {
       files: ['*.js', '*.jsx'],
       overrides: [
         {
-          // TODO: Add Cypress eslint rules
+          extends: ['plugin:cypress/recommended'],
           files: ['cypress/**/*.js'],
+          plugins: ['cypress'],
           rules: {
             'import/no-extraneous-dependencies': 'off',
           },
@@ -122,22 +116,12 @@ module.exports = {
       plugins: ['react'],
       rules: {
         ...overrides[1].rules,
-        // TODO: Enable this rule
-        'react/function-component-definition': [
-          'off',
-          {
-            namedComponents: ['function-declaration', 'function-expression'],
-            unnamedComponents: 'function-expression',
-          },
-        ],
         'react/jsx-no-useless-fragment': [
           'error',
           {
             allowExpressions: true,
           },
         ],
-        // TODO: Enable this rule
-        'react/prop-types': 'off',
       },
     },
   ],
