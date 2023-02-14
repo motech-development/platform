@@ -1,6 +1,6 @@
 import { Card, TextBox, Typography } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 import FormFooter from './FormFooter';
@@ -20,14 +20,14 @@ export interface IForgottenPasswordFormProps {
   onSubmit(value: FormSchema): void;
 }
 
-const ForgottenPasswordForm: FC<IForgottenPasswordFormProps> = ({
+function ForgottenPasswordForm({
   change,
   helpText,
   loading,
   onChange,
   onSubmit,
   submit,
-}) => {
+}: IForgottenPasswordFormProps) {
   const { t } = useTranslation('forms');
   const validationSchema = object<FormSchema>()
     .shape({
@@ -67,6 +67,6 @@ const ForgottenPasswordForm: FC<IForgottenPasswordFormProps> = ({
       )}
     </Formik>
   );
-};
+}
 
 export default ForgottenPasswordForm;

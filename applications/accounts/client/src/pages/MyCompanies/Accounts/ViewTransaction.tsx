@@ -6,7 +6,7 @@ import {
   Row,
   useToast,
 } from '@motech-development/breeze-ui';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -117,7 +117,7 @@ interface IViewTransactionParams {
   transactionId: string;
 }
 
-const ViewTransaction: FC = () => {
+function ViewTransaction() {
   const history = useHistory();
   const { companyId, transactionId } = useParams<IViewTransactionParams>();
   const [attachment, setAttachment] = useState('');
@@ -313,6 +313,6 @@ const ViewTransaction: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default ViewTransaction;

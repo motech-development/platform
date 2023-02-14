@@ -6,10 +6,9 @@ import {
   DateTime,
   Notifications,
   TableCell,
-  TRowData,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import ON_NOTIFICATION, {
@@ -96,10 +95,9 @@ interface IDataRowComponent {
   read: boolean;
 }
 
-const row: TRowData<IDataRow, IDataRowComponent> =
-  ({ t }) =>
-  ({ createdAt, message, read }) =>
-    (
+function row({ t }: IDataRow) {
+  function Row({ createdAt, message, read }: IDataRowComponent) {
+    return (
       <>
         <TableCell>{!read && <Icon icon={faCircle} />}</TableCell>
         <TableCell noWrap={false}>
@@ -113,12 +111,16 @@ const row: TRowData<IDataRow, IDataRowComponent> =
         </TableCell>
       </>
     );
+  }
+
+  return Row;
+}
 
 export interface IUserNotificationsProps {
   id: string;
 }
 
-const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
+function UserNotifications({ id }: IUserNotificationsProps) {
   const { t } = useTranslation('user-notifications');
   const { data, subscribeToMore } = useQuery<
     IGetNotificationsOutput,
@@ -207,6 +209,6 @@ const UserNotifications: FC<IUserNotificationsProps> = ({ id }) => {
       onClose={onClose}
     />
   );
-};
+}
 
 export default UserNotifications;

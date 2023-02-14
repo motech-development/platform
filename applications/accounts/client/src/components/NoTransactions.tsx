@@ -1,8 +1,7 @@
 import { Card, Typography } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const NoTransactions: FC = () => {
+function NoTransactions() {
   const { t } = useTranslation('accounts');
 
   return (
@@ -16,6 +15,6 @@ const NoTransactions: FC = () => {
       </Typography>
     </Card>
   );
-};
+}
 
 export default NoTransactions;

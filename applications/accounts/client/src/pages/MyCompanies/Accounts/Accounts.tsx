@@ -7,7 +7,6 @@ import {
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import TransactionsList from '../../../components/TransactionsList';
@@ -27,7 +26,7 @@ interface IAccountsParams {
   companyId: string;
 }
 
-const Accounts: FC = () => {
+function Accounts() {
   const { companyId } = useParams<IAccountsParams>();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
@@ -186,6 +185,6 @@ const Accounts: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default Accounts;

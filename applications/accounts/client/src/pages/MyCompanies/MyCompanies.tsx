@@ -7,7 +7,7 @@ import {
   PageTitle,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, Fragment } from 'react';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import Connected from '../../components/Connected';
 import GET_COMPANIES, {
@@ -15,7 +15,7 @@ import GET_COMPANIES, {
   IGetCompaniesOutput,
 } from '../../graphql/company/GET_COMPANIES';
 
-const MyCompanies: FC = () => {
+function MyCompanies() {
   const { t } = useTranslation('my-companies');
   const { user } = useAuth();
   const { data, error, loading } = useQuery<
@@ -95,6 +95,6 @@ const MyCompanies: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default MyCompanies;

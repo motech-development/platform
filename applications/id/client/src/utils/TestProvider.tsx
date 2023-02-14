@@ -1,6 +1,6 @@
 import { ToastContext, ToastProvider } from '@motech-development/breeze-ui';
 import i18n from 'i18next';
-import { FC, ReactNode, Suspense, useMemo } from 'react';
+import { ReactNode, Suspense, useMemo } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 export const add = jest.fn();
@@ -11,7 +11,7 @@ export interface ITestProviderProps {
   children: ReactNode;
 }
 
-const TestProvider: FC<ITestProviderProps> = ({ children }) => {
+function TestProvider({ children }: ITestProviderProps) {
   const testI18n = i18n;
 
   testI18n
@@ -45,6 +45,6 @@ const TestProvider: FC<ITestProviderProps> = ({ children }) => {
       </ToastContext.Provider>
     </ToastProvider>
   );
-};
+}
 
 export default TestProvider;

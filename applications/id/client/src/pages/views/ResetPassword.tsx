@@ -1,6 +1,5 @@
 import { usePost } from '@motech-development/axios-hooks';
 import { useToast } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import ResetPasswordForm, {
   FormSchema,
@@ -14,7 +13,7 @@ export interface IResetPasswordProps {
   setView(view: string): void;
 }
 
-const ResetPassword: FC<IResetPasswordProps> = ({ setView }) => {
+function ResetPassword({ setView }: IResetPasswordProps) {
   const { t } = useTranslation('reset');
   const { add } = useToast();
   const [reset, { loading }] = usePost<unknown, FormSchema, IError>({
@@ -39,6 +38,6 @@ const ResetPassword: FC<IResetPasswordProps> = ({ setView }) => {
       onSubmit={resetPassword}
     />
   );
-};
+}
 
 export default ResetPassword;

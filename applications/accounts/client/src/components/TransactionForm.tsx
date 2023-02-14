@@ -15,7 +15,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { Decimal } from 'decimal.js';
 import { FormikProps, FormikValues, getIn } from 'formik';
-import { ChangeEvent, FC, ReactNode, useEffect, useState } from 'react';
+import { ChangeEvent, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { boolean, date, number, object, string } from 'yup';
 
@@ -49,6 +49,21 @@ export type FormSchema = {
   vat: number;
 };
 
+interface IFormSchema {
+  amount: number | string;
+  attachment: string;
+  category: string;
+  companyId: string;
+  date: string;
+  description: string;
+  id: string;
+  name: string;
+  refund: boolean;
+  scheduled: boolean;
+  status: string;
+  vat: number | string;
+}
+
 export interface ITransactionForm {
   attachment: string;
   attachmentView: ReactNode;
@@ -56,7 +71,7 @@ export interface ITransactionForm {
   categories: ISelectOption[];
   clients: ISelectOption[];
   companyId: string;
-  initialValues?: FormSchema;
+  initialValues?: IFormSchema;
   loading: boolean;
   purchases?: string[] | null;
   sales?: string[] | null;
@@ -70,7 +85,7 @@ interface IFormValues extends FormSchema {
   transaction: string;
 }
 
-const TransactionForm: FC<ITransactionForm> = ({
+function TransactionForm({
   attachment,
   attachmentView,
   backTo,
@@ -88,7 +103,7 @@ const TransactionForm: FC<ITransactionForm> = ({
   suppliers,
   uploader,
   vat,
-}) => {
+}: ITransactionForm) {
   const isEmpty = initialValues.amount === '';
   const initialTransaction =
     !initialValues.refund && initialValues.amount > 0 ? 'Sales' : 'Purchase';
@@ -514,6 +529,6 @@ const TransactionForm: FC<ITransactionForm> = ({
       </Row>
     </Form>
   );
-};
+}
 
 export default TransactionForm;

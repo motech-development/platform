@@ -5,7 +5,7 @@ import {
   ToastProvider,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, Router, Switch } from 'react-router-dom';
 import history from './history';
@@ -14,7 +14,7 @@ import Wrapper from './components/Wrapper';
 const Login = lazy(() => import('./pages/Login'));
 const Reset = lazy(() => import('./pages/Reset'));
 
-const App: FC = () => {
+function App() {
   const { t } = useTranslation();
 
   return (
@@ -39,6 +39,6 @@ const App: FC = () => {
       <BaseStyles />
     </Wrapper>
   );
-};
+}
 
 export default App;

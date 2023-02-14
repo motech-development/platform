@@ -1,6 +1,6 @@
 import { Card, TextBox, Typography } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 import FormFooter from './FormFooter';
@@ -26,7 +26,7 @@ export interface IAuthFormProps {
   onSubmit: (value: FormSchema) => void;
 }
 
-const AuthForm: FC<IAuthFormProps> = ({
+function AuthForm({
   change,
   helpText,
   loading,
@@ -34,7 +34,7 @@ const AuthForm: FC<IAuthFormProps> = ({
   onChange,
   onSubmit,
   submit,
-}) => {
+}: IAuthFormProps) {
   const { t } = useTranslation('forms');
   const validationSchema = object<FormSchema>()
     .shape({
@@ -112,6 +112,6 @@ const AuthForm: FC<IAuthFormProps> = ({
       )}
     </Formik>
   );
-};
+}
 
 export default AuthForm;

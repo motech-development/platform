@@ -6,7 +6,6 @@ import {
   TextBox,
 } from '@motech-development/breeze-ui';
 import { Info } from 'luxon';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const name = (value: string, prefix?: string) => {
@@ -21,7 +20,7 @@ export interface IAddressFieldsProps {
   prefix?: string;
 }
 
-export const AddressFields: FC<IAddressFieldsProps> = ({ prefix }) => {
+export function AddressFields({ prefix }: IAddressFieldsProps) {
   const { t } = useTranslation('common-fields');
   const postcode = name('address.line5', prefix);
 
@@ -58,13 +57,13 @@ export const AddressFields: FC<IAddressFieldsProps> = ({ prefix }) => {
       />
     </>
   );
-};
+}
 
 export interface IBankFieldsProps {
   prefix?: string;
 }
 
-export const BankFields: FC<IBankFieldsProps> = ({ prefix }) => {
+export function BankFields({ prefix }: IBankFieldsProps) {
   const { t } = useTranslation('common-fields');
 
   return (
@@ -82,15 +81,13 @@ export const BankFields: FC<IBankFieldsProps> = ({ prefix }) => {
       />
     </>
   );
-};
+}
 
 export interface ICompanyDetailsFieldsProps {
   prefix?: string;
 }
 
-export const CompanyDetailsFields: FC<ICompanyDetailsFieldsProps> = ({
-  prefix,
-}) => {
+export function CompanyDetailsFields({ prefix }: ICompanyDetailsFieldsProps) {
   const { t } = useTranslation('common-fields');
 
   return (
@@ -104,15 +101,13 @@ export const CompanyDetailsFields: FC<ICompanyDetailsFieldsProps> = ({
       />
     </>
   );
-};
+}
 
 export interface IContactDetailsFieldsProps {
   prefix?: string;
 }
 
-export const ContactDetailsFields: FC<IContactDetailsFieldsProps> = ({
-  prefix,
-}) => {
+export function ContactDetailsFields({ prefix }: IContactDetailsFieldsProps) {
   const { t } = useTranslation('common-fields');
 
   return (
@@ -128,13 +123,13 @@ export const ContactDetailsFields: FC<IContactDetailsFieldsProps> = ({
       />
     </>
   );
-};
+}
 
 export interface IVatSettingsFieldsProps {
   prefix?: string;
 }
 
-export const VatSettingsFields: FC<IVatSettingsFieldsProps> = ({ prefix }) => {
+export function VatSettingsFields({ prefix }: IVatSettingsFieldsProps) {
   const { t } = useTranslation('common-fields');
   const schemes = [
     {
@@ -178,13 +173,13 @@ export const VatSettingsFields: FC<IVatSettingsFieldsProps> = ({ prefix }) => {
       />
     </>
   );
-};
+}
 
 export interface IYearEndFieldsProps {
   prefix?: string;
 }
 
-export const YearEndFields: FC<IYearEndFieldsProps> = ({ prefix }) => {
+export function YearEndFields({ prefix }: IYearEndFieldsProps) {
   const { t } = useTranslation('common-fields');
   const days = [...Array<unknown>(31)].map((_, i) => {
     const day = (i + 1).toString();
@@ -220,4 +215,4 @@ export const YearEndFields: FC<IYearEndFieldsProps> = ({ prefix }) => {
       </Col>
     </Row>
   );
-};
+}

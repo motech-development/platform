@@ -1,12 +1,12 @@
 import { Loader, Window } from '@motech-development/breeze-ui';
-import { FC, lazy, useEffect, useState } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import { pageview } from 'react-ga';
 import AppTitle from '../components/AppTitle';
 
 const ResetPassword = lazy(() => import('./views/ResetPassword'));
 const Success = lazy(() => import('./views/Success'));
 
-const Reset: FC = () => {
+function Reset() {
   const [view, setView] = useState('reset');
 
   useEffect(() => {
@@ -44,6 +44,6 @@ const Reset: FC = () => {
   ) : (
     <Loader />
   );
-};
+}
 
 export default Reset;

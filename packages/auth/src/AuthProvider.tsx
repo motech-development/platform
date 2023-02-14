@@ -1,6 +1,5 @@
 import {
   createContext,
-  FC,
   ReactNode,
   useCallback,
   useContext,
@@ -56,10 +55,10 @@ export interface IAuthProviderProps {
   onRedirectCallback?(appState: IAppState): void;
 }
 
-const AuthProvider: FC<IAuthProviderProps> = ({
+function AuthProvider({
   children,
   onRedirectCallback = defaultRedirectCallback,
-}) => {
+}: IAuthProviderProps) {
   const {
     NODE_ENV,
     REACT_APP_AUTH0_AUDIENCE,
@@ -199,6 +198,6 @@ const AuthProvider: FC<IAuthProviderProps> = ({
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+}
 
 export default AuthProvider;

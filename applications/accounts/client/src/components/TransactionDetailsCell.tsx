@@ -1,5 +1,5 @@
 import { TableCell, useBreakpoint } from '@motech-development/breeze-ui';
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import styled from 'styled-components';
 
 interface ICell {
@@ -24,10 +24,10 @@ export interface ITransactionDetailsCell {
   children: ReactNode;
 }
 
-const TransactionDetailsCell: FC<ITransactionDetailsCell> = ({ children }) => {
+function TransactionDetailsCell({ children }: ITransactionDetailsCell) {
   const breakpoint = useBreakpoint();
 
   return <Cell breakpoint={breakpoint}>{children}</Cell>;
-};
+}
 
 export default TransactionDetailsCell;

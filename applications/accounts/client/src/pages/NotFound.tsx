@@ -1,9 +1,8 @@
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import ErrorCard from '../components/ErrorCard';
 import Container from '../components/Container';
 
-const NotFound: FC = () => {
+function NotFound() {
   const { t } = useTranslation('not-found');
 
   return (
@@ -11,6 +10,6 @@ const NotFound: FC = () => {
       <ErrorCard title={t('not-found')} description={t('description')} />
     </Container>
   );
-};
+}
 
 export default NotFound;

@@ -1,8 +1,7 @@
 import { Card, Typography } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const Success: FC = () => {
+function Success() {
   const { t } = useTranslation('reset');
 
   return (
@@ -12,6 +11,6 @@ const Success: FC = () => {
       </Typography>
     </Card>
   );
-};
+}
 
 export default Success;

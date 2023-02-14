@@ -1,6 +1,6 @@
 import { ButtonLink } from '@motech-development/breeze-ui';
 import { Auth0Error, WebAuth } from 'auth0-js';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AuthForm, { FormSchema } from '../../components/AuthForm';
 
@@ -10,7 +10,7 @@ export interface ILogInProps {
   setView(view: string): void;
 }
 
-const LogIn: FC<ILogInProps> = ({ client, handleError, setView }) => {
+function LogIn({ client, handleError, setView }: ILogInProps) {
   const { t } = useTranslation('log-in');
   const [loading, setLoading] = useState(false);
   const logIn = ({ password, username }: FormSchema) => {
@@ -44,6 +44,6 @@ const LogIn: FC<ILogInProps> = ({ client, handleError, setView }) => {
       onSubmit={logIn}
     />
   );
-};
+}
 
 export default LogIn;

@@ -1,6 +1,5 @@
 import { Button, Col, Row, TextBox } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 
@@ -17,12 +16,12 @@ export interface IConfirmDeleteProps {
   onDelete(input: FormSchema): void;
 }
 
-const ConfirmDelete: FC<IConfirmDeleteProps> = ({
+function ConfirmDelete({
   loading,
   name,
   onCancel,
   onDelete,
-}) => {
+}: IConfirmDeleteProps) {
   const { t } = useTranslation('confirm-delete');
   const validationSchema = object<FormSchema>()
     .shape({
@@ -76,6 +75,6 @@ const ConfirmDelete: FC<IConfirmDeleteProps> = ({
       )}
     </Formik>
   );
-};
+}
 
 export default ConfirmDelete;

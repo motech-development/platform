@@ -1,6 +1,5 @@
 import { Button, Card, TextBox } from '@motech-development/breeze-ui';
 import { Form, Formik } from 'formik';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, ref, string } from 'yup';
 
@@ -20,11 +19,11 @@ export interface IResetPasswordFormProps {
   onSubmit: (value: FormSchema) => Promise<void>;
 }
 
-const ResetPasswordForm: FC<IResetPasswordFormProps> = ({
+function ResetPasswordForm({
   loading,
   onSubmit,
   submit,
-}) => {
+}: IResetPasswordFormProps) {
   const { t } = useTranslation('forms');
   const validationSchema = object<FormSchema>()
     .shape({
@@ -75,6 +74,6 @@ const ResetPasswordForm: FC<IResetPasswordFormProps> = ({
       )}
     </Formik>
   );
-};
+}
 
 export default ResetPasswordForm;

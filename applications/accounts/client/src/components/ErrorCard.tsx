@@ -6,7 +6,6 @@ import {
   Row,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import isProd from '../utils/isProd';
@@ -18,12 +17,7 @@ export interface IErrorCardProps {
   title: string;
 }
 
-const ErrorCard: FC<IErrorCardProps> = ({
-  backTo = null,
-  description,
-  errors = null,
-  title,
-}) => {
+function ErrorCard({ backTo, description, errors, title }: IErrorCardProps) {
   const history = useHistory();
   const { t } = useTranslation('error-card');
   const goBack = () => {
@@ -82,6 +76,6 @@ const ErrorCard: FC<IErrorCardProps> = ({
       </Col>
     </Row>
   );
-};
+}
 
 export default ErrorCard;

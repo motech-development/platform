@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import ClientForm, { FormSchema } from '../../../components/ClientForm';
@@ -15,7 +14,7 @@ interface IAddClientParams {
   companyId: string;
 }
 
-const AddClient: FC = () => {
+function AddClient() {
   const history = useHistory();
   const { companyId } = useParams<IAddClientParams>();
   const { t } = useTranslation('clients');
@@ -71,6 +70,6 @@ const AddClient: FC = () => {
       />
     </Connected>
   );
-};
+}
 
 export default AddClient;

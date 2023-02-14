@@ -1,7 +1,7 @@
 import { Apollo } from '@motech-development/appsync-apollo';
 import { useAuth } from '@motech-development/auth';
 import { Loader } from '@motech-development/breeze-ui';
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import Container from './Container';
 import ErrorCard from './ErrorCard';
@@ -10,7 +10,7 @@ export interface IApolloClientProps {
   children: ReactNode;
 }
 
-const ApolloClient: FC<IApolloClientProps> = ({ children }) => {
+function ApolloClient({ children }: IApolloClientProps) {
   const { getTokenSilently, isAuthenticated, isLoading } = useAuth();
   const { t } = useTranslation('apollo-client');
 
@@ -47,6 +47,6 @@ const ApolloClient: FC<IApolloClientProps> = ({ children }) => {
       {children}
     </Apollo>
   );
-};
+}
 
 export default ApolloClient;

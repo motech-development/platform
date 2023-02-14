@@ -1,7 +1,6 @@
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { TableCell } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const danger = {
@@ -28,7 +27,7 @@ interface ITransactionArrowProps {
   value: number;
 }
 
-const TransactionArrow: FC<ITransactionArrowProps> = ({ value }) => {
+function TransactionArrow({ value }: ITransactionArrowProps) {
   const isNegative = value < 0;
   const icon = isNegative ? faArrowLeft : faArrowRight;
   const theme = isNegative ? danger : success;
@@ -40,6 +39,6 @@ const TransactionArrow: FC<ITransactionArrowProps> = ({ value }) => {
       </TransactionArrowCell>
     </ThemeProvider>
   );
-};
+}
 
 export default TransactionArrow;

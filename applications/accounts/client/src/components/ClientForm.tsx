@@ -7,7 +7,6 @@ import {
   TextBox,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 import { useAddress, useContactDetails } from '../hooks/schema';
@@ -40,16 +39,16 @@ export interface IClientFormProps {
   onSave(value: FormSchema): void;
 }
 
-const ClientForm: FC<IClientFormProps> = ({
+function ClientForm({
   backTo,
-  companyId = null,
+  companyId = '',
   initialValues = {
     ...formSchema,
     companyId,
   },
   loading,
   onSave,
-}) => {
+}: IClientFormProps) {
   const { t } = useTranslation('clients');
   const address = useAddress();
   const contact = useContactDetails();
@@ -119,6 +118,6 @@ const ClientForm: FC<IClientFormProps> = ({
       </Row>
     </Form>
   );
-};
+}
 
 export default ClientForm;

@@ -1,5 +1,5 @@
 import { useQueryString } from '@motech-development/query-string-hook';
-import { FC, ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useAuth } from './AuthProvider';
 
 export interface IWithAuthProps {
@@ -8,7 +8,7 @@ export interface IWithAuthProps {
   onError(message: string): void;
 }
 
-const WithAuth: FC<IWithAuthProps> = ({ children, fallback, onError }) => {
+function WithAuth({ children, fallback, onError }: IWithAuthProps) {
   const query = useQueryString();
   const { isLoading } = useAuth();
 
@@ -29,6 +29,6 @@ const WithAuth: FC<IWithAuthProps> = ({ children, fallback, onError }) => {
   }
 
   return <>{children}</>;
-};
+}
 
 export default WithAuth;

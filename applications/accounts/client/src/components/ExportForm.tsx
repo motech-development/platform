@@ -7,7 +7,6 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { DateTime } from 'luxon';
-import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { number, object, string } from 'yup';
 
@@ -36,14 +35,14 @@ export interface IExportFormProps {
   onSave: (value: FormSchema) => void;
 }
 
-const ExportForm: FC<IExportFormProps> = ({
+function ExportForm({
   backTo,
   companyId,
   currency,
   loading,
   yearEnd,
   onSave,
-}) => {
+}: IExportFormProps) {
   const { t } = useTranslation('reports');
   const validationSchema = object<FormSchema>()
     .shape({
@@ -141,6 +140,6 @@ const ExportForm: FC<IExportFormProps> = ({
       </Card>
     </Form>
   );
-};
+}
 
 export default ExportForm;

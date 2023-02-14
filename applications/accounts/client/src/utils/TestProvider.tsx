@@ -5,7 +5,7 @@ import {
   ToastProvider,
 } from '@motech-development/breeze-ui';
 import i18n from 'i18next';
-import { FC, ReactElement, useMemo } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { Route, Router, Switch } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
@@ -39,7 +39,7 @@ export interface ITestProviderProps {
   user?: object;
 }
 
-const TestProvider: FC<ITestProviderProps> = ({
+function TestProvider({
   children,
   isAuthenticated = true,
   isLoading = false,
@@ -51,7 +51,7 @@ const TestProvider: FC<ITestProviderProps> = ({
     name: 'Mo Gusbi',
     sub: 'user-id',
   },
-}) => {
+}: ITestProviderProps) {
   const testI18n = i18n;
 
   testI18n
@@ -111,6 +111,6 @@ const TestProvider: FC<ITestProviderProps> = ({
       </AuthProvider>
     </Router>
   );
-};
+}
 
 export default TestProvider;

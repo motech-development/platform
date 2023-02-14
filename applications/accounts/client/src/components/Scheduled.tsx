@@ -5,7 +5,6 @@ import {
   IDateTimeProps,
   Tooltip,
 } from '@motech-development/breeze-ui';
-import { FC } from 'react';
 import styled from 'styled-components';
 
 interface IClock {
@@ -27,14 +26,14 @@ export interface IScheduledProps extends IDateTimeProps {
   show: boolean;
 }
 
-const Scheduled: FC<IScheduledProps> = ({
+function Scheduled({
   format,
   id,
   message,
   placement,
   show,
   value,
-}) => {
+}: IScheduledProps) {
   if (show) {
     return (
       <Tooltip
@@ -60,6 +59,6 @@ const Scheduled: FC<IScheduledProps> = ({
   }
 
   return <DateTime format={format} value={value} />;
-};
+}
 
 export default Scheduled;

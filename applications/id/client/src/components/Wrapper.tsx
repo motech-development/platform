@@ -1,11 +1,11 @@
-import { FC, ReactNode, useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { disableBodyScroll } from 'body-scroll-lock';
 
 export interface IWrapperProps {
   children: ReactNode;
 }
 
-const Wrapper: FC<IWrapperProps> = ({ children }) => {
+function Wrapper({ children }: IWrapperProps) {
   const parentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -16,6 +16,6 @@ const Wrapper: FC<IWrapperProps> = ({ children }) => {
   }, []);
 
   return <div ref={parentRef}>{children}</div>;
-};
+}
 
 export default Wrapper;

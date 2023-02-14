@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
 
 export interface IConditionalRouteProps extends RouteProps {
@@ -6,11 +5,13 @@ export interface IConditionalRouteProps extends RouteProps {
   redirect: string;
 }
 
-const ConditionalRoute: FC<IConditionalRouteProps> = ({
+function ConditionalRoute({
   condition,
   redirect,
   ...rest
+}: IConditionalRouteProps) {
   // eslint-disable-next-line react/jsx-props-no-spreading
-}) => (condition ? <Route {...rest} /> : <Redirect to={redirect} />);
+  return condition ? <Route {...rest} /> : <Redirect to={redirect} />;
+}
 
 export default ConditionalRoute;

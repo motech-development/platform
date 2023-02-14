@@ -6,7 +6,7 @@ import {
   PageTitle,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, Fragment } from 'react';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -19,7 +19,7 @@ interface IClientsParams {
   companyId: string;
 }
 
-const Clients: FC = () => {
+function Clients() {
   const { companyId } = useParams<IClientsParams>();
   const { t } = useTranslation(['clients', 'global']);
   const { data, error, loading } = useQuery<
@@ -137,6 +137,6 @@ const Clients: FC = () => {
       )}
     </Connected>
   );
-};
+}
 
 export default Clients;

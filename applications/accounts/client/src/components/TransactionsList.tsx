@@ -8,7 +8,7 @@ import {
   TableRow,
   Typography,
 } from '@motech-development/breeze-ui';
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Currency from './Currency';
 import DeleteItem from './DeleteItem';
@@ -35,12 +35,12 @@ export interface ITransactionsListProps {
   onDelete: (id: string) => void;
 }
 
-const TransactionsList: FC<ITransactionsListProps> = ({
+function TransactionsList({
   companyId,
   loading,
   onDelete,
   transactions,
-}) => {
+}: ITransactionsListProps) {
   const [transaction, setTransaction] = useState({
     id: '',
     name: '',
@@ -142,6 +142,6 @@ const TransactionsList: FC<ITransactionsListProps> = ({
       />
     </>
   );
-};
+}
 
 export default TransactionsList;
