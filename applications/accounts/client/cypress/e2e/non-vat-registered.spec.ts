@@ -953,7 +953,7 @@ describe('Non-VAT registered', () => {
       });
     });
 
-    it('should delete a pending transaction', overrides, () => {
+    it('should delete a pending transaction', () => {
       cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[5];
 
@@ -980,9 +980,7 @@ describe('Non-VAT registered', () => {
           .last()
           .safeClick();
 
-        cy.findAllByRole('button', {
-          name: 'Delete',
-        }).should('have.length', 1);
+        cy.findByTestId(`Delete ${transaction.supplier}`).should('not.exist');
       });
     });
 
