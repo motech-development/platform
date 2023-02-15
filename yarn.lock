@@ -8739,10 +8739,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:14.18.33":
-  version: 14.18.33
-  resolution: "@types/node@npm:14.18.33"
-  checksum: 4e23f95186d8ae1d38c999bc6b46fe94e790da88744b0a3bfeedcbd0d9ffe2cb0ff39e85f43014f6739e5270292c1a1f6f97a1fc606fd573a0c17fda9a1d42de
+"@types/node@npm:14.18.36, @types/node@npm:^14.14.31":
+  version: 14.18.36
+  resolution: "@types/node@npm:14.18.36"
+  checksum: da7f479b3fc996d585e60b8329987c6e310ddbf051e14f2d900ce04f7768f42fa7b760f0eb376008d3eca130ce9431018fb5c9e44027dcb7bb139c547e44b9c5
   languageName: node
   linkType: hard
 
@@ -8757,13 +8757,6 @@ __metadata:
   version: 16.18.12
   resolution: "@types/node@npm:16.18.12"
   checksum: fc3271182414f8593018ef8f00b4718116a92f463f619081bd399d9460e7861e1dd7eebc7cf94c23567e418ff397babed077011711aae8d47171b5a81c5bd71d
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^14.14.31":
-  version: 14.18.36
-  resolution: "@types/node@npm:14.18.36"
-  checksum: da7f479b3fc996d585e60b8329987c6e310ddbf051e14f2d900ce04f7768f42fa7b760f0eb376008d3eca130ce9431018fb5c9e44027dcb7bb139c547e44b9c5
   languageName: node
   linkType: hard
 
@@ -26639,7 +26632,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@qiwi/multi-semantic-release": ^6.5.1
     "@types/is-ci": 3.0.0
-    "@types/node": 14.18.33
+    "@types/node": 14.18.36
     commitizen: 4.2.5
     cz-conventional-changelog: 3.3.0
     husky: 8.0.2
