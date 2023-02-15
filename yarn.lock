@@ -27,7 +27,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     "@motech-development/serverless-outputs-env": "workspace:*"
-    "@types/aws-lambda": 8.10.108
+    "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     "@types/luxon": 2.0.9
     aws-appsync: 4.1.8
@@ -149,7 +149,7 @@ __metadata:
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@types/aws-lambda": 8.10.108
+    "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     "@types/luxon": 2.0.9
     "@types/uuid": 8.3.4
@@ -197,7 +197,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@types/aws-lambda": 8.10.108
+    "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     "@types/luxon": 2.0.9
     "@types/uuid": 8.3.4
@@ -232,7 +232,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@types/aws-lambda": 8.10.108
+    "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1241.0
@@ -266,7 +266,7 @@ __metadata:
     "@motech-development/s3-file-operations": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     "@types/archiver": 5.3.1
-    "@types/aws-lambda": 8.10.108
+    "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     "@types/luxon": 2.0.9
     "@types/qs": 6.9.7
@@ -311,7 +311,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/s3-file-operations": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@types/aws-lambda": 8.10.108
+    "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     "@types/uuid": 8.3.4
     "@types/yup": 0.29.11
@@ -346,7 +346,7 @@ __metadata:
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@types/aws-lambda": 8.10.108
+    "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     "@types/luxon": 2.0.9
     "@types/uuid": 8.3.4
@@ -3570,7 +3570,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@motech-development/webpack-conditional-plugin": "workspace:*"
     "@motech-development/webpack-permissions-plugin": "workspace:*"
-    "@types/aws-lambda": 8.10.108
+    "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1241.0
@@ -3601,7 +3601,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@types/aws-lambda": 8.10.108
+    "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     "@types/yup": 0.29.11
     aws-lambda-mock-context: 3.2.1
@@ -3832,7 +3832,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@octokit/auth-app": 3.6.1
     "@octokit/rest": 18.12.0
-    "@types/aws-lambda": 8.10.108
+    "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     "@types/luxon": 2.0.9
     "@types/yup": 0.29.11
@@ -6422,7 +6422,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@types/aws-lambda": 8.10.108
+    "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     "@types/yup": 0.29.11
     aws-lambda-mock-context: 3.2.1
@@ -8265,10 +8265,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/aws-lambda@npm:8.10.108":
-  version: 8.10.108
-  resolution: "@types/aws-lambda@npm:8.10.108"
-  checksum: 648a6cc8e627e6170fbfa523c918cea6b06cdb0a66e25aa35da99a78ed1b7345e4f2921e25f96cb2547f0a13bbd77a90823c37c650db6e9ad8e3b03752e21570
+"@types/aws-lambda@npm:8.10.110":
+  version: 8.10.110
+  resolution: "@types/aws-lambda@npm:8.10.110"
+  checksum: 57be33940035f68c93ecb2c43d82b6f47a9f91f7f2114870d5fbab30c4b93084f12c4353da4aaffdfb0b612f2e7f13ee3ac53e0cc7b9f8e536b04bda0a593615
   languageName: node
   linkType: hard
 
