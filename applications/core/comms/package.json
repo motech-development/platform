@@ -21,7 +21,7 @@
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
-    "@types/aws-lambda": "8.10.108",
+    "@types/aws-lambda": "8.10.110",
     "@types/jest": "29.4.0",
     "@types/yup": "0.29.11",
     "aws-lambda-mock-context": "3.2.1",

@@ -27,7 +27,7 @@
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
     "@motech-development/serverless-outputs-env": "workspace:*",
-    "@types/aws-lambda": "8.10.108",
+    "@types/aws-lambda": "8.10.110",
     "@types/jest": "29.4.0",
     "@types/luxon": "2.0.9",
     "aws-lambda-mock-context": "3.2.1",
