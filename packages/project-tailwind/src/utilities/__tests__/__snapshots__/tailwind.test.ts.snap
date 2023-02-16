@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`tailwind should omit sizing styles if none are passed 1`] = `"text-sm font-medium bg-blue-50"`;
+
+exports[`tailwind should omit theme styles if none are passed 1`] = `"text-sm font-medium md-4"`;
+
+exports[`tailwind should omit universal classes if none are passed 1`] = `"md-4 bg-blue-50"`;
+
+exports[`tailwind should return the correct styles 1`] = `"text-sm font-medium md-4 bg-blue-50"`;
