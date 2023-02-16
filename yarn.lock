@@ -30,7 +30,7 @@ __metadata:
     "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
     "@types/luxon": 2.0.9
-    aws-appsync: 4.1.8
+    aws-appsync: 4.1.9
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1241.0
     babel-loader: 9.1.2
@@ -5359,7 +5359,7 @@ __metadata:
     "@types/react": 17.0.53
     "@types/react-dom": 17.0.18
     aws-appsync-auth-link: 3.0.7
-    aws-appsync-subscription-link: 3.1.1
+    aws-appsync-subscription-link: 3.1.2
     eslint: 8.33.0
     jest: 29.4.2
     jest-environment-jsdom: ^29.4.2
@@ -11062,9 +11062,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-appsync-subscription-link@npm:3.1.1":
-  version: 3.1.1
-  resolution: "aws-appsync-subscription-link@npm:3.1.1"
+"aws-appsync-subscription-link@npm:3.1.2":
+  version: 3.1.2
+  resolution: "aws-appsync-subscription-link@npm:3.1.2"
   dependencies:
     aws-appsync-auth-link: ^3.0.7
     debug: 2.6.9
@@ -11072,11 +11072,11 @@ __metadata:
     zen-observable-ts: ^1.2.5
   peerDependencies:
     "@apollo/client": 3.x
-  checksum: 0e7f9ff74c9c54bcab08f1855674d1d88c5537ae2ed5083b4f570db9568f5beb5c7aff1e444e2dd7238dab2f40118e4209b90e4502237b2cc56e0b45edeb76b7
+  checksum: 657b456d838d7d40a4c8ad3eddddbe2a0aa937fb31b46dd44c476684cd9a3ec1cf9c9e96b7b3957fb6d7d90e569f9ca5d2ff706cc483f6f78d77fb2408595561
   languageName: node
   linkType: hard
 
-"aws-appsync-subscription-link@npm:^2.4.1":
+"aws-appsync-subscription-link@npm:^2.4.2":
   version: 2.4.2
   resolution: "aws-appsync-subscription-link@npm:2.4.2"
   dependencies:
@@ -11094,9 +11094,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-appsync@npm:4.1.8":
-  version: 4.1.8
-  resolution: "aws-appsync@npm:4.1.8"
+"aws-appsync@npm:4.1.9":
+  version: 4.1.9
+  resolution: "aws-appsync@npm:4.1.9"
   dependencies:
     "@aws-crypto/sha256-universal": ^1.1.1
     "@aws-sdk/client-s3": ^3.25.0
@@ -11110,7 +11110,7 @@ __metadata:
     apollo-link-http: 1.5.8
     apollo-link-retry: 2.2.7
     aws-appsync-auth-link: ^2.0.8
-    aws-appsync-subscription-link: ^2.4.1
+    aws-appsync-subscription-link: ^2.4.2
     debug: 2.6.9
     redux: ^3.7.2
     redux-thunk: ^2.2.0
@@ -11118,8 +11118,8 @@ __metadata:
     url: ^0.11.0
     uuid: 3.x
   peerDependencies:
-    graphql: 0.13.0 || 14.x || 15.x
-  checksum: 3d57fa615818834fcdfb68227f1acbbbd05b1cd1aca3914a59d89fa65f341f8066f85b8299899a00be79988cede4a9d3f54d59ee450dd1e646cd3e330b362dcc
+    graphql: 0.13.0 || 14.x || 15.0.0 - 15.3.0
+  checksum: 244fd36a1d58dd80c98155437cafea81994144f0db29f27e146ecb5c503fbeb4b50e3dd67c3c0a1ad4e6dc426f6fd2db3662ffa1661dbf96f80b32f72a7a8799
   languageName: node
   linkType: hard
 
