@@ -108,7 +108,7 @@ __metadata:
     jest-styled-components: 7.1.1
     luxon: 2.5.2
     prettier: 2.3.0
-    pwa-asset-generator: 6.2.0
+    pwa-asset-generator: 6.2.1
     react: 17.0.2
     react-dom: 17.0.2
     react-ga: 3.3.1
@@ -4594,7 +4594,7 @@ __metadata:
     i18next-http-backend: 1.3.2
     jest-styled-components: 7.1.1
     prettier: 2.3.0
-    pwa-asset-generator: 6.2.0
+    pwa-asset-generator: 6.2.1
     react: 17.0.2
     react-dom: 17.0.2
     react-ga: 3.3.1
@@ -28192,9 +28192,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pwa-asset-generator@npm:6.2.0":
-  version: 6.2.0
-  resolution: "pwa-asset-generator@npm:6.2.0"
+"pwa-asset-generator@npm:6.2.1":
+  version: 6.2.1
+  resolution: "pwa-asset-generator@npm:6.2.1"
   dependencies:
     chalk: ^4.1.2
     cheerio: ^1.0.0-rc.12
@@ -28210,7 +28210,7 @@ __metadata:
     slash: ^3.0.0
   bin:
     pwa-asset-generator: bin/cli
-  checksum: 9791679f3a1c901691de412ec0d19f1817aa8ef9ff309df5695ad95af0fc85c44e76c0fe6232ab63e250e43c0227c11098cd625def2a7e9abb2633bd3056abfa
+  checksum: 969f9426f9ab01e61c5e394e89de3756c5ad3681d0606c398da47f34263ee1dd2387743c92f1dd9a8072c8525ebbdb8f12e0c223aac91b9431020cf881538a68
   languageName: node
   linkType: hard
 
