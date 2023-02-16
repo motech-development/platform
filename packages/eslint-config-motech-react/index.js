@@ -11,6 +11,7 @@ module.exports = {
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
         'plugin:react/jsx-runtime',
+        'plugin:storybook/recommended',
         'prettier',
       ],
       files: ['*.mts', '*.ts', '*.tsx'],
@@ -51,6 +52,8 @@ module.exports = {
           ],
           rules: {
             'import/no-extraneous-dependencies': 'off',
+            'react/function-component-definition': 'off',
+            'react/jsx-props-no-spreading': 'off',
           },
         },
       ],
@@ -76,6 +79,7 @@ module.exports = {
         'airbnb',
         'airbnb/hooks',
         'plugin:react/jsx-runtime',
+        'plugin:storybook/recommended',
         'prettier',
       ],
       files: ['*.{js,jsx,mjs}'],
@@ -104,6 +108,8 @@ module.exports = {
           ],
           rules: {
             'import/no-extraneous-dependencies': 'off',
+            'react/function-component-definition': 'off',
+            'react/jsx-props-no-spreading': 'off',
           },
         },
       ],
