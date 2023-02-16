@@ -51,7 +51,7 @@
     "eslint": "8.33.0",
     "jest-styled-components": "7.1.1",
     "prettier": "2.3.0",
-    "pwa-asset-generator": "6.2.0",
+    "pwa-asset-generator": "6.2.1",
     "react-scripts": "5.0.1",
     "react-snap": "1.23.0",
     "serverless": "3.27.0",
