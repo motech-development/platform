@@ -68,7 +68,7 @@ export function Button<E extends ElementType = typeof DEFAULT_ELEMENT>({
       primary: [
         'bg-blue-600 text-white',
         {
-          'hover:bg-blue-700 focus:ring-blue-500 ': !disabled,
+          'hover:bg-blue-700 focus:ring-blue-500': !disabled,
         },
       ],
       secondary: [
