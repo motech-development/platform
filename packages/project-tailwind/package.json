@@ -29,7 +29,8 @@
     "@heroicons/react": "^2.0.15",
     "clsx": "^1.2.1",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-polymorphic-box": "^3.0.3"
   },
   "devDependencies": {
     "@babel/core": "7.20.12",

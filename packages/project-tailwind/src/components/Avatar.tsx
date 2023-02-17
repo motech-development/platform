@@ -16,8 +16,11 @@ export interface IAvatarProps extends ComponentPropsWithRef<'img'> {
  *
  * @returns Avatar component
  */
-export function Avatar(props: IAvatarProps) {
-  const { alt, className = 'h-8 w-8', src, ...rest } = props;
-
+export function Avatar({
+  alt,
+  className = 'h-8 w-8',
+  src,
+  ...rest
+}: IAvatarProps) {
   return <img {...{ alt, className, src }} {...rest} />;
 }

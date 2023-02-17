@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx, { ClassValue } from 'clsx';
 
 /** Sizing options */
 export enum Sizing {
@@ -35,14 +35,14 @@ export type TTheme = `${Themes}`;
 /** Class names options */
 type TCreateStylesClassNames = {
   /** Universal classes to apply */
-  classNames?: string[];
+  classNames?: ClassValue[];
   /** Sizing specific classes */
   sizing?: {
-    [name in Sizing]?: string[];
+    [name in Sizing]?: ClassValue[];
   };
   /** Theme specific classes */
   theme?: {
-    [name in TTheme]?: string[];
+    [name in TTheme]?: ClassValue[];
   };
 };
 
@@ -63,10 +63,10 @@ export function useTailwind(theme: TTheme, sizing: TSizing) {
    * @returns Class names
    */
   function createStyles(classNames: TCreateStylesClassNames) {
-    let finalStyles: string[] = [];
+    let finalStyles: ClassValue[] = [];
 
     if (classNames.classNames) {
-      finalStyles = [...finalStyles, ...classNames.classNames];
+      finalStyles = [...classNames.classNames];
     }
 
     if (sizing && classNames.sizing) {

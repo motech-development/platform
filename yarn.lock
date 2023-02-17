@@ -9307,6 +9307,7 @@ __metadata:
     prettier: "npm:2.3.0"
     react: "npm:17.0.2"
     react-dom: "npm:17.0.2"
+    react-polymorphic-box: "npm:^3.0.3"
     rimraf: "npm:3.0.2"
     rollup: "npm:2.79.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
@@ -37936,6 +37937,15 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10/c0455dfd8d566c736fd747489cad414e2dc1e9c10570598ce576f4461e0f8a1a9eff8065f0247f1277796d3d4ec051f2b195ba12a8974405610834308ce4ee0d
+  languageName: node
+  linkType: hard
+
+"react-polymorphic-box@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "react-polymorphic-box@npm:3.0.3"
+  peerDependencies:
+    react: ">=16.3"
+  checksum: 10/3c1e91d737faf9590f6e76d750c7a5db0df54356509cddb4f7609148b055de2bc1a3a670e1c642048707123c19cee839e09b7400e4b49ad97204aa5416efb731
   languageName: node
   linkType: hard
 
