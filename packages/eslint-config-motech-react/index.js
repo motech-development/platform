@@ -68,6 +68,15 @@ module.exports = {
             allowExpressions: true,
           },
         ],
+        'react/jsx-props-no-spreading': [
+          'error',
+          {
+            custom: 'enforce',
+            exceptions: ['Box'],
+            explicitSpread: 'ignore',
+            html: 'ignore',
+          },
+        ],
         'react/require-default-props': 'off',
       },
     },
@@ -118,6 +127,15 @@ module.exports = {
           'error',
           {
             allowExpressions: true,
+          },
+        ],
+        'react/jsx-props-no-spreading': [
+          'error',
+          {
+            custom: 'enforce',
+            exceptions: ['Box'],
+            explicitSpread: 'ignore',
+            html: 'ignore',
           },
         ],
       },
