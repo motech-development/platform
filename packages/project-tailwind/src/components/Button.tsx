@@ -46,8 +46,9 @@ export function Button<E extends ElementType = typeof DEFAULT_ELEMENT>({
   const buttonStyles = createStyles({
     classNames: [
       {
+        'block w-full': block,
         'cursor-not-allowed bg-opacity-75 hover:bg-opacity-75': disabled,
-        'w-full': block,
+        'inline-block': !block,
       },
       'group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2',
       className,
@@ -55,7 +56,7 @@ export function Button<E extends ElementType = typeof DEFAULT_ELEMENT>({
     sizing: {
       lg: ['py-4 px-6 text-lg'],
       md: ['py-2 px-4 text-base'],
-      none: ['p-0 text-sm'],
+      none: ['py-2 px-4 text-base'],
       sm: ['py-0 px-2 text-sm'],
     },
     theme: {
