@@ -1,5 +1,18 @@
 import clsx, { ClassValue } from 'clsx';
 
+/** Alignment options */
+export enum Alignment {
+  /** Centre */
+  CENTRE = 'centre',
+  /** Left */
+  LEFT = 'left',
+  /** Right */
+  RIGHT = 'right',
+}
+
+/** Alignment type */
+export type TAlignment = `${Alignment}`;
+
 /** Sizing options */
 export enum Sizing {
   /** Large */
@@ -92,7 +105,27 @@ export function useTailwind(theme: TTheme, sizing: TSizing) {
     return clsx(finalStyles);
   }
 
+  /**
+   * Creates text alignment classes
+   *
+   * @param alignment - Text alignment
+   *
+   * @returns Class names
+   */
+  function createTextAlignmentStyles(alignment: TAlignment) {
+    switch (alignment) {
+      case Alignment.CENTRE:
+        return 'text-center';
+      case Alignment.RIGHT:
+        return 'text-right';
+      case Alignment.LEFT:
+      default:
+        return 'text-left';
+    }
+  }
+
   return {
     createStyles,
+    createTextAlignmentStyles,
   };
 }
