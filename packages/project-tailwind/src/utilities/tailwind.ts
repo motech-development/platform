@@ -67,7 +67,7 @@ type TCreateStylesClassNames = {
  *
  * @returns Tailwind helper utilities
  */
-export function useTailwind(theme: TTheme, sizing: TSizing) {
+export function useTailwind(theme?: TTheme, sizing?: TSizing) {
   /**
    * Creates css styles to apply
    *
