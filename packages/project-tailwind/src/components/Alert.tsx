@@ -1,6 +1,13 @@
 import { Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { Fragment, ReactNode, useCallback, useEffect, useState } from 'react';
+import {
+  Fragment,
+  ReactNode,
+  Ref,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import {
   Sizing,
   Themes,
@@ -11,6 +18,9 @@ import {
 
 /** Alert component properties */
 export interface IAlertProps {
+  /** Dismiss button reference */
+  buttonRef?: Ref<HTMLButtonElement>;
+
   /** Sets whether alert can be dismissed or a timer, in milliseconds, to automatically dismiss */
   dismissable?: boolean | number;
 
@@ -45,6 +55,7 @@ const DISMISS_TEXT = 'Dismiss';
  */
 export function Alert(props: IAlertProps) {
   const {
+    buttonRef,
     dismissable = false,
     dismissText = DISMISS_TEXT,
     icon,
@@ -167,6 +178,7 @@ export function Alert(props: IAlertProps) {
               {dismissable && (
                 <button
                   className={buttonStyles}
+                  ref={buttonRef}
                   type="button"
                   onClick={dismiss}
                 >

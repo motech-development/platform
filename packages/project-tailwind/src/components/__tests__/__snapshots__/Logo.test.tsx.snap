@@ -4,7 +4,7 @@ exports[`Logo should apply native svg attributes 1`] = `
 <DocumentFragment>
   <svg
     aria-labelledby="logo-alt-text"
-    class="w-40 h-40 text-blue-600"
+    class="h-40 w-40 text-blue-600"
     viewBox="0 0 345.21 398.61"
     xmlns="http://www.w3.org/2000/svg"
   >
