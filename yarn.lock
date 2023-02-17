@@ -4643,7 +4643,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     "@types/jest": 29.4.0
-    auth0: 2.44.0
+    auth0: 2.44.1
     auth0-deploy-cli: 7.15.1
     eslint: 8.33.0
     istanbul-lib-instrument: 5.1.0
@@ -10963,22 +10963,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0@npm:2.44.0":
-  version: 2.44.0
-  resolution: "auth0@npm:2.44.0"
-  dependencies:
-    axios: ^0.27.2
-    form-data: ^3.0.1
-    jsonwebtoken: ^8.5.1
-    jwks-rsa: ^1.12.1
-    lru-memoizer: ^2.1.4
-    rest-facade: ^1.16.3
-    retry: ^0.13.1
-  checksum: afcdf661b317146159fd51bb0c61dbb7d1c983106f45e14a5538e88656971090172a6b4629effd2bcdc818983960f62ed0ba5a3a1f0e50e84ed439db7e49df91
-  languageName: node
-  linkType: hard
-
-"auth0@npm:^2.42.0":
+"auth0@npm:2.44.1, auth0@npm:^2.42.0":
   version: 2.44.1
   resolution: "auth0@npm:2.44.1"
   dependencies:
