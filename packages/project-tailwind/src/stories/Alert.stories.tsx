@@ -3,13 +3,9 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import { Alert } from '../components/Alert';
 
 export default {
-  argTypes: {
-    icon: {
-      defaultValue: <ExclamationTriangleIcon />,
-    },
-    message: {
-      defaultValue: 'Hello, world!',
-    },
+  args: {
+    icon: <ExclamationTriangleIcon />,
+    message: 'Hello, world!',
   },
   component: Alert,
 } as ComponentMeta<typeof Alert>;
