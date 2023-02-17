@@ -13,9 +13,7 @@ export interface ILogoProps extends ComponentPropsWithRef<'svg'> {
  *
  * @returns Logo component
  */
-export function Logo(props: ILogoProps) {
-  const { alt, ...rest } = props;
-
+export function Logo({ alt, ...rest }: ILogoProps) {
   return (
     <svg
       {...rest}

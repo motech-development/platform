@@ -53,18 +53,16 @@ const DISMISS_TEXT = 'Dismiss';
  *
  * @returns Alert component
  */
-export function Alert(props: IAlertProps) {
-  const {
-    buttonRef,
-    dismissable = false,
-    dismissText = DISMISS_TEXT,
-    icon,
-    message,
-    spacing = Sizing.NONE,
-    theme = Themes.PRIMARY,
-    onDismiss,
-  } = props;
-
+export function Alert({
+  buttonRef,
+  dismissable = false,
+  dismissText = DISMISS_TEXT,
+  icon,
+  message,
+  spacing = Sizing.NONE,
+  theme = Themes.PRIMARY,
+  onDismiss,
+}: IAlertProps) {
   const [visible, setVisiblity] = useState(true);
 
   const { createStyles } = useTailwind(theme, spacing);
