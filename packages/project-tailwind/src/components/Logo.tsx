@@ -1,7 +1,7 @@
-import { ComponentPropsWithoutRef } from 'react';
+import { ComponentPropsWithRef } from 'react';
 
 /** Logo component properties */
-export interface ILogoProps extends ComponentPropsWithoutRef<'svg'> {
+export interface ILogoProps extends ComponentPropsWithRef<'svg'> {
   /** Alternative information text */
   alt: string;
 }
