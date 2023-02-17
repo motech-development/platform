@@ -37,9 +37,7 @@ export interface IAlertProps {
 const DISMISS_TEXT = 'Dismiss';
 
 /**
- * Alert component
- *
- * @description Used to display application messages and alerts
+ * Display application messages and alerts
  *
  * @param props - Component props
  *
