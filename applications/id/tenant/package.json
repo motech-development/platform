@@ -10,7 +10,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "auth0": "2.44.0",
+    "auth0": "2.44.1",
     "istanbul-lib-instrument": "5.1.0"
   },
   "devDependencies": {
