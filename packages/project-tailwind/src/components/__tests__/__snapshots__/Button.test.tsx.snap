@@ -70,7 +70,7 @@ exports[`Button as element "a" danger should render the correct output when size
 exports[`Button as element "a" primary should render the correct output when block element 1`] = `
 <DocumentFragment>
   <a
-    class="w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 "
+    class="w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
     href="https://motech-development.github.io/platform/"
   >
     Test
@@ -93,7 +93,7 @@ exports[`Button as element "a" primary should render the correct output when dis
 exports[`Button as element "a" primary should render the correct output when size is lg 1`] = `
 <DocumentFragment>
   <a
-    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 "
+    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
     href="https://motech-development.github.io/platform/"
   >
     Test
@@ -104,7 +104,7 @@ exports[`Button as element "a" primary should render the correct output when siz
 exports[`Button as element "a" primary should render the correct output when size is md 1`] = `
 <DocumentFragment>
   <a
-    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 "
+    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
     href="https://motech-development.github.io/platform/"
   >
     Test
@@ -115,7 +115,7 @@ exports[`Button as element "a" primary should render the correct output when siz
 exports[`Button as element "a" primary should render the correct output when size is none 1`] = `
 <DocumentFragment>
   <a
-    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 p-0 text-sm bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 "
+    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 p-0 text-sm bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
     href="https://motech-development.github.io/platform/"
   >
     Test
@@ -126,7 +126,7 @@ exports[`Button as element "a" primary should render the correct output when siz
 exports[`Button as element "a" primary should render the correct output when size is sm 1`] = `
 <DocumentFragment>
   <a
-    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 "
+    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
     href="https://motech-development.github.io/platform/"
   >
     Test
@@ -405,7 +405,7 @@ exports[`Button as element "button" danger should render the correct output when
 exports[`Button as element "button" primary should render the correct output when block element 1`] = `
 <DocumentFragment>
   <button
-    class="w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 "
+    class="w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
     type="button"
   >
     Test
@@ -428,7 +428,7 @@ exports[`Button as element "button" primary should render the correct output whe
 exports[`Button as element "button" primary should render the correct output when size is lg 1`] = `
 <DocumentFragment>
   <button
-    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 "
+    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
     type="button"
   >
     Test
@@ -439,7 +439,7 @@ exports[`Button as element "button" primary should render the correct output whe
 exports[`Button as element "button" primary should render the correct output when size is md 1`] = `
 <DocumentFragment>
   <button
-    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 "
+    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
     type="button"
   >
     Test
@@ -450,7 +450,7 @@ exports[`Button as element "button" primary should render the correct output whe
 exports[`Button as element "button" primary should render the correct output when size is none 1`] = `
 <DocumentFragment>
   <button
-    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 p-0 text-sm bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 "
+    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 p-0 text-sm bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
     type="button"
   >
     Test
@@ -461,7 +461,7 @@ exports[`Button as element "button" primary should render the correct output whe
 exports[`Button as element "button" primary should render the correct output when size is sm 1`] = `
 <DocumentFragment>
   <button
-    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 "
+    class="group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
     type="button"
   >
     Test
