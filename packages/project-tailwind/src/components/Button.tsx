@@ -98,7 +98,6 @@ export function Button<E extends ElementType = typeof DEFAULT_ELEMENT>({
       className={buttonStyles}
       as={DEFAULT_ELEMENT}
       {...{ disabled }}
-      // eslint-disable-next-line react/jsx-props-no-spreading
       {...rest}
     >
       Test

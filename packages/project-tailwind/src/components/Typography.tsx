@@ -184,7 +184,6 @@ export function Typography<E extends ElementType = typeof DEFAULT_ELEMENT>({
 
   return (
     <div>
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <Box className={typographyStyles} as={DEFAULT_ELEMENT} {...rest} />
 
       {rule && <hr className={ruleStyles} />}

@@ -66,6 +66,5 @@ export function Link<E extends ElementType = typeof DEFAULT_ELEMENT>({
     },
   });
 
-  // eslint-disable-next-line react/jsx-props-no-spreading
   return <Box className={linkStyles} as={DEFAULT_ELEMENT} {...rest} />;
 }
