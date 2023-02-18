@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       - name: Set Node version
         uses: actions/setup-node@v3.5.1
@@ -95,7 +95,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       - name: Set Node version
         uses: actions/setup-node@v3.5.1
@@ -169,7 +169,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       - name: Set Node version
         uses: actions/setup-node@v3.5.1
@@ -228,7 +228,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       - name: Set Node version
         uses: actions/setup-node@v3.5.1
@@ -296,7 +296,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       - name: Set Node version
         uses: actions/setup-node@v3.5.1
@@ -355,7 +355,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       - name: Set Node version
         uses: actions/setup-node@v3.5.1
@@ -416,7 +416,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       - name: Set Node version
         uses: actions/setup-node@v3.5.1
@@ -477,7 +477,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       - name: Set Node version
         uses: actions/setup-node@v3.5.1
@@ -538,7 +538,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       - name: Set Node version
         uses: actions/setup-node@v3.5.1
@@ -669,7 +669,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3.3.0
 
       - name: Set Node version
         uses: actions/setup-node@v3.5.1
