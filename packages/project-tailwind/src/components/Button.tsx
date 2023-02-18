@@ -61,13 +61,13 @@ export function Button<E extends ElementType = typeof DEFAULT_ELEMENT>({
     },
     theme: {
       danger: [
-        'bg-red-600 text-white',
+        'bg-red-600 text-red-50',
         {
           'hover:bg-red-700 focus:ring-red-500': !disabled,
         },
       ],
       primary: [
-        'bg-blue-600 text-white',
+        'bg-blue-600 text-blue-50',
         {
           'hover:bg-blue-700 focus:ring-blue-500': !disabled,
         },
@@ -79,13 +79,13 @@ export function Button<E extends ElementType = typeof DEFAULT_ELEMENT>({
         },
       ],
       success: [
-        'bg-green-600 text-white',
+        'bg-green-600 text-green-50',
         {
           'hover:bg-green-700 focus:ring-green-500': !disabled,
         },
       ],
       warning: [
-        'bg-yellow-600 text-white',
+        'bg-yellow-600 text-yellow-50',
         {
           'hover:bg-yellow-700 focus:ring-yellow-500': !disabled,
         },
