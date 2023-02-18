@@ -106,8 +106,9 @@ function createRuleSpacingStyles(rule: boolean, spacing: TSizing) {
     case Sizing.SM:
       return rule ? 'mb-0.5' : 'mb-2';
     case Sizing.MD:
-    default:
       return rule ? 'mb-1.5' : 'mb-4';
+    default:
+      return rule ? 'mb-1.5' : 'mb-0';
   }
 }
 
