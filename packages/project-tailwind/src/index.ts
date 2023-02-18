@@ -8,4 +8,5 @@ export * from './components/Card';
 export * from './components/Link';
 export * from './components/Logo';
 export * from './components/Title';
+export * from './components/Toolbar';
 export * from './components/Typography';
