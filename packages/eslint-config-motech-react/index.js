@@ -39,6 +39,7 @@ module.exports = {
           rules: {
             '@typescript-eslint/unbound-method': 'off',
             'import/no-extraneous-dependencies': 'off',
+            'react/jsx-props-no-spreading': 'off',
           },
         },
         {
@@ -106,6 +107,7 @@ module.exports = {
           plugins: ['jest'],
           rules: {
             'import/no-extraneous-dependencies': 'off',
+            'react/jsx-props-no-spreading': 'off',
           },
         },
         {
