@@ -42,7 +42,7 @@ jobs:
 
       - name: Restore Node modules
         id: node-modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -54,7 +54,7 @@ jobs:
 
       - name: Restore packages
         id: packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -63,7 +63,7 @@ jobs:
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
@@ -104,7 +104,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -115,7 +115,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -173,7 +173,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -184,7 +184,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -192,7 +192,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/id/client/node_modules/.cache
@@ -247,7 +247,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -258,7 +258,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -266,7 +266,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/open-banking/api/node_modules/.cache
@@ -307,7 +307,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -318,7 +318,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -326,7 +326,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/core/anti-virus/node_modules/.cache
@@ -378,7 +378,7 @@ jobs:
           cache: yarn
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -389,7 +389,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -397,7 +397,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/cypress/api/node_modules/.cache
@@ -440,7 +440,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -451,7 +451,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -459,7 +459,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/accounts/queue/node_modules/.cache
@@ -501,7 +501,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -512,7 +512,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -520,7 +520,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/accounts/storage/node_modules/.cache
@@ -562,7 +562,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -573,7 +573,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -581,7 +581,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/accounts/data/node_modules/.cache
@@ -623,7 +623,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -634,7 +634,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -642,7 +642,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/accounts/warm-up/node_modules/.cache
@@ -688,7 +688,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -699,7 +699,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -707,7 +707,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/accounts/notifications/node_modules/.cache
@@ -751,7 +751,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -762,7 +762,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -770,7 +770,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/accounts/reports/node_modules/.cache
@@ -819,7 +819,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -830,7 +830,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -838,7 +838,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore env vars
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-checks-v4-${{ github.run_id }}
@@ -846,7 +846,7 @@ jobs:
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/accounts/api/node_modules/.cache
@@ -923,7 +923,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./node_modules
@@ -934,7 +934,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -942,7 +942,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
@@ -950,7 +950,7 @@ jobs:
             ${{ runner.os }}-cache-
 
       - name: Restore env vars
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-checks-v4-${{ github.run_id }}
@@ -958,7 +958,7 @@ jobs:
             ${{ runner.os }}-accounts-client-env-vars-checks-
 
       - name: Restore application cache
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.5
         with:
           path: |
             ./applications/accounts/client/node_modules/.cache
