@@ -23,7 +23,6 @@ describe('Button', () => {
     describe.each(themes)('$theme', ({ theme }) => {
       it('should render the correct output when disabled', () => {
         const { asFragment } = render(
-          // eslint-disable-next-line react/jsx-props-no-spreading
           <Button disabled as={element} theme={theme} {...attrs}>
             Hello, world
           </Button>,
@@ -34,7 +33,6 @@ describe('Button', () => {
 
       it('should render the correct output when block element', () => {
         const { asFragment } = render(
-          // eslint-disable-next-line react/jsx-props-no-spreading
           <Button block as={element} theme={theme} {...attrs}>
             Hello, world
           </Button>,
@@ -47,7 +45,6 @@ describe('Button', () => {
         'should render the correct output when size is $size',
         ({ size }) => {
           const { asFragment } = render(
-            // eslint-disable-next-line react/jsx-props-no-spreading
             <Button as={element} size={size} theme={theme} {...attrs}>
               Hello, world
             </Button>,

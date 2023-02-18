@@ -23,7 +23,6 @@ describe('Link', () => {
     describe.each(themes)('$theme', ({ theme }) => {
       it('should render the correct output when disabled', () => {
         const { asFragment } = render(
-          // eslint-disable-next-line react/jsx-props-no-spreading
           <Link disabled as={element} theme={theme} {...attrs}>
             Hello, world
           </Link>,
@@ -34,7 +33,6 @@ describe('Link', () => {
 
       it('should render the correct output when block element', () => {
         const { asFragment } = render(
-          // eslint-disable-next-line react/jsx-props-no-spreading
           <Link block as={element} theme={theme} {...attrs}>
             Hello, world
           </Link>,
@@ -47,7 +45,6 @@ describe('Link', () => {
         'should render the correct output when size is $size',
         ({ size }) => {
           const { asFragment } = render(
-            // eslint-disable-next-line react/jsx-props-no-spreading
             <Link as={element} size={size} theme={theme} {...attrs}>
               Hello, world
             </Link>,
