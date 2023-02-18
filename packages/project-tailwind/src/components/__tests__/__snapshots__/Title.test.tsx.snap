@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Title when theme is "danger" should should render the correct output 1`] = `
+exports[`Title when theme is "danger" should render the correct output 1`] = `
 <DocumentFragment>
   <div>
     <h2
@@ -16,7 +16,7 @@ exports[`Title when theme is "danger" should should render the correct output 1`
 </DocumentFragment>
 `;
 
-exports[`Title when theme is "danger" should should render the correct output when a subtitle is set 1`] = `
+exports[`Title when theme is "danger" should render the correct output when a subtitle is set 1`] = `
 <DocumentFragment>
   <div>
     <h2
@@ -43,7 +43,7 @@ exports[`Title when theme is "danger" should should render the correct output wh
 </DocumentFragment>
 `;
 
-exports[`Title when theme is "primary" should should render the correct output 1`] = `
+exports[`Title when theme is "primary" should render the correct output 1`] = `
 <DocumentFragment>
   <div>
     <h2
@@ -59,7 +59,7 @@ exports[`Title when theme is "primary" should should render the correct output 1
 </DocumentFragment>
 `;
 
-exports[`Title when theme is "primary" should should render the correct output when a subtitle is set 1`] = `
+exports[`Title when theme is "primary" should render the correct output when a subtitle is set 1`] = `
 <DocumentFragment>
   <div>
     <h2
@@ -86,7 +86,7 @@ exports[`Title when theme is "primary" should should render the correct output w
 </DocumentFragment>
 `;
 
-exports[`Title when theme is "secondary" should should render the correct output 1`] = `
+exports[`Title when theme is "secondary" should render the correct output 1`] = `
 <DocumentFragment>
   <div>
     <h2
@@ -102,7 +102,7 @@ exports[`Title when theme is "secondary" should should render the correct output
 </DocumentFragment>
 `;
 
-exports[`Title when theme is "secondary" should should render the correct output when a subtitle is set 1`] = `
+exports[`Title when theme is "secondary" should render the correct output when a subtitle is set 1`] = `
 <DocumentFragment>
   <div>
     <h2
@@ -129,7 +129,7 @@ exports[`Title when theme is "secondary" should should render the correct output
 </DocumentFragment>
 `;
 
-exports[`Title when theme is "success" should should render the correct output 1`] = `
+exports[`Title when theme is "success" should render the correct output 1`] = `
 <DocumentFragment>
   <div>
     <h2
@@ -145,7 +145,7 @@ exports[`Title when theme is "success" should should render the correct output 1
 </DocumentFragment>
 `;
 
-exports[`Title when theme is "success" should should render the correct output when a subtitle is set 1`] = `
+exports[`Title when theme is "success" should render the correct output when a subtitle is set 1`] = `
 <DocumentFragment>
   <div>
     <h2
@@ -172,7 +172,7 @@ exports[`Title when theme is "success" should should render the correct output w
 </DocumentFragment>
 `;
 
-exports[`Title when theme is "warning" should should render the correct output 1`] = `
+exports[`Title when theme is "warning" should render the correct output 1`] = `
 <DocumentFragment>
   <div>
     <h2
@@ -188,7 +188,7 @@ exports[`Title when theme is "warning" should should render the correct output 1
 </DocumentFragment>
 `;
 
-exports[`Title when theme is "warning" should should render the correct output when a subtitle is set 1`] = `
+exports[`Title when theme is "warning" should render the correct output when a subtitle is set 1`] = `
 <DocumentFragment>
   <div>
     <h2
