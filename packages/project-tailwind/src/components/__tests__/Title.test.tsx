@@ -4,7 +4,7 @@ import { Title } from '../Title';
 
 describe('Title', () => {
   describe.each(themes)('when theme is "$theme"', ({ theme }) => {
-    it('should should render the correct output', () => {
+    it('should render the correct output', () => {
       const { asFragment } = render(
         <Title theme={theme} title="Hello, world" />,
       );
@@ -12,7 +12,7 @@ describe('Title', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should should render the correct output when a subtitle is set', () => {
+    it('should render the correct output when a subtitle is set', () => {
       const { asFragment } = render(
         <Title
           theme={theme}
