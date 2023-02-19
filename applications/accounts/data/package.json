@@ -25,7 +25,7 @@
     "@motech-development/semantic-release": "workspace:*",
     "@types/aws-lambda": "8.10.110",
     "@types/jest": "29.4.0",
-    "@types/luxon": "2.0.9",
+    "@types/luxon": "2.4.0",
     "@types/uuid": "8.3.4",
     "aws-lambda-mock-context": "3.2.1",
     "babel-loader": "9.1.2",
