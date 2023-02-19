@@ -70,7 +70,7 @@
     "@testing-library/user-event": "13.5.0",
     "@types/file-saver": "2.0.5",
     "@types/jest": "29.4.0",
-    "@types/luxon": "2.0.9",
+    "@types/luxon": "2.4.0",
     "@types/react": "17.0.53",
     "@types/react-dom": "17.0.18",
     "@types/react-router-dom": "5.3.3",

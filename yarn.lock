@@ -29,7 +29,7 @@ __metadata:
     "@motech-development/serverless-outputs-env": "workspace:*"
     "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     aws-appsync: 4.1.9
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1241.0
@@ -78,7 +78,7 @@ __metadata:
     "@testing-library/user-event": 13.5.0
     "@types/file-saver": 2.0.5
     "@types/jest": 29.4.0
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/react": 17.0.53
     "@types/react-dom": 17.0.18
     "@types/react-router-dom": 5.3.3
@@ -151,7 +151,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/uuid": 8.3.4
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1241.0
@@ -199,7 +199,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/uuid": 8.3.4
     "@types/yup": 0.29.11
     aws-lambda-mock-context: 3.2.1
@@ -268,7 +268,7 @@ __metadata:
     "@types/archiver": 5.3.1
     "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/qs": 6.9.7
     "@types/uuid": 8.3.4
     "@types/yup": 0.29.11
@@ -348,7 +348,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/uuid": 8.3.4
     "@types/yup": 0.29.11
     aws-lambda-mock-context: 3.2.1
@@ -3889,7 +3889,7 @@ __metadata:
     "@octokit/rest": 18.12.0
     "@types/aws-lambda": 8.10.110
     "@types/jest": 29.4.0
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/yup": 0.29.11
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1241.0
@@ -5514,7 +5514,7 @@ __metadata:
     "@testing-library/react-hooks": 8.0.1
     "@testing-library/user-event": 13.5.0
     "@types/jest": 29.4.0
-    "@types/luxon": 2.0.9
+    "@types/luxon": 2.4.0
     "@types/react": 17.0.53
     "@types/react-dom": 17.0.18
     "@types/react-router-dom": 5.3.3
@@ -8717,10 +8717,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/luxon@npm:2.0.9":
-  version: 2.0.9
-  resolution: "@types/luxon@npm:2.0.9"
-  checksum: 6c99741e1735aca5b784981ecec3a6ad9497b8e46cc3dd0ba625901bb5b34af4c7b1bf33e32b3e8468312ce2850b31f553f712283a8301a0ee1aacb633276738
+"@types/luxon@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@types/luxon@npm:2.4.0"
+  checksum: eeb16a1bfe5440464c1a9635700d103cd18d3cd8da6063a1938478e435cfba6ab8e893aa80c95a407e541187c1e997c3e4481322726bc1258551cb8606d0e5ad
   languageName: node
   linkType: hard
 
