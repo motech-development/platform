@@ -52,6 +52,7 @@ functions:
       DESTINATION_BUCKET: !Ref ReportBucket
       ORIGIN_BUCKET: !ImportValue ${self:provider.stage}-StorageDownloadBucket
     role: LambdaFunctionRole
+    timeout: 300
 
   GenerateDownloadLink:
     handler: src/handlers/generate-download-link.handler
