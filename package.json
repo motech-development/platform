@@ -37,7 +37,7 @@
     "@qiwi/multi-semantic-release": "^6.5.1",
     "@types/is-ci": "3.0.0",
     "@types/node": "14.18.36",
-    "commitizen": "4.2.5",
+    "commitizen": "4.3.0",
     "cz-conventional-changelog": "3.3.0",
     "husky": "8.0.3",
     "is-ci": "3.0.1",
