@@ -84,7 +84,7 @@ __metadata:
     "@types/react-router-dom": 5.3.3
     "@types/styled-components": 5.1.26
     "@types/yup": 0.29.11
-    axe-core: 4.5.1
+    axe-core: 4.6.3
     axios: 0.27.2
     cy2: 4.0.6
     cypress: 12.5.1
@@ -11297,14 +11297,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:4.5.1":
-  version: 4.5.1
-  resolution: "axe-core@npm:4.5.1"
-  checksum: db90c6b41483e9c3452393933072fe0b8c2221e6d9b96ae0e6a03a4ce1e4c35bec539c92e9b6fcd63c4acf6678ad3c3ca7f5ab1d884210d157867cc54acd4f6a
-  languageName: node
-  linkType: hard
-
-"axe-core@npm:^4.2.0, axe-core@npm:^4.3.5, axe-core@npm:^4.6.2":
+"axe-core@npm:4.6.3, axe-core@npm:^4.2.0, axe-core@npm:^4.3.5, axe-core@npm:^4.6.2":
   version: 4.6.3
   resolution: "axe-core@npm:4.6.3"
   checksum: d0c46be92b9707c48b88a53cd5f471b155a2bfc8bf6beffb514ecd14e30b4863e340b5fc4f496d82a3c562048088c1f3ff5b93b9b3b026cb9c3bfacfd535da10
