@@ -58,7 +58,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/client@workspace:applications/accounts/client"
   dependencies:
-    "@apollo/client": 3.7.7
+    "@apollo/client": 3.7.8
     "@fortawesome/fontawesome-svg-core": 1.2.36
     "@fortawesome/free-solid-svg-icons": 5.15.4
     "@fortawesome/react-fontawesome": 0.2.0
@@ -403,9 +403,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:3.7.7":
-  version: 3.7.7
-  resolution: "@apollo/client@npm:3.7.7"
+"@apollo/client@npm:3.7.8":
+  version: 3.7.8
+  resolution: "@apollo/client@npm:3.7.8"
   dependencies:
     "@graphql-typed-document-node/core": ^3.1.1
     "@wry/context": ^0.7.0
@@ -435,7 +435,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 4f061c663505dbbabe0e5c00f914dbb3ac1cb2a79beb1de49a6bb1cc299c66536ea076d3c30f579c7f9558efe710105f385cc7f69b247f2d198427d5a8f38eb6
+  checksum: 3b12251768f7e1973b7d193d1420b01e6a0cb4b8a57bb4f65a82df48df2b8420aa9fdfeb0a4dcec4d787c1dcddaa7307611153736dff79d567be39b0dcd7f3d2
   languageName: node
   linkType: hard
 
@@ -5458,7 +5458,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/appsync-apollo@workspace:packages/appsync-apollo"
   dependencies:
-    "@apollo/client": 3.7.7
+    "@apollo/client": 3.7.8
     "@babel/core": 7.20.12
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
