@@ -6,13 +6,13 @@ exports[`Toolbar when theme is "danger" should correctly render componenet 1`] =
     class="relative bg-red-900 text-red-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-red-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -30,13 +30,13 @@ exports[`Toolbar when theme is "danger" should correctly render componenet when 
     class="relative bg-red-900 text-red-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-b border-red-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -54,13 +54,13 @@ exports[`Toolbar when theme is "danger" should correctly render componenet when 
     class="fixed top-0 left-0 w-full bg-red-900 text-red-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-red-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -78,13 +78,13 @@ exports[`Toolbar when theme is "primary" should correctly render componenet 1`] 
     class="relative bg-blue-900 text-blue-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-blue-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -102,13 +102,13 @@ exports[`Toolbar when theme is "primary" should correctly render componenet when
     class="relative bg-blue-900 text-blue-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-b border-blue-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -126,13 +126,13 @@ exports[`Toolbar when theme is "primary" should correctly render componenet when
     class="fixed top-0 left-0 w-full bg-blue-900 text-blue-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-blue-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -150,13 +150,13 @@ exports[`Toolbar when theme is "secondary" should correctly render componenet 1`
     class="relative bg-gray-900 text-gray-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-gray-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -174,13 +174,13 @@ exports[`Toolbar when theme is "secondary" should correctly render componenet wh
     class="relative bg-gray-900 text-gray-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-b border-gray-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -198,13 +198,13 @@ exports[`Toolbar when theme is "secondary" should correctly render componenet wh
     class="fixed top-0 left-0 w-full bg-gray-900 text-gray-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-gray-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -222,13 +222,13 @@ exports[`Toolbar when theme is "success" should correctly render componenet 1`] 
     class="relative bg-green-900 text-green-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-green-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -246,13 +246,13 @@ exports[`Toolbar when theme is "success" should correctly render componenet when
     class="relative bg-green-900 text-green-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-b border-green-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -270,13 +270,13 @@ exports[`Toolbar when theme is "success" should correctly render componenet when
     class="fixed top-0 left-0 w-full bg-green-900 text-green-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-green-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -294,13 +294,13 @@ exports[`Toolbar when theme is "warning" should correctly render componenet 1`] 
     class="relative bg-yellow-900 text-yellow-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-yellow-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -318,13 +318,13 @@ exports[`Toolbar when theme is "warning" should correctly render componenet when
     class="relative bg-yellow-900 text-yellow-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-b border-yellow-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
@@ -342,13 +342,13 @@ exports[`Toolbar when theme is "warning" should correctly render componenet when
     class="fixed top-0 left-0 w-full bg-yellow-900 text-yellow-50"
   >
     <div
-      class="max-w-7xl mx-auto sm:px-6 lg:px-8 select-none"
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
       <div
         class="border-yellow-800"
       >
         <div
-          class="flex items-center justify-between h-16 px-4 sm:px-0"
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
         >
           <p>
             Hello, world
