@@ -14,7 +14,13 @@ import {
   useInteractions,
   useRole,
 } from '@floating-ui/react';
-import { ComponentPropsWithoutRef, ReactNode, useRef, useState } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Themes, TTheme, useTailwind } from '../utilities/tailwind';
 
 /** Default legth of time to display tooltip after moving away from parent */
@@ -75,11 +81,14 @@ export interface ITooltipProps extends ComponentPropsWithoutRef<'div'> {
   /** Content to be displayed */
   content: ReactNode;
 
+  /** Callback trigger when tooltop is shown or hidden  */
+  onVisibilityChange?: (value: boolean) => void;
+
   /** Element to output tooltip relative to */
   parent: ReactNode;
 
-  /** Where tooltip should be places */
-  placement?: Side;
+  /** Where tooltip should be placed */
+  position?: Side;
 
   /** Length of time to keep tooltip visible in milliseconds */
   time?: number;
@@ -98,9 +107,9 @@ export interface ITooltipProps extends ComponentPropsWithoutRef<'div'> {
 export function Tooltip({
   className,
   content,
-  id,
+  onVisibilityChange,
   parent,
-  placement = 'bottom',
+  position = 'bottom',
   time = DEFAULT_TIME,
   theme = Themes.PRIMARY,
   ...rest
@@ -111,28 +120,21 @@ export function Tooltip({
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const {
-    context,
-    middlewareData,
-    placement: floatingPlacement,
-    refs,
-    strategy,
-    x,
-    y,
-  } = useFloating({
-    middleware: [
-      flip(),
-      offset(FLOATING_OFFSET),
-      shift(),
-      arrow({
-        element: arrowRef,
-      }),
-    ],
-    onOpenChange: setIsOpen,
-    open: isOpen,
-    placement,
-    whileElementsMounted: autoUpdate,
-  });
+  const { context, middlewareData, placement, refs, strategy, x, y } =
+    useFloating({
+      middleware: [
+        flip(),
+        offset(FLOATING_OFFSET),
+        shift(),
+        arrow({
+          element: arrowRef,
+        }),
+      ],
+      onOpenChange: setIsOpen,
+      open: isOpen,
+      placement: position,
+      whileElementsMounted: autoUpdate,
+    });
 
   const hover = useHover(context, {
     delay: {
@@ -204,10 +206,13 @@ export function Tooltip({
     },
   });
 
-  const arrowInlineStyles = createArrowStyles(
-    middlewareData.arrow,
-    floatingPlacement,
-  );
+  const arrowInlineStyles = createArrowStyles(middlewareData.arrow, placement);
+
+  useEffect(() => {
+    if (onVisibilityChange) {
+      onVisibilityChange(isOpen);
+    }
+  }, [isOpen, onVisibilityChange]);
 
   return (
     <>
@@ -222,7 +227,6 @@ export function Tooltip({
 
       {isOpen && (
         <div
-          id={id}
           className={tooltipStyles}
           ref={refs.setFloating}
           style={tooltipInlineStyles}

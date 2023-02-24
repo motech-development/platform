@@ -107,7 +107,7 @@ describe('Tooltip', () => {
     });
   });
 
-  describe.each(placements)('when placement is "%s"', (placement) => {
+  describe.each(placements)('when position is "%s"', (position) => {
     it('should correctly render component when parent is not hovered over', () => {
       const { asFragment } = render(
         <Wrapper>
@@ -118,7 +118,7 @@ describe('Tooltip', () => {
               </button>
             }
             content={<p>Hello, world</p>}
-            placement={placement}
+            position={position}
           />
         </Wrapper>,
       );
@@ -136,7 +136,7 @@ describe('Tooltip', () => {
               </button>
             }
             content={<p>Hello, world</p>}
-            placement={placement}
+            position={position}
           />
         </Wrapper>,
       );
