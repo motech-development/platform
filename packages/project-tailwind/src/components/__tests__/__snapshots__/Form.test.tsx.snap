@@ -1,0 +1,1265 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Form TextInput should render the correct output when decimal scale is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        inputmode="numeric"
+        name="testInput"
+        type="text"
+        value="100.00"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput should render the correct output when error message is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-errormessage="testInput-error"
+        aria-invalid="true"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      >
+        <div
+          aria-describedby="floating-ui-0"
+          class="inline-block"
+          data-testid="tooltip-parent-element"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-5 w-5 cursor-pointer text-red-500"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+              fill-rule="evenodd"
+            />
+          </svg>
+        </div>
+        <div
+          class="cursor-pointer bg-red-600 text-red-50"
+          id="floating-ui-0"
+          role="tooltip"
+          style="left: -5.656854249492381px; position: absolute; top: 0px;"
+          tabindex="-1"
+        >
+          <div
+            class="px-1 text-sm font-display whitespace-nowrap border-r-2 border-red-700"
+          >
+            <div>
+              <p
+                class="font-sans text-left mb-0"
+                id="testInput-error"
+              >
+                This is an error
+              </p>
+            </div>
+          </div>
+          <div
+            class="absolute w-2 h-2 rotate-45 -z-10 pointer-events-none bg-red-700"
+            style="right: -4px; top: 0px;"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput should render the correct output when field is required 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+      <span
+        class="font-bold text-red-800"
+      >
+        *
+      </span>
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        required=""
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput should render the correct output when format is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        inputmode="numeric"
+        name="testInput"
+        type="text"
+        value="12-34-56"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput should render the correct output when prefix is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        inputmode="numeric"
+        name="testInput"
+        type="text"
+        value="£100"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput should render the correct output when suffix is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        inputmode="numeric"
+        name="testInput"
+        type="text"
+        value="100px"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput should render the correct output when type is "email" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        type="email"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput should render the correct output when type is "password" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        type="password"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput should render the correct output when type is "tel" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        type="tel"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput should render the correct output when type is "text" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "danger" should render the correct output 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-red-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "danger" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-describedby="testInput-description"
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-red-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-red-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "danger" should render the correct output when spacing is "lg" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-6"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-red-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "danger" should render the correct output when spacing is "md" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-red-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "danger" should render the correct output when spacing is "none" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-0"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-red-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "danger" should render the correct output when spacing is "sm" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-2"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-red-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "primary" should render the correct output 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-blue-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "primary" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-describedby="testInput-description"
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-blue-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-blue-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "primary" should render the correct output when spacing is "lg" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-6"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-blue-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "primary" should render the correct output when spacing is "md" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-blue-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "primary" should render the correct output when spacing is "none" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-0"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-blue-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "primary" should render the correct output when spacing is "sm" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-2"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-blue-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "secondary" should render the correct output 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "secondary" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-describedby="testInput-description"
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-gray-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "secondary" should render the correct output when spacing is "lg" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-6"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "secondary" should render the correct output when spacing is "md" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "secondary" should render the correct output when spacing is "none" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-0"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "secondary" should render the correct output when spacing is "sm" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-2"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-gray-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "success" should render the correct output 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-green-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "success" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-describedby="testInput-description"
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-green-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-green-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "success" should render the correct output when spacing is "lg" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-6"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-green-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "success" should render the correct output when spacing is "md" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-green-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "success" should render the correct output when spacing is "none" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-0"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-green-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "success" should render the correct output when spacing is "sm" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-2"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-green-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "warning" should render the correct output 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-yellow-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "warning" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-describedby="testInput-description"
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-yellow-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-warning-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "warning" should render the correct output when spacing is "lg" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-6"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-yellow-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "warning" should render the correct output when spacing is "md" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-yellow-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "warning" should render the correct output when spacing is "none" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-0"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-yellow-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form TextInput when theme is "warning" should render the correct output when spacing is "sm" 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-2"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <input
+        aria-invalid="false"
+        class="block w-full sm:text-sm pr-10 border-yellow-300"
+        id="testInput"
+        name="testInput"
+        type="text"
+      />
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;

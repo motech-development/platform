@@ -1,7 +1,10 @@
 /** @type {import('tailwindcss').Config} */
+// eslint-disable-next-line import/no-extraneous-dependencies
+const forms = require('@tailwindcss/forms');
+
 module.exports = {
   content: ['./src/**/*.{ts,tsx}'],
-  plugins: [],
+  plugins: [forms],
   theme: {
     extend: {},
     fontFamily: {
