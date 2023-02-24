@@ -9310,6 +9310,7 @@ __metadata:
     "@storybook/react": "npm:6.5.16"
     "@storybook/storybook-deployer": "npm:2.8.16"
     "@storybook/testing-library": "npm:0.0.13"
+    "@tailwindcss/forms": "npm:0.5.3"
     "@testing-library/jest-dom": "npm:5.16.5"
     "@testing-library/react": "npm:12.1.4"
     "@testing-library/react-hooks": "npm:8.0.1"
@@ -9328,6 +9329,7 @@ __metadata:
     prettier: "npm:2.3.0"
     react: "npm:17.0.2"
     react-dom: "npm:17.0.2"
+    react-number-format: "npm:5.1.3"
     react-polymorphic-box: "npm:3.0.3"
     rimraf: "npm:3.0.2"
     rollup: "npm:2.79.1"
@@ -15489,6 +15491,17 @@ __metadata:
   dependencies:
     defer-to-connect: "npm:^2.0.0"
   checksum: 10/c29df3bcec6fc3bdec2b17981d89d9c9fc9bd7d0c9bcfe92821dc533f4440bc890ccde79971838b4ceed1921d456973c4180d7175ee1d0023ad0562240a58d95
+  languageName: node
+  linkType: hard
+
+"@tailwindcss/forms@npm:0.5.3":
+  version: 0.5.3
+  resolution: "@tailwindcss/forms@npm:0.5.3"
+  dependencies:
+    mini-svg-data-uri: "npm:^1.2.3"
+  peerDependencies:
+    tailwindcss: ">=3.0.0 || >= 3.0.0-alpha.1"
+  checksum: 10/b8aff41f34bc6e3ff82df87f06d4b0bbe1842d78140edb42433ad0ffc537d0b3179f75c62c2bfbbf5536503c080a91a003fe7a54d36653bff6a9fdef2ee1b9e6
   languageName: node
   linkType: hard
 
@@ -33492,6 +33505,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mini-svg-data-uri@npm:^1.2.3":
+  version: 1.4.4
+  resolution: "mini-svg-data-uri@npm:1.4.4"
+  bin:
+    mini-svg-data-uri: cli.js
+  checksum: 10/1336c2b00b6a72b0ce3cf942f7ab074faf463b941042fbe51d7a70be119c5d4223880aaa29584d5a804496ca1dda9b6fff7dd5aa284721907519b646192d8aaa
+  languageName: node
+  linkType: hard
+
 "minimalcss@npm:0.8.1":
   version: 0.8.1
   resolution: "minimalcss@npm:0.8.1"
@@ -37981,6 +38003,18 @@ __metadata:
   version: 1.1.0
   resolution: "react-merge-refs@npm:1.1.0"
   checksum: 10/5c12a6092036336a5d04c6259e1e9dc8f554171cdf737f43fa7611ac49bcff30a6127f0ddfe67803c8539dc5e3ff35be3a0c723c6823841142b3c0cd5c19c2a0
+  languageName: node
+  linkType: hard
+
+"react-number-format@npm:5.1.3":
+  version: 5.1.3
+  resolution: "react-number-format@npm:5.1.3"
+  dependencies:
+    prop-types: "npm:^15.7.2"
+  peerDependencies:
+    react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^18.0.0
+    react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^18.0.0
+  checksum: 10/4ad739634f7496646f2360c5503d0414598c866797f3e3cda86e43ff776d3b7872d73e8724c1735669fb8caf879c622a7ea24bb6d9772e69e8cea7cf9cc8aa43
   languageName: node
   linkType: hard
 
