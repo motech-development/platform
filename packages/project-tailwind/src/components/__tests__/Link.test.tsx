@@ -1,6 +1,5 @@
-import { render } from '@testing-library/react';
 import { ElementType } from 'react';
-import { sizing, themes } from '../../utilities/jest';
+import { setup, sizing, themes } from '../../utilities/jest';
 import { Link } from '../Link';
 
 const elements = [
@@ -22,7 +21,7 @@ describe('Link', () => {
   describe.each(elements)('as element "$element"', ({ attrs, element }) => {
     describe.each(themes)('$theme', ({ theme }) => {
       it('should render the correct output when disabled', () => {
-        const { asFragment } = render(
+        const { asFragment } = setup(
           <Link disabled as={element} theme={theme} {...attrs}>
             Hello, world
           </Link>,
@@ -32,7 +31,7 @@ describe('Link', () => {
       });
 
       it('should render the correct output when block element', () => {
-        const { asFragment } = render(
+        const { asFragment } = setup(
           <Link block as={element} theme={theme} {...attrs}>
             Hello, world
           </Link>,
@@ -44,7 +43,7 @@ describe('Link', () => {
       it.each(sizing)(
         'should render the correct output when size is $size',
         ({ size }) => {
-          const { asFragment } = render(
+          const { asFragment } = setup(
             <Link as={element} size={size} theme={theme} {...attrs}>
               Hello, world
             </Link>,

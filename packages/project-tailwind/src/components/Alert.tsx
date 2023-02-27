@@ -178,6 +178,7 @@ export function Alert({
                   className={buttonStyles}
                   ref={buttonRef}
                   type="button"
+                  data-testid="alert-dismiss-button"
                   onClick={dismiss}
                 >
                   <span className="sr-only">{dismissText}</span>

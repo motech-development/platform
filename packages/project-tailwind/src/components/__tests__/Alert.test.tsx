@@ -1,6 +1,6 @@
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
-import { act, fireEvent, render, waitFor } from '@testing-library/react';
-import { sizing, themes } from '../../utilities/jest';
+import { act, waitFor } from '@testing-library/react';
+import { setup, sizing, themes } from '../../utilities/jest';
 import { Alert } from '../Alert';
 
 describe('Alert', () => {
@@ -16,33 +16,35 @@ describe('Alert', () => {
     it('should call callback function when dismissed', async () => {
       const onDismiss = jest.fn();
 
-      const { findByText } = render(
+      const { getByTestId, user } = setup(
         <Alert dismissable message="Hello, world" onDismiss={onDismiss} />,
       );
 
-      const button = await findByText(/Dismiss/);
+      await act(async () => {
+        const button = getByTestId('alert-dismiss-button');
 
-      fireEvent.click(button);
+        await user.click(button);
+      });
 
       await waitFor(() => expect(onDismiss).toHaveBeenCalledWith());
     });
 
     it('should dismiss an alert', async () => {
-      const { asFragment, findByText } = render(
+      const { asFragment, getByTestId, user } = setup(
         <Alert dismissable message="Hello, world" />,
       );
 
       await act(async () => {
-        const button = await findByText(/Dismiss/);
+        const button = getByTestId('alert-dismiss-button');
 
-        fireEvent.click(button);
+        await user.click(button);
       });
 
       expect(asFragment()).toMatchSnapshot();
     });
 
     it('should automatically dismiss an alert', () => {
-      const { asFragment } = render(
+      const { asFragment } = setup(
         <Alert dismissable={1000} message="Hello, world" />,
       );
 
@@ -54,7 +56,7 @@ describe('Alert', () => {
 
   describe.each(themes)('$theme', ({ theme }) => {
     it('should be dismissable', () => {
-      const { asFragment } = render(
+      const { asFragment } = setup(
         <Alert dismissable message="Hello, world" theme={theme} />,
       );
 
@@ -62,7 +64,7 @@ describe('Alert', () => {
     });
 
     it('should set custom dismiss text', () => {
-      const { asFragment } = render(
+      const { asFragment } = setup(
         <Alert
           dismissable
           dismissText="Close me!"
@@ -75,7 +77,7 @@ describe('Alert', () => {
     });
 
     it('should display an icon', () => {
-      const { asFragment } = render(
+      const { asFragment } = setup(
         <Alert
           icon={<ExclamationTriangleIcon />}
           message="Hello, world"
@@ -89,7 +91,7 @@ describe('Alert', () => {
     it.each(sizing)(
       'should render the correct output when spacing is $size',
       ({ size }) => {
-        const { asFragment } = render(
+        const { asFragment } = setup(
           <Alert message="Hello, world" spacing={size} theme={theme} />,
         );
 
