@@ -2,6 +2,9 @@ import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
 import { ComponentPropsWithRef, ReactNode, useState } from 'react';
 import { NumericFormat, PatternFormat } from 'react-number-format';
 import { Box } from 'react-polymorphic-box';
+import TextareaAutosize, {
+  TextareaAutosizeProps,
+} from 'react-textarea-autosize';
 import {
   Sizing,
   Themes,
@@ -12,7 +15,6 @@ import {
 import { Tooltip } from './Tooltip';
 import { Typography } from './Typography';
 
-// TODO: Textarea
 // TODO: Radio
 // TODO: Checkbox
 // TODO: Upload
@@ -48,6 +50,8 @@ type TGetMessage =
  * @returns Error message utility
  */
 function useInput(name: string) {
+  const [tooltip, setTooltip] = useState<boolean>();
+
   function inputDefined(input?: string): input is string {
     return Boolean(input);
   }
@@ -82,6 +86,8 @@ function useInput(name: string) {
 
   return {
     getMessage,
+    setTooltip,
+    tooltip,
   };
 }
 
@@ -189,12 +195,30 @@ function HelpText({ id, message, theme }: IHelpTextProps) {
   );
 }
 
-interface ILabelProps extends ComponentPropsWithRef<'label'> {
+/** Label component properties */
+export interface ILabelProps extends ComponentPropsWithRef<'label'> {
+  /** Mark as required */
+  required?: boolean;
+
   /** Component theme */
   theme: TTheme;
 }
 
-function Label({ className, htmlFor, theme, ...rest }: ILabelProps) {
+/**
+ * Reusable input label
+ *
+ * @param props - Component props
+ *
+ * @returns Label component
+ */
+export function Label({
+  children,
+  className,
+  htmlFor,
+  required = false,
+  theme,
+  ...rest
+}: ILabelProps) {
   const { createStyles } = useTailwind(theme);
 
   const labelStyles = createStyles({
@@ -208,7 +232,13 @@ function Label({ className, htmlFor, theme, ...rest }: ILabelProps) {
     },
   });
 
-  return <label className={labelStyles} htmlFor={htmlFor} {...rest} />;
+  return (
+    <label className={labelStyles} htmlFor={htmlFor} {...rest}>
+      {children}
+
+      {required && <span className="font-bold text-red-800">*</span>}
+    </label>
+  );
 }
 
 /** ValidationMessage component properties */
@@ -247,7 +277,7 @@ function ValidationMessage({
 }
 
 /** Supported text input types */
-enum TextInputTypes {
+enum InputTypes {
   /** Email */
   EMAIL = 'email',
   /** Password */
@@ -259,10 +289,10 @@ enum TextInputTypes {
 }
 
 /** Text input type */
-type TTextInputType = `${TextInputTypes}`;
+type TInputType = `${InputTypes}`;
 
-/** TextInput component properties */
-export interface ITextInputProps extends ComponentPropsWithRef<'input'> {
+/** Input component properties */
+export interface IInputProps extends ComponentPropsWithRef<'input'> {
   /** Limit number of digits after decimal point */
   decimalScale?: number;
 
@@ -294,10 +324,17 @@ export interface ITextInputProps extends ComponentPropsWithRef<'input'> {
   theme?: TTheme;
 
   /** Input type */
-  type?: TTextInputType;
+  type?: TInputType;
 }
 
-export function TextInput({
+/**
+ * Text input form component
+ *
+ * @param props - Component props
+ *
+ * @returns Input component
+ */
+export function Input({
   'aria-describedby': ariaDescribedby,
   className,
   decimalScale,
@@ -311,12 +348,10 @@ export function TextInput({
   spacing = Sizing.MD,
   suffix,
   theme = Themes.SECONDARY,
-  type = TextInputTypes.TEXT,
+  type = InputTypes.TEXT,
   ...rest
-}: ITextInputProps) {
-  const [tooltip, setTooltip] = useState<boolean>();
-
-  const { getMessage } = useInput(name);
+}: IInputProps) {
+  const { getMessage, setTooltip, tooltip } = useInput(name);
 
   const {
     hasMessage: hasDescription,
@@ -392,10 +427,8 @@ export function TextInput({
       spacing={spacing}
       theme={theme}
       label={
-        <Label htmlFor={name} theme={theme}>
+        <Label htmlFor={name} required={rest.required} theme={theme}>
           {label}
-
-          {rest.required && <span className="font-bold text-red-800">*</span>}
         </Label>
       }
       input={
@@ -409,6 +442,102 @@ export function TextInput({
           aria-errormessage={tooltip ? errorMessageId : undefined}
           aria-invalid={hasError}
           {...additionalProps()}
+          {...rest}
+        />
+      }
+      helpText={
+        hasDescription && (
+          <HelpText id={describedById} theme={theme} message={description} />
+        )
+      }
+      validationMessage={
+        hasError && (
+          <ValidationMessage
+            id={errorMessageId}
+            message={error}
+            onVisibilityChange={setTooltip}
+          />
+        )
+      }
+    />
+  );
+}
+
+export interface ITextareaProps extends TextareaAutosizeProps {
+  /** Validation error message */
+  errorMessage?: string;
+
+  /** Supporting text */
+  helpText?: string;
+
+  /** Input label */
+  label: string;
+
+  /** Input name */
+  name: string;
+
+  /** Component spacing */
+  spacing?: TSizing;
+
+  /** Component theme */
+  theme?: TTheme;
+}
+
+export function Textarea({
+  className,
+  errorMessage,
+  helpText,
+  label,
+  name,
+  spacing = Sizing.MD,
+  theme = Themes.SECONDARY,
+  ...rest
+}: ITextareaProps) {
+  const { getMessage, setTooltip, tooltip } = useInput(name);
+
+  const {
+    hasMessage: hasDescription,
+    id: describedById,
+    message: description,
+  } = getMessage('description', helpText);
+
+  const {
+    hasMessage: hasError,
+    id: errorMessageId,
+    message: error,
+  } = getMessage('error', errorMessage);
+
+  const { createStyles } = useTailwind(theme, spacing);
+
+  const inputStyles = createStyles({
+    classNames: ['block w-full sm:text-sm pr-10', className],
+    theme: {
+      danger: ['border-red-300'],
+      primary: ['border-blue-300'],
+      secondary: ['border-gray-300'],
+      success: ['border-green-300'],
+      warning: ['border-yellow-300'],
+    },
+  });
+
+  return (
+    <Container
+      spacing={spacing}
+      theme={theme}
+      label={
+        <Label htmlFor={name} required={rest.required} theme={theme}>
+          {label}
+        </Label>
+      }
+      input={
+        <TextareaAutosize
+          id={name}
+          className={inputStyles}
+          name={name}
+          aria-describedby={describedById}
+          aria-errormessage={tooltip ? errorMessageId : undefined}
+          aria-invalid={hasError}
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...rest}
         />
       }

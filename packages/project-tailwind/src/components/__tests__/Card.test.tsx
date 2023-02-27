@@ -1,11 +1,10 @@
-import { render } from '@testing-library/react';
-import { sizing, themes } from '../../utilities/jest';
+import { setup, sizing, themes } from '../../utilities/jest';
 import { Card } from '../Card';
 
 describe('Card', () => {
   describe.each(themes)('when theme is "$theme"', ({ theme }) => {
     it('should render the correct output', () => {
-      const { asFragment } = render(
+      const { asFragment } = setup(
         <Card theme={theme}>
           <p>Hello, world</p>
         </Card>,
@@ -15,7 +14,7 @@ describe('Card', () => {
     });
 
     it('should render the correct output when flex is set', () => {
-      const { asFragment } = render(
+      const { asFragment } = setup(
         <Card flex theme={theme}>
           <p>Hello, world</p>
         </Card>,
@@ -27,7 +26,7 @@ describe('Card', () => {
     it.each(sizing)(
       'should render the correct output when padding is "$size"',
       ({ size }) => {
-        const { asFragment } = render(
+        const { asFragment } = setup(
           <Card theme={theme} padding={size}>
             <p>Hello, world</p>
           </Card>,
