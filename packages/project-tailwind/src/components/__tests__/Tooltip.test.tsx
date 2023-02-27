@@ -1,9 +1,8 @@
 import { Side } from '@floating-ui/react';
-import { fireEvent, render } from '@testing-library/react';
 import { mockViewport } from 'jsdom-testing-mocks';
 import { ReactNode } from 'react';
 import { act } from 'react-dom/test-utils';
-import { themes } from '../../utilities/jest';
+import { setup, themes } from '../../utilities/jest';
 import { Tooltip } from '../Tooltip';
 
 interface IWrapperProps {
@@ -31,16 +30,16 @@ describe('Tooltip', () => {
   });
 
   describe('timer', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       jest.useFakeTimers();
     });
 
-    afterAll(() => {
+    afterEach(() => {
       jest.useRealTimers();
     });
 
     it('should hide tooltip after 1000ms', async () => {
-      const { asFragment, findByTestId } = render(
+      const { asFragment, getByTestId, user } = setup(
         <Wrapper>
           <Tooltip
             parent={
@@ -56,11 +55,11 @@ describe('Tooltip', () => {
       const firstRender = asFragment();
 
       await act(async () => {
-        const parent = await findByTestId('tooltip-parent-element');
+        const parent = getByTestId('tooltip-parent-element');
 
-        fireEvent.mouseEnter(parent);
+        await user.hover(parent);
 
-        fireEvent.mouseLeave(parent);
+        await user.unhover(parent);
       });
 
       act(() => jest.advanceTimersByTime(900));
@@ -73,7 +72,7 @@ describe('Tooltip', () => {
     });
 
     it('should hide after set time', async () => {
-      const { asFragment, findByTestId } = render(
+      const { asFragment, getByTestId, user } = setup(
         <Wrapper>
           <Tooltip
             parent={
@@ -90,11 +89,11 @@ describe('Tooltip', () => {
       const firstRender = asFragment();
 
       await act(async () => {
-        const parent = await findByTestId('tooltip-parent-element');
+        const parent = getByTestId('tooltip-parent-element');
 
-        fireEvent.mouseEnter(parent);
+        await user.hover(parent);
 
-        fireEvent.mouseLeave(parent);
+        await user.unhover(parent);
       });
 
       act(() => jest.advanceTimersByTime(300));
@@ -109,7 +108,7 @@ describe('Tooltip', () => {
 
   describe.each(placements)('when position is "%s"', (position) => {
     it('should correctly render component when parent is not hovered over', () => {
-      const { asFragment } = render(
+      const { asFragment } = setup(
         <Wrapper>
           <Tooltip
             parent={
@@ -127,7 +126,7 @@ describe('Tooltip', () => {
     });
 
     it('should correctly render component when parent is hovered over', async () => {
-      const { asFragment, findByTestId } = render(
+      const { asFragment, getByTestId, user } = setup(
         <Wrapper>
           <Tooltip
             parent={
@@ -144,9 +143,9 @@ describe('Tooltip', () => {
       const firstRender = asFragment();
 
       await act(async () => {
-        const parent = await findByTestId('tooltip-parent-element');
+        const parent = getByTestId('tooltip-parent-element');
 
-        fireEvent.mouseEnter(parent);
+        await user.hover(parent);
       });
 
       expect(firstRender).toMatchDiffSnapshot(asFragment());
@@ -155,7 +154,7 @@ describe('Tooltip', () => {
 
   describe.each(themes)('when theme is "$theme"', ({ theme }) => {
     it('should correctly render component when parent is not hovered over', () => {
-      const { asFragment } = render(
+      const { asFragment } = setup(
         <Wrapper>
           <Tooltip
             parent={
@@ -173,7 +172,7 @@ describe('Tooltip', () => {
     });
 
     it('should correctly render component when parent is hovered over', async () => {
-      const { asFragment, findByTestId } = render(
+      const { asFragment, getByTestId, user } = setup(
         <Wrapper>
           <Tooltip
             parent={
@@ -190,9 +189,9 @@ describe('Tooltip', () => {
       const firstRender = asFragment();
 
       await act(async () => {
-        const parent = await findByTestId('tooltip-parent-element');
+        const parent = getByTestId('tooltip-parent-element');
 
-        fireEvent.mouseEnter(parent);
+        await user.hover(parent);
       });
 
       expect(firstRender).toMatchDiffSnapshot(asFragment());

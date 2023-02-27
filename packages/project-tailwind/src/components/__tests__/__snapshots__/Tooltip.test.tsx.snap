@@ -10,7 +10,7 @@ exports[`Tooltip timer should hide after set time 1`] = `
       style="align-items: center; display: flex; height: 100vh; justify-content: center;"
     >
       <div
-+       aria-describedby="floating-ui-2"
++       aria-describedby=":r2:"
         class="inline-block"
         data-testid="tooltip-parent-element"
       >
@@ -23,7 +23,7 @@ exports[`Tooltip timer should hide after set time 1`] = `
 +     </div>
 +     <div
 +       class="bg-blue-600 text-blue-50"
-+       id="floating-ui-2"
++       id=":r2:"
 +       role="tooltip"
 +       style="left: 0px; position: absolute; top: 5.656854249492381px;"
 +       tabindex="-1"
@@ -54,7 +54,7 @@ exports[`Tooltip timer should hide tooltip after 1000ms 1`] = `
       style="align-items: center; display: flex; height: 100vh; justify-content: center;"
     >
       <div
-+       aria-describedby="floating-ui-0"
++       aria-describedby=":r0:"
         class="inline-block"
         data-testid="tooltip-parent-element"
       >
@@ -67,7 +67,7 @@ exports[`Tooltip timer should hide tooltip after 1000ms 1`] = `
 +     </div>
 +     <div
 +       class="bg-blue-600 text-blue-50"
-+       id="floating-ui-0"
++       id=":r0:"
 +       role="tooltip"
 +       style="left: 0px; position: absolute; top: 5.656854249492381px;"
 +       tabindex="-1"
@@ -98,7 +98,7 @@ exports[`Tooltip when position is "bottom" should correctly render component whe
       style="align-items: center; display: flex; height: 100vh; justify-content: center;"
     >
       <div
-+       aria-describedby="floating-ui-10"
++       aria-describedby=":ra:"
         class="inline-block"
         data-testid="tooltip-parent-element"
       >
@@ -111,7 +111,7 @@ exports[`Tooltip when position is "bottom" should correctly render component whe
 +     </div>
 +     <div
 +       class="bg-blue-600 text-blue-50"
-+       id="floating-ui-10"
++       id=":ra:"
 +       role="tooltip"
 +       style="left: 0px; position: absolute; top: 5.656854249492381px;"
 +       tabindex="-1"
@@ -162,7 +162,7 @@ exports[`Tooltip when position is "left" should correctly render component when 
       style="align-items: center; display: flex; height: 100vh; justify-content: center;"
     >
       <div
-+       aria-describedby="floating-ui-18"
++       aria-describedby=":ri:"
         class="inline-block"
         data-testid="tooltip-parent-element"
       >
@@ -175,7 +175,7 @@ exports[`Tooltip when position is "left" should correctly render component when 
 +     </div>
 +     <div
 +       class="bg-blue-600 text-blue-50"
-+       id="floating-ui-18"
++       id=":ri:"
 +       role="tooltip"
 +       style="left: -5.656854249492381px; position: absolute; top: 0px;"
 +       tabindex="-1"
@@ -226,7 +226,7 @@ exports[`Tooltip when position is "right" should correctly render component when
       style="align-items: center; display: flex; height: 100vh; justify-content: center;"
     >
       <div
-+       aria-describedby="floating-ui-14"
++       aria-describedby=":re:"
         class="inline-block"
         data-testid="tooltip-parent-element"
       >
@@ -239,7 +239,7 @@ exports[`Tooltip when position is "right" should correctly render component when
 +     </div>
 +     <div
 +       class="bg-blue-600 text-blue-50"
-+       id="floating-ui-14"
++       id=":re:"
 +       role="tooltip"
 +       style="left: 5.656854249492381px; position: absolute; top: 0px;"
 +       tabindex="-1"
@@ -290,7 +290,7 @@ exports[`Tooltip when position is "top" should correctly render component when p
       style="align-items: center; display: flex; height: 100vh; justify-content: center;"
     >
       <div
-+       aria-describedby="floating-ui-6"
++       aria-describedby=":r6:"
         class="inline-block"
         data-testid="tooltip-parent-element"
       >
@@ -303,7 +303,7 @@ exports[`Tooltip when position is "top" should correctly render component when p
 +     </div>
 +     <div
 +       class="bg-blue-600 text-blue-50"
-+       id="floating-ui-6"
++       id=":r6:"
 +       role="tooltip"
 +       style="left: 0px; position: absolute; top: -5.656854249492381px;"
 +       tabindex="-1"
@@ -354,7 +354,7 @@ exports[`Tooltip when theme is "danger" should correctly render component when p
       style="align-items: center; display: flex; height: 100vh; justify-content: center;"
     >
       <div
-+       aria-describedby="floating-ui-22"
++       aria-describedby=":rm:"
         class="inline-block"
         data-testid="tooltip-parent-element"
       >
@@ -367,7 +367,7 @@ exports[`Tooltip when theme is "danger" should correctly render component when p
 +     </div>
 +     <div
 +       class="bg-red-600 text-red-50"
-+       id="floating-ui-22"
++       id=":rm:"
 +       role="tooltip"
 +       style="left: 0px; position: absolute; top: 5.656854249492381px;"
 +       tabindex="-1"
@@ -418,7 +418,7 @@ exports[`Tooltip when theme is "primary" should correctly render component when 
       style="align-items: center; display: flex; height: 100vh; justify-content: center;"
     >
       <div
-+       aria-describedby="floating-ui-26"
++       aria-describedby=":rq:"
         class="inline-block"
         data-testid="tooltip-parent-element"
       >
@@ -431,7 +431,7 @@ exports[`Tooltip when theme is "primary" should correctly render component when 
 +     </div>
 +     <div
 +       class="bg-blue-600 text-blue-50"
-+       id="floating-ui-26"
++       id=":rq:"
 +       role="tooltip"
 +       style="left: 0px; position: absolute; top: 5.656854249492381px;"
 +       tabindex="-1"
@@ -482,7 +482,7 @@ exports[`Tooltip when theme is "secondary" should correctly render component whe
       style="align-items: center; display: flex; height: 100vh; justify-content: center;"
     >
       <div
-+       aria-describedby="floating-ui-30"
++       aria-describedby=":ru:"
         class="inline-block"
         data-testid="tooltip-parent-element"
       >
@@ -495,7 +495,7 @@ exports[`Tooltip when theme is "secondary" should correctly render component whe
 +     </div>
 +     <div
 +       class="bg-gray-100 text-gray-600"
-+       id="floating-ui-30"
++       id=":ru:"
 +       role="tooltip"
 +       style="left: 0px; position: absolute; top: 5.656854249492381px;"
 +       tabindex="-1"
@@ -546,7 +546,7 @@ exports[`Tooltip when theme is "success" should correctly render component when 
       style="align-items: center; display: flex; height: 100vh; justify-content: center;"
     >
       <div
-+       aria-describedby="floating-ui-34"
++       aria-describedby=":r12:"
         class="inline-block"
         data-testid="tooltip-parent-element"
       >
@@ -559,7 +559,7 @@ exports[`Tooltip when theme is "success" should correctly render component when 
 +     </div>
 +     <div
 +       class="bg-green-600 text-green-50"
-+       id="floating-ui-34"
++       id=":r12:"
 +       role="tooltip"
 +       style="left: 0px; position: absolute; top: 5.656854249492381px;"
 +       tabindex="-1"
@@ -610,7 +610,7 @@ exports[`Tooltip when theme is "warning" should correctly render component when 
       style="align-items: center; display: flex; height: 100vh; justify-content: center;"
     >
       <div
-+       aria-describedby="floating-ui-38"
++       aria-describedby=":r16:"
         class="inline-block"
         data-testid="tooltip-parent-element"
       >
@@ -623,7 +623,7 @@ exports[`Tooltip when theme is "warning" should correctly render component when 
 +     </div>
 +     <div
 +       class="bg-yellow-600 text-yellow-50"
-+       id="floating-ui-38"
++       id=":r16:"
 +       role="tooltip"
 +       style="left: 0px; position: absolute; top: 5.656854249492381px;"
 +       tabindex="-1"

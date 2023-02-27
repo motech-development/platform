@@ -1,11 +1,10 @@
-import { render } from '@testing-library/react';
-import { themes } from '../../utilities/jest';
+import { setup, themes } from '../../utilities/jest';
 import { Title } from '../Title';
 
 describe('Title', () => {
   describe.each(themes)('when theme is "$theme"', ({ theme }) => {
     it('should render the correct output', () => {
-      const { asFragment } = render(
+      const { asFragment } = setup(
         <Title theme={theme} title="Hello, world" />,
       );
 
@@ -13,7 +12,7 @@ describe('Title', () => {
     });
 
     it('should render the correct output when a subtitle is set', () => {
-      const { asFragment } = render(
+      const { asFragment } = setup(
         <Title
           theme={theme}
           title="Hello, world"

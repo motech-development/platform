@@ -33,6 +33,7 @@ exports[`Alert danger should be dismissable 1`] = `
         >
           <button
             class="inline-flex p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-red-50 text-red-500 hover:bg-red-100 focus:ring-offset-red-50 focus:ring-red-600"
+            data-testid="alert-dismiss-button"
             type="button"
           >
             <span
@@ -292,6 +293,7 @@ exports[`Alert danger should set custom dismiss text 1`] = `
         >
           <button
             class="inline-flex p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-red-50 text-red-500 hover:bg-red-100 focus:ring-offset-red-50 focus:ring-red-600"
+            data-testid="alert-dismiss-button"
             type="button"
           >
             <span
@@ -357,6 +359,7 @@ exports[`Alert primary should be dismissable 1`] = `
         >
           <button
             class="inline-flex p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-blue-50 text-blue-500 hover:bg-blue-100 focus:ring-offset-blue-50 focus:ring-blue-600"
+            data-testid="alert-dismiss-button"
             type="button"
           >
             <span
@@ -616,6 +619,7 @@ exports[`Alert primary should set custom dismiss text 1`] = `
         >
           <button
             class="inline-flex p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-blue-50 text-blue-500 hover:bg-blue-100 focus:ring-offset-blue-50 focus:ring-blue-600"
+            data-testid="alert-dismiss-button"
             type="button"
           >
             <span
@@ -677,6 +681,7 @@ exports[`Alert secondary should be dismissable 1`] = `
         >
           <button
             class="inline-flex p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-50 text-gray-500 hover:bg-gray-100 focus:ring-offset-gray-50 focus:ring-gray-600"
+            data-testid="alert-dismiss-button"
             type="button"
           >
             <span
@@ -936,6 +941,7 @@ exports[`Alert secondary should set custom dismiss text 1`] = `
         >
           <button
             class="inline-flex p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-50 text-gray-500 hover:bg-gray-100 focus:ring-offset-gray-50 focus:ring-gray-600"
+            data-testid="alert-dismiss-button"
             type="button"
           >
             <span
@@ -997,6 +1003,7 @@ exports[`Alert success should be dismissable 1`] = `
         >
           <button
             class="inline-flex p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-green-50 text-green-500 hover:bg-green-100 focus:ring-offset-green-50 focus:ring-green-600"
+            data-testid="alert-dismiss-button"
             type="button"
           >
             <span
@@ -1256,6 +1263,7 @@ exports[`Alert success should set custom dismiss text 1`] = `
         >
           <button
             class="inline-flex p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-green-50 text-green-500 hover:bg-green-100 focus:ring-offset-green-50 focus:ring-green-600"
+            data-testid="alert-dismiss-button"
             type="button"
           >
             <span
@@ -1317,6 +1325,7 @@ exports[`Alert warning should be dismissable 1`] = `
         >
           <button
             class="inline-flex p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-yellow-50 text-yellow-500 hover:bg-yellow-100 focus:ring-offset-yellow-50 focus:ring-yellow-600"
+            data-testid="alert-dismiss-button"
             type="button"
           >
             <span
@@ -1576,6 +1585,7 @@ exports[`Alert warning should set custom dismiss text 1`] = `
         >
           <button
             class="inline-flex p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-yellow-50 text-yellow-500 hover:bg-yellow-100 focus:ring-offset-yellow-50 focus:ring-yellow-600"
+            data-testid="alert-dismiss-button"
             type="button"
           >
             <span
