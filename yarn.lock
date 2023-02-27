@@ -5537,7 +5537,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.0, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.22.5, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2, @babel/runtime@npm:^7.9.6":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.0, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.22.5, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2, @babel/runtime@npm:^7.9.6":
   version: 7.25.6
   resolution: "@babel/runtime@npm:7.25.6"
   dependencies:
@@ -8446,7 +8446,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/core@npm:^29.4.2, @jest/core@npm:^29.7.0":
+"@jest/core@npm:^29.4.3, @jest/core@npm:^29.7.0":
   version: 29.7.0
   resolution: "@jest/core@npm:29.7.0"
   dependencies:
@@ -8496,7 +8496,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/environment@npm:^29.4.2, @jest/environment@npm:^29.7.0":
+"@jest/environment@npm:^29.4.3, @jest/environment@npm:^29.7.0":
   version: 29.7.0
   resolution: "@jest/environment@npm:29.7.0"
   dependencies:
@@ -8527,7 +8527,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/fake-timers@npm:^29.4.2, @jest/fake-timers@npm:^29.7.0":
+"@jest/fake-timers@npm:^29.4.3, @jest/fake-timers@npm:^29.7.0":
   version: 29.7.0
   resolution: "@jest/fake-timers@npm:29.7.0"
   dependencies:
@@ -8706,7 +8706,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/types@npm:^29.4.2, @jest/types@npm:^29.6.3":
+"@jest/types@npm:^29.4.3, @jest/types@npm:^29.6.3":
   version: 29.6.3
   resolution: "@jest/types@npm:29.6.3"
   dependencies:
@@ -9312,25 +9312,27 @@ __metadata:
     "@storybook/testing-library": "npm:0.0.13"
     "@tailwindcss/forms": "npm:0.5.3"
     "@testing-library/jest-dom": "npm:5.16.5"
-    "@testing-library/react": "npm:12.1.4"
+    "@testing-library/react": "npm:14.0.0"
     "@testing-library/react-hooks": "npm:8.0.1"
-    "@testing-library/user-event": "npm:13.5.0"
+    "@testing-library/user-event": "npm:14.4.3"
     "@types/jest": "npm:29.4.0"
-    "@types/react": "npm:17.0.53"
-    "@types/react-dom": "npm:17.0.18"
+    "@types/react": "npm:18.0.28"
+    "@types/react-dom": "npm:18.0.11"
+    "@types/react-textarea-autosize": "npm:8.0.0"
     autoprefixer: "npm:10.4.13"
     babel-loader: "npm:8.3.0"
     clsx: "npm:1.2.1"
     eslint: "npm:8.33.0"
-    jest: "npm:29.4.2"
-    jest-environment-jsdom: "npm:29.4.2"
+    jest: "npm:29.4.3"
+    jest-environment-jsdom: "npm:29.4.3"
     jsdom-testing-mocks: "npm:1.7.0"
     postcss: "npm:8.4.21"
     prettier: "npm:2.3.0"
-    react: "npm:17.0.2"
-    react-dom: "npm:17.0.2"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-number-format: "npm:5.1.3"
     react-polymorphic-box: "npm:3.0.3"
+    react-textarea-autosize: "npm:8.4.0"
     rimraf: "npm:3.0.2"
     rollup: "npm:2.79.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
@@ -15533,7 +15535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/dom@npm:^8.0.0, @testing-library/dom@npm:^8.3.0":
+"@testing-library/dom@npm:^8.3.0":
   version: 8.20.0
   resolution: "@testing-library/dom@npm:8.20.0"
   dependencies:
@@ -15546,6 +15548,22 @@ __metadata:
     lz-string: "npm:^1.4.4"
     pretty-format: "npm:^27.0.2"
   checksum: 10/07e80e1073a6317b521ff58de0459abf6f641ed9736ab787f7b96997df922664ed26668eb476aae7e756029c5f93b55c53062f19114275b45ea134350ccf3e9f
+  languageName: node
+  linkType: hard
+
+"@testing-library/dom@npm:^9.0.0":
+  version: 9.3.0
+  resolution: "@testing-library/dom@npm:9.3.0"
+  dependencies:
+    "@babel/code-frame": "npm:^7.10.4"
+    "@babel/runtime": "npm:^7.12.5"
+    "@types/aria-query": "npm:^5.0.1"
+    aria-query: "npm:^5.0.0"
+    chalk: "npm:^4.1.0"
+    dom-accessibility-api: "npm:^0.5.9"
+    lz-string: "npm:^1.5.0"
+    pretty-format: "npm:^27.0.2"
+  checksum: 10/51fab7d30358c25c0a65c967aeda6cdc9ba86b322299cada41414536258c7c2e037bcf7812cd1e1ad01ea7966b0bd7290b57ae83138549f54f78755d6d39b72e
   languageName: node
   linkType: hard
 
@@ -15603,17 +15621,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react@npm:12.1.4":
-  version: 12.1.4
-  resolution: "@testing-library/react@npm:12.1.4"
+"@testing-library/react@npm:14.0.0":
+  version: 14.0.0
+  resolution: "@testing-library/react@npm:14.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
-    "@testing-library/dom": "npm:^8.0.0"
-    "@types/react-dom": "npm:*"
+    "@testing-library/dom": "npm:^9.0.0"
+    "@types/react-dom": "npm:^18.0.0"
   peerDependencies:
-    react: "*"
-    react-dom: "*"
-  checksum: 10/09b540e77ecce8a1c76f84acfdcc370298ec67107954ca48c99a28c947f7263d286194dd2cbaeb4bb1998e3156810e23f7a392e17693994aa3c759049e7ed738
+    react: ^18.0.0
+    react-dom: ^18.0.0
+  checksum: 10/1f2a4f78d107e741b35671e9c7dd992d5c9f49b48ee24112ccfe636179be72f3c62a65b1405901b59eb6cde996176ebc2c99099e04d9f14575641e46688747f0
   languageName: node
   linkType: hard
 
@@ -15637,14 +15655,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:13.5.0, @testing-library/user-event@npm:^13.2.1":
-  version: 13.5.0
-  resolution: "@testing-library/user-event@npm:13.5.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.12.5"
+"@testing-library/user-event@npm:14.4.3":
+  version: 14.4.3
+  resolution: "@testing-library/user-event@npm:14.4.3"
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
-  checksum: 10/e2bdf2b2375d1399a4fd45195705ab0be05f5e3e8220ecbfc26cba98985e45cb505e4e11ed4d909a7052ce90d1e83751cfe21bb1b70fa82d2a2c268370432d8b
+  checksum: 10/0c7c1ee6bacd8faf15e00624ff6815f0cdf2529493c3a0d8ec6878bbedfc7bd4c7600b7a4b7a07302737e71400dc560ee17dc5706291505da09905c8ea3f3cd7
   languageName: node
   linkType: hard
 
@@ -15654,6 +15670,17 @@ __metadata:
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
   checksum: 10/34b74fff56a0447731a94b40d4cf246deb8dbc1c1e3aec93acd1c3377a760bb062e979f1572bb34ec164ad28ee2a391744b42d0d6d6cc16c4ce527e5e09610e1
+  languageName: node
+  linkType: hard
+
+"@testing-library/user-event@npm:^13.2.1":
+  version: 13.5.0
+  resolution: "@testing-library/user-event@npm:13.5.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.12.5"
+  peerDependencies:
+    "@testing-library/dom": ">=7.21.4"
+  checksum: 10/e2bdf2b2375d1399a4fd45195705ab0be05f5e3e8220ecbfc26cba98985e45cb505e4e11ed4d909a7052ce90d1e83751cfe21bb1b70fa82d2a2c268370432d8b
   languageName: node
   linkType: hard
 
@@ -16466,7 +16493,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:*, @types/react-dom@npm:18.3.5":
+"@types/react-dom@npm:18.0.11":
+  version: 18.0.11
+  resolution: "@types/react-dom@npm:18.0.11"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10/e6dd39b2ef65f6e6257f1792c62e997273a06c3e72e05f082185d0b8dfd8972340f9d5452408183b4bf03bd68cbb2fb9da89e063f1ba98c287a38953491febec
+  languageName: node
+  linkType: hard
+
+"@types/react-dom@npm:18.3.5, @types/react-dom@npm:^18.0.0":
   version: 18.3.5
   resolution: "@types/react-dom@npm:18.3.5"
   peerDependencies:
@@ -16475,12 +16511,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:17.0.18":
-  version: 17.0.18
-  resolution: "@types/react-dom@npm:17.0.18"
+"@types/react-textarea-autosize@npm:8.0.0":
+  version: 8.0.0
+  resolution: "@types/react-textarea-autosize@npm:8.0.0"
   dependencies:
-    "@types/react": "npm:^17"
-  checksum: 10/feb78d0052e935347e31a55f2883ed0fcb77b6f2a2641fa8b4d968f17c5dc2e5084c1bc833d103cc077de4c8b644478b33d4cfbeb4972216d3c0443435c37f11
+    react-textarea-autosize: "npm:*"
+  checksum: 10/35a06b6fe47f04ba8634470c28cd2441c7195a4e6776c57990839f7b2929ec3f5db55df222df50f96ddedb872de7f9944ef22a6345a5c38c11be7e85fb4ffe68
   languageName: node
   linkType: hard
 
@@ -16503,25 +16539,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:17.0.53":
-  version: 17.0.53
-  resolution: "@types/react@npm:17.0.53"
+"@types/react@npm:18.0.28":
+  version: 18.0.28
+  resolution: "@types/react@npm:18.0.28"
   dependencies:
     "@types/prop-types": "npm:*"
     "@types/scheduler": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10/e8d29150b984ca182280d140c0d91a6181abff46c2554bfb876ff7635683d0f50107e92e30ad0776bf6fc6b62ee0edf56a5f139ed1cbdac5aac67d647f44e02d
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^17":
-  version: 17.0.59
-  resolution: "@types/react@npm:17.0.59"
-  dependencies:
-    "@types/prop-types": "npm:*"
-    "@types/scheduler": "npm:*"
-    csstype: "npm:^3.0.2"
-  checksum: 10/8c7a162581e8a3075ae47823a9d84ca2728ca782f8ebeadd59dd2119ac4480f6ed0df985be89b88b652d237a5bae7e93d5c5155fe8d57930ac49e4fe8849b285
+  checksum: 10/7a752e6c5e76139f258bc14827d2c574bb76d6e7eb1b240f24f79b269153cb88668c34ba7078d3de99ec1973b7022e1f788e71117bd52a287f382d24bb80be40
   languageName: node
   linkType: hard
 
@@ -30384,7 +30409,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-cli@npm:^29.4.2, jest-cli@npm:^29.7.0":
+"jest-cli@npm:^29.4.3, jest-cli@npm:^29.7.0":
   version: 29.7.0
   resolution: "jest-cli@npm:29.7.0"
   dependencies:
@@ -30489,24 +30514,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-jsdom@npm:29.4.2":
-  version: 29.4.2
-  resolution: "jest-environment-jsdom@npm:29.4.2"
+"jest-environment-jsdom@npm:29.4.3":
+  version: 29.4.3
+  resolution: "jest-environment-jsdom@npm:29.4.3"
   dependencies:
-    "@jest/environment": "npm:^29.4.2"
-    "@jest/fake-timers": "npm:^29.4.2"
-    "@jest/types": "npm:^29.4.2"
+    "@jest/environment": "npm:^29.4.3"
+    "@jest/fake-timers": "npm:^29.4.3"
+    "@jest/types": "npm:^29.4.3"
     "@types/jsdom": "npm:^20.0.0"
     "@types/node": "npm:*"
-    jest-mock: "npm:^29.4.2"
-    jest-util: "npm:^29.4.2"
+    jest-mock: "npm:^29.4.3"
+    jest-util: "npm:^29.4.3"
     jsdom: "npm:^20.0.0"
   peerDependencies:
     canvas: ^2.5.0
   peerDependenciesMeta:
     canvas:
       optional: true
-  checksum: 10/17a69e5c699696e0a8285ec549392d38401eedd09b40fd2cd73c57abfdafa2fad7d611e4475b37e5a824e971366a56dcab6728dfe38fa8f19d54b8a1fcf55812
+  checksum: 10/97bc7a4281188471803d97df7000ce6b90eb0ba9e2138bf79616b30b60492beedb826b93c132da89117143c66eacc69dc40c445efa4af899d0c250b348eda2b3
   languageName: node
   linkType: hard
 
@@ -30649,7 +30674,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-mock@npm:^29.4.2, jest-mock@npm:^29.7.0":
+"jest-mock@npm:^29.4.3, jest-mock@npm:^29.7.0":
   version: 29.7.0
   resolution: "jest-mock@npm:29.7.0"
   dependencies:
@@ -30835,7 +30860,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-util@npm:^29.4.2, jest-util@npm:^29.7.0":
+"jest-util@npm:^29.4.3, jest-util@npm:^29.7.0":
   version: 29.7.0
   resolution: "jest-util@npm:29.7.0"
   dependencies:
@@ -30930,14 +30955,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:29.4.2":
-  version: 29.4.2
-  resolution: "jest@npm:29.4.2"
+"jest@npm:29.4.3":
+  version: 29.4.3
+  resolution: "jest@npm:29.4.3"
   dependencies:
-    "@jest/core": "npm:^29.4.2"
-    "@jest/types": "npm:^29.4.2"
+    "@jest/core": "npm:^29.4.3"
+    "@jest/types": "npm:^29.4.3"
     import-local: "npm:^3.0.2"
-    jest-cli: "npm:^29.4.2"
+    jest-cli: "npm:^29.4.3"
   peerDependencies:
     node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
   peerDependenciesMeta:
@@ -30945,7 +30970,7 @@ __metadata:
       optional: true
   bin:
     jest: bin/jest.js
-  checksum: 10/20211ad79863026b231579e6bcba2c74a8be3e7561abcd9598ce38cd2819c97c4fc6018ba61e2a900728409da0d022f17a7f8f7f135901a3396351701afe3ee4
+  checksum: 10/b4a6e0f2f82d3aa33056974368f3ebb99d5cab6fbe7324a8af6e4c755b66ae381be62617c18d098a42e79a9d901336428438abab964846afd88ca9e4cb4b78b3
   languageName: node
   linkType: hard
 
@@ -37856,16 +37881,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:17.0.2":
-  version: 17.0.2
-  resolution: "react-dom@npm:17.0.2"
+"react-dom@npm:18.2.0":
+  version: 18.2.0
+  resolution: "react-dom@npm:18.2.0"
   dependencies:
     loose-envify: "npm:^1.1.0"
-    object-assign: "npm:^4.1.1"
-    scheduler: "npm:^0.20.2"
+    scheduler: "npm:^0.23.0"
   peerDependencies:
-    react: 17.0.2
-  checksum: 10/0b3836131a64da8b1c2c852cc28b09c21a738c33c7a8d6021ac20d5619d753c8ee5fff8f97c95f2fc33053e44c2cbce9657453e21c55900164e6e0c3e955e826
+    react: ^18.2.0
+  checksum: 10/ca5e7762ec8c17a472a3605b6f111895c9f87ac7d43a610ab7024f68cd833d08eda0625ce02ec7178cc1f3c957cf0b9273cdc17aa2cd02da87544331c43b1d21
   languageName: node
   linkType: hard
 
@@ -38145,6 +38169,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-textarea-autosize@npm:*":
+  version: 8.4.1
+  resolution: "react-textarea-autosize@npm:8.4.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.20.13"
+    use-composed-ref: "npm:^1.3.0"
+    use-latest: "npm:^1.2.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10/e9c01f59357f6285c8a0c15799f512ab5480f67c32476d686465bfde48d5c9197fbe805c45a5e5dcc01bc08f2b02cdb04581692a214752902f791f095ad2c68d
+  languageName: node
+  linkType: hard
+
+"react-textarea-autosize@npm:8.4.0":
+  version: 8.4.0
+  resolution: "react-textarea-autosize@npm:8.4.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.10.2"
+    use-composed-ref: "npm:^1.3.0"
+    use-latest: "npm:^1.2.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10/60069e9c80a7a294192f1b0e6838f7091307b1eb77ed91ead737aa0fe819ddc2e034982f29012aec250902dab731df222dbd587fc2d14d0f5b0443c58def9d87
+  languageName: node
+  linkType: hard
+
 "react-transition-group@npm:^4.3.0":
   version: 4.4.5
   resolution: "react-transition-group@npm:4.4.5"
@@ -38160,13 +38210,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:17.0.2":
-  version: 17.0.2
-  resolution: "react@npm:17.0.2"
+"react@npm:18.2.0":
+  version: 18.2.0
+  resolution: "react@npm:18.2.0"
   dependencies:
     loose-envify: "npm:^1.1.0"
-    object-assign: "npm:^4.1.1"
-  checksum: 10/ece60c31c1d266d132783aaaffa185d2e4c9b4db144f853933ec690cee1e0600c8929a1dd0a9e79323eea8e2df636c9a06d40f6cfdc9f797f65225433e67f707
+  checksum: 10/b9214a9bd79e99d08de55f8bef2b7fc8c39630be97c4e29d7be173d14a9a10670b5325e94485f74cd8bff4966ef3c78ee53c79a7b0b9b70cba20aa8973acc694
   languageName: node
   linkType: hard
 
@@ -39692,17 +39741,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.20.2":
-  version: 0.20.2
-  resolution: "scheduler@npm:0.20.2"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-    object-assign: "npm:^4.1.1"
-  checksum: 10/898917fa475386953d998add9107c04bf2c335eee86172833995dee126d12a68bee3c29edbd61fa0bcbcb8ee511c422eaab23b86b02f95aab26ecfaed8df5e64
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.23.2":
+"scheduler@npm:^0.23.0, scheduler@npm:^0.23.2":
   version: 0.23.2
   resolution: "scheduler@npm:0.23.2"
   dependencies:
@@ -43819,7 +43858,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-isomorphic-layout-effect@npm:^1.1.2":
+"use-composed-ref@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "use-composed-ref@npm:1.3.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10/f771cbadfdc91e03b7ab9eb32d0fc0cc647755711801bf507e891ad38c4bbc5f02b2509acadf9c965ec9c5f2f642fd33bdfdfb17b0873c4ad0a9b1f5e5e724bf
+  languageName: node
+  linkType: hard
+
+"use-isomorphic-layout-effect@npm:^1.1.1, use-isomorphic-layout-effect@npm:^1.1.2":
   version: 1.1.2
   resolution: "use-isomorphic-layout-effect@npm:1.1.2"
   peerDependencies:
@@ -43828,6 +43876,20 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10/fd3787ed19f6cfbf70e2c5822d01bebbf96b00968195840d5ad61082b8e6ca7a8e2e46270c4096537d18a38ea57f4e4e9668cce5eec36fa4697ddba2ef1203fd
+  languageName: node
+  linkType: hard
+
+"use-latest@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "use-latest@npm:1.2.1"
+  dependencies:
+    use-isomorphic-layout-effect: "npm:^1.1.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10/b0cbdd91f32e9a7fb4cd9d54934bef55dd6dbe90e2853506405e7c2ca78ca61dd34a6241f7138110a5013da02366138708f23f417c63524ad27aa43afa4196d6
   languageName: node
   linkType: hard
 
