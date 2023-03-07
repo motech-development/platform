@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 const { overrides } = require('@motech-development/eslint-config-motech-base');
 
 module.exports = {
