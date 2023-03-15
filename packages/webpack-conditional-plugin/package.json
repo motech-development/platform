@@ -23,7 +23,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "webpack": "5.75.0"
+    "webpack": "5.76.0"
   },
   "devDependencies": {
     "@babel/core": "7.20.12",
