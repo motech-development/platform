@@ -48,7 +48,7 @@
     "@types/react-router-dom": "5.3.3",
     "@types/styled-components": "5.1.26",
     "@types/yup": "0.29.11",
-    "eslint": "8.33.0",
+    "eslint": "8.37.0",
     "jest-styled-components": "7.1.1",
     "prettier": "2.3.0",
     "pwa-asset-generator": "6.2.1",
