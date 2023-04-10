@@ -1,14 +1,22 @@
 {
   "compilerOptions": {
+    "allowJs": false,
     "downlevelIteration": true,
+    "esModuleInterop": false,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "ESNext",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
-    "target": "es5"
+    "target": "ESNext",
+    "useDefineForClassFields": true
   },
   "extends": "../../../tsconfig.json",
-  "include": ["src"]
+  "include": ["src"],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }
