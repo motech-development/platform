@@ -975,5 +975,5 @@ jobs:
         with:
           command: yarn workspace @accounts/client e2e-ci
           install: false
-          start: yarn workspace @accounts/client serve
+          start: yarn workspace @accounts/client serve --host
           wait-on: http://localhost:3000
