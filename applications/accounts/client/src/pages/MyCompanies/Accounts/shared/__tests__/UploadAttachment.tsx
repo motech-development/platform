@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { Form, Formik } from 'formik';
-import { GraphQLError } from 'graphql';
 import TestProvider from '../../../../../utils/TestProvider';
 import UploadAttachment, { REQUEST_UPLOAD } from '../UploadAttachment';
 
@@ -24,6 +23,7 @@ describe('UploadAttachment', () => {
 
     mocks = [
       {
+        error: new Error(),
         request: {
           query: REQUEST_UPLOAD,
           variables: {
@@ -34,8 +34,22 @@ describe('UploadAttachment', () => {
             },
           },
         },
-        result: {
-          errors: [new GraphQLError('Error!')],
+      },
+      {
+        error: new Error(),
+        request: {
+          query: REQUEST_UPLOAD,
+          variables: {
+            id: 'test',
+            input: {
+              contentType: 'image/pdf',
+              extension: 'pdf',
+              metadata: {
+                id: 'transaction-id',
+                typename: 'Transaction',
+              },
+            },
+          },
         },
       },
     ];
@@ -50,7 +64,12 @@ describe('UploadAttachment', () => {
           <Formik initialValues={initialValues} onSubmit={onSubmit}>
             {() => (
               <Form>
-                <UploadAttachment id="test" name="test" onUpload={onUpload} />
+                <UploadAttachment
+                  id="test"
+                  transactionId="transaction-id"
+                  name="test"
+                  onUpload={onUpload}
+                />
               </Form>
             )}
           </Formik>

@@ -6,6 +6,7 @@ import '@testing-library/jest-dom';
 import { randomFillSync } from 'crypto';
 import 'jest-date-mock';
 import 'jest-styled-components';
+import 'unfetch/polyfill';
 
 window.matchMedia = (query) => ({
   addEventListener: jest.fn(),
