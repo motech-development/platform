@@ -1,15 +1,24 @@
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import Backend from 'i18next-http-backend';
+import ChainedBackend, { ChainedBackendOptions } from 'i18next-chained-backend';
+import resourcesToBackend from 'i18next-resources-to-backend';
 import { initReactI18next } from 'react-i18next';
 
 const debug = process.env.NODE_ENV !== 'production';
 
 i18n
-  .use(Backend)
   .use(LanguageDetector)
   .use(initReactI18next)
-  .init({
+  .use(ChainedBackend)
+  .init<ChainedBackendOptions>({
+    backend: {
+      backends: [
+        resourcesToBackend(
+          (language: string, namespace: string) =>
+            import(`./locales/${language}/${namespace}.json`),
+        ),
+      ],
+    },
     debug,
     defaultNS: 'global',
     fallbackLng: 'en',
