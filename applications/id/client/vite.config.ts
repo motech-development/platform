@@ -7,10 +7,15 @@ import react from '@vitejs/plugin-react';
 dns.setDefaultResultOrder('verbatim');
 
 export default defineConfig(({ command, mode }) => {
-  const { PORT = '3000', ...env } = loadEnv(mode, process.cwd(), '');
+  const {
+    PORT = '3000',
+    PUBLIC_URL = '/',
+    ...env
+  } = loadEnv(mode, process.cwd(), '');
   const isBuild = command === 'build';
 
   return {
+    base: PUBLIC_URL,
     build: {
       outDir: 'build',
     },
