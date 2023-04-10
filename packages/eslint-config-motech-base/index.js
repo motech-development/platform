@@ -21,7 +21,7 @@ module.exports = {
           },
         },
         {
-          files: ['setupTests.ts'],
+          files: ['setupTests.ts', '*.config.ts'],
           rules: {
             'import/no-extraneous-dependencies': 'off',
           },
@@ -57,7 +57,7 @@ module.exports = {
           },
         },
         {
-          files: ['setupTests.js'],
+          files: ['setupTests.js', '*.config.js'],
           rules: {
             'import/no-extraneous-dependencies': 'off',
           },

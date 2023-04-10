@@ -41,13 +41,12 @@ module.exports = {
           },
         },
         {
-          files: ['setupTests.ts'],
-          rules: {
-            'import/no-extraneous-dependencies': 'off',
-          },
-        },
-        {
-          files: ['*.stories.ts', '*.stories.tsx'],
+          files: [
+            'setupTests.ts',
+            '*.stories.ts',
+            '*.stories.tsx',
+            '*.config.ts',
+          ],
           rules: {
             'import/no-extraneous-dependencies': 'off',
           },
@@ -100,13 +99,12 @@ module.exports = {
           },
         },
         {
-          files: ['setupTests.js'],
-          rules: {
-            'import/no-extraneous-dependencies': 'off',
-          },
-        },
-        {
-          files: ['*.stories.js', '*.stories.jsx'],
+          files: [
+            'setupTests.js',
+            '*.stories.js',
+            '*.stories.jsx',
+            '*.config.js',
+          ],
           rules: {
             'import/no-extraneous-dependencies': 'off',
           },
