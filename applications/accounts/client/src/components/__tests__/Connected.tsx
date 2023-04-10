@@ -1,3 +1,4 @@
+import { ApolloError } from '@apollo/client';
 import { render } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import TestProvider from '../../utils/TestProvider';
@@ -18,13 +19,12 @@ describe('Connected', () => {
   });
 
   it('should show ErrorCard when an error has occurred', async () => {
-    const error = {
+    const error = new ApolloError({
+      errorMessage: 'There is an error',
       extraInfo: null,
       graphQLErrors: [],
-      message: 'There is an error',
-      name: 'Test error',
       networkError: null,
-    };
+    });
     const { findByText } = render(
       <TestProvider>
         <Connected loading={false} error={error}>
@@ -49,15 +49,14 @@ describe('Connected', () => {
   });
 
   it('should show extended errors', async () => {
-    const error = {
+    const error = new ApolloError({
+      errorMessage: 'There is an error',
       extraInfo: null,
       graphQLErrors: [
         new GraphQLError('This is a more meaningful error message'),
       ],
-      message: 'There is an error',
-      name: 'Test error',
       networkError: null,
-    };
+    });
     const { findByText } = render(
       <TestProvider>
         <Connected loading={false} error={error}>

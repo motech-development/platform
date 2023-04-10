@@ -288,7 +288,7 @@ describe('UpdateDetails', () => {
             request: {
               query: DELETE_CLIENT,
               variables: {
-                id: 'client-id-1',
+                id: 'client-id',
               },
             },
           },
