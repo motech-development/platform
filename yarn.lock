@@ -38,7 +38,7 @@ __metadata:
     babel-loader: 9.1.2
     cross-fetch: 3.1.5
     decimal.js: 10.4.3
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -108,7 +108,7 @@ __metadata:
     cypress-pipe: 2.0.0
     cypress-wait-until: 1.7.2
     decimal.js: 10.4.3
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -187,7 +187,7 @@ __metadata:
     aws-sdk: 2.1241.0
     babel-loader: 9.1.2
     decimal.js: 10.4.3
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -243,7 +243,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1241.0
     babel-loader: 9.1.2
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -286,7 +286,7 @@ __metadata:
     aws4-axios: 2.4.9
     axios: 0.27.2
     babel-loader: 9.1.2
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -333,7 +333,7 @@ __metadata:
     aws4-axios: 2.4.9
     axios: 0.27.2
     babel-loader: 9.1.2
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -381,7 +381,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1241.0
     babel-loader: 9.1.2
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -425,7 +425,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1241.0
     babel-loader: 9.1.2
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -4208,7 +4208,7 @@ __metadata:
     aws-sdk: 2.1241.0
     babel-loader: 9.1.2
     copy-webpack-plugin: 11.0.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -4248,7 +4248,7 @@ __metadata:
     aws-sdk: 2.1241.0
     babel-loader: 9.1.2
     cfn-response-async: 1.0.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -4313,7 +4313,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk: 2.1241.0
     babel-loader: 9.1.2
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -4707,10 +4707,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:8.37.0":
-  version: 8.37.0
-  resolution: "@eslint/js@npm:8.37.0"
-  checksum: 7a07fb085c94ce1538949012c292fd3a6cd734f149bc03af6157dfbd8a7477678899ef57b4a27e15b36470a997389ad79a0533d5880c71e67720ae1a7de7c62d
+"@eslint/js@npm:8.38.0":
+  version: 8.38.0
+  resolution: "@eslint/js@npm:8.38.0"
+  checksum: 1f28987aa8c9cd93e23384e16c7220863b39b5dc4b66e46d7cdbccce868040f455a98d24cd8b567a884f26545a0555b761f7328d4a00c051e7ef689cbea5fce1
   languageName: node
   linkType: hard
 
@@ -5243,7 +5243,7 @@ __metadata:
     axios: 0.27.2
     babel-preset-react-app: 10.0.1
     body-scroll-lock: 3.1.5
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -5318,7 +5318,7 @@ __metadata:
     "@typescript-eslint/parser": 5.50.0
     auth0: 2.44.1
     auth0-deploy-cli: 7.16.1
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -5824,7 +5824,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
     aws-lambda-mock-context: 3.2.1
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -5865,7 +5865,7 @@ __metadata:
     aws-appsync-auth-link: 3.0.7
     aws-appsync-subscription-link: 3.1.2
     babel-preset-react-app: 10.0.1
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -5913,7 +5913,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
     babel-preset-react-app: 10.0.1
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -5955,7 +5955,7 @@ __metadata:
     "@typescript-eslint/parser": 5.50.0
     axios: 0.27.2
     babel-preset-react-app: 10.0.1
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6011,7 +6011,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
     babel-preset-react-app: 10.0.1
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6051,7 +6051,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6063,7 +6063,7 @@ __metadata:
   peerDependencies:
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6082,7 +6082,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6098,7 +6098,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6129,7 +6129,7 @@ __metadata:
     "@types/jest": 29.4.0
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6162,7 +6162,7 @@ __metadata:
     "@types/jest": 29.4.0
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6209,7 +6209,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
     babel-preset-react-app: 10.0.1
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6250,7 +6250,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
     aws-sdk: 2.1241.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6270,7 +6270,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/semantic-release@workspace:packages/semantic-release"
   dependencies:
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.5.0
     eslint-import-resolver-node: 0.3.7
@@ -6301,7 +6301,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
     assert: 2.0.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6336,7 +6336,7 @@ __metadata:
     "@types/jest": 29.4.0
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -6370,7 +6370,7 @@ __metadata:
     "@types/jest": 29.4.0
     "@typescript-eslint/eslint-plugin": 5.50.0
     "@typescript-eslint/parser": 5.50.0
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -7059,7 +7059,7 @@ __metadata:
     axios: 0.27.2
     axios-mock-adapter: 1.21.2
     babel-loader: 9.1.2
-    eslint: 8.37.0
+    eslint: 8.38.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.5.0
@@ -16521,14 +16521,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:8.37.0":
-  version: 8.37.0
-  resolution: "eslint@npm:8.37.0"
+"eslint@npm:8.38.0":
+  version: 8.38.0
+  resolution: "eslint@npm:8.38.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.4.0
     "@eslint/eslintrc": ^2.0.2
-    "@eslint/js": 8.37.0
+    "@eslint/js": 8.38.0
     "@humanwhocodes/config-array": ^0.11.8
     "@humanwhocodes/module-importer": ^1.0.1
     "@nodelib/fs.walk": ^1.2.8
@@ -16567,7 +16567,7 @@ __metadata:
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: 80f3d5cdce2d671f4794e392d234a78d039c347673defb0596268bd481e8f30a53d93c01ff4f66a546c87d97ab4122c0e9cafe1371f87cb03cee6b7d5aa97595
+  checksum: 73b6d9b650d0434aa7c07d0a1802f099b086ee70a8d8ba7be730439a26572a5eb71def12125c82942be2ec8ee5be38a6f1b42a13e40d4b67f11a148ec9e263eb
   languageName: node
   linkType: hard
 
