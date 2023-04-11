@@ -7,7 +7,7 @@
     "module": "esnext",
     "noFallthroughCasesInSwitch": true,
     "outDir": "lib",
-    "target": "es5"
+    "target": "ESNext"
   },
   "exclude": ["lib"],
   "extends": "../../tsconfig.json",
