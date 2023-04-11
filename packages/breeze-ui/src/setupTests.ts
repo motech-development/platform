@@ -5,6 +5,9 @@
 import '@testing-library/jest-dom';
 import { randomFillSync } from 'crypto';
 import 'jest-styled-components';
+import React from 'react';
+
+global.React = React;
 
 Object.defineProperty(window, 'crypto', {
   value: {
