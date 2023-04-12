@@ -2,7 +2,7 @@ import dns from 'dns';
 import { defineConfig, loadEnv } from 'vite';
 import checker from 'vite-plugin-checker';
 import eslint from 'vite-plugin-eslint';
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 
 dns.setDefaultResultOrder('verbatim');
 
