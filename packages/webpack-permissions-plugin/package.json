@@ -62,11 +62,6 @@
       "^.+\\.(t|j)sx?$": "@swc/jest"
     }
   },
-  "babel": {
-    "presets": [
-      "@babel/preset-typescript"
-    ]
-  },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
     "src/**/*.{ts,tsx}": "eslint --cache --fix"

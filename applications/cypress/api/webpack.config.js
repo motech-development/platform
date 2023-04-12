@@ -23,7 +23,7 @@ module.exports = {
         test: /\.ts(x?)$/,
         use: [
           {
-            loader: 'babel-loader',
+            loader: 'swc-loader',
           },
         ],
       },
