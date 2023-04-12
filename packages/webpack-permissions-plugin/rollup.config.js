@@ -1,8 +1,8 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import dts from 'rollup-plugin-dts';
-import esbuild from 'rollup-plugin-esbuild';
 import external from 'rollup-plugin-exclude-dependencies-from-bundle';
+import { swc } from 'rollup-plugin-swc3';
 import pkg from './package.json';
 
 export default [
@@ -38,7 +38,9 @@ export default [
         preferBuiltins: true,
       }),
       commonjs(),
-      esbuild(),
+      swc({
+        sourceMaps: true,
+      }),
     ],
   },
 ];
