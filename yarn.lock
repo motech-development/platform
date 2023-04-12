@@ -6318,6 +6318,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/serverless-outputs-env@workspace:packages/serverless-outputs-env"
   dependencies:
+    "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
@@ -6388,6 +6389,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/webpack-permissions-plugin@workspace:packages/webpack-permissions-plugin"
   dependencies:
+    "@babel/preset-typescript": 7.18.6
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
