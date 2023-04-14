@@ -8,6 +8,7 @@ import pkg from './package.json';
 
 export default [
   {
+    external: [/\.css$/],
     input: 'src/index.ts',
     output: [
       {
@@ -15,19 +16,7 @@ export default [
         format: 'es',
       },
     ],
-    plugins: [
-      postcss({
-        config: {
-          path: 'postcss.config.js',
-        },
-        extensions: ['.css'],
-        inject: {
-          insertAt: 'top',
-        },
-        minimize: true,
-      }),
-      dts(),
-    ],
+    plugins: [dts()],
   },
   {
     input: 'src/index.ts',
