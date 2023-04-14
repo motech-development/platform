@@ -1,6 +1,6 @@
 import { mockViewport } from 'jsdom-testing-mocks';
 import { act } from '@testing-library/react';
-import { Input, Textarea } from '../Form';
+import { Input, Textarea, Upload } from '../Form';
 import { setup, sizing, themes } from '../../utilities/jest';
 
 const types = ['text', 'email', 'password', 'tel'] as const;
@@ -228,6 +228,83 @@ describe('Form', () => {
           expect(asFragment()).toMatchSnapshot();
         },
       );
+    });
+  });
+
+  describe('Upload', () => {
+    it('should render the correct output when field is required', () => {
+      const { asFragment } = setup(
+        <Upload required label="Test input" name="testInput" />,
+      );
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should render the correct output when custom browse button text is set', () => {
+      const { asFragment } = setup(
+        <Upload buttonText="Select file" label="Test input" name="testInput" />,
+      );
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should render the correct output when error message is set', async () => {
+      const { asFragment, getByTestId, user } = setup(
+        <Upload
+          label="Test input"
+          name="testInput"
+          errorMessage="This is an error"
+        />,
+      );
+
+      await act(async () => {
+        const parent = getByTestId('tooltip-parent-element');
+
+        await user.hover(parent);
+      });
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should render the correct output when a file is selected', async () => {
+      const file = new File(['hello'], 'hello.png', {
+        type: 'image/png',
+      });
+
+      const { asFragment, getByLabelText, user } = setup(
+        <Upload label="Test input" name="testInput" />,
+      );
+
+      await act(async () => {
+        const input = getByLabelText('Test input');
+
+        await user.upload(input, file);
+      });
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    describe.each(themes)('when theme is "$theme"', ({ theme }) => {
+      it('should render the correct output', () => {
+        const { asFragment } = setup(
+          <Upload label="Test input" name="testInput" theme={theme} />,
+        );
+
+        expect(asFragment()).toMatchSnapshot();
+      });
+
+      it('should render the correct output when help text is set', () => {
+        const { asFragment } = setup(
+          <Upload
+            label="Test input"
+            name="testInput"
+            helpText="This is a unit test"
+            theme={theme}
+          />,
+        );
+
+        expect(asFragment()).toMatchSnapshot();
+      });
     });
   });
 });

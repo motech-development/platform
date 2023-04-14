@@ -14,4 +14,4 @@ const Template: ComponentStory<typeof Textarea> = (props) => (
   <Textarea {...props} />
 );
 
-export const TextInputComponent = Template.bind({});
+export const TextareaComponent = Template.bind({});

@@ -2284,3 +2284,801 @@ exports[`Form Textarea when theme is "warning" should render the correct output 
   </div>
 </DocumentFragment>
 `;
+
+exports[`Form Upload should render the correct output when a file is selected 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-gray-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0"
+          >
+            <p
+              class="truncate"
+            >
+              hello.png
+            </p>
+          </div>
+          <input
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload should render the correct output when custom browse button text is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-gray-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+          type="button"
+        >
+          Select file
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload should render the correct output when error message is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-gray-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-errormessage="testInput-error"
+            aria-invalid="true"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      >
+        <div
+          aria-describedby=":r4:"
+          class="inline-block"
+          data-testid="tooltip-parent-element"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-5 w-5 cursor-pointer text-red-500"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+              fill-rule="evenodd"
+            />
+          </svg>
+        </div>
+        <div
+          class="cursor-pointer bg-red-600 text-red-50"
+          id=":r4:"
+          role="tooltip"
+          style="left: -5.656854249492381px; position: absolute; top: 0px;"
+          tabindex="-1"
+        >
+          <div
+            class="px-1 text-sm font-display whitespace-nowrap border-r-2 border-red-700"
+          >
+            <div>
+              <p
+                class="font-sans text-left mb-0"
+                id="testInput-error"
+              >
+                This is an error
+              </p>
+            </div>
+          </div>
+          <div
+            class="absolute w-2 h-2 rotate-45 -z-10 pointer-events-none bg-red-700"
+            style="right: -4px; top: 0px;"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload should render the correct output when field is required 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+      <span
+        class="font-bold text-red-800"
+      >
+        *
+      </span>
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-gray-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            required=""
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload when theme is "danger" should render the correct output 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-red-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload when theme is "danger" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-red-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-describedby="testInput-description"
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-red-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload when theme is "primary" should render the correct output 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-blue-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload when theme is "primary" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-blue-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-describedby="testInput-description"
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-blue-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload when theme is "secondary" should render the correct output 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-gray-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload when theme is "secondary" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-gray-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-describedby="testInput-description"
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-gray-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload when theme is "success" should render the correct output 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-green-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload when theme is "success" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-green-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-describedby="testInput-description"
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-green-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload when theme is "warning" should render the correct output 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-yellow-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload when theme is "warning" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-yellow-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+          type="button"
+        >
+          Browse
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0 text-gray-500"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-describedby="testInput-description"
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            id="testInput"
+            name="testInput"
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-warning-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;

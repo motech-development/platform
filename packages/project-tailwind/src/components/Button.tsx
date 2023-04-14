@@ -99,8 +99,6 @@ export function Button<E extends ElementType = typeof DEFAULT_ELEMENT>({
       as={DEFAULT_ELEMENT}
       {...{ disabled }}
       {...rest}
-    >
-      Test
-    </Box>
+    />
   );
 }

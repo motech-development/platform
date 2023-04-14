@@ -3,6 +3,7 @@ import { Button } from '../components/Button';
 
 export default {
   args: {
+    children: 'Click me',
     disabled: false,
   },
   component: Button,
