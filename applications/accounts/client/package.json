@@ -107,6 +107,7 @@
     "jest-date-mock": "1.0.8",
     "jest-environment-jsdom": "^29.4.2",
     "jest-styled-components": "7.1.1",
+    "jest-watch-typeahead": "2.2.2",
     "prettier": "2.3.0",
     "pwa-asset-generator": "6.2.1",
     "serverless": "3.27.0",
@@ -161,7 +162,11 @@
           }
         }
       ]
-    }
+    },
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ]
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
