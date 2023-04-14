@@ -1,11 +1,34 @@
-import { babel } from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
+import dts from 'rollup-plugin-dts';
 import external from 'rollup-plugin-exclude-dependencies-from-bundle';
 import postcss from 'rollup-plugin-postcss';
+import { swc } from 'rollup-plugin-swc3';
 import pkg from './package.json';
 
 export default [
+  {
+    input: 'src/index.ts',
+    output: [
+      {
+        file: pkg.types,
+        format: 'es',
+      },
+    ],
+    plugins: [
+      postcss({
+        config: {
+          path: 'postcss.config.js',
+        },
+        extensions: ['.css'],
+        inject: {
+          insertAt: 'top',
+        },
+        minimize: true,
+      }),
+      dts(),
+    ],
+  },
   {
     input: 'src/index.ts',
     output: [
@@ -36,9 +59,8 @@ export default [
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       }),
       commonjs(),
-      babel({
-        babelHelpers: 'runtime',
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      swc({
+        sourceMaps: true,
       }),
     ],
   },
