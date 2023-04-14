@@ -1,10 +1,17 @@
 import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
-import { ComponentPropsWithRef, ReactNode, useState } from 'react';
+import {
+  ComponentPropsWithRef,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { NumericFormat, PatternFormat } from 'react-number-format';
 import { Box } from 'react-polymorphic-box';
 import TextareaAutosize, {
   TextareaAutosizeProps,
 } from 'react-textarea-autosize';
+import useMergeRefs from '../utilities/refs';
 import {
   Sizing,
   Themes,
@@ -12,12 +19,12 @@ import {
   TTheme,
   useTailwind,
 } from '../utilities/tailwind';
+import { Button } from './Button';
 import { Tooltip } from './Tooltip';
 import { Typography } from './Typography';
 
 // TODO: Radio
 // TODO: Checkbox
-// TODO: Upload
 
 /** Get message utility type */
 type TGetMessage =
@@ -463,6 +470,7 @@ export function Input({
   );
 }
 
+/** Textarea component properties */
 export interface ITextareaProps extends TextareaAutosizeProps {
   /** Validation error message */
   errorMessage?: string;
@@ -483,6 +491,13 @@ export interface ITextareaProps extends TextareaAutosizeProps {
   theme?: TTheme;
 }
 
+/**
+ * Multiline, autogrowing textarea form component
+ *
+ * @param props - Component props
+ *
+ * @returns Textarea component
+ */
 export function Textarea({
   className,
   errorMessage,
@@ -540,6 +555,171 @@ export function Textarea({
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...rest}
         />
+      }
+      helpText={
+        hasDescription && (
+          <HelpText id={describedById} theme={theme} message={description} />
+        )
+      }
+      validationMessage={
+        hasError && (
+          <ValidationMessage
+            id={errorMessageId}
+            message={error}
+            onVisibilityChange={setTooltip}
+          />
+        )
+      }
+    />
+  );
+}
+
+/** Default file upload browse button text */
+const BROWSE_TEXT = 'Browse';
+
+/** Upload component properties */
+export interface IUploadProps
+  extends Omit<ComponentPropsWithRef<'input'>, 'type'> {
+  /** Text to show on the browse button */
+  buttonText?: string;
+
+  /** Validation error message */
+  errorMessage?: string;
+
+  /** Supporting text */
+  helpText?: string;
+
+  /** Input label */
+  label: string;
+
+  /** Input name */
+  name: string;
+
+  /** Component spacing */
+  spacing?: TSizing;
+
+  /** Component theme */
+  theme?: TTheme;
+}
+
+/**
+ * Form file upload field
+ *
+ * @param props - Component props
+ *
+ * @returns Upload component
+ */
+export function Upload({
+  buttonText = BROWSE_TEXT,
+  className,
+  errorMessage,
+  helpText,
+  label,
+  name,
+  placeholder,
+  ref = null,
+  spacing = Sizing.MD,
+  theme = Themes.SECONDARY,
+  ...rest
+}: IUploadProps) {
+  const [fileName, setFileName] = useState(placeholder);
+
+  const innerRef = useRef<HTMLInputElement>(null);
+
+  const combinedRef = useMergeRefs(ref, innerRef);
+
+  const { getMessage, setTooltip, tooltip } = useInput(name);
+
+  const {
+    hasMessage: hasDescription,
+    id: describedById,
+    message: description,
+  } = getMessage('description', helpText);
+
+  const {
+    hasMessage: hasError,
+    id: errorMessageId,
+    message: error,
+  } = getMessage('error', errorMessage);
+
+  const { createStyles } = useTailwind(theme, spacing);
+
+  const wrapperStyles = createStyles({
+    classNames: ['form-input flex p-0'],
+    theme: {
+      danger: ['border-red-300'],
+      primary: ['border-blue-300'],
+      secondary: ['border-gray-300'],
+      success: ['border-green-300'],
+      warning: ['border-yellow-300'],
+    },
+  });
+
+  const inputStyles = createStyles({
+    classNames: [
+      'form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0',
+      {
+        'text-gray-500': fileName === placeholder,
+      },
+      className,
+    ],
+  });
+
+  const browse = () => {
+    if (combinedRef?.current) {
+      combinedRef.current.click();
+    }
+  };
+
+  useEffect(() => {
+    if (combinedRef?.current) {
+      const { current } = combinedRef;
+
+      current.onchange = () => {
+        if (current.files && current.files.length > 0) {
+          const names = [...current.files]
+            .map(({ name: uploadedFileName }) => uploadedFileName)
+            .join(', ');
+
+          setFileName(names);
+        }
+      };
+    }
+  }, [combinedRef]);
+
+  return (
+    <Container
+      spacing={spacing}
+      theme={theme}
+      label={
+        <Label htmlFor={name} required={rest.required} theme={theme}>
+          {label}
+        </Label>
+      }
+      input={
+        <div className={wrapperStyles}>
+          <Button className="z-10" type="button" theme={theme} onClick={browse}>
+            {buttonText}
+          </Button>
+
+          <div className="relative block w-full overflow-hidden">
+            <div className={inputStyles}>
+              <p className="truncate">{fileName}</p>
+            </div>
+
+            <input
+              id={name}
+              className="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+              type="file"
+              name={name}
+              aria-describedby={describedById}
+              aria-errormessage={tooltip ? errorMessageId : undefined}
+              aria-invalid={hasError}
+              ref={combinedRef}
+              {...rest}
+            />
+          </div>
+        </div>
       }
       helpText={
         hasDescription && (
