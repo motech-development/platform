@@ -1,9 +1,7 @@
 import { mockViewport } from 'jsdom-testing-mocks';
 import { act } from '@testing-library/react';
-import { Input, Textarea, Upload } from '../Form';
+import { Input, Radio, Textarea, Upload } from '../Form';
 import { setup, sizing, themes } from '../../utilities/jest';
-
-const types = ['text', 'email', 'password', 'tel'] as const;
 
 describe('Form', () => {
   beforeAll(() => {
@@ -14,6 +12,8 @@ describe('Form', () => {
   });
 
   describe('Input', () => {
+    const types = ['text', 'email', 'password', 'tel'] as const;
+
     it.each(types)(
       'should render the correct output when type is "%s"',
       (type) => {
@@ -305,6 +305,172 @@ describe('Form', () => {
 
         expect(asFragment()).toMatchSnapshot();
       });
+
+      it.each(sizing)(
+        'should render the correct output when spacing is "$size"',
+        ({ size }) => {
+          const { asFragment } = setup(
+            <Upload
+              label="Test input"
+              name="testInput"
+              spacing={size}
+              theme={theme}
+            />,
+          );
+
+          expect(asFragment()).toMatchSnapshot();
+        },
+      );
+    });
+  });
+
+  describe('Radio', () => {
+    const options = [
+      {
+        label: '4 GB',
+        value: '4',
+      },
+      {
+        label: '8 GB',
+        value: '8',
+      },
+      {
+        label: '16 GB',
+        value: '16',
+      },
+      {
+        label: '32 GB',
+        value: '32',
+      },
+      {
+        label: '64 GB',
+        value: '64',
+      },
+      {
+        disabled: true,
+        label: '128 GB',
+        value: '128',
+      },
+    ];
+
+    it('should render the correct output when field is required', () => {
+      const { asFragment } = setup(
+        <Radio
+          required
+          label="Test input"
+          name="testInput"
+          options={options}
+        />,
+      );
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should render the correct output when error message is set', async () => {
+      const { asFragment, getByTestId, user } = setup(
+        <Radio
+          errorMessage="This is an error"
+          label="Test input"
+          name="testInput"
+          options={options}
+        />,
+      );
+
+      await act(async () => {
+        const parent = getByTestId('tooltip-parent-element');
+
+        await user.hover(parent);
+      });
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    describe.each(themes)('when theme is "$theme"', ({ theme }) => {
+      it('should render the correct output', () => {
+        const { asFragment } = setup(
+          <Radio
+            label="Test input"
+            name="testInput"
+            options={options}
+            theme={theme}
+          />,
+        );
+
+        expect(asFragment()).toMatchSnapshot();
+      });
+
+      it('should render the correct output when help text is set', () => {
+        const { asFragment } = setup(
+          <Radio
+            label="Test input"
+            name="testInput"
+            helpText="This is a unit test"
+            options={options}
+            theme={theme}
+          />,
+        );
+
+        expect(asFragment()).toMatchSnapshot();
+      });
+
+      it('should render the correct output when an item is selected', async () => {
+        const { asFragment, getByLabelText, user } = setup(
+          <Radio
+            label="Test input"
+            name="testInput"
+            options={options}
+            theme={theme}
+          />,
+        );
+
+        await act(async () => {
+          const option = getByLabelText('16 GB');
+
+          await user.click(option);
+
+          const other = getByLabelText('128 GB');
+
+          await user.click(other);
+        });
+
+        expect(asFragment()).toMatchSnapshot();
+      });
+
+      it('should render the correct output when an item is active', async () => {
+        const { asFragment, getByLabelText, user } = setup(
+          <Radio
+            label="Test input"
+            name="testInput"
+            options={options}
+            theme={theme}
+          />,
+        );
+
+        await act(async () => {
+          const option = getByLabelText('16 GB');
+
+          await user.click(option);
+        });
+
+        expect(asFragment()).toMatchSnapshot();
+      });
+
+      it.each(sizing)(
+        'should render the correct output when spacing is "$size"',
+        ({ size }) => {
+          const { asFragment } = setup(
+            <Radio
+              label="Test input"
+              name="testInput"
+              options={options}
+              spacing={size}
+              theme={theme}
+            />,
+          );
+
+          expect(asFragment()).toMatchSnapshot();
+        },
+      );
     });
   });
 });
