@@ -1,3 +1,4 @@
+import { RadioGroup } from '@headlessui/react';
 import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
 import {
   ComponentPropsWithRef,
@@ -23,8 +24,7 @@ import { Button } from './Button';
 import { Tooltip } from './Tooltip';
 import { Typography } from './Typography';
 
-// TODO: Radio
-// TODO: Checkbox
+// TODO: Select
 
 /** Get message utility type */
 type TGetMessage =
@@ -191,7 +191,7 @@ function HelpText({ id, message, theme }: IHelpTextProps) {
       primary: ['text-blue-600'],
       secondary: ['text-gray-600'],
       success: ['text-green-600'],
-      warning: ['text-warning-600'],
+      warning: ['text-yellow-600'],
     },
   });
 
@@ -375,7 +375,7 @@ export function Input({
   const { createStyles } = useTailwind(theme, spacing);
 
   const inputStyles = createStyles({
-    classNames: ['block w-full sm:text-sm pr-10', className],
+    classNames: ['block w-full text-sm pr-10', className],
     theme: {
       danger: ['border-red-300'],
       primary: ['border-blue-300'],
@@ -525,7 +525,7 @@ export function Textarea({
   const { createStyles } = useTailwind(theme, spacing);
 
   const inputStyles = createStyles({
-    classNames: ['block w-full sm:text-sm pr-10', className],
+    classNames: ['block w-full text-sm pr-10', className],
     theme: {
       danger: ['border-red-300'],
       primary: ['border-blue-300'],
@@ -657,7 +657,7 @@ export function Upload({
 
   const inputStyles = createStyles({
     classNames: [
-      'form-input block w-full h-full sm:text-sm pr-10 flex items-center border-0',
+      'form-input block w-full h-full text-sm pr-10 flex items-center border-0',
       {
         'text-gray-500': fileName === placeholder,
       },
@@ -736,5 +736,210 @@ export function Upload({
         )
       }
     />
+  );
+}
+
+type TRadioGroupClassNameFunction = (input: {
+  active: boolean;
+
+  checked: boolean;
+}) => string;
+
+/** Radio component properties */
+export interface IRadioProps {
+  /** Validation error message */
+  errorMessage?: string;
+
+  /** Supporting text */
+  helpText?: string;
+
+  /** Input label */
+  label: string;
+
+  /** Field name */
+  name: string;
+
+  /** Selectable options */
+  options: {
+    /** Disable option */
+    disabled?: boolean;
+
+    /** Value to display on screen */
+    label: string;
+
+    /** Value to submit when selected */
+    value: string;
+  }[];
+
+  /** Defines if value is required */
+  required?: boolean;
+
+  /** Component spacing */
+  spacing?: TSizing;
+
+  /** Component theme */
+  theme?: TTheme;
+}
+
+/**
+ * Radio group form component
+ *
+ * @param props - Component props
+ *
+ * @returns Radio component
+ */
+export function Radio({
+  errorMessage,
+  helpText,
+  label,
+  name,
+  options,
+  required = false,
+  spacing = Sizing.MD,
+  theme = Themes.SECONDARY,
+}: IRadioProps) {
+  const [value, setValue] = useState<string | null>(null);
+
+  const { getMessage, setTooltip, tooltip } = useInput(name);
+
+  const {
+    hasMessage: hasDescription,
+    id: describedById,
+    message: description,
+  } = getMessage('description', helpText);
+
+  const {
+    hasMessage: hasError,
+    id: errorMessageId,
+    message: error,
+  } = getMessage('error', errorMessage);
+
+  const { createStyles } = useTailwind(theme, spacing);
+
+  const inputStyles =
+    (disabled = false): TRadioGroupClassNameFunction =>
+    ({ active, checked }) =>
+      createStyles({
+        classNames: [
+          'flex-1 items-center justify-center text-sm text-center py-2 px-3 cursor-pointer focus:outline-none font-display',
+          {
+            'cursor-not-allowed opacity-25': disabled,
+          },
+        ],
+        theme: {
+          danger: [
+            {
+              'bg-red-600 text-red-50 ring-1 ring-inset ring-red-500': checked,
+              'bg-red-800 text-red-50 ring-2 ring-red-500 ring-offset-2':
+                active,
+              'hover:bg-red-700 hover:text-red-50': !disabled,
+              'text-red-500': !checked,
+            },
+          ],
+          primary: [
+            {
+              'bg-blue-600 text-blue-50 ring-1 ring-inset ring-blue-500':
+                checked,
+              'bg-blue-800 text-blue-50 ring-2 ring-blue-500 ring-offset-2':
+                active,
+              'hover:bg-blue-700 hover:text-blue-50': !disabled,
+              'text-blue-500': !checked,
+            },
+          ],
+          secondary: [
+            {
+              'bg-gray-100 text-gray-600 ring-1 ring-inset ring-gray-200':
+                checked,
+              'bg-gray-400 text-gray-600 ring-2 ring-gray-400 ring-offset-2':
+                active,
+              'hover:bg-gray-300 hover:text-gray-600': !disabled,
+              'text-gray-500': !checked,
+            },
+          ],
+          success: [
+            {
+              'bg-green-600 text-green-50 ring-1 ring-inset ring-green-500':
+                checked,
+              'bg-green-800 text-green-50 ring-2 ring-green-500 ring-offset-2':
+                active,
+              'hover:bg-green-700 hover:text-green-50': !disabled,
+              'text-green-500': !checked,
+            },
+          ],
+          warning: [
+            {
+              'bg-yellow-600 text-yellow-50 ring-1 ring-inset ring-yellow-500':
+                checked,
+              'bg-yellow-800 text-yellow-50 ring-2 ring-yellow-500 ring-offset-2':
+                active,
+              'hover:bg-yellow-700 hover:text-yellow-50': !disabled,
+              'text-yellow-500': !checked,
+            },
+          ],
+        },
+      });
+
+  const wrapperStyles = createStyles({
+    classNames: ['grid grid-cols-6 pr-12 border bg-white'],
+    theme: {
+      danger: ['border-red-300'],
+      primary: ['border-blue-300'],
+      secondary: ['border-gray-300'],
+      success: ['border-green-300'],
+      warning: ['border-yellow-300'],
+    },
+  });
+
+  return (
+    <RadioGroup
+      name={name}
+      value={value}
+      aria-errormessage={tooltip ? errorMessageId : undefined}
+      aria-invalid={hasError}
+      onChange={setValue}
+    >
+      <Container
+        label={
+          <RadioGroup.Label as={Label} required={required} theme={theme}>
+            {label}
+          </RadioGroup.Label>
+        }
+        input={
+          <div className={wrapperStyles}>
+            {options.map((option) => (
+              <RadioGroup.Option
+                key={option.value}
+                className={inputStyles(option.disabled)}
+                disabled={option.disabled}
+                value={option.value}
+              >
+                <RadioGroup.Label as="span">{option.label}</RadioGroup.Label>
+              </RadioGroup.Option>
+            ))}
+          </div>
+        }
+        helpText={
+          hasDescription && (
+            <RadioGroup.Description
+              as={HelpText}
+              id={describedById}
+              theme={theme}
+              message={description}
+            />
+          )
+        }
+        validationMessage={
+          hasError && (
+            <ValidationMessage
+              id={errorMessageId}
+              message={error}
+              onVisibilityChange={setTooltip}
+            />
+          )
+        }
+        spacing={spacing}
+        theme={theme}
+      />
+    </RadioGroup>
   );
 }
