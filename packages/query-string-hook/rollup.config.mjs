@@ -3,11 +3,11 @@ import resolve from '@rollup/plugin-node-resolve';
 import dts from 'rollup-plugin-dts';
 import external from 'rollup-plugin-exclude-dependencies-from-bundle';
 import { swc } from 'rollup-plugin-swc3';
-import pkg from './package.json';
+import pkg from './package.json' assert { type: 'json' };
 
 export default [
   {
-    input: 'src/logger.ts',
+    input: 'src/index.ts',
     output: [
       {
         file: pkg.types,
@@ -17,15 +17,16 @@ export default [
     plugins: [dts()],
   },
   {
-    input: 'src/logger.ts',
+    input: 'src/index.ts',
     output: [
       {
-        exports: 'default',
+        exports: 'named',
         file: pkg.main,
         format: 'cjs',
         sourcemap: true,
       },
       {
+        exports: 'named',
         file: pkg.module,
         format: 'es',
         sourcemap: true,
@@ -34,7 +35,7 @@ export default [
     plugins: [
       external(),
       resolve({
-        extensions: ['.js', '.ts'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
       }),
       commonjs(),
       swc({

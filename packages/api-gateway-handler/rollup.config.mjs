@@ -3,7 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import dts from 'rollup-plugin-dts';
 import external from 'rollup-plugin-exclude-dependencies-from-bundle';
 import { swc } from 'rollup-plugin-swc3';
-import pkg from './package.json';
+import pkg from './package.json' assert { type: 'json' };
 
 export default [
   {
@@ -33,7 +33,7 @@ export default [
     plugins: [
       external(),
       resolve({
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        extensions: ['.js', '.ts'],
       }),
       commonjs(),
       swc({
