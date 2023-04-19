@@ -22,11 +22,13 @@ export default [
       {
         file: pkg.main,
         format: 'cjs',
+        interop: 'compat',
         sourcemap: true,
       },
       {
         file: pkg.module,
         format: 'es',
+        interop: 'compat',
         sourcemap: true,
       },
     ],
