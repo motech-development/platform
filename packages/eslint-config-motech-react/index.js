@@ -75,11 +75,11 @@ module.exports = {
         'plugin:react/jsx-runtime',
         'prettier',
       ],
-      files: ['*.js', '*.jsx'],
+      files: ['*.{js,jsx,mjs}'],
       overrides: [
         {
           extends: ['plugin:cypress/recommended'],
-          files: ['cypress/**/*.js'],
+          files: ['cypress/**/*.{js,jsx,mjs}'],
           plugins: ['cypress'],
           rules: {
             'import/no-extraneous-dependencies': 'off',
@@ -87,12 +87,7 @@ module.exports = {
         },
         {
           extends: ['plugin:jest/recommended'],
-          files: [
-            '**/__tests__/*.js',
-            '*.test.js',
-            '**/__tests__/*.jsx',
-            '*.test.jsx',
-          ],
+          files: ['**/__tests__/*.{js,jsx,mjs}', '*.test.{js,jsx,mjs}'],
           plugins: ['jest'],
           rules: {
             'import/no-extraneous-dependencies': 'off',
@@ -100,10 +95,9 @@ module.exports = {
         },
         {
           files: [
-            'setupTests.js',
-            '*.stories.js',
-            '*.stories.jsx',
-            '*.config.js',
+            'setupTests.{js,jsx,mjs}',
+            '*.stories.{js,jsx,mjs}',
+            '*.config.{js,ejs}',
           ],
           rules: {
             'import/no-extraneous-dependencies': 'off',

@@ -3,11 +3,11 @@ import resolve from '@rollup/plugin-node-resolve';
 import dts from 'rollup-plugin-dts';
 import external from 'rollup-plugin-exclude-dependencies-from-bundle';
 import { swc } from 'rollup-plugin-swc3';
-import pkg from './package.json';
+import pkg from './package.json' assert { type: 'json' };
 
 export default [
   {
-    input: 'src/webpack-permissions-plugin.ts',
+    input: 'src/webpack-conditional-plugin.ts',
     output: [
       {
         file: pkg.types,
@@ -17,7 +17,7 @@ export default [
     plugins: [dts()],
   },
   {
-    input: 'src/webpack-permissions-plugin.ts',
+    input: 'src/webpack-conditional-plugin.ts',
     output: [
       {
         exports: 'default',

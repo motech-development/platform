@@ -46,18 +46,22 @@ module.exports = {
     },
     {
       extends: ['eslint:recommended', 'airbnb-base', 'prettier'],
-      files: ['*.js'],
+      files: ['*.{js,mjs}'],
       overrides: [
         {
           extends: ['plugin:jest/recommended'],
-          files: ['**/__tests__/*.js', '*.spec.js', '*.test.js'],
+          files: [
+            '**/__tests__/*.{js,mjs}',
+            '*.spec.{js,mjs}',
+            '*.test.{js,mjs}',
+          ],
           plugins: ['jest'],
           rules: {
             'import/no-extraneous-dependencies': 'off',
           },
         },
         {
-          files: ['setupTests.js', '*.config.js'],
+          files: ['setupTests.{js,mjs}', '*.config.{js,mjs}'],
           rules: {
             'import/no-extraneous-dependencies': 'off',
           },
