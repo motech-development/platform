@@ -11,7 +11,7 @@
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
     }
   ],
-  "prConcurrentLimit": 1,
+  "prConcurrentLimit": 2,
   "prCreation": "not-pending",
   "rebaseWhen": "behind-base-branch",
   "stabilityDays": 5,
