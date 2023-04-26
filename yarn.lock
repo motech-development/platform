@@ -66,7 +66,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/client@workspace:applications/accounts/client"
   dependencies:
-    "@apollo/client": 3.7.8
+    "@apollo/client": 3.7.12
     "@fortawesome/fontawesome-svg-core": 1.2.36
     "@fortawesome/free-solid-svg-icons": 5.15.4
     "@fortawesome/react-fontawesome": 0.2.0
@@ -492,9 +492,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:3.7.8":
-  version: 3.7.8
-  resolution: "@apollo/client@npm:3.7.8"
+"@apollo/client@npm:3.7.12":
+  version: 3.7.12
+  resolution: "@apollo/client@npm:3.7.12"
   dependencies:
     "@graphql-typed-document-node/core": ^3.1.1
     "@wry/context": ^0.7.0
@@ -502,7 +502,7 @@ __metadata:
     "@wry/trie": ^0.3.0
     graphql-tag: ^2.12.6
     hoist-non-react-statics: ^3.3.2
-    optimism: ^0.16.1
+    optimism: ^0.16.2
     prop-types: ^15.7.2
     response-iterator: ^0.2.6
     symbol-observable: ^4.0.0
@@ -524,7 +524,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 3b12251768f7e1973b7d193d1420b01e6a0cb4b8a57bb4f65a82df48df2b8420aa9fdfeb0a4dcec4d787c1dcddaa7307611153736dff79d567be39b0dcd7f3d2
+  checksum: 9b9b0cd3b02d6b90ac4565737a1fa4d0e3c8e1f4cd0a0e1c680ed6f174f522469d16f0a71bc57ea358538b482c5085c33ae22d0d3cc42d90cef1c03b1f036e61
   languageName: node
   linkType: hard
 
@@ -5787,7 +5787,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/appsync-apollo@workspace:packages/appsync-apollo"
   dependencies:
-    "@apollo/client": 3.7.8
+    "@apollo/client": 3.7.12
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
@@ -24931,7 +24931,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"optimism@npm:^0.16.1":
+"optimism@npm:^0.16.2":
   version: 0.16.2
   resolution: "optimism@npm:0.16.2"
   dependencies:
