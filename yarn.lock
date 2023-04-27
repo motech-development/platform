@@ -347,7 +347,7 @@ __metadata:
     json-2-csv: 3.17.2
     luxon: 2.5.2
     prettier: 2.3.0
-    qs: 6.11.0
+    qs: 6.11.1
     serverless: 3.27.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
@@ -6173,7 +6173,7 @@ __metadata:
     jest-environment-jsdom: ^29.4.2
     jest-watch-typeahead: 2.2.2
     prettier: 2.3.0
-    qs: 6.11.0
+    qs: 6.11.1
     react: 17.0.2
     react-router-dom: 5.3.4
     rimraf: 3.0.2
@@ -26719,19 +26719,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:6.5.2":
-  version: 6.5.2
-  resolution: "qs@npm:6.5.2"
-  checksum: 24af7b9928ba2141233fba2912876ff100403dba1b08b20c3b490da9ea6c636760445ea2211a079e7dfa882a5cf8f738337b3748c8bdd0f93358fa8881d2db8f
-  languageName: node
-  linkType: hard
-
-"qs@npm:^6.10.1, qs@npm:^6.9.4":
+"qs@npm:6.11.1, qs@npm:^6.10.1, qs@npm:^6.9.4":
   version: 6.11.1
   resolution: "qs@npm:6.11.1"
   dependencies:
     side-channel: ^1.0.4
   checksum: 82ee78ef12a16f3372fae5b64f76f8aedecb000feea882bbff1af146c147f6eb66b08f9c3f34d7e076f28563586956318b9b2ca41141846cdd6d5ad6f241d52f
+  languageName: node
+  linkType: hard
+
+"qs@npm:6.5.2":
+  version: 6.5.2
+  resolution: "qs@npm:6.5.2"
+  checksum: 24af7b9928ba2141233fba2912876ff100403dba1b08b20c3b490da9ea6c636760445ea2211a079e7dfa882a5cf8f738337b3748c8bdd0f93358fa8881d2db8f
   languageName: node
   linkType: hard
 

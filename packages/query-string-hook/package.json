@@ -22,7 +22,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "qs": "6.11.0",
+    "qs": "6.11.1",
     "react": "17.0.2",
     "react-router-dom": "5.3.4"
   },
