@@ -30,8 +30,8 @@
   },
   "homepage": "https://github.com/motech-development/platform#readme",
   "devDependencies": {
-    "@commitlint/cli": "17.4.3",
-    "@commitlint/config-conventional": "17.4.3",
+    "@commitlint/cli": "17.6.1",
+    "@commitlint/config-conventional": "17.6.1",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
     "@qiwi/multi-semantic-release": "^6.5.1",
