@@ -34,7 +34,7 @@ jobs:
 
       - name: Restore Node modules
         id: node-modules
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./node_modules
@@ -46,7 +46,7 @@ jobs:
 
       - name: Restore packages
         id: packages
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -92,7 +92,7 @@ jobs:
           cache: yarn
 
       - name: Restore Node modules
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./node_modules
@@ -138,7 +138,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./node_modules
@@ -149,7 +149,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -193,7 +193,7 @@ jobs:
           cache: yarn
 
       - name: Restore Node modules
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./node_modules
@@ -204,7 +204,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -250,7 +250,7 @@ jobs:
           cache: yarn
 
       - name: Restore Node modules
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./node_modules
@@ -261,7 +261,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -310,7 +310,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./node_modules
@@ -321,7 +321,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -361,7 +361,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./node_modules
@@ -372,7 +372,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -413,7 +413,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./node_modules
@@ -424,7 +424,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -467,7 +467,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./node_modules
@@ -478,7 +478,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -521,7 +521,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./node_modules
@@ -532,7 +532,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.3.1
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
