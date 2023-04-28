@@ -102,7 +102,7 @@ __metadata:
     axios: 0.27.2
     cy2: 4.0.6
     cypress: 12.10.0
-    cypress-axe: 1.3.0
+    cypress-axe: 1.4.0
     cypress-file-upload: 5.0.8
     cypress-localstorage-commands: 2.2.3
     cypress-log-to-output: 1.1.2
@@ -14716,13 +14716,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress-axe@npm:1.3.0":
-  version: 1.3.0
-  resolution: "cypress-axe@npm:1.3.0"
+"cypress-axe@npm:1.4.0":
+  version: 1.4.0
+  resolution: "cypress-axe@npm:1.4.0"
   peerDependencies:
     axe-core: ^3 || ^4
     cypress: ^10 || ^11 || ^12
-  checksum: 8ec27667f6f61e8639818558d2694468ab39c556350c338b90cbaa9d3d7c23cd6bea917315741ac6076aa0b81277674de4b2440adb6c8ec36cc506410b3ec0e9
+  checksum: b202de37c38aab899a9bb0f813069221bc14a9a76e1f3998595f7097d9296efac8c7679c81279e20ce023b69bcc379657a4d5fcfa3da342826cb22eec7938ef2
   languageName: node
   linkType: hard
 
