@@ -48,7 +48,7 @@
     "@rollup/plugin-commonjs": "24.1.0",
     "@rollup/plugin-node-resolve": "15.0.2",
     "@storybook/addon-a11y": "6.5.16",
-    "@storybook/addon-knobs": "6.4.0",
+    "@storybook/addon-knobs": "7.0.0",
     "@storybook/builder-webpack5": "6.5.16",
     "@storybook/manager-webpack5": "6.5.16",
     "@storybook/react": "6.5.16",
