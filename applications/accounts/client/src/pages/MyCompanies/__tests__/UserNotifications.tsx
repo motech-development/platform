@@ -18,7 +18,7 @@ describe('UserNotifications', () => {
   let mocks: MockedResponse[];
 
   describe('when there is no data', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           request: {
@@ -49,13 +49,17 @@ describe('UserNotifications', () => {
         },
       ];
 
-      component = render(
-        <TestProvider>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <UserNotifications id="user-id" />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <UserNotifications id="user-id" />
+            </MockedProvider>
+          </TestProvider>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should display nothing', async () => {
@@ -68,7 +72,7 @@ describe('UserNotifications', () => {
   });
 
   describe('when there is data', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           request: {
@@ -117,13 +121,17 @@ describe('UserNotifications', () => {
         },
       ];
 
-      component = render(
-        <TestProvider>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <UserNotifications id="user-id" />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <UserNotifications id="user-id" />
+            </MockedProvider>
+          </TestProvider>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should display the notifications', async () => {
@@ -152,7 +160,7 @@ describe('UserNotifications', () => {
   });
 
   describe('when new notifications comes in', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       mocks = [
         {
           request: {
@@ -224,13 +232,17 @@ describe('UserNotifications', () => {
         },
       ];
 
-      component = render(
-        <TestProvider>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <UserNotifications id="user-id" />
-          </MockedProvider>
-        </TestProvider>,
-      );
+      await act(async () => {
+        component = render(
+          <TestProvider>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <UserNotifications id="user-id" />
+            </MockedProvider>
+          </TestProvider>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should display a the new notification flag', async () => {

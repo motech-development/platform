@@ -11,7 +11,9 @@ interface IInitialValues {
 describe('DatePicker', () => {
   let component: RenderResult;
   let initialValues: IInitialValues;
-  let validationSchema: Yup.ObjectSchema;
+  let validationSchema: Yup.ObjectSchema<{
+    test: Date;
+  }>;
   let onSubmit: jest.Mock;
 
   beforeAll(() => {
@@ -33,24 +35,28 @@ describe('DatePicker', () => {
   });
 
   describe('with no initial value set', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       initialValues = {
         test: '',
       };
 
-      component = render(
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={onSubmit}
-        >
-          {() => (
-            <Form>
-              <DatePicker name="test" label="Test" />
-            </Form>
-          )}
-        </Formik>,
-      );
+      await act(async () => {
+        component = render(
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit}
+          >
+            {() => (
+              <Form>
+                <DatePicker name="test" label="Test" />
+              </Form>
+            )}
+          </Formik>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should default to current date', async () => {
@@ -153,24 +159,28 @@ describe('DatePicker', () => {
   });
 
   describe('with an initial value set', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       initialValues = {
         test: '2015-06-03T19:45:00.000Z',
       };
 
-      component = render(
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={onSubmit}
-        >
-          {() => (
-            <Form>
-              <DatePicker name="test" label="Test" />
-            </Form>
-          )}
-        </Formik>,
-      );
+      await act(async () => {
+        component = render(
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit}
+          >
+            {() => (
+              <Form>
+                <DatePicker name="test" label="Test" />
+              </Form>
+            )}
+          </Formik>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should default to current date', async () => {

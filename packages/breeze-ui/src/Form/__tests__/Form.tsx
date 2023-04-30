@@ -52,20 +52,24 @@ describe('Form', () => {
   });
 
   describe('without a cancel option', () => {
-    beforeEach(() => {
-      component = render(
-        <Form
-          submitLabel="Submit"
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={(value) => onSubmit(value)}
-        >
-          <TextBox label="Empty" name="empty" />
-          <TextBox label="Object empty" name="obj.empty" />
-          <TextBox label="Object test" name="obj.test" />
-          <TextBox label="Test" name="test" />
-        </Form>,
-      );
+    beforeEach(async () => {
+      await act(async () => {
+        component = render(
+          <Form
+            submitLabel="Submit"
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(value) => onSubmit(value)}
+          >
+            <TextBox label="Empty" name="empty" />
+            <TextBox label="Object empty" name="obj.empty" />
+            <TextBox label="Object test" name="obj.test" />
+            <TextBox label="Test" name="test" />
+          </Form>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should disable save button if form is invalid', async () => {
@@ -90,9 +94,13 @@ describe('Form', () => {
       await act(async () => {
         const input = await findByLabelText('Test');
 
+        userEvent.type(input, 'Hello world');
+
         fireEvent.change(input, { target: { value: 'Hello world' } });
 
         const button = await findByRole('button');
+
+        await waitFor(() => expect(button).not.toBeDisabled());
 
         fireEvent.click(button);
       });
@@ -109,22 +117,26 @@ describe('Form', () => {
   });
 
   describe('with a cancel option', () => {
-    beforeEach(() => {
-      component = render(
-        <Form
-          cancel={
-            <button type="button" data-testid="cancel-button">
-              Cancel
-            </button>
-          }
-          submitLabel="Submit"
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={(value) => onSubmit(value)}
-        >
-          <TextBox label="Test" name="test" />
-        </Form>,
-      );
+    beforeEach(async () => {
+      await act(async () => {
+        component = render(
+          <Form
+            cancel={
+              <button type="button" data-testid="cancel-button">
+                Cancel
+              </button>
+            }
+            submitLabel="Submit"
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(value) => onSubmit(value)}
+          >
+            <TextBox label="Test" name="test" />
+          </Form>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should render the cancel button', async () => {
@@ -135,17 +147,21 @@ describe('Form', () => {
   });
 
   describe('with formatting', () => {
-    beforeEach(() => {
-      component = render(
-        <Form
-          submitLabel="Submit"
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={(value) => onSubmit(value)}
-        >
-          <TextBox label="Test" name="test" format="##-##-##" />
-        </Form>,
-      );
+    beforeEach(async () => {
+      await act(async () => {
+        component = render(
+          <Form
+            submitLabel="Submit"
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(value) => onSubmit(value)}
+          >
+            <TextBox label="Test" name="test" format="##-##-##" />
+          </Form>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should submit with the correct values', async () => {
@@ -159,6 +175,8 @@ describe('Form', () => {
         });
 
         const button = await findByRole('button');
+
+        await waitFor(() => expect(button).not.toBeDisabled());
 
         fireEvent.click(button);
       });
@@ -175,17 +193,21 @@ describe('Form', () => {
   });
 
   describe('with a suffix', () => {
-    beforeEach(() => {
-      component = render(
-        <Form
-          submitLabel="Submit"
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={(value) => onSubmit(value)}
-        >
-          <TextBox label="Test" name="test" suffix="%" />
-        </Form>,
-      );
+    beforeEach(async () => {
+      await act(async () => {
+        component = render(
+          <Form
+            submitLabel="Submit"
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(value) => onSubmit(value)}
+          >
+            <TextBox label="Test" name="test" suffix="%" />
+          </Form>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should submit with the correct values', async () => {
@@ -199,6 +221,8 @@ describe('Form', () => {
         });
 
         const button = await findByRole('button');
+
+        await waitFor(() => expect(button).not.toBeDisabled());
 
         fireEvent.click(button);
       });
@@ -215,17 +239,21 @@ describe('Form', () => {
   });
 
   describe('with a prefix', () => {
-    beforeEach(() => {
-      component = render(
-        <Form
-          submitLabel="Submit"
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={(value) => onSubmit(value)}
-        >
-          <TextBox label="Test" name="test" prefix="£" />
-        </Form>,
-      );
+    beforeEach(async () => {
+      await act(async () => {
+        component = render(
+          <Form
+            submitLabel="Submit"
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(value) => onSubmit(value)}
+          >
+            <TextBox label="Test" name="test" prefix="£" />
+          </Form>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should submit with the correct values', async () => {
@@ -239,6 +267,8 @@ describe('Form', () => {
         });
 
         const button = await findByRole('button');
+
+        await waitFor(() => expect(button).not.toBeDisabled());
 
         fireEvent.click(button);
       });
@@ -255,18 +285,22 @@ describe('Form', () => {
   });
 
   describe('when loading', () => {
-    beforeEach(() => {
-      component = render(
-        <Form
-          loading
-          submitLabel="Submit"
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={(value) => onSubmit(value)}
-        >
-          <TextBox label="Test" name="test" format="##-##-##" />
-        </Form>,
-      );
+    beforeEach(async () => {
+      await act(async () => {
+        component = render(
+          <Form
+            loading
+            submitLabel="Submit"
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(value) => onSubmit(value)}
+          >
+            <TextBox label="Test" name="test" format="##-##-##" />
+          </Form>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should have a disabled submit button', async () => {
@@ -277,9 +311,9 @@ describe('Form', () => {
   });
 
   describe('with onPreSumbit hook', () => {
-    let onPreSumbit;
+    let onPreSumbit: (value: FormikValues) => object;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       onPreSumbit = (values: FormikValues) => ({
         ...values,
         obj: {
@@ -288,17 +322,21 @@ describe('Form', () => {
         },
       });
 
-      component = render(
-        <Form
-          submitLabel="Submit"
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onPreSubmit={onPreSumbit}
-          onSubmit={(value) => onSubmit(value)}
-        >
-          <TextBox label="Test" name="test" prefix="£" />
-        </Form>,
-      );
+      await act(async () => {
+        component = render(
+          <Form
+            submitLabel="Submit"
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onPreSubmit={onPreSumbit}
+            onSubmit={(value) => onSubmit(value)}
+          >
+            <TextBox label="Test" name="test" prefix="£" />
+          </Form>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should alter the response before submitting', async () => {
@@ -312,6 +350,8 @@ describe('Form', () => {
         });
 
         const button = await findByRole('button');
+
+        await waitFor(() => expect(button).not.toBeDisabled());
 
         fireEvent.click(button);
       });

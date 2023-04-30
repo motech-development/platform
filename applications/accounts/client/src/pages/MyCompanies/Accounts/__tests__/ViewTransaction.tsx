@@ -314,6 +314,8 @@ describe('ViewTransaction', () => {
 
           const [, , , , , deleteButton] = await screen.findAllByRole('button');
 
+          await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
@@ -344,6 +346,8 @@ describe('ViewTransaction', () => {
           });
 
           const [, , , , , deleteButton] = await screen.findAllByRole('button');
+
+          await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
           fireEvent.click(deleteButton);
 
@@ -511,6 +515,8 @@ describe('ViewTransaction', () => {
             'transaction-form.upload.delete-file',
           );
 
+          await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
@@ -526,6 +532,8 @@ describe('ViewTransaction', () => {
           const deleteButton = await screen.findByText(
             'transaction-form.upload.delete-file',
           );
+
+          await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
           fireEvent.click(deleteButton);
 
@@ -861,6 +869,8 @@ describe('ViewTransaction', () => {
             'button',
           );
 
+          await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
@@ -900,6 +910,8 @@ describe('ViewTransaction', () => {
           const deleteButton = await screen.findByText(
             'transaction-form.upload.delete-file',
           );
+
+          await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
           fireEvent.click(deleteButton);
 
@@ -1158,6 +1170,8 @@ describe('ViewTransaction', () => {
             'button',
           );
 
+          await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
@@ -1191,6 +1205,8 @@ describe('ViewTransaction', () => {
           const [, , , , , , deleteButton] = await screen.findAllByRole(
             'button',
           );
+
+          await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
           fireEvent.click(deleteButton);
 

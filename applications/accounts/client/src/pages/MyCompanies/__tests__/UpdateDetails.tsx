@@ -240,6 +240,8 @@ describe('UpdateDetails', () => {
 
           const [, , , deleteButton] = await findAllByRole('button');
 
+          await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
@@ -270,6 +272,8 @@ describe('UpdateDetails', () => {
           });
 
           const [, , , deleteButton] = await findAllByRole('button');
+
+          await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
           fireEvent.click(deleteButton);
 
@@ -364,6 +368,8 @@ describe('UpdateDetails', () => {
           });
 
           const [, , , deleteButton] = await findAllByRole('button');
+
+          await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
           fireEvent.click(deleteButton);
 
@@ -537,6 +543,8 @@ describe('UpdateDetails', () => {
 
         const [, , , deleteButton] = await findAllByRole('button');
 
+        await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
         fireEvent.click(deleteButton);
 
         await waitForApollo(0);
@@ -570,6 +578,8 @@ describe('UpdateDetails', () => {
         });
 
         const [, , , deleteButton] = await findAllByRole('button');
+
+        await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
         fireEvent.click(deleteButton);
 
