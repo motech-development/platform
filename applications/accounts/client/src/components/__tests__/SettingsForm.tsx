@@ -46,24 +46,28 @@ describe('SettingsForm', () => {
   });
 
   describe('when connected to a banking provider', () => {
-    beforeEach(() => {
-      component = render(
-        <TestProvider>
-          <SettingsForm
-            backTo="/test"
-            bank={{
-              connected: true,
-              disconnectLoading: false,
-              link: '/connect-to-bank',
-              name: 'Bank',
-              onDisconnect,
-            }}
-            loading={false}
-            initialValues={initialValues}
-            onSave={(value) => onSave(value)}
-          />
-        </TestProvider>,
-      );
+    beforeEach(async () => {
+      await act(async () => {
+        component = render(
+          <TestProvider>
+            <SettingsForm
+              backTo="/test"
+              bank={{
+                connected: true,
+                disconnectLoading: false,
+                link: '/connect-to-bank',
+                name: 'Bank',
+                onDisconnect,
+              }}
+              loading={false}
+              initialValues={initialValues}
+              onSave={(value) => onSave(value)}
+            />
+          </TestProvider>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should render the form', async () => {
@@ -166,24 +170,28 @@ describe('SettingsForm', () => {
   });
 
   describe('when not connected to a banking provider', () => {
-    beforeEach(() => {
-      component = render(
-        <TestProvider>
-          <SettingsForm
-            backTo="/test"
-            bank={{
-              connected: false,
-              disconnectLoading: false,
-              link: '/connect-to-bank',
-              name: 'Bank',
-              onDisconnect,
-            }}
-            loading={false}
-            initialValues={initialValues}
-            onSave={(value) => onSave(value)}
-          />
-        </TestProvider>,
-      );
+    beforeEach(async () => {
+      await act(async () => {
+        component = render(
+          <TestProvider>
+            <SettingsForm
+              backTo="/test"
+              bank={{
+                connected: false,
+                disconnectLoading: false,
+                link: '/connect-to-bank',
+                name: 'Bank',
+                onDisconnect,
+              }}
+              loading={false}
+              initialValues={initialValues}
+              onSave={(value) => onSave(value)}
+            />
+          </TestProvider>,
+        );
+
+        await Promise.resolve();
+      });
     });
 
     it('should contain a link to connect to a bank', async () => {

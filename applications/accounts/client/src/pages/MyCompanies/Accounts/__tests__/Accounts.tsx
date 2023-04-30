@@ -298,6 +298,8 @@ describe('Accounts', () => {
 
         const [, , , deleteButton] = await findAllByRole('button');
 
+        await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
         fireEvent.click(deleteButton);
 
         await waitForApollo(0);
@@ -453,6 +455,8 @@ describe('Accounts', () => {
         });
 
         const [, , , deleteButton] = await findAllByRole('button');
+
+        await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
         fireEvent.click(deleteButton);
 

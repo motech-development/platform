@@ -1,4 +1,10 @@
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from '@testing-library/react';
 import TestProvider from '../../utils/TestProvider';
 import ConfirmDelete from '../ConfirmDelete';
 
@@ -7,20 +13,24 @@ describe('ConfirmDelete', () => {
   let onCancel: jest.Mock;
   let onDelete: jest.Mock;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     onCancel = jest.fn();
     onDelete = jest.fn();
 
-    component = render(
-      <TestProvider>
-        <ConfirmDelete
-          loading={false}
-          name="Test"
-          onCancel={onCancel}
-          onDelete={onDelete}
-        />
-      </TestProvider>,
-    );
+    await act(async () => {
+      component = render(
+        <TestProvider>
+          <ConfirmDelete
+            loading={false}
+            name="Test"
+            onCancel={onCancel}
+            onDelete={onDelete}
+          />
+        </TestProvider>,
+      );
+
+      await Promise.resolve();
+    });
   });
 
   it('should call cancel event when cancel button is clicked', async () => {
@@ -41,6 +51,8 @@ describe('ConfirmDelete', () => {
       fireEvent.change(input, { target: { focus: () => {}, value: 'Test' } });
 
       const [, button] = await findAllByRole('button');
+
+      await waitFor(() => expect(button).not.toBeDisabled());
 
       fireEvent.click(button);
     });

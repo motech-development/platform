@@ -19,7 +19,7 @@
     "luxon": "2.5.2",
     "qs": "6.11.1",
     "uuid": "8.3.2",
-    "yup": "0.32.11"
+    "yup": "1.1.1"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
@@ -33,7 +33,6 @@
     "@types/luxon": "2.4.0",
     "@types/qs": "6.9.7",
     "@types/uuid": "8.3.4",
-    "@types/yup": "0.29.14",
     "@typescript-eslint/eslint-plugin": "5.59.1",
     "@typescript-eslint/parser": "5.59.1",
     "aws-lambda-mock-context": "3.2.1",
