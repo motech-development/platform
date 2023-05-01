@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import useQueryString from '../useQueryString';
 
 jest.mock('react-router-dom', () => ({

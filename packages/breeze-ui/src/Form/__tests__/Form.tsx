@@ -95,9 +95,9 @@ describe('Form', () => {
         const input = await findByLabelText('Test');
 
         userEvent.type(input, 'Hello world');
+      });
 
-        fireEvent.change(input, { target: { value: 'Hello world' } });
-
+      await act(async () => {
         const button = await findByRole('button');
 
         await waitFor(() => expect(button).not.toBeDisabled());
@@ -173,7 +173,9 @@ describe('Form', () => {
         fireEvent.change(input, {
           target: { focus: () => {}, value: '000000' },
         });
+      });
 
+      await act(async () => {
         const button = await findByRole('button');
 
         await waitFor(() => expect(button).not.toBeDisabled());
@@ -219,7 +221,9 @@ describe('Form', () => {
         fireEvent.change(input, {
           target: { focus: () => {}, value: '20' },
         });
+      });
 
+      await act(async () => {
         const button = await findByRole('button');
 
         await waitFor(() => expect(button).not.toBeDisabled());
@@ -265,7 +269,9 @@ describe('Form', () => {
         fireEvent.change(input, {
           target: { focus: () => {}, value: '20' },
         });
+      });
 
+      await act(async () => {
         const button = await findByRole('button');
 
         await waitFor(() => expect(button).not.toBeDisabled());
@@ -348,7 +354,9 @@ describe('Form', () => {
         fireEvent.change(input, {
           target: { focus: () => {}, value: '20' },
         });
+      });
 
+      await act(async () => {
         const button = await findByRole('button');
 
         await waitFor(() => expect(button).not.toBeDisabled());

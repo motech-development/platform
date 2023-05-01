@@ -49,7 +49,9 @@ describe('ConfirmDelete', () => {
       const input = await findByLabelText('confirm-delete');
 
       fireEvent.change(input, { target: { focus: () => {}, value: 'Test' } });
+    });
 
+    await act(async () => {
       const [, button] = await findAllByRole('button');
 
       await waitFor(() => expect(button).not.toBeDisabled());

@@ -6,7 +6,7 @@ import {
 } from '@motech-development/breeze-ui';
 import sendToAnalytics from '@motech-development/ga-web-vitals';
 import { StrictMode } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { initialize, pageview, set } from 'react-ga';
 import { Router } from 'react-router-dom';
 import App from './App';
@@ -38,22 +38,27 @@ const onRedirectCallback = (appState: IAppState) => {
   );
 };
 
-render(
-  <StrictMode>
-    <Router history={history}>
-      <AuthProvider onRedirectCallback={onRedirectCallback}>
-        <BaseStyles />
+const container = document.getElementById('root');
 
-        <ScrollToTop />
+if (container) {
+  const root = createRoot(container);
 
-        <ToastProvider>
-          <App />
-        </ToastProvider>
-      </AuthProvider>
-    </Router>
-  </StrictMode>,
-  document.getElementById('root'),
-);
+  root.render(
+    <StrictMode>
+      <Router history={history}>
+        <AuthProvider onRedirectCallback={onRedirectCallback}>
+          <BaseStyles />
+
+          <ScrollToTop />
+
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </AuthProvider>
+      </Router>
+    </StrictMode>,
+  );
+}
 
 serviceWorkerRegistration.register({
   onUpdate: (registration) => {

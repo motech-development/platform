@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import TestProvider, { add, logout } from '../utils/TestProvider';
 import App from '../App';
@@ -30,17 +30,23 @@ describe('App', () => {
   });
 
   it('should display error toast if there are any log in errors', async () => {
-    jest.useFakeTimers();
+    act(() => {
+      jest.useFakeTimers();
+    });
 
     const history = createMemoryHistory({
       initialEntries: ['?error=Error&error_description=Message'],
     });
 
-    render(
-      <TestProvider history={history}>
-        <App />
-      </TestProvider>,
-    );
+    await act(async () => {
+      render(
+        <TestProvider history={history}>
+          <App />
+        </TestProvider>,
+      );
+
+      await Promise.resolve();
+    });
 
     await waitFor(() =>
       expect(add).toHaveBeenCalledWith({
@@ -51,21 +57,31 @@ describe('App', () => {
       }),
     );
 
-    jest.runOnlyPendingTimers();
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
 
-    expect(logout).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(logout).toHaveBeenCalledTimes(1));
   });
 
   it('should log out when idle when not in production mode', async () => {
-    jest.useFakeTimers();
+    act(() => {
+      jest.useFakeTimers();
+    });
 
-    render(
-      <TestProvider>
-        <App />
-      </TestProvider>,
-    );
+    await act(async () => {
+      render(
+        <TestProvider>
+          <App />
+        </TestProvider>,
+      );
 
-    jest.runOnlyPendingTimers();
+      await Promise.resolve();
+    });
+
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
 
     await waitFor(() =>
       expect(logout).toHaveBeenCalledWith({

@@ -111,7 +111,9 @@ describe('Typeahead', () => {
           value: 'Opt',
         },
       });
+    });
 
+    await act(async () => {
       const [option, submit] = await findAllByRole('button');
 
       fireEvent.click(option);
@@ -136,7 +138,9 @@ describe('Typeahead', () => {
           value: 'Ran',
         },
       });
+    });
 
+    await act(async () => {
       const [option, submit] = await findAllByRole('button');
 
       fireEvent.click(option);
@@ -160,7 +164,9 @@ describe('Typeahead', () => {
           value: 'Opt',
         },
       });
+    });
 
+    await act(async () => {
       const [option, submit] = await findAllByRole('button');
 
       fireEvent.click(option);
@@ -177,7 +183,9 @@ describe('Typeahead', () => {
           value: 'Ran',
         },
       });
+    });
 
+    await act(async () => {
       const [option, submit] = await findAllByRole('button');
 
       fireEvent.click(option);
@@ -246,7 +254,9 @@ describe('Typeahead', () => {
           value: 'Motech Development',
         },
       });
+    });
 
+    await act(async () => {
       const submit = await findByRole('button');
 
       fireEvent.click(submit);

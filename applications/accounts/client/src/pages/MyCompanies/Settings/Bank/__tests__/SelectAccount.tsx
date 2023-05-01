@@ -101,9 +101,7 @@ describe('SelectAccount', () => {
       it('should display accounts', async () => {
         const { findByText } = component;
 
-        await act(async () => {
-          await findByText('select-account.title');
-        });
+        await findByText('select-account.title');
 
         await expect(findByText('Account 1')).resolves.toBeInTheDocument();
       });
@@ -111,9 +109,9 @@ describe('SelectAccount', () => {
       it('should redirect to settings page when account is linked', async () => {
         const { findAllByRole, findByText } = component;
 
-        await act(async () => {
-          await findByText('select-account.title');
+        await findByText('select-account.title');
 
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);
@@ -131,9 +129,9 @@ describe('SelectAccount', () => {
       it('should show a success toast', async () => {
         const { findAllByRole, findByText } = component;
 
-        await act(async () => {
-          await findByText('select-account.title');
+        await findByText('select-account.title');
 
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);
@@ -220,9 +218,9 @@ describe('SelectAccount', () => {
       it('should redirect to settings page', async () => {
         const { findAllByRole, findByText } = component;
 
-        await act(async () => {
-          await findByText('select-account.title');
+        await findByText('select-account.title');
 
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);
@@ -240,9 +238,9 @@ describe('SelectAccount', () => {
       it('should show a danger toast', async () => {
         const { findAllByRole, findByText } = component;
 
-        await act(async () => {
-          await findByText('select-account.title');
+        await findByText('select-account.title');
 
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);

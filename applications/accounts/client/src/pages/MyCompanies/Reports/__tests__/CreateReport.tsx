@@ -126,7 +126,9 @@ describe('CreateReport', () => {
     it('should redirect you back to the reports page on complete', async () => {
       await act(async () => {
         await waitForApollo(0);
+      });
 
+      await act(async () => {
         const status = screen.getByLabelText(
           'export-form.status.options.confirmed',
         );
@@ -134,7 +136,9 @@ describe('CreateReport', () => {
         userEvent.click(status);
 
         await waitForApollo(0);
+      });
 
+      await act(async () => {
         const button = screen.getByRole('button');
 
         userEvent.click(button);
@@ -154,21 +158,31 @@ describe('CreateReport', () => {
     it('should display a success toast on complete', async () => {
       await act(async () => {
         await waitForApollo(0);
+      });
 
-        const status = screen.getByLabelText(
-          'export-form.status.options.confirmed',
-        );
+      const status = screen.getByLabelText(
+        'export-form.status.options.confirmed',
+      );
 
-        userEvent.click(status);
+      userEvent.click(status);
 
+      await act(async () => {
         await waitForApollo(0);
+      });
 
+      await act(async () => {
         const button = screen.getByRole('button');
 
+        await waitFor(() => expect(button).not.toBeDisabled());
+
         userEvent.click(button);
+      });
 
+      await act(async () => {
         await waitForApollo(0);
+      });
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
@@ -287,7 +301,9 @@ describe('CreateReport', () => {
     it('should redirect you back to the reports page on complete', async () => {
       await act(async () => {
         await waitForApollo(0);
+      });
 
+      await act(async () => {
         const status = screen.getByLabelText(
           'export-form.status.options.confirmed',
         );
@@ -295,7 +311,9 @@ describe('CreateReport', () => {
         userEvent.click(status);
 
         await waitForApollo(0);
+      });
 
+      await act(async () => {
         const button = screen.getByRole('button');
 
         userEvent.click(button);
@@ -315,7 +333,9 @@ describe('CreateReport', () => {
     it('should display a success toast on complete', async () => {
       await act(async () => {
         await waitForApollo(0);
+      });
 
+      await act(async () => {
         const status = screen.getByLabelText(
           'export-form.status.options.confirmed',
         );
@@ -323,7 +343,9 @@ describe('CreateReport', () => {
         userEvent.click(status);
 
         await waitForApollo(0);
+      });
 
+      await act(async () => {
         const button = screen.getByRole('button');
 
         userEvent.click(button);

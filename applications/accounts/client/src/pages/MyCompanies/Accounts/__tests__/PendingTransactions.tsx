@@ -158,17 +158,15 @@ describe('PendingTransactions', () => {
     it('should hide the delete confirmation modal', async () => {
       const { findAllByRole, findByRole, queryByRole } = component;
 
-      await act(async () => {
-        const [button] = await findAllByRole('button');
+      const [button] = await findAllByRole('button');
 
-        fireEvent.click(button);
+      fireEvent.click(button);
 
-        await findByRole('dialog');
+      await findByRole('dialog');
 
-        const [, , cancelButton] = await findAllByRole('button');
+      const [, , cancelButton] = await findAllByRole('button');
 
-        fireEvent.click(cancelButton);
-      });
+      fireEvent.click(cancelButton);
 
       expect(queryByRole('dialog')).not.toBeInTheDocument();
     });
@@ -176,28 +174,28 @@ describe('PendingTransactions', () => {
     it('should display a success toast when deleting a transaction', async () => {
       const { findAllByRole, findByLabelText, findByText } = component;
 
+      await findByText('pending-transactions.title');
+
+      const [button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
+      const input = await findByLabelText('confirm-delete');
+
+      fireEvent.change(input, {
+        target: {
+          focus: () => {},
+          value: 'KFC',
+        },
+      });
+
+      const [, , , deleteButton] = await findAllByRole('button');
+
+      await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
+      fireEvent.click(deleteButton);
+
       await act(async () => {
-        await findByText('pending-transactions.title');
-
-        const [button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        const input = await findByLabelText('confirm-delete');
-
-        fireEvent.change(input, {
-          target: {
-            focus: () => {},
-            value: 'KFC',
-          },
-        });
-
-        const [, , , deleteButton] = await findAllByRole('button');
-
-        await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
-        fireEvent.click(deleteButton);
-
         await waitForApollo(0);
       });
 
@@ -290,28 +288,28 @@ describe('PendingTransactions', () => {
     it('should display an error toast when deleting a transaction', async () => {
       const { findAllByRole, findByLabelText, findByText } = component;
 
+      await findByText('pending-transactions.title');
+
+      const [button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
+      const input = await findByLabelText('confirm-delete');
+
+      fireEvent.change(input, {
+        target: {
+          focus: () => {},
+          value: 'KFC',
+        },
+      });
+
+      const [, , , deleteButton] = await findAllByRole('button');
+
+      await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
+      fireEvent.click(deleteButton);
+
       await act(async () => {
-        await findByText('pending-transactions.title');
-
-        const [button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
-        const input = await findByLabelText('confirm-delete');
-
-        fireEvent.change(input, {
-          target: {
-            focus: () => {},
-            value: 'KFC',
-          },
-        });
-
-        const [, , , deleteButton] = await findAllByRole('button');
-
-        await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
-        fireEvent.click(deleteButton);
-
         await waitForApollo(0);
       });
 

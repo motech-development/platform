@@ -126,7 +126,9 @@ describe('DatePicker', () => {
         const button = await findByRole('button');
 
         fireEvent.click(button);
+      });
 
+      await act(async () => {
         await findByRole('grid');
 
         const [date] = await findAllByText('3');
@@ -146,7 +148,9 @@ describe('DatePicker', () => {
         const button = await findByRole('button');
 
         fireEvent.click(button);
+      });
 
+      await act(async () => {
         await findByRole('grid');
 
         const [date] = await findAllByText('1');
@@ -250,7 +254,9 @@ describe('DatePicker', () => {
         const button = await findByRole('button');
 
         fireEvent.click(button);
+      });
 
+      await act(async () => {
         await findByRole('grid');
 
         const date = await findByText('20');
@@ -270,7 +276,9 @@ describe('DatePicker', () => {
         const button = await findByRole('button');
 
         fireEvent.click(button);
+      });
 
+      await act(async () => {
         await findByRole('grid');
 
         const [date] = await findAllByText('1');

@@ -260,15 +260,17 @@ describe('Accounts', () => {
     it('should hide the delete confirmation modal', async () => {
       const { findAllByRole, findByRole, findByText, queryByRole } = component;
 
-      await act(async () => {
-        await findByText('accounts.title');
+      await findByText('accounts.title');
 
+      await act(async () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
+      });
 
-        await findByRole('dialog');
+      await findByRole('dialog');
 
+      await act(async () => {
         const [, , cancelButton] = await findAllByRole('button');
 
         fireEvent.click(cancelButton);
@@ -280,13 +282,15 @@ describe('Accounts', () => {
     it('should display a success toast when deleting a transaction', async () => {
       const { findAllByRole, findByLabelText, findByText } = component;
 
-      await act(async () => {
-        await findByText('accounts.title');
+      await findByText('accounts.title');
 
+      await act(async () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
+      });
 
+      await act(async () => {
         const input = await findByLabelText('confirm-delete');
 
         fireEvent.change(input, {
@@ -295,7 +299,9 @@ describe('Accounts', () => {
             value: 'KFC',
           },
         });
+      });
 
+      await act(async () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         await waitFor(() => expect(deleteButton).not.toBeDisabled());
@@ -438,13 +444,15 @@ describe('Accounts', () => {
     it('should display an error toast when deleting a transaction', async () => {
       const { findAllByRole, findByLabelText, findByText } = component;
 
-      await act(async () => {
-        await findByText('accounts.title');
+      await findByText('accounts.title');
 
+      await act(async () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
+      });
 
+      await act(async () => {
         const input = await findByLabelText('confirm-delete');
 
         fireEvent.change(input, {
@@ -453,7 +461,9 @@ describe('Accounts', () => {
             value: 'KFC',
           },
         });
+      });
 
+      await act(async () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         await waitFor(() => expect(deleteButton).not.toBeDisabled());

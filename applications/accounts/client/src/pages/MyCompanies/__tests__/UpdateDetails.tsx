@@ -149,9 +149,9 @@ describe('UpdateDetails', () => {
       it('should redirect you to the dashboard on complete', async () => {
         const { findAllByRole, findByText } = component;
 
-        await act(async () => {
-          await findByText('New company');
+        await findByText('New company');
 
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);
@@ -169,9 +169,9 @@ describe('UpdateDetails', () => {
       it('should display a success toast', async () => {
         const { findAllByRole, findByText } = component;
 
-        await act(async () => {
-          await findByText('New company');
+        await findByText('New company');
 
+        await act(async () => {
           const [button] = await findAllByRole('button');
 
           fireEvent.click(button);
@@ -200,15 +200,17 @@ describe('UpdateDetails', () => {
         const { findAllByRole, findByRole, findByText, queryByRole } =
           component;
 
-        await act(async () => {
-          await findByText('New company');
+        await findByText('New company');
 
+        await act(async () => {
           const [, button] = await findAllByRole('button');
 
           fireEvent.click(button);
+        });
 
-          await findByRole('dialog');
+        await findByRole('dialog');
 
+        await act(async () => {
           const [, , cancelButton] = await findAllByRole('button');
 
           fireEvent.click(cancelButton);
@@ -222,13 +224,15 @@ describe('UpdateDetails', () => {
       it('should delete a company', async () => {
         const { findAllByRole, findByLabelText, findByText } = component;
 
-        await act(async () => {
-          await findByText('New company');
+        await findByText('New company');
 
+        await act(async () => {
           const [, button] = await findAllByRole('button');
 
           fireEvent.click(button);
+        });
 
+        await act(async () => {
           const input = await findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
@@ -237,7 +241,9 @@ describe('UpdateDetails', () => {
               value: 'New company',
             },
           });
+        });
 
+        await act(async () => {
           const [, , , deleteButton] = await findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
@@ -255,13 +261,15 @@ describe('UpdateDetails', () => {
       it('should display a success toast when deleting a company', async () => {
         const { findAllByRole, findByLabelText, findByText } = component;
 
-        await act(async () => {
-          await findByText('New company');
+        await findByText('New company');
 
+        await act(async () => {
           const [, button] = await findAllByRole('button');
 
           fireEvent.click(button);
+        });
 
+        await act(async () => {
           const input = await findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
@@ -270,7 +278,9 @@ describe('UpdateDetails', () => {
               value: 'New company',
             },
           });
+        });
 
+        await act(async () => {
           const [, , , deleteButton] = await findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
@@ -351,13 +361,15 @@ describe('UpdateDetails', () => {
       it('should display an error toast when deleting a company', async () => {
         const { findAllByRole, findByLabelText, findByText } = component;
 
-        await act(async () => {
-          await findByText('New company');
+        await findByText('New company');
 
+        await act(async () => {
           const [, button] = await findAllByRole('button');
 
           fireEvent.click(button);
+        });
 
+        await act(async () => {
           const input = await findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
@@ -366,7 +378,9 @@ describe('UpdateDetails', () => {
               value: 'New company',
             },
           });
+        });
 
+        await act(async () => {
           const [, , , deleteButton] = await findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
@@ -484,9 +498,9 @@ describe('UpdateDetails', () => {
     it('should display a warning toast when updating a company', async () => {
       const { findAllByRole, findByText } = component;
 
-      await act(async () => {
-        await findByText('New company');
+      await findByText('New company');
 
+      await act(async () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
@@ -505,9 +519,9 @@ describe('UpdateDetails', () => {
     it('should redirect you to the right place when updating a company', async () => {
       const { findAllByRole, findByText } = component;
 
-      await act(async () => {
-        await findByText('New company');
+      await findByText('New company');
 
+      await act(async () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
@@ -525,13 +539,15 @@ describe('UpdateDetails', () => {
     it('should display a warning toast when deleting a company', async () => {
       const { findAllByRole, findByLabelText, findByText } = component;
 
-      await act(async () => {
-        await findByText('New company');
+      await findByText('New company');
 
+      await act(async () => {
         const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
+      });
 
+      await act(async () => {
         const input = await findByLabelText('confirm-delete');
 
         fireEvent.change(input, {
@@ -540,7 +556,9 @@ describe('UpdateDetails', () => {
             value: 'New company',
           },
         });
+      });
 
+      await act(async () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         await waitFor(() => expect(deleteButton).not.toBeDisabled());
@@ -561,13 +579,15 @@ describe('UpdateDetails', () => {
     it('should redirect you to the right place when deleting a company', async () => {
       const { findAllByRole, findByLabelText, findByText } = component;
 
-      await act(async () => {
-        await findByText('New company');
+      await findByText('New company');
 
+      await act(async () => {
         const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
+      });
 
+      await act(async () => {
         const input = await findByLabelText('confirm-delete');
 
         fireEvent.change(input, {
@@ -576,7 +596,9 @@ describe('UpdateDetails', () => {
             value: 'New company',
           },
         });
+      });
 
+      await act(async () => {
         const [, , , deleteButton] = await findAllByRole('button');
 
         await waitFor(() => expect(deleteButton).not.toBeDisabled());

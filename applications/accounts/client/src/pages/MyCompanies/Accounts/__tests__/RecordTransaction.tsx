@@ -218,34 +218,32 @@ describe('RecordTransaction', () => {
         });
 
         it('should redirect you back to accounts page on complete', async () => {
+          const transactionType = await screen.findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          const supplier = await screen.findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await screen.findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await screen.findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await screen.findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await screen.findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await screen.findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
+
           await act(async () => {
-            const transactionType = await screen.findByLabelText(
-              'transaction-form.transaction-details.transaction.options.purchase',
-            );
-
-            fireEvent.click(transactionType);
-          });
-
-          await act(async () => {
-            const supplier = await screen.findByLabelText(
-              'transaction-form.transaction-details.name.label',
-            );
-            const description = await screen.findByLabelText(
-              'transaction-form.transaction-details.description.label',
-            );
-            const status = await screen.findByLabelText(
-              'transaction-form.transaction-amount.status.options.confirmed',
-            );
-            const category = await screen.findByLabelText(
-              'transaction-form.transaction-amount.category.label',
-            );
-            const amount = await screen.findByLabelText(
-              'transaction-form.transaction-amount.amount.label',
-            );
-            const fileUpload = await screen.findByLabelText(
-              'transaction-form.upload.upload.label',
-            );
-
             fireEvent.change(supplier, {
               target: {
                 focus: () => {},
@@ -280,11 +278,15 @@ describe('RecordTransaction', () => {
                 files: [upload],
               },
             });
+
+            await Promise.resolve();
           });
 
-          await act(async () => {
-            const [, , , button] = await screen.findAllByRole('button');
+          const [, , , button] = await screen.findAllByRole('button');
 
+          await waitFor(() => expect(button).not.toBeDisabled());
+
+          await act(async () => {
             fireEvent.click(button);
 
             await waitForApollo(0);
@@ -298,34 +300,32 @@ describe('RecordTransaction', () => {
         });
 
         it('should display a success toast when transaction is added', async () => {
+          const transactionType = await screen.findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          const supplier = await screen.findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await screen.findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await screen.findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await screen.findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await screen.findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await screen.findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
+
           await act(async () => {
-            const transactionType = await screen.findByLabelText(
-              'transaction-form.transaction-details.transaction.options.purchase',
-            );
-
-            fireEvent.click(transactionType);
-          });
-
-          await act(async () => {
-            const supplier = await screen.findByLabelText(
-              'transaction-form.transaction-details.name.label',
-            );
-            const description = await screen.findByLabelText(
-              'transaction-form.transaction-details.description.label',
-            );
-            const status = await screen.findByLabelText(
-              'transaction-form.transaction-amount.status.options.confirmed',
-            );
-            const category = await screen.findByLabelText(
-              'transaction-form.transaction-amount.category.label',
-            );
-            const amount = await screen.findByLabelText(
-              'transaction-form.transaction-amount.amount.label',
-            );
-            const fileUpload = await screen.findByLabelText(
-              'transaction-form.upload.upload.label',
-            );
-
             fireEvent.change(supplier, {
               target: {
                 focus: () => {},
@@ -360,11 +360,15 @@ describe('RecordTransaction', () => {
                 files: [upload],
               },
             });
+
+            await Promise.resolve();
           });
 
-          await act(async () => {
-            const [, , , button] = await screen.findAllByRole('button');
+          const [, , , button] = await screen.findAllByRole('button');
 
+          await waitFor(() => expect(button).not.toBeDisabled());
+
+          await act(async () => {
             fireEvent.click(button);
 
             await waitForApollo(0);
@@ -379,34 +383,32 @@ describe('RecordTransaction', () => {
         });
 
         it('should display an success toast if upload is successful', async () => {
+          const transactionType = await screen.findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          const supplier = await screen.findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await screen.findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await screen.findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await screen.findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await screen.findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await screen.findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
+
           await act(async () => {
-            const transactionType = await screen.findByLabelText(
-              'transaction-form.transaction-details.transaction.options.purchase',
-            );
-
-            fireEvent.click(transactionType);
-          });
-
-          await act(async () => {
-            const supplier = await screen.findByLabelText(
-              'transaction-form.transaction-details.name.label',
-            );
-            const description = await screen.findByLabelText(
-              'transaction-form.transaction-details.description.label',
-            );
-            const status = await screen.findByLabelText(
-              'transaction-form.transaction-amount.status.options.confirmed',
-            );
-            const category = await screen.findByLabelText(
-              'transaction-form.transaction-amount.category.label',
-            );
-            const amount = await screen.findByLabelText(
-              'transaction-form.transaction-amount.amount.label',
-            );
-            const fileUpload = await screen.findByLabelText(
-              'transaction-form.upload.upload.label',
-            );
-
             fireEvent.change(supplier, {
               target: {
                 focus: () => {},
@@ -441,6 +443,8 @@ describe('RecordTransaction', () => {
                 files: [upload],
               },
             });
+
+            await Promise.resolve();
           });
 
           await waitFor(() =>
@@ -457,34 +461,32 @@ describe('RecordTransaction', () => {
             isAxiosError: true,
           });
 
+          const transactionType = await screen.findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          const supplier = await screen.findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await screen.findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await screen.findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await screen.findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await screen.findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await screen.findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
+
           await act(async () => {
-            const transactionType = await screen.findByLabelText(
-              'transaction-form.transaction-details.transaction.options.purchase',
-            );
-
-            fireEvent.click(transactionType);
-          });
-
-          await act(async () => {
-            const supplier = await screen.findByLabelText(
-              'transaction-form.transaction-details.name.label',
-            );
-            const description = await screen.findByLabelText(
-              'transaction-form.transaction-details.description.label',
-            );
-            const status = await screen.findByLabelText(
-              'transaction-form.transaction-amount.status.options.confirmed',
-            );
-            const category = await screen.findByLabelText(
-              'transaction-form.transaction-amount.category.label',
-            );
-            const amount = await screen.findByLabelText(
-              'transaction-form.transaction-amount.amount.label',
-            );
-            const fileUpload = await screen.findByLabelText(
-              'transaction-form.upload.upload.label',
-            );
-
             fireEvent.change(supplier, {
               target: {
                 focus: () => {},
@@ -519,6 +521,8 @@ describe('RecordTransaction', () => {
                 files: [upload],
               },
             });
+
+            await Promise.resolve();
           });
 
           await waitFor(() =>
@@ -684,31 +688,29 @@ describe('RecordTransaction', () => {
         });
 
         it('should display a warning toast', async () => {
+          const transactionType = await screen.findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          const supplier = await screen.findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await screen.findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await screen.findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await screen.findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await screen.findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+
           await act(async () => {
-            const transactionType = await screen.findByLabelText(
-              'transaction-form.transaction-details.transaction.options.purchase',
-            );
-
-            fireEvent.click(transactionType);
-          });
-
-          await act(async () => {
-            const supplier = await screen.findByLabelText(
-              'transaction-form.transaction-details.name.label',
-            );
-            const description = await screen.findByLabelText(
-              'transaction-form.transaction-details.description.label',
-            );
-            const status = await screen.findByLabelText(
-              'transaction-form.transaction-amount.status.options.confirmed',
-            );
-            const category = await screen.findByLabelText(
-              'transaction-form.transaction-amount.category.label',
-            );
-            const amount = await screen.findByLabelText(
-              'transaction-form.transaction-amount.amount.label',
-            );
-
             fireEvent.change(supplier, {
               target: {
                 focus: () => {},
@@ -737,11 +739,15 @@ describe('RecordTransaction', () => {
                 value: '999.99',
               },
             });
+
+            await Promise.resolve();
           });
 
-          await act(async () => {
-            const [, , button] = await screen.findAllByRole('button');
+          const [, , button] = await screen.findAllByRole('button');
 
+          await waitFor(() => expect(button).not.toBeDisabled());
+
+          await act(async () => {
             fireEvent.click(button);
 
             await waitForApollo(0);
@@ -756,31 +762,29 @@ describe('RecordTransaction', () => {
         });
 
         it('should redirect you back to accounts page', async () => {
+          const transactionType = await screen.findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          const supplier = await screen.findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await screen.findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await screen.findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await screen.findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await screen.findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+
           await act(async () => {
-            const transactionType = await screen.findByLabelText(
-              'transaction-form.transaction-details.transaction.options.purchase',
-            );
-
-            fireEvent.click(transactionType);
-          });
-
-          await act(async () => {
-            const supplier = await screen.findByLabelText(
-              'transaction-form.transaction-details.name.label',
-            );
-            const description = await screen.findByLabelText(
-              'transaction-form.transaction-details.description.label',
-            );
-            const status = await screen.findByLabelText(
-              'transaction-form.transaction-amount.status.options.confirmed',
-            );
-            const category = await screen.findByLabelText(
-              'transaction-form.transaction-amount.category.label',
-            );
-            const amount = await screen.findByLabelText(
-              'transaction-form.transaction-amount.amount.label',
-            );
-
             fireEvent.change(supplier, {
               target: {
                 focus: () => {},
@@ -809,11 +813,15 @@ describe('RecordTransaction', () => {
                 value: '999.99',
               },
             });
+
+            await Promise.resolve();
           });
 
-          await act(async () => {
-            const [, , button] = await screen.findAllByRole('button');
+          const [, , button] = await screen.findAllByRole('button');
 
+          await waitFor(() => expect(button).not.toBeDisabled());
+
+          await act(async () => {
             fireEvent.click(button);
 
             await waitForApollo(0);
@@ -827,34 +835,32 @@ describe('RecordTransaction', () => {
         });
 
         it('should do nothing when uploading an attachment', async () => {
+          const transactionType = await screen.findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          const supplier = await screen.findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await screen.findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await screen.findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await screen.findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await screen.findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await screen.findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
+
           await act(async () => {
-            const transactionType = await screen.findByLabelText(
-              'transaction-form.transaction-details.transaction.options.purchase',
-            );
-
-            fireEvent.click(transactionType);
-          });
-
-          await act(async () => {
-            const supplier = await screen.findByLabelText(
-              'transaction-form.transaction-details.name.label',
-            );
-            const description = await screen.findByLabelText(
-              'transaction-form.transaction-details.description.label',
-            );
-            const status = await screen.findByLabelText(
-              'transaction-form.transaction-amount.status.options.confirmed',
-            );
-            const category = await screen.findByLabelText(
-              'transaction-form.transaction-amount.category.label',
-            );
-            const amount = await screen.findByLabelText(
-              'transaction-form.transaction-amount.amount.label',
-            );
-            const fileUpload = await screen.findByLabelText(
-              'transaction-form.upload.upload.label',
-            );
-
             fireEvent.change(supplier, {
               target: {
                 focus: () => {},
@@ -889,6 +895,8 @@ describe('RecordTransaction', () => {
                 files: [upload],
               },
             });
+
+            await Promise.resolve();
           });
 
           await waitFor(() =>
@@ -1048,34 +1056,32 @@ describe('RecordTransaction', () => {
       });
 
       it('should redirect you back to accounts page on complete', async () => {
+        const transactionType = await screen.findByLabelText(
+          'transaction-form.transaction-details.transaction.options.purchase',
+        );
+
+        fireEvent.click(transactionType);
+
+        const supplier = await screen.findByLabelText(
+          'transaction-form.transaction-details.name.label',
+        );
+        const description = await screen.findByLabelText(
+          'transaction-form.transaction-details.description.label',
+        );
+        const status = await screen.findByLabelText(
+          'transaction-form.transaction-amount.status.options.confirmed',
+        );
+        const refund = await screen.findByLabelText(
+          'transaction-form.transaction-amount.refund.options.yes',
+        );
+        const category = await screen.findByLabelText(
+          'transaction-form.transaction-amount.category.label',
+        );
+        const amount = await screen.findByLabelText(
+          'transaction-form.transaction-amount.amount.label',
+        );
+
         await act(async () => {
-          const transactionType = await screen.findByLabelText(
-            'transaction-form.transaction-details.transaction.options.purchase',
-          );
-
-          fireEvent.click(transactionType);
-        });
-
-        await act(async () => {
-          const supplier = await screen.findByLabelText(
-            'transaction-form.transaction-details.name.label',
-          );
-          const description = await screen.findByLabelText(
-            'transaction-form.transaction-details.description.label',
-          );
-          const status = await screen.findByLabelText(
-            'transaction-form.transaction-amount.status.options.confirmed',
-          );
-          const refund = await screen.findByLabelText(
-            'transaction-form.transaction-amount.refund.options.yes',
-          );
-          const category = await screen.findByLabelText(
-            'transaction-form.transaction-amount.category.label',
-          );
-          const amount = await screen.findByLabelText(
-            'transaction-form.transaction-amount.amount.label',
-          );
-
           fireEvent.change(supplier, {
             target: {
               focus: () => {},
@@ -1106,11 +1112,15 @@ describe('RecordTransaction', () => {
               value: '999.99',
             },
           });
+
+          await Promise.resolve();
         });
 
-        await act(async () => {
-          const [, , button] = await screen.findAllByRole('button');
+        const [, , button] = await screen.findAllByRole('button');
 
+        await waitFor(() => expect(button).not.toBeDisabled());
+
+        await act(async () => {
           fireEvent.click(button);
 
           await waitForApollo(0);
@@ -1124,34 +1134,32 @@ describe('RecordTransaction', () => {
       });
 
       it('should display a success toast when transaction is added', async () => {
+        const transactionType = await screen.findByLabelText(
+          'transaction-form.transaction-details.transaction.options.purchase',
+        );
+
+        fireEvent.click(transactionType);
+
+        const supplier = await screen.findByLabelText(
+          'transaction-form.transaction-details.name.label',
+        );
+        const description = await screen.findByLabelText(
+          'transaction-form.transaction-details.description.label',
+        );
+        const status = await screen.findByLabelText(
+          'transaction-form.transaction-amount.status.options.confirmed',
+        );
+        const refund = await screen.findByLabelText(
+          'transaction-form.transaction-amount.refund.options.yes',
+        );
+        const category = await screen.findByLabelText(
+          'transaction-form.transaction-amount.category.label',
+        );
+        const amount = await screen.findByLabelText(
+          'transaction-form.transaction-amount.amount.label',
+        );
+
         await act(async () => {
-          const transactionType = await screen.findByLabelText(
-            'transaction-form.transaction-details.transaction.options.purchase',
-          );
-
-          fireEvent.click(transactionType);
-        });
-
-        await act(async () => {
-          const supplier = await screen.findByLabelText(
-            'transaction-form.transaction-details.name.label',
-          );
-          const description = await screen.findByLabelText(
-            'transaction-form.transaction-details.description.label',
-          );
-          const status = await screen.findByLabelText(
-            'transaction-form.transaction-amount.status.options.confirmed',
-          );
-          const refund = await screen.findByLabelText(
-            'transaction-form.transaction-amount.refund.options.yes',
-          );
-          const category = await screen.findByLabelText(
-            'transaction-form.transaction-amount.category.label',
-          );
-          const amount = await screen.findByLabelText(
-            'transaction-form.transaction-amount.amount.label',
-          );
-
           fireEvent.change(supplier, {
             target: {
               focus: () => {},
@@ -1182,11 +1190,15 @@ describe('RecordTransaction', () => {
               value: '999.99',
             },
           });
+
+          await Promise.resolve();
         });
 
-        await act(async () => {
-          const [, , button] = await screen.findAllByRole('button');
+        const [, , button] = await screen.findAllByRole('button');
 
+        await waitFor(() => expect(button).not.toBeDisabled());
+
+        await act(async () => {
           fireEvent.click(button);
 
           await waitForApollo(0);
@@ -1372,25 +1384,23 @@ describe('RecordTransaction', () => {
       });
 
       it('should redirect you back to accounts page on complete', async () => {
-        await act(async () => {
-          const transactionType = await screen.findByLabelText(
-            'transaction-form.transaction-details.transaction.options.sale',
-          );
+        const transactionType = await screen.findByLabelText(
+          'transaction-form.transaction-details.transaction.options.sale',
+        );
 
-          fireEvent.click(transactionType);
-        });
+        fireEvent.click(transactionType);
 
-        await act(async () => {
-          const supplier = await screen.findByLabelText(
-            'transaction-form.transaction-details.name.label',
-          );
-          const description = await screen.findByLabelText(
-            'transaction-form.transaction-details.description.label',
-          );
-          const status = await screen.findByLabelText(
-            'transaction-form.transaction-amount.status.options.pending',
-          );
+        const supplier = await screen.findByLabelText(
+          'transaction-form.transaction-details.name.label',
+        );
+        const description = await screen.findByLabelText(
+          'transaction-form.transaction-details.description.label',
+        );
+        const status = await screen.findByLabelText(
+          'transaction-form.transaction-amount.status.options.pending',
+        );
 
+        act(() => {
           fireEvent.change(supplier, {
             target: {
               focus: () => {},
@@ -1408,14 +1418,14 @@ describe('RecordTransaction', () => {
           fireEvent.click(status);
         });
 
-        await act(async () => {
-          const schedule = await screen.findByLabelText(
-            'transaction-form.transaction-amount.schedule.options.yes',
-          );
-          const amount = await screen.findByLabelText(
-            'transaction-form.transaction-amount.amount.label',
-          );
+        const schedule = await screen.findByLabelText(
+          'transaction-form.transaction-amount.schedule.options.yes',
+        );
+        const amount = await screen.findByLabelText(
+          'transaction-form.transaction-amount.amount.label',
+        );
 
+        act(() => {
           fireEvent.click(schedule);
 
           fireEvent.change(amount, {
@@ -1426,9 +1436,11 @@ describe('RecordTransaction', () => {
           });
         });
 
-        await act(async () => {
-          const [, , button] = await screen.findAllByRole('button');
+        const [, , button] = await screen.findAllByRole('button');
 
+        await waitFor(() => expect(button).not.toBeDisabled());
+
+        await act(async () => {
           fireEvent.click(button);
 
           await waitForApollo(0);
@@ -1442,25 +1454,23 @@ describe('RecordTransaction', () => {
       });
 
       it('should display an error toast if upload is unsuccessful', async () => {
+        const transactionType = await screen.findByLabelText(
+          'transaction-form.transaction-details.transaction.options.sale',
+        );
+
+        fireEvent.click(transactionType);
+
+        const supplier = await screen.findByLabelText(
+          'transaction-form.transaction-details.name.label',
+        );
+        const description = await screen.findByLabelText(
+          'transaction-form.transaction-details.description.label',
+        );
+        const status = await screen.findByLabelText(
+          'transaction-form.transaction-amount.status.options.pending',
+        );
+
         await act(async () => {
-          const transactionType = await screen.findByLabelText(
-            'transaction-form.transaction-details.transaction.options.sale',
-          );
-
-          fireEvent.click(transactionType);
-        });
-
-        await act(async () => {
-          const supplier = await screen.findByLabelText(
-            'transaction-form.transaction-details.name.label',
-          );
-          const description = await screen.findByLabelText(
-            'transaction-form.transaction-details.description.label',
-          );
-          const status = await screen.findByLabelText(
-            'transaction-form.transaction-amount.status.options.pending',
-          );
-
           fireEvent.change(supplier, {
             target: {
               focus: () => {},
@@ -1476,19 +1486,21 @@ describe('RecordTransaction', () => {
           });
 
           fireEvent.click(status);
+
+          await Promise.resolve();
         });
 
-        await act(async () => {
-          const schedule = await screen.findByLabelText(
-            'transaction-form.transaction-amount.schedule.options.yes',
-          );
-          const amount = await screen.findByLabelText(
-            'transaction-form.transaction-amount.amount.label',
-          );
-          const fileUpload = await screen.findByLabelText(
-            'transaction-form.upload.upload.label',
-          );
+        const schedule = await screen.findByLabelText(
+          'transaction-form.transaction-amount.schedule.options.yes',
+        );
+        const amount = await screen.findByLabelText(
+          'transaction-form.transaction-amount.amount.label',
+        );
+        const fileUpload = await screen.findByLabelText(
+          'transaction-form.upload.upload.label',
+        );
 
+        await act(async () => {
           fireEvent.click(schedule);
 
           fireEvent.change(amount, {
@@ -1503,6 +1515,8 @@ describe('RecordTransaction', () => {
               files: [upload],
             },
           });
+
+          await Promise.resolve();
         });
 
         await waitFor(() =>
@@ -1666,28 +1680,26 @@ describe('RecordTransaction', () => {
       });
 
       it('should redirect you back to accounts page on complete', async () => {
+        const transactionType = await screen.findByLabelText(
+          'transaction-form.transaction-details.transaction.options.sale',
+        );
+
+        fireEvent.click(transactionType);
+
+        const supplier = await screen.findByLabelText(
+          'transaction-form.transaction-details.name.label',
+        );
+        const description = await screen.findByLabelText(
+          'transaction-form.transaction-details.description.label',
+        );
+        const status = await screen.findByLabelText(
+          'transaction-form.transaction-amount.status.options.pending',
+        );
+        const refund = await screen.findByLabelText(
+          'transaction-form.transaction-amount.refund.options.yes',
+        );
+
         await act(async () => {
-          const transactionType = await screen.findByLabelText(
-            'transaction-form.transaction-details.transaction.options.sale',
-          );
-
-          fireEvent.click(transactionType);
-        });
-
-        await act(async () => {
-          const supplier = await screen.findByLabelText(
-            'transaction-form.transaction-details.name.label',
-          );
-          const description = await screen.findByLabelText(
-            'transaction-form.transaction-details.description.label',
-          );
-          const status = await screen.findByLabelText(
-            'transaction-form.transaction-amount.status.options.pending',
-          );
-          const refund = await screen.findByLabelText(
-            'transaction-form.transaction-amount.refund.options.yes',
-          );
-
           fireEvent.change(supplier, {
             target: {
               focus: () => {},
@@ -1705,16 +1717,18 @@ describe('RecordTransaction', () => {
           fireEvent.click(status);
 
           fireEvent.click(refund);
+
+          await Promise.resolve();
         });
 
-        await act(async () => {
-          const schedule = await screen.findByLabelText(
-            'transaction-form.transaction-amount.schedule.options.yes',
-          );
-          const amount = await screen.findByLabelText(
-            'transaction-form.transaction-amount.amount.label',
-          );
+        const schedule = await screen.findByLabelText(
+          'transaction-form.transaction-amount.schedule.options.yes',
+        );
+        const amount = await screen.findByLabelText(
+          'transaction-form.transaction-amount.amount.label',
+        );
 
+        await act(async () => {
           fireEvent.click(schedule);
 
           fireEvent.change(amount, {
@@ -1723,11 +1737,15 @@ describe('RecordTransaction', () => {
               value: '999.99',
             },
           });
+
+          await Promise.resolve();
         });
 
-        await act(async () => {
-          const [, , button] = await screen.findAllByRole('button');
+        const [, , button] = await screen.findAllByRole('button');
 
+        await waitFor(() => expect(button).not.toBeDisabled());
+
+        await act(async () => {
           fireEvent.click(button);
 
           await waitForApollo(0);

@@ -219,15 +219,17 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page on complete', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const status = await screen.findByLabelText(
             'transaction-form.transaction-amount.status.options.confirmed',
           );
 
           fireEvent.click(status);
+        });
 
+        await act(async () => {
           const [, , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
@@ -243,15 +245,17 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a success toast', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const status = await screen.findByLabelText(
             'transaction-form.transaction-amount.status.options.confirmed',
           );
 
           fireEvent.click(status);
+        });
 
+        await act(async () => {
           const [, , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
@@ -278,15 +282,17 @@ describe('ViewTransaction', () => {
       });
 
       it('should hide the delete confirmation modal', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
+        });
 
-          await screen.findByRole('dialog');
+        await screen.findByRole('dialog');
 
+        await act(async () => {
           const [, , , , cancelButton] = await screen.findAllByRole('button');
 
           fireEvent.click(cancelButton);
@@ -296,13 +302,15 @@ describe('ViewTransaction', () => {
       });
 
       it('should delete the transaction', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
+        });
 
+        await act(async () => {
           const input = await screen.findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
@@ -311,7 +319,9 @@ describe('ViewTransaction', () => {
               value: 'Apple',
             },
           });
+        });
 
+        await act(async () => {
           const [, , , , , deleteButton] = await screen.findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
@@ -329,13 +339,15 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a success toast when deleting a transaction', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
+        });
 
+        await act(async () => {
           const input = await screen.findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
@@ -344,7 +356,9 @@ describe('ViewTransaction', () => {
               value: 'Apple',
             },
           });
+        });
 
+        await act(async () => {
           const [, , , , , deleteButton] = await screen.findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
@@ -510,13 +524,13 @@ describe('ViewTransaction', () => {
       });
 
       it('should remove download attachment', async () => {
+        const deleteButton = await screen.findByText(
+          'transaction-form.upload.delete-file',
+        );
+
+        await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
         await act(async () => {
-          const deleteButton = await screen.findByText(
-            'transaction-form.upload.delete-file',
-          );
-
-          await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
@@ -528,13 +542,13 @@ describe('ViewTransaction', () => {
       });
 
       it('should display success toast when attachment is removed', async () => {
+        const deleteButton = await screen.findByText(
+          'transaction-form.upload.delete-file',
+        );
+
+        await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
         await act(async () => {
-          const deleteButton = await screen.findByText(
-            'transaction-form.upload.delete-file',
-          );
-
-          await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
@@ -549,11 +563,11 @@ describe('ViewTransaction', () => {
       });
 
       it('should download the attachment', async () => {
-        await act(async () => {
-          const downloadButton = await screen.findByText(
-            'transaction-form.upload.download-file',
-          );
+        const downloadButton = await screen.findByText(
+          'transaction-form.upload.download-file',
+        );
 
+        await act(async () => {
           fireEvent.click(downloadButton);
 
           await waitForApollo(0);
@@ -565,11 +579,11 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a success toast when attachment is downloaded', async () => {
-        await act(async () => {
-          const downloadButton = await screen.findByText(
-            'transaction-form.upload.download-file',
-          );
+        const downloadButton = await screen.findByText(
+          'transaction-form.upload.download-file',
+        );
 
+        await act(async () => {
           fireEvent.click(downloadButton);
 
           await waitForApollo(0);
@@ -589,11 +603,11 @@ describe('ViewTransaction', () => {
           isAxiosError: true,
         });
 
-        await act(async () => {
-          const downloadButton = await screen.findByText(
-            'transaction-form.upload.download-file',
-          );
+        const downloadButton = await screen.findByText(
+          'transaction-form.upload.download-file',
+        );
 
+        await act(async () => {
           fireEvent.click(downloadButton);
 
           await waitForApollo(0);
@@ -812,9 +826,9 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page on complete', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
@@ -830,9 +844,9 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a success toast', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
@@ -849,13 +863,15 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast when deleting a transaction', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const [, , , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
+        });
 
+        await act(async () => {
           const input = await screen.findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
@@ -864,7 +880,9 @@ describe('ViewTransaction', () => {
               value: 'Motech Development',
             },
           });
+        });
 
+        await act(async () => {
           const [, , , , , , deleteButton] = await screen.findAllByRole(
             'button',
           );
@@ -885,11 +903,11 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast if file fails to download', async () => {
-        await act(async () => {
-          const downloadButton = await screen.findByText(
-            'transaction-form.upload.download-file',
-          );
+        const downloadButton = await screen.findByText(
+          'transaction-form.upload.download-file',
+        );
 
+        await act(async () => {
           fireEvent.click(downloadButton);
 
           await waitForApollo(0);
@@ -906,13 +924,13 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast if file fails to delete', async () => {
+        const deleteButton = await screen.findByText(
+          'transaction-form.upload.delete-file',
+        );
+
+        await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
         await act(async () => {
-          const deleteButton = await screen.findByText(
-            'transaction-form.upload.delete-file',
-          );
-
-          await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
           fireEvent.click(deleteButton);
 
           await waitForApollo(0);
@@ -1113,9 +1131,9 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a warning toast when a transaction is updated', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
@@ -1132,9 +1150,9 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page when a transaction is updated', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
@@ -1150,13 +1168,15 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a warning toast when a transaction is deleted', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const [, , , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
+        });
 
+        await act(async () => {
           const input = await screen.findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
@@ -1165,7 +1185,9 @@ describe('ViewTransaction', () => {
               value: 'Motech Development',
             },
           });
+        });
 
+        await act(async () => {
           const [, , , , , , deleteButton] = await screen.findAllByRole(
             'button',
           );
@@ -1186,13 +1208,15 @@ describe('ViewTransaction', () => {
       });
 
       it('should redirect you back to accounts page when a transaction is deleted', async () => {
-        await act(async () => {
-          await screen.findByText('view-transaction.title');
+        await screen.findByText('view-transaction.title');
 
+        await act(async () => {
           const [, , , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
+        });
 
+        await act(async () => {
           const input = await screen.findByLabelText('confirm-delete');
 
           fireEvent.change(input, {
@@ -1201,7 +1225,9 @@ describe('ViewTransaction', () => {
               value: 'Motech Development',
             },
           });
+        });
 
+        await act(async () => {
           const [, , , , , , deleteButton] = await screen.findAllByRole(
             'button',
           );
@@ -1221,11 +1247,11 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast if file fails to delete', async () => {
-        await act(async () => {
-          const downloadButton = await screen.findByText(
-            'transaction-form.upload.download-file',
-          );
+        const downloadButton = await screen.findByText(
+          'transaction-form.upload.download-file',
+        );
 
+        await act(async () => {
           fireEvent.click(downloadButton);
 
           await waitForApollo(0);

@@ -112,6 +112,10 @@ describe('Reports', () => {
         await waitForApollo(0);
       });
 
+      const title = screen.getByRole('heading');
+
+      await waitFor(() => expect(title).toHaveTextContent('reports.title'));
+
       const alert = screen.getByRole('alert');
 
       await waitFor(() =>
@@ -120,6 +124,10 @@ describe('Reports', () => {
     });
 
     it('should download a report', async () => {
+      const title = screen.getByRole('heading');
+
+      await waitFor(() => expect(title).toHaveTextContent('reports.title'));
+
       await act(async () => {
         const [button] = screen.getAllByRole('button');
 
@@ -143,6 +151,10 @@ describe('Reports', () => {
         await waitForApollo(0);
       });
 
+      const title = screen.getByRole('heading');
+
+      await waitFor(() => expect(title).toHaveTextContent('reports.title'));
+
       const [button] = screen.getAllByRole('button');
 
       userEvent.click(button);
@@ -156,6 +168,14 @@ describe('Reports', () => {
     });
 
     it('should go back to the dashboard', async () => {
+      await act(async () => {
+        await waitForApollo(0);
+      });
+
+      const title = screen.getByRole('heading');
+
+      await waitFor(() => expect(title).toHaveTextContent('reports.title'));
+
       await act(async () => {
         const [, link] = screen.getAllByRole('link');
 
@@ -171,7 +191,15 @@ describe('Reports', () => {
       );
     });
 
-    it('should go to the create report page', () => {
+    it('should go to the create report page', async () => {
+      await act(async () => {
+        await waitForApollo(0);
+      });
+
+      const title = screen.getByRole('heading');
+
+      await waitFor(() => expect(title).toHaveTextContent('reports.title'));
+
       const [link] = screen.getAllByRole('link');
 
       userEvent.click(link);
@@ -182,6 +210,14 @@ describe('Reports', () => {
     });
 
     it('should display the correct number of reports', async () => {
+      await act(async () => {
+        await waitForApollo(0);
+      });
+
+      const title = screen.getByRole('heading');
+
+      await waitFor(() => expect(title).toHaveTextContent('reports.title'));
+
       const buttons = screen.getAllByRole('button');
 
       await waitFor(() => expect(buttons).toHaveLength(3));
@@ -259,6 +295,14 @@ describe('Reports', () => {
     });
 
     it('should display the correct number of reports', async () => {
+      await act(async () => {
+        await waitForApollo(0);
+      });
+
+      const title = screen.getByRole('heading');
+
+      await waitFor(() => expect(title).toHaveTextContent('reports.title'));
+
       const buttons = screen.getAllByRole('button');
 
       await waitFor(() => expect(buttons).toHaveLength(2));
