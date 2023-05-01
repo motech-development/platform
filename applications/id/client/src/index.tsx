@@ -1,7 +1,7 @@
 import { Loader } from '@motech-development/breeze-ui';
 import sendToAnalytics from '@motech-development/ga-web-vitals';
 import { StrictMode, Suspense } from 'react';
-import { hydrate, render } from 'react-dom';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import { initialize } from 'react-ga';
 import App from './App';
 import './i18n';
@@ -15,7 +15,7 @@ if (!REACT_APP_GA) {
 
 initialize(REACT_APP_GA);
 
-const rootElement = document.getElementById('root');
+const rootElement = document.getElementById('root') as HTMLElement;
 
 function Bootstrap() {
   return (
@@ -27,10 +27,12 @@ function Bootstrap() {
   );
 }
 
-if (rootElement?.hasChildNodes()) {
-  hydrate(<Bootstrap />, rootElement);
+if (rootElement.hasChildNodes()) {
+  hydrateRoot(rootElement, <Bootstrap />);
 } else {
-  render(<Bootstrap />, rootElement);
+  const root = createRoot(rootElement);
+
+  root.render(<Bootstrap />);
 }
 
 reportWebVitals(sendToAnalytics);

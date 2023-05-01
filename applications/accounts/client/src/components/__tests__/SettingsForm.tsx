@@ -1,4 +1,10 @@
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from '@testing-library/react';
 import TestProvider from '../../utils/TestProvider';
 import SettingsForm, { FormSchema } from '../SettingsForm';
 
@@ -126,13 +132,12 @@ describe('SettingsForm', () => {
       const { findAllByRole, findAllByLabelText } = component;
 
       await act(async () => {
-        const [, , add, , submit] = await findAllByRole('button');
+        const [, , add] = await findAllByRole('button');
 
         fireEvent.click(add);
+      });
 
-        const [, , , name] = await findAllByLabelText(
-          'settings-form.expense-categories.name.label',
-        );
+      await act(async () => {
         const [, , , vatRate] = await findAllByLabelText(
           'settings-form.expense-categories.vat-rate.label',
         );
@@ -143,6 +148,12 @@ describe('SettingsForm', () => {
             value: '5%',
           },
         });
+      });
+
+      await act(async () => {
+        const [, , , name] = await findAllByLabelText(
+          'settings-form.expense-categories.name.label',
+        );
 
         fireEvent.change(name, {
           target: {
@@ -150,6 +161,12 @@ describe('SettingsForm', () => {
             value: 'Utilities',
           },
         });
+      });
+
+      await act(async () => {
+        const [, , , , , submit] = await findAllByRole('button');
+
+        await waitFor(() => expect(submit).not.toBeDisabled());
 
         fireEvent.click(submit);
       });

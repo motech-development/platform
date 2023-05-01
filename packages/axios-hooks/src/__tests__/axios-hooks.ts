@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import { useGet, useLazyGet, usePost, usePut } from '../axios-hooks';
 
@@ -31,7 +31,7 @@ describe('axios-hooks', () => {
 
     describe('useGet', () => {
       it('should make the correct request', async () => {
-        const { waitForNextUpdate } = renderHook(() =>
+        renderHook(() =>
           useGet('/get', {
             headers: {
               'Content-Type': 'text/html',
@@ -40,46 +40,44 @@ describe('axios-hooks', () => {
           }),
         );
 
-        await waitForNextUpdate();
-
-        expect(axios.request).toHaveBeenCalledWith({
-          headers: {
-            'Content-Type': 'text/html',
-          },
-          method: 'GET',
-          responseType: 'text',
-          url: '/get',
-        });
+        await waitFor(() =>
+          expect(axios.request).toHaveBeenCalledWith({
+            headers: {
+              'Content-Type': 'text/html',
+            },
+            method: 'GET',
+            responseType: 'text',
+            url: '/get',
+          }),
+        );
       });
 
       it('should return the correct response', async () => {
-        const { result, waitForNextUpdate } = renderHook(() => useGet('/get'));
+        const { result } = renderHook(() => useGet('/get'));
 
-        await waitForNextUpdate();
-
-        expect(result.current).toEqual({
-          data: success,
-          error: undefined,
-          loading: false,
-        });
+        await waitFor(() =>
+          expect(result.current).toEqual({
+            data: success,
+            error: undefined,
+            loading: false,
+          }),
+        );
       });
 
       it('should call onSuccess callback', async () => {
-        const { waitForNextUpdate } = renderHook(() =>
+        renderHook(() =>
           useGet('/get', {
             onCompleted,
           }),
         );
 
-        await waitForNextUpdate();
-
-        expect(onCompleted).toHaveBeenCalledWith(success);
+        await waitFor(() => expect(onCompleted).toHaveBeenCalledWith(success));
       });
     });
 
     describe('useLazyGet', () => {
       it('should make the correct request', async () => {
-        const { result, waitForNextUpdate } = renderHook(() =>
+        const { result } = renderHook(() =>
           useLazyGet({
             headers: {
               'Content-Type': 'text/html',
@@ -93,42 +91,42 @@ describe('axios-hooks', () => {
           await execute('/get', {
             Authorization: 'bearer fgdskfgsdhjfgj',
           });
-
-          await waitForNextUpdate();
         });
 
-        expect(axios.request).toHaveBeenCalledWith({
-          headers: {
-            Authorization: 'bearer fgdskfgsdhjfgj',
-            'Content-Type': 'text/html',
-          },
-          method: 'GET',
-          responseType: 'text',
-          url: '/get',
-        });
+        await waitFor(() =>
+          expect(axios.request).toHaveBeenCalledWith({
+            headers: {
+              Authorization: 'bearer fgdskfgsdhjfgj',
+              'Content-Type': 'text/html',
+            },
+            method: 'GET',
+            responseType: 'text',
+            url: '/get',
+          }),
+        );
       });
 
       it('should return the correct response', async () => {
-        const { result, waitForNextUpdate } = renderHook(() => useLazyGet());
+        const { result } = renderHook(() => useLazyGet());
         const [execute] = result.current;
 
         await act(async () => {
           await execute('/get');
-
-          await waitForNextUpdate();
         });
 
         const [, results] = result.current;
 
-        expect(results).toEqual({
-          data: success,
-          error: undefined,
-          loading: false,
-        });
+        await waitFor(() =>
+          expect(results).toEqual({
+            data: success,
+            error: undefined,
+            loading: false,
+          }),
+        );
       });
 
       it('should call onSuccess callback', async () => {
-        const { result, waitForNextUpdate } = renderHook(() =>
+        const { result } = renderHook(() =>
           useLazyGet({
             onCompleted,
           }),
@@ -137,17 +135,15 @@ describe('axios-hooks', () => {
 
         await act(async () => {
           await execute('/get');
-
-          await waitForNextUpdate();
         });
 
-        expect(onCompleted).toHaveBeenCalledWith(success);
+        await waitFor(() => expect(onCompleted).toHaveBeenCalledWith(success));
       });
     });
 
     describe('usePost', () => {
       it('should make the correct request', async () => {
-        const { result, waitForNextUpdate } = renderHook(() =>
+        const { result } = renderHook(() =>
           usePost({
             headers: {
               'Content-Type': 'application/json',
@@ -161,43 +157,43 @@ describe('axios-hooks', () => {
           await execute('/post', body, {
             Authorization: 'bearer fgdskfgsdhjfgj',
           });
-
-          await waitForNextUpdate();
         });
 
-        expect(axios.request).toHaveBeenCalledWith({
-          data: body,
-          headers: {
-            Authorization: 'bearer fgdskfgsdhjfgj',
-            'Content-Type': 'application/json',
-          },
-          method: 'POST',
-          responseType: 'json',
-          url: '/post',
-        });
+        await waitFor(() =>
+          expect(axios.request).toHaveBeenCalledWith({
+            data: body,
+            headers: {
+              Authorization: 'bearer fgdskfgsdhjfgj',
+              'Content-Type': 'application/json',
+            },
+            method: 'POST',
+            responseType: 'json',
+            url: '/post',
+          }),
+        );
       });
 
       it('should return the correct response', async () => {
-        const { result, waitForNextUpdate } = renderHook(() => usePost());
+        const { result } = renderHook(() => usePost());
         const [execute] = result.current;
 
         await act(async () => {
           await execute('/post', body);
-
-          await waitForNextUpdate();
         });
 
         const [, results] = result.current;
 
-        expect(results).toEqual({
-          data: success,
-          error: undefined,
-          loading: false,
-        });
+        await waitFor(() =>
+          expect(results).toEqual({
+            data: success,
+            error: undefined,
+            loading: false,
+          }),
+        );
       });
 
       it('should call onSuccess callback', async () => {
-        const { result, waitForNextUpdate } = renderHook(() =>
+        const { result } = renderHook(() =>
           usePost({
             onCompleted,
           }),
@@ -206,17 +202,15 @@ describe('axios-hooks', () => {
 
         await act(async () => {
           await execute('/post', body);
-
-          await waitForNextUpdate();
         });
 
-        expect(onCompleted).toHaveBeenCalledWith(success);
+        await waitFor(() => expect(onCompleted).toHaveBeenCalledWith(success));
       });
     });
 
     describe('usePut', () => {
       it('should make the correct request', async () => {
-        const { result, waitForNextUpdate } = renderHook(() =>
+        const { result } = renderHook(() =>
           usePut({
             headers: {
               'Content-Type': 'application/json',
@@ -230,43 +224,43 @@ describe('axios-hooks', () => {
           await execute('/put', body, {
             Authorization: 'bearer fgdskfgsdhjfgj',
           });
-
-          await waitForNextUpdate();
         });
 
-        expect(axios.request).toHaveBeenCalledWith({
-          data: body,
-          headers: {
-            Authorization: 'bearer fgdskfgsdhjfgj',
-            'Content-Type': 'application/json',
-          },
-          method: 'PUT',
-          responseType: 'json',
-          url: '/put',
-        });
+        await waitFor(() =>
+          expect(axios.request).toHaveBeenCalledWith({
+            data: body,
+            headers: {
+              Authorization: 'bearer fgdskfgsdhjfgj',
+              'Content-Type': 'application/json',
+            },
+            method: 'PUT',
+            responseType: 'json',
+            url: '/put',
+          }),
+        );
       });
 
       it('should return the correct response', async () => {
-        const { result, waitForNextUpdate } = renderHook(() => usePut());
+        const { result } = renderHook(() => usePut());
         const [execute] = result.current;
 
         await act(async () => {
           await execute('/put', body);
-
-          await waitForNextUpdate();
         });
 
         const [, results] = result.current;
 
-        expect(results).toEqual({
-          data: success,
-          error: undefined,
-          loading: false,
-        });
+        await waitFor(() =>
+          expect(results).toEqual({
+            data: success,
+            error: undefined,
+            loading: false,
+          }),
+        );
       });
 
       it('should call onSuccess callback', async () => {
-        const { result, waitForNextUpdate } = renderHook(() =>
+        const { result } = renderHook(() =>
           usePut({
             onCompleted,
           }),
@@ -275,11 +269,9 @@ describe('axios-hooks', () => {
 
         await act(async () => {
           await execute('/put', body);
-
-          await waitForNextUpdate();
         });
 
-        expect(onCompleted).toHaveBeenCalledWith(success);
+        await waitFor(() => expect(onCompleted).toHaveBeenCalledWith(success));
       });
     });
   });
@@ -294,61 +286,61 @@ describe('axios-hooks', () => {
 
     describe('useGet', () => {
       it('should return the correct response', async () => {
-        const { result, waitForNextUpdate } = renderHook(() => useGet('/get'));
+        const { result } = renderHook(() => useGet('/get'));
 
-        await waitForNextUpdate();
-
-        expect(result.current).toEqual({
-          data: undefined,
-          error: {
-            data: failure,
-            isAxiosError: true,
-          },
-          loading: false,
-        });
+        await waitFor(() =>
+          expect(result.current).toEqual({
+            data: undefined,
+            error: {
+              data: failure,
+              isAxiosError: true,
+            },
+            loading: false,
+          }),
+        );
       });
 
       it('should call onError callback', async () => {
-        const { waitForNextUpdate } = renderHook(() =>
+        renderHook(() =>
           useGet('/get', {
             onError,
           }),
         );
 
-        await waitForNextUpdate();
-
-        expect(onError).toHaveBeenCalledWith({
-          data: failure,
-          isAxiosError: true,
-        });
+        await waitFor(() =>
+          expect(onError).toHaveBeenCalledWith({
+            data: failure,
+            isAxiosError: true,
+          }),
+        );
       });
     });
 
     describe('useLazyGet', () => {
       it('should return the correct response', async () => {
-        const { result, waitForNextUpdate } = renderHook(() => useLazyGet());
+        const { result } = renderHook(() => useLazyGet());
         const [execute] = result.current;
 
         await act(async () => {
           await execute('/get');
-
-          await waitForNextUpdate();
         });
 
         const [, results] = result.current;
 
-        expect(results).toEqual({
-          data: undefined,
-          error: {
-            data: failure,
-            isAxiosError: true,
-          },
-          loading: false,
-        });
+        await waitFor(() =>
+          expect(results).toEqual({
+            data: undefined,
+            error: {
+              data: failure,
+              isAxiosError: true,
+            },
+            loading: false,
+          }),
+        );
       });
 
       it('should call onError callback', async () => {
-        const { result, waitForNextUpdate } = renderHook(() =>
+        const { result } = renderHook(() =>
           useLazyGet({
             onError,
           }),
@@ -357,42 +349,42 @@ describe('axios-hooks', () => {
 
         await act(async () => {
           await execute('/get');
-
-          await waitForNextUpdate();
         });
 
-        expect(onError).toHaveBeenCalledWith({
-          data: failure,
-          isAxiosError: true,
-        });
+        await waitFor(() =>
+          expect(onError).toHaveBeenCalledWith({
+            data: failure,
+            isAxiosError: true,
+          }),
+        );
       });
     });
 
     describe('usePost', () => {
       it('should return the correct response', async () => {
-        const { result, waitForNextUpdate } = renderHook(() => usePost());
+        const { result } = renderHook(() => usePost());
         const [execute] = result.current;
 
         await act(async () => {
           await execute('/post', body);
-
-          await waitForNextUpdate();
         });
 
         const [, results] = result.current;
 
-        expect(results).toEqual({
-          data: undefined,
-          error: {
-            data: failure,
-            isAxiosError: true,
-          },
-          loading: false,
-        });
+        await waitFor(() =>
+          expect(results).toEqual({
+            data: undefined,
+            error: {
+              data: failure,
+              isAxiosError: true,
+            },
+            loading: false,
+          }),
+        );
       });
 
       it('should call onError callback', async () => {
-        const { result, waitForNextUpdate } = renderHook(() =>
+        const { result } = renderHook(() =>
           usePost({
             onError,
           }),
@@ -401,42 +393,42 @@ describe('axios-hooks', () => {
 
         await act(async () => {
           await execute('/post', body);
-
-          await waitForNextUpdate();
         });
 
-        expect(onError).toHaveBeenCalledWith({
-          data: failure,
-          isAxiosError: true,
-        });
+        await waitFor(() =>
+          expect(onError).toHaveBeenCalledWith({
+            data: failure,
+            isAxiosError: true,
+          }),
+        );
       });
     });
 
     describe('usePut', () => {
       it('should return the correct response', async () => {
-        const { result, waitForNextUpdate } = renderHook(() => usePut());
+        const { result } = renderHook(() => usePut());
         const [execute] = result.current;
 
         await act(async () => {
           await execute('/put', body);
-
-          await waitForNextUpdate();
         });
 
         const [, results] = result.current;
 
-        expect(results).toEqual({
-          data: undefined,
-          error: {
-            data: failure,
-            isAxiosError: true,
-          },
-          loading: false,
-        });
+        await waitFor(() =>
+          expect(results).toEqual({
+            data: undefined,
+            error: {
+              data: failure,
+              isAxiosError: true,
+            },
+            loading: false,
+          }),
+        );
       });
 
       it('should call onError callback', async () => {
-        const { result, waitForNextUpdate } = renderHook(() =>
+        const { result } = renderHook(() =>
           usePut({
             onError,
           }),
@@ -445,14 +437,14 @@ describe('axios-hooks', () => {
 
         await act(async () => {
           await execute('/put', body);
-
-          await waitForNextUpdate();
         });
 
-        expect(onError).toHaveBeenCalledWith({
-          data: failure,
-          isAxiosError: true,
-        });
+        await waitFor(() =>
+          expect(onError).toHaveBeenCalledWith({
+            data: failure,
+            isAxiosError: true,
+          }),
+        );
       });
     });
   });

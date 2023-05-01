@@ -141,9 +141,9 @@ describe('Settings', () => {
     it('should redirect you to the dashboard on complete', async () => {
       const { findAllByRole, findByText } = component;
 
-      await act(async () => {
-        await findByText('Company name');
+      await findByText('Company name');
 
+      await act(async () => {
         const [, , button] = await findAllByRole('button');
 
         fireEvent.click(button);
@@ -161,9 +161,9 @@ describe('Settings', () => {
     it('should display a success toast', async () => {
       const { findAllByRole, findByText } = component;
 
-      await act(async () => {
-        await findByText('Company name');
+      await findByText('Company name');
 
+      await act(async () => {
         const [, , button] = await findAllByRole('button');
 
         fireEvent.click(button);
@@ -182,9 +182,9 @@ describe('Settings', () => {
     it('should display success toast when bank account is unlinked', async () => {
       const { findAllByRole, findByText } = component;
 
-      await act(async () => {
-        await findByText('Company name');
+      await findByText('Company name');
 
+      await act(async () => {
         const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
@@ -306,9 +306,9 @@ describe('Settings', () => {
     it('should display the correct toast when unable to unlink bank', async () => {
       const { findAllByRole, findByText } = component;
 
-      await act(async () => {
-        await findByText('Company name');
+      await findByText('Company name');
 
+      await act(async () => {
         const [, button] = await findAllByRole('button');
 
         fireEvent.click(button);
@@ -408,9 +408,9 @@ describe('Settings', () => {
     it('should redirect you to the dashboard on complete', async () => {
       const { findAllByRole, findByText } = component;
 
-      await act(async () => {
-        await findByText('Company name');
+      await findByText('Company name');
 
+      await act(async () => {
         const [, , button] = await findAllByRole('button');
 
         fireEvent.click(button);
@@ -428,9 +428,9 @@ describe('Settings', () => {
     it('should display a danger toast', async () => {
       const { findAllByRole, findByText } = component;
 
-      await act(async () => {
-        await findByText('Company name');
+      await findByText('Company name');
 
+      await act(async () => {
         const [, , button] = await findAllByRole('button');
 
         fireEvent.click(button);

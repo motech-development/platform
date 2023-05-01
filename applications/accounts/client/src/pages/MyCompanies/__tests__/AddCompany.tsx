@@ -118,20 +118,20 @@ describe('AddCompany', () => {
     it('should redirect you to the dashboard on complete', async () => {
       const { findAllByRole, findByLabelText } = component;
 
-      await act(async () => {
-        const line1 = await findByLabelText('address.line1');
-        const line3 = await findByLabelText('address.line3');
-        const line4 = await findByLabelText('address.line4');
-        const line5 = await findByLabelText('address.line5');
-        const accountNumber = await findByLabelText('bank.account-number');
-        const sortCode = await findByLabelText('bank.sort-code');
-        const companyNumber = await findByLabelText(
-          'company-details.company-number',
-        );
-        const email = await findByLabelText('contact-details.email');
-        const telephone = await findByLabelText('contact-details.telephone');
-        const name = await findByLabelText('company-details.name');
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const accountNumber = await findByLabelText('bank.account-number');
+      const sortCode = await findByLabelText('bank.sort-code');
+      const companyNumber = await findByLabelText(
+        'company-details.company-number',
+      );
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText('company-details.name');
 
+      act(() => {
         fireEvent.change(line1, {
           target: { focus: () => {}, value: '1 Street' },
         });
@@ -160,18 +160,22 @@ describe('AddCompany', () => {
         fireEvent.change(name, {
           target: { focus: () => {}, value: 'New company' },
         });
+      });
 
-        const [next] = await findAllByRole('button');
+      const [next] = await findAllByRole('button');
 
+      act(() => {
         fireEvent.click(next);
+      });
 
-        const vatRegistration = await findByLabelText(
-          'vat-settings.registration',
-        );
-        const vatScheme = await findByLabelText('vat-settings.scheme.flatRate');
-        const yearEndDay = await findByLabelText('year-end.day.label');
-        const yearEndMonth = await findByLabelText('year-end.month.label');
+      const vatRegistration = await findByLabelText(
+        'vat-settings.registration',
+      );
 
+      const yearEndDay = await findByLabelText('year-end.day.label');
+      const yearEndMonth = await findByLabelText('year-end.month.label');
+
+      act(() => {
         fireEvent.change(vatRegistration, {
           target: { focus: () => {}, value: 'GB123456789' },
         });
@@ -187,13 +191,19 @@ describe('AddCompany', () => {
             value: '3',
           },
         });
+      });
+
+      const vatScheme = await findByLabelText('vat-settings.scheme.flatRate');
+
+      await act(async () => {
+        await Promise.resolve();
 
         fireEvent.click(vatScheme);
       });
 
-      await act(async () => {
-        const [, submit] = await findAllByRole('button');
+      const [, submit] = await findAllByRole('button');
 
+      await act(async () => {
         fireEvent.click(submit);
 
         await waitForApollo(0);
@@ -209,20 +219,20 @@ describe('AddCompany', () => {
     it('should display a success toast', async () => {
       const { findAllByRole, findByLabelText } = component;
 
-      await act(async () => {
-        const line1 = await findByLabelText('address.line1');
-        const line3 = await findByLabelText('address.line3');
-        const line4 = await findByLabelText('address.line4');
-        const line5 = await findByLabelText('address.line5');
-        const accountNumber = await findByLabelText('bank.account-number');
-        const sortCode = await findByLabelText('bank.sort-code');
-        const companyNumber = await findByLabelText(
-          'company-details.company-number',
-        );
-        const email = await findByLabelText('contact-details.email');
-        const telephone = await findByLabelText('contact-details.telephone');
-        const name = await findByLabelText('company-details.name');
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const accountNumber = await findByLabelText('bank.account-number');
+      const sortCode = await findByLabelText('bank.sort-code');
+      const companyNumber = await findByLabelText(
+        'company-details.company-number',
+      );
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText('company-details.name');
 
+      act(() => {
         fireEvent.change(line1, {
           target: { focus: () => {}, value: '1 Street' },
         });
@@ -251,18 +261,22 @@ describe('AddCompany', () => {
         fireEvent.change(name, {
           target: { focus: () => {}, value: 'New company' },
         });
+      });
 
-        const [next] = await findAllByRole('button');
+      const [next] = await findAllByRole('button');
 
+      act(() => {
         fireEvent.click(next);
+      });
 
-        const vatRegistration = await findByLabelText(
-          'vat-settings.registration',
-        );
-        const vatScheme = await findByLabelText('vat-settings.scheme.flatRate');
-        const yearEndDay = await findByLabelText('year-end.day.label');
-        const yearEndMonth = await findByLabelText('year-end.month.label');
+      const vatRegistration = await findByLabelText(
+        'vat-settings.registration',
+      );
+      const vatScheme = await findByLabelText('vat-settings.scheme.flatRate');
+      const yearEndDay = await findByLabelText('year-end.day.label');
+      const yearEndMonth = await findByLabelText('year-end.month.label');
 
+      act(() => {
         fireEvent.change(vatRegistration, {
           target: { focus: () => {}, value: 'GB123456789' },
         });
@@ -278,13 +292,17 @@ describe('AddCompany', () => {
             value: '3',
           },
         });
+      });
+
+      await act(async () => {
+        await Promise.resolve();
 
         fireEvent.click(vatScheme);
       });
 
-      await act(async () => {
-        const [, submit] = await findAllByRole('button');
+      const [, submit] = await findAllByRole('button');
 
+      await act(async () => {
         fireEvent.click(submit);
 
         await waitForApollo(0);
@@ -371,20 +389,20 @@ describe('AddCompany', () => {
     it('should display a warning toast', async () => {
       const { findAllByRole, findByLabelText } = component;
 
-      await act(async () => {
-        const line1 = await findByLabelText('address.line1');
-        const line3 = await findByLabelText('address.line3');
-        const line4 = await findByLabelText('address.line4');
-        const line5 = await findByLabelText('address.line5');
-        const accountNumber = await findByLabelText('bank.account-number');
-        const sortCode = await findByLabelText('bank.sort-code');
-        const companyNumber = await findByLabelText(
-          'company-details.company-number',
-        );
-        const email = await findByLabelText('contact-details.email');
-        const telephone = await findByLabelText('contact-details.telephone');
-        const name = await findByLabelText('company-details.name');
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const accountNumber = await findByLabelText('bank.account-number');
+      const sortCode = await findByLabelText('bank.sort-code');
+      const companyNumber = await findByLabelText(
+        'company-details.company-number',
+      );
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText('company-details.name');
 
+      act(() => {
         fireEvent.change(line1, {
           target: { focus: () => {}, value: '1 Street' },
         });
@@ -413,18 +431,22 @@ describe('AddCompany', () => {
         fireEvent.change(name, {
           target: { focus: () => {}, value: 'New company' },
         });
+      });
 
-        const [next] = await findAllByRole('button');
+      const [next] = await findAllByRole('button');
 
+      act(() => {
         fireEvent.click(next);
+      });
 
-        const vatRegistration = await findByLabelText(
-          'vat-settings.registration',
-        );
-        const vatScheme = await findByLabelText('vat-settings.scheme.flatRate');
-        const yearEndDay = await findByLabelText('year-end.day.label');
-        const yearEndMonth = await findByLabelText('year-end.month.label');
+      const vatRegistration = await findByLabelText(
+        'vat-settings.registration',
+      );
+      const vatScheme = await findByLabelText('vat-settings.scheme.flatRate');
+      const yearEndDay = await findByLabelText('year-end.day.label');
+      const yearEndMonth = await findByLabelText('year-end.month.label');
 
+      act(() => {
         fireEvent.change(vatRegistration, {
           target: { focus: () => {}, value: 'GB123456789' },
         });
@@ -440,13 +462,17 @@ describe('AddCompany', () => {
             value: '3',
           },
         });
+      });
+
+      await act(async () => {
+        await Promise.resolve();
 
         fireEvent.click(vatScheme);
       });
 
-      await act(async () => {
-        const [, submit] = await findAllByRole('button');
+      const [, submit] = await findAllByRole('button');
 
+      await act(async () => {
         fireEvent.click(submit);
 
         await waitForApollo(0);
@@ -463,20 +489,20 @@ describe('AddCompany', () => {
     it('should redirect you back to my companies page', async () => {
       const { findAllByRole, findByLabelText } = component;
 
-      await act(async () => {
-        const line1 = await findByLabelText('address.line1');
-        const line3 = await findByLabelText('address.line3');
-        const line4 = await findByLabelText('address.line4');
-        const line5 = await findByLabelText('address.line5');
-        const accountNumber = await findByLabelText('bank.account-number');
-        const sortCode = await findByLabelText('bank.sort-code');
-        const companyNumber = await findByLabelText(
-          'company-details.company-number',
-        );
-        const email = await findByLabelText('contact-details.email');
-        const telephone = await findByLabelText('contact-details.telephone');
-        const name = await findByLabelText('company-details.name');
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const accountNumber = await findByLabelText('bank.account-number');
+      const sortCode = await findByLabelText('bank.sort-code');
+      const companyNumber = await findByLabelText(
+        'company-details.company-number',
+      );
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText('company-details.name');
 
+      act(() => {
         fireEvent.change(line1, {
           target: { focus: () => {}, value: '1 Street' },
         });
@@ -505,18 +531,22 @@ describe('AddCompany', () => {
         fireEvent.change(name, {
           target: { focus: () => {}, value: 'New company' },
         });
+      });
 
-        const [next] = await findAllByRole('button');
+      const [next] = await findAllByRole('button');
 
+      act(() => {
         fireEvent.click(next);
+      });
 
-        const vatRegistration = await findByLabelText(
-          'vat-settings.registration',
-        );
-        const vatScheme = await findByLabelText('vat-settings.scheme.flatRate');
-        const yearEndDay = await findByLabelText('year-end.day.label');
-        const yearEndMonth = await findByLabelText('year-end.month.label');
+      const vatRegistration = await findByLabelText(
+        'vat-settings.registration',
+      );
+      const vatScheme = await findByLabelText('vat-settings.scheme.flatRate');
+      const yearEndDay = await findByLabelText('year-end.day.label');
+      const yearEndMonth = await findByLabelText('year-end.month.label');
 
+      act(() => {
         fireEvent.change(vatRegistration, {
           target: { focus: () => {}, value: 'GB123456789' },
         });
@@ -532,13 +562,17 @@ describe('AddCompany', () => {
             value: '3',
           },
         });
+      });
+
+      await act(async () => {
+        await Promise.resolve();
 
         fireEvent.click(vatScheme);
       });
 
-      await act(async () => {
-        const [, submit] = await findAllByRole('button');
+      const [, submit] = await findAllByRole('button');
 
+      await act(async () => {
         fireEvent.click(submit);
 
         await waitForApollo(0);

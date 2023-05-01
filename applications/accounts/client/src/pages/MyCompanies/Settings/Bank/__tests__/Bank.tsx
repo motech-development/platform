@@ -99,9 +99,7 @@ describe('Bank', () => {
     it('should display the banks', async () => {
       const { findByText } = component;
 
-      await act(async () => {
-        await findByText('select-bank.title');
-      });
+      await findByText('select-bank.title');
 
       await expect(findByText('Bank name')).resolves.toBeInTheDocument();
     });
@@ -109,9 +107,7 @@ describe('Bank', () => {
     it('should have a cancel link button', async () => {
       const { findByText } = component;
 
-      await act(async () => {
-        await findByText('select-bank.title');
-      });
+      await findByText('select-bank.title');
 
       await expect(findByText('select-bank.cancel')).resolves.toHaveAttribute(
         'href',
@@ -122,9 +118,9 @@ describe('Bank', () => {
     it('should disable the connect buttons after selecting a bank', async () => {
       const { findAllByRole, findByText } = component;
 
-      await act(async () => {
-        await findByText('select-bank.title');
+      await findByText('select-bank.title');
 
+      await act(async () => {
         const [button] = await findAllByRole('button');
 
         fireEvent.click(button);
@@ -207,9 +203,9 @@ describe('Bank', () => {
     it('should redirect to the auth URL', async () => {
       const { findByText } = component;
 
-      await act(async () => {
-        await findByText('select-bank.title');
+      await findByText('select-bank.title');
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
