@@ -1,4 +1,4 @@
-import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import TestProvider from '../../utils/TestProvider';
 import ClientForm, { FormSchema } from '../ClientForm';
 
@@ -77,13 +77,11 @@ describe('ClientForm', () => {
         </TestProvider>,
       );
 
-      await act(async () => {
-        const button = await findByRole('button');
+      const button = await findByRole('button');
 
-        fireEvent.click(button);
-      });
+      fireEvent.click(button);
 
-      expect(onSave).toHaveBeenCalledWith(initialValues);
+      await waitFor(() => expect(onSave).toHaveBeenCalledWith(initialValues));
     });
   });
 });

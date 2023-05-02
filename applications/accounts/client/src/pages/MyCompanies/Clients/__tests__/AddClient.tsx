@@ -91,39 +91,39 @@ describe('AddClient', () => {
     it('should redirect you back to clients page on complete', async () => {
       const { findAllByRole, findByLabelText } = component;
 
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText(
+        'client-form.client-details.name.label',
+      );
+
+      await userEvent.type(line1, '1 Street');
+
+      await userEvent.type(line3, 'Town');
+
+      await userEvent.type(line4, 'County');
+
+      await userEvent.type(line5, 'KT1 1NE');
+
+      await userEvent.type(email, 'info@contact.com');
+
+      await userEvent.type(telephone, '07712345678');
+
+      await userEvent.type(name, 'New company');
+
+      const [button] = await findAllByRole('button');
+
+      await waitFor(() => expect(button).not.toBeDisabled());
+
+      fireEvent.click(button);
+
       await act(async () => {
-        const line1 = await findByLabelText('address.line1');
-        const line3 = await findByLabelText('address.line3');
-        const line4 = await findByLabelText('address.line4');
-        const line5 = await findByLabelText('address.line5');
-        const email = await findByLabelText('contact-details.email');
-        const telephone = await findByLabelText('contact-details.telephone');
-        const name = await findByLabelText(
-          'client-form.client-details.name.label',
-        );
-
-        userEvent.type(line1, '1 Street');
-
-        userEvent.type(line3, 'Town');
-
-        userEvent.type(line4, 'County');
-
-        userEvent.type(line5, 'KT1 1NE');
-
-        userEvent.type(email, 'info@contact.com');
-
-        userEvent.type(telephone, '07712345678');
-
-        userEvent.type(name, 'New company');
+        await Promise.resolve();
       });
-
-      await act(async () => {
-        const [button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-      });
-
-      await Promise.resolve();
 
       await waitFor(() =>
         expect(history.push).toHaveBeenCalledWith(
@@ -135,37 +135,35 @@ describe('AddClient', () => {
     it('should display a success toast', async () => {
       const { findAllByRole, findByLabelText } = component;
 
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText(
+        'client-form.client-details.name.label',
+      );
+
+      await userEvent.type(line1, '1 Street');
+
+      await userEvent.type(line3, 'Town');
+
+      await userEvent.type(line4, 'County');
+
+      await userEvent.type(line5, 'KT1 1NE');
+
+      await userEvent.type(email, 'info@contact.com');
+
+      await userEvent.type(telephone, '07712345678');
+
+      await userEvent.type(name, 'New company');
+
+      const [button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
       await act(async () => {
-        const line1 = await findByLabelText('address.line1');
-        const line3 = await findByLabelText('address.line3');
-        const line4 = await findByLabelText('address.line4');
-        const line5 = await findByLabelText('address.line5');
-        const email = await findByLabelText('contact-details.email');
-        const telephone = await findByLabelText('contact-details.telephone');
-        const name = await findByLabelText(
-          'client-form.client-details.name.label',
-        );
-
-        userEvent.type(line1, '1 Street');
-
-        userEvent.type(line3, 'Town');
-
-        userEvent.type(line4, 'County');
-
-        userEvent.type(line5, 'KT1 1NE');
-
-        userEvent.type(email, 'info@contact.com');
-
-        userEvent.type(telephone, '07712345678');
-
-        userEvent.type(name, 'New company');
-      });
-
-      await act(async () => {
-        const [button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
         await waitForApollo(0);
       });
 
@@ -227,37 +225,35 @@ describe('AddClient', () => {
     it('should display a warning toast', async () => {
       const { findAllByRole, findByLabelText } = component;
 
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText(
+        'client-form.client-details.name.label',
+      );
+
+      await userEvent.type(line1, '1 Street');
+
+      await userEvent.type(line3, 'Town');
+
+      await userEvent.type(line4, 'County');
+
+      await userEvent.type(line5, 'KT1 1NE');
+
+      await userEvent.type(email, 'info@contact.com');
+
+      await userEvent.type(telephone, '07712345678');
+
+      await userEvent.type(name, 'New company');
+
+      const [button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
       await act(async () => {
-        const line1 = await findByLabelText('address.line1');
-        const line3 = await findByLabelText('address.line3');
-        const line4 = await findByLabelText('address.line4');
-        const line5 = await findByLabelText('address.line5');
-        const email = await findByLabelText('contact-details.email');
-        const telephone = await findByLabelText('contact-details.telephone');
-        const name = await findByLabelText(
-          'client-form.client-details.name.label',
-        );
-
-        userEvent.type(line1, '1 Street');
-
-        userEvent.type(line3, 'Town');
-
-        userEvent.type(line4, 'County');
-
-        userEvent.type(line5, 'KT1 1NE');
-
-        userEvent.type(email, 'info@contact.com');
-
-        userEvent.type(telephone, '07712345678');
-
-        userEvent.type(name, 'New company');
-      });
-
-      await act(async () => {
-        const [button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
         await waitForApollo(0);
       });
 
@@ -272,37 +268,35 @@ describe('AddClient', () => {
     it('should redirect you back to company page', async () => {
       const { findAllByRole, findByLabelText } = component;
 
+      const line1 = await findByLabelText('address.line1');
+      const line3 = await findByLabelText('address.line3');
+      const line4 = await findByLabelText('address.line4');
+      const line5 = await findByLabelText('address.line5');
+      const email = await findByLabelText('contact-details.email');
+      const telephone = await findByLabelText('contact-details.telephone');
+      const name = await findByLabelText(
+        'client-form.client-details.name.label',
+      );
+
+      await userEvent.type(line1, '1 Street');
+
+      await userEvent.type(line3, 'Town');
+
+      await userEvent.type(line4, 'County');
+
+      await userEvent.type(line5, 'KT1 1NE');
+
+      await userEvent.type(email, 'info@contact.com');
+
+      await userEvent.type(telephone, '07712345678');
+
+      await userEvent.type(name, 'New company');
+
+      const [button] = await findAllByRole('button');
+
+      fireEvent.click(button);
+
       await act(async () => {
-        const line1 = await findByLabelText('address.line1');
-        const line3 = await findByLabelText('address.line3');
-        const line4 = await findByLabelText('address.line4');
-        const line5 = await findByLabelText('address.line5');
-        const email = await findByLabelText('contact-details.email');
-        const telephone = await findByLabelText('contact-details.telephone');
-        const name = await findByLabelText(
-          'client-form.client-details.name.label',
-        );
-
-        userEvent.type(line1, '1 Street');
-
-        userEvent.type(line3, 'Town');
-
-        userEvent.type(line4, 'County');
-
-        userEvent.type(line5, 'KT1 1NE');
-
-        userEvent.type(email, 'info@contact.com');
-
-        userEvent.type(telephone, '07712345678');
-
-        userEvent.type(name, 'New company');
-      });
-
-      await act(async () => {
-        const [button] = await findAllByRole('button');
-
-        fireEvent.click(button);
-
         await waitForApollo(0);
       });
 
