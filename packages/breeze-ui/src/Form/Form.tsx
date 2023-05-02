@@ -5,35 +5,44 @@ import Button from '../Button/Button';
 import Col from '../Col/Col';
 import Row from '../Row/Row';
 
-const isObject = (value: unknown) =>
+const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && !Array.isArray(value) && value !== null;
 
-function encodeNullValues<T extends object>(values: T) {
+function encodeNullValues<T extends Record<string, unknown>>(
+  values: T,
+): Record<string, T> {
   const initialValues = {
     ...values,
   };
 
-  Object.keys(initialValues).forEach((key) => {
+  return Object.keys(initialValues).reduce((aggregate, key) => {
     const value = initialValues[key];
 
     if (value === null) {
-      initialValues[key] = '';
-    } else if (isObject(value)) {
-      initialValues[key] = encodeNullValues(value);
+      return {
+        ...aggregate,
+        [key]: '',
+      };
     }
-  });
 
-  return initialValues;
+    if (isObject(value)) {
+      return {
+        ...aggregate,
+        [key]: encodeNullValues(value),
+      };
+    }
+
+    return {
+      ...aggregate,
+      [key]: value,
+    };
+  }, {});
 }
 
-function formNormaliser<T extends object>(values: T) {
-  let initialValues = {
+function formNormaliser<T extends Record<string, unknown>>(values: T) {
+  return encodeNullValues({
     ...values,
-  };
-
-  initialValues = encodeNullValues(initialValues);
-
-  return initialValues;
+  });
 }
 
 export interface IFormProps {
