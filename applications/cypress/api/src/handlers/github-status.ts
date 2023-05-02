@@ -65,7 +65,7 @@ export const handler = apiGatewayHandler(async (event) => {
         logger.info('Creating commit status after RUN_FINISH event');
 
         const state = data.failures > 0 ? State.Failure : State.Success;
-        const testStatus = (status: string) =>
+        const testStatus = (status: keyof typeof data) =>
           data[status] === 1 ? 'test' : 'tests';
         const payload = {
           context,
