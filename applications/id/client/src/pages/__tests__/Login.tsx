@@ -73,20 +73,16 @@ describe('Login', () => {
           }),
         );
 
-        await act(async () => {
-          const email = await findByLabelText('username.label');
-          const password = await findByLabelText('password.label');
+        const email = await findByLabelText('username.label');
+        const password = await findByLabelText('password.label');
 
-          userEvent.type(email, 'test@example.com');
+        await userEvent.type(email, 'test@example.com');
 
-          userEvent.type(password, 'Password');
-        });
+        await userEvent.type(password, 'Password');
 
-        await act(async () => {
-          const [, button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
-          userEvent.click(button);
-        });
+        await userEvent.click(button);
 
         await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
@@ -99,20 +95,16 @@ describe('Login', () => {
       it('should call login with the correct params', async () => {
         const { findAllByRole, findByLabelText } = component;
 
-        await act(async () => {
-          const email = await findByLabelText('username.label');
-          const password = await findByLabelText('password.label');
+        const email = await findByLabelText('username.label');
+        const password = await findByLabelText('password.label');
 
-          userEvent.type(email, 'test@example.com');
+        await userEvent.type(email, 'test@example.com');
 
-          userEvent.type(password, 'Password');
-        });
+        await userEvent.type(password, 'Password');
 
-        await act(async () => {
-          const [, button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
-          userEvent.click(button);
-        });
+        await userEvent.click(button);
 
         expect(WebAuth.prototype.login).toHaveBeenCalledWith(
           {
@@ -141,32 +133,26 @@ describe('Login', () => {
 
         const { findAllByRole, findByLabelText } = component;
 
-        await act(async () => {
-          const [, , signUp] = await findAllByRole('button');
+        const [, , signUp] = await findAllByRole('button');
 
-          userEvent.click(signUp);
-        });
+        await userEvent.click(signUp);
 
-        await act(async () => {
-          const givenName = await findByLabelText('given-name.label');
-          const familyName = await findByLabelText('family-name.label');
-          const email = await findByLabelText('username.label');
-          const password = await findByLabelText('password.label');
+        const givenName = await findByLabelText('given-name.label');
+        const familyName = await findByLabelText('family-name.label');
+        const email = await findByLabelText('username.label');
+        const password = await findByLabelText('password.label');
 
-          userEvent.type(givenName, 'Test');
+        await userEvent.type(givenName, 'Test');
 
-          userEvent.type(familyName, 'User');
+        await userEvent.type(familyName, 'User');
 
-          userEvent.type(email, 'test@example.com');
+        await userEvent.type(email, 'test@example.com');
 
-          userEvent.type(password, 'Password');
-        });
+        await userEvent.type(password, 'Password');
 
-        await act(async () => {
-          const [button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
-          userEvent.click(button);
-        });
+        await userEvent.click(button);
 
         await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
@@ -190,32 +176,26 @@ describe('Login', () => {
           }),
         );
 
-        await act(async () => {
-          const [, , signUp] = await findAllByRole('button');
+        const [, , signUp] = await findAllByRole('button');
 
-          userEvent.click(signUp);
-        });
+        await userEvent.click(signUp);
 
-        await act(async () => {
-          const givenName = await findByLabelText('given-name.label');
-          const familyName = await findByLabelText('family-name.label');
-          const email = await findByLabelText('username.label');
-          const password = await findByLabelText('password.label');
+        const givenName = await findByLabelText('given-name.label');
+        const familyName = await findByLabelText('family-name.label');
+        const email = await findByLabelText('username.label');
+        const password = await findByLabelText('password.label');
 
-          userEvent.type(givenName, 'Test');
+        await userEvent.type(givenName, 'Test');
 
-          userEvent.type(familyName, 'User');
+        await userEvent.type(familyName, 'User');
 
-          userEvent.type(email, 'test@example.com');
+        await userEvent.type(email, 'test@example.com');
 
-          userEvent.type(password, 'Password');
-        });
+        await userEvent.type(password, 'Password');
 
-        await act(async () => {
-          const [button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
-          userEvent.click(button);
-        });
+        await userEvent.click(button);
 
         expect(WebAuth.prototype.signup).toHaveBeenCalledWith(
           {
@@ -234,34 +214,28 @@ describe('Login', () => {
       it('should display a toast when sign up is successful and go to the log in view', async () => {
         const { findAllByRole, findByLabelText, findByText } = component;
 
-        await act(async () => {
-          const [, , signUp] = await findAllByRole('button');
+        const [, , signUp] = await findAllByRole('button');
 
-          userEvent.click(signUp);
-        });
+        await userEvent.click(signUp);
 
-        await act(async () => {
-          const givenName = await findByLabelText('given-name.label');
-          const familyName = await findByLabelText('family-name.label');
-          const email = await findByLabelText('username.label');
-          const password = await findByLabelText('password.label');
+        const givenName = await findByLabelText('given-name.label');
+        const familyName = await findByLabelText('family-name.label');
+        const email = await findByLabelText('username.label');
+        const password = await findByLabelText('password.label');
 
-          userEvent.type(givenName, 'Test');
+        await userEvent.type(givenName, 'Test');
 
-          userEvent.type(familyName, 'User');
+        await userEvent.type(familyName, 'User');
 
-          userEvent.type(email, 'test@example.com');
+        await userEvent.type(email, 'test@example.com');
 
-          userEvent.type(password, 'Password');
+        await userEvent.type(password, 'Password');
 
-          fireEvent.blur(password);
-        });
+        fireEvent.blur(password);
 
-        await act(async () => {
-          const [button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
-          userEvent.click(button);
-        });
+        await userEvent.click(button);
 
         expect(add).toHaveBeenCalledWith({
           colour: 'success',
@@ -276,19 +250,15 @@ describe('Login', () => {
       it('should go back to log in page', async () => {
         const { findAllByRole, findByText, findByLabelText } = component;
 
-        await act(async () => {
-          const [, , signUp] = await findAllByRole('button');
+        const [, , signUp] = await findAllByRole('button');
 
-          userEvent.click(signUp);
-        });
+        await userEvent.click(signUp);
 
-        await act(async () => {
-          await waitFor(() => findByLabelText('username.label'));
+        await waitFor(() => findByLabelText('username.label'));
 
-          const [, goBack] = await findAllByRole('button');
+        const [, goBack] = await findAllByRole('button');
 
-          userEvent.click(goBack);
-        });
+        await userEvent.click(goBack);
 
         await expect(
           findByText('forgotten-password'),
@@ -300,23 +270,17 @@ describe('Login', () => {
       it('should redirect you back to the log in screen', async () => {
         const { findAllByRole, findByLabelText, findByText } = component;
 
-        await act(async () => {
-          const [forgottenPassword] = await findAllByRole('button');
+        const [forgottenPassword] = await findAllByRole('button');
 
-          userEvent.click(forgottenPassword);
-        });
+        await userEvent.click(forgottenPassword);
 
-        await act(async () => {
-          const email = await findByLabelText('username.label');
+        const email = await findByLabelText('username.label');
 
-          userEvent.type(email, 'test@example.com');
-        });
+        await userEvent.type(email, 'test@example.com');
 
-        await act(async () => {
-          const [button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
-          userEvent.click(button);
-        });
+        await userEvent.click(button);
 
         await expect(
           findByText('forgotten-password'),
@@ -326,23 +290,17 @@ describe('Login', () => {
       it('should display a toast when request is successful', async () => {
         const { findAllByRole, findByLabelText } = component;
 
-        await act(async () => {
-          const [forgottenPassword] = await findAllByRole('button');
+        const [forgottenPassword] = await findAllByRole('button');
 
-          userEvent.click(forgottenPassword);
-        });
+        await userEvent.click(forgottenPassword);
 
-        await act(async () => {
-          const email = await findByLabelText('username.label');
+        const email = await findByLabelText('username.label');
 
-          userEvent.type(email, 'test@example.com');
-        });
+        await userEvent.type(email, 'test@example.com');
 
-        await act(async () => {
-          const [button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
-          userEvent.click(button);
-        });
+        await userEvent.click(button);
 
         await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
@@ -355,23 +313,17 @@ describe('Login', () => {
       it('should call changePassword with the correct params', async () => {
         const { findAllByRole, findByLabelText } = component;
 
-        await act(async () => {
-          const [forgottenPassword] = await findAllByRole('button');
+        const [forgottenPassword] = await findAllByRole('button');
 
-          userEvent.click(forgottenPassword);
-        });
+        await userEvent.click(forgottenPassword);
 
-        await act(async () => {
-          const email = await findByLabelText('username.label');
+        const email = await findByLabelText('username.label');
 
-          userEvent.type(email, 'test@example.com');
-        });
+        await userEvent.type(email, 'test@example.com');
 
-        await act(async () => {
-          const [button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
-          userEvent.click(button);
-        });
+        await userEvent.click(button);
 
         expect(WebAuth.prototype.changePassword).toHaveBeenCalledWith(
           {
@@ -386,19 +338,15 @@ describe('Login', () => {
     it('should go back to log in page', async () => {
       const { findAllByRole, findByText, findByLabelText } = component;
 
-      await act(async () => {
-        const [forgottenPassword] = await findAllByRole('button');
+      const [forgottenPassword] = await findAllByRole('button');
 
-        userEvent.click(forgottenPassword);
-      });
+      await userEvent.click(forgottenPassword);
 
-      await act(async () => {
-        await waitFor(() => findByLabelText('username.label'));
+      await waitFor(() => findByLabelText('username.label'));
 
-        const [, goBack] = await findAllByRole('button');
+      const [, goBack] = await findAllByRole('button');
 
-        userEvent.click(goBack);
-      });
+      await userEvent.click(goBack);
 
       await expect(
         findByText('forgotten-password'),

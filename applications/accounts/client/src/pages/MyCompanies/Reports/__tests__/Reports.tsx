@@ -128,11 +128,11 @@ describe('Reports', () => {
 
       await waitFor(() => expect(title).toHaveTextContent('reports.title'));
 
+      const [button] = screen.getAllByRole('button');
+
+      await userEvent.click(button);
+
       await act(async () => {
-        const [button] = screen.getAllByRole('button');
-
-        userEvent.click(button);
-
         await waitForApollo(0);
       });
 
@@ -157,7 +157,7 @@ describe('Reports', () => {
 
       const [button] = screen.getAllByRole('button');
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
@@ -176,11 +176,11 @@ describe('Reports', () => {
 
       await waitFor(() => expect(title).toHaveTextContent('reports.title'));
 
+      const [, link] = screen.getAllByRole('link');
+
+      await userEvent.click(link);
+
       await act(async () => {
-        const [, link] = screen.getAllByRole('link');
-
-        userEvent.click(link);
-
         await waitForApollo(0);
       });
 
@@ -202,10 +202,12 @@ describe('Reports', () => {
 
       const [link] = screen.getAllByRole('link');
 
-      userEvent.click(link);
+      await userEvent.click(link);
 
-      expect(history.push).toHaveBeenCalledWith(
-        '/my-companies/reports/company-id/create-report',
+      await waitFor(() =>
+        expect(history.push).toHaveBeenCalledWith(
+          '/my-companies/reports/company-id/create-report',
+        ),
       );
     });
 

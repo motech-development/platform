@@ -81,38 +81,36 @@ describe('Form', () => {
     it('should enable save button if for is valid', async () => {
       const input = screen.getByLabelText('Test');
 
-      userEvent.type(input, 'Hello world');
+      await userEvent.type(input, 'Hello world');
 
       await waitFor(() =>
-        expect(screen.getByRole('button')).toHaveAttribute('disabled'),
+        expect(screen.getByRole('button')).not.toHaveAttribute('disabled'),
       );
     });
 
     it('should submit with the correct values', async () => {
       const { findByLabelText, findByRole } = component;
 
-      await act(async () => {
-        const input = await findByLabelText('Test');
+      const input = await findByLabelText('Test');
 
-        userEvent.type(input, 'Hello world');
-      });
+      await userEvent.type(input, 'Hello world');
 
-      await act(async () => {
-        const button = await findByRole('button');
+      const button = await findByRole('button');
 
-        await waitFor(() => expect(button).not.toBeDisabled());
+      await waitFor(() => expect(button).not.toBeDisabled());
 
-        fireEvent.click(button);
-      });
+      fireEvent.click(button);
 
-      expect(onSubmit).toHaveBeenCalledWith({
-        empty: '',
-        obj: {
+      await waitFor(() =>
+        expect(onSubmit).toHaveBeenCalledWith({
           empty: '',
-          test: '',
-        },
-        test: 'Hello world',
-      });
+          obj: {
+            empty: '',
+            test: '',
+          },
+          test: 'Hello world',
+        }),
+      );
     });
   });
 
@@ -167,30 +165,28 @@ describe('Form', () => {
     it('should submit with the correct values', async () => {
       const { findByLabelText, findByRole } = component;
 
-      await act(async () => {
-        const input = await findByLabelText('Test');
+      const input = await findByLabelText('Test');
 
-        fireEvent.change(input, {
-          target: { focus: () => {}, value: '000000' },
-        });
+      fireEvent.change(input, {
+        target: { focus: () => {}, value: '000000' },
       });
 
-      await act(async () => {
-        const button = await findByRole('button');
+      const button = await findByRole('button');
 
-        await waitFor(() => expect(button).not.toBeDisabled());
+      await waitFor(() => expect(button).not.toBeDisabled());
 
-        fireEvent.click(button);
-      });
+      fireEvent.click(button);
 
-      expect(onSubmit).toHaveBeenCalledWith({
-        empty: '',
-        obj: {
+      await waitFor(() =>
+        expect(onSubmit).toHaveBeenCalledWith({
           empty: '',
-          test: '',
-        },
-        test: '00-00-00',
-      });
+          obj: {
+            empty: '',
+            test: '',
+          },
+          test: '00-00-00',
+        }),
+      );
     });
   });
 
@@ -215,30 +211,28 @@ describe('Form', () => {
     it('should submit with the correct values', async () => {
       const { findByLabelText, findByRole } = component;
 
-      await act(async () => {
-        const input = await findByLabelText('Test');
+      const input = await findByLabelText('Test');
 
-        fireEvent.change(input, {
-          target: { focus: () => {}, value: '20' },
-        });
+      fireEvent.change(input, {
+        target: { focus: () => {}, value: '20' },
       });
 
-      await act(async () => {
-        const button = await findByRole('button');
+      const button = await findByRole('button');
 
-        await waitFor(() => expect(button).not.toBeDisabled());
+      await waitFor(() => expect(button).not.toBeDisabled());
 
-        fireEvent.click(button);
-      });
+      fireEvent.click(button);
 
-      expect(onSubmit).toHaveBeenCalledWith({
-        empty: '',
-        obj: {
+      await waitFor(() =>
+        expect(onSubmit).toHaveBeenCalledWith({
           empty: '',
-          test: '',
-        },
-        test: 20,
-      });
+          obj: {
+            empty: '',
+            test: '',
+          },
+          test: 20,
+        }),
+      );
     });
   });
 
@@ -263,30 +257,28 @@ describe('Form', () => {
     it('should submit with the correct values', async () => {
       const { findByLabelText, findByRole } = component;
 
-      await act(async () => {
-        const input = await findByLabelText('Test');
+      const input = await findByLabelText('Test');
 
-        fireEvent.change(input, {
-          target: { focus: () => {}, value: '20' },
-        });
+      fireEvent.change(input, {
+        target: { focus: () => {}, value: '20' },
       });
 
-      await act(async () => {
-        const button = await findByRole('button');
+      const button = await findByRole('button');
 
-        await waitFor(() => expect(button).not.toBeDisabled());
+      await waitFor(() => expect(button).not.toBeDisabled());
 
-        fireEvent.click(button);
-      });
+      fireEvent.click(button);
 
-      expect(onSubmit).toHaveBeenCalledWith({
-        empty: '',
-        obj: {
+      await waitFor(() =>
+        expect(onSubmit).toHaveBeenCalledWith({
           empty: '',
-          test: '',
-        },
-        test: 20,
-      });
+          obj: {
+            empty: '',
+            test: '',
+          },
+          test: 20,
+        }),
+      );
     });
   });
 
@@ -348,30 +340,28 @@ describe('Form', () => {
     it('should alter the response before submitting', async () => {
       const { findByLabelText, findByRole } = component;
 
-      await act(async () => {
-        const input = await findByLabelText('Test');
+      const input = await findByLabelText('Test');
 
-        fireEvent.change(input, {
-          target: { focus: () => {}, value: '20' },
-        });
+      fireEvent.change(input, {
+        target: { focus: () => {}, value: '20' },
       });
 
-      await act(async () => {
-        const button = await findByRole('button');
+      const button = await findByRole('button');
 
-        await waitFor(() => expect(button).not.toBeDisabled());
+      await waitFor(() => expect(button).not.toBeDisabled());
 
-        fireEvent.click(button);
-      });
+      fireEvent.click(button);
 
-      expect(onSubmit).toHaveBeenCalledWith({
-        empty: '',
-        obj: {
+      await waitFor(() =>
+        expect(onSubmit).toHaveBeenCalledWith({
           empty: '',
-          test: 'Hello',
-        },
-        test: 20,
-      });
+          obj: {
+            empty: '',
+            test: 'Hello',
+          },
+          test: 20,
+        }),
+      );
     });
   });
 });
