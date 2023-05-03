@@ -4,11 +4,10 @@ import {
   ApolloProvider,
   InMemoryCache,
   InMemoryCacheConfig,
-  NormalizedCacheObject,
 } from '@apollo/client';
 import { createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 export interface IApolloProps {
   cacheConfig?: InMemoryCacheConfig;
@@ -31,12 +30,10 @@ function Apollo({
   isLoading,
   unauthorised,
 }: IApolloProps) {
-  const [client, setClient] = useState<ApolloClient<NormalizedCacheObject>>();
   const { REACT_APP_APPSYNC_URL, REACT_APP_AWS_REGION } = process.env;
   const url = REACT_APP_APPSYNC_URL;
   const region = REACT_APP_AWS_REGION;
-
-  useEffect(() => {
+  const client = useMemo(() => {
     if (url && region) {
       const auth = {
         jwtToken: async () => {
@@ -64,9 +61,10 @@ function Apollo({
         link,
       });
 
-      setClient(apollo);
+      return apollo;
     }
 
+    return null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

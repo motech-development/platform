@@ -8,7 +8,7 @@ import {
   TableCell,
   Typography,
 } from '@motech-development/breeze-ui';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import ON_NOTIFICATION, {
@@ -122,6 +122,8 @@ export interface IUserNotificationsProps {
 
 function UserNotifications({ id }: IUserNotificationsProps) {
   const { t } = useTranslation('user-notifications');
+  const renderCheck = process.env.NODE_ENV === 'development' ? 2 : 1;
+  const renderCount = useRef(0);
   const { data, subscribeToMore } = useQuery<
     IGetNotificationsOutput,
     IGetNotificationsInput
@@ -131,35 +133,52 @@ function UserNotifications({ id }: IUserNotificationsProps) {
       id,
     },
   });
-  const [markAsRead] =
-    useMutation<IMarkAsReadOutput, IMarkAsReadInput>(MARK_AS_READ);
+  const [markAsRead] = useMutation<IMarkAsReadOutput, IMarkAsReadInput>(
+    MARK_AS_READ,
+  );
 
   useEffect(
-    () =>
-      subscribeToMore<IOnNotificationOutput, IOnNotificationInput>({
-        document: ON_NOTIFICATION,
-        updateQuery: (prev, { subscriptionData }) => {
-          if (
-            !subscriptionData.data?.onNotification ||
-            !prev.getNotifications
-          ) {
-            return prev;
-          }
+    () => {
+      let unsubscribe: () => void;
 
-          return {
-            getNotifications: {
-              ...prev.getNotifications,
-              items: [
-                subscriptionData.data.onNotification,
-                ...prev.getNotifications.items,
-              ],
-            },
-          };
-        },
-        variables: {
-          owner: id,
-        },
-      }),
+      renderCount.current += 1;
+
+      if (renderCount.current >= renderCheck) {
+        unsubscribe = subscribeToMore<
+          IOnNotificationOutput,
+          IOnNotificationInput
+        >({
+          document: ON_NOTIFICATION,
+          updateQuery: (prev, { subscriptionData }) => {
+            if (
+              !subscriptionData.data?.onNotification ||
+              !prev.getNotifications
+            ) {
+              return prev;
+            }
+
+            return {
+              getNotifications: {
+                ...prev.getNotifications,
+                items: [
+                  subscriptionData.data.onNotification,
+                  ...prev.getNotifications.items,
+                ],
+              },
+            };
+          },
+          variables: {
+            owner: id,
+          },
+        });
+      }
+
+      return () => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      };
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
