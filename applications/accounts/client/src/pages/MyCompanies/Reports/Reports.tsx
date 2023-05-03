@@ -17,7 +17,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { useQs } from '@motech-development/query-string-hook';
 import { saveAs } from 'file-saver';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -100,6 +100,8 @@ function row({ download, label }: IDataRow) {
 
 function Reports() {
   const { companyId } = useParams<IReportsParams>();
+  const renderCheck = process.env.NODE_ENV === 'development' ? 2 : 1;
+  const renderCount = useRef(0);
   const { user } = useAuth();
   const { add } = useToast();
   const { t } = useTranslation('reports');
@@ -131,30 +133,45 @@ function Reports() {
   });
 
   useEffect(() => {
-    subscribeToMore<IOnNotificationOutput, IOnNotificationInput>({
-      document: ON_NOTIFICATION,
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data?.onNotification || !prev.getReports) {
-          return prev;
-        }
+    let unsubscribe: () => void;
 
-        const payload = parse(subscriptionData.data.onNotification.payload);
-        const result = [...prev.getReports.items, payload];
-        const items = result.filter(
-          (a, index) => result.findIndex((b) => a.id === b.id) === index,
-        );
+    renderCount.current += 1;
 
-        return {
-          getReports: {
-            ...prev.getReports,
-            items,
-          },
-        };
-      },
-      variables: {
-        owner: user?.sub as string,
-      },
-    });
+    if (renderCount.current >= renderCheck) {
+      unsubscribe = subscribeToMore<
+        IOnNotificationOutput,
+        IOnNotificationInput
+      >({
+        document: ON_NOTIFICATION,
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data?.onNotification || !prev.getReports) {
+            return prev;
+          }
+
+          const payload = parse(subscriptionData.data.onNotification.payload);
+          const result = [...prev.getReports.items, payload];
+          const items = result.filter(
+            (a, index) => result.findIndex((b) => a.id === b.id) === index,
+          );
+
+          return {
+            getReports: {
+              ...prev.getReports,
+              items,
+            },
+          };
+        },
+        variables: {
+          owner: user?.sub as string,
+        },
+      });
+    }
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

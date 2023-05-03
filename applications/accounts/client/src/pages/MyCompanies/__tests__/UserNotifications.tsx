@@ -258,13 +258,11 @@ describe('UserNotifications', () => {
     it('should mark notification as read', async () => {
       const { container, findByRole } = component;
 
-      await act(async () => {
-        const button = await findByRole('button');
+      const button = await findByRole('button');
 
-        fireEvent.click(button);
+      fireEvent.click(button);
 
-        fireEvent.click(button);
-      });
+      fireEvent.click(button);
 
       await waitFor(() => expect(container).toBeInTheDocument());
     });
