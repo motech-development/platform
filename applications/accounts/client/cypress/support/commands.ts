@@ -1,4 +1,4 @@
-/* eslint-disable no-undef, camelcase */
+/* eslint-disable @typescript-eslint/naming-convention */
 import '@testing-library/cypress/add-commands';
 import 'cypress-file-upload';
 import 'cypress-localstorage-commands';
@@ -11,7 +11,7 @@ Cypress.Commands.add('getBaseUrl', () => {
     throw new Error('BaseURL not found.');
   }
 
-  return baseUrl;
+  return cy.then(() => baseUrl);
 });
 
 Cypress.Commands.add(
@@ -33,8 +33,12 @@ Cypress.Commands.add(
       url: Cypress.env('AUTH_URL'),
     };
 
-    cy.request(options).then(({ body }) => {
-      // eslint-disable-next-line camelcase
+    cy.request<{
+      access_token: string;
+      expires_in: number;
+      id_token: string;
+      token_type: string;
+    }>(options).then(({ body }) => {
       const { access_token, expires_in, id_token, token_type } = body;
 
       cy.intercept('POST', 'oauth/token', {
@@ -55,7 +59,7 @@ Cypress.Commands.add(
             decodedToken: {
               user: JSON.parse(
                 Buffer.from(id_token.split('.')[1], 'base64').toString('ascii'),
-              ),
+              ) as string,
             },
             expires_in,
             id_token,
@@ -74,13 +78,15 @@ Cypress.Commands.add(
 Cypress.Commands.add('format', (type, value) => {
   switch (type) {
     case 'currency':
-      return `£${Math.abs(value).toFixed(2)}`;
+      return cy.then(() => `£${Math.abs(parseFloat(value)).toFixed(2)}`);
     case 'percentage':
-      return `${value}%`;
+      return cy.then(() => `${value}%`);
     case 'sort code':
-      return value.replace(/(\d{2})(\d{2})(\d{2})/, '$1-$2-$3');
+      return cy.then(
+        () => value.replace(/(\d{2})(\d{2})(\d{2})/, '$1-$2-$3') as string,
+      );
     case 'VAT registration':
-      return `GB${value}`;
+      return cy.then(() => `GB${value}`);
     default:
       throw new Error('Format unknown');
   }
@@ -88,8 +94,8 @@ Cypress.Commands.add('format', (type, value) => {
 
 Cypress.Commands.add('a11yWithLogs', () => {
   cy.checkA11y(
-    null,
-    null,
+    undefined,
+    undefined,
     (violations) => {
       cy.task(
         'log',
@@ -120,26 +126,30 @@ Cypress.Commands.add(
     prevSubject: 'element',
   },
   ($element) => {
-    const click = ($el) => {
+    cy.wrap($element).as('button');
+
+    cy.get('@button').should('be.visible');
+
+    cy.get('@button').pipe(($el) => {
       const instance = $el.get(0);
 
       instance.click();
 
       return instance;
-    };
+    });
 
-    return cy
-      .wrap($element)
-      .should('be.visible')
-      .pipe(click)
-      .should(($el) => expect($el).to.not.be.visible);
+    cy.get('@button').should('not.exist');
+
+    return cy.get('@button');
   },
 );
 
-Cypress.Commands.add('waitForToast', (timeout = 20000) =>
-  cy.waitUntil(() => Cypress.$('[role="alert"]').length === 0, {
-    timeout,
-  }),
+Cypress.Commands.add(
+  'waitForToast',
+  (timeout = 20000) =>
+    cy.waitUntil(() => Cypress.$('[role="alert"]').length === 0, {
+      timeout,
+    }) as unknown as Cypress.Chainable<Element>,
 );
 
 Cypress.Commands.add(
@@ -148,10 +158,12 @@ Cypress.Commands.add(
     prevSubject: 'element',
   },
   ($element, visible = true) => {
-    const check = ($el) => $el.get(0);
+    cy.wrap($element).as('element');
 
-    cy.wrap($element)
-      .pipe(check)
-      .should(visible ? 'be.visible' : 'not.exist');
+    cy.get('@element').pipe(($el) => $el.get(0));
+
+    cy.get('@element').should(visible ? 'be.visible' : 'not.exist');
+
+    return cy.get('@element');
   },
 );

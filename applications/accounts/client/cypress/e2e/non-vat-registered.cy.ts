@@ -34,55 +34,49 @@ describe('Non-VAT registered', () => {
           name: 'Add a new company',
         }).safeClick();
 
-        cy.findByLabelText('Name*')
-          .should('be.visible')
-          .focus()
-          .type(data.company.name);
+        cy.findByLabelText('Name*').should('be.visible').focus();
 
-        cy.findByLabelText('Company number*')
-          .should('be.visible')
-          .focus()
-          .type(data.company.companyNumber);
+        cy.findByLabelText('Name*').type(data.company.name);
 
-        cy.findByLabelText('Account number*')
-          .should('be.visible')
-          .focus()
-          .type(data.company.bank.accountNumber);
+        cy.findByLabelText('Company number*').should('be.visible').focus();
 
-        cy.findByLabelText('Sort code*')
-          .should('be.visible')
-          .focus()
-          .type(data.company.bank.sortCode);
+        cy.findByLabelText('Company number*').type(data.company.companyNumber);
 
-        cy.findByLabelText('Address line 1*')
-          .should('be.visible')
-          .focus()
-          .type(data.company.address.line1);
+        cy.findByLabelText('Account number*').should('be.visible').focus();
 
-        cy.findByLabelText('Town*')
-          .should('be.visible')
-          .focus()
-          .type(data.company.address.line3);
+        cy.findByLabelText('Account number*').type(
+          data.company.bank.accountNumber,
+        );
 
-        cy.findByLabelText('County')
-          .should('be.visible')
-          .focus()
-          .type(data.company.address.line4);
+        cy.findByLabelText('Sort code*').should('be.visible').focus();
 
-        cy.findByLabelText('Postcode*')
-          .should('be.visible')
-          .focus()
-          .type(data.company.address.line5);
+        cy.findByLabelText('Sort code*').type(data.company.bank.sortCode);
 
-        cy.findByLabelText('Email address*')
-          .should('be.visible')
-          .focus()
-          .type(data.company.contact.email);
+        cy.findByLabelText('Address line 1*').should('be.visible').focus();
 
-        cy.findByLabelText('Telephone number*')
-          .should('be.visible')
-          .focus()
-          .type(data.company.contact.telephone);
+        cy.findByLabelText('Address line 1*').type(data.company.address.line1);
+
+        cy.findByLabelText('Town*').should('be.visible').focus();
+
+        cy.findByLabelText('Town*').type(data.company.address.line3);
+
+        cy.findByLabelText('County').should('be.visible').focus();
+
+        cy.findByLabelText('County').type(data.company.address.line4);
+
+        cy.findByLabelText('Postcode*').should('be.visible').focus();
+
+        cy.findByLabelText('Postcode*').type(data.company.address.line5);
+
+        cy.findByLabelText('Email address*').should('be.visible').focus();
+
+        cy.findByLabelText('Email address*').type(data.company.contact.email);
+
+        cy.findByLabelText('Telephone number*').should('be.visible').focus();
+
+        cy.findByLabelText('Telephone number*').type(
+          data.company.contact.telephone,
+        );
 
         cy.findByRole('button', {
           name: 'Settings',
@@ -90,27 +84,25 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('None').check();
 
-        cy.findByLabelText('Day')
-          .should('be.visible')
-          .focus()
-          .select(data.yearEnd.day);
+        cy.findByLabelText('Day').should('be.visible').focus();
 
-        cy.findByLabelText('Month')
-          .should('be.visible')
-          .focus()
-          .select(data.yearEnd.month);
+        cy.findByLabelText('Day').select(data.yearEnd.day);
 
-        cy.findByLabelText('VAT to charge')
-          .should('be.visible')
-          .focus()
-          .clear()
-          .type(data.vat.charge);
+        cy.findByLabelText('Month').should('be.visible').focus();
 
-        cy.findByLabelText('VAT to pay')
-          .should('be.visible')
-          .focus()
-          .clear()
-          .type(data.vat.pay);
+        cy.findByLabelText('Month').select(data.yearEnd.month);
+
+        cy.findByLabelText('VAT to charge').should('be.visible').focus();
+
+        cy.findByLabelText('VAT to charge').clear();
+
+        cy.findByLabelText('VAT to charge').type(data.vat.charge);
+
+        cy.findByLabelText('VAT to pay').should('be.visible').focus();
+
+        cy.findByLabelText('VAT to pay').clear();
+
+        cy.findByLabelText('VAT to pay').type(data.vat.pay);
 
         cy.findByRole('button', {
           name: 'Save',
@@ -182,19 +174,17 @@ describe('Non-VAT registered', () => {
             .should('be.visible')
             .should('have.value', company.yearEnd.day);
 
-          cy.findByLabelText('Day')
-            .should('be.visible')
-            .focus()
-            .select(settings.yearEnd.day);
+          cy.findByLabelText('Day').should('be.visible').focus();
+
+          cy.findByLabelText('Day').select(settings.yearEnd.day);
 
           cy.findByLabelText('Month')
             .should('be.visible')
             .should('have.value', company.yearEnd.month);
 
-          cy.findByLabelText('Month')
-            .should('be.visible')
-            .focus()
-            .select(settings.yearEnd.month);
+          cy.findByLabelText('Month').should('be.visible').focus();
+
+          cy.findByLabelText('Month').select(settings.yearEnd.month);
 
           cy.findByRole('button', {
             name: 'Save',
@@ -213,27 +203,24 @@ describe('Non-VAT registered', () => {
           name: 'Add a new category',
         }).click();
 
-        cy.findAllByLabelText('Name')
-          .eq(5)
-          .should('be.visible')
-          .focus()
-          .type(settings.categories[0].name);
+        cy.findAllByLabelText('Name').eq(5).should('be.visible').focus();
+
+        cy.findAllByLabelText('Name').eq(5).type(settings.categories[0].name);
 
         cy.findByRole('button', {
           name: 'Add a new category',
         }).click();
 
-        cy.findAllByLabelText('Name')
-          .eq(6)
-          .should('be.visible')
-          .focus()
-          .type(settings.categories[1].name);
+        cy.findAllByLabelText('Name').eq(6).should('be.visible').focus();
+
+        cy.findAllByLabelText('Name').eq(6).type(settings.categories[1].name);
+
+        cy.findAllByLabelText('VAT rate').eq(6).should('be.visible').focus();
+
+        cy.findAllByLabelText('VAT rate').eq(6).clear();
 
         cy.findAllByLabelText('VAT rate')
           .eq(6)
-          .should('be.visible')
-          .focus()
-          .clear()
           .type(settings.categories[1].vatRate);
 
         cy.findByLabelText('Day')
@@ -296,35 +283,29 @@ describe('Non-VAT registered', () => {
           name: 'Add a new client',
         }).safeClick();
 
-        cy.findByLabelText('Name*')
-          .should('be.visible')
-          .focus()
-          .type(client.name);
+        cy.findByLabelText('Name*').should('be.visible').focus();
 
-        cy.findByLabelText('Address line 1*')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line1);
+        cy.findByLabelText('Name*').type(client.name);
 
-        cy.findByLabelText('Town*')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line3);
+        cy.findByLabelText('Address line 1*').should('be.visible').focus();
 
-        cy.findByLabelText('Postcode*')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line5);
+        cy.findByLabelText('Address line 1*').type(client.address.line1);
 
-        cy.findByLabelText('Email address*')
-          .should('be.visible')
-          .focus()
-          .type(client.contact.email);
+        cy.findByLabelText('Town*').should('be.visible').focus();
 
-        cy.findByLabelText('Telephone number*')
-          .should('be.visible')
-          .focus()
-          .type(client.contact.telephone);
+        cy.findByLabelText('Town*').type(client.address.line3);
+
+        cy.findByLabelText('Postcode*').should('be.visible').focus();
+
+        cy.findByLabelText('Postcode*').type(client.address.line5);
+
+        cy.findByLabelText('Email address*').should('be.visible').focus();
+
+        cy.findByLabelText('Email address*').type(client.contact.email);
+
+        cy.findByLabelText('Telephone number*').should('be.visible').focus();
+
+        cy.findByLabelText('Telephone number*').type(client.contact.telephone);
 
         cy.findByRole('button', {
           name: 'Save',
@@ -344,45 +325,37 @@ describe('Non-VAT registered', () => {
           name: 'Add a new client',
         }).safeClick();
 
-        cy.findByLabelText('Name*')
-          .should('be.visible')
-          .focus()
-          .type(client.name);
+        cy.findByLabelText('Name*').should('be.visible').focus();
 
-        cy.findByLabelText('Address line 1*')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line1);
+        cy.findByLabelText('Name*').type(client.name);
 
-        cy.findByLabelText('Address line 2')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line2);
+        cy.findByLabelText('Address line 1*').should('be.visible').focus();
 
-        cy.findByLabelText('Town*')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line3);
+        cy.findByLabelText('Address line 1*').type(client.address.line1);
 
-        cy.findByLabelText('County')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line4);
+        cy.findByLabelText('Address line 2').should('be.visible').focus();
 
-        cy.findByLabelText('Postcode*')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line5);
+        cy.findByLabelText('Address line 2').type(client.address.line2);
 
-        cy.findByLabelText('Email address*')
-          .should('be.visible')
-          .focus()
-          .type(client.contact.email);
+        cy.findByLabelText('Town*').should('be.visible').focus();
 
-        cy.findByLabelText('Telephone number*')
-          .should('be.visible')
-          .focus()
-          .type(client.contact.telephone);
+        cy.findByLabelText('Town*').type(client.address.line3);
+
+        cy.findByLabelText('County').should('be.visible').focus();
+
+        cy.findByLabelText('County').type(client.address.line4);
+
+        cy.findByLabelText('Postcode*').should('be.visible').focus();
+
+        cy.findByLabelText('Postcode*').type(client.address.line5);
+
+        cy.findByLabelText('Email address*').should('be.visible').focus();
+
+        cy.findByLabelText('Email address*').type(client.contact.email);
+
+        cy.findByLabelText('Telephone number*').should('be.visible').focus();
+
+        cy.findByLabelText('Telephone number*').type(client.contact.telephone);
 
         cy.findByRole('button', {
           name: 'Save',
@@ -402,40 +375,33 @@ describe('Non-VAT registered', () => {
           name: 'Add a new client',
         }).safeClick();
 
-        cy.findByLabelText('Name*')
-          .should('be.visible')
-          .focus()
-          .type(client.name);
+        cy.findByLabelText('Name*').should('be.visible').focus();
 
-        cy.findByLabelText('Address line 1*')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line1);
+        cy.findByLabelText('Name*').type(client.name);
 
-        cy.findByLabelText('Town*')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line3);
+        cy.findByLabelText('Address line 1*').should('be.visible').focus();
 
-        cy.findByLabelText('County')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line4);
+        cy.findByLabelText('Address line 1*').type(client.address.line1);
 
-        cy.findByLabelText('Postcode*')
-          .should('be.visible')
-          .focus()
-          .type(client.address.line5);
+        cy.findByLabelText('Town*').should('be.visible').focus();
 
-        cy.findByLabelText('Email address*')
-          .should('be.visible')
-          .focus()
-          .type(client.contact.email);
+        cy.findByLabelText('Town*').type(client.address.line3);
 
-        cy.findByLabelText('Telephone number*')
-          .should('be.visible')
-          .focus()
-          .type(client.contact.telephone);
+        cy.findByLabelText('County').should('be.visible').focus();
+
+        cy.findByLabelText('County').type(client.address.line4);
+
+        cy.findByLabelText('Postcode*').should('be.visible').focus();
+
+        cy.findByLabelText('Postcode*').type(client.address.line5);
+
+        cy.findByLabelText('Email address*').should('be.visible').focus();
+
+        cy.findByLabelText('Email address*').type(client.contact.email);
+
+        cy.findByLabelText('Telephone number*').should('be.visible').focus();
+
+        cy.findByLabelText('Telephone number*').type(client.contact.telephone);
 
         cy.findByRole('button', {
           name: 'Save',
@@ -461,9 +427,11 @@ describe('Non-VAT registered', () => {
         cy.findByLabelText('Name*')
           .should('be.visible')
           .should('have.value', client.name)
-          .focus()
-          .clear()
-          .type(updated.name);
+          .focus();
+
+        cy.findByLabelText('Name*').clear();
+
+        cy.findByLabelText('Name*').type(updated.name);
 
         cy.findByLabelText('Address line 1*')
           .should('be.visible')
@@ -519,8 +487,11 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText(`Please type ${client.name} to confirm`)
           .should('be.visible')
-          .focus()
-          .type(client.name);
+          .focus();
+
+        cy.findByLabelText(`Please type ${client.name} to confirm`).type(
+          client.name,
+        );
 
         cy.findAllByRole('button', {
           name: 'Delete',
@@ -580,22 +551,19 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('Sale').check();
 
-        cy.findByLabelText('Supplier')
-          .should('be.visible')
-          .focus()
-          .select(transaction.supplier);
+        cy.findByLabelText('Supplier').should('be.visible').focus();
 
-        cy.findByLabelText('Description')
-          .should('be.visible')
-          .focus()
-          .type(transaction.description);
+        cy.findByLabelText('Supplier').select(transaction.supplier);
+
+        cy.findByLabelText('Description').should('be.visible').focus();
+
+        cy.findByLabelText('Description').type(transaction.description);
 
         cy.findByLabelText('Confirmed').check();
 
-        cy.findByLabelText('Amount')
-          .should('be.visible')
-          .focus()
-          .type(transaction.amount);
+        cy.findByLabelText('Amount').should('be.visible').focus();
+
+        cy.findByLabelText('Amount').type(transaction.amount);
 
         cy.format('currency', '0').then((value) => {
           cy.findByLabelText('VAT')
@@ -625,27 +593,23 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('Purchase').check();
 
-        cy.findByLabelText('Supplier')
-          .should('be.visible')
-          .focus()
-          .type(transaction.supplier);
+        cy.findByLabelText('Supplier').should('be.visible').focus();
 
-        cy.findByLabelText('Description')
-          .should('be.visible')
-          .focus()
-          .type(transaction.description);
+        cy.findByLabelText('Supplier').type(transaction.supplier);
+
+        cy.findByLabelText('Description').should('be.visible').focus();
+
+        cy.findByLabelText('Description').type(transaction.description);
 
         cy.findByLabelText('Confirmed').check();
 
-        cy.findByLabelText('Category')
-          .should('be.visible')
-          .focus()
-          .select(transaction.category);
+        cy.findByLabelText('Category').should('be.visible').focus();
 
-        cy.findByLabelText('Amount')
-          .should('be.visible')
-          .focus()
-          .type(transaction.amount);
+        cy.findByLabelText('Category').select(transaction.category);
+
+        cy.findByLabelText('Amount').should('be.visible').focus();
+
+        cy.findByLabelText('Amount').type(transaction.amount);
 
         cy.format('currency', transaction.vat).then((value) => {
           cy.findByLabelText('VAT')
@@ -675,29 +639,25 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('Purchase').check();
 
-        cy.findByLabelText('Supplier')
-          .should('be.visible')
-          .focus()
-          .type(transaction.supplier);
+        cy.findByLabelText('Supplier').should('be.visible').focus();
 
-        cy.findByLabelText('Description')
-          .should('be.visible')
-          .focus()
-          .type(transaction.description);
+        cy.findByLabelText('Supplier').type(transaction.supplier);
+
+        cy.findByLabelText('Description').should('be.visible').focus();
+
+        cy.findByLabelText('Description').type(transaction.description);
 
         cy.findByLabelText('Confirmed').check();
 
         cy.findByLabelText('Yes').check();
 
-        cy.findByLabelText('Category')
-          .should('be.visible')
-          .focus()
-          .select(transaction.category);
+        cy.findByLabelText('Category').should('be.visible').focus();
 
-        cy.findByLabelText('Amount')
-          .should('be.visible')
-          .focus()
-          .type(transaction.amount);
+        cy.findByLabelText('Category').select(transaction.category);
+
+        cy.findByLabelText('Amount').should('be.visible').focus();
+
+        cy.findByLabelText('Amount').type(transaction.amount);
 
         cy.format('currency', transaction.vat).then((value) => {
           cy.findByLabelText('VAT')
@@ -727,27 +687,23 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('Purchase').check();
 
-        cy.findByLabelText('Supplier')
-          .should('be.visible')
-          .focus()
-          .type(transaction.supplier);
+        cy.findByLabelText('Supplier').should('be.visible').focus();
 
-        cy.findByLabelText('Description')
-          .should('be.visible')
-          .focus()
-          .type(transaction.description);
+        cy.findByLabelText('Supplier').type(transaction.supplier);
+
+        cy.findByLabelText('Description').should('be.visible').focus();
+
+        cy.findByLabelText('Description').type(transaction.description);
 
         cy.findByLabelText('Confirmed').check();
 
-        cy.findByLabelText('Category')
-          .should('be.visible')
-          .focus()
-          .select(transaction.category);
+        cy.findByLabelText('Category').should('be.visible').focus();
 
-        cy.findByLabelText('Amount')
-          .should('be.visible')
-          .focus()
-          .type(transaction.amount);
+        cy.findByLabelText('Category').select(transaction.category);
+
+        cy.findByLabelText('Amount').should('be.visible').focus();
+
+        cy.findByLabelText('Amount').type(transaction.amount);
 
         cy.format('currency', transaction.vat).then((value) => {
           cy.findByLabelText('VAT')
@@ -783,8 +739,11 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText(`Please type ${transaction.supplier} to confirm`)
           .should('be.visible')
-          .focus()
-          .type(transaction.supplier);
+          .focus();
+
+        cy.findByLabelText(
+          `Please type ${transaction.supplier} to confirm`,
+        ).type(transaction.supplier);
 
         cy.findAllByRole('button', {
           name: 'Delete',
@@ -806,24 +765,21 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('Sale').check();
 
-        cy.findByLabelText('Supplier')
-          .should('be.visible')
-          .focus()
-          .select(transaction.supplier);
+        cy.findByLabelText('Supplier').should('be.visible').focus();
 
-        cy.findByLabelText('Description')
-          .should('be.visible')
-          .focus()
-          .type(transaction.description);
+        cy.findByLabelText('Supplier').select(transaction.supplier);
+
+        cy.findByLabelText('Description').should('be.visible').focus();
+
+        cy.findByLabelText('Description').type(transaction.description);
 
         cy.findByLabelText('Pending').check();
 
         cy.findAllByLabelText('Yes').eq(1).check();
 
-        cy.findByLabelText('Amount')
-          .should('be.visible')
-          .focus()
-          .type(transaction.amount);
+        cy.findByLabelText('Amount').should('be.visible').focus();
+
+        cy.findByLabelText('Amount').type(transaction.amount);
 
         cy.format('currency', '0').then((value) => {
           cy.findByLabelText('VAT')
@@ -851,29 +807,25 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('Purchase').check();
 
-        cy.findByLabelText('Supplier')
-          .should('be.visible')
-          .focus()
-          .type(transaction.supplier);
+        cy.findByLabelText('Supplier').should('be.visible').focus();
 
-        cy.findByLabelText('Description')
-          .should('be.visible')
-          .focus()
-          .type(transaction.description);
+        cy.findByLabelText('Supplier').type(transaction.supplier);
+
+        cy.findByLabelText('Description').should('be.visible').focus();
+
+        cy.findByLabelText('Description').type(transaction.description);
 
         cy.findByLabelText('Pending').check();
 
         cy.findAllByLabelText('No').eq(1).check();
 
-        cy.findByLabelText('Category')
-          .should('be.visible')
-          .focus()
-          .select(transaction.category);
+        cy.findByLabelText('Category').should('be.visible').focus();
 
-        cy.findByLabelText('Amount')
-          .should('be.visible')
-          .focus()
-          .type(transaction.amount);
+        cy.findByLabelText('Category').select(transaction.category);
+
+        cy.findByLabelText('Amount').should('be.visible').focus();
+
+        cy.findByLabelText('Amount').type(transaction.amount);
 
         cy.format('currency', transaction.vat).then((value) => {
           cy.findByLabelText('VAT')
@@ -901,41 +853,37 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText('Purchase').check();
 
-        cy.findByTestId('date-picker')
-          .click()
-          .then(() => {
-            const day = DateTime.now()
-              .plus({
-                day: 1,
-              })
-              .day.toString();
+        cy.findByTestId('date-picker').click();
 
-            cy.findByTestId(`calendar-day-${day}`).safeClick();
-          });
+        cy.findByTestId('date-picker').then(() => {
+          const day = DateTime.now()
+            .plus({
+              day: 1,
+            })
+            .day.toString();
 
-        cy.findByLabelText('Supplier')
-          .should('be.visible')
-          .focus()
-          .type(transaction.supplier);
+          cy.findByTestId(`calendar-day-${day}`).safeClick();
+        });
 
-        cy.findByLabelText('Description')
-          .should('be.visible')
-          .focus()
-          .type(transaction.description);
+        cy.findByLabelText('Supplier').should('be.visible').focus();
+
+        cy.findByLabelText('Supplier').type(transaction.supplier);
+
+        cy.findByLabelText('Description').should('be.visible').focus();
+
+        cy.findByLabelText('Description').type(transaction.description);
 
         cy.findByLabelText('Pending').check();
 
         cy.findAllByLabelText('No').eq(1).check();
 
-        cy.findByLabelText('Category')
-          .should('be.visible')
-          .focus()
-          .select(transaction.category);
+        cy.findByLabelText('Category').should('be.visible').focus();
 
-        cy.findByLabelText('Amount')
-          .should('be.visible')
-          .focus()
-          .type(transaction.amount);
+        cy.findByLabelText('Category').select(transaction.category);
+
+        cy.findByLabelText('Amount').should('be.visible').focus();
+
+        cy.findByLabelText('Amount').type(transaction.amount);
 
         cy.format('currency', transaction.vat).then((value) => {
           cy.findByLabelText('VAT')
@@ -971,8 +919,11 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText(`Please type ${transaction.supplier} to confirm`)
           .should('be.visible')
-          .focus()
-          .type(transaction.supplier);
+          .focus();
+
+        cy.findByLabelText(
+          `Please type ${transaction.supplier} to confirm`,
+        ).type(transaction.supplier);
 
         cy.findAllByRole('button', {
           name: 'Delete',
@@ -1037,10 +988,9 @@ describe('Non-VAT registered', () => {
 
       const financialYear = DateTime.now().year.toString();
 
-      cy.findByLabelText('Financial year')
-        .should('be.visible')
-        .focus()
-        .select(financialYear);
+      cy.findByLabelText('Financial year').should('be.visible').focus();
+
+      cy.findByLabelText('Financial year').select(financialYear);
 
       cy.findByLabelText('Confirmed').check();
 
@@ -1117,8 +1067,11 @@ describe('Non-VAT registered', () => {
 
         cy.findByLabelText(`Please type ${company.name} to confirm`)
           .should('be.visible')
-          .focus()
-          .type(company.name);
+          .focus();
+
+        cy.findByLabelText(`Please type ${company.name} to confirm`).type(
+          company.name,
+        );
 
         cy.findByRole('button', {
           name: 'Delete',

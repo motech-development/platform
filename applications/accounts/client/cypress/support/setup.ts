@@ -1,7 +1,10 @@
 /* eslint-disable no-undef */
+let baseUrl: string;
 
 before(() => {
-  const { baseUrl } = Cypress.config();
+  cy.getBaseUrl().then((value) => {
+    baseUrl = value;
+  });
 
   cy.clearLocalStorageSnapshot().then(() => {
     cy.login().then(() => {
@@ -13,14 +16,19 @@ before(() => {
 });
 
 beforeEach(() => {
-  const { baseUrl } = Cypress.config();
+  cy.getBaseUrl().then((value) => {
+    baseUrl = value;
+  });
 
   if (window.navigator && navigator.serviceWorker) {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      registrations.forEach((registration) => {
-        registration.unregister();
-      });
-    });
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((registrations) => {
+        registrations.forEach((registration) => {
+          registration.unregister().catch(() => {});
+        });
+      })
+      .catch(() => {});
   }
 
   cy.restoreLocalStorage().then(() => {
