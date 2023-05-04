@@ -46,7 +46,7 @@ declare namespace Cypress {
      * https://www.cypress.io/blog/2019/01/22/when-can-the-test-click/
      * @example cy.get('button').safeClick()
      */
-    safeClick(): Chainable<Element>;
+    safeClick(): Chainable<JQueryWithSelector>;
 
     /**
      * Waits for toasts to disappear
@@ -59,6 +59,18 @@ declare namespace Cypress {
      * @example cy.get('button').waitForElement()
      * @example cy.get('button').waitForElement(false)
      */
-    waitForElement(visible?: boolean): Chainable<Element>;
+    waitForElement(visible?: boolean): Chainable<JQueryWithSelector>;
+  }
+
+  interface Cypress {
+    env(key: 'AUDIENCE'): string;
+
+    env(key: 'AUTH_URL'): string;
+
+    env(key: 'CLIENT_ID'): string;
+
+    env(key: 'PASSWORD'): string;
+
+    env(key: 'USERNAME'): string;
   }
 }

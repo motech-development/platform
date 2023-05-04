@@ -10,7 +10,8 @@
       "cypress-axe",
       "cypress-file-upload",
       "cypress-localstorage-commands",
-      "cypress-wait-until"
+      "cypress-wait-until",
+      "node"
     ]
   },
   "include": ["**/*.ts"]
