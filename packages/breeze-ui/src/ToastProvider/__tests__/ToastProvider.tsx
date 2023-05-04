@@ -1,4 +1,10 @@
-import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from '@testing-library/react';
 import { FC } from 'react';
 import { AlertTheme } from '../../Alert/Alert';
 import ToastProvider, { useToast } from '../ToastProvider';
@@ -149,6 +155,6 @@ describe('ToastProvider', () => {
       jest.runOnlyPendingTimers();
     });
 
-    expect(onDismiss).toHaveBeenCalled();
+    await waitFor(() => expect(onDismiss).toHaveBeenCalled());
   });
 });

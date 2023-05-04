@@ -1,6 +1,6 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 type AlertSpacing = 'sm' | 'md' | 'lg';
@@ -94,6 +94,8 @@ const Alert: FC<IAlertProps> = ({
   spacing = 'md',
   onDismiss,
 }) => {
+  const renderCheck = process.env.NODE_ENV === 'development' ? 2 : 1;
+  const renderCount = useRef(0);
   const [visible, setVisiblity] = useState(true);
   const dismiss = () => {
     setVisiblity(false);
@@ -103,10 +105,17 @@ const Alert: FC<IAlertProps> = ({
     }
   };
 
+  useEffect(() => {
+    renderCount.current += 1;
+  }, []);
+
   useEffect(
     () => () => {
-      setVisiblity(false);
+      if (renderCount.current >= renderCheck) {
+        setVisiblity(false);
+      }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
