@@ -806,7 +806,4 @@ resources:
   Outputs:
     AccountsApiUrl:
       Description: Accounts API URL
-      Value:
-        Fn::GetAtt:
-          - ${self:custom.resourceName}
-          - GraphQLUrl
+      Value: ${appsync:url}
