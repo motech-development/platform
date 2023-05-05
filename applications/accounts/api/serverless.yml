@@ -39,440 +39,6 @@ custom:
       AccountsApiUrl: REACT_APP_APPSYNC_URL
       AWS_REGION: REACT_APP_AWS_REGION
 
-  appSync:
-    name: ${self:custom.prefix}
-    authenticationType: OPENID_CONNECT
-    additionalAuthenticationProviders:
-      - authenticationType: AWS_IAM
-    openIdConnectConfig:
-      issuer: ${self:custom.oidc.issuer}
-    logConfig:
-      loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
-      level: ERROR
-    mappingTemplates:
-      - dataSource: Lambda
-        type: Query
-        field: getBalance
-        request: balance/getBalance/Query.getBalance.req.vtl
-        response: balance/getBalance/Query.getBalance.res.vtl
-
-      - dataSource: OpenBanking
-        type: Query
-        field: getBanks
-        request: bank/getBanks/Query.getBanks.req.vtl
-        response: bank/getBanks/Query.getBanks.res.vtl
-      - kind: PIPELINE
-        type: Query
-        field: getBankAccounts
-        functions:
-          - bankSettings
-          - getBankAccounts
-        request: bank/getBankAccounts/Query.getBankAccounts.req.vtl
-        response: bank/getBankAccounts/Query.getBankAccounts.res.vtl
-      - dataSource: Resolver
-        type: Mutation
-        field: bankCallback
-        request: bank/bankCallback/Mutation.bankCallback.req.vtl
-        response: bank/bankCallback/Mutation.bankCallback.res.vtl
-      - dataSource: OpenBanking
-        type: Mutation
-        field: createBankConnection
-        request: bank/createBankConnection/Mutation.createBankConnection.req.vtl
-        response: bank/createBankConnection/Mutation.createBankConnection.res.vtl
-      - kind: PIPELINE
-        type: Mutation
-        field: deleteBankConnection
-        functions:
-          - bankSettings
-          - unlinkBank
-          - resetBankSettings
-        request: bank/deleteBankConnection/Mutation.deleteBankConnection.req.vtl
-        response: bank/deleteBankConnection/Mutation.deleteBankConnection.res.vtl
-      - kind: PIPELINE
-        type: Query
-        field: getBankSettings
-        functions:
-          - bankSettings
-        request: bank/getBankSettings/Query.getBankSettings.req.vtl
-        response: bank/getBankSettings/Query.getBankSettings.res.vtl
-      - dataSource: Data
-        type: Mutation
-        field: updateBankSettings
-        request: bank/updateBankSettings/Mutation.updateBankSettings.req.vtl
-        response: bank/updateBankSettings/Mutation.updateBankSettings.res.vtl
-
-      - kind: PIPELINE
-        type: Mutation
-        field: createClient
-        functions:
-          - address
-          - addressFiltering
-          - telephone
-          - getClientCompanyId
-          - createClient
-        request: client/createClient/Mutation.createClient.req.vtl
-        response: client/createClient/Mutation.createClient.res.vtl
-      - dataSource: Data
-        type: Mutation
-        field: deleteClient
-        request: client/deleteClient/Mutation.deleteClient.req.vtl
-        response: client/deleteClient/Mutation.deleteClient.res.vtl
-      - kind: PIPELINE
-        type: Mutation
-        field: updateClient
-        functions:
-          - address
-          - addressFiltering
-          - telephone
-          - getClientCompanyId
-          - updateClient
-        request: client/updateClient/Mutation.updateClient.req.vtl
-        response: client/updateClient/Mutation.updateClient.res.vtl
-      - dataSource: Data
-        type: Query
-        field: getClient
-        request: client/getClient/Query.getClient.req.vtl
-        response: client/getClient/Query.getClient.res.vtl
-      - dataSource: Data
-        type: Query
-        field: getClients
-        request: client/getClients/Query.getClients.req.vtl
-        response: client/getClients/Query.getClients.res.vtl
-
-      - kind: PIPELINE
-        type: Mutation
-        field: createCompany
-        functions:
-          - address
-          - addressFiltering
-          - bank
-          - companyNumber
-          - telephone
-          - vatRegistration
-          - createCompany
-        request: company/createCompany/Mutation.createCompany.req.vtl
-        response: company/createCompany/Mutation.createCompany.res.vtl
-      - kind: PIPELINE
-        type: Mutation
-        field: deleteCompany
-        functions:
-          - deleteCompany
-          - queueCompanyDelete
-        request: company/deleteCompany/Mutation.deleteCompany.req.vtl
-        response: company/deleteCompany/Mutation.deleteCompany.res.vtl
-      - kind: PIPELINE
-        type: Mutation
-        field: updateCompany
-        functions:
-          - address
-          - addressFiltering
-          - bank
-          - companyNumber
-          - telephone
-          - updateCompany
-        request: company/updateCompany/Mutation.updateCompany.req.vtl
-        response: company/updateCompany/Mutation.updateCompany.res.vtl
-      - dataSource: Data
-        type: Query
-        field: getCompanies
-        request: company/getCompanies/Query.getCompanies.req.vtl
-        response: company/getCompanies/Query.getCompanies.res.vtl
-      - kind: PIPELINE
-        type: Query
-        field: getCompany
-        functions:
-          - getCompany
-        request: company/getCompany/Query.getCompany.req.vtl
-        response: company/getCompany/Query.getCompany.res.vtl
-
-      - dataSource: Data
-        type: Query
-        field: getNotifications
-        request: notifications/getNotifications/Query.getNotifications.req.vtl
-        response: notifications/getNotifications/Query.getNotifications.res.vtl
-      - dataSource: Data
-        type: Mutation
-        field: markAsRead
-        request: notifications/markAsRead/Mutation.markAsRead.req.vtl
-        response: notifications/markAsRead/Mutation.markAsRead.res.vtl
-      - dataSource: Resolver
-        type: Mutation
-        field: notificationBeacon
-        request: notifications/notificationBeacon/Mutation.notificationBeacon.req.vtl
-        response: notifications/notificationBeacon/Mutation.notificationBeacon.res.vtl
-
-      - kind: PIPELINE
-        type: Mutation
-        field: createReport
-        functions:
-          - getCompany
-          - createReport
-        request: reports/createReport/Mutation.createReport.req.vtl
-        response: reports/createReport/Mutation.createReport.res.vtl
-      - dataSource: Data
-        type: Query
-        field: getReports
-        request: reports/getReports/Query.getReports.req.vtl
-        response: reports/getReports/Query.getReports.res.vtl
-
-      - kind: PIPELINE
-        type: Mutation
-        field: updateSettings
-        functions:
-          - vatRegistration
-          - updateSettings
-        request: settings/updateSettings/Mutation.updateSettings.req.vtl
-        response: settings/updateSettings/Mutation.updateSettings.res.vtl
-      - dataSource: Data
-        type: Query
-        field: getSettings
-        request: settings/getSettings/Query.getSettings.req.vtl
-        response: settings/getSettings/Query.getSettings.res.vtl
-
-      - dataSource: Data
-        type: Mutation
-        field: addTransaction
-        request: transaction/addTransaction/Mutation.addTransaction.req.vtl
-        response: transaction/addTransaction/Mutation.addTransaction.res.vtl
-      - dataSource: Data
-        type: Mutation
-        field: deleteTransaction
-        request: transaction/deleteTransaction/Mutation.deleteTransaction.req.vtl
-        response: transaction/deleteTransaction/Mutation.deleteTransaction.res.vtl
-      - dataSource: Data
-        type: Query
-        field: getTransaction
-        request: transaction/getTransaction/Query.getTransaction.req.vtl
-        response: transaction/getTransaction/Query.getTransaction.res.vtl
-      - dataSource: Data
-        type: Query
-        field: getTransactions
-        request: transaction/getTransactions/Query.getTransactions.req.vtl
-        response: transaction/getTransactions/Query.getTransactions.res.vtl
-      - dataSource: Data
-        type: Mutation
-        field: updateTransaction
-        request: transaction/updateTransaction/Mutation.updateTransaction.req.vtl
-        response: transaction/updateTransaction/Mutation.updateTransaction.res.vtl
-
-      - kind: PIPELINE
-        type: Mutation
-        field: deleteFile
-        functions:
-          - getCompany
-          - deleteFile
-        request: storage/deleteFile/Mutation.deleteFile.req.vtl
-        response: storage/deleteFile/Mutation.deleteFile.res.vtl
-      - kind: PIPELINE
-        type: Query
-        field: requestDownload
-        functions:
-          - getCompany
-          - requestDownload
-        request: storage/requestDownload/Query.requestDownload.req.vtl
-        response: storage/requestDownload/Query.requestDownload.res.vtl
-      - kind: PIPELINE
-        type: Mutation
-        field: requestUpload
-        functions:
-          - getCompany
-          - requestUpload
-        request: storage/requestUpload/Mutation.requestUpload.req.vtl
-        response: storage/requestUpload/Mutation.requestUpload.res.vtl
-
-      - dataSource: Data
-        type: Query
-        field: getTypeahead
-        request: typeahead/getTypeahead/Query.getTypeahead.req.vtl
-        response: typeahead/getTypeahead/Query.getTypeahead.res.vtl
-    schema:
-      - schema/address.graphql
-      - schema/balance.graphql
-      - schema/bank.graphql
-      - schema/client.graphql
-      - schema/company.graphql
-      - schema/contact.graphql
-      - schema/expense-category.graphql
-      - schema/notification.graphql
-      - schema/report.graphql
-      - schema/schema.graphql
-      - schema/settings.graphql
-      - schema/storage.graphql
-      - schema/transaction.graphql
-      - schema/typeahead.graphql
-      - schema/vat-settings.graphql
-    functionConfigurations:
-      # Validation
-      - dataSource: Resolver
-        name: address
-        request: shared/address/Pipeline.address.req.vtl
-        response: shared/address/Pipeline.address.res.vtl
-      - dataSource: Resolver
-        name: bank
-        request: shared/bank/Pipeline.bank.req.vtl
-        response: shared/bank/Pipeline.bank.res.vtl
-      - dataSource: Resolver
-        name: companyNumber
-        request: shared/companyNumber/Pipeline.companyNumber.req.vtl
-        response: shared/companyNumber/Pipeline.companyNumber.res.vtl
-      - dataSource: Resolver
-        name: telephone
-        request: shared/telephone/Pipeline.telephone.req.vtl
-        response: shared/telephone/Pipeline.telephone.res.vtl
-      - dataSource: Resolver
-        name: vatRegistration
-        request: shared/vatRegistration/Pipeline.vatRegistration.req.vtl
-        response: shared/vatRegistration/Pipeline.vatRegistration.res.vtl
-
-      # Utilities
-      - dataSource: Resolver
-        name: addressFiltering
-        request: shared/addressFiltering/Pipeline.addressFiltering.req.vtl
-        response: shared/addressFiltering/Pipeline.addressFiltering.res.vtl
-      - dataSource: Data
-        name: bankSettings
-        request: shared/bankSettings/Pipeline.bankSettings.req.vtl
-        response: shared/bankSettings/Pipeline.bankSettings.res.vtl
-      - dataSource: Data
-        name: getCompany
-        request: shared/getCompany/Pipeline.getCompany.req.vtl
-        response: shared/getCompany/Pipeline.getCompany.res.vtl
-
-      # Bank
-      - dataSource: OpenBanking
-        name: getBankAccounts
-        request: bank/getBankAccounts/Pipeline.getBankAccounts.req.vtl
-        response: bank/getBankAccounts/Pipeline.getBankAccounts.res.vtl
-      - dataSource: Data
-        name: resetBankSettings
-        request: bank/deleteBankConnection/Pipeline.resetBankSettings.req.vtl
-        response: bank/deleteBankConnection/Pipeline.resetBankSettings.res.vtl
-      - dataSource: OpenBanking
-        name: unlinkBank
-        request: bank/deleteBankConnection/Pipeline.unlinkBank.req.vtl
-        response: bank/deleteBankConnection/Pipeline.unlinkBank.res.vtl
-
-      # Clients
-      - dataSource: Data
-        name: createClient
-        request: client/createClient/Pipeline.createClient.req.vtl
-        response: client/createClient/Pipeline.createClient.res.vtl
-      - dataSource: Data
-        name: getClientCompanyId
-        request: client/shared/getClientCompanyId/Pipeline.getClientCompanyId.req.vtl
-        response: client/shared/getClientCompanyId/Pipeline.getClientCompanyId.res.vtl
-      - dataSource: Data
-        name: updateClient
-        request: client/updateClient/Pipeline.updateClient.req.vtl
-        response: client/updateClient/Pipeline.updateClient.res.vtl
-
-      # Companies
-      - dataSource: Data
-        name: createCompany
-        request: company/createCompany/Pipeline.createCompany.req.vtl
-        response: company/createCompany/Pipeline.createCompany.res.vtl
-      - dataSource: Data
-        name: deleteCompany
-        request: company/deleteCompany/Pipeline.deleteCompany.req.vtl
-        response: company/deleteCompany/Pipeline.deleteCompany.res.vtl
-      - dataSource: Queue
-        name: queueCompanyDelete
-        request: company/deleteCompany/Pipeline.queueCompanyDelete.req.vtl
-        response: company/deleteCompany/Pipeline.queueCompanyDelete.res.vtl
-      - dataSource: Data
-        name: updateCompany
-        request: company/updateCompany/Pipeline.updateCompany.req.vtl
-        response: company/updateCompany/Pipeline.updateCompany.res.vtl
-
-      # Reports
-      - dataSource: Reports
-        name: createReport
-        request: reports/createReport/Pipeline.createReport.req.vtl
-        response: reports/createReport/Pipeline.createReport.res.vtl
-
-      # Settings
-      - dataSource: Data
-        name: updateSettings
-        request: settings/updateSettings/Pipeline.updateSettings.req.vtl
-        response: settings/updateSettings/Pipeline.updateSettings.res.vtl
-
-      # Storage
-      - dataSource: Queue
-        name: deleteFile
-        request: storage/deleteFile/Pipeline.deleteFile.req.vtl
-        response: storage/deleteFile/Pipeline.deleteFile.res.vtl
-      - dataSource: StorageUpload
-        name: requestDownload
-        request: storage/requestDownload/Pipeline.requestDownload.req.vtl
-        response: storage/requestDownload/Pipeline.requestDownload.res.vtl
-      - dataSource: StorageUpload
-        name: requestUpload
-        request: storage/requestUpload/Pipeline.requestUpload.req.vtl
-        response: storage/requestUpload/Pipeline.requestUpload.res.vtl
-    dataSources:
-      - type: NONE
-        name: Resolver
-      - type: AMAZON_DYNAMODB
-        name: Data
-        description: Application table
-        config:
-          tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
-          serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
-      - type: AWS_LAMBDA
-        name: Lambda
-        config:
-          lambdaFunctionArn: !GetAtt LambdaDataSourceLambdaFunction.Arn
-          serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
-      - type: HTTP
-        name: OpenBanking
-        config:
-          endpoint: !ImportValue ${self:provider.stage}-OpenBankingApiEndpoint
-          authorizationConfig:
-            authorizationType: AWS_IAM
-            awsIamConfig:
-              signingRegion: !Ref AWS::Region
-              signingServiceName: execute-api
-          serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
-      - type: HTTP
-        name: Reports
-        config:
-          endpoint: !ImportValue ${self:provider.stage}-AccountsReportsApiEndpoint
-          authorizationConfig:
-            authorizationType: AWS_IAM
-            awsIamConfig:
-              signingRegion: !Ref AWS::Region
-              signingServiceName: execute-api
-          serviceRoleArn: !GetAtt AppSyncReportsServiceRole.Arn
-      - type: HTTP
-        name: StorageUpload
-        config:
-          endpoint: !ImportValue ${self:provider.stage}-StorageUploadApiEndpoint
-          authorizationConfig:
-            authorizationType: AWS_IAM
-            awsIamConfig:
-              signingRegion: !Ref AWS::Region
-              signingServiceName: execute-api
-          serviceRoleArn: !GetAtt AppSyncStorageUploadServiceRole.Arn
-      - type: HTTP
-        name: Queue
-        config:
-          endpoint: !Join
-            - ''
-            - - 'https://sqs.'
-              - !Ref AWS::Region
-              - '.amazonaws.com/'
-          authorizationConfig:
-            authorizationType: AWS_IAM
-            awsIamConfig:
-              signingRegion: !Ref AWS::Region
-              signingServiceName: sqs
-          serviceRoleArn: !GetAtt AppSyncQueueServiceRole.Arn
-    substitutions:
-      appTable: !ImportValue ${self:provider.stage}-AccountsApplicationTable
-      deleteFileQueue: !ImportValue ${self:provider.stage}-DeleteFileQueueUrlPath
-      queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
-      stage: ${self:provider.stage}
-
   webpack:
     includeModules:
       forceExclude:
@@ -483,6 +49,460 @@ custom:
     packager: yarn
     packagerOptions:
       noFrozenLockfile: true
+
+appSync:
+  name: ${self:custom.prefix}
+
+  authentication:
+    type: OPENID_CONNECT
+    config:
+      issuer: ${self:custom.oidc.issuer}
+
+  additionalAuthentications:
+    - type: AWS_IAM
+
+  logging:
+    loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
+    level: ERROR
+
+  resolvers:
+    Query.getBalance:
+      dataSource: Lambda
+      request: balance/getBalance/Query.getBalance.req.vtl
+      response: balance/getBalance/Query.getBalance.res.vtl
+
+    Query.getBanks:
+      dataSource: OpenBanking
+      request: bank/getBanks/Query.getBanks.req.vtl
+      response: bank/getBanks/Query.getBanks.res.vtl
+
+    Query.getBankAccounts:
+      kind: PIPELINE
+      functions:
+        - bankSettings
+        - getBankAccounts
+      request: bank/getBankAccounts/Query.getBankAccounts.req.vtl
+      response: bank/getBankAccounts/Query.getBankAccounts.res.vtl
+
+    Mutation.bankCallback:
+      dataSource: Resolver
+      request: bank/bankCallback/Mutation.bankCallback.req.vtl
+      response: bank/bankCallback/Mutation.bankCallback.res.vtl
+
+    Mutation.createBankConnection:
+      dataSource: OpenBanking
+      request: bank/createBankConnection/Mutation.createBankConnection.req.vtl
+      response: bank/createBankConnection/Mutation.createBankConnection.res.vtl
+
+    Mutation.deleteBankConnection:
+      kind: PIPELINE
+      functions:
+        - bankSettings
+        - unlinkBank
+        - resetBankSettings
+      request: bank/deleteBankConnection/Mutation.deleteBankConnection.req.vtl
+      response: bank/deleteBankConnection/Mutation.deleteBankConnection.res.vtl
+
+    Query.getBankSettings:
+      kind: PIPELINE
+      functions:
+        - bankSettings
+      request: bank/getBankSettings/Query.getBankSettings.req.vtl
+      response: bank/getBankSettings/Query.getBankSettings.res.vtl
+
+    Mutation.updateBankSettings:
+      dataSource: Data
+      request: bank/updateBankSettings/Mutation.updateBankSettings.req.vtl
+      response: bank/updateBankSettings/Mutation.updateBankSettings.res.vtl
+
+    Mutation.createClient:
+      kind: PIPELINE
+      functions:
+        - address
+        - addressFiltering
+        - telephone
+        - getClientCompanyId
+        - createClient
+      request: client/createClient/Mutation.createClient.req.vtl
+      response: client/createClient/Mutation.createClient.res.vtl
+
+    Mutation.deleteClient:
+      dataSource: Data
+      request: client/deleteClient/Mutation.deleteClient.req.vtl
+      response: client/deleteClient/Mutation.deleteClient.res.vtl
+
+    Mutation.updateClient:
+      kind: PIPELINE
+      functions:
+        - address
+        - addressFiltering
+        - telephone
+        - getClientCompanyId
+        - updateClient
+      request: client/updateClient/Mutation.updateClient.req.vtl
+      response: client/updateClient/Mutation.updateClient.res.vtl
+
+    Query.getClient:
+      dataSource: Data
+      request: client/getClient/Query.getClient.req.vtl
+      response: client/getClient/Query.getClient.res.vtl
+
+    Query.getClients:
+      dataSource: Data
+      request: client/getClients/Query.getClients.req.vtl
+      response: client/getClients/Query.getClients.res.vtl
+
+    Mutation.createCompany:
+      kind: PIPELINE
+      functions:
+        - address
+        - addressFiltering
+        - bank
+        - companyNumber
+        - telephone
+        - vatRegistration
+        - createCompany
+      request: company/createCompany/Mutation.createCompany.req.vtl
+      response: company/createCompany/Mutation.createCompany.res.vtl
+
+    Mutation.deleteCompany:
+      kind: PIPELINE
+      functions:
+        - deleteCompany
+        - queueCompanyDelete
+      request: company/deleteCompany/Mutation.deleteCompany.req.vtl
+      response: company/deleteCompany/Mutation.deleteCompany.res.vtl
+
+    Mutation.updateCompany:
+      kind: PIPELINE
+      functions:
+        - address
+        - addressFiltering
+        - bank
+        - companyNumber
+        - telephone
+        - updateCompany
+      request: company/updateCompany/Mutation.updateCompany.req.vtl
+      response: company/updateCompany/Mutation.updateCompany.res.vtl
+
+    Query.getCompanies:
+      dataSource: Data
+      request: company/getCompanies/Query.getCompanies.req.vtl
+      response: company/getCompanies/Query.getCompanies.res.vtl
+
+    Query.getCompany:
+      kind: PIPELINE
+      functions:
+        - getCompany
+      request: company/getCompany/Query.getCompany.req.vtl
+      response: company/getCompany/Query.getCompany.res.vtl
+
+    Query.getNotifications:
+      dataSource: Data
+      request: notifications/getNotifications/Query.getNotifications.req.vtl
+      response: notifications/getNotifications/Query.getNotifications.res.vtl
+
+    Mutation.markAsRead:
+      dataSource: Data
+      request: notifications/markAsRead/Mutation.markAsRead.req.vtl
+      response: notifications/markAsRead/Mutation.markAsRead.res.vtl
+
+    Mutation.notificationBeacon:
+      dataSource: Resolver
+      request: notifications/notificationBeacon/Mutation.notificationBeacon.req.vtl
+      response: notifications/notificationBeacon/Mutation.notificationBeacon.res.vtl
+
+    Mutation.createReport:
+      kind: PIPELINE
+      functions:
+        - getCompany
+        - createReport
+      request: reports/createReport/Mutation.createReport.req.vtl
+      response: reports/createReport/Mutation.createReport.res.vtl
+
+    Query.getReports:
+      dataSource: Data
+      request: reports/getReports/Query.getReports.req.vtl
+      response: reports/getReports/Query.getReports.res.vtl
+
+    Mutation.updateSettings:
+      kind: PIPELINE
+      functions:
+        - vatRegistration
+        - updateSettings
+      request: settings/updateSettings/Mutation.updateSettings.req.vtl
+      response: settings/updateSettings/Mutation.updateSettings.res.vtl
+
+    Query.getSettings:
+      dataSource: Data
+      request: settings/getSettings/Query.getSettings.req.vtl
+      response: settings/getSettings/Query.getSettings.res.vtl
+
+    Mutation.addTransaction:
+      dataSource: Data
+      request: transaction/addTransaction/Mutation.addTransaction.req.vtl
+      response: transaction/addTransaction/Mutation.addTransaction.res.vtl
+
+    Mutation.deleteTransaction:
+      dataSource: Data
+      request: transaction/deleteTransaction/Mutation.deleteTransaction.req.vtl
+      response: transaction/deleteTransaction/Mutation.deleteTransaction.res.vtl
+
+    Query.getTransaction:
+      dataSource: Data
+      request: transaction/getTransaction/Query.getTransaction.req.vtl
+      response: transaction/getTransaction/Query.getTransaction.res.vtl
+
+    Query.getTransactions:
+      dataSource: Data
+      request: transaction/getTransactions/Query.getTransactions.req.vtl
+      response: transaction/getTransactions/Query.getTransactions.res.vtl
+
+    Mutation.updateTransaction:
+      dataSource: Data
+      request: transaction/updateTransaction/Mutation.updateTransaction.req.vtl
+      response: transaction/updateTransaction/Mutation.updateTransaction.res.vtl
+
+    Mutation.deleteFile:
+      kind: PIPELINE
+      functions:
+        - getCompany
+        - deleteFile
+      request: storage/deleteFile/Mutation.deleteFile.req.vtl
+      response: storage/deleteFile/Mutation.deleteFile.res.vtl
+
+    Query.requestDownload:
+      kind: PIPELINE
+      functions:
+        - getCompany
+        - requestDownload
+      request: storage/requestDownload/Query.requestDownload.req.vtl
+      response: storage/requestDownload/Query.requestDownload.res.vtl
+
+    Mutation.requestUpload:
+      kind: PIPELINE
+      functions:
+        - getCompany
+        - requestUpload
+      request: storage/requestUpload/Mutation.requestUpload.req.vtl
+      response: storage/requestUpload/Mutation.requestUpload.res.vtl
+
+    Query.getTypeahead:
+      dataSource: Data
+      request: typeahead/getTypeahead/Query.getTypeahead.req.vtl
+      response: typeahead/getTypeahead/Query.getTypeahead.res.vtl
+
+  schema:
+    - schema/address.graphql
+    - schema/balance.graphql
+    - schema/bank.graphql
+    - schema/client.graphql
+    - schema/company.graphql
+    - schema/contact.graphql
+    - schema/expense-category.graphql
+    - schema/notification.graphql
+    - schema/report.graphql
+    - schema/schema.graphql
+    - schema/settings.graphql
+    - schema/storage.graphql
+    - schema/transaction.graphql
+    - schema/typeahead.graphql
+    - schema/vat-settings.graphql
+
+  pipelineFunctions:
+    # Validation
+    address:
+      dataSource: Resolver
+      request: shared/address/Pipeline.address.req.vtl
+      response: shared/address/Pipeline.address.res.vtl
+
+    bank:
+      dataSource: Resolver
+      request: shared/bank/Pipeline.bank.req.vtl
+      response: shared/bank/Pipeline.bank.res.vtl
+
+    companyNumber:
+      dataSource: Resolver
+      request: shared/companyNumber/Pipeline.companyNumber.req.vtl
+      response: shared/companyNumber/Pipeline.companyNumber.res.vtl
+
+    telephone:
+      dataSource: Resolver
+      request: shared/telephone/Pipeline.telephone.req.vtl
+      response: shared/telephone/Pipeline.telephone.res.vtl
+
+    vatRegistration:
+      dataSource: Resolver
+      request: shared/vatRegistration/Pipeline.vatRegistration.req.vtl
+      response: shared/vatRegistration/Pipeline.vatRegistration.res.vtl
+
+    # Utilities
+    addressFiltering:
+      dataSource: Resolver
+      request: shared/addressFiltering/Pipeline.addressFiltering.req.vtl
+      response: shared/addressFiltering/Pipeline.addressFiltering.res.vtl
+
+    bankSettings:
+      dataSource: Data
+      request: shared/bankSettings/Pipeline.bankSettings.req.vtl
+      response: shared/bankSettings/Pipeline.bankSettings.res.vtl
+
+    getCompany:
+      dataSource: Data
+      request: shared/getCompany/Pipeline.getCompany.req.vtl
+      response: shared/getCompany/Pipeline.getCompany.res.vtl
+
+    # Bank
+    getBankAccounts:
+      dataSource: OpenBanking
+      request: bank/getBankAccounts/Pipeline.getBankAccounts.req.vtl
+      response: bank/getBankAccounts/Pipeline.getBankAccounts.res.vtl
+
+    resetBankSettings:
+      dataSource: Data
+      request: bank/deleteBankConnection/Pipeline.resetBankSettings.req.vtl
+      response: bank/deleteBankConnection/Pipeline.resetBankSettings.res.vtl
+
+    unlinkBank:
+      dataSource: OpenBanking
+      request: bank/deleteBankConnection/Pipeline.unlinkBank.req.vtl
+      response: bank/deleteBankConnection/Pipeline.unlinkBank.res.vtl
+
+    # Clients
+    createClient:
+      dataSource: Data
+      request: client/createClient/Pipeline.createClient.req.vtl
+      response: client/createClient/Pipeline.createClient.res.vtl
+
+    getClientCompanyId:
+      dataSource: Data
+      request: client/shared/getClientCompanyId/Pipeline.getClientCompanyId.req.vtl
+      response: client/shared/getClientCompanyId/Pipeline.getClientCompanyId.res.vtl
+
+    updateClient:
+      dataSource: Data
+      request: client/updateClient/Pipeline.updateClient.req.vtl
+      response: client/updateClient/Pipeline.updateClient.res.vtl
+
+    # Companies
+    createCompany:
+      dataSource: Data
+      request: company/createCompany/Pipeline.createCompany.req.vtl
+      response: company/createCompany/Pipeline.createCompany.res.vtl
+
+    deleteCompany:
+      dataSource: Data
+      request: company/deleteCompany/Pipeline.deleteCompany.req.vtl
+      response: company/deleteCompany/Pipeline.deleteCompany.res.vtl
+
+    queueCompanyDelete:
+      dataSource: Queue
+      request: company/deleteCompany/Pipeline.queueCompanyDelete.req.vtl
+      response: company/deleteCompany/Pipeline.queueCompanyDelete.res.vtl
+
+    updateCompany:
+      dataSource: Data
+      request: company/updateCompany/Pipeline.updateCompany.req.vtl
+      response: company/updateCompany/Pipeline.updateCompany.res.vtl
+
+    # Reports
+    createReport:
+      dataSource: Reports
+      request: reports/createReport/Pipeline.createReport.req.vtl
+      response: reports/createReport/Pipeline.createReport.res.vtl
+
+    # Settings
+    updateSettings:
+      dataSource: Data
+      request: settings/updateSettings/Pipeline.updateSettings.req.vtl
+      response: settings/updateSettings/Pipeline.updateSettings.res.vtl
+
+    # Storage
+    deleteFile:
+      dataSource: Queue
+      request: storage/deleteFile/Pipeline.deleteFile.req.vtl
+      response: storage/deleteFile/Pipeline.deleteFile.res.vtl
+
+    requestDownload:
+      dataSource: StorageUpload
+      request: storage/requestDownload/Pipeline.requestDownload.req.vtl
+      response: storage/requestDownload/Pipeline.requestDownload.res.vtl
+
+    requestUpload:
+      dataSource: StorageUpload
+      request: storage/requestUpload/Pipeline.requestUpload.req.vtl
+      response: storage/requestUpload/Pipeline.requestUpload.res.vtl
+
+  dataSources:
+    NONE:
+      name: Resolver
+
+    Data:
+      type: AMAZON_DYNAMODB
+      description: Application table
+      config:
+        tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+        serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
+
+    Lambda:
+      type: AWS_LAMBDA
+      config:
+        lambdaFunctionArn: !GetAtt LambdaDataSourceLambdaFunction.Arn
+        serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
+
+    OpenBanking:
+      type: HTTP
+      config:
+        endpoint: !ImportValue ${self:provider.stage}-OpenBankingApiEndpoint
+        authorizationConfig:
+          authorizationType: AWS_IAM
+          awsIamConfig:
+            signingRegion: !Ref AWS::Region
+            signingServiceName: execute-api
+        serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
+
+    Reports:
+      type: HTTP
+      config:
+        endpoint: !ImportValue ${self:provider.stage}-AccountsReportsApiEndpoint
+        authorizationConfig:
+          authorizationType: AWS_IAM
+          awsIamConfig:
+            signingRegion: !Ref AWS::Region
+            signingServiceName: execute-api
+        serviceRoleArn: !GetAtt AppSyncReportsServiceRole.Arn
+
+    StorageUpload:
+      type: HTTP
+      config:
+        endpoint: !ImportValue ${self:provider.stage}-StorageUploadApiEndpoint
+        authorizationConfig:
+          authorizationType: AWS_IAM
+          awsIamConfig:
+            signingRegion: !Ref AWS::Region
+            signingServiceName: execute-api
+        serviceRoleArn: !GetAtt AppSyncStorageUploadServiceRole.Arn
+
+    Queue:
+      type: HTTP
+      config:
+        endpoint: !Join
+          - ''
+          - - 'https://sqs.'
+            - !Ref AWS::Region
+            - '.amazonaws.com/'
+        authorizationConfig:
+          authorizationType: AWS_IAM
+          awsIamConfig:
+            signingRegion: !Ref AWS::Region
+            signingServiceName: sqs
+        serviceRoleArn: !GetAtt AppSyncQueueServiceRole.Arn
+
+  substitutions:
+    appTable: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+    deleteFileQueue: !ImportValue ${self:provider.stage}-DeleteFileQueueUrlPath
+    queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
+    stage: ${self:provider.stage}
 
 functions:
   LambdaDataSource:
