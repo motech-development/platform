@@ -541,10 +541,7 @@ functions:
           type: dynamodb
           arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
     environment:
-      ENDPOINT:
-        Fn::GetAtt:
-          - ${self:custom.resourceName}
-          - GraphQLUrl
+      ENDPOINT: ${appsync:url}
 
 resources:
   Resources:
