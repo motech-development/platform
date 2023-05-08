@@ -41,8 +41,6 @@ custom:
 
   webpack:
     includeModules:
-      forceExclude:
-        - aws-sdk
       forceInclude:
         - cross-fetch
       nodeModulesRelativeDir: ../../../

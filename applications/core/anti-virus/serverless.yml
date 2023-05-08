@@ -30,8 +30,6 @@ custom:
 
   webpack:
     includeModules:
-      forceExclude:
-        - aws-sdk
       nodeModulesRelativeDir: ../../../
     packager: yarn
     packagerOptions:
