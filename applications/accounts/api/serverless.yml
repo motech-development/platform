@@ -27,7 +27,7 @@ custom:
     includeLayers: true
     number: 1
 
-  resourceName: Accounts${self:provider.stage}GraphQlApi
+  resourceName: GraphQlApi
 
   oidc:
     issuer: https://${env:AUTH0_DOMAIN}/
@@ -56,7 +56,6 @@ appSync:
   authentication:
     type: OPENID_CONNECT
     config:
-      clientId: ''
       issuer: ${self:custom.oidc.issuer}
 
   additionalAuthentications:
