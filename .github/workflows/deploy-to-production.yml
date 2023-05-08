@@ -345,6 +345,7 @@ jobs:
         with:
           command: yarn workspace @core/anti-virus deploy --stage $STAGE
           max_attempts: 3
+          on_retry_command: yarn workspace @core/anti-virus clean
           retry_on: error
           timeout_seconds: 60
 

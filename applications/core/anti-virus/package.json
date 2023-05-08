@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "Motech Development anit-virus service",
   "scripts": {
+    "clean": "./scripts/clean.sh",
     "deploy": "run predeploy && serverless deploy --verbose",
     "lint": "eslint --cache './src/**/*.ts'",
     "predeploy": "./scripts/build.sh",
