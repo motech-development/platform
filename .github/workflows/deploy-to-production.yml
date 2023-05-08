@@ -5,6 +5,8 @@ on:
     branches:
       - main
 
+concurrency: production_environment
+
 jobs:
   setup:
     runs-on: ubuntu-latest

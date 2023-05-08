@@ -3,7 +3,7 @@ service: accounts-storage
 provider:
   name: aws
   region: ${opt:region, 'eu-west-1'}
-  runtime: nodejs16.x
+  runtime: nodejs18.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-storage
   deploymentBucket:

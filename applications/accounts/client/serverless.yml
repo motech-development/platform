@@ -3,7 +3,7 @@ service: accounts-app
 provider:
   name: aws
   region: ${opt:region, 'us-east-1'}
-  runtime: nodejs16.x
+  runtime: nodejs18.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-app
   deploymentBucket:
