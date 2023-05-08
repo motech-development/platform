@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: '30 */6 * * *'
 
+concurrency: production_environment
+
 jobs:
   setup:
     name: Setup
