@@ -47,7 +47,7 @@
   "resolutions": {
     "@types/react": "18.2.4",
     "eslint-plugin-react": "7.28.0",
-    "puppeteer": "13.7.0"
+    "puppeteer": "20.1.0"
   },
   "config": {
     "commitizen": {
