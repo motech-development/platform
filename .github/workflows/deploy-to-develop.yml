@@ -275,7 +275,7 @@ jobs:
           max_attempts: 3
           on_retry_command: yarn workspace @core/anti-virus clean
           retry_on: error
-          timeout_minutes: 5
+          timeout_minutes: 15
 
       - name: Update definitions
         run: yarn workspace @core/anti-virus update-definitions --stage $STAGE
