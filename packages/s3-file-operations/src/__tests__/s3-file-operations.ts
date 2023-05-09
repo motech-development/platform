@@ -1,20 +1,66 @@
-import { S3 } from 'aws-sdk';
-import { existsSync, mkdir } from 'fs';
+import {
+  CopyObjectCommand,
+  CreateMultipartUploadCommand,
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+  UploadPartCommand,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
+import { AwsCommand, mockClient } from 'aws-sdk-client-mock';
+import { existsSync } from 'fs';
+import { mkdir } from 'fs/promises';
+import { Readable } from 'stream';
 import {
   createDirectory,
   createFile,
   createSignedUrl,
   deleteFile,
+  downloadFile,
   downloadFileStream,
   getFileData,
   moveFile,
   removeFolder,
   uploader,
 } from '../s3-file-operations';
+import 'aws-sdk-client-mock-jest';
 
-jest.mock('fs');
+const s3 = mockClient(S3Client);
+
+jest.mock('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: jest
+    .fn()
+    .mockImplementation(
+      (_, command: AwsCommand<ServiceInputTypes, ServiceOutputTypes>) => {
+        Promise.resolve(s3.send(command)).catch(() => {});
+      },
+    ),
+}));
+
+jest.mock('fs', () => ({
+  createWriteStream: jest.fn(),
+  existsSync: jest.fn(),
+  promises: {
+    readFile: jest.fn().mockResolvedValue(null),
+  },
+}));
+
+jest.mock('fs/promises', () => ({
+  mkdir: jest.fn(),
+}));
 
 describe('s3-file-operations', () => {
+  beforeEach(() => {
+    s3.reset();
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -50,7 +96,7 @@ describe('s3-file-operations', () => {
       it('should create directory', async () => {
         await createDirectory(name);
 
-        expect(mkdir).toHaveBeenCalledWith('tmp', expect.any(Function));
+        expect(mkdir).toHaveBeenCalledWith('tmp');
       });
 
       it('should return false', async () => {
@@ -63,7 +109,7 @@ describe('s3-file-operations', () => {
     it('should call putObject with the correct params', async () => {
       await createFile('bucket', 'file.txt', 'Hello world');
 
-      expect(S3.prototype.putObject).toHaveBeenCalledWith({
+      expect(s3).toHaveReceivedCommandWith(PutObjectCommand, {
         Body: 'Hello world',
         Bucket: 'bucket',
         Key: 'file.txt',
@@ -72,31 +118,75 @@ describe('s3-file-operations', () => {
   });
 
   describe('createSignedUrl', () => {
-    it('should call getSignedUrlPromise with the correct params', async () => {
+    it('should call getSignedUrlPromise with the correct params when getting an object', async () => {
       await createSignedUrl('getObject', 'bucket', 'file.txt', 100);
 
-      expect(S3.prototype.getSignedUrlPromise).toHaveBeenCalledWith(
-        'getObject',
+      expect(s3).toHaveReceivedCommandWith(GetObjectCommand, {
+        Bucket: 'bucket',
+        Key: 'file.txt',
+      });
+
+      expect(getSignedUrl).toHaveBeenCalledWith(
+        expect.any(S3Client),
+        expect.any(GetObjectCommand),
         {
-          Bucket: 'bucket',
-          Expires: 100,
-          Key: 'file.txt',
+          expiresIn: 100,
         },
       );
     });
 
-    it('should call getSignedUrlPromise with the correct additional params', async () => {
+    it('should call getSignedUrlPromise with the correct additional params when getting an object', async () => {
       await createSignedUrl('getObject', 'bucket', 'file.txt', 100, {
         ContentType: 'application/pdf',
       });
 
-      expect(S3.prototype.getSignedUrlPromise).toHaveBeenCalledWith(
-        'getObject',
+      expect(s3).toHaveReceivedCommandWith(GetObjectCommand, {
+        Bucket: 'bucket',
+        Key: 'file.txt',
+      });
+
+      expect(getSignedUrl).toHaveBeenCalledWith(
+        expect.any(S3Client),
+        expect.any(GetObjectCommand),
         {
-          Bucket: 'bucket',
-          ContentType: 'application/pdf',
-          Expires: 100,
-          Key: 'file.txt',
+          expiresIn: 100,
+        },
+      );
+    });
+
+    it('should call getSignedUrlPromise with the correct params when putting an object', async () => {
+      await createSignedUrl('putObject', 'bucket', 'file.txt', 100);
+
+      expect(s3).toHaveReceivedCommandWith(PutObjectCommand, {
+        Bucket: 'bucket',
+        Key: 'file.txt',
+      });
+
+      expect(getSignedUrl).toHaveBeenCalledWith(
+        expect.any(S3Client),
+        expect.any(PutObjectCommand),
+        {
+          expiresIn: 100,
+        },
+      );
+    });
+
+    it('should call getSignedUrlPromise with the correct additional params when putting an object', async () => {
+      await createSignedUrl('putObject', 'bucket', 'file.txt', 100, {
+        ContentType: 'application/pdf',
+      });
+
+      expect(s3).toHaveReceivedCommandWith(PutObjectCommand, {
+        Bucket: 'bucket',
+        ContentType: 'application/pdf',
+        Key: 'file.txt',
+      });
+
+      expect(getSignedUrl).toHaveBeenCalledWith(
+        expect.any(S3Client),
+        expect.any(PutObjectCommand),
+        {
+          expiresIn: 100,
         },
       );
     });
@@ -106,7 +196,7 @@ describe('s3-file-operations', () => {
     it('should call deleteObject with the correct params', async () => {
       await deleteFile('bucket', 'file.txt');
 
-      expect(S3.prototype.deleteObject).toHaveBeenCalledWith({
+      expect(s3).toHaveReceivedCommandWith(DeleteObjectCommand, {
         Bucket: 'bucket',
         Key: 'file.txt',
       });
@@ -114,10 +204,14 @@ describe('s3-file-operations', () => {
   });
 
   describe('downloadFileStream', () => {
-    it('should call getObject with the correct params', () => {
-      downloadFileStream('bucket', 'file.txt');
+    it('should call getObject with the correct params', async () => {
+      s3.on(GetObjectCommand).resolves({
+        Body: sdkStreamMixin(new Readable()),
+      });
 
-      expect(S3.prototype.getObject).toHaveBeenCalledWith({
+      await downloadFileStream('bucket', 'file.txt');
+
+      expect(s3).toHaveReceivedCommandWith(GetObjectCommand, {
         Bucket: 'bucket',
         Key: 'file.txt',
       });
@@ -125,14 +219,18 @@ describe('s3-file-operations', () => {
   });
 
   describe('downloadFile', () => {
-    it.todo('should throw an error if file cannot be downloaded');
+    it('should throw an error if file cannot be downloaded', async () => {
+      await expect(
+        downloadFile('upload-bucket', 'file.txt', 'download-bucket'),
+      ).rejects.toThrow('Unable to stream file');
+    });
   });
 
   describe('getFileData', () => {
     it('should call headObject with the correct params', async () => {
       await getFileData('bucket', 'file.txt');
 
-      expect(S3.prototype.headObject).toHaveBeenCalledWith({
+      expect(s3).toHaveReceivedCommandWith(HeadObjectCommand, {
         Bucket: 'bucket',
         Key: 'file.txt',
       });
@@ -153,7 +251,7 @@ describe('s3-file-operations', () => {
     it('should call copyObject with the correct params', async () => {
       await moveFile(from, to, key);
 
-      expect(S3.prototype.copyObject).toHaveBeenCalledWith({
+      expect(s3).toHaveReceivedCommandWith(CopyObjectCommand, {
         Bucket: 'download-bucket',
         CopySource: 'upload-bucket/test.pdf',
         Key: 'test.pdf',
@@ -163,7 +261,7 @@ describe('s3-file-operations', () => {
     it('should call deleteObject with the correct params', async () => {
       await moveFile(from, to, key);
 
-      expect(S3.prototype.deleteObject).toHaveBeenCalledWith({
+      expect(s3).toHaveReceivedCommandWith(DeleteObjectCommand, {
         Bucket: 'upload-bucket',
         Key: 'test.pdf',
       });
@@ -172,17 +270,15 @@ describe('s3-file-operations', () => {
 
   describe('removeFolder', () => {
     beforeEach(() => {
-      (S3.prototype.listObjectsV2 as jest.Mock).mockReturnValue({
-        promise: jest.fn().mockResolvedValue({
-          Contents: [],
-        }),
+      s3.on(ListObjectsV2Command).resolves({
+        Contents: [],
       });
     });
 
     it('should call listObjectsV2 with the correct params', async () => {
       await removeFolder('bucket', '/test');
 
-      expect(S3.prototype.listObjectsV2).toHaveBeenCalledWith({
+      expect(s3).toReceiveCommandWith(ListObjectsV2Command, {
         Bucket: 'bucket',
         Prefix: '/test',
       });
@@ -191,24 +287,22 @@ describe('s3-file-operations', () => {
     it('should do nothing if no files found', async () => {
       await removeFolder('bucket', '/test');
 
-      expect(S3.prototype.deleteObjects).not.toHaveBeenCalled();
+      expect(s3).not.toReceiveCommand(DeleteObjectCommand);
     });
 
     it('should delete the correct objects', async () => {
-      (S3.prototype.listObjectsV2 as jest.Mock).mockReturnValue({
-        promise: jest.fn().mockResolvedValue({
-          Contents: [
-            {
-              Key: '/test/test-1.pdf',
-            },
-          ],
-          IsTruncated: false,
-        }),
+      s3.on(ListObjectsV2Command).resolves({
+        Contents: [
+          {
+            Key: '/test/test-1.pdf',
+          },
+        ],
+        IsTruncated: false,
       });
 
       await removeFolder('bucket', '/test');
 
-      expect(S3.prototype.deleteObjects).toHaveBeenCalledWith({
+      expect(s3).toReceiveCommandWith(DeleteObjectsCommand, {
         Bucket: 'bucket',
         Delete: {
           Objects: [
@@ -221,42 +315,62 @@ describe('s3-file-operations', () => {
     });
 
     it('should call deleteObjects the correct number of times if listObjects is truncated', async () => {
-      (S3.prototype.listObjectsV2 as jest.Mock).mockReturnValue({
-        promise: jest
-          .fn()
-          .mockResolvedValueOnce({
-            Contents: [
-              {
-                Key: '/test/test-1.pdf',
-              },
-            ],
-            IsTruncated: true,
-          })
-          .mockResolvedValueOnce({
-            Contents: [
-              {
-                Key: '/test/test-2.pdf',
-              },
-            ],
-            IsTruncated: false,
-          }),
-      });
+      s3.on(ListObjectsV2Command)
+        .resolvesOnce({
+          Contents: [
+            {
+              Key: '/test/test-1.pdf',
+            },
+          ],
+          IsTruncated: true,
+        })
+        .resolvesOnce({
+          Contents: [
+            {
+              Key: '/test/test-2.pdf',
+            },
+          ],
+          IsTruncated: false,
+        });
 
       await removeFolder('bucket', '/test');
 
-      expect(S3.prototype.deleteObjects).toHaveBeenCalledTimes(2);
+      expect(s3).toReceiveCommandTimes(DeleteObjectsCommand, 2);
     });
   });
 
   describe('uploader', () => {
-    it('should call upload with the correct params', () => {
-      uploader('bucket', 'file.txt', 'hello world', 'text/plain');
+    beforeEach(() => {
+      s3.on(CreateMultipartUploadCommand).resolves({
+        UploadId: '1',
+      });
 
-      expect(S3.prototype.upload).toHaveBeenCalledWith({
-        Body: 'hello world',
+      s3.on(UploadPartCommand).resolves({
+        ETag: '1',
+      });
+    });
+
+    it('should call upload with the correct params', async () => {
+      const stream = new Readable();
+
+      stream.push('hello world');
+
+      stream.push(null);
+
+      const result = await uploader(
+        'bucket',
+        'file.txt',
+        stream,
+        'text/plain',
+        new S3Client({
+          region: 'eu-west-1',
+        }),
+      ).done();
+
+      expect(result).toEqual({
         Bucket: 'bucket',
-        ContentType: 'text/plain',
         Key: 'file.txt',
+        Location: 'https://bucket.s3.eu-west-1.amazonaws.com/file.txt',
       });
     });
   });

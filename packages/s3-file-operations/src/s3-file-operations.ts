@@ -1,19 +1,29 @@
-import { AWSError, S3 } from 'aws-sdk';
-import { ObjectIdentifier } from 'aws-sdk/clients/s3';
-import { PromiseResult } from 'aws-sdk/lib/request';
-import { createWriteStream, existsSync, mkdir, ReadStream } from 'fs';
+import {
+  CopyObjectCommand,
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  HeadObjectCommandOutput,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  PutObjectRequest,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { createWriteStream, existsSync, ReadStream } from 'fs';
+import { mkdir } from 'fs/promises';
 import { basename, join } from 'path';
 import { Readable } from 'stream';
-import { promisify } from 'util';
 
-const mkdirAsync = promisify(mkdir);
-const s3 = new S3();
+const s3 = new S3Client({});
 
 export const createDirectory = async (name: string): Promise<boolean> => {
   const directoryExists = existsSync(name);
 
   if (!directoryExists) {
-    await mkdirAsync(name);
+    await mkdir(name);
   }
 
   return directoryExists;
@@ -23,70 +33,98 @@ export const createFile = async (
   to: string,
   key: string,
   body: string | ReadStream,
+  client = s3,
 ): Promise<void> => {
-  await s3
-    .putObject({
-      Body: body,
-      Bucket: to,
-      Key: key,
-    })
-    .promise();
+  const command = new PutObjectCommand({
+    Body: body,
+    Bucket: to,
+    Key: key,
+  });
+
+  await client.send(command);
 };
 
 interface ICreateSignedUrlOpts {
   ContentType?: string;
-  Metadata?: S3.Metadata;
+  Metadata?: Record<string, string>;
 }
 
+type TOperation = 'getObject' | 'putObject';
+
 export const createSignedUrl = async (
-  operation: string,
+  operation: TOperation,
   bucket: string,
   key: string,
   expires: number,
   opts?: ICreateSignedUrlOpts,
-): Promise<string> =>
-  s3.getSignedUrlPromise(operation, {
-    Bucket: bucket,
-    Expires: expires,
-    Key: key,
-    ...opts,
+  client = s3,
+): Promise<string> => {
+  const command =
+    operation === 'getObject'
+      ? new GetObjectCommand({
+          Bucket: bucket,
+          Key: key,
+        })
+      : new PutObjectCommand({
+          Bucket: bucket,
+          Key: key,
+          ...opts,
+        });
+
+  return getSignedUrl(client, command, {
+    expiresIn: expires,
   });
+};
 
 export const deleteFile = async (
   bucket: string,
   key: string,
+  client = s3,
 ): Promise<void> => {
   const decodedKey = decodeURIComponent(key);
 
-  await s3
-    .deleteObject({
-      Bucket: bucket,
-      Key: decodedKey,
-    })
-    .promise();
+  const command = new DeleteObjectCommand({
+    Bucket: bucket,
+    Key: decodedKey,
+  });
+
+  await client.send(command);
 };
 
-export const downloadFileStream = (bucket: string, key: string): Readable => {
+export const downloadFileStream = async (
+  bucket: string,
+  key: string,
+  client = s3,
+): Promise<Readable> => {
   const decodedKey = decodeURIComponent(key);
 
-  return s3
-    .getObject({
-      Bucket: bucket,
-      Key: decodedKey,
-    })
-    .createReadStream();
+  const command = new GetObjectCommand({
+    Bucket: bucket,
+    Key: decodedKey,
+  });
+
+  const response = await client.send(command);
+
+  if (response?.Body instanceof Readable) {
+    return response.Body;
+  }
+
+  throw new Error('Unable to stream file');
 };
 
 export const downloadFile = async (
   bucket: string,
   key: string,
   to: string,
+  client = s3,
 ): Promise<string> => {
   const filePath = join(to, basename(key));
   const fileStream = createWriteStream(filePath);
 
+  const stream = await downloadFileStream(bucket, key, client);
+
   return new Promise<string>((resolve, reject) => {
-    downloadFileStream(bucket, key)
+    stream
       .on('end', () => {
         resolve(filePath);
       })
@@ -98,31 +136,33 @@ export const downloadFile = async (
 export const getFileData = async (
   bucket: string,
   key: string,
-): Promise<PromiseResult<S3.HeadObjectOutput, AWSError>> => {
+  client = s3,
+): Promise<HeadObjectCommandOutput> => {
   const decodedKey = decodeURIComponent(key);
 
-  return s3
-    .headObject({
-      Bucket: bucket,
-      Key: decodedKey,
-    })
-    .promise();
+  const command = new HeadObjectCommand({
+    Bucket: bucket,
+    Key: decodedKey,
+  });
+
+  return client.send(command);
 };
 
 export const moveFile = async (
   from: string,
   to: string,
   key: string,
+  client = s3,
 ): Promise<void> => {
   const decodedKey = decodeURIComponent(key);
 
-  await s3
-    .copyObject({
-      Bucket: to,
-      CopySource: join(from, decodedKey),
-      Key: decodedKey,
-    })
-    .promise();
+  const command = new CopyObjectCommand({
+    Bucket: to,
+    CopySource: join(from, decodedKey),
+    Key: decodedKey,
+  });
+
+  await client.send(command);
 
   await deleteFile(from, key);
 };
@@ -130,31 +170,32 @@ export const moveFile = async (
 export const removeFolder = async (
   bucket: string,
   key: string,
+  client = s3,
 ): Promise<void> => {
   const decodedKey = decodeURIComponent(key);
 
-  const listedObjects = await s3
-    .listObjectsV2({
-      Bucket: bucket,
-      Prefix: decodedKey,
-    })
-    .promise();
+  const command = new ListObjectsV2Command({
+    Bucket: bucket,
+    Prefix: decodedKey,
+  });
+
+  const listedObjects = await client.send(command);
 
   if (listedObjects.Contents && listedObjects.Contents.length > 0) {
-    const Objects = listedObjects.Contents.filter(
-      (item): item is ObjectIdentifier => !!item.Key,
-    ).map(({ Key }) => ({
-      Key,
-    }));
+    const Objects = listedObjects.Contents.filter((item) => !!item.Key).map(
+      ({ Key }) => ({
+        Key,
+      }),
+    );
 
-    await s3
-      .deleteObjects({
-        Bucket: bucket,
-        Delete: {
-          Objects,
-        },
-      })
-      .promise();
+    const deleteObjectsCommand = new DeleteObjectsCommand({
+      Bucket: bucket,
+      Delete: {
+        Objects,
+      },
+    });
+
+    await client.send(deleteObjectsCommand);
 
     if (listedObjects.IsTruncated) {
       await removeFolder(bucket, key);
@@ -165,12 +206,16 @@ export const removeFolder = async (
 export const uploader = (
   bucket: string,
   key: string,
-  body: S3.Body,
+  body: PutObjectRequest['Body'],
   contentType: string,
-): S3.ManagedUpload =>
-  s3.upload({
-    Body: body,
-    Bucket: bucket,
-    ContentType: contentType,
-    Key: key,
+  client = s3,
+): Upload =>
+  new Upload({
+    client,
+    params: {
+      Body: body,
+      Bucket: bucket,
+      ContentType: contentType,
+      Key: key,
+    },
   });
