@@ -1,20 +1,19 @@
+import { GetParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit } from '@octokit/rest';
-import { SSM } from 'aws-sdk';
 import env from './env';
 
-const ssm = new SSM();
+const ssm = new SSMClient({});
 
 const github = async (): Promise<Octokit> => {
   const Name = env('GITHUB_APP_PRIVATE_KEY');
   const appId = env('CY_API_GITHUB_APP_ID');
   const clientId = env('CY_API_GITHUB_CLIENT_ID');
   const installationId = env('CY_API_GITHUB_INSTALLATION_ID');
-  const { Parameter } = await ssm
-    .getParameter({
-      Name,
-    })
-    .promise();
+  const command = new GetParameterCommand({
+    Name,
+  });
+  const { Parameter } = await ssm.send(command);
 
   if (!Parameter?.Value) {
     throw new Error('Parameter not found');

@@ -1,10 +1,17 @@
+import {
+  GetParameterCommand,
+  SSMClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-ssm';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit } from '@octokit/rest';
-import { SSM } from 'aws-sdk';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import github from '../github';
 
 describe('github', () => {
   let env: NodeJS.ProcessEnv;
+  let ssm: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
   beforeEach(() => {
     env = {
@@ -16,12 +23,12 @@ describe('github', () => {
     process.env.CY_API_GITHUB_INSTALLATION_ID = 'installation-id';
     process.env.GITHUB_APP_PRIVATE_KEY = 'SSM_Name';
 
-    SSM.prototype.getParameter = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({
-        Parameter: {
-          Value: 'MY-SECRET-KEY',
-        },
-      }),
+    ssm = mockClient(SSMClient);
+
+    ssm.on(GetParameterCommand).resolves({
+      Parameter: {
+        Value: 'MY-SECRET-KEY',
+      },
     });
   });
 
@@ -32,16 +39,14 @@ describe('github', () => {
   it('should retrieve the correct parameter from SSM', async () => {
     await github();
 
-    expect(SSM.prototype.getParameter).toHaveBeenCalledWith({
+    expect(ssm).toReceiveCommandWith(GetParameterCommand, {
       Name: 'SSM_Name',
     });
   });
 
   it('should throw an error if parameter cannot be retrieved', async () => {
-    SSM.prototype.getParameter = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({
-        Parameter: {},
-      }),
+    ssm.on(GetParameterCommand).resolvesOnce({
+      Parameter: {},
     });
 
     await expect(github()).rejects.toThrow('Parameter not found');
