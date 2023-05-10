@@ -1,14 +1,14 @@
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
-const documentClient = (): DocumentClient => {
+const documentClient = (): DynamoDBClient => {
   const { STAGE } = process.env;
 
   return STAGE === 'local'
-    ? new DocumentClient({
+    ? new DynamoDBClient({
         endpoint: 'http://localhost:8000',
         region: 'localhost',
       })
-    : new DocumentClient();
+    : new DynamoDBClient({});
 };
 
 export default documentClient;

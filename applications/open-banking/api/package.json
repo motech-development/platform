@@ -12,8 +12,11 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "3.329.0",
+    "@aws-sdk/client-ssm": "3.329.0",
+    "@aws-sdk/lib-dynamodb": "3.329.0",
+    "@aws-sdk/util-dynamodb": "3.329.0",
     "@motech-development/api-gateway-handler": "workspace:*",
-    "aws-sdk": "2.1368.0",
     "axios": "0.27.2",
     "yup": "1.1.1"
   },
@@ -28,6 +31,8 @@
     "@typescript-eslint/eslint-plugin": "5.59.2",
     "@typescript-eslint/parser": "5.59.2",
     "aws-lambda-mock-context": "3.2.1",
+    "aws-sdk-client-mock": "2.1.1",
+    "aws-sdk-client-mock-jest": "2.1.1",
     "axios-mock-adapter": "1.21.4",
     "eslint": "8.40.0",
     "eslint-config-airbnb-base": "15.0.0",
@@ -56,6 +61,9 @@
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
       "!src/**/*.d.ts"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
     ],
     "testEnvironment": "node",
     "transform": {

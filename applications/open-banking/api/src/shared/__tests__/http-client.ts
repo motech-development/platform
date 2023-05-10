@@ -1,9 +1,16 @@
-import { SSM } from 'aws-sdk';
+import {
+  GetParameterCommand,
+  SSMClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-ssm';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import MockAdapter from 'axios-mock-adapter';
 import httpClient from '../http-client';
 
 describe('http-client', () => {
   let mock: MockAdapter;
+  let ssm: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
   beforeEach(() => {
     mock = new MockAdapter(httpClient);
@@ -11,7 +18,7 @@ describe('http-client', () => {
     mock.onGet().reply(200);
     mock.onPost().reply(400);
 
-    SSM.prototype.getParameter = jest.fn();
+    ssm = mockClient(SSMClient);
   });
 
   it('should throw if no params set', async () => {
@@ -34,10 +41,8 @@ describe('http-client', () => {
     });
 
     it('should throw if no credentials are found', async () => {
-      (SSM.prototype.getParameter as jest.Mock).mockReturnValue({
-        promise: jest.fn().mockResolvedValue({
-          Parameter: {},
-        }),
+      ssm.on(GetParameterCommand).resolves({
+        Parameter: {},
       });
 
       await expect(httpClient.get('/test')).rejects.toThrow(
@@ -46,12 +51,10 @@ describe('http-client', () => {
     });
 
     it('should throw if no credentials are set', async () => {
-      (SSM.prototype.getParameter as jest.Mock).mockReturnValue({
-        promise: jest.fn().mockResolvedValue({
-          Parameter: {
-            Value: 'key',
-          },
-        }),
+      ssm.on(GetParameterCommand).resolves({
+        Parameter: {
+          Value: 'key',
+        },
       });
 
       await expect(httpClient.get('/test')).rejects.toThrow(
@@ -61,19 +64,17 @@ describe('http-client', () => {
 
     describe('with the correct secrets', () => {
       beforeEach(() => {
-        (SSM.prototype.getParameter as jest.Mock).mockReturnValue({
-          promise: jest.fn().mockResolvedValue({
-            Parameter: {
-              Value: 'key,secret',
-            },
-          }),
+        ssm.on(GetParameterCommand).resolves({
+          Parameter: {
+            Value: 'key,secret',
+          },
         });
       });
 
       it('should call SSM with the correct values', async () => {
         await httpClient.get('/test');
 
-        expect(SSM.prototype.getParameter).toHaveBeenCalledWith({
+        expect(ssm).toReceiveCommandWith(GetParameterCommand, {
           Name: 'Something',
         });
       });

@@ -1,11 +1,18 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../get-banks';
 
 describe('get-banks', () => {
   let callback: jest.Mock;
   let context: Context;
+  let dynamodb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let event: APIGatewayProxyEvent;
 
   beforeEach(() => {
@@ -14,6 +21,8 @@ describe('get-banks', () => {
     context.done();
 
     callback = jest.fn();
+
+    dynamodb = mockClient(DynamoDBClient);
 
     event = {} as APIGatewayProxyEvent;
   });
@@ -46,23 +55,21 @@ describe('get-banks', () => {
     });
 
     it('should return a list of banks', async () => {
-      DocumentClient.prototype.query = jest.fn().mockReturnValueOnce({
-        promise: jest.fn().mockResolvedValueOnce({
-          Items: [
-            {
-              name: 'bank-1',
-              pk: '1',
-            },
-            {
-              name: 'bank-2',
-              pk: '2',
-            },
-            {
-              name: 'bank-3',
-              pk: '3',
-            },
-          ],
-        }),
+      dynamodb.on(QueryCommand).resolves({
+        Items: [
+          {
+            name: 'bank-1',
+            pk: '1',
+          },
+          {
+            name: 'bank-2',
+            pk: '2',
+          },
+          {
+            name: 'bank-3',
+            pk: '3',
+          },
+        ],
       });
 
       await handler(event, context, callback);
@@ -89,9 +96,7 @@ describe('get-banks', () => {
     });
 
     it('should return an empty array if no banks are available', async () => {
-      DocumentClient.prototype.query = jest.fn().mockReturnValueOnce({
-        promise: jest.fn().mockResolvedValueOnce({}),
-      });
+      dynamodb.on(QueryCommand).resolves({});
 
       await handler(event, context, callback);
 

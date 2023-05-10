@@ -1,11 +1,11 @@
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import documentClient from '../document-client';
 
 describe('document-client', () => {
   it('should return an instance of DocumentClient', () => {
     const result = documentClient();
 
-    expect(result).toBeInstanceOf(DocumentClient);
+    expect(result).toBeInstanceOf(DynamoDBClient);
   });
 
   describe('when stage is local', () => {
@@ -26,7 +26,7 @@ describe('document-client', () => {
     it('should return an instance of DocumentClient', () => {
       const result = documentClient();
 
-      expect(result).toBeInstanceOf(DocumentClient);
+      expect(result).toBeInstanceOf(DynamoDBClient);
     });
   });
 });
