@@ -1,4 +1,4 @@
-import { SSM } from 'aws-sdk';
+import { GetParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import axios from 'axios';
 
 export const getErrorStatus = (e: unknown): number => {
@@ -19,13 +19,13 @@ const authHeader = async () => {
   }
 
   // TODO: Cache SSM result
-  const ssm = new SSM();
+  const ssm = new SSMClient({});
 
-  const { Parameter } = await ssm
-    .getParameter({
-      Name: YapilyCredentials,
-    })
-    .promise();
+  const command = new GetParameterCommand({
+    Name: YapilyCredentials,
+  });
+
+  const { Parameter } = await ssm.send(command);
 
   if (!Parameter || !Parameter.Value) {
     throw new Error('No credentials found');
