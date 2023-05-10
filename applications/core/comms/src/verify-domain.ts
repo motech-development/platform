@@ -1,5 +1,10 @@
+import {
+  DeleteIdentityCommand,
+  SESClient,
+  VerifyDomainDkimCommand,
+  VerifyDomainIdentityCommand,
+} from '@aws-sdk/client-ses';
 import { CloudFormationCustomResourceHandler } from 'aws-lambda';
-import { SES } from 'aws-sdk';
 import { FAILED, SUCCESS, send } from 'cfn-response-async';
 import { number, object, string } from 'yup';
 
@@ -30,7 +35,7 @@ export const handler: CloudFormationCustomResourceHandler = async (
     const { DMARC, Domain, Region, SPF, TTL } = await schema.validate(
       ResourceProperties,
     );
-    const ses = new SES({
+    const ses = new SESClient({
       region: Region,
     });
     const [, , , , account] = StackId.split(':');
@@ -40,30 +45,34 @@ export const handler: CloudFormationCustomResourceHandler = async (
       case 'Create':
       case 'Update': {
         const [{ VerificationToken }, { DkimTokens }] = await Promise.all([
-          ses
-            .verifyDomainIdentity({
+          ses.send(
+            new VerifyDomainIdentityCommand({
               Domain,
-            })
-            .promise(),
-          ses
-            .verifyDomainDkim({
+            }),
+          ),
+          ses.send(
+            new VerifyDomainDkimCommand({
               Domain,
-            })
-            .promise(),
+            }),
+          ),
         ]);
-        const dkim = DkimTokens.map((token) => ({
+        const dkim = (DkimTokens || []).map((token) => ({
           Name: `${token}._domainkey.${Domain}.`,
           ResourceRecords: [`${token}.dkim.amazonses.com.`],
           TTL: TTL.toString(),
           Type: 'CNAME',
         }));
         const Route53RecordSets = [
-          {
-            Name: `_amazonses.${Domain}.`,
-            ResourceRecords: [`"${VerificationToken}"`],
-            TTL: TTL.toString(),
-            Type: 'TXT',
-          },
+          ...(VerificationToken
+            ? [
+                {
+                  Name: `_amazonses.${Domain}.`,
+                  ResourceRecords: [`"${VerificationToken}"`],
+                  TTL: TTL.toString(),
+                  Type: 'TXT',
+                },
+              ]
+            : []),
           {
             Name: `_dmarc.${Domain}.`,
             ResourceRecords: [`"${DMARC}"`],
@@ -94,11 +103,10 @@ export const handler: CloudFormationCustomResourceHandler = async (
         break;
       }
       case 'Delete': {
-        await ses
-          .deleteIdentity({
-            Identity: Domain,
-          })
-          .promise();
+        const command = new DeleteIdentityCommand({
+          Identity: Domain,
+        });
+        await ses.send(command);
 
         await send(
           event,
