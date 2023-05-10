@@ -12,10 +12,10 @@ import {
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { createWriteStream, existsSync, ReadStream } from 'fs';
-import { mkdir } from 'fs/promises';
-import { basename, join } from 'path';
-import { Readable } from 'stream';
+import { createWriteStream, existsSync, ReadStream } from 'node:fs';
+import { mkdir } from 'node:fs/promises';
+import { basename, join } from 'node:path';
+import { Readable } from 'node:stream';
 
 const s3 = new S3Client({});
 

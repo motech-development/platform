@@ -14,7 +14,14 @@ export default [
         format: 'es',
       },
     ],
-    plugins: [dts()],
+    plugins: [
+      external(),
+      resolve({
+        extensions: ['.js', '.ts'],
+        preferBuiltins: true,
+      }),
+      dts(),
+    ],
   },
   {
     input: 'src/s3-file-operations.ts',

@@ -62,6 +62,9 @@
       "src/**/*.{ts,tsx}",
       "!src/**/*.d.ts"
     ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
+    ],
     "testEnvironment": "node",
     "transform": {
       "^.+\\.(t|j)sx?$": "@swc/jest"
