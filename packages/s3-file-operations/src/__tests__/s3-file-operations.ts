@@ -15,9 +15,9 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
 import { AwsCommand, mockClient } from 'aws-sdk-client-mock';
-import { existsSync } from 'fs';
-import { mkdir } from 'fs/promises';
-import { Readable } from 'stream';
+import { existsSync } from 'node:fs';
+import { mkdir } from 'node:fs/promises';
+import { Readable } from 'node:stream';
 import {
   createDirectory,
   createFile,
@@ -30,7 +30,6 @@ import {
   removeFolder,
   uploader,
 } from '../s3-file-operations';
-import 'aws-sdk-client-mock-jest';
 
 const s3 = mockClient(S3Client);
 
@@ -44,7 +43,7 @@ jest.mock('@aws-sdk/s3-request-presigner', () => ({
     ),
 }));
 
-jest.mock('fs', () => ({
+jest.mock('node:fs', () => ({
   createWriteStream: jest.fn(),
   existsSync: jest.fn(),
   promises: {
@@ -52,7 +51,7 @@ jest.mock('fs', () => ({
   },
 }));
 
-jest.mock('fs/promises', () => ({
+jest.mock('node:fs/promises', () => ({
   mkdir: jest.fn(),
 }));
 
