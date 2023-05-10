@@ -1,6 +1,14 @@
+import {
+  DeleteIdentityCommand,
+  SESClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+  VerifyDomainDkimCommand,
+  VerifyDomainIdentityCommand,
+} from '@aws-sdk/client-ses';
 import { CloudFormationCustomResourceEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { SES } from 'aws-sdk';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { FAILED, SUCCESS, send } from 'cfn-response-async';
 import { handler } from '../verify-domain';
 
@@ -10,6 +18,7 @@ describe('verify-domain', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: CloudFormationCustomResourceEvent;
+  let ses: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
   beforeEach(() => {
     context = ctx();
@@ -17,6 +26,18 @@ describe('verify-domain', () => {
     context.done();
 
     callback = jest.fn();
+
+    ses = mockClient(SESClient);
+
+    ses
+      .on(VerifyDomainIdentityCommand)
+      .resolves({
+        VerificationToken: 'VERIFICATION_CODE',
+      })
+      .on(VerifyDomainDkimCommand)
+      .resolves({
+        DkimTokens: ['DKIM-1', 'DKIM-2', 'DKIM-3'],
+      });
   });
 
   describe('with an invalid event', () => {
@@ -125,7 +146,7 @@ describe('verify-domain', () => {
       it('should validate the domain with the correct params', async () => {
         await handler(event, context, callback);
 
-        expect(SES.prototype.verifyDomainIdentity).toHaveBeenCalledWith({
+        expect(ses).toReceiveCommandWith(VerifyDomainIdentityCommand, {
           Domain: 'domain.com',
         });
       });
@@ -133,7 +154,7 @@ describe('verify-domain', () => {
       it('should validate the dkim with the correct params', async () => {
         await handler(event, context, callback);
 
-        expect(SES.prototype.verifyDomainDkim).toHaveBeenCalledWith({
+        expect(ses).toReceiveCommandWith(VerifyDomainDkimCommand, {
           Domain: 'domain.com',
         });
       });
@@ -202,7 +223,7 @@ describe('verify-domain', () => {
       it('should validate the domain with the correct params', async () => {
         await handler(event, context, callback);
 
-        expect(SES.prototype.verifyDomainIdentity).toHaveBeenCalledWith({
+        expect(ses).toReceiveCommandWith(VerifyDomainIdentityCommand, {
           Domain: 'domain.com',
         });
       });
@@ -210,7 +231,7 @@ describe('verify-domain', () => {
       it('should validate the dkim with the correct params', async () => {
         await handler(event, context, callback);
 
-        expect(SES.prototype.verifyDomainDkim).toHaveBeenCalledWith({
+        expect(ses).toReceiveCommandWith(VerifyDomainDkimCommand, {
           Domain: 'domain.com',
         });
       });
@@ -239,7 +260,7 @@ describe('verify-domain', () => {
       it('should delete the identity with the correct params', async () => {
         await handler(event, context, callback);
 
-        expect(SES.prototype.deleteIdentity).toHaveBeenCalledWith({
+        expect(ses).toReceiveCommandWith(DeleteIdentityCommand, {
           Identity: 'domain.com',
         });
       });
