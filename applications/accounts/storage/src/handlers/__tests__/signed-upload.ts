@@ -1,7 +1,11 @@
+import { createSignedUrl } from '@motech-development/s3-file-operations';
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { S3 } from 'aws-sdk';
 import { handler } from '../signed-upload';
+
+jest.mock('@motech-development/s3-file-operations', () => ({
+  createSignedUrl: jest.fn().mockResolvedValue('https://signed-url'),
+}));
 
 jest.mock('uuid', () => ({
   v4: jest.fn().mockReturnValue('test-uuid'),
@@ -134,13 +138,13 @@ describe('signed-upload', () => {
     it('should create a signed URL with the correct params when an ID is not sent', async () => {
       await handler(event, context, callback);
 
-      expect(S3.prototype.getSignedUrlPromise).toHaveBeenLastCalledWith(
+      expect(createSignedUrl).toHaveBeenLastCalledWith(
         'putObject',
+        'upload-bucket',
+        'owner/company-id/test-uuid.png',
+        30,
         {
-          Bucket: 'upload-bucket',
           ContentType: 'image/png',
-          Expires: 30,
-          Key: 'owner/company-id/test-uuid.png',
           Metadata: {
             typename: 'Test',
           },
@@ -162,13 +166,13 @@ describe('signed-upload', () => {
 
       await handler(event, context, callback);
 
-      expect(S3.prototype.getSignedUrlPromise).toHaveBeenLastCalledWith(
+      expect(createSignedUrl).toHaveBeenLastCalledWith(
         'putObject',
+        'upload-bucket',
+        'owner/company-id/test-uuid.png',
+        30,
         {
-          Bucket: 'upload-bucket',
           ContentType: 'image/png',
-          Expires: 30,
-          Key: 'owner/company-id/test-uuid.png',
           Metadata: {
             id: 'transaction-id',
             typename: 'Test',
