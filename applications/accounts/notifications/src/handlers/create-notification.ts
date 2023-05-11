@@ -1,14 +1,15 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import {
   apiGatewayHandler,
   paramCheck,
   response,
 } from '@motech-development/api-gateway-handler';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { object, string } from 'yup';
 
-const client = new DocumentClient();
+const client = new DynamoDBClient({});
 const schema = object({
   message: string().required(),
   owner: string().required(),
@@ -27,21 +28,21 @@ export const handler = apiGatewayHandler(async (event) => {
       stripUnknown: true,
     });
 
-    await client
-      .put({
-        Item: {
-          __typename: 'Notification',
-          createdAt,
-          data: `${owner}:Notification:${createdAt}`,
-          id: uuid(),
-          message,
-          owner,
-          payload,
-          read: false,
-        },
-        TableName,
-      })
-      .promise();
+    const command = new PutCommand({
+      Item: {
+        __typename: 'Notification',
+        createdAt,
+        data: `${owner}:Notification:${createdAt}`,
+        id: uuid(),
+        message,
+        owner,
+        payload,
+        read: false,
+      },
+      TableName,
+    });
+
+    await client.send(command);
 
     return response('', 201);
   } catch (e) {

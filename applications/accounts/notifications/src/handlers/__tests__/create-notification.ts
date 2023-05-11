@@ -1,12 +1,19 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import { handler } from '../create-notification';
 
 describe('create-notification', () => {
   let callback: jest.Mock;
   let context: Context;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let env: NodeJS.ProcessEnv;
   let event: APIGatewayProxyEvent;
 
@@ -20,6 +27,8 @@ describe('create-notification', () => {
     context.done();
 
     callback = jest.fn();
+
+    ddb = mockClient(DynamoDBClient);
 
     event = {
       body: JSON.stringify({
@@ -54,7 +63,7 @@ describe('create-notification', () => {
   it('should write to the database with the correct params', async () => {
     await handler(event, context, callback);
 
-    expect(DocumentClient.prototype.put).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(PutCommand, {
       Item: {
         __typename: 'Notification',
         createdAt: '2021-04-11T19:45:00.000Z',
