@@ -1,12 +1,19 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 import { Context } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import ctx from 'aws-lambda-mock-context';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import { handler } from '../insert-ttl';
 
 describe('insert-ttl', () => {
   let callback: jest.Mock;
   let context: Context;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
   beforeAll(() => {
     advanceTo('2021-04-11T19:45:00+00:00');
@@ -18,6 +25,8 @@ describe('insert-ttl', () => {
     context = ctx();
 
     context.done();
+
+    ddb = mockClient(DynamoDBClient);
   });
 
   afterAll(clear);
@@ -38,22 +47,18 @@ describe('insert-ttl', () => {
 
       process.env.TABLE = 'TABLE-NAME';
 
-      (DocumentClient.prototype.get as jest.Mock).mockReturnValue({
-        promise: jest
-          .fn()
-          .mockResolvedValueOnce({
-            Item: {
-              __typename: 'WarmUp',
-              createdAt: '2021-04-11T19:45:00.000Z',
-              data: 'WarmUp:2021-04-11T19:45:00.000Z',
-              id: 'test-uuid',
-              ttl: 1618170300,
-            },
-          })
-          .mockResolvedValueOnce({
-            Item: undefined,
-          }),
-      });
+      ddb
+        .on(GetCommand)
+        .resolvesOnce({
+          Item: {
+            __typename: 'WarmUp',
+            createdAt: '2021-04-11T19:45:00.000Z',
+            data: 'WarmUp:2021-04-11T19:45:00.000Z',
+            id: 'test-uuid',
+            ttl: 1618170300,
+          },
+        })
+        .resolvesOnce({});
     });
 
     afterEach(() => {
@@ -63,7 +68,7 @@ describe('insert-ttl', () => {
     it('should input the correct data into the database', async () => {
       await handler(null, context, callback);
 
-      expect(DocumentClient.prototype.put).toHaveBeenCalledWith({
+      expect(ddb).toReceiveCommandWith(PutCommand, {
         Item: {
           __typename: 'WarmUp',
           createdAt: '2021-04-11T19:45:00.000Z',

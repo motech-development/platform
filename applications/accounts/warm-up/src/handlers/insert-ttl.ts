@@ -1,10 +1,11 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
 import { Handler } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 
-const client = new DocumentClient();
+const client = new DynamoDBClient({});
 
 export const handler: Handler = async () => {
   const { TABLE } = process.env;
@@ -22,18 +23,18 @@ export const handler: Handler = async () => {
     id,
   });
 
-  await client
-    .put({
-      Item: {
-        __typename: 'WarmUp',
-        createdAt,
-        data: `WarmUp:${createdAt}`,
-        id,
-        ttl,
-      },
-      TableName: TABLE,
-    })
-    .promise();
+  const command = new PutCommand({
+    Item: {
+      __typename: 'WarmUp',
+      createdAt,
+      data: `WarmUp:${createdAt}`,
+      id,
+      ttl,
+    },
+    TableName: TABLE,
+  });
+
+  await client.send(command);
 
   logger.info('Starting to poll database');
 

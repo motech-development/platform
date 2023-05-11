@@ -1,9 +1,10 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
 import { Handler } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { boolean, number, object, string } from 'yup';
 
-const client = new DocumentClient();
+const client = new DynamoDBClient({});
 
 const schema = object({
   attempts: number().default(0).required(),
@@ -29,15 +30,15 @@ export const handler: Handler<IEvent> = async (event) => {
     stripUnknown: true,
   });
 
-  const { Item } = await client
-    .get({
-      Key: {
-        __typename: 'WarmUp',
-        id,
-      },
-      TableName: TABLE,
-    })
-    .promise();
+  const command = new GetCommand({
+    Key: {
+      __typename: 'WarmUp',
+      id,
+    },
+    TableName: TABLE,
+  });
+
+  const { Item } = await client.send(command);
 
   logger.debug('Result from database', {
     Item,
