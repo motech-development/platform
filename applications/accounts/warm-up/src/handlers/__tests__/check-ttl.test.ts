@@ -1,11 +1,18 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import { Context } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import ctx from 'aws-lambda-mock-context';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler, IEvent } from '../check-ttl';
 
 describe('check-ttl', () => {
   let callback: jest.Mock;
   let context: Context;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let event: IEvent;
 
   beforeEach(() => {
@@ -14,6 +21,8 @@ describe('check-ttl', () => {
     context = ctx();
 
     context.done();
+
+    ddb = mockClient(DynamoDBClient);
 
     event = {
       id: 'test-uuid',
@@ -42,16 +51,14 @@ describe('check-ttl', () => {
     });
 
     it('should complete correctly when item exists', async () => {
-      (DocumentClient.prototype.get as jest.Mock).mockReturnValue({
-        promise: jest.fn().mockResolvedValue({
-          Item: {
-            __typename: 'WarmUp',
-            createdAt: '2021-04-11T19:45:00.000Z',
-            data: 'WarmUp:2021-04-11T19:45:00.000Z',
-            id: 'test-uuid',
-            ttl: 1618170300,
-          },
-        }),
+      ddb.on(GetCommand).resolvesOnce({
+        Item: {
+          __typename: 'WarmUp',
+          createdAt: '2021-04-11T19:45:00.000Z',
+          data: 'WarmUp:2021-04-11T19:45:00.000Z',
+          id: 'test-uuid',
+          ttl: 1618170300,
+        },
       });
 
       await expect(handler(event, context, callback)).resolves.toEqual({
@@ -62,9 +69,7 @@ describe('check-ttl', () => {
     });
 
     it('should complete correctly when item no longer exists', async () => {
-      (DocumentClient.prototype.get as jest.Mock).mockReturnValue({
-        promise: jest.fn().mockResolvedValue({}),
-      });
+      ddb.on(GetCommand).resolvesOnce({});
 
       event.attempts = 2;
       event.complete = false;
