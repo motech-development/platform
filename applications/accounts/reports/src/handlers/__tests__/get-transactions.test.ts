@@ -1,46 +1,53 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { Context } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import ctx from 'aws-lambda-mock-context';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler, IEvent } from '../get-transactions';
 import Status from '../../shared/status';
 
 describe('get-transactions', () => {
   let callback: jest.Mock;
   let context: Context;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let event: IEvent;
 
   beforeEach(() => {
     callback = jest.fn();
 
-    (DocumentClient.prototype.query as jest.Mock).mockReturnValue({
-      promise: jest.fn().mockResolvedValue({
-        Items: [
-          {
-            amount: 1000,
-            category: 'Sales',
-            date: '08/04/2021',
-            description: 'For work',
-            name: 'Client',
-            vat: 166.67,
-          },
-          {
-            amount: 41.11,
-            category: 'Bills',
-            date: '09/04/2021',
-            description: 'Mobile',
-            name: 'EE',
-            vat: 6.85,
-          },
-          {
-            amount: 2.4,
-            category: 'Bills',
-            date: '10/04/2021',
-            description: 'Domain',
-            name: 'GoDaddy',
-            vat: 0.4,
-          },
-        ],
-      }),
+    ddb = mockClient(DynamoDBClient);
+
+    ddb.on(QueryCommand).resolves({
+      Items: [
+        {
+          amount: 1000,
+          category: 'Sales',
+          date: '08/04/2021',
+          description: 'For work',
+          name: 'Client',
+          vat: 166.67,
+        },
+        {
+          amount: 41.11,
+          category: 'Bills',
+          date: '09/04/2021',
+          description: 'Mobile',
+          name: 'EE',
+          vat: 6.85,
+        },
+        {
+          amount: 2.4,
+          category: 'Bills',
+          date: '10/04/2021',
+          description: 'Domain',
+          name: 'GoDaddy',
+          vat: 0.4,
+        },
+      ],
     });
 
     context = ctx();
@@ -84,7 +91,7 @@ describe('get-transactions', () => {
     it('should query DynamoDB with the correct params', async () => {
       await handler(event, context, callback);
 
-      expect(DocumentClient.prototype.query).toHaveBeenCalledWith({
+      expect(ddb).toReceiveCommandWith(QueryCommand, {
         ExpressionAttributeNames: {
           '#data': 'data',
           '#owner': 'owner',
@@ -141,10 +148,8 @@ describe('get-transactions', () => {
     });
 
     it('should return the correct data when no items are returned', async () => {
-      (DocumentClient.prototype.query as jest.Mock).mockReturnValue({
-        promise: jest.fn().mockResolvedValue({
-          Items: [],
-        }),
+      ddb.on(QueryCommand).resolvesOnce({
+        Items: [],
       });
 
       await expect(handler(event, context, callback)).resolves.toEqual({

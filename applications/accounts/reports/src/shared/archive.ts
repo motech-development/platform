@@ -3,8 +3,7 @@ import {
   uploader,
 } from '@motech-development/s3-file-operations';
 import Archiver from 'archiver';
-import { ManagedUpload } from 'aws-sdk/clients/s3';
-import { PassThrough } from 'stream';
+import { PassThrough } from 'node:stream';
 
 interface IArchiveDestination {
   bucket: string;
@@ -23,7 +22,7 @@ const archive = async (
   report: string,
   destination: IArchiveDestination,
   origin: IArchiveOrigin,
-): Promise<ManagedUpload.SendData> => {
+) => {
   const archiver = Archiver('zip');
   const passThrough = new PassThrough();
   const upload = uploader(
@@ -41,10 +40,12 @@ const archive = async (
   });
 
   if (origin.keys && origin.keys.length > 0) {
-    const downloadStreams = origin.keys.map(({ key, path }) => ({
-      name: path,
-      stream: downloadFileStream(origin.bucket, key),
-    }));
+    const downloadStreams = await Promise.all(
+      origin.keys.map(async ({ key, path }) => ({
+        name: path,
+        stream: await downloadFileStream(origin.bucket, key),
+      })),
+    );
 
     downloadStreams.forEach(({ name, stream }) => {
       archiver.append(stream, {
@@ -55,7 +56,7 @@ const archive = async (
 
   await archiver.finalize();
 
-  return upload.promise();
+  return upload.done();
 };
 
 export default archive;

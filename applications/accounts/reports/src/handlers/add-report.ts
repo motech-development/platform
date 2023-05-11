@@ -1,10 +1,12 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import { Handler } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { object, string } from 'yup';
 
-const client = new DocumentClient();
+const client = new DynamoDBClient({});
+
 const schema = object({
   companyId: string().required(),
   downloadUrl: string().required(),
@@ -40,22 +42,21 @@ export const handler: Handler<IEvent> = async (event) => {
       .toSeconds(),
   );
   const id = uuid();
+  const command = new PutCommand({
+    Item: {
+      __typename: 'Report',
+      createdAt,
+      data: `${owner}:${companyId}:${now.toISO()}`,
+      downloadUrl,
+      id,
+      key,
+      owner,
+      ttl,
+    },
+    TableName: TABLE,
+  });
 
-  await client
-    .put({
-      Item: {
-        __typename: 'Report',
-        createdAt,
-        data: `${owner}:${companyId}:${now.toISO()}`,
-        downloadUrl,
-        id,
-        key,
-        owner,
-        ttl,
-      },
-      TableName: TABLE,
-    })
-    .promise();
+  await client.send(command);
 
   const payload = {
     createdAt,

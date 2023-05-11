@@ -3,6 +3,8 @@ import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { handler, IEvent } from '../generate-download-link';
 
+jest.mock('@motech-development/s3-file-operations');
+
 describe('generate-download-link', () => {
   let callback: jest.Mock;
   let context: Context;
