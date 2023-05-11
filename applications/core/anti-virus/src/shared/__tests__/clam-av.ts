@@ -1,7 +1,7 @@
-import childProcess, { ChildProcess } from 'child_process';
+import childProcess, { ChildProcess } from 'node:child_process';
 import { scanFile, updateDefinitions } from '../clam-av';
 
-jest.mock('child_process');
+jest.mock('node:child_process');
 
 interface IChildProcess extends ChildProcess {
   setExecFile(pass: boolean): void;

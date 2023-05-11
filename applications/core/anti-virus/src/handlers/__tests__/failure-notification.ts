@@ -1,7 +1,13 @@
+import {
+  SendMessageCommand,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+  SQSClient,
+} from '@aws-sdk/client-sqs';
 import { getFileData } from '@motech-development/s3-file-operations';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { SQS } from 'aws-sdk';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler, IEvent } from '../failure-notification';
 
 jest.mock('@motech-development/s3-file-operations', () => ({
@@ -12,6 +18,7 @@ describe('failure-notification', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: IEvent;
+  let sqs: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
   beforeEach(() => {
     context = ctx();
@@ -24,6 +31,8 @@ describe('failure-notification', () => {
       from: 'upload-bucket',
       key: 'path/to/file.pdf',
     };
+
+    sqs = mockClient(SQSClient);
   });
 
   it('should throw an error if queue url is not set', async () => {
@@ -60,7 +69,7 @@ describe('failure-notification', () => {
       it('should send message with the correct params with an id set', async () => {
         await handler(event, context, callback);
 
-        expect(SQS.prototype.sendMessage).toHaveBeenCalledWith({
+        expect(sqs).toReceiveCommandWith(SendMessageCommand, {
           MessageAttributes: {
             key: {
               DataType: 'String',
@@ -92,7 +101,7 @@ describe('failure-notification', () => {
 
         await handler(event, context, callback);
 
-        expect(SQS.prototype.sendMessage).toHaveBeenCalledWith({
+        expect(sqs).toReceiveCommandWith(SendMessageCommand, {
           DelaySeconds: 600,
           MessageAttributes: {
             key: {
@@ -131,7 +140,7 @@ describe('failure-notification', () => {
       it('should send message with the correct params', async () => {
         await handler(event, context, callback);
 
-        expect(SQS.prototype.sendMessage).toHaveBeenCalledWith({
+        expect(sqs).toReceiveCommandWith(SendMessageCommand, {
           DelaySeconds: 600,
           MessageAttributes: {
             key: {

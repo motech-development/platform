@@ -13,9 +13,10 @@
     "update-definitions": "serverless invoke -f UpdateDefinitions"
   },
   "dependencies": {
+    "@aws-sdk/client-sfn": "3.329.0",
+    "@aws-sdk/client-sqs": "3.329.0",
     "@motech-development/node-logger": "workspace:*",
-    "@motech-development/s3-file-operations": "workspace:*",
-    "aws-sdk": "2.1368.0"
+    "@motech-development/s3-file-operations": "workspace:*"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
@@ -30,6 +31,8 @@
     "@typescript-eslint/eslint-plugin": "5.59.2",
     "@typescript-eslint/parser": "5.59.2",
     "aws-lambda-mock-context": "3.2.1",
+    "aws-sdk-client-mock": "2.1.1",
+    "aws-sdk-client-mock-jest": "2.1.1",
     "copy-webpack-plugin": "11.0.0",
     "eslint": "8.40.0",
     "eslint-config-airbnb-base": "15.0.0",
@@ -56,6 +59,9 @@
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
       "!src/**/*.d.ts"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
     ],
     "testEnvironment": "node",
     "transform": {

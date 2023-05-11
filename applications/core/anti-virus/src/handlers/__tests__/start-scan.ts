@@ -1,12 +1,19 @@
+import {
+  SFNClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+  StartExecutionCommand,
+} from '@aws-sdk/client-sfn';
 import { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { StepFunctions } from 'aws-sdk';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../start-scan';
 
 describe('start-scan', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: SQSEvent;
+  let sfn: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
   beforeEach(() => {
     context = ctx();
@@ -51,6 +58,8 @@ describe('start-scan', () => {
         },
       ],
     } as unknown as SQSEvent;
+
+    sfn = mockClient(SFNClient);
   });
 
   it('should throw an error if state machine is not set', async () => {
@@ -77,13 +86,13 @@ describe('start-scan', () => {
     it('should start the correct number of executions', async () => {
       await handler(event, context, callback);
 
-      expect(StepFunctions.prototype.startExecution).toHaveBeenCalledTimes(2);
+      expect(sfn).toReceiveCommandTimes(StartExecutionCommand, 2);
     });
 
     it('should start executions with the correct params', async () => {
       await handler(event, context, callback);
 
-      expect(StepFunctions.prototype.startExecution).toHaveBeenCalledWith({
+      expect(sfn).toReceiveCommandWith(StartExecutionCommand, {
         input: JSON.stringify({
           from: 'upload-bucket',
           key: 'file-1.pdf',
@@ -92,7 +101,7 @@ describe('start-scan', () => {
         stateMachineArn: 'state-machine-arn',
       });
 
-      expect(StepFunctions.prototype.startExecution).toHaveBeenCalledWith({
+      expect(sfn).toReceiveCommandWith(StartExecutionCommand, {
         input: JSON.stringify({
           from: 'upload-bucket',
           key: 'file-2.pdf',
