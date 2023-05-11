@@ -1,8 +1,14 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { AttributeValue as DdbAttributeValue } from '@aws-sdk/client-dynamodb';
+import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
+import { unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
 import { AWSAppSyncClient } from 'aws-appsync';
-import { DynamoDBStreamHandler, StreamRecord } from 'aws-lambda';
-import { config, DynamoDB } from 'aws-sdk';
+import {
+  AttributeValue,
+  DynamoDBRecord,
+  DynamoDBStreamHandler,
+} from 'aws-lambda';
 import 'cross-fetch/polyfill';
 import gql from 'graphql-tag';
 
@@ -15,6 +21,21 @@ interface IRecord {
   owner: string;
   payload: string;
 }
+
+interface IFilteredRecord {
+  eventName: 'INSERT';
+  dynamodb: {
+    NewImage: Record<string, AttributeValue>;
+  };
+}
+
+const isStreamRecord = (value: DynamoDBRecord): value is IFilteredRecord => {
+  if (value.eventName === 'INSERT') {
+    return !!value.dynamodb?.NewImage;
+  }
+
+  return false;
+};
 
 export const mutation = gql`
   mutation NotificationBeacon($id: ID!, $input: NotificationInput!) {
@@ -30,6 +51,8 @@ export const mutation = gql`
 `;
 
 export const handler: DynamoDBStreamHandler = async (event) => {
+  const credentials = fromNodeProviderChain({});
+
   const { AWS_REGION, ENDPOINT } = process.env;
 
   if (!AWS_REGION) {
@@ -40,30 +63,22 @@ export const handler: DynamoDBStreamHandler = async (event) => {
     throw new Error('No endpoint set');
   }
 
-  if (!config.credentials) {
-    throw new Error('No AWS credentials set');
-  }
-
   const { Records } = event;
   const client = new AWSAppSyncClient({
     auth: {
-      credentials: config.credentials,
+      credentials,
       type: 'AWS_IAM',
     },
     disableOffline: true,
     region: AWS_REGION,
     url: ENDPOINT,
   });
-  const mutations = Records.filter(
-    ({ dynamodb, eventName }) =>
-      eventName === 'INSERT' && dynamodb && dynamodb.NewImage,
-  )
+  const mutations = Records.filter(isStreamRecord)
     .map(({ dynamodb }) => {
-      const { NewImage } = dynamodb as StreamRecord;
-      const { __typename, createdAt, id, message, owner, payload } =
-        DynamoDB.Converter.unmarshall(
-          NewImage as DynamoDB.AttributeMap,
-        ) as IRecord;
+      const { NewImage } = dynamodb;
+      const { __typename, createdAt, id, message, owner, payload } = unmarshall(
+        NewImage as Record<string, DdbAttributeValue>,
+      ) as IRecord;
 
       return {
         __typename,

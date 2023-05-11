@@ -1,4 +1,5 @@
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import delay from '../shared/delay';
 import transformBalance, {
   IBalanceItem,
@@ -6,7 +7,7 @@ import transformBalance, {
   ITransformedBalance,
 } from '../shared/transform-balance';
 
-const client = new DocumentClient();
+const client = new DynamoDBClient({});
 
 export interface IEvent {
   id: string;
@@ -25,35 +26,35 @@ const getBalance = async (event: IEvent): Promise<ITransformedBalance> => {
 
   const { id, owner } = event;
 
-  const balanceQuery = client
-    .get({
-      Key: {
-        __typename: 'Balance',
-        id,
-      },
-      TableName: TABLE,
-    })
-    .promise();
-  const transactionsQuery = client
-    .query({
-      ExpressionAttributeNames: {
-        '#data': 'data',
-        '#owner': 'owner',
-        '#typename': '__typename',
-      },
-      ExpressionAttributeValues: {
-        ':data': `${owner}:${id}:confirmed`,
-        ':owner': owner,
-        ':typename': 'Transaction',
-      },
-      FilterExpression: '#owner = :owner',
-      IndexName: '__typename-data-index',
-      KeyConditionExpression:
-        '#typename = :typename AND begins_with(#data, :data)',
-      ScanIndexForward: false,
-      TableName: TABLE,
-    })
-    .promise();
+  const getCommand = new GetCommand({
+    Key: {
+      __typename: 'Balance',
+      id,
+    },
+    TableName: TABLE,
+  });
+
+  const queryCommand = new QueryCommand({
+    ExpressionAttributeNames: {
+      '#data': 'data',
+      '#owner': 'owner',
+      '#typename': '__typename',
+    },
+    ExpressionAttributeValues: {
+      ':data': `${owner}:${id}:confirmed`,
+      ':owner': owner,
+      ':typename': 'Transaction',
+    },
+    FilterExpression: '#owner = :owner',
+    IndexName: '__typename-data-index',
+    KeyConditionExpression:
+      '#typename = :typename AND begins_with(#data, :data)',
+    ScanIndexForward: false,
+    TableName: TABLE,
+  });
+
+  const balanceQuery = client.send(getCommand);
+  const transactionsQuery = client.send(queryCommand);
 
   const [balance, transactions] = await Promise.all([
     balanceQuery,

@@ -1,4 +1,10 @@
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import getBalance, { IEvent } from '../get-balance';
 import delay from '../../shared/delay';
 import transformBalance, {
@@ -17,9 +23,12 @@ jest.mock('../../shared/transform-balance', () => ({
 }));
 
 describe('get-balance', () => {
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let event: IEvent;
 
   beforeEach(() => {
+    ddb = mockClient(DynamoDBClient);
+
     event = {
       id: 'id',
       owner: 'owner',
@@ -107,16 +116,15 @@ describe('get-balance', () => {
         },
       ];
 
-      DocumentClient.prototype.get = jest.fn().mockReturnValueOnce({
-        promise: jest.fn().mockResolvedValueOnce({
+      ddb
+        .on(GetCommand)
+        .resolves({
           Item: balance,
-        }),
-      });
-      DocumentClient.prototype.query = jest.fn().mockReturnValueOnce({
-        promise: jest.fn().mockResolvedValueOnce({
+        })
+        .on(QueryCommand)
+        .resolves({
           Items: transactions,
-        }),
-      });
+        });
     });
 
     afterEach(() => {
@@ -132,7 +140,7 @@ describe('get-balance', () => {
     it('should call get with the correct params', async () => {
       await getBalance(event);
 
-      expect(DocumentClient.prototype.get).toHaveBeenCalledWith({
+      expect(ddb).toReceiveCommandWith(GetCommand, {
         Key: {
           __typename: 'Balance',
           id: 'id',
@@ -144,7 +152,7 @@ describe('get-balance', () => {
     it('should call query with the correct params', async () => {
       await getBalance(event);
 
-      expect(DocumentClient.prototype.query).toHaveBeenCalledWith({
+      expect(ddb).toReceiveCommandWith(QueryCommand, {
         ExpressionAttributeNames: {
           '#data': 'data',
           '#owner': 'owner',
