@@ -1,12 +1,19 @@
+import {
+  SFNClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+  StartExecutionCommand,
+} from '@aws-sdk/client-sfn';
 import { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { StepFunctions } from 'aws-sdk';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../delete';
 
 describe('delete', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: SQSEvent;
+  let sfn: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
   beforeEach(() => {
     context = ctx();
@@ -105,6 +112,8 @@ describe('delete', () => {
         },
       ],
     };
+
+    sfn = mockClient(SFNClient);
   });
 
   it('should throw if no state machine ARN is set', async () => {
@@ -131,13 +140,13 @@ describe('delete', () => {
     it('should call call start state machine execution the correct number of times', async () => {
       await handler(event, context, callback);
 
-      expect(StepFunctions.prototype.startExecution).toHaveBeenCalledTimes(2);
+      expect(sfn).toReceiveCommandTimes(StartExecutionCommand, 2);
     });
 
     it('should call start state machine execution with the correct params', async () => {
       await handler(event, context, callback);
 
-      expect(StepFunctions.prototype.startExecution).toHaveBeenCalledWith({
+      expect(sfn).toReceiveCommandWith(StartExecutionCommand, {
         input: JSON.stringify({
           id: 'company-1-id',
           owner: 'owner-id',

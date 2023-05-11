@@ -1,7 +1,8 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
 import { Handler } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
-const documentClient = new DocumentClient();
+const documentClient = new DynamoDBClient({});
 
 export interface IEvent {
   count: number;
@@ -22,22 +23,22 @@ export const handler: Handler<IEvent> = async (event) => {
 
   const { count, current, items } = event;
 
-  await documentClient
-    .batchWrite({
-      RequestItems: {
-        [TABLE]: [
-          ...items[current].map((id) => ({
-            DeleteRequest: {
-              Key: {
-                __typename: TYPENAME,
-                id,
-              },
+  const command = new BatchWriteCommand({
+    RequestItems: {
+      [TABLE]: [
+        ...items[current].map((id) => ({
+          DeleteRequest: {
+            Key: {
+              __typename: TYPENAME,
+              id,
             },
-          })),
-        ],
-      },
-    })
-    .promise();
+          },
+        })),
+      ],
+    },
+  });
+
+  await documentClient.send(command);
 
   return {
     ...event,
