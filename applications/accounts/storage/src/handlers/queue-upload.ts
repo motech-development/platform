@@ -1,8 +1,8 @@
+import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { S3Handler } from 'aws-lambda';
-import { SQS } from 'aws-sdk';
 import { basename, extname } from 'path';
 
-const sqs = new SQS();
+const sqs = new SQSClient({});
 
 export const handler: S3Handler = async (event) => {
   const { DOWNLOAD_BUCKET, QUEUE_URL } = process.env;
@@ -41,10 +41,10 @@ export const handler: S3Handler = async (event) => {
     };
   });
 
-  await sqs
-    .sendMessageBatch({
-      Entries: entries,
-      QueueUrl: QUEUE_URL,
-    })
-    .promise();
+  const command = new SendMessageBatchCommand({
+    Entries: entries,
+    QueueUrl: QUEUE_URL,
+  });
+
+  await sqs.send(command);
 };

@@ -1,7 +1,11 @@
+import { createSignedUrl } from '@motech-development/s3-file-operations';
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { S3 } from 'aws-sdk';
 import { handler } from '../signed-download';
+
+jest.mock('@motech-development/s3-file-operations', () => ({
+  createSignedUrl: jest.fn().mockResolvedValue('https://signed-url'),
+}));
 
 describe('signed-download', () => {
   let callback: jest.Mock;
@@ -94,13 +98,11 @@ describe('signed-download', () => {
     it('should create a signed URL with the correct params', async () => {
       await handler(event, context, callback);
 
-      expect(S3.prototype.getSignedUrlPromise).toHaveBeenLastCalledWith(
+      expect(createSignedUrl).toHaveBeenLastCalledWith(
         'getObject',
-        {
-          Bucket: 'download-bucket',
-          Expires: 30,
-          Key: 'owner/path/to/download.png',
-        },
+        'download-bucket',
+        'owner/path/to/download.png',
+        30,
       );
     });
   });

@@ -1,12 +1,19 @@
+import {
+  SendMessageBatchCommand,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+  SQSClient,
+} from '@aws-sdk/client-sqs';
 import { Context, S3Event } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { SQS } from 'aws-sdk';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../queue-upload';
 
 describe('queue-upload', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: S3Event;
+  let sqs: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
   beforeEach(() => {
     context = ctx();
@@ -39,6 +46,8 @@ describe('queue-upload', () => {
         },
       ],
     } as S3Event;
+
+    sqs = mockClient(SQSClient);
   });
 
   it('should throw an error when no queue url is set', async () => {
@@ -88,7 +97,7 @@ describe('queue-upload', () => {
     it('should send the correct messages to SQS', async () => {
       await handler(event, context, callback);
 
-      expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledWith({
+      expect(sqs).toReceiveCommandWith(SendMessageBatchCommand, {
         Entries: [
           {
             Id: 'file-1',
