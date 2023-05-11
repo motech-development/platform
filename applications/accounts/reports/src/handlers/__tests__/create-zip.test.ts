@@ -2,8 +2,15 @@ import { uploader } from '@motech-development/s3-file-operations';
 import Archiver from 'archiver';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { PassThrough } from 'stream';
+import { PassThrough } from 'node:stream';
 import { handler, IEvent } from '../create-zip';
+
+jest.mock('@motech-development/s3-file-operations', () => ({
+  downloadFileStream: jest.fn(),
+  uploader: jest.fn(() => ({
+    done: jest.fn(),
+  })),
+}));
 
 describe('create-zip', () => {
   let callback: jest.Mock;
@@ -76,12 +83,6 @@ describe('create-zip', () => {
 
       process.env.DESTINATION_BUCKET = 'DESTINATION-BUCKET';
       process.env.ORIGIN_BUCKET = 'ORIGIN-BUCKET';
-
-      (uploader as jest.Mock).mockReturnValue({
-        promise: jest.fn().mockResolvedValue({
-          Key: 'PATH/TO/KEY.zip',
-        }),
-      });
     });
 
     afterEach(() => {
@@ -108,7 +109,7 @@ describe('create-zip', () => {
     it('should return the correct data when attachments are set', async () => {
       await expect(handler(event, context, callback)).resolves.toEqual({
         companyId: 'COMPANY-ID',
-        key: 'PATH/TO/KEY.zip',
+        key: 'OWNER-ID/COMPANY-ID/test-uuid.zip',
         owner: 'OWNER-ID',
       });
     });
@@ -118,7 +119,7 @@ describe('create-zip', () => {
 
       await expect(handler(event, context, callback)).resolves.toEqual({
         companyId: 'COMPANY-ID',
-        key: 'PATH/TO/KEY.zip',
+        key: 'OWNER-ID/COMPANY-ID/test-uuid.zip',
         owner: 'OWNER-ID',
       });
     });

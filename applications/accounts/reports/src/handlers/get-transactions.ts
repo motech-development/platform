@@ -1,10 +1,11 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { Handler } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { number, object, string } from 'yup';
 import padNumber from '../shared/padNumber';
 import Status from '../shared/status';
 
-const client = new DocumentClient();
+const client = new DynamoDBClient({});
 
 const schema = object({
   companyId: string().required(),
@@ -42,33 +43,32 @@ export const handler: Handler<IEvent> = async (event) => {
     stripUnknown: true,
   });
   const data = `${result.owner}:${result.companyId}:${result.status}`;
-  const transactions = await client
-    .query({
-      ExpressionAttributeNames: {
-        '#data': 'data',
-        '#owner': 'owner',
-        '#typename': '__typename',
-      },
-      ExpressionAttributeValues: {
-        ':lower': `${data}:${result.year}-${padNumber(
-          result.yearEnd.month + 1,
-          2,
-        )}-${padNumber(result.yearEnd.day + 1, 2)}T00:00:00Z`,
-        ':owner': result.owner,
-        ':typename': 'Transaction',
-        ':upper': `${data}:${result.year + 1}-${padNumber(
-          result.yearEnd.month + 1,
-          2,
-        )}-${padNumber(result.yearEnd.day, 2)}T23:59:59Z`,
-      },
-      FilterExpression: '#owner = :owner',
-      IndexName: '__typename-data-index',
-      KeyConditionExpression:
-        '#typename = :typename AND #data BETWEEN :lower AND :upper',
-      ScanIndexForward: false,
-      TableName: TABLE,
-    })
-    .promise();
+  const command = new QueryCommand({
+    ExpressionAttributeNames: {
+      '#data': 'data',
+      '#owner': 'owner',
+      '#typename': '__typename',
+    },
+    ExpressionAttributeValues: {
+      ':lower': `${data}:${result.year}-${padNumber(
+        result.yearEnd.month + 1,
+        2,
+      )}-${padNumber(result.yearEnd.day + 1, 2)}T00:00:00Z`,
+      ':owner': result.owner,
+      ':typename': 'Transaction',
+      ':upper': `${data}:${result.year + 1}-${padNumber(
+        result.yearEnd.month + 1,
+        2,
+      )}-${padNumber(result.yearEnd.day, 2)}T23:59:59Z`,
+    },
+    FilterExpression: '#owner = :owner',
+    IndexName: '__typename-data-index',
+    KeyConditionExpression:
+      '#typename = :typename AND #data BETWEEN :lower AND :upper',
+    ScanIndexForward: false,
+    TableName: TABLE,
+  });
+  const transactions = await client.send(command);
 
   if (transactions.Items && transactions.Items.length > 0) {
     return {

@@ -1,12 +1,19 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import { Context } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import ctx from 'aws-lambda-mock-context';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import { handler, IEvent } from '../add-report';
 
 describe('add-report', () => {
   let callback: jest.Mock;
   let context: Context;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let event: IEvent;
 
   beforeAll(() => {
@@ -19,6 +26,8 @@ describe('add-report', () => {
     context = ctx();
 
     context.done();
+
+    ddb = mockClient(DynamoDBClient);
 
     event = {
       companyId: 'COMPANY-ID',
@@ -54,7 +63,7 @@ describe('add-report', () => {
     it('should call put with the correct params', async () => {
       await handler(event, context, callback);
 
-      expect(DocumentClient.prototype.put).toHaveBeenCalledWith({
+      expect(ddb).toReceiveCommandWith(PutCommand, {
         Item: {
           __typename: 'Report',
           createdAt: '2021-04-11T19:45:00.000Z',

@@ -1,5 +1,5 @@
 import { Handler } from 'aws-lambda';
-import { join } from 'path';
+import { join } from 'node:path';
 import { v4 as uuid } from 'uuid';
 import { array, object, string } from 'yup';
 import archive from '../shared/archive';
@@ -43,7 +43,7 @@ export const handler: Handler<IEvent> = async (event) => {
   });
   const key = join(owner, companyId, `${uuid()}.zip`);
 
-  const { Key } = await archive(
+  await archive(
     csv,
     {
       bucket: DESTINATION_BUCKET,
@@ -57,7 +57,7 @@ export const handler: Handler<IEvent> = async (event) => {
 
   return {
     companyId,
-    key: Key,
+    key,
     owner,
   };
 };
