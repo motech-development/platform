@@ -1,11 +1,18 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler, IEvent } from '../delete-records';
 
 describe('delete-records', () => {
   let callback: jest.Mock;
   let context: Context;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let event: IEvent;
 
   beforeEach(() => {
@@ -14,6 +21,8 @@ describe('delete-records', () => {
     context.done();
 
     callback = jest.fn();
+
+    ddb = mockClient(DynamoDBClient);
 
     event = {
       count: 2,
@@ -72,7 +81,7 @@ describe('delete-records', () => {
     it('should call batchWrite with the correct params', async () => {
       await handler(event, context, callback);
 
-      expect(DocumentClient.prototype.batchWrite).toHaveBeenCalledWith({
+      expect(ddb).toReceiveCommandWith(BatchWriteCommand, {
         RequestItems: {
           'app-table': [
             {

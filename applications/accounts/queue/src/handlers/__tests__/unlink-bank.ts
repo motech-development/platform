@@ -1,13 +1,20 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import { aws4Interceptor } from 'aws4-axios';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import axios from 'axios';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { handler, IEvent } from '../unlink-bank';
 
 describe('unlink-bank', () => {
   let callback: jest.Mock;
   let context: Context;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let event: IEvent;
 
   beforeEach(() => {
@@ -16,6 +23,8 @@ describe('unlink-bank', () => {
     context.done();
 
     callback = jest.fn();
+
+    ddb = mockClient(DynamoDBClient);
 
     event = {
       id: 'company-id',
@@ -93,11 +102,7 @@ describe('unlink-bank', () => {
 
     describe('when no user is found', () => {
       beforeEach(() => {
-        DocumentClient.prototype.get = jest.fn().mockReturnValue({
-          promise: jest.fn().mockResolvedValue({
-            Item: null,
-          }),
-        });
+        ddb.on(GetCommand).resolves({});
       });
 
       it('should not call the endpoont', async () => {
@@ -113,12 +118,10 @@ describe('unlink-bank', () => {
 
     describe('when a user is found', () => {
       beforeEach(() => {
-        DocumentClient.prototype.get = jest.fn().mockReturnValue({
-          promise: jest.fn().mockResolvedValue({
-            Item: {
-              user: 'user-id',
-            },
-          }),
+        ddb.on(GetCommand).resolves({
+          Item: {
+            user: 'user-id',
+          },
         });
       });
 

@@ -1,12 +1,19 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import chunk from '../../shared/chunk';
 import { handler, IEvent } from '../get-records';
 
 describe('get-records', () => {
   let callback: jest.Mock;
   let context: Context;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let event: IEvent;
 
   beforeEach(() => {
@@ -15,6 +22,8 @@ describe('get-records', () => {
     context.done();
 
     callback = jest.fn();
+
+    ddb = mockClient(DynamoDBClient);
 
     event = {
       id: 'company-id',
@@ -72,19 +81,17 @@ describe('get-records', () => {
       beforeEach(() => {
         Items = [...new Array<unknown>(50)].map((_, i) => `client-id-${i}`);
 
-        DocumentClient.prototype.query = jest.fn().mockReturnValueOnce({
-          promise: jest.fn().mockResolvedValue({
-            Items: Items.map((id) => ({
-              id,
-            })),
-          }),
+        ddb.on(QueryCommand).resolves({
+          Items: Items.map((id) => ({
+            id,
+          })),
         });
       });
 
       it('should query with the correct params', async () => {
         await handler(event, context, callback);
 
-        expect(DocumentClient.prototype.query).toHaveBeenCalledWith({
+        expect(ddb).toReceiveCommandWith(QueryCommand, {
           ExpressionAttributeNames: {
             '#data': 'data',
             '#owner': 'owner',
@@ -118,10 +125,8 @@ describe('get-records', () => {
 
     describe('when clients are not returned', () => {
       beforeEach(() => {
-        DocumentClient.prototype.query = jest.fn().mockReturnValueOnce({
-          promise: jest.fn().mockResolvedValue({
-            Items: [],
-          }),
+        ddb.on(QueryCommand).resolves({
+          Items: [],
         });
       });
 

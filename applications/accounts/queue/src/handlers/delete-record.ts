@@ -1,7 +1,8 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { Handler } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 
-const documentClient = new DocumentClient();
+const documentClient = new DynamoDBClient({});
 
 export interface IEvent {
   id: string;
@@ -21,22 +22,22 @@ export const handler: Handler<IEvent> = async (event) => {
 
   const { id, owner } = event;
 
-  await documentClient
-    .delete({
-      ConditionExpression: '#owner = :owner',
-      ExpressionAttributeNames: {
-        '#owner': 'owner',
-      },
-      ExpressionAttributeValues: {
-        ':owner': owner,
-      },
-      Key: {
-        __typename: TYPENAME,
-        id,
-      },
-      TableName: TABLE,
-    })
-    .promise();
+  const command = new DeleteCommand({
+    ConditionExpression: '#owner = :owner',
+    ExpressionAttributeNames: {
+      '#owner': 'owner',
+    },
+    ExpressionAttributeValues: {
+      ':owner': owner,
+    },
+    Key: {
+      __typename: TYPENAME,
+      id,
+    },
+    TableName: TABLE,
+  });
+
+  await documentClient.send(command);
 
   return {
     complete: true,

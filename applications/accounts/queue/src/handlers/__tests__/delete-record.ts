@@ -1,11 +1,18 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler, IEvent } from '../delete-record';
 
 describe('delete-record', () => {
   let callback: jest.Mock;
   let context: Context;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let event: IEvent;
 
   beforeEach(() => {
@@ -14,6 +21,8 @@ describe('delete-record', () => {
     context.done();
 
     callback = jest.fn();
+
+    ddb = mockClient(DynamoDBClient);
 
     event = {
       id: 'company-id',
@@ -68,7 +77,7 @@ describe('delete-record', () => {
     it('should delete with the correct params', async () => {
       await handler(event, context, callback);
 
-      expect(DocumentClient.prototype.delete).toHaveBeenCalledWith({
+      expect(ddb).toReceiveCommandWith(DeleteCommand, {
         ConditionExpression: '#owner = :owner',
         ExpressionAttributeNames: {
           '#owner': 'owner',
