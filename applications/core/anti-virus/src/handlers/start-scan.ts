@@ -1,7 +1,7 @@
+import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
 import { SQSHandler } from 'aws-lambda';
-import { StepFunctions } from 'aws-sdk';
 
-const stepFunctions = new StepFunctions();
+const stepFunctions = new SFNClient({});
 
 export const handler: SQSHandler = async (event) => {
   const { STATE_MACHINE_ARN } = process.env;
@@ -13,17 +13,16 @@ export const handler: SQSHandler = async (event) => {
   const executions = event.Records.map((record) => {
     const { messageAttributes } = record;
     const { from, key, to } = messageAttributes;
+    const command = new StartExecutionCommand({
+      input: JSON.stringify({
+        from: from.stringValue,
+        key: key.stringValue,
+        to: to.stringValue,
+      }),
+      stateMachineArn: STATE_MACHINE_ARN,
+    });
 
-    return stepFunctions
-      .startExecution({
-        input: JSON.stringify({
-          from: from.stringValue,
-          key: key.stringValue,
-          to: to.stringValue,
-        }),
-        stateMachineArn: STATE_MACHINE_ARN,
-      })
-      .promise();
+    return stepFunctions.send(command);
   });
 
   await Promise.all(executions);

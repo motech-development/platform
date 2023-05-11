@@ -1,7 +1,7 @@
 import logger from '@motech-development/node-logger';
-import { execFile } from 'child_process';
-import { join, resolve } from 'path';
-import { promisify } from 'util';
+import { execFile } from 'node:child_process';
+import { join, resolve } from 'node:path';
+import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
 
