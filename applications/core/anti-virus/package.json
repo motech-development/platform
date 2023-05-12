@@ -13,8 +13,8 @@
     "update-definitions": "serverless invoke -f UpdateDefinitions"
   },
   "dependencies": {
-    "@aws-sdk/client-sfn": "3.329.0",
-    "@aws-sdk/client-sqs": "3.329.0",
+    "@aws-sdk/client-sfn": "3.332.0",
+    "@aws-sdk/client-sqs": "3.332.0",
     "@motech-development/node-logger": "workspace:*",
     "@motech-development/s3-file-operations": "workspace:*"
   },
