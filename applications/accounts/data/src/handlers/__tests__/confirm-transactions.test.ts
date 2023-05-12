@@ -1,10 +1,17 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBRecord } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import confirmTransactions from '../confirm-transactions';
 
 describe('confirm-transactions', () => {
-  let documentClient: DocumentClient;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let documentClient: DynamoDBClient;
   let tableName: string;
   let records: DynamoDBRecord[];
 
@@ -13,10 +20,9 @@ describe('confirm-transactions', () => {
   });
 
   beforeEach(() => {
-    documentClient = new DocumentClient();
-    documentClient.update = jest.fn().mockReturnValue({
-      promise: jest.fn(),
-    });
+    ddb = mockClient(DynamoDBClient);
+
+    documentClient = new DynamoDBClient({});
 
     tableName = 'test';
 
@@ -81,7 +87,7 @@ describe('confirm-transactions', () => {
   it('should return update with the correct params', () => {
     confirmTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#data': 'data',
         '#scheduled': 'scheduled',
@@ -107,7 +113,7 @@ describe('confirm-transactions', () => {
   it('should create notification', () => {
     confirmTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#createdAt': 'createdAt',
         '#data': 'data',
@@ -135,6 +141,6 @@ describe('confirm-transactions', () => {
   it('should call update the correct number of times', () => {
     confirmTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(2);
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
   });
 });

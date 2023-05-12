@@ -1,12 +1,12 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import logger from '@motech-development/node-logger';
 import { DynamoDBStreamHandler } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import insertScheduledTransactions from './handlers/insert-scheduled-transactions';
 import removeScheduledTransactions from './handlers/remove-scheduled-transactions';
 import updateScheduledTransactions from './handlers/update-scheduled-transactions';
 import extractStream from './shared/extract-stream';
 
-const documentClient = new DocumentClient();
+const documentClient = new DynamoDBClient({});
 
 export const handler: DynamoDBStreamHandler = async (event) => {
   const { TABLE, inserts, removals, updates } = extractStream(event);

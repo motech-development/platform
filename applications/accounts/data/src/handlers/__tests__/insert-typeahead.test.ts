@@ -1,10 +1,17 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBRecord } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import insertTypeahead from '../insert-typeahead';
 
 describe('insert-typeahead', () => {
-  let documentClient: DocumentClient;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let documentClient: DynamoDBClient;
   let tableName: string;
   let records: DynamoDBRecord[];
 
@@ -13,10 +20,9 @@ describe('insert-typeahead', () => {
   });
 
   beforeEach(() => {
-    documentClient = new DocumentClient();
-    documentClient.update = jest.fn().mockReturnValue({
-      promise: jest.fn(),
-    });
+    ddb = mockClient(DynamoDBClient);
+
+    documentClient = new DynamoDBClient({});
 
     tableName = 'test';
 
@@ -307,7 +313,7 @@ describe('insert-typeahead', () => {
   it('should return update with the correct params', () => {
     insertTypeahead(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#createdAt': 'createdAt',
         '#data': 'data',
@@ -319,11 +325,11 @@ describe('insert-typeahead', () => {
       },
       ExpressionAttributeValues: {
         ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': documentClient.createSet(['Description 1']),
+        ':descriptions': ['Description 1'],
         ':groupsCanAccess': ['Admin'],
         ':now': '2020-06-06T19:45:00.000Z',
         ':owner': 'owner-id',
-        ':suppliers': documentClient.createSet(['Transaction 1']),
+        ':suppliers': ['Transaction 1'],
       },
       Key: {
         __typename: 'Typeahead',
@@ -334,7 +340,7 @@ describe('insert-typeahead', () => {
         'ADD #descriptions :descriptions, #suppliers :suppliers SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
     });
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#createdAt': 'createdAt',
         '#data': 'data',
@@ -345,7 +351,7 @@ describe('insert-typeahead', () => {
       },
       ExpressionAttributeValues: {
         ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': documentClient.createSet(['Description 2']),
+        ':descriptions': ['Description 2'],
         ':groupsCanAccess': ['Admin'],
         ':now': '2020-06-06T19:45:00.000Z',
         ':owner': 'owner-id',
@@ -359,7 +365,7 @@ describe('insert-typeahead', () => {
         'ADD #descriptions :descriptions SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
     });
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#createdAt': 'createdAt',
         '#data': 'data',
@@ -370,7 +376,7 @@ describe('insert-typeahead', () => {
       },
       ExpressionAttributeValues: {
         ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': documentClient.createSet(['Description 3']),
+        ':descriptions': ['Description 3'],
         ':groupsCanAccess': ['Admin'],
         ':now': '2020-06-06T19:45:00.000Z',
         ':owner': 'owner-id',
@@ -384,7 +390,7 @@ describe('insert-typeahead', () => {
         'ADD #descriptions :descriptions SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
     });
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#createdAt': 'createdAt',
         '#data': 'data',
@@ -396,11 +402,11 @@ describe('insert-typeahead', () => {
       },
       ExpressionAttributeValues: {
         ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': documentClient.createSet(['Description 4']),
+        ':descriptions': ['Description 4'],
         ':groupsCanAccess': ['Admin'],
         ':now': '2020-06-06T19:45:00.000Z',
         ':owner': 'owner-id',
-        ':suppliers': documentClient.createSet(['Transaction 4']),
+        ':suppliers': ['Transaction 4'],
       },
       Key: {
         __typename: 'Typeahead',
@@ -415,6 +421,6 @@ describe('insert-typeahead', () => {
   it('should call update the correct number of times', () => {
     insertTypeahead(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(4);
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 4);
   });
 });

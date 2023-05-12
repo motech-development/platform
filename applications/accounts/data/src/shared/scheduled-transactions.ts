@@ -1,13 +1,7 @@
-import { AWSError } from 'aws-sdk';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { PromiseResult } from 'aws-sdk/lib/request';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { UpdateCommand, UpdateCommandOutput } from '@aws-sdk/lib-dynamodb';
 import aggregatedDay from './aggregated-day';
 import { ITransaction, TransactionStatus } from './transaction';
-
-export type TScheduledTransaction = PromiseResult<
-  DocumentClient.UpdateItemOutput,
-  AWSError
->;
 
 export interface IScheduledTransaction {
   __typename: string;
@@ -31,114 +25,111 @@ const commonUpdate = (tableName: string, record: ITransaction) => {
 };
 
 export const confirm = (
-  documentClient: DocumentClient,
+  documentClient: DynamoDBClient,
   tableName: string,
   record: IScheduledTransaction,
-): Promise<TScheduledTransaction> => {
+): Promise<UpdateCommandOutput> => {
   const now = new Date();
   const { companyId, date, id, owner } = record;
+  const command = new UpdateCommand({
+    ExpressionAttributeNames: {
+      '#data': 'data',
+      '#scheduled': 'scheduled',
+      '#status': 'status',
+      '#updatedAt': 'updatedAt',
+    },
+    ExpressionAttributeValues: {
+      ':data': `${owner}:${companyId}:confirmed:${date}`,
+      ':scheduled': false,
+      ':status': 'confirmed',
+      ':updatedAt': now.toISOString(),
+    },
+    Key: {
+      __typename: 'Transaction',
+      id,
+    },
+    TableName: tableName,
+    UpdateExpression:
+      'SET #data = :data, #scheduled = :scheduled, #status = :status, #updatedAt = :updatedAt',
+  });
 
-  return documentClient
-    .update({
-      ExpressionAttributeNames: {
-        '#data': 'data',
-        '#scheduled': 'scheduled',
-        '#status': 'status',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':data': `${owner}:${companyId}:confirmed:${date}`,
-        ':scheduled': false,
-        ':status': 'confirmed',
-        ':updatedAt': now.toISOString(),
-      },
-      Key: {
-        __typename: 'Transaction',
-        id,
-      },
-      TableName: tableName,
-      UpdateExpression:
-        'SET #data = :data, #scheduled = :scheduled, #status = :status, #updatedAt = :updatedAt',
-    })
-    .promise();
+  return documentClient.send(command);
 };
 
 export const insert = (
-  documentClient: DocumentClient,
+  documentClient: DynamoDBClient,
   tableName: string,
   record: ITransaction,
-): Promise<TScheduledTransaction> => {
+): Promise<UpdateCommandOutput> => {
   const now = new Date();
   const { companyId, date, owner } = record;
   const startOfDay = aggregatedDay(date);
   const timestamp = Math.floor(new Date(startOfDay).getTime() / 1000);
+  const command = new UpdateCommand({
+    ...commonUpdate(tableName, record),
+    ExpressionAttributeNames: {
+      '#active': 'active',
+      '#companyId': 'companyId',
+      '#createdAt': 'createdAt',
+      '#data': 'data',
+      '#date': 'date',
+      '#owner': 'owner',
+      '#ttl': 'ttl',
+      '#updatedAt': 'updatedAt',
+    },
+    ExpressionAttributeValues: {
+      ':active': true,
+      ':companyId': companyId,
+      ':createdAt': now.toISOString(),
+      ':data': `${owner}:${companyId}:active:${timestamp}`,
+      ':date': date,
+      ':owner': owner,
+      ':ttl': timestamp,
+      ':updatedAt': now.toISOString(),
+    },
+    UpdateExpression:
+      'SET #active = :active, #companyId = :companyId, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #date = :date, #owner = :owner, #ttl = :ttl, #updatedAt = :updatedAt',
+  });
 
-  return documentClient
-    .update({
-      ...commonUpdate(tableName, record),
-      ExpressionAttributeNames: {
-        '#active': 'active',
-        '#companyId': 'companyId',
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#date': 'date',
-        '#owner': 'owner',
-        '#ttl': 'ttl',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':active': true,
-        ':companyId': companyId,
-        ':createdAt': now.toISOString(),
-        ':data': `${owner}:${companyId}:active:${timestamp}`,
-        ':date': date,
-        ':owner': owner,
-        ':ttl': timestamp,
-        ':updatedAt': now.toISOString(),
-      },
-      UpdateExpression:
-        'SET #active = :active, #companyId = :companyId, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #date = :date, #owner = :owner, #ttl = :ttl, #updatedAt = :updatedAt',
-    })
-    .promise();
+  return documentClient.send(command);
 };
 
 export const remove = (
-  documentClient: DocumentClient,
+  documentClient: DynamoDBClient,
   tableName: string,
   record: ITransaction,
-): Promise<TScheduledTransaction> => {
+): Promise<UpdateCommandOutput> => {
   const { companyId, owner } = record;
   const now = new Date();
   const timestamp = Math.floor(now.getTime() / 1000);
+  const command = new UpdateCommand({
+    ...commonUpdate(tableName, record),
+    ConditionExpression: 'attribute_exists(id)',
+    ExpressionAttributeNames: {
+      '#active': 'active',
+      '#data': 'data',
+      '#ttl': 'ttl',
+      '#updatedAt': 'updatedAt',
+    },
+    ExpressionAttributeValues: {
+      ':active': false,
+      ':data': `${owner}:${companyId}:active:${timestamp}`,
+      ':ttl': timestamp,
+      ':updatedAt': now.toISOString(),
+    },
+    UpdateExpression:
+      'SET #active = :active, #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
+  });
 
-  return documentClient
-    .update({
-      ...commonUpdate(tableName, record),
-      ConditionExpression: 'attribute_exists(id)',
-      ExpressionAttributeNames: {
-        '#active': 'active',
-        '#data': 'data',
-        '#ttl': 'ttl',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':active': false,
-        ':data': `${owner}:${companyId}:active:${timestamp}`,
-        ':ttl': timestamp,
-        ':updatedAt': now.toISOString(),
-      },
-      UpdateExpression:
-        'SET #active = :active, #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
-    })
-    .promise();
+  return documentClient.send(command);
 };
 
 export const update = (
-  documentClient: DocumentClient,
+  documentClient: DynamoDBClient,
   tableName: string,
   oldRecord: ITransaction,
   newRecord: ITransaction,
-): Promise<TScheduledTransaction | void> => {
+): Promise<UpdateCommandOutput | void> => {
   if (newRecord.status === TransactionStatus.Confirmed) {
     return remove(documentClient, tableName, newRecord);
   }

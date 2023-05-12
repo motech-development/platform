@@ -1,5 +1,5 @@
+import { NativeAttributeValue, unmarshall } from '@aws-sdk/util-dynamodb';
 import { DynamoDBRecord, StreamRecord } from 'aws-lambda';
-import { DynamoDB } from 'aws-sdk';
 
 interface IUnmarshallAllRecords<T> {
   NewImage: T;
@@ -37,11 +37,11 @@ export const unmarshallAllRecords = <T extends IRecord>(
       const { NewImage, OldImage } = record;
 
       return {
-        NewImage: DynamoDB.Converter.unmarshall(
-          NewImage as DynamoDB.AttributeMap,
+        NewImage: unmarshall(
+          NewImage as Record<string, NativeAttributeValue>,
         ) as T,
-        OldImage: DynamoDB.Converter.unmarshall(
-          OldImage as DynamoDB.AttributeMap,
+        OldImage: unmarshall(
+          OldImage as Record<string, NativeAttributeValue>,
         ) as T,
       };
     })
@@ -65,8 +65,8 @@ export const unmarshallNewRecords = <T extends IRecord>(
       const { NewImage } = record;
 
       return {
-        NewImage: DynamoDB.Converter.unmarshall(
-          NewImage as DynamoDB.AttributeMap,
+        NewImage: unmarshall(
+          NewImage as Record<string, NativeAttributeValue>,
         ) as T,
       };
     })
@@ -90,8 +90,8 @@ export const unmarshallOldRecords = <T extends IRecord>(
       const { OldImage } = record;
 
       return {
-        OldImage: DynamoDB.Converter.unmarshall(
-          OldImage as DynamoDB.AttributeMap,
+        OldImage: unmarshall(
+          OldImage as Record<string, NativeAttributeValue>,
         ) as T,
       };
     })

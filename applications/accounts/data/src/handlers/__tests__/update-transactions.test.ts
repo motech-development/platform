@@ -1,10 +1,17 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBRecord } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import updateTransactions from '../update-transactions';
 
 describe('update-transactions', () => {
-  let documentClient: DocumentClient;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let documentClient: DynamoDBClient;
   let tableName: string;
   let records: DynamoDBRecord[];
 
@@ -13,10 +20,9 @@ describe('update-transactions', () => {
   });
 
   beforeEach(() => {
-    documentClient = new DocumentClient();
-    documentClient.update = jest.fn().mockReturnValue({
-      promise: jest.fn(),
-    });
+    ddb = mockClient(DynamoDBClient);
+
+    documentClient = new DynamoDBClient({});
 
     tableName = 'test';
 
@@ -388,7 +394,7 @@ describe('update-transactions', () => {
   it('should return update with the correct params', () => {
     updateTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#balance': 'balance',
         '#itemProperty': '2019-12-15T00:00:00.000Z',
@@ -411,7 +417,7 @@ describe('update-transactions', () => {
         'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
     });
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#balance': 'balance',
         '#itemPropertyNew': '2019-12-15T00:00:00.000Z',
@@ -437,7 +443,7 @@ describe('update-transactions', () => {
         'SET #updatedAt = :updatedAt, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemPropertyNew :itemPropertyNew',
     });
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#balance': 'balance',
         '#itemProperty': '2019-12-15T00:00:00.000Z',
@@ -460,7 +466,7 @@ describe('update-transactions', () => {
         'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
     });
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#balance': 'balance',
         '#itemProperty': '2019-12-15T00:00:00.000Z',
@@ -483,7 +489,7 @@ describe('update-transactions', () => {
         'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
     });
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#balance': 'balance',
         '#itemProperty': '2019-12-15T00:00:00.000Z',
@@ -506,7 +512,7 @@ describe('update-transactions', () => {
         'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
     });
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#balance': 'balance',
         '#itemProperty': '2019-12-15T00:00:00.000Z',
@@ -533,6 +539,6 @@ describe('update-transactions', () => {
   it('should call update the correct number of times', () => {
     updateTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(6);
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 6);
   });
 });

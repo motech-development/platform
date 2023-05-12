@@ -1,20 +1,28 @@
+import {
+  SQSClient,
+  SendMessageBatchCommand,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-sqs';
 import { DynamoDBRecord } from 'aws-lambda';
-import { SQS } from 'aws-sdk';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import deleteAttachments from '../delete-attachments';
 
 describe('delete-attachments', () => {
+  let client: SQSClient;
   let queueUrl: string;
-  let sqs: SQS;
+  let sqs: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
   beforeEach(() => {
-    sqs = new SQS();
+    client = new SQSClient({});
     queueUrl = 'https://queue-url';
+    sqs = mockClient(SQSClient);
   });
 
   it('should not call sendMessageBatch if there are no attachments to process', async () => {
-    await deleteAttachments(sqs, queueUrl, []);
+    await deleteAttachments(client, queueUrl, []);
 
-    expect(sqs.sendMessageBatch).not.toHaveBeenCalled();
+    expect(sqs).not.toReceiveCommand(SendMessageBatchCommand);
   });
 
   it('should call sendMessageBatch with the correct params', async () => {
@@ -216,9 +224,9 @@ describe('delete-attachments', () => {
       },
     ];
 
-    await deleteAttachments(sqs, queueUrl, records);
+    await deleteAttachments(client, queueUrl, records);
 
-    expect(sqs.sendMessageBatch).toHaveBeenCalledWith({
+    expect(sqs).toReceiveCommandWith(SendMessageBatchCommand, {
       Entries: [
         {
           DelaySeconds: 300,

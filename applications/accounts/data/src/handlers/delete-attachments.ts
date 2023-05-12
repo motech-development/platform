@@ -1,20 +1,18 @@
+import {
+  SendMessageBatchCommand,
+  SendMessageBatchCommandOutput,
+  SQSClient,
+} from '@aws-sdk/client-sqs';
 import { DynamoDBRecord } from 'aws-lambda';
-import { AWSError, SQS } from 'aws-sdk';
-import { PromiseResult } from 'aws-sdk/lib/request';
 import { join } from 'path';
 import { ITransaction } from '../shared/transaction';
 import { unmarshallOldRecords } from '../shared/unmarshall-records';
 
-export type TDeleteAttachments = PromiseResult<
-  SQS.SendMessageBatchResult,
-  AWSError
-> | void;
-
 const deleteAttachments = (
-  sqs: SQS,
+  sqs: SQSClient,
   queueUrl: string,
   records: DynamoDBRecord[],
-): Promise<TDeleteAttachments> => {
+): Promise<SendMessageBatchCommandOutput | void> => {
   const unmarshalledRecords = unmarshallOldRecords<ITransaction>(
     records,
     'Transaction',
@@ -34,12 +32,12 @@ const deleteAttachments = (
     }));
 
   if (entries.length > 0) {
-    return sqs
-      .sendMessageBatch({
-        Entries: entries,
-        QueueUrl: queueUrl,
-      })
-      .promise();
+    const command = new SendMessageBatchCommand({
+      Entries: entries,
+      QueueUrl: queueUrl,
+    });
+
+    return sqs.send(command);
   }
 
   return Promise.resolve();

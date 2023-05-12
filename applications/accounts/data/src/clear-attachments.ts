@@ -1,9 +1,9 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import logger from '@motech-development/node-logger';
 import { SQSHandler } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import updateAttachments from './handlers/update-attachments';
 
-const documentClient = new DocumentClient();
+const documentClient = new DynamoDBClient({});
 
 export const handler: SQSHandler = async (event) => {
   const { BUCKET, TABLE } = process.env;

@@ -1,12 +1,19 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
 import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../schedule-transactions';
 
 describe('schedule-transaction', () => {
   let callback: jest.Mock;
   let context: Context;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let event: DynamoDBStreamEvent;
 
   beforeEach(() => {
@@ -15,6 +22,8 @@ describe('schedule-transaction', () => {
     context.done();
 
     callback = jest.fn();
+
+    ddb = mockClient(DynamoDBClient);
 
     event = {
       Records: [
@@ -301,13 +310,13 @@ describe('schedule-transaction', () => {
 
         await handler(event, context, callback);
 
-        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(0);
+        expect(ddb).toReceiveCommandTimes(UpdateCommand, 0);
       });
 
       it('should update the correct number of records', async () => {
         await handler(event, context, callback);
 
-        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(3);
+        expect(ddb).toReceiveCommandTimes(UpdateCommand, 3);
       });
     });
 
@@ -317,9 +326,7 @@ describe('schedule-transaction', () => {
       beforeEach(() => {
         error = new Error('Something has gone wrong');
 
-        (DocumentClient.prototype.update as jest.Mock).mockReturnValue({
-          promise: jest.fn().mockRejectedValue(error),
-        });
+        ddb.on(UpdateCommand).rejectsOnce(error);
       });
 
       it('should swallow the error', async () => {

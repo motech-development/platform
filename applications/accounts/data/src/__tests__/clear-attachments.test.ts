@@ -1,12 +1,19 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
 import { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../clear-attachments';
 
 describe('clear-attachments', () => {
   let callback: jest.Mock;
   let context: Context;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
   let event: SQSEvent;
 
   beforeEach(() => {
@@ -16,15 +23,15 @@ describe('clear-attachments', () => {
 
     callback = jest.fn();
 
-    DocumentClient.prototype.query = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValueOnce({
-        Items: [
-          {
-            __typename: 'Something',
-            id: 'id-1',
-          },
-        ],
-      }),
+    ddb = mockClient(DynamoDBClient);
+
+    ddb.on(QueryCommand).resolves({
+      Items: [
+        {
+          __typename: 'Something',
+          id: 'id-1',
+        },
+      ],
     });
 
     event = {
@@ -123,7 +130,7 @@ describe('clear-attachments', () => {
       it('should update the correct number of records', async () => {
         await handler(event, context, callback);
 
-        expect(DocumentClient.prototype.update).toHaveBeenCalledTimes(2);
+        expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
       });
     });
 
@@ -133,9 +140,7 @@ describe('clear-attachments', () => {
       beforeEach(() => {
         error = new Error('Something has gone wrong');
 
-        (DocumentClient.prototype.update as jest.Mock).mockReturnValue({
-          promise: jest.fn().mockRejectedValue(error),
-        });
+        ddb.on(UpdateCommand).rejectsOnce(error);
       });
 
       it('should swallow the error', async () => {
