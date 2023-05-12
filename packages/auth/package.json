@@ -22,7 +22,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@auth0/auth0-spa-js": "1.22.6",
+    "@auth0/auth0-spa-js": "2.0.4",
     "@motech-development/query-string-hook": "workspace:*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
