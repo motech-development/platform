@@ -56,7 +56,7 @@ export const handler: CloudFormationCustomResourceHandler = async (
             }),
           ),
         ]);
-        const dkim = (DkimTokens || []).map((token) => ({
+        const dkim = (DkimTokens ?? []).map((token) => ({
           Name: `${token}._domainkey.${Domain}.`,
           ResourceRecords: [`${token}.dkim.amazonses.com.`],
           TTL: TTL.toString(),

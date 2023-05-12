@@ -4,7 +4,7 @@
   "packageRules": [
     {
       "extends": ["schedule:monthly"],
-      "matchPackageNames": ["aws-sdk"]
+      "matchPackagePrefixes": ["@aws-sdk"]
     },
     {
       "automerge": true,
