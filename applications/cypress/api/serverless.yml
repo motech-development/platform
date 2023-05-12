@@ -31,6 +31,8 @@ custom:
 
   webpack:
     includeModules:
+      forceExclude:
+        - '@aws-sdk/client-ssm'
       nodeModulesRelativeDir: ../../../
     packager: yarn
     packagerOptions:

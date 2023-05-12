@@ -33,6 +33,8 @@ custom:
 
   webpack:
     includeModules:
+      forceInclude:
+        - '@aws-sdk/client-sqs'
       nodeModulesRelativeDir: ../../../
     packager: yarn
     packagerOptions:

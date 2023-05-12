@@ -10,8 +10,8 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.329.0",
-    "@aws-sdk/lib-dynamodb": "3.329.0",
+    "@aws-sdk/client-dynamodb": "3.332.0",
+    "@aws-sdk/lib-dynamodb": "3.332.0",
     "@motech-development/api-gateway-handler": "workspace:*",
     "luxon": "2.5.2",
     "uuid": "8.3.2",

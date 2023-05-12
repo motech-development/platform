@@ -34,6 +34,11 @@ custom:
 
   webpack:
     includeModules:
+      forceExclude:
+        - '@aws-sdk/client-dynamodb'
+        - '@aws-sdk/client-ssm'
+        - '@aws-sdk/lib-dynamodb'
+        - '@aws-sdk/util-dynamodb'
       nodeModulesRelativeDir: ../../../
     packager: yarn
     packagerOptions:

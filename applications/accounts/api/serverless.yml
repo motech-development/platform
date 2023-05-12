@@ -41,6 +41,11 @@ custom:
 
   webpack:
     includeModules:
+      forceExclude:
+        - '@aws-sdk/client-dynamodb'
+        - '@aws-sdk/credential-providers'
+        - '@aws-sdk/lib-dynamodb'
+        - '@aws-sdk/util-dynamodb'
       forceInclude:
         - cross-fetch
       nodeModulesRelativeDir: ../../../

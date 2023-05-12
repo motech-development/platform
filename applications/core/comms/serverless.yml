@@ -28,6 +28,8 @@ custom:
 
   webpack:
     includeModules:
+      forceExclude:
+        - '@aws-sdk/client-ses'
       nodeModulesRelativeDir: ../../../
     packager: yarn
     packagerOptions:
