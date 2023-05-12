@@ -14,8 +14,8 @@
 // the project's config changing)
 
 const logToOutput = require('cypress-log-to-output');
-const { rmdirSync } = require('fs');
-const { join } = require('path');
+const { rmdirSync } = require('node:fs');
+const { join } = require('node:path');
 
 /**
  * @type {Cypress.PluginConfig}

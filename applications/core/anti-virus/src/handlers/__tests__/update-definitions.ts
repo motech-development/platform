@@ -4,7 +4,7 @@ import ctx from 'aws-lambda-mock-context';
 import { updateDefinitions } from '../../shared/clam-av';
 import { handler } from '../update-definitions';
 
-jest.mock('fs');
+jest.mock('node:fs');
 
 jest.mock('../../shared/clam-av', () => ({
   updateDefinitions: jest.fn(),

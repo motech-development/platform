@@ -1,5 +1,5 @@
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const { join, resolve } = require('path');
+const { join, resolve } = require('node:path');
 const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
 

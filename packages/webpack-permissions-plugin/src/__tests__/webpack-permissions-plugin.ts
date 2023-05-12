@@ -3,7 +3,7 @@ import { TapOptions } from 'tapable';
 import { Compiler, Stats } from 'webpack';
 import PermissionsPlugin from '../webpack-permissions-plugin';
 
-jest.mock('fs');
+jest.mock('node:fs');
 jest.mock('filehound', () => ({
   create: jest.fn().mockReturnValue({
     depth: jest.fn().mockReturnThis(),
