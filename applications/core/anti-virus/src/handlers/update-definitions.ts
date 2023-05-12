@@ -1,8 +1,8 @@
 import logger from '@motech-development/node-logger';
 import { createFile } from '@motech-development/s3-file-operations';
 import { Handler } from 'aws-lambda';
-import { createReadStream } from 'fs';
-import { join } from 'path';
+import { createReadStream } from 'node:fs';
+import { join } from 'node:path';
 import { updateDefinitions } from '../shared/clam-av';
 import virusDefinitions from '../shared/virus-definitions';
 

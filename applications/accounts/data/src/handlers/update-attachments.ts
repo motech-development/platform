@@ -10,7 +10,7 @@ import {
   SQSMessageAttributes,
   SQSRecord,
 } from 'aws-lambda';
-import { join } from 'path';
+import { join } from 'node:path';
 import publishNotification from '../shared/publish-notification';
 
 interface IData extends SQSMessageAttributes {
