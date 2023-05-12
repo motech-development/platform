@@ -1,13 +1,20 @@
+import {
+  SQSClient,
+  SendMessageBatchCommand,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-sqs';
 import logger from '@motech-development/node-logger';
 import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { SQS } from 'aws-sdk';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../attachments';
 
 describe('attachments', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: DynamoDBStreamEvent;
+  let sqs: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
   beforeEach(() => {
     context = ctx();
@@ -15,6 +22,8 @@ describe('attachments', () => {
     context.done();
 
     callback = jest.fn();
+
+    sqs = mockClient(SQSClient);
 
     event = {
       Records: [
@@ -280,13 +289,13 @@ describe('attachments', () => {
 
         await handler(event, context, callback);
 
-        expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledTimes(0);
+        expect(sqs).toReceiveCommandTimes(SendMessageBatchCommand, 0);
       });
 
       it('should update the correct number of records', async () => {
         await handler(event, context, callback);
 
-        expect(SQS.prototype.sendMessageBatch).toHaveBeenCalledTimes(1);
+        expect(sqs).toReceiveCommandTimes(SendMessageBatchCommand, 1);
       });
     });
 
@@ -296,9 +305,7 @@ describe('attachments', () => {
       beforeEach(() => {
         error = new Error('Something has gone wrong');
 
-        (SQS.prototype.sendMessageBatch as jest.Mock).mockReturnValue({
-          promise: jest.fn().mockRejectedValue(error),
-        });
+        sqs.on(SendMessageBatchCommand).rejectsOnce(error);
       });
 
       it('should swallow the error', async () => {

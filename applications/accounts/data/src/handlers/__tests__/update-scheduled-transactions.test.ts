@@ -1,10 +1,17 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBRecord } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import updateScheduledTransactions from '../update-scheduled-transactions';
 
 describe('update-scheduled-transactions', () => {
-  let documentClient: DocumentClient;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let documentClient: DynamoDBClient;
   let tableName: string;
   let records: DynamoDBRecord[];
 
@@ -13,10 +20,9 @@ describe('update-scheduled-transactions', () => {
   });
 
   beforeEach(() => {
-    documentClient = new DocumentClient();
-    documentClient.update = jest.fn().mockReturnValue({
-      promise: jest.fn(),
-    });
+    ddb = mockClient(DynamoDBClient);
+
+    documentClient = new DynamoDBClient({});
 
     tableName = 'test';
 
@@ -307,7 +313,7 @@ describe('update-scheduled-transactions', () => {
   it('should return update with the correct params', () => {
     updateScheduledTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ConditionExpression: 'attribute_exists(id)',
       ExpressionAttributeNames: {
         '#active': 'active',
@@ -330,7 +336,7 @@ describe('update-scheduled-transactions', () => {
         'SET #active = :active, #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
     });
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#active': 'active',
         '#companyId': 'companyId',
@@ -360,7 +366,7 @@ describe('update-scheduled-transactions', () => {
         'SET #active = :active, #companyId = :companyId, #createdAt = if_not_exists(#createdAt, :createdAt), #data = :data, #date = :date, #owner = :owner, #ttl = :ttl, #updatedAt = :updatedAt',
     });
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ConditionExpression: 'attribute_exists(id)',
       ExpressionAttributeNames: {
         '#active': 'active',
@@ -387,6 +393,6 @@ describe('update-scheduled-transactions', () => {
   it('should call update the correct number of times', () => {
     updateScheduledTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(3);
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 3);
   });
 });

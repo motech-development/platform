@@ -1,10 +1,17 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBRecord } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import removeScheduledTransactions from '../remove-scheduled-transactions';
 
 describe('remove-scheduled-transactions', () => {
-  let documentClient: DocumentClient;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let documentClient: DynamoDBClient;
   let tableName: string;
   let records: DynamoDBRecord[];
 
@@ -13,10 +20,9 @@ describe('remove-scheduled-transactions', () => {
   });
 
   beforeEach(() => {
-    documentClient = new DocumentClient();
-    documentClient.update = jest.fn().mockReturnValue({
-      promise: jest.fn(),
-    });
+    ddb = mockClient(DynamoDBClient);
+
+    documentClient = new DynamoDBClient({});
 
     tableName = 'test';
 
@@ -307,7 +313,7 @@ describe('remove-scheduled-transactions', () => {
   it('should return update with the correct params', () => {
     removeScheduledTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ConditionExpression: 'attribute_exists(id)',
       ExpressionAttributeNames: {
         '#active': 'active',
@@ -330,7 +336,7 @@ describe('remove-scheduled-transactions', () => {
         'SET #active = :active, #data = :data, #ttl = :ttl, #updatedAt = :updatedAt',
     });
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ConditionExpression: 'attribute_exists(id)',
       ExpressionAttributeNames: {
         '#active': 'active',
@@ -357,6 +363,6 @@ describe('remove-scheduled-transactions', () => {
   it('should call update the correct number of times', () => {
     removeScheduledTransactions(documentClient, tableName, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(2);
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
   });
 });

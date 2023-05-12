@@ -1,21 +1,15 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { UpdateCommandOutput } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBRecord } from 'aws-lambda';
-import { AWSError } from 'aws-sdk';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { PromiseResult } from 'aws-sdk/lib/request';
 import { insert } from '../shared/balance';
 import { ITransaction, TransactionStatus } from '../shared/transaction';
 import { unmarshallNewRecords } from '../shared/unmarshall-records';
 
-export type TInsertTransaction = PromiseResult<
-  DocumentClient.UpdateItemOutput,
-  AWSError
->;
-
 const insertTransactions = (
-  documentClient: DocumentClient,
+  documentClient: DynamoDBClient,
   tableName: string,
   records: DynamoDBRecord[],
-): Promise<TInsertTransaction>[] => {
+): Promise<UpdateCommandOutput>[] => {
   const unmarshalledRecords = unmarshallNewRecords<ITransaction>(
     records,
     'Transaction',

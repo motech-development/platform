@@ -1,11 +1,18 @@
+import {
+  DynamoDBClient,
+  ServiceInputTypes,
+  ServiceOutputTypes,
+} from '@aws-sdk/client-dynamodb';
+import { UpdateCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { SQSRecord } from 'aws-lambda';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import updateAttachments from '../update-attachments';
 
 describe('update-attachments', () => {
   let bucket: string;
-  let documentClient: DocumentClient;
+  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let documentClient: DynamoDBClient;
   let tableName: string;
   let records: SQSRecord[];
 
@@ -14,26 +21,24 @@ describe('update-attachments', () => {
   });
 
   beforeEach(() => {
-    documentClient = new DocumentClient();
-    documentClient.update = jest.fn().mockReturnValue({
-      promise: jest.fn(),
-    });
-    documentClient.query = jest.fn().mockReturnValue({
-      promise: jest
-        .fn()
-        .mockResolvedValueOnce({
-          Items: [
-            {
-              __typename: 'Something',
-              id: 'id-1',
-              owner: 'owner',
-            },
-          ],
-        })
-        .mockResolvedValueOnce({
-          Items: [],
-        }),
-    });
+    ddb = mockClient(DynamoDBClient);
+
+    documentClient = new DynamoDBClient({});
+
+    ddb
+      .on(QueryCommand)
+      .resolvesOnce({
+        Items: [
+          {
+            __typename: 'Something',
+            id: 'id-1',
+            owner: 'owner',
+          },
+        ],
+      })
+      .resolvesOnce({
+        Items: [],
+      });
 
     tableName = 'test';
 
@@ -111,7 +116,7 @@ describe('update-attachments', () => {
   it('should query with the correct params', async () => {
     await updateAttachments(documentClient, tableName, bucket, records);
 
-    expect(documentClient.query).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(QueryCommand, {
       ExpressionAttributeNames: {
         '#attachment': 'attachment',
         '#data': 'data',
@@ -136,7 +141,7 @@ describe('update-attachments', () => {
   it('should return update with the correct params', async () => {
     await updateAttachments(documentClient, tableName, bucket, records);
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#attachment': 'attachment',
       },
@@ -152,7 +157,7 @@ describe('update-attachments', () => {
   it('should create notification', async () => {
     await updateAttachments(documentClient, tableName, bucket, records);
 
-    expect(documentClient.update).toHaveBeenCalledWith({
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#createdAt': 'createdAt',
         '#data': 'data',
@@ -180,6 +185,6 @@ describe('update-attachments', () => {
   it('should call update the correct number of times', async () => {
     await updateAttachments(documentClient, tableName, bucket, records);
 
-    expect(documentClient.update).toHaveBeenCalledTimes(2);
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
   });
 });
