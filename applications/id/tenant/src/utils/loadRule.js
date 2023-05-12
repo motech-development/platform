@@ -1,8 +1,8 @@
 /* eslint-disable no-underscore-dangle, import/no-dynamic-require */
-const { readFileSync } = require('fs');
 const { createInstrumenter } = require('istanbul-lib-instrument');
-const { resolve } = require('path');
-const { createContext, runInNewContext } = require('vm');
+const { readFileSync } = require('node:fs');
+const { resolve } = require('node:path');
+const { createContext, runInNewContext } = require('node:vm');
 
 const instrumenter = createInstrumenter({
   additionalProperties: true,
