@@ -1,5 +1,5 @@
 import { create } from 'filehound';
-import { chmodSync, existsSync } from 'fs';
+import { chmodSync, existsSync } from 'node:fs';
 import { Compiler } from 'webpack';
 
 interface IOptions {

@@ -1,4 +1,4 @@
-import { chmodSync, existsSync } from 'fs';
+import { chmodSync, existsSync } from 'node:fs';
 import { TapOptions } from 'tapable';
 import { Compiler, Stats } from 'webpack';
 import PermissionsPlugin from '../webpack-permissions-plugin';
