@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
+import { useAuth0 } from '@auth0/auth0-react';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useAuth } from '@motech-development/auth';
 import { useLazyGet } from '@motech-development/axios-hooks';
 import {
   Alert,
@@ -102,7 +102,7 @@ function Reports() {
   const { companyId } = useParams<IReportsParams>();
   const renderCheck = process.env.NODE_ENV === 'development' ? 2 : 1;
   const renderCount = useRef(0);
-  const { user } = useAuth();
+  const { user } = useAuth0();
   const { add } = useToast();
   const { t } = useTranslation('reports');
   const { parse } = useQs<IReport>();

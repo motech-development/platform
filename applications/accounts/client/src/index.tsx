@@ -1,4 +1,4 @@
-import { AuthProvider, IAppState } from '@motech-development/auth';
+import { Auth0Provider } from '@auth0/auth0-react';
 import {
   BaseStyles,
   ScrollToTop,
@@ -15,10 +15,23 @@ import './i18n';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
-const { REACT_APP_GA } = process.env;
+const {
+  REACT_APP_AUTH0_AUDIENCE,
+  REACT_APP_AUTH0_CLIENT_ID,
+  REACT_APP_AUTH0_DOMAIN,
+  REACT_APP_GA,
+} = process.env;
 
 if (!REACT_APP_GA) {
   throw new Error('Reporting error');
+}
+
+if (
+  !REACT_APP_AUTH0_AUDIENCE ||
+  !REACT_APP_AUTH0_CLIENT_ID ||
+  !REACT_APP_AUTH0_DOMAIN
+) {
+  throw new Error('Auth error');
 }
 
 initialize(REACT_APP_GA);
@@ -30,14 +43,6 @@ history.listen((location) => {
   pageview(location.pathname);
 });
 
-const onRedirectCallback = (appState: IAppState) => {
-  history.push(
-    appState && appState.targetUrl
-      ? appState.targetUrl
-      : window.location.pathname,
-  );
-};
-
 const container = document.getElementById('root');
 
 if (container) {
@@ -46,7 +51,23 @@ if (container) {
   root.render(
     <StrictMode>
       <Router history={history}>
-        <AuthProvider onRedirectCallback={onRedirectCallback}>
+        <Auth0Provider
+          authorizationParams={{
+            audience: REACT_APP_AUTH0_AUDIENCE,
+            redirect_uri: window.location.origin,
+          }}
+          cacheLocation="localstorage"
+          clientId={REACT_APP_AUTH0_CLIENT_ID}
+          domain={REACT_APP_AUTH0_DOMAIN}
+          onRedirectCallback={(appState) => {
+            history.push(
+              appState && appState.returnTo
+                ? appState.returnTo
+                : window.location.pathname,
+            );
+          }}
+          useRefreshTokens
+        >
           <BaseStyles />
 
           <ScrollToTop />
@@ -54,7 +75,7 @@ if (container) {
           <ToastProvider>
             <App />
           </ToastProvider>
-        </AuthProvider>
+        </Auth0Provider>
       </Router>
     </StrictMode>,
   );

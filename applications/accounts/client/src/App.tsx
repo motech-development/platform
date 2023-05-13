@@ -1,4 +1,5 @@
-import { useAuth, WithAuth } from '@motech-development/auth';
+import { useAuth0 } from '@auth0/auth0-react';
+import { WithAuth } from '@motech-development/auth';
 import { Loader, useToast } from '@motech-development/breeze-ui';
 import { Suspense, useEffect } from 'react';
 import { pageview } from 'react-ga';
@@ -8,16 +9,16 @@ import Pages from './pages';
 import isProd from './utils/isProd';
 
 function App() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth0();
   const { add } = useToast();
   const timeout = isProd(600000, 3600000);
   const location = useLocation();
   const logOut = () => {
-    Promise.resolve(
-      logout({
+    logout({
+      logoutParams: {
         returnTo: window.location.origin,
-      }),
-    ).catch(() => {});
+      },
+    });
   };
   const onError = (message: string) => {
     add({

@@ -85,7 +85,9 @@ describe('App', () => {
 
     await waitFor(() =>
       expect(logout).toHaveBeenCalledWith({
-        returnTo: window.location.origin,
+        logoutParams: {
+          returnTo: window.location.origin,
+        },
       }),
     );
   });

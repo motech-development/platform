@@ -14,8 +14,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Generate release token
+        id: generate_token
+        uses: tibdex/github-app-token@v1.8.0
+        with:
+          app_id: ${{ secrets.BOT_APP_ID }}
+          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v3.5.2
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
 
       - name: Set Node version
         uses: actions/setup-node@v3.6.0
@@ -32,5 +41,5 @@ jobs:
       - name: Release
         run: yarn release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
