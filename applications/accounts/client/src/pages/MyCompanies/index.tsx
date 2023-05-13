@@ -1,4 +1,5 @@
-import { ProtectedRoute, useAuth } from '@motech-development/auth';
+import { useAuth0 } from '@auth0/auth0-react';
+import { ProtectedRoute } from '@motech-development/auth';
 import { Loader } from '@motech-development/breeze-ui';
 import { lazy, Suspense } from 'react';
 import { Route, Switch } from 'react-router-dom';
@@ -17,13 +18,13 @@ const Settings = lazy(() => import('./Settings'));
 const UpdateDetails = lazy(() => import('./UpdateDetails'));
 
 function Routes() {
-  const { logout, user } = useAuth();
+  const { logout, user } = useAuth0();
   const logOut = () => {
-    Promise.resolve(
-      logout({
+    logout({
+      logoutParams: {
         returnTo: window.location.origin,
-      }),
-    ).catch(() => {});
+      },
+    });
   };
 
   return (

@@ -72,6 +72,7 @@ __metadata:
   resolution: "@accounts/client@workspace:applications/accounts/client"
   dependencies:
     "@apollo/client": 3.7.14
+    "@auth0/auth0-react": 2.1.0
     "@fortawesome/fontawesome-svg-core": 1.2.36
     "@fortawesome/free-solid-svg-icons": 5.15.4
     "@fortawesome/react-fontawesome": 0.2.0
@@ -539,7 +540,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth0/auth0-spa-js@npm:2.0.4":
+"@auth0/auth0-react@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@auth0/auth0-react@npm:2.1.0"
+  dependencies:
+    "@auth0/auth0-spa-js": ^2.0.4
+  peerDependencies:
+    react: ^16.11.0 || ^17 || ^18
+    react-dom: ^16.11.0 || ^17 || ^18
+  checksum: f1e480d7ab79bf4b1e621f8d06172c658ac1a2fe5bcea71df7ca29afd2f642020c040865077fb7974aec2b33c5c8c7dba5d438b34e0c4478258ed0eaeef03066
+  languageName: node
+  linkType: hard
+
+"@auth0/auth0-spa-js@npm:^2.0.4":
   version: 2.0.4
   resolution: "@auth0/auth0-spa-js@npm:2.0.4"
   checksum: 1ff91b47cca70bfc911a0bd97ee5a4d9e055784cde7961266ca68d3c4d1721b11aba1d33fee5a1919d1808f21949682041e6cd293bb014e2f1f1edfe454e8f0c
@@ -5827,7 +5840,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/auth@workspace:packages/auth"
   dependencies:
-    "@auth0/auth0-spa-js": 2.0.4
+    "@auth0/auth0-react": 2.1.0
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"

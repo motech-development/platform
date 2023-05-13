@@ -1,4 +1,4 @@
-import { useAuth } from '@motech-development/auth';
+import { useAuth0 } from '@auth0/auth0-react';
 import {
   Button,
   Card,
@@ -8,12 +8,12 @@ import {
 import { useTranslation } from 'react-i18next';
 
 function LogIn() {
-  const { loginWithRedirect } = useAuth();
+  const { loginWithRedirect } = useAuth0();
   const { t } = useTranslation('log-in');
   const login = () => {
     loginWithRedirect({
       appState: {
-        targetUrl: '/my-companies',
+        returnTo: '/my-companies',
       },
     }).catch(() => {});
   };

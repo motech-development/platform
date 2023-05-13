@@ -1,5 +1,5 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import { Apollo } from '@motech-development/appsync-apollo';
-import { useAuth } from '@motech-development/auth';
 import { Loader } from '@motech-development/breeze-ui';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ export interface IApolloClientProps {
 }
 
 function ApolloClient({ children }: IApolloClientProps) {
-  const { getTokenSilently, isAuthenticated, isLoading } = useAuth();
+  const { getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0();
   const { t } = useTranslation('apollo-client');
 
   return (
@@ -32,7 +32,7 @@ function ApolloClient({ children }: IApolloClientProps) {
         </Container>
       }
       fallback={<Loader />}
-      getTokenSilently={getTokenSilently}
+      getTokenSilently={getAccessTokenSilently}
       isAuthenticated={isAuthenticated}
       isLoading={isLoading}
       unauthorised={

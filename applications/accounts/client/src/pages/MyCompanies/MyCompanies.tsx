@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { useAuth } from '@motech-development/auth';
+import { useAuth0 } from '@auth0/auth0-react';
 import {
   Card,
   LinkButton,
@@ -17,7 +17,7 @@ import GET_COMPANIES, {
 
 function MyCompanies() {
   const { t } = useTranslation('my-companies');
-  const { user } = useAuth();
+  const { user } = useAuth0();
   const { data, error, loading } = useQuery<
     IGetCompaniesOutput,
     IGetCompaniesInput

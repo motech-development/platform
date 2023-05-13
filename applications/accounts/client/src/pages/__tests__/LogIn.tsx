@@ -18,7 +18,7 @@ describe('LogIn', () => {
 
     expect(loginWithRedirect).toHaveBeenCalledWith({
       appState: {
-        targetUrl: '/my-companies',
+        returnTo: '/my-companies',
       },
     });
   });
