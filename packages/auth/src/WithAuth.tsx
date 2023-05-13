@@ -1,6 +1,6 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import { useQueryString } from '@motech-development/query-string-hook';
 import { ReactNode, useEffect } from 'react';
-import { useAuth } from './AuthProvider';
 
 export interface IWithAuthProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ export interface IWithAuthProps {
 
 function WithAuth({ children, fallback, onError }: IWithAuthProps) {
   const query = useQueryString();
-  const { isLoading } = useAuth();
+  const { isLoading } = useAuth0();
 
   useEffect(() => {
     if (!isLoading) {

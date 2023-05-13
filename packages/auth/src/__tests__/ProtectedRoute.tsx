@@ -1,8 +1,11 @@
+import { useAuth0, User } from '@auth0/auth0-react';
 import { render, waitFor } from '@testing-library/react';
-import { useMemo } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
 import ProtectedRoute from '../ProtectedRoute';
+
+jest.mock('@auth0/auth0-react', () => ({
+  useAuth0: jest.fn(),
+}));
 
 function TestComponent() {
   return <p data-testid="authenticated">Authenticated</p>;
@@ -18,7 +21,7 @@ describe('ProtectedRoute', () => {
   let loginWithPopup: jest.Mock;
   let loginWithRedirect: jest.Mock;
   let logout: jest.Mock;
-  let user: AuthUser;
+  let user: User;
 
   beforeEach(() => {
     buildAuthorizeUrl = jest.fn();
@@ -47,29 +50,22 @@ describe('ProtectedRoute', () => {
     isLoading = false;
     isAuthenticated = false;
 
+    (useAuth0 as jest.Mock).mockReturnValue({
+      buildAuthorizeUrl,
+      getIdTokenClaims,
+      getTokenSilently,
+      isAuthenticated,
+      isLoading,
+      loginWithPopup,
+      loginWithRedirect,
+      logout,
+      user,
+    });
+
     function Component() {
       return (
         <MemoryRouter>
-          <AuthProvider>
-            <AuthContext.Provider
-              value={useMemo(
-                () => ({
-                  buildAuthorizeUrl,
-                  getIdTokenClaims,
-                  getTokenSilently,
-                  isAuthenticated,
-                  isLoading,
-                  loginWithPopup,
-                  loginWithRedirect,
-                  logout,
-                  user,
-                }),
-                [],
-              )}
-            >
-              <ProtectedRoute path="/" component={TestComponent} />
-            </AuthContext.Provider>
-          </AuthProvider>
+          <ProtectedRoute path="/" component={TestComponent} />
         </MemoryRouter>
       );
     }
@@ -83,29 +79,22 @@ describe('ProtectedRoute', () => {
     isLoading = false;
     isAuthenticated = true;
 
+    (useAuth0 as jest.Mock).mockReturnValue({
+      buildAuthorizeUrl,
+      getIdTokenClaims,
+      getTokenSilently,
+      isAuthenticated,
+      isLoading,
+      loginWithPopup,
+      loginWithRedirect,
+      logout,
+      user,
+    });
+
     function Component() {
       return (
         <MemoryRouter>
-          <AuthProvider>
-            <AuthContext.Provider
-              value={useMemo(
-                () => ({
-                  buildAuthorizeUrl,
-                  getIdTokenClaims,
-                  getTokenSilently,
-                  isAuthenticated,
-                  isLoading,
-                  loginWithPopup,
-                  loginWithRedirect,
-                  logout,
-                  user,
-                }),
-                [],
-              )}
-            >
-              <ProtectedRoute path="/" component={TestComponent} />
-            </AuthContext.Provider>
-          </AuthProvider>
+          <ProtectedRoute path="/" component={TestComponent} />
         </MemoryRouter>
       );
     }
@@ -119,29 +108,22 @@ describe('ProtectedRoute', () => {
     isLoading = false;
     isAuthenticated = false;
 
+    (useAuth0 as jest.Mock).mockReturnValue({
+      buildAuthorizeUrl,
+      getIdTokenClaims,
+      getTokenSilently,
+      isAuthenticated,
+      isLoading,
+      loginWithPopup,
+      loginWithRedirect,
+      logout,
+      user,
+    });
+
     function Component() {
       return (
         <MemoryRouter>
-          <AuthProvider>
-            <AuthContext.Provider
-              value={useMemo(
-                () => ({
-                  buildAuthorizeUrl,
-                  getIdTokenClaims,
-                  getTokenSilently,
-                  isAuthenticated,
-                  isLoading,
-                  loginWithPopup,
-                  loginWithRedirect,
-                  logout,
-                  user,
-                }),
-                [],
-              )}
-            >
-              <ProtectedRoute path="/" component={TestComponent} />
-            </AuthContext.Provider>
-          </AuthProvider>
+          <ProtectedRoute path="/" component={TestComponent} />
         </MemoryRouter>
       );
     }
