@@ -6,7 +6,7 @@ import axios from 'axios';
 import { saveAs } from 'file-saver';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import ON_NOTIFICATION from '../../../../graphql/notifications/ON_NOTIFICATION';
-import { add, createTestProvider } from '../../../../utils/TestProvider';
+import TestProvider, { add } from '../../../../utils/TestProvider';
 import Reports, { GET_REPORTS } from '../Reports';
 
 describe('Reports', () => {
@@ -80,18 +80,13 @@ describe('Reports', () => {
         },
       ];
 
-      const { Provider } = createTestProvider({
-        history,
-        path: '/reports/:companyId',
-      });
-
       await act(async () => {
         render(
-          <Provider>
+          <TestProvider path="/reports/:companyId" history={history}>
             <MockedProvider mocks={mocks} addTypename={false}>
               <Reports />
             </MockedProvider>
-          </Provider>,
+          </TestProvider>,
         );
 
         await waitForApollo(0);
@@ -286,18 +281,13 @@ describe('Reports', () => {
         },
       ];
 
-      const { Provider } = createTestProvider({
-        history,
-        path: '/reports/:companyId',
-      });
-
       await act(async () => {
         render(
-          <Provider>
+          <TestProvider path="/reports/:companyId" history={history}>
             <MockedProvider mocks={mocks} addTypename={false}>
               <Reports />
             </MockedProvider>
-          </Provider>,
+          </TestProvider>,
         );
 
         await waitForApollo(0);
@@ -355,18 +345,13 @@ describe('Reports', () => {
         },
       ];
 
-      const { Provider } = createTestProvider({
-        history,
-        path: '/reports/:companyId',
-      });
-
       await act(async () => {
         render(
-          <Provider>
+          <TestProvider path="/reports/:companyId" history={history}>
             <MockedProvider mocks={mocks} addTypename={false}>
               <Reports />
             </MockedProvider>
-          </Provider>,
+          </TestProvider>,
         );
 
         await waitForApollo(0);
