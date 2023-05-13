@@ -1,8 +1,11 @@
+import { useAuth0, User } from '@auth0/auth0-react';
 import { render, waitFor } from '@testing-library/react';
-import { useMemo } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import AuthProvider, { AuthContext, AuthUser } from '../AuthProvider';
 import WithAuth from '../WithAuth';
+
+jest.mock('@auth0/auth0-react', () => ({
+  useAuth0: jest.fn(),
+}));
 
 function TestComponent() {
   return <div data-testid="content">Loaded</div>;
@@ -23,7 +26,7 @@ describe('withAuth', () => {
   let loginWithRedirect: jest.Mock;
   let logout: jest.Mock;
   let onError: jest.Mock;
-  let user: AuthUser;
+  let user: User;
 
   beforeEach(() => {
     buildAuthorizeUrl = jest.fn();
@@ -56,31 +59,24 @@ describe('withAuth', () => {
     });
 
     it('should show component', async () => {
+      (useAuth0 as jest.Mock).mockReturnValue({
+        buildAuthorizeUrl,
+        getIdTokenClaims,
+        getTokenSilently,
+        isAuthenticated,
+        isLoading,
+        loginWithPopup,
+        loginWithRedirect,
+        logout,
+        user,
+      });
+
       function Component() {
         return (
           <MemoryRouter>
-            <AuthProvider>
-              <AuthContext.Provider
-                value={useMemo(
-                  () => ({
-                    buildAuthorizeUrl,
-                    getIdTokenClaims,
-                    getTokenSilently,
-                    isAuthenticated,
-                    isLoading,
-                    loginWithPopup,
-                    loginWithRedirect,
-                    logout,
-                    user,
-                  }),
-                  [],
-                )}
-              >
-                <WithAuth fallback={<LoadingComponent />} onError={onError}>
-                  <TestComponent />
-                </WithAuth>
-              </AuthContext.Provider>
-            </AuthProvider>
+            <WithAuth fallback={<LoadingComponent />} onError={onError}>
+              <TestComponent />
+            </WithAuth>
           </MemoryRouter>
         );
       }
@@ -91,33 +87,26 @@ describe('withAuth', () => {
     });
 
     it('should should handler error', async () => {
+      (useAuth0 as jest.Mock).mockReturnValue({
+        buildAuthorizeUrl,
+        getIdTokenClaims,
+        getTokenSilently,
+        isAuthenticated,
+        isLoading,
+        loginWithPopup,
+        loginWithRedirect,
+        logout,
+        user,
+      });
+
       function Component() {
         return (
           <MemoryRouter
             initialEntries={['?error=Error&error_description=Message']}
           >
-            <AuthProvider>
-              <AuthContext.Provider
-                value={useMemo(
-                  () => ({
-                    buildAuthorizeUrl,
-                    getIdTokenClaims,
-                    getTokenSilently,
-                    isAuthenticated,
-                    isLoading,
-                    loginWithPopup,
-                    loginWithRedirect,
-                    logout,
-                    user,
-                  }),
-                  [],
-                )}
-              >
-                <WithAuth fallback={<LoadingComponent />} onError={onError}>
-                  <TestComponent />
-                </WithAuth>
-              </AuthContext.Provider>
-            </AuthProvider>
+            <WithAuth fallback={<LoadingComponent />} onError={onError}>
+              <TestComponent />
+            </WithAuth>
           </MemoryRouter>
         );
       }
@@ -132,31 +121,24 @@ describe('withAuth', () => {
     it('should show the loader', async () => {
       isLoading = true;
 
+      (useAuth0 as jest.Mock).mockReturnValue({
+        buildAuthorizeUrl,
+        getIdTokenClaims,
+        getTokenSilently,
+        isAuthenticated,
+        isLoading,
+        loginWithPopup,
+        loginWithRedirect,
+        logout,
+        user,
+      });
+
       function Component() {
         return (
           <MemoryRouter>
-            <AuthProvider>
-              <AuthContext.Provider
-                value={useMemo(
-                  () => ({
-                    buildAuthorizeUrl,
-                    getIdTokenClaims,
-                    getTokenSilently,
-                    isAuthenticated,
-                    isLoading,
-                    loginWithPopup,
-                    loginWithRedirect,
-                    logout,
-                    user,
-                  }),
-                  [],
-                )}
-              >
-                <WithAuth fallback={<LoadingComponent />} onError={onError}>
-                  <TestComponent />
-                </WithAuth>
-              </AuthContext.Provider>
-            </AuthProvider>
+            <WithAuth fallback={<LoadingComponent />} onError={onError}>
+              <TestComponent />
+            </WithAuth>
           </MemoryRouter>
         );
       }
