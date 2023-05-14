@@ -52,7 +52,7 @@ describe('Radio', () => {
       );
     });
 
-    it('should should be disabled', async () => {
+    it('should be disabled', async () => {
       const { findByLabelText } = component;
 
       await expect(findByLabelText('Option 1')).resolves.toHaveAttribute(
@@ -89,7 +89,7 @@ describe('Radio', () => {
       );
     });
 
-    it('should should be disabled', async () => {
+    it('should be disabled', async () => {
       const { findByLabelText } = component;
 
       await expect(findByLabelText('Option 1')).resolves.toHaveAttribute(

@@ -86,7 +86,7 @@ describe('withAuth', () => {
       await expect(findByTestId('content')).resolves.toBeInTheDocument();
     });
 
-    it('should should handler error', async () => {
+    it('should handler error', async () => {
       (useAuth0 as jest.Mock).mockReturnValue({
         buildAuthorizeUrl,
         getIdTokenClaims,
