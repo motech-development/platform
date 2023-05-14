@@ -105,7 +105,7 @@ describe('delete-records', () => {
       });
     });
 
-    it('should should not complete', async () => {
+    it('should not complete', async () => {
       await expect(handler(event, context, callback)).resolves.toEqual({
         ...event,
         complete: false,
@@ -113,7 +113,7 @@ describe('delete-records', () => {
       });
     });
 
-    it('should should complete', async () => {
+    it('should complete', async () => {
       event.current = 1;
 
       await expect(handler(event, context, callback)).resolves.toEqual({

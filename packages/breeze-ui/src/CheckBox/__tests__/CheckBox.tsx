@@ -41,7 +41,7 @@ describe('CheckBox', () => {
       );
     });
 
-    it('should should be disabled', async () => {
+    it('should be disabled', async () => {
       const { findByLabelText } = component;
 
       await expect(findByLabelText('Test')).resolves.toHaveAttribute(
@@ -78,7 +78,7 @@ describe('CheckBox', () => {
       );
     });
 
-    it('should should be disabled', async () => {
+    it('should be disabled', async () => {
       const { findByLabelText } = component;
 
       await expect(findByLabelText('Test')).resolves.toHaveAttribute(
