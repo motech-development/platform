@@ -13,7 +13,7 @@
     "@aws-sdk/client-ssm": "3.332.0",
     "@motech-development/api-gateway-handler": "workspace:*",
     "@motech-development/node-logger": "workspace:*",
-    "@octokit/auth-app": "4.0.10",
+    "@octokit/auth-app": "4.0.9",
     "@octokit/rest": "18.12.0",
     "luxon": "2.5.2",
     "yup": "1.1.1"
