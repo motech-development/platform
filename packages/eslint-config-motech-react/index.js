@@ -65,6 +65,7 @@ module.exports = {
             allowExpressions: true,
           },
         ],
+        'react/require-default-props': 'off',
       },
     },
     {
