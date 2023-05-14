@@ -105,8 +105,8 @@ describe('withAuth', () => {
             initialEntries={['?error=Error&error_description=Message']}
           >
             <WithAuth fallback={<LoadingComponent />} onError={onError}>
-                <TestComponent />
-              </WithAuth>
+              <TestComponent />
+            </WithAuth>
           </MemoryRouter>
         );
       }
