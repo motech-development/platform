@@ -157,6 +157,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Clear bucket
+        continue-on-error: true
         run: aws s3 rm $DEFINITIONS_BUCKET --recursive
 
       - name: Teardown
@@ -269,6 +270,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Clear bucket
+        continue-on-error: true
         run: |
           aws s3 rm $DOWNLOAD_BUCKET --recursive
           aws s3 rm $UPLOAD_BUCKET --recursive
@@ -486,6 +488,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Clear bucket
+        continue-on-error: true
         run: aws s3 rm $REPORTS_BUCKET --recursive
 
       - name: Teardown
