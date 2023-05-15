@@ -68,6 +68,8 @@ appSync:
     loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
     level: ERROR
 
+  xrayEnabled: true
+
   resolvers:
     Query.getBalance:
       dataSource: Lambda
