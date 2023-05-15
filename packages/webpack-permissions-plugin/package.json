@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "filehound": "1.17.6",
-    "webpack": "5.82.0"
+    "webpack": "5.82.1"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
