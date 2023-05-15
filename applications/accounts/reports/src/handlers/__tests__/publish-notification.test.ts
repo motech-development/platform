@@ -72,7 +72,9 @@ describe('publish-notification', () => {
       await handler(event, context, callback);
 
       expect(axios.interceptors.request.use).toHaveBeenCalledWith(
-        aws4Interceptor(),
+        aws4Interceptor({
+          instance: axios,
+        }),
       );
     });
 
