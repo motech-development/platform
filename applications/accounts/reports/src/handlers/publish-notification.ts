@@ -4,11 +4,13 @@ import axios from 'axios';
 import { stringify } from 'qs';
 import { number, object, string } from 'yup';
 
-const axiosClient = axios.create();
+const instance = axios.create();
 
-const interceptor = aws4Interceptor();
+const interceptor = aws4Interceptor({
+  instance,
+});
 
-axiosClient.interceptors.request.use(interceptor);
+instance.interceptors.request.use(interceptor);
 
 const schema = object({
   owner: string().required(),
@@ -53,7 +55,7 @@ export const handler: Handler<IEvent> = async (event) => {
     payload: stringify(payload),
   };
 
-  await axiosClient.request({
+  await instance.request({
     data,
     headers: {
       'Content-Type': 'application/json',

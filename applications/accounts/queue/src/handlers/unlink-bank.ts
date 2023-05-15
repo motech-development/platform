@@ -11,11 +11,13 @@ interface IItem {
 
 const documentClient = new DynamoDBClient({});
 
-const axiosClient = axios.create();
+const instance = axios.create();
 
-const interceptor = aws4Interceptor();
+const interceptor = aws4Interceptor({
+  instance,
+});
 
-axiosClient.interceptors.request.use(interceptor);
+instance.interceptors.request.use(interceptor);
 
 const isUser = (item?: Record<string, NativeAttributeValue>): item is IItem =>
   !!item?.user;
@@ -61,7 +63,7 @@ export const handler: Handler<IEvent> = async (event) => {
     const path = `/${STAGE}/api/v1/users/${user}`;
     const url = ENDPOINT + path;
 
-    await axiosClient.request({
+    await instance.request({
       method: 'DELETE',
       url,
     });
