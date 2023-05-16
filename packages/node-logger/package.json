@@ -15,7 +15,7 @@
   "types": "lib/logger.d.ts",
   "scripts": {
     "build": "run prebuild && rollup -c",
-    "lint": "eslint --cache './src/**/*.ts'",
+    "lint": "eslint './src/**/*.ts'",
     "package": "run build",
     "prebuild": "rimraf ./lib",
     "test": "jest --watch",
@@ -69,6 +69,6 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "src/**/*.{ts,tsx}": "eslint --cache --fix"
+    "src/**/*.{ts,tsx}": "eslint --fix"
   }
 }

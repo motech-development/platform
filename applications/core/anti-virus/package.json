@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "./scripts/clean.sh",
     "deploy": "run predeploy && serverless deploy --verbose",
-    "lint": "eslint --cache './src/**/*.ts'",
+    "lint": "eslint './src/**/*.ts'",
     "predeploy": "./scripts/build.sh",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
@@ -74,6 +74,6 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "src/**/*.{ts,tsx}": "eslint --cache --fix"
+    "src/**/*.{ts,tsx}": "eslint --fix"
   }
 }

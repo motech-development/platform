@@ -5,7 +5,7 @@
   "scripts": {
     "deploy": "serverless deploy --verbose",
     "dynamodb": "sls dynamodb install",
-    "lint": "eslint --cache './src/**/*.ts'",
+    "lint": "eslint './src/**/*.ts'",
     "start": "serverless offline start --env local",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
@@ -76,6 +76,6 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "src/**/*.{ts,tsx}": "eslint --cache --fix"
+    "src/**/*.{ts,tsx}": "eslint --fix"
   }
 }

@@ -4,7 +4,7 @@
   "description": "Motech Development accounts warm up service",
   "scripts": {
     "deploy": "serverless deploy --verbose",
-    "lint": "eslint --cache './src/**/*.ts'",
+    "lint": "eslint './src/**/*.ts'",
     "start": "serverless invoke stepf --name warmUp",
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
@@ -74,6 +74,6 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "src/**/*.{ts,tsx}": "eslint --cache --fix"
+    "src/**/*.{ts,tsx}": "eslint --fix"
   }
 }
