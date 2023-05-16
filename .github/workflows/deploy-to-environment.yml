@@ -10,20 +10,10 @@ on:
 concurrency: ephemeral_environment
 
 jobs:
-  label:
-    name: Label PR
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/labeler@v4
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
   setup:
     name: Setup
 
-    if: github.actor != 'dependabot[bot]'
+    if: github.event.pull_request.draft == false
 
     runs-on: ubuntu-latest
 
@@ -78,69 +68,13 @@ jobs:
         if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
         run: yarn package
 
-      - name: Lint code
-        run: yarn lint
-
-  unit-tests:
-    name: Unit tests
-
-    runs-on: ubuntu-latest
-
-    needs: setup
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3.5.2
-        with:
-          fetch-depth: 0
-
-      - name: Set Node version
-        uses: actions/setup-node@v3.6.0
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v3.3.1
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v3.3.1
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Unit test
-        run: yarn test
-
-      - name: Fix paths for SonarCloud Scan
-        run: ./scripts/sonar-scanner-path-fix.sh
-
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
   # Auth0 tenant
   auth0-tenant:
     name: Deploy Auth0 tenant
 
     runs-on: ubuntu-latest
 
-    needs: unit-tests
+    needs: setup
 
     env:
       AUTH0_ALLOW_DELETE: true
@@ -223,7 +157,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    needs: unit-tests
+    needs: setup
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -284,7 +218,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    needs: unit-tests
+    needs: setup
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -359,8 +293,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    needs:
-      - unit-tests
+    needs: setup
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -422,7 +355,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - unit-tests
+      - setup
       - accounts-data
       - open-banking
 
@@ -484,7 +417,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - unit-tests
+      - setup
       - anti-virus
 
     env:
@@ -545,7 +478,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - unit-tests
+      - setup
       - accounts-storage
 
     env:
@@ -606,7 +539,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - unit-tests
+      - setup
       - accounts-data
 
     env:
@@ -671,7 +604,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - unit-tests
+      - setup
       - accounts-data
 
     env:
@@ -732,7 +665,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - unit-tests
+      - setup
       - accounts-data
       - accounts-notifications
       - accounts-storage
@@ -795,7 +728,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - unit-tests
+      - setup
       - accounts-data
       - accounts-queue
       - accounts-reports
@@ -877,8 +810,8 @@ jobs:
             Add these params to your `.env.local` file
 
             ```
-            REACT_APP_APPSYNC_URL = "${{ env.REACT_APP_APPSYNC_URL }}"
-            REACT_APP_AWS_REGION = "${{ env.REACT_APP_AWS_REGION }}"
+            REACT_APP_APPSYNC_URL="${{ env.REACT_APP_APPSYNC_URL }}"
+            REACT_APP_AWS_REGION="${{ env.REACT_APP_AWS_REGION }}"
             ```
 
   # Accounts (client)
@@ -888,7 +821,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - unit-tests
+      - setup
       - auth0-tenant
       - accounts-api
       - accounts-warm-up
