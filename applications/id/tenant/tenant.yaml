@@ -218,12 +218,15 @@ tenant:
     include_email_in_verify_email_redirect: true
   friendly_name: Motech Development
   picture_url: ''
+  sandbox_version: '16'
   support_email: info@motechdevelopment.co.uk
   support_url: https://motechdevelopment.co.uk/support
   universal_login:
     colors:
       page_background: '#161616'
       primary: '#007fa8'
+    passwordless:
+      allow_magiclink_verify_without_session: true
 emailProvider:
   name: ses
   credentials:
@@ -294,9 +297,15 @@ branding:
   colors:
     page_background: '#161616'
     primary: '#007fa8'
+  logo_url: ''
+  templates: []
 prompts:
+  customText: {}
   universal_login_experience: classic
-migrations: {}
+migrations:
+  allow_custom_extensions: true
+  role_users_offset_pagination_over_thousand: true
 actions: []
 triggers: {}
 organizations: []
+themes: []

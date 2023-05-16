@@ -1,5 +1,5 @@
 async function setName(user, context, callback) {
-  const { ManagementClient } = require('auth0@2.32.0');
+  const { ManagementClient } = require('auth0@3.0.1');
   const managementClient = new ManagementClient({
     domain: auth0.domain,
     token: auth0.accessToken,
