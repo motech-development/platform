@@ -10,7 +10,7 @@
     "deploy": "serverless client deploy --verbose --no-confirm",
     "e2e": "cypress open",
     "e2e-ci": "cy2 run --browser chrome --record --parallel --headless",
-    "lint": "eslint --cache './src/**/*.{ts,tsx}'",
+    "lint": "eslint './src/**/*.{ts,tsx}'",
     "serve": "vite preview",
     "start": "vite",
     "teardown": "serverless client remove --verbose --no-confirm",
@@ -170,6 +170,6 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "src/**/*.{ts,tsx}": "eslint --cache --fix"
+    "src/**/*.{ts,tsx}": "eslint --fix"
   }
 }

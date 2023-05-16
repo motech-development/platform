@@ -16,7 +16,7 @@
   "scripts": {
     "build": "run prebuild && rollup -c",
     "deploy": "storybook-to-ghpages --ci --host-token-env-variable=GITHUB_TOKEN",
-    "lint": "eslint --cache './src/**/*.{ts,tsx}'",
+    "lint": "eslint './src/**/*.{ts,tsx}'",
     "package": "run build",
     "prebuild": "rimraf ./lib",
     "start": "start-storybook",
@@ -122,6 +122,6 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "src/**/*.{ts,tsx}": "eslint --cache --fix"
+    "src/**/*.{ts,tsx}": "eslint --fix"
   }
 }

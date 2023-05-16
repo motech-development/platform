@@ -20,7 +20,7 @@
   ],
   "main": "index.js",
   "scripts": {
-    "lint": "eslint --cache \"index.js\""
+    "lint": "eslint \"index.js\""
   },
   "dependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
@@ -60,6 +60,6 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "*.{js,ts}": "eslint --cache --fix"
+    "*.{js,ts}": "eslint --fix"
   }
 }
