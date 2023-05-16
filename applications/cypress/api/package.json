@@ -14,7 +14,7 @@
     "@motech-development/api-gateway-handler": "workspace:*",
     "@motech-development/node-logger": "workspace:*",
     "@octokit/auth-app": "4.0.9",
-    "@octokit/rest": "19.0.7",
+    "@octokit/rest": "19.0.8",
     "luxon": "2.5.2",
     "yup": "1.1.1"
   },
