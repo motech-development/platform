@@ -31,8 +31,6 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       react(),
       eslint({
-        cache: true,
-        cacheLocation: '.eslintcache',
         include: ['src/**/*.ts', 'src/**/*.tsx'],
       }),
       checker({
