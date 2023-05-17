@@ -10,6 +10,7 @@ const publishNotification = (
   message: string,
 ): Promise<UpdateCommandOutput> => {
   const now = DateTime.utc();
+  const isoString = now.toISO() as string;
   const command = new UpdateCommand({
     ExpressionAttributeNames: {
       '#createdAt': 'createdAt',
@@ -19,8 +20,8 @@ const publishNotification = (
       '#read': 'read',
     },
     ExpressionAttributeValues: {
-      ':createdAt': now.toISO(),
-      ':data': `${owner}:Notification:${now.toISO()}`,
+      ':createdAt': isoString,
+      ':data': `${owner}:Notification:${isoString}`,
       ':message': message,
       ':owner': owner,
       ':read': false,

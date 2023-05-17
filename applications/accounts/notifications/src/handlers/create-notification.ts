@@ -21,7 +21,7 @@ export const handler = apiGatewayHandler(async (event) => {
   const TableName = paramCheck(TABLE, 'No table set', 400);
   const body = paramCheck(event.body, 'No body found', 400);
   const bodyParams = JSON.parse(body) as unknown;
-  const createdAt = DateTime.utc().toISO();
+  const createdAt = DateTime.utc().toISO() as string;
 
   try {
     const { message, owner, payload } = await schema.validate(bodyParams, {

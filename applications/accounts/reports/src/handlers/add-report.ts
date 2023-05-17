@@ -33,7 +33,7 @@ export const handler: Handler<IEvent> = async (event) => {
     stripUnknown: true,
   });
   const now = DateTime.utc();
-  const createdAt = now.toISO();
+  const createdAt = now.toISO() as string;
   const ttl = Math.floor(
     now
       .plus({
@@ -46,7 +46,7 @@ export const handler: Handler<IEvent> = async (event) => {
     Item: {
       __typename: 'Report',
       createdAt,
-      data: `${owner}:${companyId}:${now.toISO()}`,
+      data: `${owner}:${companyId}:${createdAt}`,
       downloadUrl,
       id,
       key,
