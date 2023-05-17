@@ -7,6 +7,10 @@
 
 > Motech Development applications monorepo
 
+## Getting started
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/motech-development/platform)
+
 ## Applications
 
 A diverse set of applications built by Motech Development
