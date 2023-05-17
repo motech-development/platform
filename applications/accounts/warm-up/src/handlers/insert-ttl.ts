@@ -16,7 +16,7 @@ export const handler: Handler = async () => {
 
   const id = uuid();
   const now = DateTime.utc();
-  const createdAt = now.toISO();
+  const createdAt = now.toISO() as string;
   const ttl = Math.floor(now.toSeconds());
 
   logger.info('Inserting warm up record', {
