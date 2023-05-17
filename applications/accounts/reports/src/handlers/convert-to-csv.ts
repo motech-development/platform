@@ -1,5 +1,5 @@
 import { Handler } from 'aws-lambda';
-import { json2csvAsync } from 'json-2-csv';
+import { json2csv } from 'json-2-csv';
 import { array, object, string } from 'yup';
 
 const schema = object({
@@ -45,7 +45,7 @@ export const handler: Handler<IEvent> = async (event) => {
     abortEarly: true,
     stripUnknown: true,
   });
-  const report = await json2csvAsync(csv, {
+  const report = await json2csv(csv, {
     checkSchemaDifferences: true,
   });
 
