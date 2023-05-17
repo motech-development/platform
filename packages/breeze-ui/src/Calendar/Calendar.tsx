@@ -6,7 +6,7 @@ import {
   faAngleRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { DateTime, Info } from 'luxon';
+import { DateTime, Info, PossibleDaysInMonth } from 'luxon';
 import { FC, ReactNode, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonColour } from '../BaseButton/BaseButton';
@@ -153,7 +153,7 @@ const Dates: FC<IDates> = ({ date, id, onSelect, view }) => {
 
     if (i === totalSlots.length - 1) {
       const filler = [...Array(7 - cells.length)].map((_, fillerIndex) => {
-        const key = daysInMonth + fillerIndex + 1;
+        const key = (daysInMonth as PossibleDaysInMonth) + fillerIndex + 1;
 
         const day = 1 + fillerIndex;
         const thisMonth = date.hasSame(nextMonth, 'month');
@@ -252,8 +252,10 @@ const Calendar: FC<ICalendarProps> = ({
   }, [selectedView]);
 
   useEffect(() => {
-    if (date) {
-      onDateChange(date.toISO());
+    const isoDate = date?.toISO();
+
+    if (isoDate) {
+      onDateChange(isoDate);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);

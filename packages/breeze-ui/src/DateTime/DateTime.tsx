@@ -16,7 +16,7 @@ export const formatDateTime = (
     typeof value === 'string' ? Luxon.fromISO(value) : Luxon.fromSeconds(value);
 
   return {
-    ISOString: date.toUTC().toISO(),
+    ISOString: date.toUTC().toISO() as string,
     formatted: date.toFormat(format),
   };
 };
