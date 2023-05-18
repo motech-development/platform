@@ -34,8 +34,15 @@
         "csstools.postcss",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
-        "sodatea.velocity"
-      ]
+        "sodatea.velocity",
+        "dracula-theme.theme-dracula",
+        "vscode-icons-team.vscode-icons"
+      ],
+      "settings": {
+        "files.autoSave": "off",
+        "workbench.colorTheme": "Dracula",
+        "workbench.iconTheme": "vscode-icons"
+      }
     }
   }
 
