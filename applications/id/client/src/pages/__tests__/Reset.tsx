@@ -65,15 +65,19 @@ describe('Reset', () => {
         const password = await findByLabelText('password.label');
         const confirmation = await findByLabelText('confirm-password.label');
 
-        await userEvent.type(password, 'Test');
+        await act(async () => {
+          await userEvent.type(password, 'Test');
 
-        await userEvent.type(confirmation, 'Test');
+          await userEvent.type(confirmation, 'Test');
 
-        fireEvent.blur(confirmation);
+          fireEvent.blur(confirmation);
+        });
 
         const button = await findByRole('button');
 
-        await userEvent.click(button);
+        await act(async () => {
+          await userEvent.click(button);
+        });
 
         await waitFor(() =>
           expect(axios.request).toHaveBeenCalledWith({
@@ -97,15 +101,19 @@ describe('Reset', () => {
         const password = await findByLabelText('password.label');
         const confirmation = await findByLabelText('confirm-password.label');
 
-        await userEvent.type(password, 'Test');
+        await act(async () => {
+          await userEvent.type(password, 'Test');
 
-        await userEvent.type(confirmation, 'Test');
+          await userEvent.type(confirmation, 'Test');
 
-        fireEvent.blur(confirmation);
+          fireEvent.blur(confirmation);
+        });
 
         const button = await findByRole('button');
 
-        await userEvent.click(button);
+        await act(async () => {
+          await userEvent.click(button);
+        });
 
         await waitFor(() =>
           expect(findByText('success')).resolves.toBeInTheDocument(),
@@ -133,15 +141,19 @@ describe('Reset', () => {
         const password = await findByLabelText('password.label');
         const confirmation = await findByLabelText('confirm-password.label');
 
-        await userEvent.type(password, 'Test');
+        await act(async () => {
+          await userEvent.type(password, 'Test');
 
-        await userEvent.type(confirmation, 'Test');
+          await userEvent.type(confirmation, 'Test');
+        });
 
         fireEvent.blur(confirmation);
 
         const button = await findByRole('button');
 
-        await userEvent.click(button);
+        await act(async () => {
+          await userEvent.click(button);
+        });
 
         await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
@@ -161,15 +173,19 @@ describe('Reset', () => {
         const password = await findByLabelText('password.label');
         const confirmation = await findByLabelText('confirm-password.label');
 
-        await userEvent.type(password, 'Test');
+        await act(async () => {
+          await userEvent.type(password, 'Test');
 
-        await userEvent.type(confirmation, 'Test');
+          await userEvent.type(confirmation, 'Test');
+        });
 
         fireEvent.blur(confirmation);
 
         const button = await findByRole('button');
 
-        await userEvent.click(button);
+        await act(async () => {
+          await userEvent.click(button);
+        });
 
         await waitFor(() =>
           expect(add).toHaveBeenCalledWith({

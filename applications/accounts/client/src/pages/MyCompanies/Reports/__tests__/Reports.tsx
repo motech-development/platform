@@ -100,8 +100,8 @@ describe('Reports', () => {
         await waitForApollo(0);
       });
 
-      const title = screen.getByRole('heading');
-      const subTitle = screen.getByText('reports.sub-title');
+      const title = await screen.findByRole('heading');
+      const subTitle = await screen.findByText('reports.sub-title');
 
       await waitFor(() => expect(title).toHaveTextContent('reports.title'));
       await waitFor(() => expect(subTitle).toBeInTheDocument());
@@ -112,11 +112,11 @@ describe('Reports', () => {
         await waitForApollo(0);
       });
 
-      const title = screen.getByRole('heading');
+      const title = await screen.findByRole('heading');
 
       await waitFor(() => expect(title).toHaveTextContent('reports.title'));
 
-      const alert = screen.getByRole('alert');
+      const alert = await screen.findByRole('alert');
 
       await waitFor(() =>
         expect(alert).toHaveTextContent('reports.expiry-message'),
@@ -124,15 +124,15 @@ describe('Reports', () => {
     });
 
     it('should download a report', async () => {
-      const title = screen.getByRole('heading');
+      const title = await screen.findByRole('heading');
 
       await waitFor(() => expect(title).toHaveTextContent('reports.title'));
 
-      const [button] = screen.getAllByRole('button');
-
-      await userEvent.click(button);
+      const [button] = await screen.findAllByRole('button');
 
       await act(async () => {
+        await userEvent.click(button);
+
         await waitForApollo(0);
       });
 
@@ -151,13 +151,15 @@ describe('Reports', () => {
         await waitForApollo(0);
       });
 
-      const title = screen.getByRole('heading');
+      const title = await screen.findByRole('heading');
 
       await waitFor(() => expect(title).toHaveTextContent('reports.title'));
 
-      const [button] = screen.getAllByRole('button');
+      const [button] = await screen.findAllByRole('button');
 
-      await userEvent.click(button);
+      await act(async () => {
+        await userEvent.click(button);
+      });
 
       await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
@@ -172,15 +174,15 @@ describe('Reports', () => {
         await waitForApollo(0);
       });
 
-      const title = screen.getByRole('heading');
+      const title = await screen.findByRole('heading');
 
       await waitFor(() => expect(title).toHaveTextContent('reports.title'));
 
-      const [, link] = screen.getAllByRole('link');
-
-      await userEvent.click(link);
+      const [, link] = await screen.findAllByRole('link');
 
       await act(async () => {
+        await userEvent.click(link);
+
         await waitForApollo(0);
       });
 
@@ -196,13 +198,15 @@ describe('Reports', () => {
         await waitForApollo(0);
       });
 
-      const title = screen.getByRole('heading');
+      const title = await screen.findByRole('heading');
 
       await waitFor(() => expect(title).toHaveTextContent('reports.title'));
 
-      const [link] = screen.getAllByRole('link');
+      const [link] = await screen.findAllByRole('link');
 
-      await userEvent.click(link);
+      await act(async () => {
+        await userEvent.click(link);
+      });
 
       await waitFor(() =>
         expect(history.push).toHaveBeenCalledWith(
@@ -216,11 +220,11 @@ describe('Reports', () => {
         await waitForApollo(0);
       });
 
-      const title = screen.getByRole('heading');
+      const title = await screen.findByRole('heading');
 
       await waitFor(() => expect(title).toHaveTextContent('reports.title'));
 
-      const buttons = screen.getAllByRole('button');
+      const buttons = await screen.findAllByRole('button');
 
       await waitFor(() => expect(buttons).toHaveLength(3));
     });
@@ -301,11 +305,11 @@ describe('Reports', () => {
         await waitForApollo(0);
       });
 
-      const title = screen.getByRole('heading');
+      const title = await screen.findByRole('heading');
 
       await waitFor(() => expect(title).toHaveTextContent('reports.title'));
 
-      const buttons = screen.getAllByRole('button');
+      const buttons = await screen.findAllByRole('button');
 
       await waitFor(() => expect(buttons).toHaveLength(2));
     });
@@ -365,7 +369,7 @@ describe('Reports', () => {
         await waitForApollo(0);
       });
 
-      const [, alert] = screen.getAllByRole('alert');
+      const [, alert] = await screen.findAllByRole('alert');
 
       await waitFor(() =>
         expect(alert).toHaveTextContent('reports.no-reports-found'),
