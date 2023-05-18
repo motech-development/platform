@@ -12,7 +12,9 @@
     "csstools.postcss",
     "esbenp.prettier-vscode",
     "bradlc.vscode-tailwindcss",
-    "sodatea.velocity"
+    "sodatea.velocity",
+    "dracula-theme.theme-dracula",
+    "vscode-icons-team.vscode-icons"
   ],
   // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
   "unwantedRecommendations": []
