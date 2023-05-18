@@ -114,8 +114,8 @@ describe('CreateReport', () => {
         await waitForApollo(0);
       });
 
-      const [title] = screen.getAllByRole('heading');
-      const subTitle = screen.getByText('create-report.sub-title');
+      const [title] = await screen.findAllByRole('heading');
+      const subTitle = await screen.findByText('create-report.sub-title');
 
       await waitFor(() =>
         expect(title).toHaveTextContent('create-report.title'),
@@ -128,25 +128,25 @@ describe('CreateReport', () => {
         await waitForApollo(0);
       });
 
-      const status = screen.getByLabelText(
+      const status = await screen.findByLabelText(
         'export-form.status.options.confirmed',
       );
 
-      await userEvent.click(status);
-
       await act(async () => {
+        await userEvent.click(status);
+
         await waitForApollo(0);
 
         await waitForApollo(0);
       });
 
-      const button = screen.getByRole('button');
+      const button = await screen.findByRole('button');
 
       await waitFor(() => expect(button).not.toBeDisabled());
 
-      await userEvent.click(button);
-
       await act(async () => {
+        await userEvent.click(button);
+
         await waitForApollo(0);
 
         await waitForApollo(0);
@@ -164,27 +164,25 @@ describe('CreateReport', () => {
         await waitForApollo(0);
       });
 
-      const status = screen.getByLabelText(
+      const status = await screen.findByLabelText(
         'export-form.status.options.confirmed',
       );
 
-      await userEvent.click(status);
-
       await act(async () => {
+        await userEvent.click(status);
+
         await waitForApollo(0);
       });
 
-      const button = screen.getByRole('button');
+      const button = await screen.findByRole('button');
 
       await waitFor(() => expect(button).not.toBeDisabled());
 
-      await userEvent.click(button);
-
       await act(async () => {
+        await userEvent.click(button);
+
         await waitForApollo(0);
-      });
 
-      await act(async () => {
         await waitForApollo(0);
       });
 
@@ -201,9 +199,11 @@ describe('CreateReport', () => {
         await waitForApollo(0);
       });
 
-      const link = screen.getByRole('link');
+      const link = await screen.findByRole('link');
 
-      await userEvent.click(link);
+      await act(async () => {
+        await userEvent.click(link);
+      });
 
       await waitFor(() =>
         expect(history.push).toHaveBeenCalledWith(
@@ -305,23 +305,23 @@ describe('CreateReport', () => {
         await waitForApollo(0);
       });
 
-      const status = screen.getByLabelText(
+      const status = await screen.findByLabelText(
         'export-form.status.options.confirmed',
       );
 
-      await userEvent.click(status);
-
       await act(async () => {
+        await userEvent.click(status);
+
         await waitForApollo(0);
       });
 
-      const button = screen.getByRole('button');
+      const button = await screen.findByRole('button');
 
       await waitFor(() => expect(button).not.toBeDisabled());
 
-      await userEvent.click(button);
-
       await act(async () => {
+        await userEvent.click(button);
+
         await waitForApollo(0);
 
         await waitForApollo(0);
@@ -339,23 +339,23 @@ describe('CreateReport', () => {
         await waitForApollo(0);
       });
 
-      const status = screen.getByLabelText(
+      const status = await screen.findByLabelText(
         'export-form.status.options.confirmed',
       );
 
-      await userEvent.click(status);
-
       await act(async () => {
+        await userEvent.click(status);
+
         await waitForApollo(0);
       });
 
-      const button = screen.getByRole('button');
+      const button = await screen.findByRole('button');
 
       await waitFor(() => expect(button).not.toBeDisabled());
 
-      await userEvent.click(button);
-
       await act(async () => {
+        await userEvent.click(button);
+
         await waitForApollo(0);
 
         await waitForApollo(0);

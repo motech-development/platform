@@ -81,7 +81,9 @@ describe('Form', () => {
     it('should enable save button if for is valid', async () => {
       const input = screen.getByLabelText('Test');
 
-      await userEvent.type(input, 'Hello world');
+      await act(async () => {
+        await userEvent.type(input, 'Hello world');
+      });
 
       await waitFor(() =>
         expect(screen.getByRole('button')).not.toHaveAttribute('disabled'),
@@ -93,7 +95,9 @@ describe('Form', () => {
 
       const input = await findByLabelText('Test');
 
-      await userEvent.type(input, 'Hello world');
+      await act(async () => {
+        await userEvent.type(input, 'Hello world');
+      });
 
       const button = await findByRole('button');
 

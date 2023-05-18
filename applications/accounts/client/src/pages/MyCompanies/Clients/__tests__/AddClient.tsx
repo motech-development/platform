@@ -101,27 +101,31 @@ describe('AddClient', () => {
         'client-form.client-details.name.label',
       );
 
-      await userEvent.type(line1, '1 Street');
+      await act(async () => {
+        await userEvent.type(line1, '1 Street');
 
-      await userEvent.type(line3, 'Town');
+        await userEvent.type(line3, 'Town');
 
-      await userEvent.type(line4, 'County');
+        await userEvent.type(line4, 'County');
 
-      await userEvent.type(line5, 'KT1 1NE');
+        await userEvent.type(line5, 'KT1 1NE');
+      });
 
-      await userEvent.type(email, 'info@contact.com');
+      await act(async () => {
+        await userEvent.type(email, 'info@contact.com');
 
-      await userEvent.type(telephone, '07712345678');
+        await userEvent.type(telephone, '07712345678');
 
-      await userEvent.type(name, 'New company');
+        await userEvent.type(name, 'New company');
+      });
 
       const [button] = await findAllByRole('button');
 
       await waitFor(() => expect(button).not.toBeDisabled());
 
-      fireEvent.click(button);
-
       await act(async () => {
+        fireEvent.click(button);
+
         await Promise.resolve();
       });
 
@@ -145,25 +149,29 @@ describe('AddClient', () => {
         'client-form.client-details.name.label',
       );
 
-      await userEvent.type(line1, '1 Street');
+      await act(async () => {
+        await userEvent.type(line1, '1 Street');
 
-      await userEvent.type(line3, 'Town');
+        await userEvent.type(line3, 'Town');
 
-      await userEvent.type(line4, 'County');
+        await userEvent.type(line4, 'County');
 
-      await userEvent.type(line5, 'KT1 1NE');
+        await userEvent.type(line5, 'KT1 1NE');
+      });
 
-      await userEvent.type(email, 'info@contact.com');
+      await act(async () => {
+        await userEvent.type(email, 'info@contact.com');
 
-      await userEvent.type(telephone, '07712345678');
+        await userEvent.type(telephone, '07712345678');
 
-      await userEvent.type(name, 'New company');
+        await userEvent.type(name, 'New company');
+      });
 
       const [button] = await findAllByRole('button');
 
-      fireEvent.click(button);
-
       await act(async () => {
+        fireEvent.click(button);
+
         await waitForApollo(0);
       });
 
@@ -235,25 +243,29 @@ describe('AddClient', () => {
         'client-form.client-details.name.label',
       );
 
-      await userEvent.type(line1, '1 Street');
+      await act(async () => {
+        await userEvent.type(line1, '1 Street');
 
-      await userEvent.type(line3, 'Town');
+        await userEvent.type(line3, 'Town');
 
-      await userEvent.type(line4, 'County');
+        await userEvent.type(line4, 'County');
 
-      await userEvent.type(line5, 'KT1 1NE');
+        await userEvent.type(line5, 'KT1 1NE');
+      });
 
-      await userEvent.type(email, 'info@contact.com');
+      await act(async () => {
+        await userEvent.type(email, 'info@contact.com');
 
-      await userEvent.type(telephone, '07712345678');
+        await userEvent.type(telephone, '07712345678');
 
-      await userEvent.type(name, 'New company');
+        await userEvent.type(name, 'New company');
+      });
 
       const [button] = await findAllByRole('button');
 
-      fireEvent.click(button);
-
       await act(async () => {
+        fireEvent.click(button);
+
         await waitForApollo(0);
       });
 
@@ -278,25 +290,29 @@ describe('AddClient', () => {
         'client-form.client-details.name.label',
       );
 
-      await userEvent.type(line1, '1 Street');
+      await act(async () => {
+        await userEvent.type(line1, '1 Street');
 
-      await userEvent.type(line3, 'Town');
+        await userEvent.type(line3, 'Town');
 
-      await userEvent.type(line4, 'County');
+        await userEvent.type(line4, 'County');
 
-      await userEvent.type(line5, 'KT1 1NE');
+        await userEvent.type(line5, 'KT1 1NE');
+      });
 
-      await userEvent.type(email, 'info@contact.com');
+      await act(async () => {
+        await userEvent.type(email, 'info@contact.com');
 
-      await userEvent.type(telephone, '07712345678');
+        await userEvent.type(telephone, '07712345678');
 
-      await userEvent.type(name, 'New company');
+        await userEvent.type(name, 'New company');
+      });
 
       const [button] = await findAllByRole('button');
 
-      fireEvent.click(button);
-
       await act(async () => {
+        fireEvent.click(button);
+
         await waitForApollo(0);
       });
 
