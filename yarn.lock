@@ -19,16 +19,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/api@workspace:applications/accounts/api"
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.332.0
-    "@aws-sdk/credential-providers": 3.332.0
-    "@aws-sdk/lib-dynamodb": 3.332.0
-    "@aws-sdk/util-dynamodb": 3.332.0
+    "@aws-sdk/client-dynamodb": 3.335.0
+    "@aws-sdk/credential-providers": 3.335.0
+    "@aws-sdk/lib-dynamodb": 3.335.0
+    "@aws-sdk/util-dynamodb": 3.335.0
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     "@motech-development/serverless-outputs-env": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.115
     "@types/jest": 29.5.1
@@ -39,9 +39,9 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    cross-fetch: 3.1.5
+    cross-fetch: 3.1.6
     decimal.js: 10.4.3
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -55,14 +55,14 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.3.0
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-appsync-plugin: 2.2.1
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
-    typescript: 4.9.5
-    webpack: 5.82.1
+    typescript: 5.0.4
+    webpack: 5.83.1
     webpack-node-externals: 3.0.0
   languageName: unknown
   linkType: soft
@@ -86,7 +86,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/query-string-hook": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@testing-library/cypress": 9.0.0
     "@testing-library/dom": 9.3.0
@@ -114,7 +114,7 @@ __metadata:
     cypress-pipe: 2.0.0
     cypress-wait-until: 1.7.2
     decimal.js: 10.4.3
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -128,10 +128,10 @@ __metadata:
     formik: 2.2.9
     graphql: 16.6.0
     history: 4.10.1
-    i18next: 22.4.15
+    i18next: 22.5.0
     i18next-browser-languagedetector: 7.0.1
     i18next-chained-backend: 4.2.0
-    i18next-resources-to-backend: 1.1.3
+    i18next-resources-to-backend: 1.1.4
     jest: 29.5.0
     jest-date-mock: 1.0.8
     jest-environment-jsdom: 29.5.0
@@ -139,20 +139,20 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.3.0
     prettier: 2.8.8
-    pwa-asset-generator: 6.3.0
+    pwa-asset-generator: 6.3.1
     react: 18.2.0
     react-dom: 18.2.0
     react-ga: 3.3.1
-    react-i18next: 12.2.2
+    react-i18next: 12.3.1
     react-idle-timer: 4.6.4
     react-router-dom: 5.3.4
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-finch: 4.0.3
     styled-components: 5.3.10
-    typescript: 4.9.5
+    typescript: 5.0.4
     unfetch: 5.0.0
-    vite: 4.3.7
+    vite: 4.3.8
     vite-plugin-checker: 0.6.0
     vite-plugin-eslint: 1.8.1
     vite-plugin-pwa: 0.14.7
@@ -177,15 +177,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/data@workspace:applications/accounts/data"
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.332.0
-    "@aws-sdk/client-sqs": 3.332.0
-    "@aws-sdk/lib-dynamodb": 3.332.0
-    "@aws-sdk/util-dynamodb": 3.332.0
+    "@aws-sdk/client-dynamodb": 3.335.0
+    "@aws-sdk/client-sqs": 3.335.0
+    "@aws-sdk/lib-dynamodb": 3.335.0
+    "@aws-sdk/util-dynamodb": 3.335.0
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.115
     "@types/jest": 29.5.1
@@ -197,7 +197,7 @@ __metadata:
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
     decimal.js: 10.4.3
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -210,14 +210,14 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.3.0
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
-    typescript: 4.9.5
+    typescript: 5.0.4
     uuid: 9.0.0
-    webpack: 5.82.1
+    webpack: 5.83.1
     webpack-node-externals: 3.0.0
   languageName: unknown
   linkType: soft
@@ -229,7 +229,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
@@ -238,13 +238,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/notifications@workspace:applications/accounts/notifications"
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.332.0
-    "@aws-sdk/lib-dynamodb": 3.332.0
+    "@aws-sdk/client-dynamodb": 3.335.0
+    "@aws-sdk/lib-dynamodb": 3.335.0
     "@motech-development/api-gateway-handler": "workspace:*"
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.115
     "@types/jest": 29.5.1
@@ -255,7 +255,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -268,14 +268,14 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.3.0
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
-    typescript: 4.9.5
+    typescript: 5.0.4
     uuid: 9.0.0
-    webpack: 5.82.1
+    webpack: 5.83.1
     webpack-node-externals: 3.0.0
     yup: 1.1.1
   languageName: unknown
@@ -285,14 +285,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/queue@workspace:applications/accounts/queue"
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.332.0
-    "@aws-sdk/client-sfn": 3.332.0
-    "@aws-sdk/lib-dynamodb": 3.332.0
-    "@aws-sdk/util-dynamodb": 3.332.0
+    "@aws-sdk/client-dynamodb": 3.335.0
+    "@aws-sdk/client-sfn": 3.335.0
+    "@aws-sdk/lib-dynamodb": 3.335.0
+    "@aws-sdk/util-dynamodb": 3.335.0
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.115
     "@types/jest": 29.5.1
@@ -301,9 +301,9 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    aws4-axios: 3.1.10
+    aws4-axios: 3.2.1
     axios: 1.4.0
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -314,14 +314,14 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-step-functions: 3.13.1
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
-    typescript: 4.9.5
-    webpack: 5.82.1
+    typescript: 5.0.4
+    webpack: 5.83.1
     webpack-node-externals: 3.0.0
   languageName: unknown
   linkType: soft
@@ -330,13 +330,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/reports@workspace:applications/accounts/reports"
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.332.0
-    "@aws-sdk/lib-dynamodb": 3.332.0
+    "@aws-sdk/client-dynamodb": 3.335.0
+    "@aws-sdk/lib-dynamodb": 3.335.0
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/s3-file-operations": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/archiver": 5.3.2
     "@types/aws-lambda": 8.10.115
@@ -350,9 +350,9 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    aws4-axios: 3.1.10
+    aws4-axios: 3.2.1
     axios: 1.4.0
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -366,16 +366,16 @@ __metadata:
     json-2-csv: 4.0.0
     luxon: 3.3.0
     prettier: 2.8.8
-    qs: 6.11.1
-    serverless: 3.30.1
+    qs: 6.11.2
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-step-functions: 3.13.1
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
-    typescript: 4.9.5
+    typescript: 5.0.4
     uuid: 9.0.0
-    webpack: 5.82.1
+    webpack: 5.83.1
     webpack-node-externals: 3.0.0
     yup: 1.1.1
   languageName: unknown
@@ -385,13 +385,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/storage@workspace:applications/accounts/storage"
   dependencies:
-    "@aws-sdk/client-sqs": 3.332.0
+    "@aws-sdk/client-sqs": 3.335.0
     "@motech-development/api-gateway-handler": "workspace:*"
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/s3-file-operations": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.115
     "@types/jest": 29.5.1
@@ -401,7 +401,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -412,15 +412,15 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-offline: 12.0.4
     serverless-prune-plugin: 2.0.2
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
-    typescript: 4.9.5
+    typescript: 5.0.4
     uuid: 9.0.0
-    webpack: 5.82.1
+    webpack: 5.83.1
     webpack-node-externals: 3.0.0
     yup: 1.1.1
   languageName: unknown
@@ -430,13 +430,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/warm-up@workspace:applications/accounts/warm-up"
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.332.0
-    "@aws-sdk/lib-dynamodb": 3.332.0
+    "@aws-sdk/client-dynamodb": 3.335.0
+    "@aws-sdk/lib-dynamodb": 3.335.0
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.115
     "@types/jest": 29.5.1
@@ -447,7 +447,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -460,15 +460,15 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.3.0
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-step-functions: 3.13.1
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
-    typescript: 4.9.5
+    typescript: 5.0.4
     uuid: 9.0.0
-    webpack: 5.82.1
+    webpack: 5.83.1
     webpack-node-externals: 3.0.0
     yup: 1.1.1
   languageName: unknown
@@ -738,15 +738,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cognito-identity@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/client-cognito-identity@npm:3.332.0"
+"@aws-sdk/client-cognito-identity@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/client-cognito-identity@npm:3.335.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
-    "@aws-sdk/client-sts": 3.332.0
+    "@aws-sdk/client-sts": 3.335.0
     "@aws-sdk/config-resolver": 3.329.0
-    "@aws-sdk/credential-provider-node": 3.332.0
+    "@aws-sdk/credential-provider-node": 3.335.0
     "@aws-sdk/fetch-http-handler": 3.329.0
     "@aws-sdk/hash-node": 3.329.0
     "@aws-sdk/invalid-dependency": 3.329.0
@@ -762,7 +762,6 @@ __metadata:
     "@aws-sdk/middleware-user-agent": 3.332.0
     "@aws-sdk/node-config-provider": 3.329.0
     "@aws-sdk/node-http-handler": 3.329.0
-    "@aws-sdk/protocol-http": 3.329.0
     "@aws-sdk/smithy-client": 3.329.0
     "@aws-sdk/types": 3.329.0
     "@aws-sdk/url-parser": 3.329.0
@@ -776,20 +775,22 @@ __metadata:
     "@aws-sdk/util-user-agent-browser": 3.329.0
     "@aws-sdk/util-user-agent-node": 3.329.0
     "@aws-sdk/util-utf8": 3.310.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
     tslib: ^2.5.0
-  checksum: 7ea66c22918ef0340c7e0176be1ec0369320943b01679fb20a9cd8d8c148486e0345d1c61535478e73ee734e8c7ce9c740d3f2a70a074254c39abf5760aa1c28
+  checksum: be9ad5933a2e24cc9e7f9859bec61c8e303b6c19bbf7e9bc0a7ee57dc10190404c2197ac0a98f1050be453db8b49cd9ba662a95faaf5c7dce4ed188fbb6d544a
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/client-dynamodb@npm:3.332.0"
+"@aws-sdk/client-dynamodb@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/client-dynamodb@npm:3.335.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
-    "@aws-sdk/client-sts": 3.332.0
+    "@aws-sdk/client-sts": 3.335.0
     "@aws-sdk/config-resolver": 3.329.0
-    "@aws-sdk/credential-provider-node": 3.332.0
+    "@aws-sdk/credential-provider-node": 3.335.0
     "@aws-sdk/fetch-http-handler": 3.329.0
     "@aws-sdk/hash-node": 3.329.0
     "@aws-sdk/invalid-dependency": 3.329.0
@@ -806,7 +807,6 @@ __metadata:
     "@aws-sdk/middleware-user-agent": 3.332.0
     "@aws-sdk/node-config-provider": 3.329.0
     "@aws-sdk/node-http-handler": 3.329.0
-    "@aws-sdk/protocol-http": 3.329.0
     "@aws-sdk/smithy-client": 3.329.0
     "@aws-sdk/types": 3.329.0
     "@aws-sdk/url-parser": 3.329.0
@@ -821,9 +821,11 @@ __metadata:
     "@aws-sdk/util-user-agent-node": 3.329.0
     "@aws-sdk/util-utf8": 3.310.0
     "@aws-sdk/util-waiter": 3.329.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
     tslib: ^2.5.0
     uuid: ^8.3.2
-  checksum: da8e495f79a57da9e0ca97fee3146a174bddf1e85f6ca564c058389cbdc8f811da43d48bb37b31825dc4e73be5ced969b3af48127080dabb636b892592af877f
+  checksum: a7bc4d1cf056a748b65eef6ca9dece4ec1fb01393913d6c550d6890b08cc0378c6d3c3b02bc65d24b97412d596bb24f02bca1c4900bc26f51f973532dff02fdf
   languageName: node
   linkType: hard
 
@@ -874,16 +876,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.332.0, @aws-sdk/client-s3@npm:^3.25.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/client-s3@npm:3.332.0"
+"@aws-sdk/client-s3@npm:3.335.0, @aws-sdk/client-s3@npm:^3.25.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/client-s3@npm:3.335.0"
   dependencies:
     "@aws-crypto/sha1-browser": 3.0.0
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
-    "@aws-sdk/client-sts": 3.332.0
+    "@aws-sdk/client-sts": 3.335.0
     "@aws-sdk/config-resolver": 3.329.0
-    "@aws-sdk/credential-provider-node": 3.332.0
+    "@aws-sdk/credential-provider-node": 3.335.0
     "@aws-sdk/eventstream-serde-browser": 3.329.0
     "@aws-sdk/eventstream-serde-config-resolver": 3.329.0
     "@aws-sdk/eventstream-serde-node": 3.329.0
@@ -911,7 +913,6 @@ __metadata:
     "@aws-sdk/middleware-user-agent": 3.332.0
     "@aws-sdk/node-config-provider": 3.329.0
     "@aws-sdk/node-http-handler": 3.329.0
-    "@aws-sdk/protocol-http": 3.329.0
     "@aws-sdk/signature-v4-multi-region": 3.329.0
     "@aws-sdk/smithy-client": 3.329.0
     "@aws-sdk/types": 3.329.0
@@ -930,21 +931,23 @@ __metadata:
     "@aws-sdk/util-utf8": 3.310.0
     "@aws-sdk/util-waiter": 3.329.0
     "@aws-sdk/xml-builder": 3.310.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
     fast-xml-parser: 4.1.2
     tslib: ^2.5.0
-  checksum: b720ae285d84fd34124d9a3be0a7f540ac791525b41d012fa0e3d4418923aa8fece7d23cb54460290297607c005dde44861a104d43de5a8a3233130f65458b2a
+  checksum: 65d0399a39f1d2f39c8286399df0ba453eda80c145034adf18890975e998668ac165c6f5039c3735638f8cabd622be947799a06baaff8114a7b6ebd7aa3e1675
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-ses@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/client-ses@npm:3.332.0"
+"@aws-sdk/client-ses@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/client-ses@npm:3.335.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
-    "@aws-sdk/client-sts": 3.332.0
+    "@aws-sdk/client-sts": 3.335.0
     "@aws-sdk/config-resolver": 3.329.0
-    "@aws-sdk/credential-provider-node": 3.332.0
+    "@aws-sdk/credential-provider-node": 3.335.0
     "@aws-sdk/fetch-http-handler": 3.329.0
     "@aws-sdk/hash-node": 3.329.0
     "@aws-sdk/invalid-dependency": 3.329.0
@@ -960,7 +963,6 @@ __metadata:
     "@aws-sdk/middleware-user-agent": 3.332.0
     "@aws-sdk/node-config-provider": 3.329.0
     "@aws-sdk/node-http-handler": 3.329.0
-    "@aws-sdk/protocol-http": 3.329.0
     "@aws-sdk/smithy-client": 3.329.0
     "@aws-sdk/types": 3.329.0
     "@aws-sdk/url-parser": 3.329.0
@@ -975,21 +977,23 @@ __metadata:
     "@aws-sdk/util-user-agent-node": 3.329.0
     "@aws-sdk/util-utf8": 3.310.0
     "@aws-sdk/util-waiter": 3.329.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
     fast-xml-parser: 4.1.2
     tslib: ^2.5.0
-  checksum: 73b3d428a12eb8053a567061081735500d005acf44842255628b6d19b97886091c4030aba2794c736eb913e523c53cf3206c7e0e953402da0f945d371232bb5a
+  checksum: 2c77f956f502f3e90afa0c0952b5119292d669df7871e4827f7c90835aa3061b07123e7df7e132941bf386368ffad79537b3dc07152eb9ba2999b60e1cbdeac3
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sfn@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/client-sfn@npm:3.332.0"
+"@aws-sdk/client-sfn@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/client-sfn@npm:3.335.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
-    "@aws-sdk/client-sts": 3.332.0
+    "@aws-sdk/client-sts": 3.335.0
     "@aws-sdk/config-resolver": 3.329.0
-    "@aws-sdk/credential-provider-node": 3.332.0
+    "@aws-sdk/credential-provider-node": 3.335.0
     "@aws-sdk/fetch-http-handler": 3.329.0
     "@aws-sdk/hash-node": 3.329.0
     "@aws-sdk/invalid-dependency": 3.329.0
@@ -1005,7 +1009,6 @@ __metadata:
     "@aws-sdk/middleware-user-agent": 3.332.0
     "@aws-sdk/node-config-provider": 3.329.0
     "@aws-sdk/node-http-handler": 3.329.0
-    "@aws-sdk/protocol-http": 3.329.0
     "@aws-sdk/smithy-client": 3.329.0
     "@aws-sdk/types": 3.329.0
     "@aws-sdk/url-parser": 3.329.0
@@ -1019,20 +1022,22 @@ __metadata:
     "@aws-sdk/util-user-agent-browser": 3.329.0
     "@aws-sdk/util-user-agent-node": 3.329.0
     "@aws-sdk/util-utf8": 3.310.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
     tslib: ^2.5.0
-  checksum: ab4114cd5626262cdd389db46b7fb0ca817bbfd1493437723ca620817a138fe37f10d8caf3329560b03f87b52ad80fb25ef50b8c864dfacc9b89aaa8d8859cff
+  checksum: 70c8d6bbe5e98a3250a44800a7e4cda087bd4eee0dcec90b6f307e0e7da5bc2e3a816c397d8cb34ff0e9496670c23707ab53df9297d37e819fa30591e6adb84e
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sqs@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/client-sqs@npm:3.332.0"
+"@aws-sdk/client-sqs@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/client-sqs@npm:3.335.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
-    "@aws-sdk/client-sts": 3.332.0
+    "@aws-sdk/client-sts": 3.335.0
     "@aws-sdk/config-resolver": 3.329.0
-    "@aws-sdk/credential-provider-node": 3.332.0
+    "@aws-sdk/credential-provider-node": 3.335.0
     "@aws-sdk/fetch-http-handler": 3.329.0
     "@aws-sdk/hash-node": 3.329.0
     "@aws-sdk/invalid-dependency": 3.329.0
@@ -1050,7 +1055,6 @@ __metadata:
     "@aws-sdk/middleware-user-agent": 3.332.0
     "@aws-sdk/node-config-provider": 3.329.0
     "@aws-sdk/node-http-handler": 3.329.0
-    "@aws-sdk/protocol-http": 3.329.0
     "@aws-sdk/smithy-client": 3.329.0
     "@aws-sdk/types": 3.329.0
     "@aws-sdk/url-parser": 3.329.0
@@ -1064,21 +1068,23 @@ __metadata:
     "@aws-sdk/util-user-agent-browser": 3.329.0
     "@aws-sdk/util-user-agent-node": 3.329.0
     "@aws-sdk/util-utf8": 3.310.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
     fast-xml-parser: 4.1.2
     tslib: ^2.5.0
-  checksum: 0dac18df11aaa2dcaf0ab6cd4f74e7ed873a21f87f50c8def0f8c94421f25a979e6f814d8f381793300c830aec5b8c473630cdae4b181c1c094f1b93e4c7fee7
+  checksum: 2927ae9a275c848015107de3e1e69e1ff0e398b5d2560c6fbad4dd008851e664bcfbbc12637688cc3afdc12974a437e535aef3e4e89b64f87f28f796ce1f067c
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-ssm@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/client-ssm@npm:3.332.0"
+"@aws-sdk/client-ssm@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/client-ssm@npm:3.335.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
-    "@aws-sdk/client-sts": 3.332.0
+    "@aws-sdk/client-sts": 3.335.0
     "@aws-sdk/config-resolver": 3.329.0
-    "@aws-sdk/credential-provider-node": 3.332.0
+    "@aws-sdk/credential-provider-node": 3.335.0
     "@aws-sdk/fetch-http-handler": 3.329.0
     "@aws-sdk/hash-node": 3.329.0
     "@aws-sdk/invalid-dependency": 3.329.0
@@ -1094,7 +1100,6 @@ __metadata:
     "@aws-sdk/middleware-user-agent": 3.332.0
     "@aws-sdk/node-config-provider": 3.329.0
     "@aws-sdk/node-http-handler": 3.329.0
-    "@aws-sdk/protocol-http": 3.329.0
     "@aws-sdk/smithy-client": 3.329.0
     "@aws-sdk/types": 3.329.0
     "@aws-sdk/url-parser": 3.329.0
@@ -1109,9 +1114,11 @@ __metadata:
     "@aws-sdk/util-user-agent-node": 3.329.0
     "@aws-sdk/util-utf8": 3.310.0
     "@aws-sdk/util-waiter": 3.329.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
     tslib: ^2.5.0
     uuid: ^8.3.2
-  checksum: 712b566dd8f168dafa752018f56a9e32801fbd824571d613d62b3bb3ebb6824380e53aa163b937951ac36ff86198276d631ef41282d54a84f7e753943c62a70f
+  checksum: d699d3d4239f39d37aee540f83f2638d3bed7015c787bb9f32af4cf8be0a9d7afb6f398c062b55e30fa70a17c6f959458858144934692f89f30b4f5029a60046
   languageName: node
   linkType: hard
 
@@ -1155,9 +1162,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sso-oidc@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/client-sso-oidc@npm:3.332.0"
+"@aws-sdk/client-sso-oidc@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/client-sso-oidc@npm:3.335.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
@@ -1176,7 +1183,6 @@ __metadata:
     "@aws-sdk/middleware-user-agent": 3.332.0
     "@aws-sdk/node-config-provider": 3.329.0
     "@aws-sdk/node-http-handler": 3.329.0
-    "@aws-sdk/protocol-http": 3.329.0
     "@aws-sdk/smithy-client": 3.329.0
     "@aws-sdk/types": 3.329.0
     "@aws-sdk/url-parser": 3.329.0
@@ -1190,8 +1196,10 @@ __metadata:
     "@aws-sdk/util-user-agent-browser": 3.329.0
     "@aws-sdk/util-user-agent-node": 3.329.0
     "@aws-sdk/util-utf8": 3.310.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
     tslib: ^2.5.0
-  checksum: 57c2c8af68815b05b9786729472d160eccf3a14a276585d5969e4bb403d1b7150da5c392b8745cf4bc678a60a11c66b8c0870791d112e6935e9f3b52ed35816a
+  checksum: 80510066a821fe2b58c684b29618e005f04fa7dc1276a50567b14eb75b837b618921d3033e6fe461b02b7dd1c48b69998cf30788bf4baad7ba8efece4336c605
   languageName: node
   linkType: hard
 
@@ -1235,9 +1243,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sso@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/client-sso@npm:3.332.0"
+"@aws-sdk/client-sso@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/client-sso@npm:3.335.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
@@ -1256,7 +1264,6 @@ __metadata:
     "@aws-sdk/middleware-user-agent": 3.332.0
     "@aws-sdk/node-config-provider": 3.329.0
     "@aws-sdk/node-http-handler": 3.329.0
-    "@aws-sdk/protocol-http": 3.329.0
     "@aws-sdk/smithy-client": 3.329.0
     "@aws-sdk/types": 3.329.0
     "@aws-sdk/url-parser": 3.329.0
@@ -1270,8 +1277,10 @@ __metadata:
     "@aws-sdk/util-user-agent-browser": 3.329.0
     "@aws-sdk/util-user-agent-node": 3.329.0
     "@aws-sdk/util-utf8": 3.310.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
     tslib: ^2.5.0
-  checksum: ae283b258a9cf00f44f0d765f7a73b8d2376cea4dbca584793ff469ee5c820aae4a75274b8d389d32d543f044063fc6df286e47cc3584935f5de2bc9f40b07cb
+  checksum: c2cb8614c643331e35c1a0d46093dd0a7f9febf6bc260d53e1657b42247c18796b7a77c440d9ae00ab1c7071d851df71fe259a64add697f3001f188ad9902209
   languageName: node
   linkType: hard
 
@@ -1319,14 +1328,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sts@npm:3.332.0, @aws-sdk/client-sts@npm:^3.4.1":
-  version: 3.332.0
-  resolution: "@aws-sdk/client-sts@npm:3.332.0"
+"@aws-sdk/client-sts@npm:3.335.0, @aws-sdk/client-sts@npm:^3.4.1":
+  version: 3.335.0
+  resolution: "@aws-sdk/client-sts@npm:3.335.0"
   dependencies:
     "@aws-crypto/sha256-browser": 3.0.0
     "@aws-crypto/sha256-js": 3.0.0
     "@aws-sdk/config-resolver": 3.329.0
-    "@aws-sdk/credential-provider-node": 3.332.0
+    "@aws-sdk/credential-provider-node": 3.335.0
     "@aws-sdk/fetch-http-handler": 3.329.0
     "@aws-sdk/hash-node": 3.329.0
     "@aws-sdk/invalid-dependency": 3.329.0
@@ -1343,7 +1352,6 @@ __metadata:
     "@aws-sdk/middleware-user-agent": 3.332.0
     "@aws-sdk/node-config-provider": 3.329.0
     "@aws-sdk/node-http-handler": 3.329.0
-    "@aws-sdk/protocol-http": 3.329.0
     "@aws-sdk/smithy-client": 3.329.0
     "@aws-sdk/types": 3.329.0
     "@aws-sdk/url-parser": 3.329.0
@@ -1357,9 +1365,11 @@ __metadata:
     "@aws-sdk/util-user-agent-browser": 3.329.0
     "@aws-sdk/util-user-agent-node": 3.329.0
     "@aws-sdk/util-utf8": 3.310.0
+    "@smithy/protocol-http": ^1.0.1
+    "@smithy/types": ^1.0.0
     fast-xml-parser: 4.1.2
     tslib: ^2.5.0
-  checksum: de5b64e479a4c1946bd03565ffffab3c5e79473434eefa4df28bb51db58edae3690474df94b84a322e99bda85a4783c6b913b959afd1870cf82e90582743833c
+  checksum: f6ab10343a2878c867bb1c2d637261583e5700b4b9e1c5cf36d6c245b30c781f49756b7c2490c42eef5bb7838251780917dcfd03bd100fa51c0980d76fef38f4
   languageName: node
   linkType: hard
 
@@ -1375,15 +1385,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-cognito-identity@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/credential-provider-cognito-identity@npm:3.332.0"
+"@aws-sdk/credential-provider-cognito-identity@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/credential-provider-cognito-identity@npm:3.335.0"
   dependencies:
-    "@aws-sdk/client-cognito-identity": 3.332.0
+    "@aws-sdk/client-cognito-identity": 3.335.0
     "@aws-sdk/property-provider": 3.329.0
     "@aws-sdk/types": 3.329.0
     tslib: ^2.5.0
-  checksum: ac47bc2821d6a561dea5cab44e9f7870a2fb387b81cb8a17757f7669c77b897d95b2654497c448f6136d095cf12c79ba7c4eb9ca947eb3e41f9caf1211a0d74e
+  checksum: f484d3eb680ee561414d8ada8dc4ab7e72138d2ad8eae913dcac94a47caaa87aa40aa4e06566f57d1a9ccf1d9c807ac3871cafa23b982f67f3c911da785320dc
   languageName: node
   linkType: hard
 
@@ -1428,20 +1438,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-ini@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/credential-provider-ini@npm:3.332.0"
+"@aws-sdk/credential-provider-ini@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/credential-provider-ini@npm:3.335.0"
   dependencies:
     "@aws-sdk/credential-provider-env": 3.329.0
     "@aws-sdk/credential-provider-imds": 3.329.0
     "@aws-sdk/credential-provider-process": 3.329.0
-    "@aws-sdk/credential-provider-sso": 3.332.0
+    "@aws-sdk/credential-provider-sso": 3.335.0
     "@aws-sdk/credential-provider-web-identity": 3.329.0
     "@aws-sdk/property-provider": 3.329.0
     "@aws-sdk/shared-ini-file-loader": 3.329.0
     "@aws-sdk/types": 3.329.0
     tslib: ^2.5.0
-  checksum: 745b8e524b76db18650ae4e9f060d8c5bd6f9bbde475222b3e99239916fe98730dc051feb2640b365d6be1e31924325b0e71a4731ceebf269021c1d487992618
+  checksum: 79414e4c4bbdd5775187f5a2b8975824d97718b2528ae5daf073f388994cdb6d5667c41f7578e84da6df73769321d3566386b113a463aa2ddaf36ccb0d7e8cab
   languageName: node
   linkType: hard
 
@@ -1463,21 +1473,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-node@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/credential-provider-node@npm:3.332.0"
+"@aws-sdk/credential-provider-node@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/credential-provider-node@npm:3.335.0"
   dependencies:
     "@aws-sdk/credential-provider-env": 3.329.0
     "@aws-sdk/credential-provider-imds": 3.329.0
-    "@aws-sdk/credential-provider-ini": 3.332.0
+    "@aws-sdk/credential-provider-ini": 3.335.0
     "@aws-sdk/credential-provider-process": 3.329.0
-    "@aws-sdk/credential-provider-sso": 3.332.0
+    "@aws-sdk/credential-provider-sso": 3.335.0
     "@aws-sdk/credential-provider-web-identity": 3.329.0
     "@aws-sdk/property-provider": 3.329.0
     "@aws-sdk/shared-ini-file-loader": 3.329.0
     "@aws-sdk/types": 3.329.0
     tslib: ^2.5.0
-  checksum: e26d84742b2a2e2ac3abe4ff6c341aebb7246e2e55d5a5592489de8fde8f97bc180fe13d02c2be312bed5556e147df346e78ab9b2221d9644f49d3fede57d08a
+  checksum: 8c1b724eff8ab120a343543914f56bd13625c4aae1a7a69b5d29852093485917435aec91f6614491b268477ba6d05963a4dea9a4709523fd2f8d061f46f2358c
   languageName: node
   linkType: hard
 
@@ -1507,17 +1517,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-sso@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/credential-provider-sso@npm:3.332.0"
+"@aws-sdk/credential-provider-sso@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/credential-provider-sso@npm:3.335.0"
   dependencies:
-    "@aws-sdk/client-sso": 3.332.0
+    "@aws-sdk/client-sso": 3.335.0
     "@aws-sdk/property-provider": 3.329.0
     "@aws-sdk/shared-ini-file-loader": 3.329.0
-    "@aws-sdk/token-providers": 3.332.0
+    "@aws-sdk/token-providers": 3.335.0
     "@aws-sdk/types": 3.329.0
     tslib: ^2.5.0
-  checksum: 42526af88cb2378f57c2d01222dee982117d579fe3c30c97277ef4ca4e47a3c3c4163af97095d19f6dc8fd45c130454e5b9cdf469483494180f2c51e86da3aef
+  checksum: f8317ff846d3a7beda11627266e49ece43f2c1dff92a7c96da6c5b9f1f1e3108b98d8b7b5cddb0f43ffb5cef74683bc3f68eb708cd727e0f4992c6666b58343e
   languageName: node
   linkType: hard
 
@@ -1532,25 +1542,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-providers@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/credential-providers@npm:3.332.0"
+"@aws-sdk/credential-providers@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/credential-providers@npm:3.335.0"
   dependencies:
-    "@aws-sdk/client-cognito-identity": 3.332.0
-    "@aws-sdk/client-sso": 3.332.0
-    "@aws-sdk/client-sts": 3.332.0
-    "@aws-sdk/credential-provider-cognito-identity": 3.332.0
+    "@aws-sdk/client-cognito-identity": 3.335.0
+    "@aws-sdk/client-sso": 3.335.0
+    "@aws-sdk/client-sts": 3.335.0
+    "@aws-sdk/credential-provider-cognito-identity": 3.335.0
     "@aws-sdk/credential-provider-env": 3.329.0
     "@aws-sdk/credential-provider-imds": 3.329.0
-    "@aws-sdk/credential-provider-ini": 3.332.0
-    "@aws-sdk/credential-provider-node": 3.332.0
+    "@aws-sdk/credential-provider-ini": 3.335.0
+    "@aws-sdk/credential-provider-node": 3.335.0
     "@aws-sdk/credential-provider-process": 3.329.0
-    "@aws-sdk/credential-provider-sso": 3.332.0
+    "@aws-sdk/credential-provider-sso": 3.335.0
     "@aws-sdk/credential-provider-web-identity": 3.329.0
     "@aws-sdk/property-provider": 3.329.0
     "@aws-sdk/types": 3.329.0
     tslib: ^2.5.0
-  checksum: 20e6c7ae87dc8c87df074cc9f6d2601c5a5e19b71a3be8efde537a0eff106929418247283fbf41b8355b6c7640ea8d27ba06848269649f2642c5ebcb2bc99111
+  checksum: c82923a923f6433b61b45beff33fc34ae87be172a3941ff85d692d839e8fad64b4f68032ad7c4ec6a5fd3bed5f34ab5fef069788c1fc48f99c75f94c1b8c407f
   languageName: node
   linkType: hard
 
@@ -1685,23 +1695,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/lib-dynamodb@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/lib-dynamodb@npm:3.332.0"
+"@aws-sdk/lib-dynamodb@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/lib-dynamodb@npm:3.335.0"
   dependencies:
-    "@aws-sdk/util-dynamodb": 3.332.0
+    "@aws-sdk/util-dynamodb": 3.335.0
     tslib: ^2.5.0
   peerDependencies:
     "@aws-sdk/client-dynamodb": ^3.0.0
     "@aws-sdk/smithy-client": ^3.0.0
     "@aws-sdk/types": ^3.0.0
-  checksum: d15a1ddc57c2b22a9b9b7b6950f097046da8297cccbdb16abe71bfda0cfc53552480b9df2b88e58588c226696a23440a6cc06b07a8e92dd42679d03d32e582f4
+  checksum: 1c8ceb004dddf9a4322dea767a6f68017d515505caf00564232df2d807ae8217b5e329c3cd0c1d1aab972767d16deabdbde970f64af20107cf1b144cbde93d02
   languageName: node
   linkType: hard
 
-"@aws-sdk/lib-storage@npm:3.332.0, @aws-sdk/lib-storage@npm:^3.25.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/lib-storage@npm:3.332.0"
+"@aws-sdk/lib-storage@npm:3.335.0, @aws-sdk/lib-storage@npm:^3.25.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/lib-storage@npm:3.335.0"
   dependencies:
     "@aws-sdk/middleware-endpoint": 3.329.0
     "@aws-sdk/smithy-client": 3.329.0
@@ -1712,7 +1722,7 @@ __metadata:
   peerDependencies:
     "@aws-sdk/abort-controller": ^3.0.0
     "@aws-sdk/client-s3": ^3.0.0
-  checksum: 9f1a8964216161057097fcfeb2dfe7056e9cc857a2ef9ec94dc86ce2c81d9e181f68ee361415d594151ba6ab4fd1aa8abec689613b7a360b5dbf95d8e63c7f08
+  checksum: 04410ea889bdae5db0ee32ba3a6618e559de2438c5e29a1d14912bc963359bfb68de25c5399888683b414fbe4d1db602878579d76d6fbc3460384d70e1975eb5
   languageName: node
   linkType: hard
 
@@ -2027,9 +2037,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/s3-request-presigner@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/s3-request-presigner@npm:3.332.0"
+"@aws-sdk/s3-request-presigner@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/s3-request-presigner@npm:3.335.0"
   dependencies:
     "@aws-sdk/middleware-endpoint": 3.329.0
     "@aws-sdk/protocol-http": 3.329.0
@@ -2038,7 +2048,7 @@ __metadata:
     "@aws-sdk/types": 3.329.0
     "@aws-sdk/util-format-url": 3.329.0
     tslib: ^2.5.0
-  checksum: 1c380d2bc3306b03dce7e958c7eb89fa058f1e5ad86236e272a08764ecede71540e76237f70d3227d8127250e0c9ea825e8626eab0d7da1fc370be5fb9f64d58
+  checksum: e17e58d09ac65b4c4a07a0d519aab6fce06995a9baeed7533a985f6b75b49b0b78ab0e91e22e971eaeb9442aaa2fd0a8b0214db6613630d78d3c636a6ea940e6
   languageName: node
   linkType: hard
 
@@ -2115,16 +2125,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/token-providers@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/token-providers@npm:3.332.0"
+"@aws-sdk/token-providers@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/token-providers@npm:3.335.0"
   dependencies:
-    "@aws-sdk/client-sso-oidc": 3.332.0
+    "@aws-sdk/client-sso-oidc": 3.335.0
     "@aws-sdk/property-provider": 3.329.0
     "@aws-sdk/shared-ini-file-loader": 3.329.0
     "@aws-sdk/types": 3.329.0
     tslib: ^2.5.0
-  checksum: 5c8d5c1996bb7bd0562f3c07f411eb9b7a42f50d810ace0839e6d93f7220a85afa561ce0332206fcf9dabbcc14c7d19413be22459f70414ad4698020f3ba33d4
+  checksum: 4d12001ebc01d21b63d9251f407565228d62eb942a2afc229eefe2b3bf851f8a43ca0e8e9650d34f993525583a265318854c7ab50f974512f673e6b43e753062
   languageName: node
   linkType: hard
 
@@ -2230,12 +2240,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/util-dynamodb@npm:3.332.0":
-  version: 3.332.0
-  resolution: "@aws-sdk/util-dynamodb@npm:3.332.0"
+"@aws-sdk/util-dynamodb@npm:3.335.0":
+  version: 3.335.0
+  resolution: "@aws-sdk/util-dynamodb@npm:3.335.0"
   dependencies:
     tslib: ^2.5.0
-  checksum: 10349b330cc55431be1d93a1584a7d3d57dfe36e756c7a285a1cdfc6f9054b03a2b030d384518d36773122602bec8bd1958ea3034f6882c6053f5e3bb3800963
+  checksum: 5487cde1d637b764f8f29dd13131f34de5a9299f0a7edd10e2d9326f64e9982cfb8be34e50d4dfa5619b6075f50a8caa9cc348f211e6db9d1539126c1b01e9ee
   languageName: node
   linkType: hard
 
@@ -3915,7 +3925,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.19.4, @babel/runtime@npm:^7.20.6, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2, @babel/runtime@npm:^7.9.6":
+"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.19.4, @babel/runtime@npm:^7.20.6, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.21.5, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2, @babel/runtime@npm:^7.9.6":
   version: 7.21.5
   resolution: "@babel/runtime@npm:7.21.5"
   dependencies:
@@ -4193,8 +4203,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@core/anti-virus@workspace:applications/core/anti-virus"
   dependencies:
-    "@aws-sdk/client-sfn": 3.332.0
-    "@aws-sdk/client-sqs": 3.332.0
+    "@aws-sdk/client-sfn": 3.335.0
+    "@aws-sdk/client-sqs": 3.335.0
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
@@ -4202,7 +4212,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@motech-development/webpack-conditional-plugin": "workspace:*"
     "@motech-development/webpack-permissions-plugin": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.115
     "@types/jest": 29.5.1
@@ -4212,7 +4222,7 @@ __metadata:
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
     copy-webpack-plugin: 11.0.0
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -4223,14 +4233,14 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-step-functions: 3.13.1
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
-    typescript: 4.9.5
-    webpack: 5.82.1
+    typescript: 5.0.4
+    webpack: 5.83.1
     webpack-node-externals: 3.0.0
   languageName: unknown
   linkType: soft
@@ -4239,11 +4249,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@core/comms@workspace:applications/core/comms"
   dependencies:
-    "@aws-sdk/client-ses": 3.332.0
+    "@aws-sdk/client-ses": 3.335.0
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.115
     "@types/jest": 29.5.1
@@ -4253,7 +4263,7 @@ __metadata:
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
     cfn-response-async: 1.0.0
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -4264,13 +4274,13 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
-    typescript: 4.9.5
-    webpack: 5.82.1
+    typescript: 5.0.4
+    webpack: 5.83.1
     webpack-node-externals: 3.0.0
     yup: 1.1.1
   languageName: unknown
@@ -4283,7 +4293,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
@@ -4301,15 +4311,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@cypress/api@workspace:applications/cypress/api"
   dependencies:
-    "@aws-sdk/client-ssm": 3.332.0
+    "@aws-sdk/client-ssm": 3.335.0
     "@motech-development/api-gateway-handler": "workspace:*"
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@octokit/auth-app": 4.0.9
-    "@octokit/rest": 19.0.8
-    "@swc/core": 1.3.58
+    "@octokit/auth-app": 4.0.13
+    "@octokit/rest": 19.0.11
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.115
     "@types/jest": 29.5.1
@@ -4319,7 +4329,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -4331,13 +4341,13 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.3.0
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
-    typescript: 4.9.5
-    webpack: 5.82.1
+    typescript: 5.0.4
+    webpack: 5.83.1
     webpack-node-externals: 3.0.0
     yup: 1.1.1
   languageName: unknown
@@ -4350,7 +4360,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
@@ -4715,10 +4725,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:8.40.0":
-  version: 8.40.0
-  resolution: "@eslint/js@npm:8.40.0"
-  checksum: e84936b8ebd1c8fd90e860182e95d1404006da4cbca722b14950b298aeeca102b080aa9b62c8e69f90824ec54e19f1ba79b239046223624d1414ee82e8e628ac
+"@eslint/js@npm:8.41.0":
+  version: 8.41.0
+  resolution: "@eslint/js@npm:8.41.0"
+  checksum: af013d70fe8d0429cdf5cd8b5dcc6fc384ed026c1eccb0cfe30f5849b968ab91645111373fd1b83282b38955b1bdfbe667c1a7dbda3b06cae753521223cad775
   languageName: node
   linkType: hard
 
@@ -5178,7 +5188,7 @@ __metadata:
     "@motech-development/ga-web-vitals": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 14.0.0
@@ -5195,7 +5205,7 @@ __metadata:
     auth0-js: 9.20.2
     axios: 1.4.0
     body-scroll-lock: 3.1.5
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -5207,28 +5217,28 @@ __metadata:
     eslint-plugin-react-hooks: 4.6.0
     formik: 2.2.9
     history: 4.10.1
-    i18next: 22.4.15
+    i18next: 22.5.0
     i18next-browser-languagedetector: 7.0.1
     i18next-chained-backend: 4.2.0
-    i18next-resources-to-backend: 1.1.3
+    i18next-resources-to-backend: 1.1.4
     jest: 29.5.0
     jest-environment-jsdom: 29.5.0
     jest-styled-components: 7.1.1
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    pwa-asset-generator: 6.3.0
+    pwa-asset-generator: 6.3.1
     react: 18.2.0
     react-dom: 18.2.0
     react-ga: 3.3.1
-    react-i18next: 12.2.2
+    react-i18next: 12.3.1
     react-router-dom: 5.3.4
     react-snap: 1.23.0
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-finch: 4.0.3
     styled-components: 5.3.10
-    typescript: 4.9.5
-    vite: 4.3.7
+    typescript: 5.0.4
+    vite: 4.3.8
     vite-plugin-checker: 0.6.0
     vite-plugin-eslint: 1.8.1
     web-vitals: 2.1.4
@@ -5254,7 +5264,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
@@ -5271,7 +5281,7 @@ __metadata:
     "@typescript-eslint/parser": 5.59.6
     auth0: 3.0.1
     auth0-deploy-cli: 7.17.2
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -5758,14 +5768,14 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-node-resolve": 15.0.2
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.115
     "@types/jest": 29.5.1
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
     aws-lambda-mock-context: 3.2.1
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -5776,12 +5786,12 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
-    typescript: 4.9.5
+    typescript: 5.0.4
   languageName: unknown
   linkType: soft
 
@@ -5796,7 +5806,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-node-resolve": 15.0.2
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 14.0.0
@@ -5808,7 +5818,7 @@ __metadata:
     "@typescript-eslint/parser": 5.59.6
     aws-appsync-auth-link: 3.0.7
     aws-appsync-subscription-link: 3.1.2
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -5825,12 +5835,12 @@ __metadata:
     prettier: 2.8.8
     react: 18.2.0
     react-dom: 18.2.0
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
-    typescript: 4.9.5
+    typescript: 5.0.4
     unfetch: 5.0.0
     uuid: 9.0.0
   languageName: unknown
@@ -5848,7 +5858,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-node-resolve": 15.0.2
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 14.0.0
@@ -5858,7 +5868,7 @@ __metadata:
     "@types/react-router-dom": 5.3.3
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -5875,12 +5885,12 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-router-dom: 5.3.4
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
-    typescript: 4.9.5
+    typescript: 5.0.4
   languageName: unknown
   linkType: soft
 
@@ -5894,14 +5904,14 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-node-resolve": 15.0.2
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.1
     "@types/react": 18.2.6
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
     axios: 1.4.0
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -5915,12 +5925,12 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
     react: 18.2.0
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
-    typescript: 4.9.5
+    typescript: 5.0.4
   languageName: unknown
   linkType: soft
 
@@ -5944,7 +5954,7 @@ __metadata:
     "@storybook/manager-webpack5": 6.5.16
     "@storybook/react": 6.5.16
     "@storybook/storybook-deployer": 2.8.16
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 14.0.0
@@ -5957,7 +5967,7 @@ __metadata:
     "@types/styled-components": 5.1.26
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -5980,15 +5990,15 @@ __metadata:
     react-number-format: 4.9.4
     react-popper: 2.3.0
     react-router-dom: 5.3.4
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
     storybook-addon-swc: 1.2.0
     styled-components: 5.3.10
     styled-reset: 4.4.7
-    typescript: 4.9.5
+    typescript: 5.0.4
     yup: 1.1.1
   languageName: unknown
   linkType: soft
@@ -6001,7 +6011,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6009,7 +6019,7 @@ __metadata:
     eslint-plugin-import: 2.27.5
     eslint-plugin-jest: 27.2.1
     prettier: 2.8.8
-    typescript: 4.9.5
+    typescript: 5.0.4
   peerDependencies:
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
@@ -6032,7 +6042,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6043,7 +6053,7 @@ __metadata:
     eslint-plugin-react: 7.32.2
     eslint-plugin-react-hooks: 4.6.0
     prettier: 2.8.8
-    typescript: 4.9.5
+    typescript: 5.0.4
   peerDependencies:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.59.6
@@ -6070,13 +6080,13 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-node-resolve": 15.0.2
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/google.analytics": 0.0.42
     "@types/jest": 29.5.1
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6086,12 +6096,12 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
-    typescript: 4.9.5
+    typescript: 5.0.4
   languageName: unknown
   linkType: soft
 
@@ -6104,12 +6114,12 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-node-resolve": 15.0.2
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.1
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6119,12 +6129,12 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
-    typescript: 4.9.5
+    typescript: 5.0.4
     winston: 3.8.2
     winston-transport: 4.5.0
   languageName: unknown
@@ -6149,7 +6159,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-node-resolve": 15.0.2
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.1
     "@types/qs": 6.9.7
@@ -6157,7 +6167,7 @@ __metadata:
     "@types/react-router-dom": 5.3.3
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6171,15 +6181,15 @@ __metadata:
     jest-environment-jsdom: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    qs: 6.11.1
+    qs: 6.11.2
     react: 18.2.0
     react-router-dom: 5.3.4
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
-    typescript: 4.9.5
+    typescript: 5.0.4
   languageName: unknown
   linkType: soft
 
@@ -6187,23 +6197,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/s3-file-operations@workspace:packages/s3-file-operations"
   dependencies:
-    "@aws-sdk/client-s3": 3.332.0
-    "@aws-sdk/lib-storage": 3.332.0
-    "@aws-sdk/s3-request-presigner": 3.332.0
+    "@aws-sdk/client-s3": 3.335.0
+    "@aws-sdk/lib-storage": 3.335.0
+    "@aws-sdk/s3-request-presigner": 3.335.0
     "@aws-sdk/util-stream-node": 3.331.0
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-node-resolve": 15.0.2
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.1
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6213,12 +6223,12 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
-    typescript: 4.9.5
+    typescript: 5.0.4
   languageName: unknown
   linkType: soft
 
@@ -6226,7 +6236,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/semantic-release@workspace:packages/semantic-release"
   dependencies:
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.8.0
     eslint-import-resolver-node: 0.3.7
@@ -6247,7 +6257,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-node-resolve": 15.0.2
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/assert": 1.5.6
     "@types/jest": 29.5.1
@@ -6255,7 +6265,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
     assert: 2.0.0
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6265,14 +6275,14 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
-    serverless: 3.30.1
+    serverless: 3.31.0
     tomlify-j0.4: 3.0.0
-    typescript: 4.9.5
+    typescript: 5.0.4
   languageName: unknown
   linkType: soft
 
@@ -6285,12 +6295,12 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-node-resolve": 15.0.2
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.1
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6300,13 +6310,13 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
-    typescript: 4.9.5
-    webpack: 5.82.1
+    typescript: 5.0.4
+    webpack: 5.83.1
   languageName: unknown
   linkType: soft
 
@@ -6319,12 +6329,12 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.0
     "@rollup/plugin-node-resolve": 15.0.2
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.1
     "@typescript-eslint/eslint-plugin": 5.59.6
     "@typescript-eslint/parser": 5.59.6
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6335,13 +6345,13 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    rimraf: 5.0.0
-    rollup: 3.21.8
+    rimraf: 5.0.1
+    rollup: 3.23.0
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.1
-    typescript: 4.9.5
-    webpack: 5.82.1
+    typescript: 5.0.4
+    webpack: 5.83.1
   languageName: unknown
   linkType: soft
 
@@ -6617,21 +6627,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/auth-app@npm:4.0.9":
-  version: 4.0.9
-  resolution: "@octokit/auth-app@npm:4.0.9"
+"@octokit/auth-app@npm:4.0.13":
+  version: 4.0.13
+  resolution: "@octokit/auth-app@npm:4.0.13"
   dependencies:
     "@octokit/auth-oauth-app": ^5.0.0
     "@octokit/auth-oauth-user": ^2.0.0
     "@octokit/request": ^6.0.0
     "@octokit/request-error": ^3.0.0
     "@octokit/types": ^9.0.0
-    "@types/lru-cache": ^5.1.0
     deprecation: ^2.3.1
-    lru-cache: ^6.0.0
+    lru-cache: ^9.0.0
     universal-github-app-jwt: ^1.1.1
     universal-user-agent: ^6.0.0
-  checksum: 3846ebeda40bf88684fa310741ec4b5838d57e18ba5c38986e422161e1ce95c750053fbb2aa18bdce120d6eb857d16bb8e9988597c3dfda40fec985dbdda1b2a
+  checksum: 809004bc3e985fd4911cc42060fecd7b88e609e1334b90c4f79711aa27cade03fa1d930945ea8f7339ddd8d4514dd220a6ae8489faefa9e0ce6881519a02fc37
   languageName: node
   linkType: hard
 
@@ -6685,9 +6694,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/core@npm:^4.1.0":
-  version: 4.2.0
-  resolution: "@octokit/core@npm:4.2.0"
+"@octokit/core@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "@octokit/core@npm:4.2.1"
   dependencies:
     "@octokit/auth-token": ^3.0.0
     "@octokit/graphql": ^5.0.0
@@ -6696,7 +6705,7 @@ __metadata:
     "@octokit/types": ^9.0.0
     before-after-hook: ^2.2.0
     universal-user-agent: ^6.0.0
-  checksum: 5ac56e7f14b42a5da8d3075a2ae41483521a78bee061a01f4a81d8c0ecd6a684b2e945d66baba0cd1fdf264639deedc3a96d0f32c4d2fc39b49ca10f52f4de39
+  checksum: f82d52e937e12da1c7c163341c845b8e27e7fa75678f5e5954e6fa017a94f1833d6e5c4e43f0be796fbfea9dc5e1137087f655dbd5acb3d57879e1b28568e0a9
   languageName: node
   linkType: hard
 
@@ -6742,39 +6751,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/openapi-types@npm:^16.0.0":
-  version: 16.0.0
-  resolution: "@octokit/openapi-types@npm:16.0.0"
-  checksum: 844f30a545da380d63c712e0eb733366bc567d1aab34529c79fdfbec3d73810e81d83f06fdab13058a5cbc7dae786db1a9b90b5b61b1e606854ee45d5ec5f194
-  languageName: node
-  linkType: hard
-
-"@octokit/openapi-types@npm:^17.1.2":
+"@octokit/openapi-types@npm:^17.2.0":
   version: 17.2.0
   resolution: "@octokit/openapi-types@npm:17.2.0"
   checksum: 29995e34f98d9d64ba234d64a7ae9486c66d2bb6ac0d30d9a42decdbb4b03b13e811769b1e1505a1748ff20c22d35724985e6c128cd11a3f14f8322201520093
   languageName: node
   linkType: hard
 
-"@octokit/plugin-paginate-rest@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@octokit/plugin-paginate-rest@npm:6.0.0"
+"@octokit/plugin-paginate-rest@npm:^6.1.2":
+  version: 6.1.2
+  resolution: "@octokit/plugin-paginate-rest@npm:6.1.2"
   dependencies:
-    "@octokit/types": ^9.0.0
+    "@octokit/tsconfig": ^1.0.2
+    "@octokit/types": ^9.2.3
   peerDependencies:
     "@octokit/core": ">=4"
-  checksum: 4ad89568d883373898b733837cada7d849d51eef32157c11d4a81cef5ce8e509720d79b46918cada3c132f9b29847e383f17b7cd5c39ede7c93cdcd2f850b47f
-  languageName: node
-  linkType: hard
-
-"@octokit/plugin-paginate-rest@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "@octokit/plugin-paginate-rest@npm:6.1.0"
-  dependencies:
-    "@octokit/types": ^9.2.2
-  peerDependencies:
-    "@octokit/core": ">=4"
-  checksum: e6f7d211d2ddae29762d447b5a0687fb4d48a36c623f4720a11dbd4343f04a149b4ae496392ad16a2cf7e1fbda0783abc3a7b9f1be523dd04e468a6a4e87fae2
+  checksum: a7b3e686c7cbd27ec07871cde6e0b1dc96337afbcef426bbe3067152a17b535abd480db1861ca28c88d93db5f7bfdbcadd0919ead19818c28a69d0e194038065
   languageName: node
   linkType: hard
 
@@ -6787,27 +6779,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-rest-endpoint-methods@npm:^7.0.0":
-  version: 7.0.1
-  resolution: "@octokit/plugin-rest-endpoint-methods@npm:7.0.1"
+"@octokit/plugin-rest-endpoint-methods@npm:^7.1.2":
+  version: 7.1.2
+  resolution: "@octokit/plugin-rest-endpoint-methods@npm:7.1.2"
   dependencies:
-    "@octokit/types": ^9.0.0
+    "@octokit/types": ^9.2.3
     deprecation: ^2.3.1
   peerDependencies:
     "@octokit/core": ">=3"
-  checksum: cdb8734ec960f75acc2405284920c58efac9a71b1c3b2a71662b9100ffbc22dac597150acff017a93459c57e9a492d9e1c27872b068387dbb90597de75065fcf
-  languageName: node
-  linkType: hard
-
-"@octokit/plugin-rest-endpoint-methods@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "@octokit/plugin-rest-endpoint-methods@npm:7.1.0"
-  dependencies:
-    "@octokit/types": ^9.2.2
-    deprecation: ^2.3.1
-  peerDependencies:
-    "@octokit/core": ">=3"
-  checksum: 4ac740dc74a0f7789601b4118c1f0ee42cd3480dfd0199515414dcbb670f126e31dd6856a9deb1578a2e2e8c70d4f5f1828cb85f4bd8a8cd5576dfb0cd5b29c7
+  checksum: 159d29bf28d7aecbe39f08c25cf376d39b6c90ce17e50a55eafb44f3e4b9e1053a300c1edd72f308ae386146a17cbad46c410c1cfd000b048adf9c21d6922a1a
   languageName: node
   linkType: hard
 
@@ -6836,45 +6816,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/rest@npm:19.0.8":
-  version: 19.0.8
-  resolution: "@octokit/rest@npm:19.0.8"
+"@octokit/rest@npm:19.0.11, @octokit/rest@npm:^19.0.0":
+  version: 19.0.11
+  resolution: "@octokit/rest@npm:19.0.11"
   dependencies:
-    "@octokit/core": ^4.1.0
-    "@octokit/plugin-paginate-rest": ^6.1.0
+    "@octokit/core": ^4.2.1
+    "@octokit/plugin-paginate-rest": ^6.1.2
     "@octokit/plugin-request-log": ^1.0.4
-    "@octokit/plugin-rest-endpoint-methods": ^7.1.0
-  checksum: 86276924a2458cb1cb672d496dee45752ea14c57ca146f148cc51160179600c4071e1d8c4fd593bb20a6b5ca51cc94451d6cb4457865c174090e3e3f9bae597c
+    "@octokit/plugin-rest-endpoint-methods": ^7.1.2
+  checksum: 147518ad51d214ead88adc717b5fdc4f33317949d58c124f4069bdf07d2e6b49fa66861036b9e233aed71fcb88ff367a6da0357653484e466175ab4fb7183b3b
   languageName: node
   linkType: hard
 
-"@octokit/rest@npm:^19.0.0":
-  version: 19.0.7
-  resolution: "@octokit/rest@npm:19.0.7"
-  dependencies:
-    "@octokit/core": ^4.1.0
-    "@octokit/plugin-paginate-rest": ^6.0.0
-    "@octokit/plugin-request-log": ^1.0.4
-    "@octokit/plugin-rest-endpoint-methods": ^7.0.0
-  checksum: 1f970c4de2cf3d1691d3cf5dd4bfa5ac205629e76417b5c51561e1beb5b4a7e6c65ba647f368727e67e5243418e06ca9cdafd9e733173e1529385d4f4d053d3d
+"@octokit/tsconfig@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@octokit/tsconfig@npm:1.0.2"
+  checksum: 74d56f3e9f326a8dd63700e9a51a7c75487180629c7a68bbafee97c612fbf57af8347369bfa6610b9268a3e8b833c19c1e4beb03f26db9a9dce31f6f7a19b5b1
   languageName: node
   linkType: hard
 
-"@octokit/types@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "@octokit/types@npm:9.0.0"
+"@octokit/types@npm:^9.0.0, @octokit/types@npm:^9.2.3":
+  version: 9.2.3
+  resolution: "@octokit/types@npm:9.2.3"
   dependencies:
-    "@octokit/openapi-types": ^16.0.0
-  checksum: 5c7f5cca8f00f7c4daa0d00f4fe991c1598ec47cd6ced50b1c5fbe9721bb9dee0adc2acdee265a3a715bb984e53ef3dc7f1cfb7326f712c6d809d59fc5c6648d
-  languageName: node
-  linkType: hard
-
-"@octokit/types@npm:^9.2.2":
-  version: 9.2.2
-  resolution: "@octokit/types@npm:9.2.2"
-  dependencies:
-    "@octokit/openapi-types": ^17.1.2
-  checksum: 6bbf7e55c167f683ee68430f07be5d22e9ab4db92645872887bb040e09bf419d629600b811b3e502d70f7dfb6c2c11dbbc6239e0612e9a0b994673aeb5100d8b
+    "@octokit/openapi-types": ^17.2.0
+  checksum: 6806413089f20a8302237ef85aa2e83bace7499e95fdc3db2d304f9e6dc6e87fb6766452f92e08ddf475046b69753e11beabaeff6733c38bdaf3e21dfd7d3341
   languageName: node
   linkType: hard
 
@@ -6882,15 +6848,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@open-banking/api@workspace:applications/open-banking/api"
   dependencies:
-    "@aws-sdk/client-dynamodb": 3.332.0
-    "@aws-sdk/client-ssm": 3.332.0
-    "@aws-sdk/lib-dynamodb": 3.332.0
-    "@aws-sdk/util-dynamodb": 3.332.0
+    "@aws-sdk/client-dynamodb": 3.335.0
+    "@aws-sdk/client-ssm": 3.335.0
+    "@aws-sdk/lib-dynamodb": 3.335.0
+    "@aws-sdk/util-dynamodb": 3.335.0
     "@motech-development/api-gateway-handler": "workspace:*"
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.58
+    "@swc/core": 1.3.59
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.115
     "@types/jest": 29.5.1
@@ -6901,7 +6867,7 @@ __metadata:
     aws-sdk-client-mock-jest: 2.1.1
     axios: 1.4.0
     axios-mock-adapter: 1.21.4
-    eslint: 8.40.0
+    eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6912,7 +6878,7 @@ __metadata:
     jest: 29.5.0
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    serverless: 3.30.1
+    serverless: 3.31.0
     serverless-deployment-bucket: 1.6.0
     serverless-dynamodb-local: 0.2.40
     serverless-offline: 12.0.4
@@ -6920,8 +6886,8 @@ __metadata:
     serverless-step-functions: 3.13.1
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
-    typescript: 4.9.5
-    webpack: 5.82.1
+    typescript: 5.0.4
+    webpack: 5.83.1
     webpack-node-externals: 3.0.0
     yup: 1.1.1
   languageName: unknown
@@ -7479,6 +7445,25 @@ __metadata:
   version: 0.7.2
   resolution: "@sinonjs/text-encoding@npm:0.7.2"
   checksum: fe690002a32ba06906cf87e2e8fe84d1590294586f2a7fd180a65355b53660c155c3273d8011a5f2b77209b819aa7306678ae6e4aea0df014bd7ffd4bbbcf1ab
+  languageName: node
+  linkType: hard
+
+"@smithy/protocol-http@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@smithy/protocol-http@npm:1.0.1"
+  dependencies:
+    "@smithy/types": ^1.0.0
+    tslib: ^2.5.0
+  checksum: ba9ac4880fed48eeea0813663c94c765fe5b900f2fdac4f5de6524306bbc6645829f48bc175d202076b83acaccf008ed77f4b5546a4c180315f253e22fe6c89f
+  languageName: node
+  linkType: hard
+
+"@smithy/types@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@smithy/types@npm:1.0.0"
+  dependencies:
+    tslib: ^2.5.0
+  checksum: ec05163564af050088f3c21cb047640ca842bea645c2a73624475b486d5df8ad9c494bf683a498f4b467b84fab2817cc199893dfb5cee30dce1e0172ab38db00
   languageName: node
   linkType: hard
 
@@ -8430,160 +8415,90 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.3.57":
-  version: 1.3.57
-  resolution: "@swc/core-darwin-arm64@npm:1.3.57"
+"@swc/core-darwin-arm64@npm:1.3.59":
+  version: 1.3.59
+  resolution: "@swc/core-darwin-arm64@npm:1.3.59"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.3.58":
-  version: 1.3.58
-  resolution: "@swc/core-darwin-arm64@npm:1.3.58"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@swc/core-darwin-x64@npm:1.3.57":
-  version: 1.3.57
-  resolution: "@swc/core-darwin-x64@npm:1.3.57"
+"@swc/core-darwin-x64@npm:1.3.59":
+  version: 1.3.59
+  resolution: "@swc/core-darwin-x64@npm:1.3.59"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-x64@npm:1.3.58":
-  version: 1.3.58
-  resolution: "@swc/core-darwin-x64@npm:1.3.58"
-  conditions: os=darwin & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@swc/core-linux-arm-gnueabihf@npm:1.3.57":
-  version: 1.3.57
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.57"
+"@swc/core-linux-arm-gnueabihf@npm:1.3.59":
+  version: 1.3.59
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.59"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.3.58":
-  version: 1.3.58
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.58"
-  conditions: os=linux & cpu=arm
-  languageName: node
-  linkType: hard
-
-"@swc/core-linux-arm64-gnu@npm:1.3.57":
-  version: 1.3.57
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.57"
+"@swc/core-linux-arm64-gnu@npm:1.3.59":
+  version: 1.3.59
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.59"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-gnu@npm:1.3.58":
-  version: 1.3.58
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.58"
-  conditions: os=linux & cpu=arm64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@swc/core-linux-arm64-musl@npm:1.3.57":
-  version: 1.3.57
-  resolution: "@swc/core-linux-arm64-musl@npm:1.3.57"
+"@swc/core-linux-arm64-musl@npm:1.3.59":
+  version: 1.3.59
+  resolution: "@swc/core-linux-arm64-musl@npm:1.3.59"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.3.58":
-  version: 1.3.58
-  resolution: "@swc/core-linux-arm64-musl@npm:1.3.58"
-  conditions: os=linux & cpu=arm64 & libc=musl
-  languageName: node
-  linkType: hard
-
-"@swc/core-linux-x64-gnu@npm:1.3.57":
-  version: 1.3.57
-  resolution: "@swc/core-linux-x64-gnu@npm:1.3.57"
+"@swc/core-linux-x64-gnu@npm:1.3.59":
+  version: 1.3.59
+  resolution: "@swc/core-linux-x64-gnu@npm:1.3.59"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-gnu@npm:1.3.58":
-  version: 1.3.58
-  resolution: "@swc/core-linux-x64-gnu@npm:1.3.58"
-  conditions: os=linux & cpu=x64 & libc=glibc
-  languageName: node
-  linkType: hard
-
-"@swc/core-linux-x64-musl@npm:1.3.57":
-  version: 1.3.57
-  resolution: "@swc/core-linux-x64-musl@npm:1.3.57"
+"@swc/core-linux-x64-musl@npm:1.3.59":
+  version: 1.3.59
+  resolution: "@swc/core-linux-x64-musl@npm:1.3.59"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.3.58":
-  version: 1.3.58
-  resolution: "@swc/core-linux-x64-musl@npm:1.3.58"
-  conditions: os=linux & cpu=x64 & libc=musl
-  languageName: node
-  linkType: hard
-
-"@swc/core-win32-arm64-msvc@npm:1.3.57":
-  version: 1.3.57
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.57"
+"@swc/core-win32-arm64-msvc@npm:1.3.59":
+  version: 1.3.59
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.59"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-win32-arm64-msvc@npm:1.3.58":
-  version: 1.3.58
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.58"
-  conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@swc/core-win32-ia32-msvc@npm:1.3.57":
-  version: 1.3.57
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.57"
+"@swc/core-win32-ia32-msvc@npm:1.3.59":
+  version: 1.3.59
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.59"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.3.58":
-  version: 1.3.58
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.58"
-  conditions: os=win32 & cpu=ia32
-  languageName: node
-  linkType: hard
-
-"@swc/core-win32-x64-msvc@npm:1.3.57":
-  version: 1.3.57
-  resolution: "@swc/core-win32-x64-msvc@npm:1.3.57"
+"@swc/core-win32-x64-msvc@npm:1.3.59":
+  version: 1.3.59
+  resolution: "@swc/core-win32-x64-msvc@npm:1.3.59"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.3.58":
-  version: 1.3.58
-  resolution: "@swc/core-win32-x64-msvc@npm:1.3.58"
-  conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@swc/core@npm:1.3.58":
-  version: 1.3.58
-  resolution: "@swc/core@npm:1.3.58"
+"@swc/core@npm:1.3.59, @swc/core@npm:^1.3.56":
+  version: 1.3.59
+  resolution: "@swc/core@npm:1.3.59"
   dependencies:
-    "@swc/core-darwin-arm64": 1.3.58
-    "@swc/core-darwin-x64": 1.3.58
-    "@swc/core-linux-arm-gnueabihf": 1.3.58
-    "@swc/core-linux-arm64-gnu": 1.3.58
-    "@swc/core-linux-arm64-musl": 1.3.58
-    "@swc/core-linux-x64-gnu": 1.3.58
-    "@swc/core-linux-x64-musl": 1.3.58
-    "@swc/core-win32-arm64-msvc": 1.3.58
-    "@swc/core-win32-ia32-msvc": 1.3.58
-    "@swc/core-win32-x64-msvc": 1.3.58
+    "@swc/core-darwin-arm64": 1.3.59
+    "@swc/core-darwin-x64": 1.3.59
+    "@swc/core-linux-arm-gnueabihf": 1.3.59
+    "@swc/core-linux-arm64-gnu": 1.3.59
+    "@swc/core-linux-arm64-musl": 1.3.59
+    "@swc/core-linux-x64-gnu": 1.3.59
+    "@swc/core-linux-x64-musl": 1.3.59
+    "@swc/core-win32-arm64-msvc": 1.3.59
+    "@swc/core-win32-ia32-msvc": 1.3.59
+    "@swc/core-win32-x64-msvc": 1.3.59
   peerDependencies:
     "@swc/helpers": ^0.5.0
   dependenciesMeta:
@@ -8610,51 +8525,7 @@ __metadata:
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: 34e5a1046aab51e55b35b966e54de8f1bcdef2535c297d76a9b0e38cba126599c24b5062c9c6ce9d4c6b5745c91e8a2eda596fe39ab27093459e8aa2934cf387
-  languageName: node
-  linkType: hard
-
-"@swc/core@npm:^1.3.56":
-  version: 1.3.57
-  resolution: "@swc/core@npm:1.3.57"
-  dependencies:
-    "@swc/core-darwin-arm64": 1.3.57
-    "@swc/core-darwin-x64": 1.3.57
-    "@swc/core-linux-arm-gnueabihf": 1.3.57
-    "@swc/core-linux-arm64-gnu": 1.3.57
-    "@swc/core-linux-arm64-musl": 1.3.57
-    "@swc/core-linux-x64-gnu": 1.3.57
-    "@swc/core-linux-x64-musl": 1.3.57
-    "@swc/core-win32-arm64-msvc": 1.3.57
-    "@swc/core-win32-ia32-msvc": 1.3.57
-    "@swc/core-win32-x64-msvc": 1.3.57
-  peerDependencies:
-    "@swc/helpers": ^0.5.0
-  dependenciesMeta:
-    "@swc/core-darwin-arm64":
-      optional: true
-    "@swc/core-darwin-x64":
-      optional: true
-    "@swc/core-linux-arm-gnueabihf":
-      optional: true
-    "@swc/core-linux-arm64-gnu":
-      optional: true
-    "@swc/core-linux-arm64-musl":
-      optional: true
-    "@swc/core-linux-x64-gnu":
-      optional: true
-    "@swc/core-linux-x64-musl":
-      optional: true
-    "@swc/core-win32-arm64-msvc":
-      optional: true
-    "@swc/core-win32-ia32-msvc":
-      optional: true
-    "@swc/core-win32-x64-msvc":
-      optional: true
-  peerDependenciesMeta:
-    "@swc/helpers":
-      optional: true
-  checksum: 4e900d05f8ea8fe7051d06b90bcedf13edd1305f9f2d50d0cbe3b28256a0f1512488c0f3fece6e9b5413e3bc8dc9c7e559c2bb384676aaf80971661e89d39241
+  checksum: 0283f39cf49cd12a6dc7062ef9ea4fa93e1a4f622ce46903a09605219f4f47ed5ad03925c6146d09ffe6ee02a89bb14e3c82eb86b4c60ecce4985ea6e078ffcf
   languageName: node
   linkType: hard
 
@@ -8691,7 +8562,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/dom@npm:9.3.0":
+"@testing-library/dom@npm:9.3.0, @testing-library/dom@npm:^9.0.0":
   version: 9.3.0
   resolution: "@testing-library/dom@npm:9.3.0"
   dependencies:
@@ -8720,22 +8591,6 @@ __metadata:
     lz-string: ^1.4.4
     pretty-format: ^27.0.2
   checksum: 1e599129a2fe91959ce80900a0a4897232b89e2a8e22c1f5950c36d39c97629ea86b4986b60b173b5525a05de33fde1e35836ea597b03de78cc51b122835c6f0
-  languageName: node
-  linkType: hard
-
-"@testing-library/dom@npm:^9.0.0":
-  version: 9.2.0
-  resolution: "@testing-library/dom@npm:9.2.0"
-  dependencies:
-    "@babel/code-frame": ^7.10.4
-    "@babel/runtime": ^7.12.5
-    "@types/aria-query": ^5.0.1
-    aria-query: ^5.0.0
-    chalk: ^4.1.0
-    dom-accessibility-api: ^0.5.9
-    lz-string: ^1.5.0
-    pretty-format: ^27.0.2
-  checksum: b145f43cd06ff083012cf2503aff6ccba97ff80715fcb106fe64af690f5536557bf24d37b97e8d685bbe3803d7f71d685ce71426cb1b9e250c3611e4372dcfa9
   languageName: node
   linkType: hard
 
@@ -9206,13 +9061,6 @@ __metadata:
   version: 4.14.191
   resolution: "@types/lodash@npm:4.14.191"
   checksum: ba0d5434e10690869f32d5ea49095250157cae502f10d57de0a723fd72229ce6c6a4979576f0f13e0aa9fbe3ce2457bfb9fa7d4ec3d6daba56730a51906d1491
-  languageName: node
-  linkType: hard
-
-"@types/lru-cache@npm:^5.1.0":
-  version: 5.1.1
-  resolution: "@types/lru-cache@npm:5.1.1"
-  checksum: e1d6c0085f61b16ec5b3073ec76ad1be4844ea036561c3f145fc19f71f084b58a6eb600b14128aa95809d057d28f1d147c910186ae51219f58366ffd2ff2e118
   languageName: node
   linkType: hard
 
@@ -9717,16 +9565,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/scope-manager@npm:5.59.5":
-  version: 5.59.5
-  resolution: "@typescript-eslint/scope-manager@npm:5.59.5"
-  dependencies:
-    "@typescript-eslint/types": 5.59.5
-    "@typescript-eslint/visitor-keys": 5.59.5
-  checksum: b3d8a5b70e741b9bef60d0a297da77e844cb744895f31fb6880fdac4c53f7c58f3e04065a7d644afb6e1dc51591285ec866eca2fbd2ad50de6b376031aaccfbd
-  languageName: node
-  linkType: hard
-
 "@typescript-eslint/scope-manager@npm:5.59.6":
   version: 5.59.6
   resolution: "@typescript-eslint/scope-manager@npm:5.59.6"
@@ -9754,35 +9592,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/types@npm:5.59.5":
-  version: 5.59.5
-  resolution: "@typescript-eslint/types@npm:5.59.5"
-  checksum: 98c93d354d6410934f468ba8bd468d2746f20b2910c0ef5b08fc788c0742aa7cb82eb2edc4194c85d3fabac5563c1a91d377e84bf5c25caeb4ac9e871aabd4bb
-  languageName: node
-  linkType: hard
-
 "@typescript-eslint/types@npm:5.59.6":
   version: 5.59.6
   resolution: "@typescript-eslint/types@npm:5.59.6"
   checksum: e898ca629d95b69f5dbfb7c9a3d28f943e5a372d37bf7efaefb41341d2d7147372cd4956b35b637e9b3a1b8555d64a5b35776650b815c4227b114513247ec2b5
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/typescript-estree@npm:5.59.5":
-  version: 5.59.5
-  resolution: "@typescript-eslint/typescript-estree@npm:5.59.5"
-  dependencies:
-    "@typescript-eslint/types": 5.59.5
-    "@typescript-eslint/visitor-keys": 5.59.5
-    debug: ^4.3.4
-    globby: ^11.1.0
-    is-glob: ^4.0.3
-    semver: ^7.3.7
-    tsutils: ^3.21.0
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10a8c01ad53da115ca698668941dcb18c497035ba07faf08237bfa3ab92185bdfaf1df93562915a936b49e9f72a4cc6b10b1d9296b7cdc8c34ba0ca323c37677
   languageName: node
   linkType: hard
 
@@ -9804,7 +9617,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:5.59.6":
+"@typescript-eslint/utils@npm:5.59.6, @typescript-eslint/utils@npm:^5.10.0":
   version: 5.59.6
   resolution: "@typescript-eslint/utils@npm:5.59.6"
   dependencies:
@@ -9819,34 +9632,6 @@ __metadata:
   peerDependencies:
     eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
   checksum: 40ffe1d2f1fbf6c30aa05f4a68785fb1e77aa09772ea45b001daf4068e504830cf60a441a819b2c6ffe4a19216aba404869300b2ce6bc2a67d093f74ded504a7
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/utils@npm:^5.10.0":
-  version: 5.59.5
-  resolution: "@typescript-eslint/utils@npm:5.59.5"
-  dependencies:
-    "@eslint-community/eslint-utils": ^4.2.0
-    "@types/json-schema": ^7.0.9
-    "@types/semver": ^7.3.12
-    "@typescript-eslint/scope-manager": 5.59.5
-    "@typescript-eslint/types": 5.59.5
-    "@typescript-eslint/typescript-estree": 5.59.5
-    eslint-scope: ^5.1.1
-    semver: ^7.3.7
-  peerDependencies:
-    eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-  checksum: 2703972653d3c6eab2423d9a2586908086afa3b89580969ed38e454bc372265d5ca9fadf7967e4ea639d482ad069f763981ef4a03a42d79df28f43f00ee9d43a
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/visitor-keys@npm:5.59.5":
-  version: 5.59.5
-  resolution: "@typescript-eslint/visitor-keys@npm:5.59.5"
-  dependencies:
-    "@typescript-eslint/types": 5.59.5
-    eslint-visitor-keys: ^3.3.0
-  checksum: 94db281ec8ea3a7ede46763aaa0d3349e035b19334fd03e2e560f89c70faebcfa937d51b53d2eaad2506b60a5d901428cc8b5a65ad8e90ca1c12a133dbe977fc
   languageName: node
   linkType: hard
 
@@ -11547,9 +11332,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:^2.1265.0, aws-sdk@npm:^2.1352.0, aws-sdk@npm:^2.7.0":
-  version: 2.1372.0
-  resolution: "aws-sdk@npm:2.1372.0"
+"aws-sdk@npm:^2.1265.0, aws-sdk@npm:^2.1379.0, aws-sdk@npm:^2.7.0":
+  version: 2.1381.0
+  resolution: "aws-sdk@npm:2.1381.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -11561,7 +11346,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.5.0
-  checksum: da064626d434f792adf74861534ab3fc15757ba9352f735f6703deacebf1b982c057d5db434ac00fc5d364aee1c82de684572e205228f5014ca468e05e312d97
+  checksum: fd58b497287352ef4fba2c70810435078b8852ed985777dbb7e7a14ef76a196d782a392a2618622aee0f6a20d615402870ab408154fc7fd0b5cb3cbf9271a84b
   languageName: node
   linkType: hard
 
@@ -11572,15 +11357,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws4-axios@npm:3.1.10":
-  version: 3.1.10
-  resolution: "aws4-axios@npm:3.1.10"
+"aws4-axios@npm:3.2.1":
+  version: 3.2.1
+  resolution: "aws4-axios@npm:3.2.1"
   dependencies:
     "@aws-sdk/client-sts": ^3.4.1
     aws4: ^1.12.0
   peerDependencies:
     axios: ">=1.0.0"
-  checksum: 4798da91db11e9ef1ff3da069fbe55b167824022ba72edd96732afe152bce04226e572f0937fe8f23266eb4c075466acc0208fa7c92f54c1ee1a29afc716ca4c
+  checksum: 82a407c5b930c86f19d4a86e7acf2747e9876bccd53a7ab5723a021dae9afbc135d528add4cbdfcbe1deea731c8f605ceb71f0e83ec32ca4a30f6c7184b43e87
   languageName: node
   linkType: hard
 
@@ -11591,17 +11376,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:4.7.1":
+"axe-core@npm:4.7.1, axe-core@npm:^4.2.0, axe-core@npm:^4.6.2":
   version: 4.7.1
   resolution: "axe-core@npm:4.7.1"
   checksum: ff6fb92d6cadb749977af72b7d28009dec2b1842d4fdc4114a295ce973a39d0ac477e541be360eb9482a8d63f55840196813d7d892c0bd8437f52d9f7349c788
-  languageName: node
-  linkType: hard
-
-"axe-core@npm:^4.2.0, axe-core@npm:^4.6.2":
-  version: 4.7.0
-  resolution: "axe-core@npm:4.7.0"
-  checksum: f086bcab42be1761ba2b0b127dec350087f4c3a853bba8dd58f69d898cefaac31a1561da23146f6f3c07954c76171d1f2ce460e555e052d2b02cd79af628fa4a
   languageName: node
   linkType: hard
 
@@ -14184,6 +13962,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cross-fetch@npm:3.1.6":
+  version: 3.1.6
+  resolution: "cross-fetch@npm:3.1.6"
+  dependencies:
+    node-fetch: ^2.6.11
+  checksum: 704b3519ab7de488328cc49a52cf1aa14132ec748382be5b9557b22398c33ffa7f8c2530e8a97ed8cb55da52b0a9740a9791d361271c4591910501682d981d9c
+  languageName: node
+  linkType: hard
+
 "cross-spawn@npm:^6.0.5":
   version: 6.0.5
   resolution: "cross-spawn@npm:6.0.5"
@@ -15717,16 +15504,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^5.13.0":
-  version: 5.13.0
-  resolution: "enhanced-resolve@npm:5.13.0"
-  dependencies:
-    graceful-fs: ^4.2.4
-    tapable: ^2.2.0
-  checksum: 76d6844c4393d76beed5b3ce6cf5a98dee3ad5c84a9887f49ccde1224e3b7af201dfbd5a57ebf2b49f623b74883df262d50ff480d3cc02fc2881fc58b84e1bbe
-  languageName: node
-  linkType: hard
-
 "enhanced-resolve@npm:^5.14.0":
   version: 5.14.0
   resolution: "enhanced-resolve@npm:5.14.0"
@@ -16385,14 +16162,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:8.40.0":
-  version: 8.40.0
-  resolution: "eslint@npm:8.40.0"
+"eslint@npm:8.41.0":
+  version: 8.41.0
+  resolution: "eslint@npm:8.41.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.4.0
     "@eslint/eslintrc": ^2.0.3
-    "@eslint/js": 8.40.0
+    "@eslint/js": 8.41.0
     "@humanwhocodes/config-array": ^0.11.8
     "@humanwhocodes/module-importer": ^1.0.1
     "@nodelib/fs.walk": ^1.2.8
@@ -16412,13 +16189,12 @@ __metadata:
     find-up: ^5.0.0
     glob-parent: ^6.0.2
     globals: ^13.19.0
-    grapheme-splitter: ^1.0.4
+    graphemer: ^1.4.0
     ignore: ^5.2.0
     import-fresh: ^3.0.0
     imurmurhash: ^0.1.4
     is-glob: ^4.0.0
     is-path-inside: ^3.0.3
-    js-sdsl: ^4.1.4
     js-yaml: ^4.1.0
     json-stable-stringify-without-jsonify: ^1.0.1
     levn: ^0.4.1
@@ -16431,7 +16207,7 @@ __metadata:
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: b79eba37f52f517a420eec99a80ae9f284d2cbe73afc0d4d3d4d5ed1cce0b06f21badc0374bfb7ac239efd2d49a1fd7c6111d6c3d52888521f377ba33de77e61
+  checksum: 09979a6f8451dcc508a7005b6670845c8a518376280b3fd96657a406b8b6ef29d0e480d1ba11b4eb48da93d607e0c55c9b877676fe089d09973ec152354e23b2
   languageName: node
   linkType: hard
 
@@ -18201,18 +17977,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.0.0":
-  version: 10.2.2
-  resolution: "glob@npm:10.2.2"
+"glob@npm:^10.2.5":
+  version: 10.2.6
+  resolution: "glob@npm:10.2.6"
   dependencies:
     foreground-child: ^3.1.0
     jackspeak: ^2.0.3
-    minimatch: ^9.0.0
-    minipass: ^5.0.0
+    minimatch: ^9.0.1
+    minipass: ^5.0.0 || ^6.0.2
     path-scurry: ^1.7.0
   bin:
     glob: dist/cjs/src/bin.js
-  checksum: 33cbbbea74deb605107715f2ee51937953271ff2f6ce712b57d95a714e2f1bf272fa2c2b0c5101097bf98d3e5d40856941af498b05bce07567aca1a6e3cc7ae9
+  checksum: 94c5964bfa9df95207a69a3bd9b07b99ea7b5ba1f36dd73a8914378cee9436a205b9b5bdff58872abc238684ea7f4b4936e932155b8885250818bcc8d5321ddf
   languageName: node
   linkType: hard
 
@@ -18423,6 +18199,13 @@ __metadata:
   version: 1.0.4
   resolution: "grapheme-splitter@npm:1.0.4"
   checksum: 0c22ec54dee1b05cd480f78cf14f732cb5b108edc073572c4ec205df4cd63f30f8db8025afc5debc8835a8ddeacf648a1c7992fe3dcd6ad38f9a476d84906620
+  languageName: node
+  linkType: hard
+
+"graphemer@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "graphemer@npm:1.4.0"
+  checksum: bab8f0be9b568857c7bec9fda95a89f87b783546d02951c40c33f84d05bb7da3fd10f863a9beb901463669b6583173a8c8cc6d6b306ea2b9b9d5d3d943c3a673
   languageName: node
   linkType: hard
 
@@ -19145,21 +18928,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-resources-to-backend@npm:1.1.3":
-  version: 1.1.3
-  resolution: "i18next-resources-to-backend@npm:1.1.3"
+"i18next-resources-to-backend@npm:1.1.4":
+  version: 1.1.4
+  resolution: "i18next-resources-to-backend@npm:1.1.4"
   dependencies:
-    "@babel/runtime": ^7.20.6
-  checksum: 47fe45d29c403c2715a8b057a7e814500a39c26b514428fa6cc4026e9358d2bbb8eb690c3fa06346466fc096fec84830842a90d6b5cfd38c940f5483ad3a5613
+    "@babel/runtime": ^7.21.5
+  checksum: 4f3f25de0d9c96b109dfdc9259864898ac9d140a80a372925e0c5a34b13bd95dcb4c682c6255a5f3bb4c4dc40c20d0f9d1b82c491ebe2f8f245ae149fe911a1d
   languageName: node
   linkType: hard
 
-"i18next@npm:22.4.15":
-  version: 22.4.15
-  resolution: "i18next@npm:22.4.15"
+"i18next@npm:22.5.0":
+  version: 22.5.0
+  resolution: "i18next@npm:22.5.0"
   dependencies:
     "@babel/runtime": ^7.20.6
-  checksum: fced898227983e439c59e7aa6e7b87e53ad1b8a1c85f0613a968881418266e5336e9443831125590559796075d516fe3dbf8118679c894094a0a404be78b02a2
+  checksum: 291c0e02fda20bd1827b6529dad74c01867892c7ac000befe0f69e10ad97ab074a2ae5b4ce1e0638c28ae1a6f59d1ed8503ea05bd1c324d731a44dd94c43a49a
   languageName: node
   linkType: hard
 
@@ -21097,13 +20880,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-sdsl@npm:^4.1.4":
-  version: 4.3.0
-  resolution: "js-sdsl@npm:4.3.0"
-  checksum: ce908257cf6909e213af580af3a691a736f5ee8b16315454768f917a682a4ea0c11bde1b241bbfaecedc0eb67b72101b2c2df2ffaed32aed5d539fca816f054e
-  languageName: node
-  linkType: hard
-
 "js-string-escape@npm:^1.0.1":
   version: 1.0.1
   resolution: "js-string-escape@npm:1.0.1"
@@ -21258,7 +21034,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-cycle@npm:^1.4.0":
+"json-cycle@npm:^1.5.0":
   version: 1.5.0
   resolution: "json-cycle@npm:1.5.0"
   checksum: 0a44cd349676c6726093c64283fb75402f9104b32325b06c9270af6d639e7caac419f5301a39298aef2ac1659b273b167e02bd622e628c3392cf86f0e77a9f78
@@ -23149,12 +22925,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "minimatch@npm:9.0.0"
+"minimatch@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "minimatch@npm:9.0.1"
   dependencies:
     brace-expansion: ^2.0.1
-  checksum: 7bd57899edd1d1b0560f50b5b2d1ea4ad2a366c5a2c8e0a943372cf2f200b64c256bae45a87a80915adbce27fa36526264296ace0da57b600481fe5ea3e372e5
+  checksum: 97f5f5284bb57dc65b9415dec7f17a0f6531a33572193991c60ff18450dcfad5c2dad24ffeaf60b5261dccd63aae58cc3306e2209d57e7f88c51295a532d8ec3
   languageName: node
   linkType: hard
 
@@ -23270,17 +23046,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minipass@npm:^4.0.0":
-  version: 4.0.3
-  resolution: "minipass@npm:4.0.3"
-  checksum: a09f405e2f380ae7f6ee0cbb53b45c1fcc1b6c70fc3896f4d20649d92a10e61892c57bd9960a64cedf6c90b50022cb6c195905b515039c335b423202f99e6f18
-  languageName: node
-  linkType: hard
-
 "minipass@npm:^5.0.0":
   version: 5.0.0
   resolution: "minipass@npm:5.0.0"
   checksum: 425dab288738853fded43da3314a0b5c035844d6f3097a8e3b5b29b328da8f3c1af6fc70618b32c29ff906284cf6406b6841376f21caaadd0793c1d5a6a620ea
+  languageName: node
+  linkType: hard
+
+"minipass@npm:^5.0.0 || ^6.0.2":
+  version: 6.0.2
+  resolution: "minipass@npm:6.0.2"
+  checksum: d140b91f4ab2e5ce5a9b6c468c0e82223504acc89114c1a120d4495188b81fedf8cade72a9f4793642b4e66672f990f1e0d902dd858485216a07cd3c8a62fac9
   languageName: node
   linkType: hard
 
@@ -23723,9 +23499,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.8, node-fetch@npm:^2.6.9":
-  version: 2.6.9
-  resolution: "node-fetch@npm:2.6.9"
+"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.11, node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.8, node-fetch@npm:^2.6.9":
+  version: 2.6.11
+  resolution: "node-fetch@npm:2.6.11"
   dependencies:
     whatwg-url: ^5.0.0
   peerDependencies:
@@ -23733,7 +23509,7 @@ __metadata:
   peerDependenciesMeta:
     encoding:
       optional: true
-  checksum: acb04f9ce7224965b2b59e71b33c639794d8991efd73855b0b250921382b38331ffc9d61bce502571f6cc6e11a8905ca9b1b6d4aeb586ab093e2756a1fd190d0
+  checksum: 249d0666a9497553384d46b5ab296ba223521ac88fed4d8a17d6ee6c2efb0fc890f3e8091cafe7f9fba8151a5b8d925db2671543b3409a56c3cd522b468b47b3
   languageName: node
   linkType: hard
 
@@ -25369,7 +25145,7 @@ __metadata:
     is-ci: 3.0.1
     lint-staged: 13.2.2
     prettier: 2.8.8
-    typescript: 4.9.5
+    typescript: 5.0.4
   languageName: unknown
   linkType: soft
 
@@ -26182,9 +25958,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pwa-asset-generator@npm:6.3.0":
-  version: 6.3.0
-  resolution: "pwa-asset-generator@npm:6.3.0"
+"pwa-asset-generator@npm:6.3.1":
+  version: 6.3.1
+  resolution: "pwa-asset-generator@npm:6.3.1"
   dependencies:
     chalk: ^4.1.2
     cheerio: ^1.0.0-rc.12
@@ -26200,7 +25976,7 @@ __metadata:
     slash: ^3.0.0
   bin:
     pwa-asset-generator: bin/cli
-  checksum: e64dc19a9654617e5a1db7a7ff72f7fe6a298b22b95940569870f52d57f57f0bea580342eceb2240bb0d21c96a4a21ab95b5c2e046169cb135331aa0e1d53dae
+  checksum: 2eadfe096fed9fd6b5907c1a18bd1a4116d32a7af4df48ae0e647c7185b2126f6ea394653e2d66d38550357f72d66a019753bb376f29a8855678d246842ec875
   languageName: node
   linkType: hard
 
@@ -26229,12 +26005,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:6.11.1, qs@npm:^6.10.0, qs@npm:^6.10.1, qs@npm:^6.10.3, qs@npm:^6.11.0":
-  version: 6.11.1
-  resolution: "qs@npm:6.11.1"
+"qs@npm:6.11.2, qs@npm:^6.10.0, qs@npm:^6.10.1, qs@npm:^6.10.3, qs@npm:^6.11.0":
+  version: 6.11.2
+  resolution: "qs@npm:6.11.2"
   dependencies:
     side-channel: ^1.0.4
-  checksum: 82ee78ef12a16f3372fae5b64f76f8aedecb000feea882bbff1af146c147f6eb66b08f9c3f34d7e076f28563586956318b9b2ca41141846cdd6d5ad6f241d52f
+  checksum: e812f3c590b2262548647d62f1637b6989cc56656dc960b893fe2098d96e1bd633f36576f4cd7564dfbff9db42e17775884db96d846bebe4f37420d073ecdc0b
   languageName: node
   linkType: hard
 
@@ -26475,9 +26251,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:12.2.2":
-  version: 12.2.2
-  resolution: "react-i18next@npm:12.2.2"
+"react-i18next@npm:12.3.1":
+  version: 12.3.1
+  resolution: "react-i18next@npm:12.3.1"
   dependencies:
     "@babel/runtime": ^7.20.6
     html-parse-stringify: ^3.0.1
@@ -26489,7 +26265,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 460e32779f6abba287d63be6054f855202c2e365cbceca36673c8f37a497c2ac5a21a8577d20fcc0b3fcd4825f89427dc4fdf00136365963d27dac7d997c3c74
+  checksum: fe3f360e5184bc63861734e94bf625a09b9ec0d28fab41779a68758af258fd1737dde25ff7a88ddb66c1571a3e3de5b3403825a91b4949bf9832a00615acb87a
   languageName: node
   linkType: hard
 
@@ -27421,14 +27197,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:5.0.0":
-  version: 5.0.0
-  resolution: "rimraf@npm:5.0.0"
+"rimraf@npm:5.0.1":
+  version: 5.0.1
+  resolution: "rimraf@npm:5.0.1"
   dependencies:
-    glob: ^10.0.0
+    glob: ^10.2.5
   bin:
     rimraf: dist/cjs/src/bin.js
-  checksum: 60c5a7f152014d4f6bbf23f48e6badd145960a9be1115b719a07ba688c760b1bb8270abd6650bbd184ae2011843d8e9c775409652c89ff97550418aa5d581b27
+  checksum: bafce85391349a2d960847980bf9b5caa2a8887f481af630f1ea27e08288217293cec72d75e9a2ba35495c212789f66a7f3d23366ba6197026ab71c535126857
   languageName: node
   linkType: hard
 
@@ -27534,9 +27310,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:3.21.8":
-  version: 3.21.8
-  resolution: "rollup@npm:3.21.8"
+"rollup@npm:3.23.0, rollup@npm:^3.21.0, rollup@npm:^3.7.2":
+  version: 3.23.0
+  resolution: "rollup@npm:3.23.0"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -27544,7 +27320,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: f749443af3560aba26f5d45dab98f5657bb29d6698f5a8665932b93e8963ba0d9d54283a25cc2b48b4f47d3dc042acfaae1d2947f02c767d28b87aa11f9e148f
+  checksum: 0721065cf725c5611815be61d2b01f20b4d0027e17035f6e76384d38396b56cf6ed21a3db78eb004d9db4d24c8a6a19da4563b4ff96b5dd36f0a0f7a3baf85e8
   languageName: node
   linkType: hard
 
@@ -27559,20 +27335,6 @@ __metadata:
   bin:
     rollup: dist/bin/rollup
   checksum: 6a2bf167b3587d4df709b37d149ad0300692cc5deb510f89ac7bdc77c8738c9546ae3de9322b0968e1ed2b0e984571f5f55aae28fa7de4cfcb1bc5402a4e2be6
-  languageName: node
-  linkType: hard
-
-"rollup@npm:^3.21.0, rollup@npm:^3.7.2":
-  version: 3.21.6
-  resolution: "rollup@npm:3.21.6"
-  dependencies:
-    fsevents: ~2.3.2
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    rollup: dist/bin/rollup
-  checksum: bb6786ee0d755f253d3aa3820b05806a482abe9c9fd6dad14df83b386a370d48af20c4be66f732a15b5e89c0ae6269a7b82736b64f34ae61552c58de0eecedeb
   languageName: node
   linkType: hard
 
@@ -27860,7 +27622,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.5.0, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.1.2, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.0":
+"semver@npm:7.5.0":
   version: 7.5.0
   resolution: "semver@npm:7.5.0"
   dependencies:
@@ -27877,6 +27639,17 @@ __metadata:
   bin:
     semver: ./bin/semver.js
   checksum: 1b26ecf6db9e8292dd90df4e781d91875c0dcc1b1909e70f5d12959a23c7eebb8f01ea581c00783bbee72ceeaad9505797c381756326073850dc36ed284b21b9
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.1.2, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.0, semver@npm:^7.5.1":
+  version: 7.5.1
+  resolution: "semver@npm:7.5.1"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: d16dbedad53c65b086f79524b9ef766bf38670b2395bdad5c957f824dcc566b624988013564f4812bcace3f9d405355c3635e2007396a39d1bffc71cfec4a2fc
   languageName: node
   linkType: hard
 
@@ -28154,9 +27927,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless@npm:3.30.1":
-  version: 3.30.1
-  resolution: "serverless@npm:3.30.1"
+"serverless@npm:3.31.0":
+  version: 3.31.0
+  resolution: "serverless@npm:3.31.0"
   dependencies:
     "@serverless/dashboard-plugin": ^6.2.3
     "@serverless/platform-client": ^4.3.2
@@ -28164,7 +27937,7 @@ __metadata:
     ajv: ^8.12.0
     ajv-formats: ^2.1.1
     archiver: ^5.3.1
-    aws-sdk: ^2.1352.0
+    aws-sdk: ^2.1379.0
     bluebird: ^3.7.2
     cachedir: ^2.3.0
     chalk: ^4.1.2
@@ -28189,12 +27962,12 @@ __metadata:
     is-docker: ^2.2.1
     js-yaml: ^4.1.0
     json-colorizer: ^2.2.2
-    json-cycle: ^1.4.0
+    json-cycle: ^1.5.0
     json-refs: ^3.0.15
     lodash: ^4.17.21
     memoizee: ^0.4.15
     micromatch: ^4.0.5
-    node-fetch: ^2.6.9
+    node-fetch: ^2.6.11
     npm-registry-utilities: ^1.0.0
     object-hash: ^3.0.0
     open: ^8.4.2
@@ -28202,12 +27975,12 @@ __metadata:
     process-utils: ^4.0.0
     promise-queue: ^2.2.5
     require-from-string: ^2.0.2
-    semver: ^7.3.8
+    semver: ^7.5.1
     signal-exit: ^3.0.7
     stream-buffers: ^3.0.2
     strip-ansi: ^6.0.1
     supports-color: ^8.1.1
-    tar: ^6.1.13
+    tar: ^6.1.15
     timers-ext: ^0.1.7
     type: ^2.7.2
     untildify: ^4.0.0
@@ -28217,7 +27990,7 @@ __metadata:
   bin:
     serverless: bin/serverless.js
     sls: bin/serverless.js
-  checksum: cb8be3c14527d3278f691cbff8084b5d63ebd3967a999dde0242056a500dd562d23d3fdca7038417b10f0b2ae1715d2e0f34fad7b5ec45486edb83c82dec7719
+  checksum: 75ce2eb344b2b9725b48d14d947e21a903c7d723d187bad7de40faa9f25ae5724ed96c550c7b70a43d1bddacdb93e991c729d571b0fd151fbc2b3f873a63fdf1
   languageName: node
   linkType: hard
 
@@ -29641,17 +29414,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:^6.0.2, tar@npm:^6.1.0, tar@npm:^6.1.11, tar@npm:^6.1.13, tar@npm:^6.1.2":
-  version: 6.1.13
-  resolution: "tar@npm:6.1.13"
+"tar@npm:^6.0.2, tar@npm:^6.1.0, tar@npm:^6.1.11, tar@npm:^6.1.15, tar@npm:^6.1.2":
+  version: 6.1.15
+  resolution: "tar@npm:6.1.15"
   dependencies:
     chownr: ^2.0.0
     fs-minipass: ^2.0.0
-    minipass: ^4.0.0
+    minipass: ^5.0.0
     minizlib: ^2.1.1
     mkdirp: ^1.0.3
     yallist: ^4.0.0
-  checksum: 8a278bed123aa9f53549b256a36b719e317c8b96fe86a63406f3c62887f78267cea9b22dc6f7007009738509800d4a4dccc444abd71d762287c90f35b002eb1c
+  checksum: f23832fceeba7578bf31907aac744ae21e74a66f4a17a9e94507acf460e48f6db598c7023882db33bab75b80e027c21f276d405e4a0322d58f51c7088d428268
   languageName: node
   linkType: hard
 
@@ -30458,17 +30231,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:4.9.5":
-  version: 4.9.5
-  resolution: "typescript@npm:4.9.5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: ee000bc26848147ad423b581bd250075662a354d84f0e06eb76d3b892328d8d4440b7487b5a83e851b12b255f55d71835b008a66cbf8f255a11e4400159237db
-  languageName: node
-  linkType: hard
-
-"typescript@npm:^4.6.4 || ^5.0.0":
+"typescript@npm:5.0.4, typescript@npm:^4.6.4 || ^5.0.0":
   version: 5.0.4
   resolution: "typescript@npm:5.0.4"
   bin:
@@ -30478,17 +30241,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@4.9.5#~builtin<compat/typescript>":
-  version: 4.9.5
-  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=289587"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 1f8f3b6aaea19f0f67cba79057674ba580438a7db55057eb89cc06950483c5d632115c14077f6663ea76fd09fce3c190e6414bb98582ec80aa5a4eaf345d5b68
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^4.6.4 || ^5.0.0#~builtin<compat/typescript>":
+"typescript@patch:typescript@5.0.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.6.4 || ^5.0.0#~builtin<compat/typescript>":
   version: 5.0.4
   resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"
   bin:
@@ -31247,9 +31000,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:4.3.7":
-  version: 4.3.7
-  resolution: "vite@npm:4.3.7"
+"vite@npm:4.3.8":
+  version: 4.3.8
+  resolution: "vite@npm:4.3.8"
   dependencies:
     esbuild: ^0.17.5
     fsevents: ~2.3.2
@@ -31280,7 +31033,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: cda8c86fd9f9ab984f2ab8ae09f89bfef7dc636142f0b1ed30d37b8155516729cf91d95eab7ba43d43bb51d8068f0d938ac85dc80d3f53497fbd35f50d27ec25
+  checksum: 454a7c0c1bd1fd5611c9df28c62e3adbe75f48e87fc787179c5af60c4ab9a87aa0eda44be446d898851a135766d36f65f8e7d56317556aa807d30e561de369c4
   languageName: node
   linkType: hard
 
@@ -31618,9 +31371,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5.82.1":
-  version: 5.82.1
-  resolution: "webpack@npm:5.82.1"
+"webpack@npm:5.83.1, webpack@npm:>=4.43.0 <6.0.0, webpack@npm:^5.9.0":
+  version: 5.83.1
+  resolution: "webpack@npm:5.83.1"
   dependencies:
     "@types/eslint-scope": ^3.7.3
     "@types/estree": ^1.0.0
@@ -31651,44 +31404,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 747ee7ebd238c15249c2652060e3c6ca6d62cc66dcf7e4e2824ecd4875b7ea5e01fce8f4179080a3e84dfdb3c8d0992700444c7c5a05ef47b38c0623d3ac76de
-  languageName: node
-  linkType: hard
-
-"webpack@npm:>=4.43.0 <6.0.0, webpack@npm:^5.9.0":
-  version: 5.82.0
-  resolution: "webpack@npm:5.82.0"
-  dependencies:
-    "@types/eslint-scope": ^3.7.3
-    "@types/estree": ^1.0.0
-    "@webassemblyjs/ast": ^1.11.5
-    "@webassemblyjs/wasm-edit": ^1.11.5
-    "@webassemblyjs/wasm-parser": ^1.11.5
-    acorn: ^8.7.1
-    acorn-import-assertions: ^1.7.6
-    browserslist: ^4.14.5
-    chrome-trace-event: ^1.0.2
-    enhanced-resolve: ^5.13.0
-    es-module-lexer: ^1.2.1
-    eslint-scope: 5.1.1
-    events: ^3.2.0
-    glob-to-regexp: ^0.4.1
-    graceful-fs: ^4.2.9
-    json-parse-even-better-errors: ^2.3.1
-    loader-runner: ^4.2.0
-    mime-types: ^2.1.27
-    neo-async: ^2.6.2
-    schema-utils: ^3.1.2
-    tapable: ^2.1.1
-    terser-webpack-plugin: ^5.3.7
-    watchpack: ^2.4.0
-    webpack-sources: ^3.2.3
-  peerDependenciesMeta:
-    webpack-cli:
-      optional: true
-  bin:
-    webpack: bin/webpack.js
-  checksum: 499e7f5f24fccaa76f64f2a01f91f371073416f568ef6171dc73187a89078f0c33410d4c9f40d411f0827bab8455f8476eabd803ef4d2920d9a2e5f17efa2703
+  checksum: 219d5ef50380bc0fd3702ed17feddf13819d8173b78f7a5b857dc74ac177e63d1f79c050792754411cc088bbc02e0971b989efddadbb8e393cf27d64c0ad9ff8
   languageName: node
   linkType: hard
 
