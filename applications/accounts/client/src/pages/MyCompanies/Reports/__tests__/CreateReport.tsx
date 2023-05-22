@@ -132,9 +132,9 @@ describe('CreateReport', () => {
         'export-form.status.options.confirmed',
       );
 
-      await act(async () => {
-        await userEvent.click(status);
+      await userEvent.click(status);
 
+      await act(async () => {
         await waitForApollo(0);
 
         await waitForApollo(0);
@@ -144,9 +144,9 @@ describe('CreateReport', () => {
 
       await waitFor(() => expect(button).not.toBeDisabled());
 
-      await act(async () => {
-        await userEvent.click(button);
+      await userEvent.click(button);
 
+      await act(async () => {
         await waitForApollo(0);
 
         await waitForApollo(0);
@@ -168,9 +168,9 @@ describe('CreateReport', () => {
         'export-form.status.options.confirmed',
       );
 
-      await act(async () => {
-        await userEvent.click(status);
+      await userEvent.click(status);
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
@@ -178,11 +178,13 @@ describe('CreateReport', () => {
 
       await waitFor(() => expect(button).not.toBeDisabled());
 
+      await userEvent.click(button);
+
       await act(async () => {
-        await userEvent.click(button);
-
         await waitForApollo(0);
+      });
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
@@ -201,9 +203,7 @@ describe('CreateReport', () => {
 
       const link = await screen.findByRole('link');
 
-      await act(async () => {
-        await userEvent.click(link);
-      });
+      await userEvent.click(link);
 
       await waitFor(() =>
         expect(history.push).toHaveBeenCalledWith(
@@ -309,9 +309,9 @@ describe('CreateReport', () => {
         'export-form.status.options.confirmed',
       );
 
-      await act(async () => {
-        await userEvent.click(status);
+      await userEvent.click(status);
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
@@ -319,9 +319,9 @@ describe('CreateReport', () => {
 
       await waitFor(() => expect(button).not.toBeDisabled());
 
-      await act(async () => {
-        await userEvent.click(button);
+      await userEvent.click(button);
 
+      await act(async () => {
         await waitForApollo(0);
 
         await waitForApollo(0);
@@ -343,9 +343,9 @@ describe('CreateReport', () => {
         'export-form.status.options.confirmed',
       );
 
-      await act(async () => {
-        await userEvent.click(status);
+      await userEvent.click(status);
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
@@ -353,9 +353,9 @@ describe('CreateReport', () => {
 
       await waitFor(() => expect(button).not.toBeDisabled());
 
-      await act(async () => {
-        await userEvent.click(button);
+      await userEvent.click(button);
 
+      await act(async () => {
         await waitForApollo(0);
 
         await waitForApollo(0);

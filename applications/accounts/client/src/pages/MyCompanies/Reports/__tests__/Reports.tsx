@@ -130,9 +130,9 @@ describe('Reports', () => {
 
       const [button] = await screen.findAllByRole('button');
 
-      await act(async () => {
-        await userEvent.click(button);
+      await userEvent.click(button);
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
@@ -157,9 +157,7 @@ describe('Reports', () => {
 
       const [button] = await screen.findAllByRole('button');
 
-      await act(async () => {
-        await userEvent.click(button);
-      });
+      await userEvent.click(button);
 
       await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
@@ -180,9 +178,9 @@ describe('Reports', () => {
 
       const [, link] = await screen.findAllByRole('link');
 
-      await act(async () => {
-        await userEvent.click(link);
+      await userEvent.click(link);
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
@@ -204,9 +202,7 @@ describe('Reports', () => {
 
       const [link] = await screen.findAllByRole('link');
 
-      await act(async () => {
-        await userEvent.click(link);
-      });
+      await userEvent.click(link);
 
       await waitFor(() =>
         expect(history.push).toHaveBeenCalledWith(
