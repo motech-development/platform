@@ -3,7 +3,7 @@ import { WithAuth } from '@motech-development/auth';
 import { Loader, useToast } from '@motech-development/breeze-ui';
 import { Suspense, useEffect } from 'react';
 import { pageview } from 'react-ga';
-import IdleTimer from 'react-idle-timer';
+import { useIdleTimer } from 'react-idle-timer';
 import { useLocation } from 'react-router-dom';
 import Pages from './pages';
 import isProd from './utils/isProd';
@@ -20,6 +20,11 @@ function App() {
       },
     });
   };
+  const onIdle = () => {
+    if (isAuthenticated) {
+      logOut();
+    }
+  };
   const onError = (message: string) => {
     add({
       colour: 'danger',
@@ -35,11 +40,14 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useIdleTimer({
+    onIdle,
+    timeout,
+  });
+
   return (
     <WithAuth fallback={<Loader />} onError={onError}>
       <Suspense fallback={<Loader />}>
-        {isAuthenticated && <IdleTimer onIdle={logOut} timeout={timeout} />}
-
         <Pages />
       </Suspense>
     </WithAuth>
