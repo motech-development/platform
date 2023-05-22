@@ -156,7 +156,7 @@ __metadata:
     vite-plugin-checker: 0.6.0
     vite-plugin-eslint: 1.8.1
     vite-plugin-pwa: 0.14.7
-    web-vitals: 2.1.4
+    web-vitals: 3.3.1
     workbox-background-sync: 6.5.4
     workbox-broadcast-update: 6.5.4
     workbox-cacheable-response: 6.5.4
@@ -5241,7 +5241,7 @@ __metadata:
     vite: 4.3.8
     vite-plugin-checker: 0.6.0
     vite-plugin-eslint: 1.8.1
-    web-vitals: 2.1.4
+    web-vitals: 3.3.1
     yup: 1.1.1
   languageName: unknown
   linkType: soft
@@ -31203,10 +31203,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-vitals@npm:2.1.4":
-  version: 2.1.4
-  resolution: "web-vitals@npm:2.1.4"
-  checksum: 03d3f47dbf55c3dce07beb0ff5de8ddd52e2d0a53a8df5c84e7a16dda93543341d67231fa79b1d9772b091419af4ec0fd395b8bcf451a0e26846e3f76b3d0efc
+"web-vitals@npm:3.3.1":
+  version: 3.3.1
+  resolution: "web-vitals@npm:3.3.1"
+  checksum: ff417dec2d77f57bc5130767f47aad6f93173e5d0e24a179082c7dca423850106ba1d66c737f91400a6bed6585a7295531d9e54354d1cb31d1a3e68596bb2000
   languageName: node
   linkType: hard
 
