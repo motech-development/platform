@@ -26,6 +26,7 @@ i18n
       escapeValue: false,
     },
     ns: ['global'],
+    returnNull: false,
   })
   .catch(() => {});
 
