@@ -29,12 +29,8 @@ custom:
     number: 1
 
   webpack:
+    excludeRegex: 'node_modules/@aws-sdk'
     includeModules:
-      forceExclude:
-        - '@aws-sdk/client-dynamodb'
-        - '@aws-sdk/client-sfn'
-        - '@aws-sdk/lib-dynamodb'
-        - '@aws-sdk/util-dynamodb'
       nodeModulesRelativeDir: ../../../
     packager: yarn
     packagerOptions:
