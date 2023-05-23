@@ -13,9 +13,7 @@ const documentClient = new DynamoDBClient({});
 
 const instance = axios.create();
 
-const interceptor = aws4Interceptor({
-  instance,
-});
+const interceptor = aws4Interceptor({});
 
 instance.interceptors.request.use(interceptor);
 
