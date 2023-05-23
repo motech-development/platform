@@ -16,7 +16,7 @@ describe('WarningText', () => {
       </WarningText>,
     );
     const icon = container.querySelector(
-      'svg[data-icon="exclamation-triangle"]',
+      'svg[data-icon="triangle-exclamation"]',
     );
 
     expect(icon).not.toBeInTheDocument();
@@ -47,7 +47,7 @@ describe('WarningText', () => {
     it('should show warning icon', () => {
       const { container } = component;
       const icon = container.querySelector(
-        'svg[data-icon="exclamation-triangle"]',
+        'svg[data-icon="triangle-exclamation"]',
       );
 
       expect(icon).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe('WarningText', () => {
     it('should show warning icon', async () => {
       const { container } = component;
       const icon = container.querySelector(
-        'svg[data-icon="exclamation-triangle"]',
+        'svg[data-icon="triangle-exclamation"]',
       );
 
       await Promise.resolve();
