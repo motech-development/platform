@@ -165,7 +165,6 @@ jobs:
       STAGE: ${{ github.event.pull_request.number }}
       YAPILY_APPLICATION_KEY: ${{ secrets.YAPILY_APPLICATION_KEY }}
       YAPILY_APPLICATION_SECRET: ${{ secrets.YAPILY_APPLICATION_SECRET }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     steps:
       - name: Checkout code
