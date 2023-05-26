@@ -3,5 +3,5 @@
     "noEmit": true
   },
   "extends": "./tsconfig.json",
-  "include": ["src", "vite.config.ts", "__mocks__"]
+  "include": ["src", "cypress.config.ts", "vite.config.ts", "__mocks__"]
 }
