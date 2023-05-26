@@ -210,7 +210,6 @@ tenant:
   enabled_locales:
     - en
   flags:
-    new_universal_login_experience_enabled: false
     universal_login: false
     dashboard_ui_next: true
     disable_clickjack_protection_headers: false
