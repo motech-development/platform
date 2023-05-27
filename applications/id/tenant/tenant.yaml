@@ -38,14 +38,12 @@ clients:
     allowed_logout_urls:
       - https://accounts.motechdevelopment.co.uk
       - http://localhost:3000
-      - http://192.168.1.153:3000
-      - http://192.168.1.66:3000
+      - http://127.0.0.1:3000
     app_type: spa
     callbacks:
       - https://accounts.motechdevelopment.co.uk
       - http://localhost:3000
-      - http://192.168.1.153:3000
-      - http://192.168.1.66:3000
+      - http://127.0.0.1:3000
     client_aliases: []
     cross_origin_auth: false
     custom_login_page_on: true
@@ -80,8 +78,7 @@ clients:
     web_origins:
       - https://accounts.motechdevelopment.co.uk
       - http://localhost:3000
-      - http://192.168.1.153:3000
-      - http://192.168.1.66:3000
+      - http://127.0.0.1:3000
   - name: Accounts API (Test Application)
     app_type: non_interactive
     cross_origin_auth: false
