@@ -11,8 +11,8 @@
     "e2e": "cypress open",
     "e2e-ci": "cypress-cloud --browser chrome --record --parallel",
     "lint": "eslint './src/**/*.{ts,tsx}'",
-    "serve": "vite preview",
-    "start": "vite",
+    "serve": "vite preview  --host",
+    "start": "vite --host",
     "teardown": "serverless client remove --verbose --no-confirm",
     "test": "jest --watch",
     "test-ci": "jest --coverage --runInBand"
