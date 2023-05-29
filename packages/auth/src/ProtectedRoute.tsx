@@ -1,16 +1,19 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { ComponentType, useEffect } from 'react';
-import { Route, RouteProps } from 'react-router-dom';
+import { ReactNode, useEffect } from 'react';
 
-export interface IProtectedRouteProps extends RouteProps {
-  component: ComponentType;
+interface IProtectedRoutePropsWithChildren {
+  children: ReactNode;
 }
 
-function ProtectedRoute({
-  component: Component,
-  path,
-  ...rest
-}: IProtectedRouteProps) {
+interface IProtectedRoutePropsWithElement {
+  element: JSX.Element;
+}
+
+export type TProtectedRouteProps =
+  | IProtectedRoutePropsWithChildren
+  | IProtectedRoutePropsWithElement;
+
+function ProtectedRoute({ ...props }: TProtectedRouteProps) {
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
 
   useEffect(() => {
@@ -28,10 +31,11 @@ function ProtectedRoute({
     );
   }, [isAuthenticated, isLoading, loginWithRedirect]);
 
-  return isAuthenticated ? (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <Route path={path} component={Component} {...rest} />
-  ) : null;
+  if (isAuthenticated) {
+    return 'children' in props ? <>{props.children}</> : props.element;
+  }
+
+  return null;
 }
 
 export default ProtectedRoute;
