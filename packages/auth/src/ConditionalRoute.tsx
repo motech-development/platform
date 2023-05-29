@@ -1,17 +1,32 @@
-import { Redirect, Route, RouteProps } from 'react-router-dom';
+import { ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
 
-export interface IConditionalRouteProps extends RouteProps {
+interface IConditionalRoutePropsWithChildren {
+  children: ReactNode;
   condition: boolean;
   redirect: string;
 }
+
+interface IConditionalRoutePropsWithElement {
+  element: JSX.Element;
+  condition: boolean;
+  redirect: string;
+}
+
+export type TConditionalRouteProps =
+  | IConditionalRoutePropsWithChildren
+  | IConditionalRoutePropsWithElement;
 
 function ConditionalRoute({
   condition,
   redirect,
   ...rest
-}: IConditionalRouteProps) {
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return condition ? <Route {...rest} /> : <Redirect to={redirect} />;
+}: TConditionalRouteProps) {
+  if (condition) {
+    return 'children' in rest ? <>{rest.children}</> : rest.element;
+  }
+
+  return <Navigate to={redirect} />;
 }
 
 export default ConditionalRoute;

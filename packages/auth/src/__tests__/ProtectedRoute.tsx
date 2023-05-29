@@ -1,6 +1,6 @@
 import { useAuth0, User } from '@auth0/auth0-react';
 import { render, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from '../ProtectedRoute';
 
 jest.mock('@auth0/auth0-react', () => ({
@@ -65,7 +65,12 @@ describe('ProtectedRoute', () => {
     function Component() {
       return (
         <MemoryRouter>
-          <ProtectedRoute path="/" component={TestComponent} />
+          <Routes>
+            <Route
+              path="/"
+              element={<ProtectedRoute element={<TestComponent />} />}
+            />
+          </Routes>
         </MemoryRouter>
       );
     }
@@ -94,7 +99,12 @@ describe('ProtectedRoute', () => {
     function Component() {
       return (
         <MemoryRouter>
-          <ProtectedRoute path="/" component={TestComponent} />
+          <Routes>
+            <Route
+              path="/"
+              element={<ProtectedRoute element={<TestComponent />} />}
+            />
+          </Routes>
         </MemoryRouter>
       );
     }
@@ -123,7 +133,16 @@ describe('ProtectedRoute', () => {
     function Component() {
       return (
         <MemoryRouter>
-          <ProtectedRoute path="/" component={TestComponent} />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <TestComponent />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
         </MemoryRouter>
       );
     }

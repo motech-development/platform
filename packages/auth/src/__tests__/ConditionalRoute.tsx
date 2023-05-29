@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { MemoryRouter, Route } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import ConditionalRoute from '../ConditionalRoute';
 
 function TestComponent() {
@@ -18,13 +18,19 @@ describe('ConditionalRoute', () => {
 
     const { findByTestId } = render(
       <MemoryRouter>
-        <ConditionalRoute
-          condition={condition}
-          path="/"
-          component={TestComponent}
-          redirect="/fail"
-        />
-        <Route path="/fail" component={RedirectComponent} />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ConditionalRoute
+                condition={condition}
+                element={<TestComponent />}
+                redirect="/fail"
+              />
+            }
+          />
+          <Route path="/fail" element={<RedirectComponent />} />
+        </Routes>
       </MemoryRouter>,
     );
 
@@ -36,13 +42,17 @@ describe('ConditionalRoute', () => {
 
     const { findByTestId } = render(
       <MemoryRouter>
-        <ConditionalRoute
-          condition={condition}
-          path="/"
-          component={TestComponent}
-          redirect="/fail"
-        />
-        <Route path="/fail" component={RedirectComponent} />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ConditionalRoute condition={condition} redirect="/fail">
+                <TestComponent />
+              </ConditionalRoute>
+            }
+          />
+          <Route path="/fail" element={<RedirectComponent />} />
+        </Routes>
       </MemoryRouter>,
     );
 
