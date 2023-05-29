@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
 interface IConditionalRoutePropsWithChildren {
@@ -8,7 +8,7 @@ interface IConditionalRoutePropsWithChildren {
 }
 
 interface IConditionalRoutePropsWithElement {
-  element: JSX.Element;
+  element: ReactElement;
   condition: boolean;
   redirect: string;
 }
