@@ -40,7 +40,7 @@ function SettingsRoutes() {
               />
             }
           />
-          <Route element={<Settings />} path="/" />
+          <Route index element={<Settings />} />
         </Routes>
       )}
     </Connected>

@@ -20,7 +20,7 @@ describe('ConditionalRoute', () => {
       <MemoryRouter>
         <Routes>
           <Route
-            path="/"
+            index
             element={
               <ConditionalRoute
                 condition={condition}
@@ -44,7 +44,7 @@ describe('ConditionalRoute', () => {
       <MemoryRouter>
         <Routes>
           <Route
-            path="/"
+            index
             element={
               <ConditionalRoute condition={condition} redirect="/fail">
                 <TestComponent />

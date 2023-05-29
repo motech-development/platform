@@ -67,7 +67,7 @@ describe('ProtectedRoute', () => {
         <MemoryRouter>
           <Routes>
             <Route
-              path="/"
+              index
               element={<ProtectedRoute element={<TestComponent />} />}
             />
           </Routes>
@@ -101,7 +101,7 @@ describe('ProtectedRoute', () => {
         <MemoryRouter>
           <Routes>
             <Route
-              path="/"
+              index
               element={<ProtectedRoute element={<TestComponent />} />}
             />
           </Routes>
@@ -135,7 +135,7 @@ describe('ProtectedRoute', () => {
         <MemoryRouter>
           <Routes>
             <Route
-              path="/"
+              index
               element={
                 <ProtectedRoute>
                   <TestComponent />

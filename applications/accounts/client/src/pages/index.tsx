@@ -9,7 +9,7 @@ const NotFound = lazy(() => import('./NotFound'));
 function Pages() {
   return (
     <Routes>
-      <Route element={<LogIn />} path="/" />
+      <Route index element={<LogIn />} />
       <Route
         element={<ProtectedRoute element={<MyCompanies />} />}
         path="/my-companies/*"

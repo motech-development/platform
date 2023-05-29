@@ -10,7 +10,7 @@ function BankRoutes() {
     <Routes>
       <Route element={<Callback />} path="callback" />
       <Route element={<SelectAccount />} path="select-account" />
-      <Route element={<Bank />} path="/" />
+      <Route index element={<Bank />} />
     </Routes>
   );
 }
