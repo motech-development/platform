@@ -8,22 +8,17 @@ import {
   waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import ADD_CLIENT from '../../../../graphql/client/ADD_CLIENT';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import AddClient from '../AddClient';
 
 describe('AddClient', () => {
   let component: RenderResult;
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    history = createMemoryHistory({
-      initialEntries: ['/clients/company-id/add-client'],
-    });
-
-    jest.spyOn(history, 'push');
+    history = ['/clients/company-id/add-client'];
   });
 
   describe('when data is returned', () => {
@@ -89,7 +84,7 @@ describe('AddClient', () => {
     });
 
     it('should redirect you back to clients page on complete', async () => {
-      const { findAllByRole, findByLabelText } = component;
+      const { findAllByRole, findByLabelText, findByTestId } = component;
 
       const line1 = await findByLabelText('address.line1');
       const line3 = await findByLabelText('address.line3');
@@ -125,11 +120,9 @@ describe('AddClient', () => {
         await Promise.resolve();
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/clients/company-id',
-        ),
-      );
+      await expect(
+        findByTestId('/my-companies/clients/company-id'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should display a success toast', async () => {
@@ -266,7 +259,7 @@ describe('AddClient', () => {
     });
 
     it('should redirect you back to company page', async () => {
-      const { findAllByRole, findByLabelText } = component;
+      const { findAllByRole, findByLabelText, findByTestId } = component;
 
       const line1 = await findByLabelText('address.line1');
       const line3 = await findByLabelText('address.line3');
@@ -300,11 +293,9 @@ describe('AddClient', () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/clients/company-id',
-        ),
-      );
+      await expect(
+        findByTestId('/my-companies/clients/company-id'),
+      ).resolves.toBeInTheDocument();
     });
   });
 });

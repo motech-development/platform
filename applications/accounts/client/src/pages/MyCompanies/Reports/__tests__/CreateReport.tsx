@@ -2,22 +2,17 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import { advanceTo, clear } from 'jest-date-mock';
 import GET_SETTINGS from '../../../../graphql/settings/GET_SETTINGS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import CreateReport, { CREATE_REPORT } from '../CreateReport';
 
 describe('CreateReport', () => {
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    history = createMemoryHistory({
-      initialEntries: ['/reports/company-id/create-report'],
-    });
-
-    jest.spyOn(history, 'push');
+    history = ['/reports/company-id/create-report'];
   });
 
   afterAll(clear);
@@ -152,11 +147,9 @@ describe('CreateReport', () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/reports/company-id',
-        ),
-      );
+      await expect(
+        screen.findByTestId('/my-companies/reports/company-id'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should display a success toast on complete', async () => {
@@ -205,11 +198,9 @@ describe('CreateReport', () => {
 
       await userEvent.click(link);
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/reports/company-id',
-        ),
-      );
+      await expect(
+        screen.findByTestId('/my-companies/reports/company-id'),
+      ).resolves.toBeInTheDocument();
     });
   });
 
@@ -327,11 +318,9 @@ describe('CreateReport', () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/reports/company-id',
-        ),
-      );
+      await expect(
+        screen.findByTestId('/my-companies/reports/company-id'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should display a success toast on complete', async () => {

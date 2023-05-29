@@ -7,7 +7,6 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import GET_BANK_ACCOUNTS from '../../../../../graphql/bank/GET_BANK_ACCOUNTS';
 import UPDATE_BANK_SETTINGS from '../../../../../graphql/bank/UPDATE_BANK_SETTINGS';
 import TestProvider, { add } from '../../../../../utils/TestProvider';
@@ -15,15 +14,11 @@ import SelectAccount from '../SelectAccount';
 
 describe('SelectAccount', () => {
   let component: RenderResult;
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    history = createMemoryHistory({
-      initialEntries: ['/settings/company-id/bank/select-account'],
-    });
-
-    jest.spyOn(history, 'push');
+    history = ['/settings/company-id/bank/select-account'];
   });
 
   describe('when accounts are loaded', () => {
@@ -107,7 +102,7 @@ describe('SelectAccount', () => {
       });
 
       it('should redirect to settings page when account is linked', async () => {
-        const { findAllByRole, findByText } = component;
+        const { findAllByRole, findByTestId, findByText } = component;
 
         await findByText('select-account.title');
 
@@ -119,11 +114,9 @@ describe('SelectAccount', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
-            '/my-companies/settings/company-id',
-          ),
-        );
+        await expect(
+          findByTestId('/my-companies/settings/company-id'),
+        ).resolves.toBeInTheDocument();
       });
 
       it('should show a success toast', async () => {
@@ -216,7 +209,7 @@ describe('SelectAccount', () => {
       });
 
       it('should redirect to settings page', async () => {
-        const { findAllByRole, findByText } = component;
+        const { findAllByRole, findByTestId, findByText } = component;
 
         await findByText('select-account.title');
 
@@ -228,11 +221,9 @@ describe('SelectAccount', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
-            '/my-companies/settings/company-id',
-          ),
-        );
+        await expect(
+          findByTestId('/my-companies/settings/company-id'),
+        ).resolves.toBeInTheDocument();
       });
 
       it('should show a danger toast', async () => {

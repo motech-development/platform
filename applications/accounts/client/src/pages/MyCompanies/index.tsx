@@ -1,8 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { ProtectedRoute } from '@motech-development/auth';
 import { Loader } from '@motech-development/breeze-ui';
 import { lazy, Suspense } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import ApolloClient from '../../components/ApolloClient';
 import Container from '../../components/Container';
 import UserBar from '../../components/UserBar';
@@ -17,7 +16,7 @@ const Reports = lazy(() => import('./Reports'));
 const Settings = lazy(() => import('./Settings'));
 const UpdateDetails = lazy(() => import('./UpdateDetails'));
 
-function Routes() {
+function MyCompaniesRoutes() {
   const { logout, user } = useAuth0();
   const logOut = () => {
     logout({
@@ -40,48 +39,23 @@ function Routes() {
 
       <Suspense fallback={<Loader />}>
         <Container>
-          <Switch>
-            <ProtectedRoute
-              exact
-              component={MyCompanies}
-              path="/my-companies"
-            />
-            <ProtectedRoute
-              exact
-              component={AddCompany}
-              path="/my-companies/add-company"
-            />
-            <ProtectedRoute
-              exact
-              component={Dashboard}
-              path="/my-companies/dashboard/:companyId"
-            />
+          <Routes>
+            <Route element={<MyCompanies />} path="/" />
+            <Route element={<AddCompany />} path="add-company" />
+            <Route element={<Dashboard />} path="dashboard/:companyId" />
+            <Route element={<Accounts />} path="accounts/:companyId/*" />
+            <Route element={<Clients />} path="clients/:companyId/*" />
+            <Route element={<Reports />} path="reports/:companyId/*" />
+            <Route element={<Settings />} path="settings/:companyId" />
             <Route
-              component={Accounts}
-              path="/my-companies/accounts/:companyId"
+              element={<UpdateDetails />}
+              path="update-details/:companyId"
             />
-            <Route
-              component={Clients}
-              path="/my-companies/clients/:companyId"
-            />
-            <Route
-              component={Reports}
-              path="/my-companies/reports/:companyId"
-            />
-            <Route
-              component={Settings}
-              path="/my-companies/settings/:companyId"
-            />
-            <ProtectedRoute
-              exact
-              component={UpdateDetails}
-              path="/my-companies/update-details/:companyId"
-            />
-          </Switch>
+          </Routes>
         </Container>
       </Suspense>
     </ApolloClient>
   );
 }
 
-export default Routes;
+export default MyCompaniesRoutes;

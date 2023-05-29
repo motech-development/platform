@@ -1,5 +1,4 @@
 import { act, render, waitFor } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
 import { createMocks } from 'react-idle-timer';
 import TestProvider, { add, logout } from '../utils/TestProvider';
 import App from '../App';
@@ -36,9 +35,7 @@ describe('App', () => {
       createMocks();
     });
 
-    const history = createMemoryHistory({
-      initialEntries: ['?error=Error&error_description=Message'],
-    });
+    const history = ['?error=Error&error_description=Message'];
 
     await act(async () => {
       render(

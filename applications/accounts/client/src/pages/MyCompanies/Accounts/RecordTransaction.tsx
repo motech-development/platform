@@ -2,7 +2,7 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import TransactionForm, {
   FormSchema,
@@ -13,6 +13,7 @@ import ADD_TRANSACTION, {
   IAddTransactionOutput,
   updateCache,
 } from '../../../graphql/transaction/ADD_TRANSACTION';
+import invariant from '../../../utils/invariant';
 import UploadAttachment from './shared/UploadAttachment';
 import ViewAttachment from './shared/ViewAttachment';
 
@@ -71,13 +72,12 @@ export const RECORD_TRANSACTION = gql`
   }
 `;
 
-interface IRecordTransactionParams {
-  companyId: string;
-}
-
 function RecordTransaction() {
-  const history = useHistory();
-  const { companyId } = useParams<IRecordTransactionParams>();
+  const navigate = useNavigate();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const [attachment, setAttachment] = useState('');
   const { t } = useTranslation('accounts');
   const { add } = useToast();
@@ -111,14 +111,14 @@ function RecordTransaction() {
           message: t('record-transaction.success'),
         });
 
-        history.push(backTo(addTransaction.companyId, addTransaction.status));
+        navigate(backTo(addTransaction.companyId, addTransaction.status));
       } else {
         add({
           colour: 'danger',
           message: t('record-transaction.retry'),
         });
 
-        history.push(backTo(companyId));
+        navigate(backTo(companyId));
       }
     },
     refetchQueries: () => [

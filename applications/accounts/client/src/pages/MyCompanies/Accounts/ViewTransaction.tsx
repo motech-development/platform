@@ -8,7 +8,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import DeleteItem from '../../../components/DeleteItem';
 import TransactionForm, {
@@ -25,6 +25,7 @@ import UPDATE_TRANSACTION, {
   IUpdateTransactionOutput,
   updateCache as updateTransactionCache,
 } from '../../../graphql/transaction/UPDATE_TRANSACTION';
+import invariant from '../../../utils/invariant';
 import UploadAttachment from './shared/UploadAttachment';
 import ViewAttachment from './shared/ViewAttachment';
 
@@ -112,14 +113,13 @@ export const VIEW_TRANSACTION = gql`
   }
 `;
 
-interface IViewTransactionParams {
-  companyId: string;
-  transactionId: string;
-}
-
 function ViewTransaction() {
-  const history = useHistory();
-  const { companyId, transactionId } = useParams<IViewTransactionParams>();
+  const navigate = useNavigate();
+  const { companyId, transactionId } = useParams();
+
+  invariant(companyId);
+  invariant(transactionId);
+
   const [attachment, setAttachment] = useState('');
   const [modal, setModal] = useState(false);
   const { t } = useTranslation('accounts');
@@ -168,7 +168,7 @@ function ViewTransaction() {
               message: t('view-transaction.success'),
             });
 
-            history.push(
+            navigate(
               backTo(updateTransaction.companyId, updateTransaction.status),
             );
           } else {
@@ -177,7 +177,7 @@ function ViewTransaction() {
               message: t('view-transaction.retry'),
             });
 
-            history.push(backTo(companyId));
+            navigate(backTo(companyId));
           }
         },
         refetchQueries,
@@ -195,16 +195,14 @@ function ViewTransaction() {
           message: t('delete-transaction.success'),
         });
 
-        history.push(
-          backTo(deleteTransaction.companyId, deleteTransaction.status),
-        );
+        navigate(backTo(deleteTransaction.companyId, deleteTransaction.status));
       } else {
         add({
           colour: 'danger',
           message: t('delete-transaction.retry'),
         });
 
-        history.push(backTo(companyId));
+        navigate(backTo(companyId));
       }
     },
     onError: () => {

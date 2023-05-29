@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import DELETE_BANK_CONNECTION, {
   IDeleteBankConnectionInput,
@@ -17,16 +17,16 @@ import UPDATE_SETTINGS, {
   IUpdateSettingsInput,
   IUpdateSettingsOutput,
 } from '../../../graphql/settings/UPDATE_SETTINGS';
-
-interface ISettingsParams {
-  companyId: string;
-}
+import invariant from '../../../utils/invariant';
 
 function Settings() {
   const backTo = (id: string) => `/my-companies/dashboard/${id}`;
   const [connected, setConnected] = useState(false);
-  const { companyId } = useParams<ISettingsParams>();
-  const history = useHistory();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
+  const navigate = useNavigate();
   const { t } = useTranslation('settings');
   const { add } = useToast();
   const { data, error, loading } = useQuery<
@@ -48,14 +48,14 @@ function Settings() {
             message: t('settings.success'),
           });
 
-          history.push(backTo(id));
+          navigate(backTo(id));
         } else {
           add({
             colour: 'danger',
             message: t('settings.retry'),
           });
 
-          history.push(backTo(companyId));
+          navigate(backTo(companyId));
         }
       },
     });

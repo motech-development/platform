@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { render, RenderResult, act } from '@testing-library/react';
-import { Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import GET_COMPANY from '../../../graphql/company/GET_COMPANY';
 import TestProvider from '../../../utils/TestProvider';
 import Dashboard from '../Dashboard';
@@ -48,9 +48,11 @@ describe('Dashboard', () => {
 
     await act(async () => {
       component = render(
-        <TestProvider path="/dashboard/Test">
+        <TestProvider history={['/dashboard/Test']} path="/dashboard/*">
           <MockedProvider mocks={mocks} addTypename={false}>
-            <Route exact path="/dashboard/:companyId" component={Dashboard} />
+            <Routes>
+              <Route path=":companyId" element={<Dashboard />} />
+            </Routes>
           </MockedProvider>
         </TestProvider>,
       );
