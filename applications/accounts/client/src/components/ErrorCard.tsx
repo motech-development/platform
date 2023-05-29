@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import isProd from '../utils/isProd';
 
 export interface IErrorCardProps {
@@ -18,10 +18,10 @@ export interface IErrorCardProps {
 }
 
 function ErrorCard({ backTo, description, errors, title }: IErrorCardProps) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { t } = useTranslation('error-card');
   const goBack = () => {
-    history.goBack();
+    navigate(-1);
   };
 
   return (

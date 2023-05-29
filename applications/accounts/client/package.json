@@ -34,7 +34,6 @@
     "file-saver": "2.0.5",
     "formik": "2.2.9",
     "graphql": "16.6.0",
-    "history": "4.10.1",
     "i18next": "22.5.0",
     "i18next-browser-languagedetector": "7.0.1",
     "i18next-chained-backend": "4.2.0",
@@ -45,7 +44,7 @@
     "react-ga": "3.3.1",
     "react-i18next": "12.3.1",
     "react-idle-timer": "5.6.2",
-    "react-router-dom": "5.3.4",
+    "react-router-dom": "6.11.2",
     "styled-components": "5.3.10",
     "web-vitals": "3.3.1",
     "workbox-background-sync": "6.5.4",
@@ -79,7 +78,6 @@
     "@types/luxon": "3.3.0",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
-    "@types/react-router-dom": "5.3.3",
     "@types/styled-components": "5.1.26",
     "@typescript-eslint/eslint-plugin": "5.59.7",
     "@typescript-eslint/parser": "5.59.7",
@@ -135,7 +133,7 @@
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
-      "!src/{history,index,i18n}.{ts,tsx}",
+      "!src/{index,i18n}.{ts,tsx}",
       "!src/**/*/index.{ts,tsx}"
     ],
     "moduleNameMapper": {

@@ -7,7 +7,6 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import DELETE_BANK_CONNECTION from '../../../../graphql/bank/DELETE_BANK_CONNECTION';
 import GET_SETTINGS from '../../../../graphql/settings/GET_SETTINGS';
 import UPDATE_SETTINGS from '../../../../graphql/settings/UPDATE_SETTINGS';
@@ -16,15 +15,11 @@ import Settings from '../Settings';
 
 describe('Settings', () => {
   let component: RenderResult;
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    history = createMemoryHistory({
-      initialEntries: ['/settings/company-uuid'],
-    });
-
-    jest.spyOn(history, 'push');
+    history = ['/settings/company-uuid'];
   });
 
   describe('when unlinking is successful', () => {
@@ -139,7 +134,7 @@ describe('Settings', () => {
     });
 
     it('should redirect you to the dashboard on complete', async () => {
-      const { findAllByRole, findByText } = component;
+      const { findAllByRole, findByTestId, findByText } = component;
 
       await findByText('Company name');
 
@@ -151,11 +146,9 @@ describe('Settings', () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/dashboard/company-uuid',
-        ),
-      );
+      await expect(
+        findByTestId('/my-companies/dashboard/company-uuid'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should display a success toast', async () => {
@@ -406,7 +399,7 @@ describe('Settings', () => {
     });
 
     it('should redirect you to the dashboard on complete', async () => {
-      const { findAllByRole, findByText } = component;
+      const { findAllByRole, findByTestId, findByText } = component;
 
       await findByText('Company name');
 
@@ -418,11 +411,9 @@ describe('Settings', () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/dashboard/company-uuid',
-        ),
-      );
+      await expect(
+        findByTestId('/my-companies/dashboard/company-uuid'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should display a danger toast', async () => {

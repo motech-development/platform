@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import CREATE_BANK_CONNECTION from '../../../../../graphql/bank/CREATE_BANK_CONNECTION';
 import GET_BANKS from '../../../../../graphql/bank/GET_BANKS';
 import ON_BANK_CALLBACK from '../../../../../graphql/bank/ON_BANK_CALLBACK';
@@ -10,13 +9,11 @@ import Bank from '../Bank';
 
 describe('Bank', () => {
   let component: RenderResult;
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    history = createMemoryHistory({
-      initialEntries: ['/settings/company-id/banks'],
-    });
+    history = ['/settings/company-id/banks'];
   });
 
   describe('before connecting to a bank', () => {

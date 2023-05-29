@@ -1,19 +1,16 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { render, RenderResult, act } from '@testing-library/react';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import TestProvider from '../../../../utils/TestProvider';
 import Clients from '../Clients';
 
 describe('Clients', () => {
   let component: RenderResult;
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(async () => {
-    history = createMemoryHistory({
-      initialEntries: ['/clients/company-id'],
-    });
+    history = ['/clients/company-id'];
 
     mocks = [
       {

@@ -7,8 +7,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Route, Router, Switch } from 'react-router-dom';
-import history from './history';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Wrapper from './components/Wrapper';
 
 const Login = lazy(() => import('./pages/Login'));
@@ -27,12 +26,12 @@ function App() {
 
       <Suspense fallback={<Loader />}>
         <ToastProvider>
-          <Router history={history}>
-            <Switch>
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/lo/reset" component={Reset} />
-            </Switch>
-          </Router>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/lo/reset" element={<Reset />} />
+            </Routes>
+          </BrowserRouter>
         </ToastProvider>
       </Suspense>
 

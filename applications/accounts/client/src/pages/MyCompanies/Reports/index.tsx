@@ -1,25 +1,16 @@
-import { ProtectedRoute } from '@motech-development/auth';
 import { lazy } from 'react';
-import { Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 const CreateReport = lazy(() => import('./CreateReport'));
 const Reports = lazy(() => import('./Reports'));
 
-function Routes() {
+function ReportsRoutes() {
   return (
-    <Switch>
-      <ProtectedRoute
-        exact
-        component={Reports}
-        path="/my-companies/reports/:companyId"
-      />
-      <ProtectedRoute
-        exact
-        component={CreateReport}
-        path="/my-companies/reports/:companyId/create-report"
-      />
-    </Switch>
+    <Routes>
+      <Route element={<Reports />} path="/" />
+      <Route element={<CreateReport />} path="create-report" />
+    </Routes>
   );
 }
 
-export default Routes;
+export default ReportsRoutes;

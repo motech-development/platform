@@ -1,25 +1,20 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
-import { act, render, RenderResult, waitFor } from '@testing-library/react';
-import { createMemoryHistory, MemoryHistory } from 'history';
+import { act, render, RenderResult } from '@testing-library/react';
 import UPDATE_BANK_SETTINGS from '../../../../../graphql/bank/UPDATE_BANK_SETTINGS';
 import TestProvider from '../../../../../utils/TestProvider';
 import Callback from '../Callback';
 
 describe('Callback', () => {
   let component: RenderResult;
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   describe('with a successful response', () => {
     beforeEach(async () => {
-      history = createMemoryHistory({
-        initialEntries: [
-          '/settings/company-id/bank/callback?institution=bank-name&consent=consent-token&user-uuid=user-id',
-        ],
-      });
-
-      jest.spyOn(history, 'push');
+      history = [
+        '/settings/company-id/bank/callback?institution=bank-name&consent=consent-token&user-uuid=user-id',
+      ];
 
       mocks = [
         {
@@ -63,27 +58,23 @@ describe('Callback', () => {
     });
 
     it('should redirect to the account selection', async () => {
+      const { findByTestId } = component;
+
       await act(async () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/settings/company-id/bank/select-account',
-        ),
-      );
+      await expect(
+        findByTestId('/my-companies/settings/company-id/bank/select-account'),
+      ).resolves.toBeInTheDocument();
     });
   });
 
   describe('with an unsuccessful response', () => {
     beforeEach(async () => {
-      history = createMemoryHistory({
-        initialEntries: [
-          '/settings/company-id/bank/callback?institution=bank-name&consent=consent-token',
-        ],
-      });
-
-      jest.spyOn(history, 'push');
+      history = [
+        '/settings/company-id/bank/callback?institution=bank-name&consent=consent-token',
+      ];
 
       mocks = [
         {
@@ -152,13 +143,9 @@ describe('Callback', () => {
 
   describe('when no data is sent', () => {
     beforeEach(async () => {
-      history = createMemoryHistory({
-        initialEntries: [
-          '/settings/company-id/bank/callback?institution=bank-name&consent=consent-token&user-uuid=user-id',
-        ],
-      });
-
-      jest.spyOn(history, 'push');
+      history = [
+        '/settings/company-id/bank/callback?institution=bank-name&consent=consent-token&user-uuid=user-id',
+      ];
 
       mocks = [
         {

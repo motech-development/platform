@@ -6,8 +6,7 @@ import {
 import i18n from 'i18next';
 import { ReactElement, useMemo } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
-import { Route, Router, Switch } from 'react-router-dom';
-import { createMemoryHistory, MemoryHistory } from 'history';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 
 jest.mock('@auth0/auth0-react');
@@ -59,9 +58,19 @@ export interface ITestProviderProps {
   children: ReactElement;
   isAuthenticated?: boolean;
   isLoading?: boolean;
-  history?: MemoryHistory;
+  history?: string[];
   path?: string;
   user?: object;
+}
+
+function TestRoute() {
+  const location = useLocation();
+
+  return (
+    <div data-testid="next-page">
+      <span data-testid={location.pathname}>The next page</span>
+    </div>
+  );
 }
 
 function TestProvider({
@@ -69,9 +78,7 @@ function TestProvider({
   isAuthenticated = true,
   isLoading = false,
   path = '/',
-  history = createMemoryHistory({
-    initialEntries: [path],
-  }),
+  history = [path],
   user = {
     name: 'Mo Gusbi',
     sub: 'user-id',
@@ -108,20 +115,18 @@ function TestProvider({
   );
 
   return (
-    <Router history={history}>
+    <MemoryRouter initialEntries={history}>
       <ToastProvider>
         <ToastContext.Provider value={toastProvider}>
           <I18nextProvider i18n={testI18n}>
-            <Switch>
-              <Route exact path={path} component={() => children} />
-              <Route path="*">
-                <div data-testid="next-page">The next page</div>
-              </Route>
-            </Switch>
+            <Routes>
+              <Route path={path} element={<>{children}</>} />
+              <Route path="*" element={<TestRoute />} />
+            </Routes>
           </I18nextProvider>
         </ToastContext.Provider>
       </ToastProvider>
-    </Router>
+    </MemoryRouter>
   );
 }
 

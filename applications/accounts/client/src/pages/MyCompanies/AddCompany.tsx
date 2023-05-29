@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CompanyWizard, { FormSchema } from '../../components/CompanyWizard';
 import Connected from '../../components/Connected';
 import ADD_COMPANY, {
@@ -11,7 +11,7 @@ import ADD_COMPANY, {
 } from '../../graphql/company/ADD_COMPANY';
 
 function AddCompany() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { t } = useTranslation('my-companies');
   const { add } = useToast();
   const [addCompany, { error, loading }] = useMutation<
@@ -29,14 +29,14 @@ function AddCompany() {
           }),
         });
 
-        history.push(`/my-companies/dashboard/${id}`);
+        navigate(`/my-companies/dashboard/${id}`);
       } else {
         add({
           colour: 'danger',
           message: t('add-company.retry'),
         });
 
-        history.push('/my-companies');
+        navigate('/my-companies');
       }
     },
   });

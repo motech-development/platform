@@ -8,7 +8,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ClientForm, { FormSchema } from '../../../components/ClientForm';
 import Connected from '../../../components/Connected';
 import DeleteItem from '../../../components/DeleteItem';
@@ -25,19 +25,19 @@ import UPDATE_CLIENT, {
   IUpdateClientInput,
   IUpdateClientOutput,
 } from '../../../graphql/client/UPDATE_CLIENT';
-
-interface IUpdateDetailsParams {
-  clientId: string;
-  companyId: string;
-}
+import invariant from '../../../utils/invariant';
 
 function UpdateDetails() {
   const backTo = (id: string) => `/my-companies/clients/${id}`;
-  const history = useHistory();
+  const navigate = useNavigate();
   const { t } = useTranslation('clients');
   const { add } = useToast();
   const [modal, setModal] = useState(false);
-  const { clientId, companyId } = useParams<IUpdateDetailsParams>();
+  const { clientId, companyId } = useParams();
+
+  invariant(clientId);
+  invariant(companyId);
+
   const { data, error, loading } = useQuery<IGetClientOutput, IGetClientInput>(
     GET_CLIENT,
     {
@@ -59,14 +59,14 @@ function UpdateDetails() {
             }),
           });
 
-          history.push(backTo(id));
+          navigate(backTo(id));
         } else {
           add({
             colour: 'danger',
             message: t('update-details.retry'),
           });
 
-          history.push(backTo(companyId));
+          navigate(backTo(companyId));
         }
       },
     });
@@ -83,14 +83,14 @@ function UpdateDetails() {
             }),
           });
 
-          history.push(backTo(id));
+          navigate(backTo(id));
         } else {
           add({
             colour: 'danger',
             message: t('delete-client.retry'),
           });
 
-          history.push(backTo(companyId));
+          navigate(backTo(companyId));
         }
       },
       onError: () => {

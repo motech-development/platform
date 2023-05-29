@@ -1,22 +1,22 @@
 import { useQuery } from '@apollo/client';
-import { ConditionalRoute, ProtectedRoute } from '@motech-development/auth';
+import { ConditionalRoute } from '@motech-development/auth';
 import { lazy } from 'react';
-import { Switch, useParams } from 'react-router-dom';
+import { Route, Routes, useParams } from 'react-router-dom';
 import GET_BANK_SETTINGS, {
   IGetBankSettingsInput,
   IGetBankSettingsOutput,
 } from '../../../graphql/bank/GET_BANK_SETTINGS';
 import Connected from '../../../components/Connected';
+import invariant from '../../../utils/invariant';
 
 const Bank = lazy(() => import('./Bank'));
 const Settings = lazy(() => import('./Settings'));
 
-interface IRouteParams {
-  companyId: string;
-}
+function SettingsRoutes() {
+  const { companyId } = useParams();
 
-function Routes() {
-  const { companyId } = useParams<IRouteParams>();
+  invariant(companyId);
+
   const { data, error, loading } = useQuery<
     IGetBankSettingsOutput,
     IGetBankSettingsInput
@@ -29,22 +29,22 @@ function Routes() {
   return (
     <Connected error={error} loading={loading}>
       {data?.getBankSettings && (
-        <Switch>
-          <ConditionalRoute
-            component={Bank}
-            path="/my-companies/settings/:companyId/bank"
-            condition={!data.getBankSettings.account}
-            redirect="/not-found"
+        <Routes>
+          <Route
+            path="bank/*"
+            element={
+              <ConditionalRoute
+                element={<Bank />}
+                condition={!data.getBankSettings.account}
+                redirect="/not-found"
+              />
+            }
           />
-          <ProtectedRoute
-            exact
-            component={Settings}
-            path="/my-companies/settings/:companyId"
-          />
-        </Switch>
+          <Route element={<Settings />} path="/" />
+        </Routes>
       )}
     </Connected>
   );
 }
 
-export default Routes;
+export default SettingsRoutes;

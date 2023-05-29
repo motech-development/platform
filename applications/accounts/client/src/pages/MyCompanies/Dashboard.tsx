@@ -14,13 +14,13 @@ import GET_COMPANY, {
   IGetCompanyInput,
   IGetCompanyOutput,
 } from '../../graphql/company/GET_COMPANY';
-
-interface IDashboardParams {
-  companyId: string;
-}
+import invariant from '../../utils/invariant';
 
 function Dashboard() {
-  const { companyId } = useParams<IDashboardParams>();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const { data, error, loading } = useQuery<
     IGetCompanyOutput,
     IGetCompanyInput

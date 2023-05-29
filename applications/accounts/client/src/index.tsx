@@ -7,10 +7,9 @@ import {
 import sendToAnalytics from '@motech-development/ga-web-vitals';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { initialize, pageview, set } from 'react-ga';
-import { Router } from 'react-router-dom';
+import { initialize } from 'react-ga';
+import { BrowserRouter, useNavigate } from 'react-router-dom';
 import App from './App';
-import history from './history';
 import './i18n';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
@@ -26,22 +25,47 @@ if (!REACT_APP_GA) {
   throw new Error('Reporting error');
 }
 
-if (
-  !REACT_APP_AUTH0_AUDIENCE ||
-  !REACT_APP_AUTH0_CLIENT_ID ||
-  !REACT_APP_AUTH0_DOMAIN
-) {
-  throw new Error('Auth error');
-}
-
 initialize(REACT_APP_GA);
 
-history.listen((location) => {
-  set({
-    page: location.pathname,
-  });
-  pageview(location.pathname);
-});
+function Bootstrap() {
+  if (
+    !REACT_APP_AUTH0_AUDIENCE ||
+    !REACT_APP_AUTH0_CLIENT_ID ||
+    !REACT_APP_AUTH0_DOMAIN
+  ) {
+    throw new Error('Auth error');
+  }
+
+  const navigate = useNavigate();
+
+  return (
+    <Auth0Provider
+      authorizationParams={{
+        audience: REACT_APP_AUTH0_AUDIENCE,
+        redirect_uri: window.location.origin,
+      }}
+      cacheLocation="localstorage"
+      clientId={REACT_APP_AUTH0_CLIENT_ID}
+      domain={REACT_APP_AUTH0_DOMAIN}
+      onRedirectCallback={(appState) => {
+        navigate(
+          appState && appState.returnTo
+            ? appState.returnTo
+            : window.location.pathname,
+        );
+      }}
+      useRefreshTokens
+    >
+      <BaseStyles />
+
+      <ScrollToTop />
+
+      <ToastProvider>
+        <App />
+      </ToastProvider>
+    </Auth0Provider>
+  );
+}
 
 const container = document.getElementById('root');
 
@@ -50,33 +74,9 @@ if (container) {
 
   root.render(
     <StrictMode>
-      <Router history={history}>
-        <Auth0Provider
-          authorizationParams={{
-            audience: REACT_APP_AUTH0_AUDIENCE,
-            redirect_uri: window.location.origin,
-          }}
-          cacheLocation="localstorage"
-          clientId={REACT_APP_AUTH0_CLIENT_ID}
-          domain={REACT_APP_AUTH0_DOMAIN}
-          onRedirectCallback={(appState) => {
-            history.push(
-              appState && appState.returnTo
-                ? appState.returnTo
-                : window.location.pathname,
-            );
-          }}
-          useRefreshTokens
-        >
-          <BaseStyles />
-
-          <ScrollToTop />
-
-          <ToastProvider>
-            <App />
-          </ToastProvider>
-        </Auth0Provider>
-      </Router>
+      <BrowserRouter>
+        <Bootstrap />
+      </BrowserRouter>
     </StrictMode>,
   );
 }
