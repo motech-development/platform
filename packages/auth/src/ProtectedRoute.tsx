@@ -1,12 +1,12 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { ReactNode, useEffect } from 'react';
+import { ReactElement, ReactNode, useEffect } from 'react';
 
 interface IProtectedRoutePropsWithChildren {
   children: ReactNode;
 }
 
 interface IProtectedRoutePropsWithElement {
-  element: JSX.Element;
+  element: ReactElement;
 }
 
 export type TProtectedRouteProps =
