@@ -7,7 +7,7 @@ const Reports = lazy(() => import('./Reports'));
 function ReportsRoutes() {
   return (
     <Routes>
-      <Route element={<Reports />} path="/" />
+      <Route index element={<Reports />} />
       <Route element={<CreateReport />} path="create-report" />
     </Routes>
   );

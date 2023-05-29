@@ -8,7 +8,7 @@ const UpdateDetails = lazy(() => import('./UpdateDetails'));
 function ClientsRoutes() {
   return (
     <Routes>
-      <Route element={<Clients />} path="/" />
+      <Route index element={<Clients />} />
       <Route element={<AddClient />} path="add-client" />
       <Route element={<UpdateDetails />} path="update-details/:clientId" />
     </Routes>

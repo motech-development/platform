@@ -9,7 +9,7 @@ const ViewTransaction = lazy(() => import('./ViewTransaction'));
 function AccountsRoutes() {
   return (
     <Routes>
-      <Route element={<Accounts />} path="/" />
+      <Route index element={<Accounts />} />
       <Route element={<PendingTransactions />} path="pending-transactions" />
       <Route element={<RecordTransaction />} path="record-transaction" />
       <Route

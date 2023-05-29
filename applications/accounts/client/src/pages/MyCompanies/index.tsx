@@ -40,7 +40,7 @@ function MyCompaniesRoutes() {
       <Suspense fallback={<Loader />}>
         <Container>
           <Routes>
-            <Route element={<MyCompanies />} path="/" />
+            <Route index element={<MyCompanies />} />
             <Route element={<AddCompany />} path="add-company" />
             <Route element={<Dashboard />} path="dashboard/:companyId" />
             <Route element={<Accounts />} path="accounts/:companyId/*" />
