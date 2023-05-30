@@ -20,7 +20,7 @@
   // "forwardPorts": [],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "yarn && yarn prepare && yarn package",
+  "postCreateCommand": "yarn && yarn package",
 
   // Configure tool-specific properties.
   "customizations": {
