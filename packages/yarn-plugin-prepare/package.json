@@ -1,0 +1,35 @@
+{
+  "name": "@motech-development/yarn-plugin-prepare",
+  "description": "Run Yarn prepare after every installation",
+  "version": "0.0.0-development",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/motech-development/platform.git"
+  },
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "bugs": {
+    "url": "https://github.com/motech-development/platform/issues"
+  },
+  "homepage": "https://github.com/motech-development/platform/tree/main/packages/yarn-plugin-prepare#readme",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "index.js"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint \"index.js\""
+  },
+  "devDependencies": {
+    "@motech-development/eslint-config-motech-base": "workspace:*",
+    "@motech-development/prettier-motech-config": "workspace:*",
+    "@motech-development/semantic-release": "workspace:*",
+    "prettier": "2.8.8"
+  },
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write",
+    "*.{js,ts}": "eslint --fix"
+  }
+}
