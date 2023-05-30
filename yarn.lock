@@ -6978,9 +6978,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@qiwi/multi-semantic-release@npm:6.6.1":
-  version: 6.6.1
-  resolution: "@qiwi/multi-semantic-release@npm:6.6.1"
+"@qiwi/multi-semantic-release@npm:6.7.0":
+  version: 6.7.0
+  resolution: "@qiwi/multi-semantic-release@npm:6.7.0"
   dependencies:
     "@semrel-extra/topo": ^1.13.0
     blork: ^9.3.0
@@ -6991,7 +6991,6 @@ __metadata:
     execa: ^6.1.0
     get-stream: ^6.0.1
     git-log-parser: ^1.2.0
-    globby: 13.1.4
     lodash-es: ^4.17.21
     meow: ^10.1.2
     promise-events: ^0.2.4
@@ -7002,7 +7001,7 @@ __metadata:
     stream-buffers: ^3.0.2
   bin:
     multi-semantic-release: bin/cli.js
-  checksum: 5da349e6c1c1b2c50087949dd55cc916a8879e9cdd89fa0969b21f57a5f7856f25f046013148efeff52079cf00cd3a9fd746bbd044525dae85fa4c0853e8e8a9
+  checksum: 6e8f1309ebefa6e05d5c2a03b5865dcfa1a9c413c3fa7bd60fab496733d8416a780a28e09344e42ca92c0063707dc68674851a32bd841c69e2b48e371174c824
   languageName: node
   linkType: hard
 
@@ -18057,19 +18056,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globby@npm:13.1.4, globby@npm:^13.1.1":
-  version: 13.1.4
-  resolution: "globby@npm:13.1.4"
-  dependencies:
-    dir-glob: ^3.0.1
-    fast-glob: ^3.2.11
-    ignore: ^5.2.0
-    merge2: ^1.4.1
-    slash: ^4.0.0
-  checksum: e8bc13879972082d590cd1b0e27080d90d2e12fff7eeb2cee9329c29115ace14cc5b9f899e3d6beb136ba826307a727016658919a6f383e1511d698acee81741
-  languageName: node
-  linkType: hard
-
 "globby@npm:^11.0.0, globby@npm:^11.0.1, globby@npm:^11.0.2, globby@npm:^11.1.0":
   version: 11.1.0
   resolution: "globby@npm:11.1.0"
@@ -18081,6 +18067,19 @@ __metadata:
     merge2: ^1.4.1
     slash: ^3.0.0
   checksum: b4be8885e0cfa018fc783792942d53926c35c50b3aefd3fdcfb9d22c627639dc26bd2327a40a0b74b074100ce95bb7187bfeae2f236856aa3de183af7a02aea6
+  languageName: node
+  linkType: hard
+
+"globby@npm:^13.1.1":
+  version: 13.1.4
+  resolution: "globby@npm:13.1.4"
+  dependencies:
+    dir-glob: ^3.0.1
+    fast-glob: ^3.2.11
+    ignore: ^5.2.0
+    merge2: ^1.4.1
+    slash: ^4.0.0
+  checksum: e8bc13879972082d590cd1b0e27080d90d2e12fff7eeb2cee9329c29115ace14cc5b9f899e3d6beb136ba826307a727016658919a6f383e1511d698acee81741
   languageName: node
   linkType: hard
 
@@ -25047,7 +25046,7 @@ __metadata:
     "@commitlint/config-conventional": 17.6.3
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@qiwi/multi-semantic-release": 6.6.1
+    "@qiwi/multi-semantic-release": 6.7.0
     "@types/is-ci": 3.0.0
     commitizen: 4.3.0
     cz-conventional-changelog: 3.3.0
