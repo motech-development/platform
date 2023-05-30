@@ -42,8 +42,6 @@ custom:
   webpack:
     excludeRegex: 'node_modules/@aws-sdk'
     includeModules:
-      forceInclude:
-        - cross-fetch
       nodeModulesRelativeDir: ../../../
     packager: yarn
     packagerOptions:
