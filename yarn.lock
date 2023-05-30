@@ -101,7 +101,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.59.7
     "@typescript-eslint/parser": 5.59.7
     "@vitejs/plugin-react-swc": 3.3.1
-    axe-core: 4.7.1
+    axe-core: 4.7.2
     axios: 1.4.0
     cypress: 12.13.0
     cypress-axe: 1.4.0
@@ -11300,7 +11300,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:4.7.1, axe-core@npm:^4.2.0, axe-core@npm:^4.6.2":
+"axe-core@npm:4.7.2":
+  version: 4.7.2
+  resolution: "axe-core@npm:4.7.2"
+  checksum: 5d86fa0f45213b0e54cbb5d713ce885c4a8fe3a72b92dd915a47aa396d6fd149c4a87fec53aa978511f6d941402256cfeb26f2db35129e370f25a453c688655a
+  languageName: node
+  linkType: hard
+
+"axe-core@npm:^4.2.0, axe-core@npm:^4.6.2":
   version: 4.7.1
   resolution: "axe-core@npm:4.7.1"
   checksum: ff6fb92d6cadb749977af72b7d28009dec2b1842d4fdc4114a295ce973a39d0ac477e541be360eb9482a8d63f55840196813d7d892c0bd8437f52d9f7349c788
