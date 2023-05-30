@@ -1,0 +1,3 @@
+{
+  "extends": "@motech-development/semantic-release/package"
+}

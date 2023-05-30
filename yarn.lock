@@ -6328,6 +6328,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@motech-development/yarn-plugin-dedupe@workspace:packages/yarn-plugin-dedupe":
+  version: 0.0.0-use.local
+  resolution: "@motech-development/yarn-plugin-dedupe@workspace:packages/yarn-plugin-dedupe"
+  dependencies:
+    "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
+    "@motech-development/semantic-release": "workspace:*"
+    prettier: 2.8.8
+  languageName: unknown
+  linkType: soft
+
+"@motech-development/yarn-plugin-prepare@workspace:packages/yarn-plugin-prepare":
+  version: 0.0.0-use.local
+  resolution: "@motech-development/yarn-plugin-prepare@workspace:packages/yarn-plugin-prepare"
+  dependencies:
+    "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
+    "@motech-development/semantic-release": "workspace:*"
+    prettier: 2.8.8
+  languageName: unknown
+  linkType: soft
+
 "@mrmlnc/readdir-enhanced@npm:^2.2.1":
   version: 2.2.1
   resolution: "@mrmlnc/readdir-enhanced@npm:2.2.1"
@@ -10006,15 +10028,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn-import-assertions@npm:^1.7.6":
-  version: 1.8.0
-  resolution: "acorn-import-assertions@npm:1.8.0"
-  peerDependencies:
-    acorn: ^8
-  checksum: 5c4cf7c850102ba7ae0eeae0deb40fb3158c8ca5ff15c0bca43b5c47e307a1de3d8ef761788f881343680ea374631ae9e9615ba8876fee5268dbe068c98bcba6
-  languageName: node
-  linkType: hard
-
 "acorn-import-assertions@npm:^1.9.0":
   version: 1.9.0
   resolution: "acorn-import-assertions@npm:1.9.0"
@@ -11300,17 +11313,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:4.7.2":
+"axe-core@npm:4.7.2, axe-core@npm:^4.2.0, axe-core@npm:^4.6.2":
   version: 4.7.2
   resolution: "axe-core@npm:4.7.2"
   checksum: 5d86fa0f45213b0e54cbb5d713ce885c4a8fe3a72b92dd915a47aa396d6fd149c4a87fec53aa978511f6d941402256cfeb26f2db35129e370f25a453c688655a
-  languageName: node
-  linkType: hard
-
-"axe-core@npm:^4.2.0, axe-core@npm:^4.6.2":
-  version: 4.7.1
-  resolution: "axe-core@npm:4.7.1"
-  checksum: ff6fb92d6cadb749977af72b7d28009dec2b1842d4fdc4114a295ce973a39d0ac477e541be360eb9482a8d63f55840196813d7d892c0bd8437f52d9f7349c788
   languageName: node
   linkType: hard
 
@@ -15459,16 +15465,6 @@ __metadata:
     memory-fs: ^0.5.0
     tapable: ^1.0.0
   checksum: 4d87488584c4d67d356ef4ba04978af4b2d4d18190cb859efac8e8475a34d5d6c069df33faa5a0a22920b0586dbf330f6a08d52bb15a8771a9ce4d70a2da74ba
-  languageName: node
-  linkType: hard
-
-"enhanced-resolve@npm:^5.14.0":
-  version: 5.14.0
-  resolution: "enhanced-resolve@npm:5.14.0"
-  dependencies:
-    graceful-fs: ^4.2.4
-    tapable: ^2.2.0
-  checksum: fff1aaebbf376371e5df4502e111967f6247c37611ad3550e4e7fca657f6dcb29ef7ffe88bf14e5010b78997f1ddd984a8db97af87ee0a5477771398fd326f5b
   languageName: node
   linkType: hard
 
@@ -31250,7 +31246,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5.84.0":
+"webpack@npm:5.84.0, webpack@npm:>=4.43.0 <6.0.0, webpack@npm:^5.9.0":
   version: 5.84.0
   resolution: "webpack@npm:5.84.0"
   dependencies:
@@ -31284,43 +31280,6 @@ __metadata:
   bin:
     webpack: bin/webpack.js
   checksum: 5837983d81d55edf621317f23de3a7ae49bbf24c9f8605beeba35ea62be5cc4b3b63ace0ec9785912b9ffe70fd969e613597fae21b2334a3913054c41189ef75
-  languageName: node
-  linkType: hard
-
-"webpack@npm:>=4.43.0 <6.0.0, webpack@npm:^5.9.0":
-  version: 5.83.1
-  resolution: "webpack@npm:5.83.1"
-  dependencies:
-    "@types/eslint-scope": ^3.7.3
-    "@types/estree": ^1.0.0
-    "@webassemblyjs/ast": ^1.11.5
-    "@webassemblyjs/wasm-edit": ^1.11.5
-    "@webassemblyjs/wasm-parser": ^1.11.5
-    acorn: ^8.7.1
-    acorn-import-assertions: ^1.7.6
-    browserslist: ^4.14.5
-    chrome-trace-event: ^1.0.2
-    enhanced-resolve: ^5.14.0
-    es-module-lexer: ^1.2.1
-    eslint-scope: 5.1.1
-    events: ^3.2.0
-    glob-to-regexp: ^0.4.1
-    graceful-fs: ^4.2.9
-    json-parse-even-better-errors: ^2.3.1
-    loader-runner: ^4.2.0
-    mime-types: ^2.1.27
-    neo-async: ^2.6.2
-    schema-utils: ^3.1.2
-    tapable: ^2.1.1
-    terser-webpack-plugin: ^5.3.7
-    watchpack: ^2.4.0
-    webpack-sources: ^3.2.3
-  peerDependenciesMeta:
-    webpack-cli:
-      optional: true
-  bin:
-    webpack: bin/webpack.js
-  checksum: 219d5ef50380bc0fd3702ed17feddf13819d8173b78f7a5b857dc74ac177e63d1f79c050792754411cc088bbc02e0971b989efddadbb8e393cf27d64c0ad9ff8
   languageName: node
   linkType: hard
 
