@@ -12,7 +12,7 @@
   "dependencies": {
     "@aws-sdk/client-ses": "3.335.0",
     "cfn-response-async": "1.0.0",
-    "yup": "1.1.1"
+    "yup": "1.2.0"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
