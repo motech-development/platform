@@ -1,13 +1,14 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import ExportForm, { FormSchema } from '../../../components/ExportForm';
 import GET_SETTINGS, {
   IGetSettingsInput,
   IGetSettingsOutput,
 } from '../../../graphql/settings/GET_SETTINGS';
+import invariant from '../../../utils/invariant';
 
 interface ICreateReportInput {
   input: {
@@ -28,10 +29,6 @@ interface ICreateReportOutput {
   };
 }
 
-interface IReportsParams {
-  companyId: string;
-}
-
 export const CREATE_REPORT = gql`
   mutation CreateReport($input: ReportInput!) {
     createReport(input: $input) {
@@ -41,8 +38,11 @@ export const CREATE_REPORT = gql`
 `;
 
 function CreateReport() {
-  const history = useHistory();
-  const { companyId } = useParams<IReportsParams>();
+  const navigate = useNavigate();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const { add } = useToast();
   const { t } = useTranslation('reports');
   const backTo = `/my-companies/reports/${companyId}`;
@@ -62,7 +62,7 @@ function CreateReport() {
           message: t('create-report.requested'),
         });
 
-        history.push(backTo);
+        navigate(backTo);
       },
     });
   const save = (input: FormSchema) => {

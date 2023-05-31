@@ -13,6 +13,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+const { cloudPlugin } = require('cypress-cloud/plugin');
 const logToOutput = require('cypress-log-to-output');
 const { rmdirSync } = require('node:fs');
 const { join } = require('node:path');
@@ -20,9 +21,11 @@ const { join } = require('node:path');
 /**
  * @type {Cypress.PluginConfig}
  */
-module.exports = (on) => {
+module.exports = async (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+  await cloudPlugin(on, config);
+
   const downloads = join(__dirname, '../downloads');
 
   logToOutput.install(

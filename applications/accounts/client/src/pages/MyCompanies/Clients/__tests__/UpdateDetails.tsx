@@ -7,7 +7,6 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import DELETE_CLIENT from '../../../../graphql/client/DELETE_CLIENT';
 import GET_CLIENT from '../../../../graphql/client/GET_CLIENT';
 import UPDATE_CLIENT from '../../../../graphql/client/UPDATE_CLIENT';
@@ -16,15 +15,11 @@ import UpdateDetails from '../UpdateDetails';
 
 describe('UpdateDetails', () => {
   let component: RenderResult;
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    history = createMemoryHistory({
-      initialEntries: ['/clients/company-id/update-details/client-id'],
-    });
-
-    jest.spyOn(history, 'push');
+    history = ['/clients/company-id/update-details/client-id'];
   });
 
   describe('when data is returned', () => {
@@ -138,7 +133,7 @@ describe('UpdateDetails', () => {
       });
 
       it('should redirect you back to clients page on complete', async () => {
-        const { findAllByRole, findByText } = component;
+        const { findAllByRole, findByTestId, findByText } = component;
 
         await findByText('New client');
 
@@ -150,11 +145,9 @@ describe('UpdateDetails', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
-            '/my-companies/clients/company-id',
-          ),
-        );
+        await expect(
+          findByTestId('/my-companies/clients/company-id'),
+        ).resolves.toBeInTheDocument();
       });
 
       it('should display a success toast', async () => {
@@ -215,7 +208,8 @@ describe('UpdateDetails', () => {
       });
 
       it('should delete a client', async () => {
-        const { findAllByRole, findByLabelText, findByText } = component;
+        const { findAllByRole, findByLabelText, findByTestId, findByText } =
+          component;
 
         await findByText('New client');
 
@@ -246,11 +240,9 @@ describe('UpdateDetails', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
-            '/my-companies/clients/company-id',
-          ),
-        );
+        await expect(
+          findByTestId('/my-companies/clients/company-id'),
+        ).resolves.toBeInTheDocument();
       });
 
       it('should display a success toast when deleting a client', async () => {
@@ -506,7 +498,7 @@ describe('UpdateDetails', () => {
     });
 
     it('should redirect you to the right place when updating a client', async () => {
-      const { findAllByRole, findByText } = component;
+      const { findAllByRole, findByTestId, findByText } = component;
 
       await findByText('New client');
 
@@ -518,11 +510,9 @@ describe('UpdateDetails', () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/clients/company-id',
-        ),
-      );
+      await expect(
+        findByTestId('/my-companies/clients/company-id'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should display a warning toast when deleting a client', async () => {
@@ -566,7 +556,8 @@ describe('UpdateDetails', () => {
     });
 
     it('should redirect you to the right place when when deleting a client', async () => {
-      const { findAllByRole, findByLabelText, findByText } = component;
+      const { findAllByRole, findByLabelText, findByTestId, findByText } =
+        component;
 
       await findByText('New client');
 
@@ -594,11 +585,9 @@ describe('UpdateDetails', () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/clients/company-id',
-        ),
-      );
+      await expect(
+        findByTestId('/my-companies/clients/company-id'),
+      ).resolves.toBeInTheDocument();
     });
   });
 });

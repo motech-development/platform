@@ -8,22 +8,17 @@ import {
   waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import ADD_CLIENT from '../../../../graphql/client/ADD_CLIENT';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import AddClient from '../AddClient';
 
 describe('AddClient', () => {
   let component: RenderResult;
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    history = createMemoryHistory({
-      initialEntries: ['/clients/company-id/add-client'],
-    });
-
-    jest.spyOn(history, 'push');
+    history = ['/clients/company-id/add-client'];
   });
 
   describe('when data is returned', () => {
@@ -89,7 +84,7 @@ describe('AddClient', () => {
     });
 
     it('should redirect you back to clients page on complete', async () => {
-      const { findAllByRole, findByLabelText } = component;
+      const { findAllByRole, findByLabelText, findByTestId } = component;
 
       const line1 = await findByLabelText('address.line1');
       const line3 = await findByLabelText('address.line3');
@@ -101,39 +96,33 @@ describe('AddClient', () => {
         'client-form.client-details.name.label',
       );
 
-      await act(async () => {
-        await userEvent.type(line1, '1 Street');
+      await userEvent.type(line1, '1 Street');
 
-        await userEvent.type(line3, 'Town');
+      await userEvent.type(line3, 'Town');
 
-        await userEvent.type(line4, 'County');
+      await userEvent.type(line4, 'County');
 
-        await userEvent.type(line5, 'KT1 1NE');
-      });
+      await userEvent.type(line5, 'KT1 1NE');
 
-      await act(async () => {
-        await userEvent.type(email, 'info@contact.com');
+      await userEvent.type(email, 'info@contact.com');
 
-        await userEvent.type(telephone, '07712345678');
+      await userEvent.type(telephone, '07712345678');
 
-        await userEvent.type(name, 'New company');
-      });
+      await userEvent.type(name, 'New company');
 
       const [button] = await findAllByRole('button');
 
       await waitFor(() => expect(button).not.toBeDisabled());
 
-      await act(async () => {
-        fireEvent.click(button);
+      fireEvent.click(button);
 
+      await act(async () => {
         await Promise.resolve();
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/clients/company-id',
-        ),
-      );
+      await expect(
+        findByTestId('/my-companies/clients/company-id'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should display a success toast', async () => {
@@ -149,29 +138,25 @@ describe('AddClient', () => {
         'client-form.client-details.name.label',
       );
 
-      await act(async () => {
-        await userEvent.type(line1, '1 Street');
+      await userEvent.type(line1, '1 Street');
 
-        await userEvent.type(line3, 'Town');
+      await userEvent.type(line3, 'Town');
 
-        await userEvent.type(line4, 'County');
+      await userEvent.type(line4, 'County');
 
-        await userEvent.type(line5, 'KT1 1NE');
-      });
+      await userEvent.type(line5, 'KT1 1NE');
 
-      await act(async () => {
-        await userEvent.type(email, 'info@contact.com');
+      await userEvent.type(email, 'info@contact.com');
 
-        await userEvent.type(telephone, '07712345678');
+      await userEvent.type(telephone, '07712345678');
 
-        await userEvent.type(name, 'New company');
-      });
+      await userEvent.type(name, 'New company');
 
       const [button] = await findAllByRole('button');
 
-      await act(async () => {
-        fireEvent.click(button);
+      fireEvent.click(button);
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
@@ -243,29 +228,25 @@ describe('AddClient', () => {
         'client-form.client-details.name.label',
       );
 
-      await act(async () => {
-        await userEvent.type(line1, '1 Street');
+      await userEvent.type(line1, '1 Street');
 
-        await userEvent.type(line3, 'Town');
+      await userEvent.type(line3, 'Town');
 
-        await userEvent.type(line4, 'County');
+      await userEvent.type(line4, 'County');
 
-        await userEvent.type(line5, 'KT1 1NE');
-      });
+      await userEvent.type(line5, 'KT1 1NE');
 
-      await act(async () => {
-        await userEvent.type(email, 'info@contact.com');
+      await userEvent.type(email, 'info@contact.com');
 
-        await userEvent.type(telephone, '07712345678');
+      await userEvent.type(telephone, '07712345678');
 
-        await userEvent.type(name, 'New company');
-      });
+      await userEvent.type(name, 'New company');
 
       const [button] = await findAllByRole('button');
 
-      await act(async () => {
-        fireEvent.click(button);
+      fireEvent.click(button);
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
@@ -278,7 +259,7 @@ describe('AddClient', () => {
     });
 
     it('should redirect you back to company page', async () => {
-      const { findAllByRole, findByLabelText } = component;
+      const { findAllByRole, findByLabelText, findByTestId } = component;
 
       const line1 = await findByLabelText('address.line1');
       const line3 = await findByLabelText('address.line3');
@@ -290,37 +271,31 @@ describe('AddClient', () => {
         'client-form.client-details.name.label',
       );
 
-      await act(async () => {
-        await userEvent.type(line1, '1 Street');
+      await userEvent.type(line1, '1 Street');
 
-        await userEvent.type(line3, 'Town');
+      await userEvent.type(line3, 'Town');
 
-        await userEvent.type(line4, 'County');
+      await userEvent.type(line4, 'County');
 
-        await userEvent.type(line5, 'KT1 1NE');
-      });
+      await userEvent.type(line5, 'KT1 1NE');
 
-      await act(async () => {
-        await userEvent.type(email, 'info@contact.com');
+      await userEvent.type(email, 'info@contact.com');
 
-        await userEvent.type(telephone, '07712345678');
+      await userEvent.type(telephone, '07712345678');
 
-        await userEvent.type(name, 'New company');
-      });
+      await userEvent.type(name, 'New company');
 
       const [button] = await findAllByRole('button');
 
-      await act(async () => {
-        fireEvent.click(button);
+      fireEvent.click(button);
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/clients/company-id',
-        ),
-      );
+      await expect(
+        findByTestId('/my-companies/clients/company-id'),
+      ).resolves.toBeInTheDocument();
     });
   });
 });

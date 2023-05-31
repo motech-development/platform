@@ -6,9 +6,7 @@ import { number, object, string } from 'yup';
 
 const instance = axios.create();
 
-const interceptor = aws4Interceptor({
-  instance,
-});
+const interceptor = aws4Interceptor({});
 
 instance.interceptors.request.use(interceptor);
 

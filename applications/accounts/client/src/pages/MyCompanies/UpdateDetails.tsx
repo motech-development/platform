@@ -8,7 +8,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CompanyForm, { FormSchema } from '../../components/CompanyForm';
 import Connected from '../../components/Connected';
 import DeleteItem from '../../components/DeleteItem';
@@ -25,17 +25,17 @@ import UPDATE_COMPANY, {
   IUpdateCompanyInput,
   IUpdateCompanyOutput,
 } from '../../graphql/company/UPDATE_COMPANY';
-
-interface IUpdateDetailsParams {
-  companyId: string;
-}
+import invariant from '../../utils/invariant';
 
 function UpdateDetails() {
   const backTo = (id: string) => `/my-companies/dashboard/${id}`;
-  const history = useHistory();
+  const navigate = useNavigate();
   const { add } = useToast();
   const { t } = useTranslation('my-companies');
-  const { companyId } = useParams<IUpdateDetailsParams>();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const [modal, setModal] = useState(false);
   const [mutation, { error: updateError, loading: updateLoading }] =
     useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY, {
@@ -50,14 +50,14 @@ function UpdateDetails() {
             }),
           });
 
-          history.push(backTo(id));
+          navigate(backTo(id));
         } else {
           add({
             colour: 'danger',
             message: t('update-details.retry'),
           });
 
-          history.push(backTo(companyId));
+          navigate(backTo(companyId));
         }
       },
     });
@@ -82,7 +82,7 @@ function UpdateDetails() {
         });
       }
 
-      history.push('/my-companies');
+      navigate('/my-companies');
     },
     onError: () => {
       add({

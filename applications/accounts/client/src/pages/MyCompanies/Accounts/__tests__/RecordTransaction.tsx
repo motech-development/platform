@@ -8,7 +8,6 @@ import {
   waitFor,
 } from '@testing-library/react';
 import axios from 'axios';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import { advanceTo, clear } from 'jest-date-mock';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
@@ -17,7 +16,7 @@ import RecordTransaction, { RECORD_TRANSACTION } from '../RecordTransaction';
 import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 
 describe('RecordTransaction', () => {
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
   let upload: File;
 
@@ -26,11 +25,7 @@ describe('RecordTransaction', () => {
   });
 
   beforeEach(() => {
-    history = createMemoryHistory({
-      initialEntries: ['/accounts/company-id/record-transaction'],
-    });
-
-    jest.spyOn(history, 'push');
+    history = ['/accounts/company-id/record-transaction'];
 
     upload = new File(['dummy content'], 'invoice.PDF', {
       type: 'application/pdf',
@@ -292,11 +287,9 @@ describe('RecordTransaction', () => {
             await waitForApollo(0);
           });
 
-          await waitFor(() =>
-            expect(history.push).toHaveBeenCalledWith(
-              '/my-companies/accounts/company-id',
-            ),
-          );
+          await expect(
+            screen.findByTestId('/my-companies/accounts/company-id'),
+          ).resolves.toBeInTheDocument();
         });
 
         it('should display a success toast when transaction is added', async () => {
@@ -827,11 +820,9 @@ describe('RecordTransaction', () => {
             await waitForApollo(0);
           });
 
-          await waitFor(() =>
-            expect(history.push).toHaveBeenCalledWith(
-              '/my-companies/accounts/company-id',
-            ),
-          );
+          await expect(
+            screen.findByTestId('/my-companies/accounts/company-id'),
+          ).resolves.toBeInTheDocument();
         });
 
         it('should do nothing when uploading an attachment', async () => {
@@ -1126,11 +1117,9 @@ describe('RecordTransaction', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
-            '/my-companies/accounts/company-id',
-          ),
-        );
+        await expect(
+          screen.findByTestId('/my-companies/accounts/company-id'),
+        ).resolves.toBeInTheDocument();
       });
 
       it('should display a success toast when transaction is added', async () => {
@@ -1446,11 +1435,11 @@ describe('RecordTransaction', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
+        await expect(
+          screen.findByTestId(
             '/my-companies/accounts/company-id/pending-transactions',
           ),
-        );
+        ).resolves.toBeInTheDocument();
       });
 
       it('should display an error toast if upload is unsuccessful', async () => {
@@ -1751,11 +1740,11 @@ describe('RecordTransaction', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
+        await expect(
+          screen.findByTestId(
             '/my-companies/accounts/company-id/pending-transactions',
           ),
-        );
+        ).resolves.toBeInTheDocument();
       });
     });
   });

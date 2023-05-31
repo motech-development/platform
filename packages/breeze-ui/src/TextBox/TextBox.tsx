@@ -7,7 +7,11 @@ import {
   useEffect,
   useState,
 } from 'react';
-import NumberFormat, { NumberFormatValues } from 'react-number-format';
+import {
+  NumericFormat,
+  NumberFormatValues,
+  PatternFormat,
+} from 'react-number-format';
 import styled from 'styled-components';
 import useInputValidation from '../hooks/useInputValidation';
 import InputWrapper from '../InputWrapper/InputWrapper';
@@ -163,38 +167,64 @@ const InternalTextBox: FC<IInternalTextBox> = ({
       </Label>
 
       {/* eslint-disable react/jsx-props-no-spreading */}
-      {useNumberFormat ? (
-        <NumberFormat
-          {...props}
-          {...rest}
-          isNumericString={Boolean(prefix || suffix)}
-          customInput={Input}
-          decimalScale={decimalScale}
-          fixedDecimalScale={!!decimalScale}
-          format={format}
-          inputMode="decimal"
-          prefix={prefix}
-          suffix={suffix}
-          active={active}
-          describedBy={describedBy}
-          errors={error}
-          onBlur={doBlur}
-          onChange={doChange}
-          onFocus={doFocus}
-          onValueChange={doValueChange}
-        />
-      ) : (
-        <Input
-          {...props}
-          {...rest}
-          active={active}
-          describedBy={describedBy}
-          errors={error}
-          onBlur={doBlur}
-          onChange={doChange}
-          onFocus={doFocus}
-        />
-      )}
+      {(() => {
+        if (useNumberFormat) {
+          if (format) {
+            return (
+              <PatternFormat
+                {...props}
+                {...rest}
+                valueIsNumericString={Boolean(prefix || suffix)}
+                customInput={Input}
+                format={format}
+                inputMode="decimal"
+                prefix={prefix}
+                active={active}
+                describedBy={describedBy}
+                errors={error}
+                onBlur={doBlur}
+                onChange={doChange}
+                onFocus={doFocus}
+                onValueChange={doValueChange}
+              />
+            );
+          }
+
+          return (
+            <NumericFormat
+              {...props}
+              {...rest}
+              valueIsNumericString={Boolean(prefix || suffix)}
+              customInput={Input}
+              decimalScale={decimalScale}
+              fixedDecimalScale={!!decimalScale}
+              inputMode="decimal"
+              prefix={prefix}
+              suffix={suffix}
+              active={active}
+              describedBy={describedBy}
+              errors={error}
+              onBlur={doBlur}
+              onChange={doChange}
+              onFocus={doFocus}
+              onValueChange={doValueChange}
+            />
+          );
+        }
+
+        return (
+          <Input
+            {...props}
+            {...rest}
+            active={active}
+            describedBy={describedBy}
+            errors={error}
+            onBlur={doBlur}
+            onChange={doChange}
+            onFocus={doFocus}
+          />
+        );
+      })()}
       {/* eslint-enable react/jsx-props-no-spreading */}
     </InputWrapper>
   );

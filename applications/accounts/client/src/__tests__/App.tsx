@@ -1,5 +1,5 @@
 import { act, render, waitFor } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
+import { createMocks } from 'react-idle-timer';
 import TestProvider, { add, logout } from '../utils/TestProvider';
 import App from '../App';
 
@@ -32,11 +32,10 @@ describe('App', () => {
   it('should display error toast if there are any log in errors', async () => {
     act(() => {
       jest.useFakeTimers();
+      createMocks();
     });
 
-    const history = createMemoryHistory({
-      initialEntries: ['?error=Error&error_description=Message'],
-    });
+    const history = ['?error=Error&error_description=Message'];
 
     await act(async () => {
       render(
@@ -67,6 +66,7 @@ describe('App', () => {
   it('should log out when idle when not in production mode', async () => {
     act(() => {
       jest.useFakeTimers();
+      createMocks();
     });
 
     await act(async () => {

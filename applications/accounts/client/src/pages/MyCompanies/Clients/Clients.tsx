@@ -14,13 +14,13 @@ import GET_CLIENTS, {
   IGetClientsInput,
   IGetClientsOutput,
 } from '../../../graphql/client/GET_CLIENTS';
-
-interface IClientsParams {
-  companyId: string;
-}
+import invariant from '../../../utils/invariant';
 
 function Clients() {
-  const { companyId } = useParams<IClientsParams>();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const { t } = useTranslation(['clients', 'global']);
   const { data, error, loading } = useQuery<
     IGetClientsOutput,

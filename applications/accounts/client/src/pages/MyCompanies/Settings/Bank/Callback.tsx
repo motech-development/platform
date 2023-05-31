@@ -3,20 +3,20 @@ import { Loader } from '@motech-development/breeze-ui';
 import { useQueryString } from '@motech-development/query-string-hook';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ErrorCard from '../../../../components/ErrorCard';
 import UPDATE_BANK_SETTINGS, {
   IUpdateBankSettingsInput,
   IUpdateBankSettingsOutput,
 } from '../../../../graphql/bank/UPDATE_BANK_SETTINGS';
-
-interface ICallbackParams {
-  companyId: string;
-}
+import invariant from '../../../../utils/invariant';
 
 function Callback() {
-  const history = useHistory();
-  const { companyId } = useParams<ICallbackParams>();
+  const navigate = useNavigate();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const { t } = useTranslation('settings');
   const [error, setError] = useState(false);
   const query = useQueryString();
@@ -29,7 +29,7 @@ function Callback() {
         const { id, user } = updateBankSettings;
 
         if (user) {
-          history.push(`/my-companies/settings/${id}/bank/select-account`);
+          navigate(`/my-companies/settings/${id}/bank/select-account`);
         } else {
           setError(true);
         }

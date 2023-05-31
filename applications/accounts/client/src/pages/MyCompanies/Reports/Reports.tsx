@@ -25,6 +25,7 @@ import ON_NOTIFICATION, {
   IOnNotificationInput,
   IOnNotificationOutput,
 } from '../../../graphql/notifications/ON_NOTIFICATION';
+import invariant from '../../../utils/invariant';
 
 interface IReport {
   createdAt: string;
@@ -44,10 +45,6 @@ interface IGetReportsOutput {
     id: string;
     items: IReport[];
   };
-}
-
-interface IReportsParams {
-  companyId: string;
 }
 
 interface IDataRow {
@@ -99,7 +96,10 @@ function row({ download, label }: IDataRow) {
 }
 
 function Reports() {
-  const { companyId } = useParams<IReportsParams>();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const renderCheck = process.env.NODE_ENV === 'development' ? 2 : 1;
   const renderCount = useRef(0);
   const { user } = useAuth0();

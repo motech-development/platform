@@ -4,21 +4,16 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import ON_NOTIFICATION from '../../../../graphql/notifications/ON_NOTIFICATION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import Reports, { GET_REPORTS } from '../Reports';
 
 describe('Reports', () => {
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    history = createMemoryHistory({
-      initialEntries: ['/reports/company-id'],
-    });
-
-    jest.spyOn(history, 'push');
+    history = ['/reports/company-id'];
 
     axios.request = jest.fn().mockResolvedValue({
       data: 'success',
@@ -130,9 +125,9 @@ describe('Reports', () => {
 
       const [button] = await screen.findAllByRole('button');
 
-      await act(async () => {
-        await userEvent.click(button);
+      await userEvent.click(button);
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
@@ -157,9 +152,7 @@ describe('Reports', () => {
 
       const [button] = await screen.findAllByRole('button');
 
-      await act(async () => {
-        await userEvent.click(button);
-      });
+      await userEvent.click(button);
 
       await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
@@ -180,17 +173,15 @@ describe('Reports', () => {
 
       const [, link] = await screen.findAllByRole('link');
 
-      await act(async () => {
-        await userEvent.click(link);
+      await userEvent.click(link);
 
+      await act(async () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/dashboard/company-id',
-        ),
-      );
+      await expect(
+        screen.findByTestId('/my-companies/dashboard/company-id'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should go to the create report page', async () => {
@@ -204,15 +195,11 @@ describe('Reports', () => {
 
       const [link] = await screen.findAllByRole('link');
 
-      await act(async () => {
-        await userEvent.click(link);
-      });
+      await userEvent.click(link);
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/reports/company-id/create-report',
-        ),
-      );
+      await expect(
+        screen.findByTestId('/my-companies/reports/company-id/create-report'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should display the correct number of reports', async () => {

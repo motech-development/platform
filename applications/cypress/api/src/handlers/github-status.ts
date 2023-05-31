@@ -26,7 +26,6 @@ const schema = object({
     authorEmail: string().required(),
     authorName: string().required(),
     branch: string().required(),
-    defaultBranch: string().required(),
     message: string().required(),
     remoteOrigin: string().url().required(),
     sha: string().required(),

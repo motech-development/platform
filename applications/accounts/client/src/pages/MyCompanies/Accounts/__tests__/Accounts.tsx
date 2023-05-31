@@ -7,7 +7,6 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
@@ -15,13 +14,11 @@ import Accounts from '../Accounts';
 
 describe('Accounts', () => {
   let component: RenderResult;
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    history = createMemoryHistory({
-      initialEntries: ['/accounts/company-id'],
-    });
+    history = ['/accounts/company-id'];
   });
 
   describe('success', () => {

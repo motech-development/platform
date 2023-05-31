@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ClientForm, { FormSchema } from '../../../components/ClientForm';
 import Connected from '../../../components/Connected';
 import ADD_CLIENT, {
@@ -9,14 +9,14 @@ import ADD_CLIENT, {
   IAddClientOutput,
   updateCache,
 } from '../../../graphql/client/ADD_CLIENT';
-
-interface IAddClientParams {
-  companyId: string;
-}
+import invariant from '../../../utils/invariant';
 
 function AddClient() {
-  const history = useHistory();
-  const { companyId } = useParams<IAddClientParams>();
+  const navigate = useNavigate();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const { t } = useTranslation('clients');
   const { add } = useToast();
   const backTo = (id: string) => `/my-companies/clients/${id}`;
@@ -35,14 +35,14 @@ function AddClient() {
           }),
         });
 
-        history.push(backTo(id));
+        navigate(backTo(id));
       } else {
         add({
           colour: 'danger',
           message: t('add-client.retry'),
         });
 
-        history.push(backTo(companyId));
+        navigate(backTo(companyId));
       }
     },
   });

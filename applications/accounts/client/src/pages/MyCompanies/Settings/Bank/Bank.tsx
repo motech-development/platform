@@ -25,10 +25,7 @@ import GET_BANKS, {
 import ON_BANK_CALLBACK, {
   IOnBankCallbackOutput,
 } from '../../../../graphql/bank/ON_BANK_CALLBACK';
-
-interface ISelectBankParams {
-  companyId: string;
-}
+import invariant from '../../../../utils/invariant';
 
 interface IDataRow {
   connect: (bank: string, user?: string) => Promise<void>;
@@ -74,7 +71,10 @@ function row({ connect, connectLabel, data, selected }: IDataRow) {
 
 // TODO: Get to the bottom of the subscription error
 function Bank() {
-  const { companyId } = useParams<ISelectBankParams>();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const { t } = useTranslation('settings');
   const [selected, setSelected] = useState('');
   const { data, error, loading } = useQuery<IGetBanksOutput, IGetBanksInput>(

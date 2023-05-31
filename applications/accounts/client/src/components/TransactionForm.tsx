@@ -106,7 +106,9 @@ function TransactionForm({
 }: ITransactionForm) {
   const isEmpty = initialValues.amount === '';
   const initialTransaction =
-    !initialValues.refund && initialValues.amount > 0 ? 'Sales' : 'Purchase';
+    !initialValues.refund && (initialValues.amount as number) > 0
+      ? 'Sales'
+      : 'Purchase';
   const formValues = {
     ...initialValues,
     amount: initialValues.amount

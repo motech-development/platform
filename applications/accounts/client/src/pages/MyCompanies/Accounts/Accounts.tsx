@@ -21,13 +21,13 @@ import DELETE_TRANSACTION, {
   IDeleteTransactionOutput,
   updateCache,
 } from '../../../graphql/transaction/DELETE_TRANSACTION';
-
-interface IAccountsParams {
-  companyId: string;
-}
+import invariant from '../../../utils/invariant';
 
 function Accounts() {
-  const { companyId } = useParams<IAccountsParams>();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const { t } = useTranslation('accounts');
   const { add } = useToast();
   const { data, error, loading } = useQuery<

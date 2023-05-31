@@ -12,7 +12,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
 import Currency from '../../../../components/Currency';
 import ErrorCard from '../../../../components/ErrorCard';
@@ -24,10 +24,7 @@ import UPDATE_BANK_SETTINGS, {
   IUpdateBankSettingsInput,
   IUpdateBankSettingsOutput,
 } from '../../../../graphql/bank/UPDATE_BANK_SETTINGS';
-
-interface ISelectAccountParams {
-  companyId: string;
-}
+import invariant from '../../../../utils/invariant';
 
 interface IDataRow {
   balanceLabel: string;
@@ -87,11 +84,14 @@ function row({
 }
 
 function SelectAccount() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { add } = useToast();
   const { t } = useTranslation('settings');
   const [selected, setSelected] = useState('');
-  const { companyId } = useParams<ISelectAccountParams>();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const {
     data,
     error: bankError,
@@ -118,14 +118,14 @@ function SelectAccount() {
           message: t('select-account.success'),
         });
 
-        history.push(`/my-companies/settings/${id}`);
+        navigate(`/my-companies/settings/${id}`);
       } else {
         add({
           colour: 'danger',
           message: t('select-account.retry'),
         });
 
-        history.push(`/my-companies/settings/${companyId}`);
+        navigate(`/my-companies/settings/${companyId}`);
       }
     },
   });

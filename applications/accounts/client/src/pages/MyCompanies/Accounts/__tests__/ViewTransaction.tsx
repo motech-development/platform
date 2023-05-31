@@ -9,7 +9,6 @@ import {
 } from '@testing-library/react';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import UPDATE_TRANSACTION from '../../../../graphql/transaction/UPDATE_TRANSACTION';
@@ -18,17 +17,13 @@ import { DELETE_FILE, REQUEST_DOWNLOAD } from '../shared/ViewAttachment';
 import ViewTransaction, { VIEW_TRANSACTION } from '../ViewTransaction';
 
 describe('ViewTransaction', () => {
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
     jest.setTimeout(120000);
 
-    history = createMemoryHistory({
-      initialEntries: ['/accounts/company-id/view-transaction/transaction-id'],
-    });
-
-    jest.spyOn(history, 'push');
+    history = ['/accounts/company-id/view-transaction/transaction-id'];
 
     axios.request = jest.fn().mockResolvedValue({
       data: 'success',
@@ -237,11 +232,9 @@ describe('ViewTransaction', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
-            '/my-companies/accounts/company-id',
-          ),
-        );
+        await expect(
+          screen.findByTestId('/my-companies/accounts/company-id'),
+        ).resolves.toBeInTheDocument();
       });
 
       it('should display a success toast', async () => {
@@ -331,11 +324,11 @@ describe('ViewTransaction', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
+        await expect(
+          screen.findByTestId(
             '/my-companies/accounts/company-id/pending-transactions',
           ),
-        );
+        ).resolves.toBeInTheDocument();
       });
 
       it('should display a success toast when deleting a transaction', async () => {
@@ -836,11 +829,9 @@ describe('ViewTransaction', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
-            '/my-companies/accounts/company-id',
-          ),
-        );
+        await expect(
+          screen.findByTestId('/my-companies/accounts/company-id'),
+        ).resolves.toBeInTheDocument();
       });
 
       it('should display a success toast', async () => {
@@ -1160,11 +1151,9 @@ describe('ViewTransaction', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
-            '/my-companies/accounts/company-id',
-          ),
-        );
+        await expect(
+          screen.findByTestId('/my-companies/accounts/company-id'),
+        ).resolves.toBeInTheDocument();
       });
 
       it('should display a warning toast when a transaction is deleted', async () => {
@@ -1239,11 +1228,9 @@ describe('ViewTransaction', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
-            '/my-companies/accounts/company-id',
-          ),
-        );
+        await expect(
+          screen.findByTestId('/my-companies/accounts/company-id'),
+        ).resolves.toBeInTheDocument();
       });
 
       it('should display an error toast if file fails to delete', async () => {

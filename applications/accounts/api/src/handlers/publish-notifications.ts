@@ -9,7 +9,6 @@ import {
   DynamoDBRecord,
   DynamoDBStreamHandler,
 } from 'aws-lambda';
-import 'cross-fetch/polyfill';
 import gql from 'graphql-tag';
 
 // TODO: Use generated types instead

@@ -7,7 +7,6 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import DELETE_COMPANY from '../../../graphql/company/DELETE_COMPANY';
 import GET_COMPANY from '../../../graphql/company/GET_COMPANY';
 import UPDATE_COMPANY from '../../../graphql/company/UPDATE_COMPANY';
@@ -16,15 +15,11 @@ import UpdateDetails from '../UpdateDetails';
 
 describe('UpdateDetails', () => {
   let component: RenderResult;
-  let history: MemoryHistory;
+  let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    history = createMemoryHistory({
-      initialEntries: ['/update-company/company-uuid'],
-    });
-
-    jest.spyOn(history, 'push');
+    history = ['/update-company/company-uuid'];
   });
 
   describe('when data is returned', () => {
@@ -147,7 +142,7 @@ describe('UpdateDetails', () => {
       });
 
       it('should redirect you to the dashboard on complete', async () => {
-        const { findAllByRole, findByText } = component;
+        const { findAllByRole, findByTestId, findByText } = component;
 
         await findByText('New company');
 
@@ -159,11 +154,9 @@ describe('UpdateDetails', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith(
-            '/my-companies/dashboard/company-uuid',
-          ),
-        );
+        await expect(
+          findByTestId('/my-companies/dashboard/company-uuid'),
+        ).resolves.toBeInTheDocument();
       });
 
       it('should display a success toast', async () => {
@@ -222,7 +215,8 @@ describe('UpdateDetails', () => {
       });
 
       it('should delete a company', async () => {
-        const { findAllByRole, findByLabelText, findByText } = component;
+        const { findAllByRole, findByLabelText, findByTestId, findByText } =
+          component;
 
         await findByText('New company');
 
@@ -253,9 +247,9 @@ describe('UpdateDetails', () => {
           await waitForApollo(0);
         });
 
-        await waitFor(() =>
-          expect(history.push).toHaveBeenCalledWith('/my-companies'),
-        );
+        await expect(
+          findByTestId('/my-companies'),
+        ).resolves.toBeInTheDocument();
       });
 
       it('should display a success toast when deleting a company', async () => {
@@ -517,7 +511,7 @@ describe('UpdateDetails', () => {
     });
 
     it('should redirect you to the right place when updating a company', async () => {
-      const { findAllByRole, findByText } = component;
+      const { findAllByRole, findByTestId, findByText } = component;
 
       await findByText('New company');
 
@@ -529,11 +523,9 @@ describe('UpdateDetails', () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith(
-          '/my-companies/dashboard/company-uuid',
-        ),
-      );
+      await expect(
+        findByTestId('/my-companies/dashboard/company-uuid'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should display a warning toast when deleting a company', async () => {
@@ -577,7 +569,8 @@ describe('UpdateDetails', () => {
     });
 
     it('should redirect you to the right place when deleting a company', async () => {
-      const { findAllByRole, findByLabelText, findByText } = component;
+      const { findAllByRole, findByLabelText, findByTestId, findByText } =
+        component;
 
       await findByText('New company');
 
@@ -608,9 +601,7 @@ describe('UpdateDetails', () => {
         await waitForApollo(0);
       });
 
-      await waitFor(() =>
-        expect(history.push).toHaveBeenCalledWith('/my-companies'),
-      );
+      await expect(findByTestId('/my-companies')).resolves.toBeInTheDocument();
     });
   });
 });

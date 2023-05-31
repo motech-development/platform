@@ -30,10 +30,7 @@ import GET_TRANSACTIONS, {
   IGetTransactionsInput,
   IGetTransactionsOutput,
 } from '../../../graphql/transaction/GET_TRANSACTIONS';
-
-interface IPendingTransactionsParams {
-  companyId: string;
-}
+import invariant from '../../../utils/invariant';
 
 interface IDataRow {
   companyId: string;
@@ -141,7 +138,10 @@ function PendingTransactions() {
     name: '',
   });
   const { t } = useTranslation('accounts');
-  const { companyId } = useParams<IPendingTransactionsParams>();
+  const { companyId } = useParams();
+
+  invariant(companyId);
+
   const { add } = useToast();
   const { data, error, loading } = useQuery<
     IGetTransactionsOutput,

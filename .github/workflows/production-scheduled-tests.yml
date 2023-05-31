@@ -121,13 +121,13 @@ jobs:
           - 2
 
     env:
-      CYPRESS_API_URL: ${{ secrets.CYPRESS_API_URL }}
+      CURRENTS_API_URL: ${{ secrets.CYPRESS_API_URL }}
+      CURRENTS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       CYPRESS_BASE_URL: https://accounts.motechdevelopment.co.uk
       CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL_PROD }}
       CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_PROD }}
       CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
-      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

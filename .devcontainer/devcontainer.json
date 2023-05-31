@@ -20,7 +20,7 @@
   // "forwardPorts": [],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "yarn && yarn prepare && yarn package",
+  "postCreateCommand": "yarn && yarn package",
 
   // Configure tool-specific properties.
   "customizations": {
@@ -36,16 +36,24 @@
         "bradlc.vscode-tailwindcss",
         "sodatea.velocity",
         "dracula-theme.theme-dracula",
-        "vscode-icons-team.vscode-icons"
+        "vscode-icons-team.vscode-icons",
+        "amazonwebservices.aws-toolkit-vscode"
       ],
       "settings": {
+        "aws.telemetry": false,
         "files.autoSave": "off",
         "workbench.colorTheme": "Dracula",
         "workbench.iconTheme": "vscode-icons"
       }
     }
-  }
+  },
 
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   // "remoteUser": "root"
+
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  }
 }
