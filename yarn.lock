@@ -123,7 +123,7 @@ __metadata:
     eslint-plugin-react: 7.32.2
     eslint-plugin-react-hooks: 4.6.0
     file-saver: 2.0.5
-    formik: 2.2.9
+    formik: 2.3.2
     graphql: 16.6.0
     i18next: 22.5.0
     i18next-browser-languagedetector: 7.0.1
@@ -5218,7 +5218,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.7.1
     eslint-plugin-react: 7.32.2
     eslint-plugin-react-hooks: 4.6.0
-    formik: 2.2.9
+    formik: 2.3.2
     i18next: 22.5.0
     i18next-browser-languagedetector: 7.0.1
     i18next-chained-backend: 4.2.0
@@ -5951,7 +5951,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.7.1
     eslint-plugin-react: 7.32.2
     eslint-plugin-react-hooks: 4.6.0
-    formik: 2.2.9
+    formik: 2.3.2
     jest: 29.5.0
     jest-date-mock: 1.0.8
     jest-environment-jsdom: 29.5.0
@@ -17433,9 +17433,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"formik@npm:2.2.9":
-  version: 2.2.9
-  resolution: "formik@npm:2.2.9"
+"formik@npm:2.3.2":
+  version: 2.3.2
+  resolution: "formik@npm:2.3.2"
   dependencies:
     deepmerge: ^2.1.1
     hoist-non-react-statics: ^3.3.0
@@ -17446,7 +17446,7 @@ __metadata:
     tslib: ^1.10.0
   peerDependencies:
     react: ">=16.8.0"
-  checksum: f07f80eee8423b4c5560546c48c4093c47530dae7d931a4e0d947d68ae1aab94291b1bf2e99ecaa5854ee50593b415fb5724c624c787338f0577f066009e8812
+  checksum: 7afb09fdc9a73c886e7c538d9f19684b8dd55cff66037bf6631e684ca47b72cb16a53f48232fff49d1ec60e2072a5415deac63c6e0ece5c6da63c78cc345f7ee
   languageName: node
   linkType: hard
 
