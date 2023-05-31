@@ -74,7 +74,7 @@
     "serverless-deployment-bucket": "1.6.0",
     "serverless-finch": "4.0.3",
     "typescript": "5.0.4",
-    "vite": "4.3.8",
+    "vite": "4.3.9",
     "vite-plugin-checker": "0.6.0",
     "vite-plugin-eslint": "1.8.1"
   },
