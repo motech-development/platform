@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Input } from '../components/Form';
 
 export default {
@@ -8,8 +8,8 @@ export default {
     required: false,
   },
   component: Input,
-} as ComponentMeta<typeof Input>;
+} as Meta<typeof Input>;
 
-const Template: ComponentStory<typeof Input> = (props) => <Input {...props} />;
+const Template: StoryFn<typeof Input> = (props) => <Input {...props} />;
 
 export const InputComponent = Template.bind({});

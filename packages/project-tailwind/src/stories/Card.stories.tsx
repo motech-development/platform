@@ -1,12 +1,12 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Card } from '../components/Card';
 import { Typography } from '../components/Typography';
 
 export default {
   component: Card,
-} as ComponentMeta<typeof Card>;
+} as Meta<typeof Card>;
 
-const Template: ComponentStory<typeof Card> = (props) => (
+const Template: StoryFn<typeof Card> = (props) => (
   <Card {...props}>
     <Typography rule as="h1" align="centre" variant="h1">
       Hello, world

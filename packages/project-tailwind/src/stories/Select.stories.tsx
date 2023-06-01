@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Select } from '../components/Form';
 
 export default {
@@ -6,6 +6,9 @@ export default {
     label: 'RAM',
     name: 'ram',
     options: [
+      {
+        label: 'Select an option',
+      },
       {
         label: '4 GB',
         value: '4',
@@ -34,8 +37,8 @@ export default {
     ],
   },
   component: Select,
-} as ComponentMeta<typeof Select>;
+} as Meta<typeof Select>;
 
-const Template: ComponentStory<typeof Select> = (props) => <Select {...props} />;
+const Template: StoryFn<typeof Select> = (props) => <Select {...props} />;
 
 export const SelectComponent = Template.bind({});
