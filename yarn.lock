@@ -298,7 +298,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    aws4-axios: 3.2.4
+    aws4-axios: 3.2.5
     axios: 1.4.0
     eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
@@ -347,7 +347,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    aws4-axios: 3.2.4
+    aws4-axios: 3.2.5
     axios: 1.4.0
     eslint: 8.41.0
     eslint-config-airbnb-base: 15.0.0
@@ -11320,15 +11320,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws4-axios@npm:3.2.4":
-  version: 3.2.4
-  resolution: "aws4-axios@npm:3.2.4"
+"aws4-axios@npm:3.2.5":
+  version: 3.2.5
+  resolution: "aws4-axios@npm:3.2.5"
   dependencies:
     "@aws-sdk/client-sts": ^3.4.1
     aws4: ^1.12.0
   peerDependencies:
     axios: ">=1.0.0"
-  checksum: 2c118c981149b30e2151a3fda92cc3c255c6ab60d6747f98fb587364ea09f7f80cdac8dbba3149527d00e4be0ce6e316c3dac97f399be325974ebb303a6a011a
+  checksum: 56c742bec4584666dfd094dde235995a5f425212f5b857b41410ee4fee8711ac2b940a5bfef9096cfb112d710192a41717cf0a2f1acbb27f5bce4fc4a139ba08
   languageName: node
   linkType: hard
 
