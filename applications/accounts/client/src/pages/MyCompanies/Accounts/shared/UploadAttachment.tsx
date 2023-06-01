@@ -92,7 +92,7 @@ function UploadAttachment({
 
         const attachment = `${id}/${uploadData.id}.${extension}`;
 
-        form.setFieldValue('attachment', attachment);
+        form.setFieldValue('attachment', attachment).catch(() => {});
 
         onUpload(attachment);
 

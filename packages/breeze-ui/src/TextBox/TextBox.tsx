@@ -139,9 +139,9 @@ const InternalTextBox: FC<IInternalTextBox> = ({
     formattedValue,
   }: NumberFormatValues) => {
     if (format) {
-      setFieldValue(field.name, formattedValue);
+      setFieldValue(field.name, formattedValue).catch(() => {});
     } else {
-      setFieldValue(field.name, floatValue);
+      setFieldValue(field.name, floatValue).catch(() => {});
     }
   };
   const doChange = (e: ChangeEvent<HTMLInputElement>) => {

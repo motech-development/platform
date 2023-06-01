@@ -62,8 +62,9 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
 }) => {
   const [referenceElement, setReferenceElement] =
     useState<HTMLDivElement | null>(null);
-  const [popperElement, setPopperElement] =
-    useState<HTMLDivElement | null>(null);
+  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
+    null,
+  );
   const { attributes, styles } = usePopper(referenceElement, popperElement, {
     placement: 'bottom-end',
   });
@@ -86,7 +87,7 @@ const InnerDatePicker: FC<IInnerDatePicker> = ({
   };
 
   useEffect(() => {
-    setFieldValue(name, date);
+    setFieldValue(name, date).catch(() => {});
     setVisible(false);
 
     const err = getIn(errors, name);

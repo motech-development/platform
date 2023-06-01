@@ -95,9 +95,9 @@ describe('FileUpload', () => {
                   buttonText="Browse"
                   label="Test"
                   name="test"
-                  onSelect={(upload, form) =>
-                    form.setFieldValue('test', upload.name)
-                  }
+                  onSelect={(upload, form) => {
+                    form.setFieldValue('test', upload.name).catch(() => {});
+                  }}
                 />
               </Form>
             )}
@@ -139,7 +139,9 @@ describe('FileUpload', () => {
                   buttonText="Browse"
                   label="Test"
                   name="test"
-                  onSelect={(_, form) => form.setFieldValue('test', '')}
+                  onSelect={(_, form) => {
+                    form.setFieldValue('test', '').catch(() => {});
+                  }}
                 />
               </Form>
             )}

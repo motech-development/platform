@@ -232,11 +232,11 @@ function TransactionForm({
 
     setTransactionType(event.target.value);
 
-    setFieldValue('refund', false);
-    setFieldValue('name', '');
+    setFieldValue('refund', false).catch(() => {});
+    setFieldValue('name', '').catch(() => {});
 
     if (event.target.value === 'Sales') {
-      setFieldValue('category', event.target.value);
+      setFieldValue('category', event.target.value).catch(() => {});
     }
   };
   const onCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -250,7 +250,7 @@ function TransactionForm({
     const value = parseFloat(event.target.value.replace(currency, ''));
     const calculated = new Decimal(value).dividedBy(100).times(vat).toFixed(2);
 
-    setFieldValue('vat', calculated);
+    setFieldValue('vat', calculated).catch(() => {});
   };
   const onPurchaseAmountChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -265,7 +265,7 @@ function TransactionForm({
       .minus(new Decimal(value).dividedBy(rate))
       .toFixed(2);
 
-    setFieldValue('vat', calculated);
+    setFieldValue('vat', calculated).catch(() => {});
   };
   const onStatusChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -276,10 +276,10 @@ function TransactionForm({
     const isPending = value === 'pending';
 
     setPending(isPending);
-    setFieldValue('status', value);
+    setFieldValue('status', value).catch(() => {});
 
     if (!isPending) {
-      setFieldValue('scheduled', false);
+      setFieldValue('scheduled', false).catch(() => {});
     }
   };
   const onRadioChange =
@@ -288,7 +288,7 @@ function TransactionForm({
       const { value } = event.target;
       const { setFieldValue } = form;
 
-      setFieldValue(name, value === 'true');
+      setFieldValue(name, value === 'true').catch(() => {});
     };
   const onPreSubmit = ({ transaction, ...value }: IFormValues) => {
     const isPurchase = transaction === 'Purchase';
