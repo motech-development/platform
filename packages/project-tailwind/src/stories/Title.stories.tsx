@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Title } from '../components/Title';
 
 export default {
@@ -6,8 +6,8 @@ export default {
     title: 'Hello, world',
   },
   component: Title,
-} as ComponentMeta<typeof Title>;
+} as Meta<typeof Title>;
 
-const Template: ComponentStory<typeof Title> = (props) => <Title {...props} />;
+const Template: StoryFn<typeof Title> = (props) => <Title {...props} />;
 
 export const TitleComponent = Template.bind({});

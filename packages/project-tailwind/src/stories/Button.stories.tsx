@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Button } from '../components/Button';
 
 export default {
@@ -7,10 +7,8 @@ export default {
     disabled: false,
   },
   component: Button,
-} as ComponentMeta<typeof Button>;
+} as Meta<typeof Button>;
 
-const Template: ComponentStory<typeof Button> = (props) => (
-  <Button {...props} />
-);
+const Template: StoryFn<typeof Button> = (props) => <Button {...props} />;
 
 export const ButtonComponent = Template.bind({});
