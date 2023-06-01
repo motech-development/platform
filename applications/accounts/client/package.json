@@ -32,7 +32,7 @@
     "axios": "1.4.0",
     "decimal.js": "10.4.3",
     "file-saver": "2.0.5",
-    "formik": "2.3.2",
+    "formik": "2.4.1",
     "graphql": "16.6.0",
     "i18next": "22.5.0",
     "i18next-browser-languagedetector": "7.0.1",

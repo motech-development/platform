@@ -52,7 +52,7 @@ export function AddressFields({ prefix }: IAddressFieldsProps) {
         onChange={(e, form) => {
           const transformed = e.target.value.toUpperCase();
 
-          form.setFieldValue(postcode, transformed);
+          form.setFieldValue(postcode, transformed).catch(() => {});
         }}
       />
     </>
