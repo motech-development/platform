@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Upload } from '../components/Form';
 
 export default {
@@ -9,10 +9,8 @@ export default {
     required: false,
   },
   component: Upload,
-} as ComponentMeta<typeof Upload>;
+} as Meta<typeof Upload>;
 
-const Template: ComponentStory<typeof Upload> = (props) => (
-  <Upload {...props} />
-);
+const Template: StoryFn<typeof Upload> = (props) => <Upload {...props} />;
 
 export const UploadComponent = Template.bind({});

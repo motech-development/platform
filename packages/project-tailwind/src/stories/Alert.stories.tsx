@@ -1,5 +1,5 @@
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Alert } from '../components/Alert';
 
 export default {
@@ -8,8 +8,8 @@ export default {
     message: 'Hello, world!',
   },
   component: Alert,
-} as ComponentMeta<typeof Alert>;
+} as Meta<typeof Alert>;
 
-const Template: ComponentStory<typeof Alert> = (props) => <Alert {...props} />;
+const Template: StoryFn<typeof Alert> = (props) => <Alert {...props} />;
 
 export const AlertComponent = Template.bind({});

@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Link } from '../components/Link';
 
 export default {
@@ -8,8 +8,8 @@ export default {
     target: '_blank',
   },
   component: Link,
-} as ComponentMeta<typeof Link>;
+} as Meta<typeof Link>;
 
-const Template: ComponentStory<typeof Link> = (props) => <Link {...props} />;
+const Template: StoryFn<typeof Link> = (props) => <Link {...props} />;
 
 export const LinkComponent = Template.bind({});

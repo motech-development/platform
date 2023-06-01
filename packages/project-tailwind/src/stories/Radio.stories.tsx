@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Radio } from '../components/Form';
 
 export default {
@@ -34,8 +34,8 @@ export default {
     ],
   },
   component: Radio,
-} as ComponentMeta<typeof Radio>;
+} as Meta<typeof Radio>;
 
-const Template: ComponentStory<typeof Radio> = (props) => <Radio {...props} />;
+const Template: StoryFn<typeof Radio> = (props) => <Radio {...props} />;
 
 export const RadioComponent = Template.bind({});

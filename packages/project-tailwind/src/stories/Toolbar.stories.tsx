@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { Logo } from '../components/Logo';
 import { Toolbar } from '../components/Toolbar';
 import { Typography } from '../components/Typography';
@@ -8,9 +8,9 @@ export default {
     as: 'nav',
   },
   component: Toolbar,
-} as ComponentMeta<typeof Toolbar>;
+} as Meta<typeof Toolbar>;
 
-export const BasicToolbar: ComponentStory<typeof Toolbar> = (props) => (
+export const BasicToolbar: StoryFn<typeof Toolbar> = (props) => (
   <Toolbar {...props}>
     <div className="flex-shrink-0">
       <Typography as="h1" variant="h5" margin="none">
@@ -20,7 +20,7 @@ export const BasicToolbar: ComponentStory<typeof Toolbar> = (props) => (
   </Toolbar>
 );
 
-export const AdvancedToolbar: ComponentStory<typeof Toolbar> = (props) => (
+export const AdvancedToolbar: StoryFn<typeof Toolbar> = (props) => (
   <Toolbar {...props}>
     <div className="flex-shrink-0">
       <Logo className="h-10 w-10" alt="logo" />
