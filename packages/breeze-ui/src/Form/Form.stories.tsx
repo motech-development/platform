@@ -189,7 +189,7 @@ stories.add('Basic form', () => (
               name="upload"
               label="Your photo"
               onSelect={(file, form) => {
-                form.setFieldValue('upload', file.name);
+                form.setFieldValue('upload', file.name).catch(() => {});
               }}
             />
           </Form>

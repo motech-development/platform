@@ -44,7 +44,7 @@ const InternalRadio: FC<IInternalRadio> = ({
   const doChange = (e: ChangeEvent<HTMLInputElement>, value: string) => {
     handleChange(e);
 
-    setFieldValue(field.name, value);
+    setFieldValue(field.name, value).catch(() => {});
 
     if (onChange) {
       onChange(e, form);
