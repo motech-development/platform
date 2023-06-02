@@ -1,8 +1,14 @@
-import { RadioGroup } from '@headlessui/react';
-import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
+import { Listbox, RadioGroup, Transition } from '@headlessui/react';
 import {
-  ComponentPropsWithRef,
+  CheckIcon,
+  ChevronUpDownIcon,
+  ExclamationCircleIcon,
+} from '@heroicons/react/24/solid';
+import {
+  ComponentPropsWithoutRef,
+  Fragment,
   ReactNode,
+  forwardRef,
   useEffect,
   useRef,
   useState,
@@ -12,6 +18,7 @@ import { Box } from 'react-polymorphic-box';
 import TextareaAutosize, {
   TextareaAutosizeProps,
 } from 'react-textarea-autosize';
+
 import useMergeRefs from '../utilities/refs';
 import {
   Sizing,
@@ -203,7 +210,7 @@ function HelpText({ id, message, theme }: IHelpTextProps) {
 }
 
 /** Label component properties */
-export interface ILabelProps extends ComponentPropsWithRef<'label'> {
+export interface ILabelProps extends ComponentPropsWithoutRef<'label'> {
   /** Mark as required */
   required?: boolean;
 
@@ -218,35 +225,30 @@ export interface ILabelProps extends ComponentPropsWithRef<'label'> {
  *
  * @returns Label component
  */
-export function Label({
-  children,
-  className,
-  htmlFor,
-  required = false,
-  theme,
-  ...rest
-}: ILabelProps) {
-  const { createStyles } = useTailwind(theme);
+export const Label = forwardRef<HTMLLabelElement, ILabelProps>(
+  ({ children, className, htmlFor, required = false, theme, ...rest }, ref) => {
+    const { createStyles } = useTailwind(theme);
 
-  const labelStyles = createStyles({
-    classNames: ['block text-sm font-medium', className],
-    theme: {
-      danger: ['text-red-700'],
-      primary: ['text-blue-700'],
-      secondary: ['text-gray-700'],
-      success: ['text-green-700'],
-      warning: ['text-yellow-700'],
-    },
-  });
+    const labelStyles = createStyles({
+      classNames: ['block text-sm font-medium', className],
+      theme: {
+        danger: ['text-red-700'],
+        primary: ['text-blue-700'],
+        secondary: ['text-gray-700'],
+        success: ['text-green-700'],
+        warning: ['text-yellow-700'],
+      },
+    });
 
-  return (
-    <label className={labelStyles} htmlFor={htmlFor} {...rest}>
-      {children}
+    return (
+      <label className={labelStyles} htmlFor={htmlFor} {...rest} ref={ref}>
+        {children}
 
-      {required && <span className="font-bold text-red-800">*</span>}
-    </label>
-  );
-}
+        {required && <span className="font-bold text-red-800">*</span>}
+      </label>
+    );
+  },
+);
 
 /** ValidationMessage component properties */
 interface IValidationMessage {
@@ -299,7 +301,7 @@ enum InputTypes {
 type TInputType = `${InputTypes}`;
 
 /** Input component properties */
-export interface IInputProps extends ComponentPropsWithRef<'input'> {
+export interface IInputProps extends ComponentPropsWithoutRef<'input'> {
   /** Limit number of digits after decimal point */
   decimalScale?: number;
 
@@ -341,134 +343,146 @@ export interface IInputProps extends ComponentPropsWithRef<'input'> {
  *
  * @returns Input component
  */
-export function Input({
-  'aria-describedby': ariaDescribedby,
-  className,
-  decimalScale,
-  errorMessage,
-  format,
-  helpText,
-  id,
-  label,
-  name,
-  prefix,
-  spacing = Sizing.MD,
-  suffix,
-  theme = Themes.SECONDARY,
-  type = InputTypes.TEXT,
-  ...rest
-}: IInputProps) {
-  const { getMessage, setTooltip, tooltip } = useInput(name);
-
-  const {
-    hasMessage: hasDescription,
-    id: describedById,
-    message: description,
-  } = getMessage('description', helpText);
-
-  const {
-    hasMessage: hasError,
-    id: errorMessageId,
-    message: error,
-  } = getMessage('error', errorMessage);
-
-  const { createStyles } = useTailwind(theme, spacing);
-
-  const inputStyles = createStyles({
-    classNames: ['block w-full text-sm pr-10', className],
-    theme: {
-      danger: ['border-red-300'],
-      primary: ['border-blue-300'],
-      secondary: ['border-gray-300'],
-      success: ['border-green-300'],
-      warning: ['border-yellow-300'],
+export const Input = forwardRef<HTMLInputElement, IInputProps>(
+  (
+    {
+      'aria-describedby': ariaDescribedby,
+      className,
+      decimalScale,
+      errorMessage,
+      format,
+      helpText,
+      id,
+      label,
+      name,
+      prefix,
+      spacing = Sizing.MD,
+      suffix,
+      theme = Themes.SECONDARY,
+      type = InputTypes.TEXT,
+      ...rest
     },
-  });
+    ref,
+  ) => {
+    const { getMessage, setTooltip, tooltip } = useInput(name);
 
-  /**
-   * Decide what component to render input as
-   *
-   * @returns Required component
-   */
-  function renderAs() {
-    if (format) {
-      return PatternFormat;
+    const {
+      hasMessage: hasDescription,
+      id: describedById,
+      message: description,
+    } = getMessage('description', helpText);
+
+    const {
+      hasMessage: hasError,
+      id: errorMessageId,
+      message: error,
+    } = getMessage('error', errorMessage);
+
+    const { createStyles } = useTailwind(theme, spacing);
+
+    const inputStyles = createStyles({
+      classNames: [
+        'block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600',
+        className,
+      ],
+      theme: {
+        danger: ['border-red-300'],
+        primary: ['border-blue-300'],
+        secondary: ['border-gray-300'],
+        success: ['border-green-300'],
+        warning: ['border-yellow-300'],
+      },
+    });
+
+    /**
+     * Decide what component to render input as
+     *
+     * @returns Required component
+     */
+    function renderAs() {
+      if (format) {
+        return PatternFormat;
+      }
+
+      if (decimalScale || prefix || suffix) {
+        return NumericFormat;
+      }
+
+      return 'input';
     }
 
-    if (decimalScale || prefix || suffix) {
-      return NumericFormat;
-    }
+    /**
+     * Additional props for formatted inputs
+     *
+     * @returns Additional props
+     */
+    function additionalProps() {
+      if (format) {
+        return {
+          format,
+          getInputRef: ref,
+        };
+      }
 
-    return 'input';
-  }
+      if (decimalScale || prefix || suffix) {
+        const valueIsNumericString = Boolean(prefix || suffix);
 
-  /**
-   * Additional props for formatted inputs
-   *
-   * @returns Additional props
-   */
-  function additionalProps() {
-    if (format) {
+        return {
+          decimalScale,
+          fixedDecimalScale: Boolean(decimalScale),
+          getInputRef: ref,
+          prefix,
+          suffix,
+          valueIsNumericString,
+        };
+      }
+
       return {
-        format,
+        ref,
       };
     }
 
-    if (decimalScale || prefix || suffix) {
-      const valueIsNumericString = Boolean(prefix || suffix);
-
-      return {
-        decimalScale,
-        fixedDecimalScale: Boolean(decimalScale),
-        prefix,
-        suffix,
-        valueIsNumericString,
-      };
-    }
-
-    return {};
-  }
-
-  return (
-    <Container
-      spacing={spacing}
-      theme={theme}
-      label={
-        <Label htmlFor={name} required={rest.required} theme={theme}>
-          {label}
-        </Label>
-      }
-      input={
-        <Box
-          id={name}
-          className={inputStyles}
-          as={renderAs()}
-          type={type}
-          name={name}
-          aria-describedby={describedById}
-          aria-errormessage={tooltip ? errorMessageId : undefined}
-          aria-invalid={hasError}
-          {...additionalProps()}
-          {...rest}
-        />
-      }
-      helpText={
-        hasDescription && (
-          <HelpText id={describedById} theme={theme} message={description} />
-        )
-      }
-      validationMessage={
-        hasError && (
-          <ValidationMessage
-            id={errorMessageId}
-            message={error}
-            onVisibilityChange={setTooltip}
+    return (
+      <Container
+        spacing={spacing}
+        theme={theme}
+        label={
+          <Label htmlFor={name} required={rest.required} theme={theme}>
+            {label}
+          </Label>
+        }
+        input={
+          <Box
+            id={name}
+            className={inputStyles}
+            as={renderAs()}
+            type={type}
+            name={name}
+            aria-describedby={describedById}
+            aria-errormessage={tooltip ? errorMessageId : undefined}
+            aria-invalid={hasError}
+            {...additionalProps()}
+            {...rest}
           />
-        )
-      }
-    />
-  );
-}
+        }
+        helpText={
+          hasDescription && (
+            <HelpText id={describedById} theme={theme} message={description} />
+          )
+        }
+        validationMessage={
+          hasError && (
+            <ValidationMessage
+              id={errorMessageId}
+              message={error}
+              onVisibilityChange={setTooltip}
+            />
+          )
+        }
+      />
+    );
+  },
+);
 
 /** Textarea component properties */
 export interface ITextareaProps extends TextareaAutosizeProps {
@@ -498,88 +512,97 @@ export interface ITextareaProps extends TextareaAutosizeProps {
  *
  * @returns Textarea component
  */
-export function Textarea({
-  className,
-  errorMessage,
-  helpText,
-  label,
-  name,
-  spacing = Sizing.MD,
-  theme = Themes.SECONDARY,
-  ...rest
-}: ITextareaProps) {
-  const { getMessage, setTooltip, tooltip } = useInput(name);
-
-  const {
-    hasMessage: hasDescription,
-    id: describedById,
-    message: description,
-  } = getMessage('description', helpText);
-
-  const {
-    hasMessage: hasError,
-    id: errorMessageId,
-    message: error,
-  } = getMessage('error', errorMessage);
-
-  const { createStyles } = useTailwind(theme, spacing);
-
-  const inputStyles = createStyles({
-    classNames: ['block w-full text-sm pr-10', className],
-    theme: {
-      danger: ['border-red-300'],
-      primary: ['border-blue-300'],
-      secondary: ['border-gray-300'],
-      success: ['border-green-300'],
-      warning: ['border-yellow-300'],
+export const Textarea = forwardRef<HTMLTextAreaElement, ITextareaProps>(
+  (
+    {
+      className,
+      errorMessage,
+      helpText,
+      label,
+      name,
+      spacing = Sizing.MD,
+      theme = Themes.SECONDARY,
+      ...rest
     },
-  });
+    ref,
+  ) => {
+    const { getMessage, setTooltip, tooltip } = useInput(name);
 
-  return (
-    <Container
-      spacing={spacing}
-      theme={theme}
-      label={
-        <Label htmlFor={name} required={rest.required} theme={theme}>
-          {label}
-        </Label>
-      }
-      input={
-        <TextareaAutosize
-          id={name}
-          className={inputStyles}
-          name={name}
-          aria-describedby={describedById}
-          aria-errormessage={tooltip ? errorMessageId : undefined}
-          aria-invalid={hasError}
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...rest}
-        />
-      }
-      helpText={
-        hasDescription && (
-          <HelpText id={describedById} theme={theme} message={description} />
-        )
-      }
-      validationMessage={
-        hasError && (
-          <ValidationMessage
-            id={errorMessageId}
-            message={error}
-            onVisibilityChange={setTooltip}
+    const {
+      hasMessage: hasDescription,
+      id: describedById,
+      message: description,
+    } = getMessage('description', helpText);
+
+    const {
+      hasMessage: hasError,
+      id: errorMessageId,
+      message: error,
+    } = getMessage('error', errorMessage);
+
+    const { createStyles } = useTailwind(theme, spacing);
+
+    const inputStyles = createStyles({
+      classNames: [
+        'block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600',
+        className,
+      ],
+      theme: {
+        danger: ['border-red-300'],
+        primary: ['border-blue-300'],
+        secondary: ['border-gray-300'],
+        success: ['border-green-300'],
+        warning: ['border-yellow-300'],
+      },
+    });
+
+    return (
+      <Container
+        spacing={spacing}
+        theme={theme}
+        label={
+          <Label htmlFor={name} required={rest.required} theme={theme}>
+            {label}
+          </Label>
+        }
+        input={
+          <TextareaAutosize
+            id={name}
+            className={inputStyles}
+            name={name}
+            aria-describedby={describedById}
+            aria-errormessage={tooltip ? errorMessageId : undefined}
+            aria-invalid={hasError}
+            ref={ref}
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...rest}
           />
-        )
-      }
-    />
-  );
-}
+        }
+        helpText={
+          hasDescription && (
+            <HelpText id={describedById} theme={theme} message={description} />
+          )
+        }
+        validationMessage={
+          hasError && (
+            <ValidationMessage
+              id={errorMessageId}
+              message={error}
+              onVisibilityChange={setTooltip}
+            />
+          )
+        }
+      />
+    );
+  },
+);
 
 /** Default file upload browse button text */
 const BROWSE_TEXT = 'Browse';
 
 /** Upload component properties */
 export interface IUploadProps
-  extends Omit<ComponentPropsWithRef<'input'>, 'type'> {
+  extends Omit<ComponentPropsWithoutRef<'input'>, 'type'> {
   /** Text to show on the browse button */
   buttonText?: string;
 
@@ -609,141 +632,174 @@ export interface IUploadProps
  *
  * @returns Upload component
  */
-export function Upload({
-  buttonText = BROWSE_TEXT,
-  className,
-  errorMessage,
-  helpText,
-  label,
-  name,
-  placeholder,
-  ref = null,
-  spacing = Sizing.MD,
-  theme = Themes.SECONDARY,
-  ...rest
-}: IUploadProps) {
-  const [fileName, setFileName] = useState(placeholder);
-
-  const innerRef = useRef<HTMLInputElement>(null);
-
-  const combinedRef = useMergeRefs(ref, innerRef);
-
-  const { getMessage, setTooltip, tooltip } = useInput(name);
-
-  const {
-    hasMessage: hasDescription,
-    id: describedById,
-    message: description,
-  } = getMessage('description', helpText);
-
-  const {
-    hasMessage: hasError,
-    id: errorMessageId,
-    message: error,
-  } = getMessage('error', errorMessage);
-
-  const { createStyles } = useTailwind(theme, spacing);
-
-  const wrapperStyles = createStyles({
-    classNames: ['form-input flex p-0'],
-    theme: {
-      danger: ['border-red-300'],
-      primary: ['border-blue-300'],
-      secondary: ['border-gray-300'],
-      success: ['border-green-300'],
-      warning: ['border-yellow-300'],
-    },
-  });
-
-  const inputStyles = createStyles({
-    classNames: [
-      'form-input block w-full h-full text-sm pr-10 flex items-center border-0',
-      {
-        'text-gray-500': fileName === placeholder,
-      },
+export const Upload = forwardRef<HTMLInputElement, IUploadProps>(
+  (
+    {
+      buttonText = BROWSE_TEXT,
       className,
-    ],
-  });
+      errorMessage,
+      helpText,
+      label,
+      name,
+      placeholder,
+      spacing = Sizing.MD,
+      theme = Themes.SECONDARY,
+      ...rest
+    },
+    ref,
+  ) => {
+    const [fileName, setFileName] = useState(placeholder);
 
-  const browse = () => {
-    if (combinedRef?.current) {
-      combinedRef.current.click();
-    }
-  };
+    const innerRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (combinedRef?.current) {
-      const { current } = combinedRef;
+    const combinedRef = useMergeRefs<HTMLInputElement>(ref, innerRef);
 
-      current.onchange = () => {
-        if (current.files && current.files.length > 0) {
-          const names = [...current.files]
-            .map(({ name: uploadedFileName }) => uploadedFileName)
-            .join(', ');
+    const { getMessage, setTooltip, tooltip } = useInput(name);
 
-          setFileName(names);
+    const {
+      hasMessage: hasDescription,
+      id: describedById,
+      message: description,
+    } = getMessage('description', helpText);
+
+    const {
+      hasMessage: hasError,
+      id: errorMessageId,
+      message: error,
+    } = getMessage('error', errorMessage);
+
+    const { createStyles } = useTailwind(theme, spacing);
+
+    const wrapperStyles = createStyles({
+      classNames: ['form-input flex p-0'],
+      theme: {
+        danger: ['border-red-300'],
+        primary: ['border-blue-300'],
+        secondary: ['border-gray-300'],
+        success: ['border-green-300'],
+        warning: ['border-yellow-300'],
+      },
+    });
+
+    const inputStyles = createStyles({
+      classNames: [
+        'form-input block w-full h-full text-sm pr-10 flex items-center border-0',
+        {
+          'bg-gray-50 text-gray-600': rest.disabled,
+          'text-gray-500': fileName === placeholder && !rest.disabled,
+        },
+        className,
+      ],
+    });
+
+    const browse = () => {
+      if (combinedRef?.current) {
+        combinedRef.current.click();
+      }
+    };
+
+    useEffect(() => {
+      if (combinedRef?.current) {
+        const { current } = combinedRef;
+
+        current.onchange = () => {
+          if (current.files && current.files.length > 0) {
+            const names = [...current.files]
+              .map(({ name: uploadedFileName }) => uploadedFileName)
+              .join(', ');
+
+            setFileName(names);
+          }
+        };
+      }
+    }, [combinedRef]);
+
+    return (
+      <Container
+        spacing={spacing}
+        theme={theme}
+        label={
+          <Label htmlFor={name} required={rest.required} theme={theme}>
+            {label}
+          </Label>
         }
-      };
-    }
-  }, [combinedRef]);
+        input={
+          <div className={wrapperStyles}>
+            <Button
+              className="z-10"
+              type="button"
+              theme={theme}
+              onClick={browse}
+            >
+              {buttonText}
+            </Button>
 
-  return (
-    <Container
-      spacing={spacing}
-      theme={theme}
-      label={
-        <Label htmlFor={name} required={rest.required} theme={theme}>
-          {label}
-        </Label>
-      }
-      input={
-        <div className={wrapperStyles}>
-          <Button className="z-10" type="button" theme={theme} onClick={browse}>
-            {buttonText}
-          </Button>
+            <div className="relative block w-full overflow-hidden">
+              <div className={inputStyles}>
+                <p className="truncate">{fileName}</p>
+              </div>
 
-          <div className="relative block w-full overflow-hidden">
-            <div className={inputStyles}>
-              <p className="truncate">{fileName}</p>
+              <input
+                id={name}
+                className="absolute bottom-0 left-0 top-0 block w-full opacity-0"
+                type="file"
+                name={name}
+                aria-describedby={describedById}
+                aria-errormessage={tooltip ? errorMessageId : undefined}
+                aria-invalid={hasError}
+                ref={combinedRef}
+                {...rest}
+              />
             </div>
-
-            <input
-              id={name}
-              className="absolute top-0 left-0 bottom-0 block w-full opacity-0"
-              type="file"
-              name={name}
-              aria-describedby={describedById}
-              aria-errormessage={tooltip ? errorMessageId : undefined}
-              aria-invalid={hasError}
-              ref={combinedRef}
-              {...rest}
-            />
           </div>
-        </div>
-      }
-      helpText={
-        hasDescription && (
-          <HelpText id={describedById} theme={theme} message={description} />
-        )
-      }
-      validationMessage={
-        hasError && (
-          <ValidationMessage
-            id={errorMessageId}
-            message={error}
-            onVisibilityChange={setTooltip}
-          />
-        )
-      }
-    />
-  );
-}
+        }
+        helpText={
+          hasDescription && (
+            <HelpText id={describedById} theme={theme} message={description} />
+          )
+        }
+        validationMessage={
+          hasError && (
+            <ValidationMessage
+              id={errorMessageId}
+              message={error}
+              onVisibilityChange={setTooltip}
+            />
+          )
+        }
+      />
+    );
+  },
+);
 
-type TRadioGroupClassNameFunction = (input: {
-  active: boolean;
+/**
+ * Class function with states
+ */
+type TStateClassNameFunction = (input: {
+  /** Option active state */
+  active?: boolean;
 
-  checked: boolean;
+  /** Option checked state */
+  checked?: boolean;
+
+  /** Option selected state */
+  selected?: boolean;
 }) => string;
+
+/** Selectable option interface */
+interface IOption {
+  /** Disable option */
+  disabled?: boolean;
+
+  /** Value to display on screen */
+  label: string;
+
+  /** Select option */
+  selected?: boolean;
+
+  /** Value to submit when selected */
+  value: string;
+}
 
 /** Radio component properties */
 export interface IRadioProps {
@@ -760,16 +816,7 @@ export interface IRadioProps {
   name: string;
 
   /** Selectable options */
-  options: {
-    /** Disable option */
-    disabled?: boolean;
-
-    /** Value to display on screen */
-    label: string;
-
-    /** Value to submit when selected */
-    value: string;
-  }[];
+  options: IOption[];
 
   /** Defines if value is required */
   required?: boolean;
@@ -788,158 +835,423 @@ export interface IRadioProps {
  *
  * @returns Radio component
  */
-export function Radio({
-  errorMessage,
-  helpText,
-  label,
-  name,
-  options,
-  required = false,
-  spacing = Sizing.MD,
-  theme = Themes.SECONDARY,
-}: IRadioProps) {
-  const [value, setValue] = useState<string | null>(null);
+export const Radio = forwardRef<HTMLElement, IRadioProps>(
+  (
+    {
+      errorMessage,
+      helpText,
+      label,
+      name,
+      options,
+      required = false,
+      spacing = Sizing.MD,
+      theme = Themes.SECONDARY,
+    },
+    ref,
+  ) => {
+    const [value, setValue] = useState<string | null>(() => {
+      const option = options.find(({ selected }) => selected);
 
-  const { getMessage, setTooltip, tooltip } = useInput(name);
+      if (option) {
+        return option.value;
+      }
 
-  const {
-    hasMessage: hasDescription,
-    id: describedById,
-    message: description,
-  } = getMessage('description', helpText);
+      return null;
+    });
 
-  const {
-    hasMessage: hasError,
-    id: errorMessageId,
-    message: error,
-  } = getMessage('error', errorMessage);
+    const { getMessage, setTooltip, tooltip } = useInput(name);
 
-  const { createStyles } = useTailwind(theme, spacing);
+    const {
+      hasMessage: hasDescription,
+      id: describedById,
+      message: description,
+    } = getMessage('description', helpText);
 
-  const inputStyles =
-    (disabled = false): TRadioGroupClassNameFunction =>
-    ({ active, checked }) =>
-      createStyles({
-        classNames: [
-          'flex-1 items-center justify-center text-sm text-center py-2 px-3 cursor-pointer focus:outline-none font-display',
-          {
-            'cursor-not-allowed opacity-25': disabled,
+    const {
+      hasMessage: hasError,
+      id: errorMessageId,
+      message: error,
+    } = getMessage('error', errorMessage);
+
+    const { createStyles } = useTailwind(theme, spacing);
+
+    const inputStyles =
+      (disabled = false): TStateClassNameFunction =>
+      ({ active, checked }) =>
+        createStyles({
+          classNames: [
+            'flex-1 items-center justify-center text-sm text-center py-2 px-3 cursor-pointer focus:outline-none font-display',
+            {
+              'cursor-not-allowed opacity-25': disabled,
+            },
+          ],
+          theme: {
+            danger: [
+              {
+                'bg-red-600 text-red-50 ring-1 ring-inset ring-red-500':
+                  checked,
+                'bg-red-800 text-red-50 ring-2 ring-red-500 ring-offset-2':
+                  active,
+                'hover:bg-red-700 hover:text-red-50': !disabled,
+                'text-red-500': !checked,
+              },
+            ],
+            primary: [
+              {
+                'bg-blue-600 text-blue-50 ring-1 ring-inset ring-blue-500':
+                  checked,
+                'bg-blue-800 text-blue-50 ring-2 ring-blue-500 ring-offset-2':
+                  active,
+                'hover:bg-blue-700 hover:text-blue-50': !disabled,
+                'text-blue-500': !checked,
+              },
+            ],
+            secondary: [
+              {
+                'bg-gray-100 text-gray-600 ring-1 ring-inset ring-gray-200':
+                  checked,
+                'bg-gray-400 text-gray-600 ring-2 ring-gray-400 ring-offset-2':
+                  active,
+                'hover:bg-gray-300 hover:text-gray-600': !disabled,
+                'text-gray-500': !checked,
+              },
+            ],
+            success: [
+              {
+                'bg-green-600 text-green-50 ring-1 ring-inset ring-green-500':
+                  checked,
+                'bg-green-800 text-green-50 ring-2 ring-green-500 ring-offset-2':
+                  active,
+                'hover:bg-green-700 hover:text-green-50': !disabled,
+                'text-green-500': !checked,
+              },
+            ],
+            warning: [
+              {
+                'bg-yellow-600 text-yellow-50 ring-1 ring-inset ring-yellow-500':
+                  checked,
+                'bg-yellow-800 text-yellow-50 ring-2 ring-yellow-500 ring-offset-2':
+                  active,
+                'hover:bg-yellow-700 hover:text-yellow-50': !disabled,
+                'text-yellow-500': !checked,
+              },
+            ],
           },
-        ],
-        theme: {
-          danger: [
-            {
-              'bg-red-600 text-red-50 ring-1 ring-inset ring-red-500': checked,
-              'bg-red-800 text-red-50 ring-2 ring-red-500 ring-offset-2':
-                active,
-              'hover:bg-red-700 hover:text-red-50': !disabled,
-              'text-red-500': !checked,
-            },
-          ],
-          primary: [
-            {
-              'bg-blue-600 text-blue-50 ring-1 ring-inset ring-blue-500':
-                checked,
-              'bg-blue-800 text-blue-50 ring-2 ring-blue-500 ring-offset-2':
-                active,
-              'hover:bg-blue-700 hover:text-blue-50': !disabled,
-              'text-blue-500': !checked,
-            },
-          ],
-          secondary: [
-            {
-              'bg-gray-100 text-gray-600 ring-1 ring-inset ring-gray-200':
-                checked,
-              'bg-gray-400 text-gray-600 ring-2 ring-gray-400 ring-offset-2':
-                active,
-              'hover:bg-gray-300 hover:text-gray-600': !disabled,
-              'text-gray-500': !checked,
-            },
-          ],
-          success: [
-            {
-              'bg-green-600 text-green-50 ring-1 ring-inset ring-green-500':
-                checked,
-              'bg-green-800 text-green-50 ring-2 ring-green-500 ring-offset-2':
-                active,
-              'hover:bg-green-700 hover:text-green-50': !disabled,
-              'text-green-500': !checked,
-            },
-          ],
-          warning: [
-            {
-              'bg-yellow-600 text-yellow-50 ring-1 ring-inset ring-yellow-500':
-                checked,
-              'bg-yellow-800 text-yellow-50 ring-2 ring-yellow-500 ring-offset-2':
-                active,
-              'hover:bg-yellow-700 hover:text-yellow-50': !disabled,
-              'text-yellow-500': !checked,
-            },
-          ],
+        });
+
+    const wrapperStyles = createStyles({
+      classNames: ['grid grid-cols-6 pr-12 border bg-white'],
+      theme: {
+        danger: ['border-red-300'],
+        primary: ['border-blue-300'],
+        secondary: ['border-gray-300'],
+        success: ['border-green-300'],
+        warning: ['border-yellow-300'],
+      },
+    });
+
+    return (
+      <RadioGroup
+        name={name}
+        value={value}
+        aria-errormessage={tooltip ? errorMessageId : undefined}
+        aria-invalid={hasError}
+        onChange={setValue}
+        ref={ref}
+      >
+        <Container
+          label={
+            <RadioGroup.Label as={Label} required={required} theme={theme}>
+              {label}
+            </RadioGroup.Label>
+          }
+          input={
+            <div className={wrapperStyles}>
+              {options.map((option) => (
+                <RadioGroup.Option
+                  key={option.value}
+                  className={inputStyles(option.disabled)}
+                  disabled={option.disabled}
+                  value={option.value}
+                >
+                  <RadioGroup.Label as="span">{option.label}</RadioGroup.Label>
+                </RadioGroup.Option>
+              ))}
+            </div>
+          }
+          helpText={
+            hasDescription && (
+              <RadioGroup.Description
+                as={HelpText}
+                id={describedById}
+                theme={theme}
+                message={description}
+              />
+            )
+          }
+          validationMessage={
+            hasError && (
+              <ValidationMessage
+                id={errorMessageId}
+                message={error}
+                onVisibilityChange={setTooltip}
+              />
+            )
+          }
+          spacing={spacing}
+          theme={theme}
+        />
+      </RadioGroup>
+    );
+  },
+);
+
+/** Select component properties */
+export interface ISelectProps {
+  /** Additional CSS classes */
+  className?: string;
+
+  /** Disables the element */
+  disabled?: boolean;
+
+  /** Validation error message */
+  errorMessage?: string;
+
+  /** Supporting text */
+  helpText?: string;
+
+  /** Input label */
+  label: string;
+
+  /** Field name */
+  name: string;
+
+  /** Selectable options */
+  options: IOption[];
+
+  /** Defines if value is required */
+  required?: boolean;
+
+  /** Component spacing */
+  spacing?: TSizing;
+
+  /** Component theme */
+  theme?: TTheme;
+}
+
+/**
+ * Select form component
+ *
+ * @param props - Component props
+ *
+ * @returns Select component
+ */
+export const Select = forwardRef<HTMLSelectElement, ISelectProps>(
+  (
+    {
+      className,
+      disabled,
+      errorMessage,
+      helpText,
+      label,
+      name,
+      options,
+      required = false,
+      spacing = Sizing.MD,
+      theme = Themes.SECONDARY,
+    },
+    ref,
+  ) => {
+    const [value, setValue] = useState<string>(() => {
+      const option = options.find(({ selected }) => selected);
+
+      if (option) {
+        return option.value;
+      }
+
+      return options[0].value;
+    });
+
+    const { getMessage, setTooltip, tooltip } = useInput(name);
+
+    const {
+      hasMessage: hasDescription,
+      id: describedById,
+      message: description,
+    } = getMessage('description', helpText);
+
+    const {
+      hasMessage: hasError,
+      id: errorMessageId,
+      message: error,
+    } = getMessage('error', errorMessage);
+
+    const { createStyles } = useTailwind(theme, spacing);
+
+    const chevronStyles = createStyles({
+      classNames: ['h-5 w-5'],
+      theme: {
+        danger: ['text-red-400'],
+        primary: ['text-blue-400'],
+        secondary: ['text-gray-400'],
+        success: ['text-green-400'],
+        warning: ['text-yellow-400'],
+      },
+    });
+
+    const selectStyles = createStyles({
+      classNames: [
+        'block w-full text-left text-sm pr-10 form-select bg-none',
+        {
+          'bg-gray-50 text-gray-600': disabled,
         },
+        className,
+      ],
+      theme: {
+        danger: ['border-red-300'],
+        primary: ['border-blue-300'],
+        secondary: ['border-gray-300'],
+        success: ['border-green-300'],
+        warning: ['border-yellow-300'],
+      },
+    });
+
+    const optionStyles =
+      (isDisabled = false): TStateClassNameFunction =>
+      ({ active }) =>
+        createStyles({
+          classNames: [
+            'relative cursor-pointer select-none py-2 pl-8 pr-4',
+            {
+              'bg-blue-600 text-blue-50': active && !isDisabled,
+              'bg-gray-50 text-gray-600': isDisabled,
+            },
+          ],
+        });
+
+    const optionLabelStyles: TStateClassNameFunction = () =>
+      createStyles({
+        classNames: ['block truncate font-normal'],
       });
 
-  const wrapperStyles = createStyles({
-    classNames: ['grid grid-cols-6 pr-12 border bg-white'],
-    theme: {
-      danger: ['border-red-300'],
-      primary: ['border-blue-300'],
-      secondary: ['border-gray-300'],
-      success: ['border-green-300'],
-      warning: ['border-yellow-300'],
-    },
-  });
+    const optionCheckStyles: TStateClassNameFunction = ({ active }) =>
+      createStyles({
+        classNames: [
+          'absolute inset-y-0 left-0 flex items-center pl-1.5',
+          {
+            'text-blue-50': active,
+            'text-blue-600': !active,
+          },
+        ],
+      });
 
-  return (
-    <RadioGroup
-      name={name}
-      value={value}
-      aria-errormessage={tooltip ? errorMessageId : undefined}
-      aria-invalid={hasError}
-      onChange={setValue}
-    >
-      <Container
-        label={
-          <RadioGroup.Label as={Label} required={required} theme={theme}>
-            {label}
-          </RadioGroup.Label>
-        }
-        input={
-          <div className={wrapperStyles}>
-            {options.map((option) => (
-              <RadioGroup.Option
-                key={option.value}
-                className={inputStyles(option.disabled)}
-                disabled={option.disabled}
-                value={option.value}
-              >
-                <RadioGroup.Label as="span">{option.label}</RadioGroup.Label>
-              </RadioGroup.Option>
-            ))}
-          </div>
-        }
-        helpText={
-          hasDescription && (
-            <RadioGroup.Description
-              as={HelpText}
-              id={describedById}
-              theme={theme}
-              message={description}
-            />
-          )
-        }
-        validationMessage={
-          hasError && (
-            <ValidationMessage
-              id={errorMessageId}
-              message={error}
-              onVisibilityChange={setTooltip}
-            />
-          )
-        }
-        spacing={spacing}
-        theme={theme}
-      />
-    </RadioGroup>
-  );
-}
+    const selectedLabel =
+      options.find((option) => option.value === value)?.label ?? '';
+
+    return (
+      <Listbox
+        name={name}
+        value={value}
+        disabled={disabled}
+        ref={ref}
+        onChange={setValue}
+      >
+        {({ open }) => (
+          <Container
+            label={
+              <Listbox.Label as={Label} required={required} theme={theme}>
+                {label}
+              </Listbox.Label>
+            }
+            input={
+              <div className="relative">
+                <Listbox.Button
+                  className={selectStyles}
+                  aria-describedby={describedById}
+                  aria-errormessage={tooltip ? errorMessageId : undefined}
+                  aria-invalid={hasError}
+                  data-testid="select-button"
+                >
+                  <span className="block truncate">{selectedLabel}</span>
+
+                  <span className="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2">
+                    <ChevronUpDownIcon
+                      className={chevronStyles}
+                      aria-hidden="true"
+                    />
+                  </span>
+                </Listbox.Button>
+
+                <Transition
+                  show={open}
+                  as={Fragment}
+                  leave="transition ease-in duration-100"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                  <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                    {options.map((option) => (
+                      <Listbox.Option
+                        key={option.value}
+                        className={optionStyles(option.disabled)}
+                        disabled={option.disabled}
+                        value={option.value}
+                      >
+                        {({ active, selected }) => (
+                          <>
+                            <span
+                              className={optionLabelStyles({
+                                active,
+                                selected,
+                              })}
+                            >
+                              {option.label}
+                            </span>
+
+                            {selected && !option.disabled ? (
+                              <span
+                                className={optionCheckStyles({
+                                  active,
+                                  selected,
+                                })}
+                              >
+                                <CheckIcon
+                                  className="h-5 w-5"
+                                  aria-hidden="true"
+                                />
+                              </span>
+                            ) : null}
+                          </>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Transition>
+              </div>
+            }
+            helpText={
+              hasDescription && (
+                <HelpText
+                  id={describedById}
+                  theme={theme}
+                  message={description}
+                />
+              )
+            }
+            validationMessage={
+              hasError && (
+                <ValidationMessage
+                  id={errorMessageId}
+                  message={error}
+                  onVisibilityChange={setTooltip}
+                />
+              )
+            }
+            spacing={spacing}
+            theme={theme}
+          />
+        )}
+      </Listbox>
+    );
+  },
+);
