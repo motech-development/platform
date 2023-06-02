@@ -10,7 +10,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "3.335.0",
+    "@aws-sdk/client-sqs": "3.341.0",
     "@motech-development/api-gateway-handler": "workspace:*",
     "@motech-development/s3-file-operations": "workspace:*",
     "uuid": "9.0.0",
