@@ -4,7 +4,8 @@
   "packageRules": [
     {
       "extends": ["schedule:monthly"],
-      "matchPackagePrefixes": ["@aws-sdk"]
+      "groupName": ["aws-sdk-js-v3 monorepo"],
+      "matchPackageNames": ["aws4-axios"]
     },
     {
       "automerge": true,
