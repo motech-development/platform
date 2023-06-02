@@ -16,7 +16,7 @@ exports[`Form Input should render the correct output when decimal scale is set 1
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         inputmode="numeric"
         name="testInput"
@@ -48,7 +48,7 @@ exports[`Form Input should render the correct output when error message is set 1
       <input
         aria-errormessage="testInput-error"
         aria-invalid="true"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -126,7 +126,7 @@ exports[`Form Input should render the correct output when field is required 1`] 
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         required=""
@@ -156,7 +156,7 @@ exports[`Form Input should render the correct output when format is set 1`] = `
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         inputmode="numeric"
         name="testInput"
@@ -187,7 +187,7 @@ exports[`Form Input should render the correct output when prefix is set 1`] = `
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         inputmode="numeric"
         name="testInput"
@@ -218,7 +218,7 @@ exports[`Form Input should render the correct output when suffix is set 1`] = `
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         inputmode="numeric"
         name="testInput"
@@ -249,7 +249,7 @@ exports[`Form Input should render the correct output when type is "email" 1`] = 
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         type="email"
@@ -278,7 +278,7 @@ exports[`Form Input should render the correct output when type is "password" 1`]
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         type="password"
@@ -307,7 +307,7 @@ exports[`Form Input should render the correct output when type is "tel" 1`] = `
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         type="tel"
@@ -336,7 +336,7 @@ exports[`Form Input should render the correct output when type is "text" 1`] = `
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -365,7 +365,7 @@ exports[`Form Input when theme is "danger" should render the correct output 1`] 
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -395,7 +395,7 @@ exports[`Form Input when theme is "danger" should render the correct output when
       <input
         aria-describedby="testInput-description"
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -432,7 +432,7 @@ exports[`Form Input when theme is "danger" should render the correct output when
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -461,7 +461,7 @@ exports[`Form Input when theme is "danger" should render the correct output when
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -490,7 +490,7 @@ exports[`Form Input when theme is "danger" should render the correct output when
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -519,7 +519,7 @@ exports[`Form Input when theme is "danger" should render the correct output when
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -548,7 +548,7 @@ exports[`Form Input when theme is "primary" should render the correct output 1`]
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -578,7 +578,7 @@ exports[`Form Input when theme is "primary" should render the correct output whe
       <input
         aria-describedby="testInput-description"
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -615,7 +615,7 @@ exports[`Form Input when theme is "primary" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -644,7 +644,7 @@ exports[`Form Input when theme is "primary" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -673,7 +673,7 @@ exports[`Form Input when theme is "primary" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -702,7 +702,7 @@ exports[`Form Input when theme is "primary" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -731,7 +731,7 @@ exports[`Form Input when theme is "secondary" should render the correct output 1
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -761,7 +761,7 @@ exports[`Form Input when theme is "secondary" should render the correct output w
       <input
         aria-describedby="testInput-description"
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -798,7 +798,7 @@ exports[`Form Input when theme is "secondary" should render the correct output w
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -827,7 +827,7 @@ exports[`Form Input when theme is "secondary" should render the correct output w
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -856,7 +856,7 @@ exports[`Form Input when theme is "secondary" should render the correct output w
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -885,7 +885,7 @@ exports[`Form Input when theme is "secondary" should render the correct output w
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -914,7 +914,7 @@ exports[`Form Input when theme is "success" should render the correct output 1`]
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -944,7 +944,7 @@ exports[`Form Input when theme is "success" should render the correct output whe
       <input
         aria-describedby="testInput-description"
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -981,7 +981,7 @@ exports[`Form Input when theme is "success" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -1010,7 +1010,7 @@ exports[`Form Input when theme is "success" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -1039,7 +1039,7 @@ exports[`Form Input when theme is "success" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -1068,7 +1068,7 @@ exports[`Form Input when theme is "success" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -1097,7 +1097,7 @@ exports[`Form Input when theme is "warning" should render the correct output 1`]
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -1127,7 +1127,7 @@ exports[`Form Input when theme is "warning" should render the correct output whe
       <input
         aria-describedby="testInput-description"
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -1164,7 +1164,7 @@ exports[`Form Input when theme is "warning" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -1193,7 +1193,7 @@ exports[`Form Input when theme is "warning" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -1222,7 +1222,7 @@ exports[`Form Input when theme is "warning" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -1251,7 +1251,7 @@ exports[`Form Input when theme is "warning" should render the correct output whe
     >
       <input
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
         type="text"
@@ -6886,6 +6886,2590 @@ exports[`Form Radio when theme is "warning" should render the correct output whe
 </DocumentFragment>
 `;
 
+exports[`Form Select should render the correct output when error message is set 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rir:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-errormessage="testInput-error"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="true"
+          aria-labelledby="headlessui-listbox-label-:rir: headlessui-listbox-button-:ris:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-gray-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:ris:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      >
+        <div
+          aria-describedby=":rit:"
+          class="inline-block"
+          data-testid="tooltip-parent-element"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-5 w-5 cursor-pointer text-red-500"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+              fill-rule="evenodd"
+            />
+          </svg>
+        </div>
+        <div
+          class="cursor-pointer bg-red-600 text-red-50"
+          id=":rit:"
+          role="tooltip"
+          style="left: -5.656854249492381px; position: absolute; top: 0px;"
+          tabindex="-1"
+        >
+          <div
+            class="px-1 text-sm font-display whitespace-nowrap border-r-2 border-red-700"
+          >
+            <div>
+              <p
+                class="font-sans text-left mb-0"
+                id="testInput-error"
+              >
+                This is an error
+              </p>
+            </div>
+          </div>
+          <div
+            class="absolute w-2 h-2 rotate-45 -z-10 pointer-events-none bg-red-700"
+            style="right: -4px; top: 0px;"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select should render the correct output when field is disabled 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      data-headlessui-state="disabled"
+      id="headlessui-listbox-label-:riv:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:riv: headlessui-listbox-button-:rj0:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none bg-gray-50 text-gray-600 border-gray-300"
+          data-headlessui-state="disabled"
+          data-testid="select-button"
+          disabled=""
+          id="headlessui-listbox-button-:rj0:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select should render the correct output when field is required 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rip:"
+    >
+      Test input
+      <span
+        class="font-bold text-red-800"
+      >
+        *
+      </span>
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rip: headlessui-listbox-button-:riq:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-gray-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:riq:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select should render the correct output when menu is open 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      data-headlessui-state="open"
+      id="headlessui-listbox-label-:rj1:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-controls="headlessui-listbox-options-:rj3:"
+          aria-expanded="true"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rj1: headlessui-listbox-button-:rj2:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-gray-300"
+          data-headlessui-state="open"
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rj2:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+        <ul
+          aria-activedescendant="headlessui-listbox-option-:rj4:"
+          aria-labelledby="headlessui-listbox-label-:rj1:"
+          aria-orientation="vertical"
+          class="absolute z-10 mt-1 max-h-60 w-full overflow-auto bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+          data-headlessui-state="open"
+          id="headlessui-listbox-options-:rj3:"
+          role="listbox"
+          tabindex="0"
+        >
+          <li
+            aria-disabled="true"
+            aria-selected="true"
+            class="relative cursor-pointer select-none py-2 pl-8 pr-4 bg-gray-50 text-gray-600"
+            data-headlessui-state="active selected disabled"
+            id="headlessui-listbox-option-:rj4:"
+            role="option"
+          >
+            <span
+              class="block truncate font-normal"
+            >
+              Select an option
+            </span>
+          </li>
+          <li
+            aria-selected="false"
+            class="relative cursor-pointer select-none py-2 pl-8 pr-4"
+            data-headlessui-state=""
+            id="headlessui-listbox-option-:rj5:"
+            role="option"
+            tabindex="-1"
+          >
+            <span
+              class="block truncate font-normal"
+            >
+              4 GB
+            </span>
+          </li>
+          <li
+            aria-selected="false"
+            class="relative cursor-pointer select-none py-2 pl-8 pr-4"
+            data-headlessui-state=""
+            id="headlessui-listbox-option-:rj6:"
+            role="option"
+            tabindex="-1"
+          >
+            <span
+              class="block truncate font-normal"
+            >
+              8 GB
+            </span>
+          </li>
+          <li
+            aria-selected="false"
+            class="relative cursor-pointer select-none py-2 pl-8 pr-4"
+            data-headlessui-state=""
+            id="headlessui-listbox-option-:rj7:"
+            role="option"
+            tabindex="-1"
+          >
+            <span
+              class="block truncate font-normal"
+            >
+              16 GB
+            </span>
+          </li>
+          <li
+            aria-selected="false"
+            class="relative cursor-pointer select-none py-2 pl-8 pr-4"
+            data-headlessui-state=""
+            id="headlessui-listbox-option-:rj8:"
+            role="option"
+            tabindex="-1"
+          >
+            <span
+              class="block truncate font-normal"
+            >
+              32 GB
+            </span>
+          </li>
+          <li
+            aria-selected="false"
+            class="relative cursor-pointer select-none py-2 pl-8 pr-4"
+            data-headlessui-state=""
+            id="headlessui-listbox-option-:rj9:"
+            role="option"
+            tabindex="-1"
+          >
+            <span
+              class="block truncate font-normal"
+            >
+              64 GB
+            </span>
+          </li>
+          <li
+            aria-disabled="true"
+            aria-selected="false"
+            class="relative cursor-pointer select-none py-2 pl-8 pr-4 bg-gray-50 text-gray-600"
+            data-headlessui-state="disabled"
+            id="headlessui-listbox-option-:rja:"
+            role="option"
+          >
+            <span
+              class="block truncate font-normal"
+            >
+              128 GB
+            </span>
+          </li>
+        </ul>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select should select the correct option 1`] = `
+"Snapshot Diff:
+- First value
++ Second value
+
+@@ -3,11 +3,11 @@
+      hidden=""
+      name="testInput"
+      readonly=""
+      style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+      type="hidden"
+-     value=""
++     value="64"
+    />
+    <div
+      class="mb-4"
+    >
+      <label
+@@ -35,11 +35,11 @@
+            type="button"
+          >
+            <span
+              class="block truncate"
+            >
+-             Select an option
++             64 GB
+            </span>
+            <span
+              class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+            >
+              <svg"
+`;
+
+exports[`Form Select when theme is "danger" should render the correct output 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rjl:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rjl: headlessui-listbox-button-:rjm:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-red-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rjm:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-red-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "danger" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rjn:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-describedby="testInput-description"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rjn: headlessui-listbox-button-:rjo:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-red-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rjo:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-red-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-red-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "danger" should render the correct output when spacing is "lg" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-6"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rjp:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rjp: headlessui-listbox-button-:rjq:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-red-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rjq:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-red-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "danger" should render the correct output when spacing is "md" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rjr:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rjr: headlessui-listbox-button-:rjs:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-red-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rjs:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-red-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "danger" should render the correct output when spacing is "none" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-0"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rjt:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rjt: headlessui-listbox-button-:rju:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-red-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rju:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-red-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "danger" should render the correct output when spacing is "sm" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-2"
+  >
+    <label
+      class="block text-sm font-medium text-red-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rjv:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rjv: headlessui-listbox-button-:rk0:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-red-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rk0:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-red-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "primary" should render the correct output 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rk1:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rk1: headlessui-listbox-button-:rk2:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-blue-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rk2:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "primary" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rk3:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-describedby="testInput-description"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rk3: headlessui-listbox-button-:rk4:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-blue-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rk4:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-blue-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "primary" should render the correct output when spacing is "lg" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-6"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rk5:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rk5: headlessui-listbox-button-:rk6:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-blue-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rk6:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "primary" should render the correct output when spacing is "md" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rk7:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rk7: headlessui-listbox-button-:rk8:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-blue-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rk8:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "primary" should render the correct output when spacing is "none" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-0"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rk9:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rk9: headlessui-listbox-button-:rka:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-blue-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rka:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "primary" should render the correct output when spacing is "sm" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-2"
+  >
+    <label
+      class="block text-sm font-medium text-blue-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rkb:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rkb: headlessui-listbox-button-:rkc:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-blue-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rkc:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "secondary" should render the correct output 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rkd:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rkd: headlessui-listbox-button-:rke:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-gray-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rke:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "secondary" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rkf:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-describedby="testInput-description"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rkf: headlessui-listbox-button-:rkg:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-gray-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rkg:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-gray-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "secondary" should render the correct output when spacing is "lg" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-6"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rkh:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rkh: headlessui-listbox-button-:rki:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-gray-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rki:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "secondary" should render the correct output when spacing is "md" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rkj:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rkj: headlessui-listbox-button-:rkk:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-gray-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rkk:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "secondary" should render the correct output when spacing is "none" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-0"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rkl:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rkl: headlessui-listbox-button-:rkm:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-gray-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rkm:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "secondary" should render the correct output when spacing is "sm" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-2"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rkn:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rkn: headlessui-listbox-button-:rko:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-gray-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rko:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "success" should render the correct output 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rkp:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rkp: headlessui-listbox-button-:rkq:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-green-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rkq:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-green-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "success" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rkr:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-describedby="testInput-description"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rkr: headlessui-listbox-button-:rks:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-green-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rks:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-green-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-green-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "success" should render the correct output when spacing is "lg" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-6"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rkt:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rkt: headlessui-listbox-button-:rku:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-green-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rku:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-green-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "success" should render the correct output when spacing is "md" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rkv:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rkv: headlessui-listbox-button-:rl0:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-green-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rl0:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-green-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "success" should render the correct output when spacing is "none" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-0"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rl1:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rl1: headlessui-listbox-button-:rl2:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-green-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rl2:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-green-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "success" should render the correct output when spacing is "sm" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-2"
+  >
+    <label
+      class="block text-sm font-medium text-green-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rl3:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rl3: headlessui-listbox-button-:rl4:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-green-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rl4:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-green-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "warning" should render the correct output 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rl5:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rl5: headlessui-listbox-button-:rl6:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-yellow-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rl6:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-yellow-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "warning" should render the correct output when help text is set 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rl7:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-describedby="testInput-description"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rl7: headlessui-listbox-button-:rl8:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-yellow-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rl8:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-yellow-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+    <div>
+      <p
+        class="font-sans text-left mb-4 mt-2 text-sm text-yellow-600"
+        id="testInput-description"
+      >
+        This is a unit test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "warning" should render the correct output when spacing is "lg" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-6"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rl9:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rl9: headlessui-listbox-button-:rla:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-yellow-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rla:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-yellow-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "warning" should render the correct output when spacing is "md" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rlb:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rlb: headlessui-listbox-button-:rlc:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-yellow-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rlc:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-yellow-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "warning" should render the correct output when spacing is "none" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-0"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rld:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rld: headlessui-listbox-button-:rle:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-yellow-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rle:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-yellow-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Select when theme is "warning" should render the correct output when spacing is "sm" 1`] = `
+<DocumentFragment>
+  <input
+    hidden=""
+    name="testInput"
+    readonly=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+    type="hidden"
+    value=""
+  />
+  <div
+    class="mb-2"
+  >
+    <label
+      class="block text-sm font-medium text-yellow-700"
+      data-headlessui-state=""
+      id="headlessui-listbox-label-:rlf:"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="relative"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-invalid="false"
+          aria-labelledby="headlessui-listbox-label-:rlf: headlessui-listbox-button-:rlg:"
+          class="block w-full text-left text-sm pr-10 form-select bg-none border-yellow-300"
+          data-headlessui-state=""
+          data-testid="select-button"
+          id="headlessui-listbox-button-:rlg:"
+          type="button"
+        >
+          <span
+            class="block truncate"
+          >
+            Select an option
+          </span>
+          <span
+            class="pointer-events-none absolute inset-y-0 right-10 flex items-center pr-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 text-yellow-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M11.47 4.72a.75.75 0 011.06 0l3.75 3.75a.75.75 0 01-1.06 1.06L12 6.31 8.78 9.53a.75.75 0 01-1.06-1.06l3.75-3.75zm-3.75 9.75a.75.75 0 011.06 0L12 17.69l3.22-3.22a.75.75 0 111.06 1.06l-3.75 3.75a.75.75 0 01-1.06 0l-3.75-3.75a.75.75 0 010-1.06z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
 exports[`Form Textarea should expand the textarea when content goes over one line 1`] = `
 <DocumentFragment>
   <div
@@ -6902,7 +9486,7 @@ exports[`Form Textarea should expand the textarea when content goes over one lin
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         data-testid="test-input"
         id="testInput"
         name="testInput"
@@ -6932,7 +9516,7 @@ exports[`Form Textarea should render the correct output when error message is se
       <textarea
         aria-errormessage="testInput-error"
         aria-invalid="true"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
       />
@@ -7009,7 +9593,7 @@ exports[`Form Textarea should render the correct output when field is required 1
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
         required=""
@@ -7038,7 +9622,7 @@ exports[`Form Textarea when theme is "danger" should render the correct output 1
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
       />
@@ -7067,7 +9651,7 @@ exports[`Form Textarea when theme is "danger" should render the correct output w
       <textarea
         aria-describedby="testInput-description"
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
       />
@@ -7103,7 +9687,7 @@ exports[`Form Textarea when theme is "danger" should render the correct output w
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
       />
@@ -7131,7 +9715,7 @@ exports[`Form Textarea when theme is "danger" should render the correct output w
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
       />
@@ -7159,7 +9743,7 @@ exports[`Form Textarea when theme is "danger" should render the correct output w
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
       />
@@ -7187,7 +9771,7 @@ exports[`Form Textarea when theme is "danger" should render the correct output w
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-red-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-red-300"
         id="testInput"
         name="testInput"
       />
@@ -7215,7 +9799,7 @@ exports[`Form Textarea when theme is "primary" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
       />
@@ -7244,7 +9828,7 @@ exports[`Form Textarea when theme is "primary" should render the correct output 
       <textarea
         aria-describedby="testInput-description"
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
       />
@@ -7280,7 +9864,7 @@ exports[`Form Textarea when theme is "primary" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
       />
@@ -7308,7 +9892,7 @@ exports[`Form Textarea when theme is "primary" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
       />
@@ -7336,7 +9920,7 @@ exports[`Form Textarea when theme is "primary" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
       />
@@ -7364,7 +9948,7 @@ exports[`Form Textarea when theme is "primary" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-blue-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-blue-300"
         id="testInput"
         name="testInput"
       />
@@ -7392,7 +9976,7 @@ exports[`Form Textarea when theme is "secondary" should render the correct outpu
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
       />
@@ -7421,7 +10005,7 @@ exports[`Form Textarea when theme is "secondary" should render the correct outpu
       <textarea
         aria-describedby="testInput-description"
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
       />
@@ -7457,7 +10041,7 @@ exports[`Form Textarea when theme is "secondary" should render the correct outpu
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
       />
@@ -7485,7 +10069,7 @@ exports[`Form Textarea when theme is "secondary" should render the correct outpu
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
       />
@@ -7513,7 +10097,7 @@ exports[`Form Textarea when theme is "secondary" should render the correct outpu
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
       />
@@ -7541,7 +10125,7 @@ exports[`Form Textarea when theme is "secondary" should render the correct outpu
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-gray-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-gray-300"
         id="testInput"
         name="testInput"
       />
@@ -7569,7 +10153,7 @@ exports[`Form Textarea when theme is "success" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
       />
@@ -7598,7 +10182,7 @@ exports[`Form Textarea when theme is "success" should render the correct output 
       <textarea
         aria-describedby="testInput-description"
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
       />
@@ -7634,7 +10218,7 @@ exports[`Form Textarea when theme is "success" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
       />
@@ -7662,7 +10246,7 @@ exports[`Form Textarea when theme is "success" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
       />
@@ -7690,7 +10274,7 @@ exports[`Form Textarea when theme is "success" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
       />
@@ -7718,7 +10302,7 @@ exports[`Form Textarea when theme is "success" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-green-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-green-300"
         id="testInput"
         name="testInput"
       />
@@ -7746,7 +10330,7 @@ exports[`Form Textarea when theme is "warning" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
       />
@@ -7775,7 +10359,7 @@ exports[`Form Textarea when theme is "warning" should render the correct output 
       <textarea
         aria-describedby="testInput-description"
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
       />
@@ -7811,7 +10395,7 @@ exports[`Form Textarea when theme is "warning" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
       />
@@ -7839,7 +10423,7 @@ exports[`Form Textarea when theme is "warning" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
       />
@@ -7867,7 +10451,7 @@ exports[`Form Textarea when theme is "warning" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
       />
@@ -7895,7 +10479,7 @@ exports[`Form Textarea when theme is "warning" should render the correct output 
     >
       <textarea
         aria-invalid="false"
-        class="block w-full text-sm pr-10 border-yellow-300"
+        class="block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600 border-yellow-300"
         id="testInput"
         name="testInput"
       />
@@ -8148,6 +10732,57 @@ exports[`Form Upload should render the correct output when field is required 1`]
             id="testInput"
             name="testInput"
             required=""
+            type="file"
+          />
+        </div>
+      </div>
+      <div
+        class="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center pr-3"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Form Upload should render the correct output when input is disabled 1`] = `
+<DocumentFragment>
+  <div
+    class="mb-4"
+  >
+    <label
+      class="block text-sm font-medium text-gray-700"
+      for="testInput"
+    >
+      Test input
+    </label>
+    <div
+      class="relative mt-1 shadow-sm"
+    >
+      <div
+        class="form-input flex p-0 border-gray-300"
+      >
+        <button
+          class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 z-10 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+          type="button"
+        >
+          Select file
+        </button>
+        <div
+          class="relative block w-full overflow-hidden"
+        >
+          <div
+            class="form-input block w-full h-full text-sm pr-10 flex items-center border-0 bg-gray-50 text-gray-600"
+          >
+            <p
+              class="truncate"
+            />
+          </div>
+          <input
+            aria-invalid="false"
+            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            disabled=""
+            id="testInput"
+            name="testInput"
             type="file"
           />
         </div>
