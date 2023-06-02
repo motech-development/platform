@@ -1,6 +1,6 @@
 import { mockViewport } from 'jsdom-testing-mocks';
 import { act } from '@testing-library/react';
-import { Input, Radio, Textarea, Upload } from '../Form';
+import { Input, Radio, Select, Textarea, Upload } from '../Form';
 import { setup, sizing, themes } from '../../utilities/jest';
 
 describe('Form', () => {
@@ -284,6 +284,19 @@ describe('Form', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
+    it('should render the correct output when input is disabled', () => {
+      const { asFragment } = setup(
+        <Upload
+          disabled
+          buttonText="Select file"
+          label="Test input"
+          name="testInput"
+        />,
+      );
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
     describe.each(themes)('when theme is "$theme"', ({ theme }) => {
       it('should render the correct output', () => {
         const { asFragment } = setup(
@@ -460,6 +473,168 @@ describe('Form', () => {
         ({ size }) => {
           const { asFragment } = setup(
             <Radio
+              label="Test input"
+              name="testInput"
+              options={options}
+              spacing={size}
+              theme={theme}
+            />,
+          );
+
+          expect(asFragment()).toMatchSnapshot();
+        },
+      );
+    });
+  });
+
+  describe('Select', () => {
+    const options = [
+      {
+        disabled: true,
+        label: 'Select an option',
+        value: '',
+      },
+      {
+        label: '4 GB',
+        value: '4',
+      },
+      {
+        label: '8 GB',
+        value: '8',
+      },
+      {
+        label: '16 GB',
+        value: '16',
+      },
+      {
+        label: '32 GB',
+        value: '32',
+      },
+      {
+        label: '64 GB',
+        value: '64',
+      },
+      {
+        disabled: true,
+        label: '128 GB',
+        value: '128',
+      },
+    ];
+
+    it('should render the correct output when field is required', () => {
+      const { asFragment } = setup(
+        <Select
+          required
+          label="Test input"
+          name="testInput"
+          options={options}
+        />,
+      );
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should render the correct output when error message is set', async () => {
+      const { asFragment, getByTestId, user } = setup(
+        <Select
+          errorMessage="This is an error"
+          label="Test input"
+          name="testInput"
+          options={options}
+        />,
+      );
+
+      await act(async () => {
+        const parent = getByTestId('tooltip-parent-element');
+
+        await user.hover(parent);
+      });
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should render the correct output when field is disabled', () => {
+      const { asFragment } = setup(
+        <Select
+          disabled
+          label="Test input"
+          name="testInput"
+          options={options}
+        />,
+      );
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should render the correct output when menu is open', async () => {
+      const { asFragment, getByTestId, user } = setup(
+        <Select label="Test input" name="testInput" options={options} />,
+      );
+
+      await act(async () => {
+        const parent = getByTestId('select-button');
+
+        await user.click(parent);
+      });
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should select the correct option', async () => {
+      const { asFragment, getByTestId, getByText, user } = setup(
+        <Select label="Test input" name="testInput" options={options} />,
+      );
+
+      const firstRender = asFragment();
+
+      await act(async () => {
+        const parent = getByTestId('select-button');
+
+        await user.click(parent);
+      });
+
+      await act(async () => {
+        const item = getByText('64 GB');
+
+        await user.click(item);
+      });
+
+      expect(firstRender).toMatchDiffSnapshot(asFragment());
+    });
+
+    describe.each(themes)('when theme is "$theme"', ({ theme }) => {
+      it('should render the correct output', () => {
+        const { asFragment } = setup(
+          <Select
+            label="Test input"
+            name="testInput"
+            options={options}
+            theme={theme}
+          />,
+        );
+
+        expect(asFragment()).toMatchSnapshot();
+      });
+
+      it('should render the correct output when help text is set', () => {
+        const { asFragment } = setup(
+          <Select
+            label="Test input"
+            name="testInput"
+            helpText="This is a unit test"
+            options={options}
+            theme={theme}
+          />,
+        );
+
+        expect(asFragment()).toMatchSnapshot();
+      });
+
+      it.each(sizing)(
+        'should render the correct output when spacing is "$size"',
+        ({ size }) => {
+          const { asFragment } = setup(
+            <Select
               label="Test input"
               name="testInput"
               options={options}

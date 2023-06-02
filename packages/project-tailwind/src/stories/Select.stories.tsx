@@ -7,7 +7,9 @@ export default {
     name: 'ram',
     options: [
       {
+        disabled: true,
         label: 'Select an option',
+        value: '',
       },
       {
         label: '4 GB',
