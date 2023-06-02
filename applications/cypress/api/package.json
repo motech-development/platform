@@ -10,7 +10,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@aws-sdk/client-ssm": "3.335.0",
+    "@aws-sdk/client-ssm": "3.341.0",
     "@motech-development/api-gateway-handler": "workspace:*",
     "@motech-development/node-logger": "workspace:*",
     "@octokit/auth-app": "4.0.13",
