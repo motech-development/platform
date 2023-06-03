@@ -1,7 +1,7 @@
-import { ComponentPropsWithRef } from 'react';
+import { ComponentPropsWithoutRef, forwardRef } from 'react';
 
 /** Avatar component properties */
-export interface IAvatarProps extends ComponentPropsWithRef<'img'> {
+export interface IAvatarProps extends ComponentPropsWithoutRef<'img'> {
   /** Alternative information text */
   alt: string;
 
@@ -16,11 +16,8 @@ export interface IAvatarProps extends ComponentPropsWithRef<'img'> {
  *
  * @returns Avatar component
  */
-export function Avatar({
-  alt,
-  className = 'h-8 w-8',
-  src,
-  ...rest
-}: IAvatarProps) {
-  return <img {...{ alt, className, src }} {...rest} />;
-}
+export const Avatar = forwardRef<HTMLImageElement, IAvatarProps>(
+  ({ alt, className = 'h-8 w-8', src, ...rest }, ref) => (
+    <img {...{ alt, className, ref, src }} {...rest} />
+  ),
+);
