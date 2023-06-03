@@ -1,7 +1,7 @@
-import { ComponentPropsWithRef } from 'react';
+import { ComponentPropsWithoutRef, forwardRef } from 'react';
 
 /** Logo component properties */
-export interface ILogoProps extends ComponentPropsWithRef<'svg'> {
+export interface ILogoProps extends ComponentPropsWithoutRef<'svg'> {
   /** Alternative information text */
   alt: string;
 }
@@ -13,13 +13,14 @@ export interface ILogoProps extends ComponentPropsWithRef<'svg'> {
  *
  * @returns Logo component
  */
-export function Logo({ alt, ...rest }: ILogoProps) {
-  return (
+export const Logo = forwardRef<SVGSVGElement, ILogoProps>(
+  ({ alt, ...rest }, ref) => (
     <svg
       {...rest}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 345.21 398.61"
       aria-labelledby="logo-alt-text"
+      ref={ref}
     >
       <title id="logo-alt-text">{alt}</title>
       <polygon
@@ -31,5 +32,5 @@ export function Logo({ alt, ...rest }: ILogoProps) {
         points="115.07 365.39 115.07 232.53 172.6 265.74 230.14 232.53 230.14 365.39 172.6 398.61 115.07 365.39"
       />
     </svg>
-  );
-}
+  ),
+);
