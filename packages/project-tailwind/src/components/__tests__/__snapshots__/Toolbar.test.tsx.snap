@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolbar when theme is "danger" should correctly render componenet 1`] = `
+exports[`Toolbar as element "div" when theme is "danger" should correctly render componenet 1`] = `
 <DocumentFragment>
   <div
     class="relative bg-red-900 text-red-50"
@@ -24,7 +24,7 @@ exports[`Toolbar when theme is "danger" should correctly render componenet 1`] =
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "danger" should correctly render componenet when border is set 1`] = `
+exports[`Toolbar as element "div" when theme is "danger" should correctly render componenet when border is set 1`] = `
 <DocumentFragment>
   <div
     class="relative bg-red-900 text-red-50"
@@ -48,7 +48,7 @@ exports[`Toolbar when theme is "danger" should correctly render componenet when 
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "danger" should correctly render componenet when position is fixed 1`] = `
+exports[`Toolbar as element "div" when theme is "danger" should correctly render componenet when position is fixed 1`] = `
 <DocumentFragment>
   <div
     class="fixed top-0 left-0 w-full bg-red-900 text-red-50"
@@ -72,7 +72,7 @@ exports[`Toolbar when theme is "danger" should correctly render componenet when 
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "primary" should correctly render componenet 1`] = `
+exports[`Toolbar as element "div" when theme is "primary" should correctly render componenet 1`] = `
 <DocumentFragment>
   <div
     class="relative bg-blue-900 text-blue-50"
@@ -96,7 +96,7 @@ exports[`Toolbar when theme is "primary" should correctly render componenet 1`] 
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "primary" should correctly render componenet when border is set 1`] = `
+exports[`Toolbar as element "div" when theme is "primary" should correctly render componenet when border is set 1`] = `
 <DocumentFragment>
   <div
     class="relative bg-blue-900 text-blue-50"
@@ -120,7 +120,7 @@ exports[`Toolbar when theme is "primary" should correctly render componenet when
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "primary" should correctly render componenet when position is fixed 1`] = `
+exports[`Toolbar as element "div" when theme is "primary" should correctly render componenet when position is fixed 1`] = `
 <DocumentFragment>
   <div
     class="fixed top-0 left-0 w-full bg-blue-900 text-blue-50"
@@ -144,7 +144,7 @@ exports[`Toolbar when theme is "primary" should correctly render componenet when
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "secondary" should correctly render componenet 1`] = `
+exports[`Toolbar as element "div" when theme is "secondary" should correctly render componenet 1`] = `
 <DocumentFragment>
   <div
     class="relative bg-gray-900 text-gray-50"
@@ -168,7 +168,7 @@ exports[`Toolbar when theme is "secondary" should correctly render componenet 1`
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "secondary" should correctly render componenet when border is set 1`] = `
+exports[`Toolbar as element "div" when theme is "secondary" should correctly render componenet when border is set 1`] = `
 <DocumentFragment>
   <div
     class="relative bg-gray-900 text-gray-50"
@@ -192,7 +192,7 @@ exports[`Toolbar when theme is "secondary" should correctly render componenet wh
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "secondary" should correctly render componenet when position is fixed 1`] = `
+exports[`Toolbar as element "div" when theme is "secondary" should correctly render componenet when position is fixed 1`] = `
 <DocumentFragment>
   <div
     class="fixed top-0 left-0 w-full bg-gray-900 text-gray-50"
@@ -216,7 +216,7 @@ exports[`Toolbar when theme is "secondary" should correctly render componenet wh
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "success" should correctly render componenet 1`] = `
+exports[`Toolbar as element "div" when theme is "success" should correctly render componenet 1`] = `
 <DocumentFragment>
   <div
     class="relative bg-green-900 text-green-50"
@@ -240,7 +240,7 @@ exports[`Toolbar when theme is "success" should correctly render componenet 1`] 
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "success" should correctly render componenet when border is set 1`] = `
+exports[`Toolbar as element "div" when theme is "success" should correctly render componenet when border is set 1`] = `
 <DocumentFragment>
   <div
     class="relative bg-green-900 text-green-50"
@@ -264,7 +264,7 @@ exports[`Toolbar when theme is "success" should correctly render componenet when
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "success" should correctly render componenet when position is fixed 1`] = `
+exports[`Toolbar as element "div" when theme is "success" should correctly render componenet when position is fixed 1`] = `
 <DocumentFragment>
   <div
     class="fixed top-0 left-0 w-full bg-green-900 text-green-50"
@@ -288,7 +288,7 @@ exports[`Toolbar when theme is "success" should correctly render componenet when
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "warning" should correctly render componenet 1`] = `
+exports[`Toolbar as element "div" when theme is "warning" should correctly render componenet 1`] = `
 <DocumentFragment>
   <div
     class="relative bg-yellow-900 text-yellow-50"
@@ -312,7 +312,7 @@ exports[`Toolbar when theme is "warning" should correctly render componenet 1`] 
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "warning" should correctly render componenet when border is set 1`] = `
+exports[`Toolbar as element "div" when theme is "warning" should correctly render componenet when border is set 1`] = `
 <DocumentFragment>
   <div
     class="relative bg-yellow-900 text-yellow-50"
@@ -336,7 +336,7 @@ exports[`Toolbar when theme is "warning" should correctly render componenet when
 </DocumentFragment>
 `;
 
-exports[`Toolbar when theme is "warning" should correctly render componenet when position is fixed 1`] = `
+exports[`Toolbar as element "div" when theme is "warning" should correctly render componenet when position is fixed 1`] = `
 <DocumentFragment>
   <div
     class="fixed top-0 left-0 w-full bg-yellow-900 text-yellow-50"
@@ -357,5 +357,335 @@ exports[`Toolbar when theme is "warning" should correctly render componenet when
       </div>
     </div>
   </div>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "danger" should correctly render componenet 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-red-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "danger" should correctly render componenet when border is set 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-b border-red-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "danger" should correctly render componenet when position is fixed 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-red-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "primary" should correctly render componenet 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-blue-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "primary" should correctly render componenet when border is set 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-b border-blue-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "primary" should correctly render componenet when position is fixed 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-blue-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "secondary" should correctly render componenet 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-gray-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "secondary" should correctly render componenet when border is set 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-b border-gray-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "secondary" should correctly render componenet when position is fixed 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-gray-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "success" should correctly render componenet 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-green-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "success" should correctly render componenet when border is set 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-b border-green-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "success" should correctly render componenet when position is fixed 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-green-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "warning" should correctly render componenet 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-yellow-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "warning" should correctly render componenet when border is set 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-b border-yellow-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`Toolbar as element "header" when theme is "warning" should correctly render componenet when position is fixed 1`] = `
+<DocumentFragment>
+  <header>
+    <div
+      class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
+    >
+      <div
+        class="border-yellow-800"
+      >
+        <div
+          class="flex h-16 items-center justify-between px-4 sm:px-0"
+        >
+          <p>
+            Hello, world
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
 </DocumentFragment>
 `;

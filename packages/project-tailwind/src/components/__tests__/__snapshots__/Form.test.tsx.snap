@@ -10528,7 +10528,7 @@ exports[`Form Upload should render the correct output when a file is selected 1`
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -10578,7 +10578,7 @@ exports[`Form Upload should render the correct output when custom browse button 
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -10629,7 +10629,7 @@ exports[`Form Upload should render the correct output when error message is set 
           <input
             aria-errormessage="testInput-error"
             aria-invalid="true"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -10728,7 +10728,7 @@ exports[`Form Upload should render the correct output when field is required 1`]
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             required=""
@@ -10779,7 +10779,7 @@ exports[`Form Upload should render the correct output when input is disabled 1`]
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             disabled=""
             id="testInput"
             name="testInput"
@@ -10830,7 +10830,7 @@ exports[`Form Upload when theme is "danger" should render the correct output 1`]
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -10881,7 +10881,7 @@ exports[`Form Upload when theme is "danger" should render the correct output whe
           <input
             aria-describedby="testInput-description"
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -10939,7 +10939,7 @@ exports[`Form Upload when theme is "danger" should render the correct output whe
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -10989,7 +10989,7 @@ exports[`Form Upload when theme is "danger" should render the correct output whe
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11039,7 +11039,7 @@ exports[`Form Upload when theme is "danger" should render the correct output whe
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11089,7 +11089,7 @@ exports[`Form Upload when theme is "danger" should render the correct output whe
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11139,7 +11139,7 @@ exports[`Form Upload when theme is "primary" should render the correct output 1`
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11190,7 +11190,7 @@ exports[`Form Upload when theme is "primary" should render the correct output wh
           <input
             aria-describedby="testInput-description"
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11248,7 +11248,7 @@ exports[`Form Upload when theme is "primary" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11298,7 +11298,7 @@ exports[`Form Upload when theme is "primary" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11348,7 +11348,7 @@ exports[`Form Upload when theme is "primary" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11398,7 +11398,7 @@ exports[`Form Upload when theme is "primary" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11448,7 +11448,7 @@ exports[`Form Upload when theme is "secondary" should render the correct output 
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11499,7 +11499,7 @@ exports[`Form Upload when theme is "secondary" should render the correct output 
           <input
             aria-describedby="testInput-description"
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11557,7 +11557,7 @@ exports[`Form Upload when theme is "secondary" should render the correct output 
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11607,7 +11607,7 @@ exports[`Form Upload when theme is "secondary" should render the correct output 
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11657,7 +11657,7 @@ exports[`Form Upload when theme is "secondary" should render the correct output 
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11707,7 +11707,7 @@ exports[`Form Upload when theme is "secondary" should render the correct output 
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11757,7 +11757,7 @@ exports[`Form Upload when theme is "success" should render the correct output 1`
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11808,7 +11808,7 @@ exports[`Form Upload when theme is "success" should render the correct output wh
           <input
             aria-describedby="testInput-description"
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11866,7 +11866,7 @@ exports[`Form Upload when theme is "success" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11916,7 +11916,7 @@ exports[`Form Upload when theme is "success" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -11966,7 +11966,7 @@ exports[`Form Upload when theme is "success" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -12016,7 +12016,7 @@ exports[`Form Upload when theme is "success" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -12066,7 +12066,7 @@ exports[`Form Upload when theme is "warning" should render the correct output 1`
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -12117,7 +12117,7 @@ exports[`Form Upload when theme is "warning" should render the correct output wh
           <input
             aria-describedby="testInput-description"
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -12175,7 +12175,7 @@ exports[`Form Upload when theme is "warning" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -12225,7 +12225,7 @@ exports[`Form Upload when theme is "warning" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -12275,7 +12275,7 @@ exports[`Form Upload when theme is "warning" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"
@@ -12325,7 +12325,7 @@ exports[`Form Upload when theme is "warning" should render the correct output wh
           </div>
           <input
             aria-invalid="false"
-            class="absolute top-0 left-0 bottom-0 block w-full opacity-0"
+            class="absolute bottom-0 left-0 top-0 block w-full opacity-0"
             id="testInput"
             name="testInput"
             type="file"

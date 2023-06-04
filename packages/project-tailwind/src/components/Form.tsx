@@ -14,11 +14,10 @@ import {
   useState,
 } from 'react';
 import { NumericFormat, PatternFormat } from 'react-number-format';
-import { Box } from 'react-polymorphic-box';
 import TextareaAutosize, {
   TextareaAutosizeProps,
 } from 'react-textarea-autosize';
-
+import { Box } from './Box';
 import useMergeRefs from '../utilities/refs';
 import {
   Sizing,
@@ -270,18 +269,17 @@ function ValidationMessage({
   return (
     <Tooltip
       className="cursor-pointer"
-      content={
-        <Typography id={id} margin={Sizing.NONE}>
-          {message}
-        </Typography>
-      }
       parent={
         <ExclamationCircleIcon className="h-5 w-5 cursor-pointer text-red-500" />
       }
       onVisibilityChange={onVisibilityChange}
       position="left"
       theme={Themes.DANGER}
-    />
+    >
+      <Typography id={id} margin={Sizing.NONE}>
+        {message}
+      </Typography>
+    </Tooltip>
   );
 }
 
