@@ -10,10 +10,10 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.341.0",
-    "@aws-sdk/client-sqs": "3.341.0",
-    "@aws-sdk/lib-dynamodb": "3.341.0",
-    "@aws-sdk/util-dynamodb": "3.341.0",
+    "@aws-sdk/client-dynamodb": "3.342.0",
+    "@aws-sdk/client-sqs": "3.342.0",
+    "@aws-sdk/lib-dynamodb": "3.342.0",
+    "@aws-sdk/util-dynamodb": "3.342.0",
     "@motech-development/node-logger": "workspace:*",
     "decimal.js": "10.4.3",
     "luxon": "3.3.0",
