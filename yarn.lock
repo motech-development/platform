@@ -152,7 +152,7 @@ __metadata:
     vite: 4.3.9
     vite-plugin-checker: 0.6.0
     vite-plugin-eslint: 1.8.1
-    vite-plugin-pwa: 0.15.1
+    vite-plugin-pwa: 0.15.2
     web-vitals: 3.3.2
     workbox-background-sync: 6.6.0
     workbox-broadcast-update: 6.6.0
@@ -31370,9 +31370,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-pwa@npm:0.15.1":
-  version: 0.15.1
-  resolution: "vite-plugin-pwa@npm:0.15.1"
+"vite-plugin-pwa@npm:0.15.2":
+  version: 0.15.2
+  resolution: "vite-plugin-pwa@npm:0.15.2"
   dependencies:
     debug: ^4.3.4
     fast-glob: ^3.2.12
@@ -31383,7 +31383,7 @@ __metadata:
     vite: ^3.1.0 || ^4.0.0
     workbox-build: ^6.5.4
     workbox-window: ^6.5.4
-  checksum: 1581adb617a48fb879791e7b56c8fff761b68357e85df2fe9c7f1ab303900b0fbe8f94fccda7ca3406586fb7e7ed3d65897bf4754dffc1e7bc4a11456c13a924
+  checksum: 0430d3fd95cc6e293bc95c227736a6f43fa79aa2ed4f2560aa29086b81b58a807a2926cd56887fc5c8a89fbe98c079c8ec6e8e1a6da6d67c0cf00608f79148e7
   languageName: node
   linkType: hard
 
