@@ -1,5 +1,5 @@
-import { ElementType } from 'react';
-import { Box, PolymorphicComponentProps } from 'react-polymorphic-box';
+import { Slot } from '@radix-ui/react-slot';
+import { ComponentPropsWithoutRef, forwardRef } from 'react';
 import {
   Alignment,
   Sizing,
@@ -9,6 +9,7 @@ import {
   TTheme,
   useTailwind,
 } from '../utilities/tailwind';
+import { ISlot } from './Slot';
 
 /** Variant options */
 enum Variants {
@@ -37,31 +38,28 @@ type TVariant = `${Variants}`;
 const DEFAULT_ELEMENT = 'p';
 
 /** Typography component props */
-export type TTypographyProps<E extends ElementType> = PolymorphicComponentProps<
-  E,
-  {
-    /** Text alignment */
-    align?: TAlignment;
+export interface ITypographyProps extends ISlot, ComponentPropsWithoutRef<'p'> {
+  /** Text alignment */
+  align?: TAlignment;
 
-    /** Apply line break for overflowing text */
-    breakWord?: boolean;
+  /** Apply line break for overflowing text */
+  breakWord?: boolean;
 
-    /** Apply margin to text */
-    margin?: TSizing;
+  /** Apply margin to text */
+  margin?: TSizing;
 
-    /** Add horizontal rule */
-    rule?: boolean;
+  /** Add horizontal rule */
+  rule?: boolean;
 
-    /** Component theme */
-    theme?: TTheme;
+  /** Component theme */
+  theme?: TTheme;
 
-    /** Truncate text string */
-    truncate?: boolean;
+  /** Truncate text string */
+  truncate?: boolean;
 
-    /** Text variant */
-    variant?: TVariant;
-  }
->;
+  /** Text variant */
+  variant?: TVariant;
+}
 
 /**
  * Creates font styles for text variants
@@ -138,55 +136,63 @@ function createRuleAlignmentStyles(alignment: TAlignment) {
  *
  * @returns Typography component
  */
-export function Typography<E extends ElementType = typeof DEFAULT_ELEMENT>({
-  align = Alignment.LEFT,
-  breakWord = false,
-  className,
-  margin = Sizing.MD,
-  rule = false,
-  theme = Themes.DANGER,
-  truncate = false,
-  variant = Variants.BODY,
-  ...rest
-}: TTypographyProps<E>) {
-  const { createStyles, createTextAlignmentStyles } = useTailwind(
-    theme,
-    margin,
-  );
-
-  const ruleStyles = createStyles({
-    classNames: [
-      'w-12 border-t-4 shadow-md',
-      createRuleSpacingStyles(rule, margin),
-      createRuleAlignmentStyles(align),
-    ],
-    theme: {
-      danger: ['border-red-600'],
-      primary: ['border-blue-600'],
-      secondary: ['border-gray-600'],
-      success: ['border-green-600'],
-      warning: ['border-yellow-600'],
-    },
-  });
-
-  const typographyStyles = createStyles({
-    classNames: [
-      {
-        'bread-words': breakWord,
-        truncate,
-      },
-      createFontStyles(variant),
-      createTextAlignmentStyles(align),
-      createRuleSpacingStyles(rule, margin),
+export const Typography = forwardRef<HTMLParagraphElement, ITypographyProps>(
+  (
+    {
+      align = Alignment.LEFT,
+      asChild,
+      breakWord = false,
       className,
-    ],
-  });
+      margin = Sizing.MD,
+      rule = false,
+      theme = Themes.DANGER,
+      truncate = false,
+      variant = Variants.BODY,
+      ...rest
+    },
+    ref,
+  ) => {
+    const { createStyles, createTextAlignmentStyles } = useTailwind(
+      theme,
+      margin,
+    );
 
-  return (
-    <div>
-      <Box className={typographyStyles} as={DEFAULT_ELEMENT} {...rest} />
+    const Comp = asChild ? Slot : DEFAULT_ELEMENT;
 
-      {rule && <hr className={ruleStyles} />}
-    </div>
-  );
-}
+    const ruleStyles = createStyles({
+      classNames: [
+        'w-12 border-t-4 shadow-md',
+        createRuleSpacingStyles(rule, margin),
+        createRuleAlignmentStyles(align),
+      ],
+      theme: {
+        danger: ['border-red-600'],
+        primary: ['border-blue-600'],
+        secondary: ['border-gray-600'],
+        success: ['border-green-600'],
+        warning: ['border-yellow-600'],
+      },
+    });
+
+    const typographyStyles = createStyles({
+      classNames: [
+        {
+          'bread-words': breakWord,
+          truncate,
+        },
+        createFontStyles(variant),
+        createTextAlignmentStyles(align),
+        createRuleSpacingStyles(rule, margin),
+        className,
+      ],
+    });
+
+    return (
+      <div>
+        <Comp className={typographyStyles} ref={ref} {...rest} />
+
+        {rule && <hr className={ruleStyles} />}
+      </div>
+    );
+  },
+);

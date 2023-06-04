@@ -47,8 +47,9 @@ describe('Tooltip', () => {
                 Hover over me
               </button>
             }
-            content={<p>Hello, world</p>}
-          />
+          >
+            <p>Hello, world</p>
+          </Tooltip>
         </Wrapper>,
       );
 
@@ -80,9 +81,10 @@ describe('Tooltip', () => {
                 Hover over me
               </button>
             }
-            content={<p>Hello, world</p>}
             time={400}
-          />
+          >
+            <p>Hello, world</p>
+          </Tooltip>
         </Wrapper>,
       );
 
@@ -116,9 +118,10 @@ describe('Tooltip', () => {
                 Hover over me
               </button>
             }
-            content={<p>Hello, world</p>}
             position={position}
-          />
+          >
+            <p>Hello, world</p>
+          </Tooltip>
         </Wrapper>,
       );
 
@@ -134,9 +137,10 @@ describe('Tooltip', () => {
                 Hover over me
               </button>
             }
-            content={<p>Hello, world</p>}
             position={position}
-          />
+          >
+            <p>Hello, world</p>
+          </Tooltip>
         </Wrapper>,
       );
 
@@ -162,9 +166,10 @@ describe('Tooltip', () => {
                 Hover over me
               </button>
             }
-            content={<p>Hello, world</p>}
             theme={theme}
-          />
+          >
+            <p>Hello, world</p>
+          </Tooltip>
         </Wrapper>,
       );
 
@@ -180,9 +185,10 @@ describe('Tooltip', () => {
                 Hover over me
               </button>
             }
-            content={<p>Hello, world</p>}
             theme={theme}
-          />
+          >
+            <p>Hello, world</p>
+          </Tooltip>
         </Wrapper>,
       );
 

@@ -73,7 +73,7 @@ module.exports = {
           'error',
           {
             custom: 'enforce',
-            exceptions: ['Box'],
+            exceptions: ['Box', 'Comp'],
             explicitSpread: 'ignore',
             html: 'ignore',
           },
@@ -135,7 +135,7 @@ module.exports = {
           'error',
           {
             custom: 'enforce',
-            exceptions: ['Box'],
+            exceptions: ['Box', 'Comp'],
             explicitSpread: 'ignore',
             html: 'ignore',
           },
