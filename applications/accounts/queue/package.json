@@ -10,11 +10,11 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.341.0",
-    "@aws-sdk/client-sfn": "3.341.0",
-    "@aws-sdk/lib-dynamodb": "3.341.0",
-    "@aws-sdk/util-dynamodb": "3.341.0",
-    "aws4-axios": "3.2.6",
+    "@aws-sdk/client-dynamodb": "3.342.0",
+    "@aws-sdk/client-sfn": "3.342.0",
+    "@aws-sdk/lib-dynamodb": "3.342.0",
+    "@aws-sdk/util-dynamodb": "3.342.0",
+    "aws4-axios": "3.2.8",
     "axios": "1.4.0"
   },
   "devDependencies": {
