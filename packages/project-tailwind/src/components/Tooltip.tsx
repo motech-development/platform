@@ -79,7 +79,7 @@ function createArrowStyles(
 /** Tooltip component properties */
 export interface ITooltipProps extends ComponentPropsWithoutRef<'div'> {
   /** Content to be displayed */
-  content: ReactNode;
+  children: ReactNode;
 
   /** Callback trigger when tooltop is shown or hidden  */
   onVisibilityChange?: (value: boolean) => void;
@@ -105,8 +105,8 @@ export interface ITooltipProps extends ComponentPropsWithoutRef<'div'> {
  * @returns Tooltip component
  */
 export function Tooltip({
+  children,
   className,
-  content,
   onVisibilityChange,
   parent,
   position = 'bottom',
@@ -233,7 +233,7 @@ export function Tooltip({
           {...getFloatingProps()}
           {...rest}
         >
-          <div className={innerTooltipStyles}>{content}</div>
+          <div className={innerTooltipStyles}>{children}</div>
 
           <div
             className={arrowStyles}

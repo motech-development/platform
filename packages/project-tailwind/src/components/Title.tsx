@@ -44,8 +44,10 @@ export function Title({
 
   return (
     <>
-      <Typography as="h2" margin="sm" variant="h2">
-        <span className={titleStyles}>{title}</span>
+      <Typography asChild margin="sm" variant="h2">
+        <h2>
+          <span className={titleStyles}>{title}</span>
+        </h2>
       </Typography>
 
       {subtitle && (
