@@ -32,7 +32,6 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-number-format": "5.2.2",
-    "react-polymorphic-box": "3.0.3",
     "react-textarea-autosize": "8.4.0"
   },
   "devDependencies": {
