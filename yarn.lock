@@ -6891,7 +6891,6 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-number-format: 5.2.2
-    react-polymorphic-box: 3.0.3
     react-textarea-autosize: 8.4.0
     rimraf: 5.0.1
     rollup: 3.23.0
@@ -30257,15 +30256,6 @@ __metadata:
     react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
   checksum: ae788b550b759f3f3e475e5805f7c650472f3d06fe633a046288f62cf5deedbfa597cb8fea08f29538b04931d7453ffbbe653bdd50cfca6ac43e12397502fec3
-  languageName: node
-  linkType: hard
-
-"react-polymorphic-box@npm:3.0.3":
-  version: 3.0.3
-  resolution: "react-polymorphic-box@npm:3.0.3"
-  peerDependencies:
-    react: ">=16.3"
-  checksum: 3c1e91d737faf9590f6e76d750c7a5db0df54356509cddb4f7609148b055de2bc1a3a670e1c642048707123c19cee839e09b7400e4b49ad97204aa5416efb731
   languageName: node
   linkType: hard
 
