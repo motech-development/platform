@@ -26,12 +26,17 @@ interface ISlottableProps extends ISlot {
  *
  * @returns Slottable component
  */
-export function Slottable({ asChild, child, children }: ISlottableProps) {
+export function Slottable({
+  asChild,
+  child,
+  children,
+  ...rest
+}: ISlottableProps) {
   if (asChild) {
     if (isValidElement(child)) {
       return cloneElement(
         child,
-        undefined,
+        rest,
         children((child as TChild).props.children),
       );
     }

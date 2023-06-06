@@ -9,10 +9,12 @@ interface IBoxOwnProps<E extends ElementType = ElementType> {
   as?: E;
 }
 
+/** Box component type */
 type TBox = <E extends ElementType = typeof DEFAULT_ELEMENT>(
   props: TBoxProps<E>,
 ) => ReactElement | null;
 
+/** Polymorphic component prop type */
 export type TBoxComponentProps<E extends ElementType, P> = P & TBoxProps<E>;
 
 /** Box component props */
