@@ -6845,7 +6845,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@radix-ui/react-slot": ^1.0.2
     "@rollup/plugin-commonjs": 25.0.0
-    "@rollup/plugin-node-resolve": 15.0.2
+    "@rollup/plugin-node-resolve": 15.1.0
     "@storybook/addon-actions": 7.0.18
     "@storybook/addon-docs": 7.0.18
     "@storybook/addon-essentials": 7.0.18
@@ -7917,25 +7917,6 @@ __metadata:
     rollup:
       optional: true
   checksum: f014f98f161ba4573e5101cf262c152bdcd8cfebf9cf4872f8bb657d20e20d8e2dc51af5339fe10772d19007e63044bd79881af0db4fe9babe9e96d0c0eeb328
-  languageName: node
-  linkType: hard
-
-"@rollup/plugin-node-resolve@npm:15.0.2":
-  version: 15.0.2
-  resolution: "@rollup/plugin-node-resolve@npm:15.0.2"
-  dependencies:
-    "@rollup/pluginutils": ^5.0.1
-    "@types/resolve": 1.20.2
-    deepmerge: ^4.2.2
-    is-builtin-module: ^3.2.1
-    is-module: ^1.0.0
-    resolve: ^1.22.1
-  peerDependencies:
-    rollup: ^2.78.0||^3.0.0
-  peerDependenciesMeta:
-    rollup:
-      optional: true
-  checksum: 328eafee06ff967a36441b55e77fbd0d4f599d256e5d1977800ee71915846c46bc1b6185df35c7b512ad2b4023b05b65a332be77b8b00b9d8a20f87d056b8166
   languageName: node
   linkType: hard
 
