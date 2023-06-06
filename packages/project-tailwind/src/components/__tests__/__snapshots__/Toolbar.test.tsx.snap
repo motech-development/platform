@@ -362,7 +362,9 @@ exports[`Toolbar as element "div" when theme is "warning" should correctly rende
 
 exports[`Toolbar as element "header" when theme is "danger" should correctly render componenet 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="relative bg-red-900 text-red-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -384,7 +386,9 @@ exports[`Toolbar as element "header" when theme is "danger" should correctly ren
 
 exports[`Toolbar as element "header" when theme is "danger" should correctly render componenet when border is set 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="relative bg-red-900 text-red-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -406,7 +410,9 @@ exports[`Toolbar as element "header" when theme is "danger" should correctly ren
 
 exports[`Toolbar as element "header" when theme is "danger" should correctly render componenet when position is fixed 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="fixed top-0 left-0 w-full bg-red-900 text-red-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -428,7 +434,9 @@ exports[`Toolbar as element "header" when theme is "danger" should correctly ren
 
 exports[`Toolbar as element "header" when theme is "primary" should correctly render componenet 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="relative bg-blue-900 text-blue-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -450,7 +458,9 @@ exports[`Toolbar as element "header" when theme is "primary" should correctly re
 
 exports[`Toolbar as element "header" when theme is "primary" should correctly render componenet when border is set 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="relative bg-blue-900 text-blue-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -472,7 +482,9 @@ exports[`Toolbar as element "header" when theme is "primary" should correctly re
 
 exports[`Toolbar as element "header" when theme is "primary" should correctly render componenet when position is fixed 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="fixed top-0 left-0 w-full bg-blue-900 text-blue-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -494,7 +506,9 @@ exports[`Toolbar as element "header" when theme is "primary" should correctly re
 
 exports[`Toolbar as element "header" when theme is "secondary" should correctly render componenet 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="relative bg-gray-900 text-gray-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -516,7 +530,9 @@ exports[`Toolbar as element "header" when theme is "secondary" should correctly 
 
 exports[`Toolbar as element "header" when theme is "secondary" should correctly render componenet when border is set 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="relative bg-gray-900 text-gray-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -538,7 +554,9 @@ exports[`Toolbar as element "header" when theme is "secondary" should correctly 
 
 exports[`Toolbar as element "header" when theme is "secondary" should correctly render componenet when position is fixed 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="fixed top-0 left-0 w-full bg-gray-900 text-gray-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -560,7 +578,9 @@ exports[`Toolbar as element "header" when theme is "secondary" should correctly 
 
 exports[`Toolbar as element "header" when theme is "success" should correctly render componenet 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="relative bg-green-900 text-green-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -582,7 +602,9 @@ exports[`Toolbar as element "header" when theme is "success" should correctly re
 
 exports[`Toolbar as element "header" when theme is "success" should correctly render componenet when border is set 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="relative bg-green-900 text-green-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -604,7 +626,9 @@ exports[`Toolbar as element "header" when theme is "success" should correctly re
 
 exports[`Toolbar as element "header" when theme is "success" should correctly render componenet when position is fixed 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="fixed top-0 left-0 w-full bg-green-900 text-green-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -626,7 +650,9 @@ exports[`Toolbar as element "header" when theme is "success" should correctly re
 
 exports[`Toolbar as element "header" when theme is "warning" should correctly render componenet 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="relative bg-yellow-900 text-yellow-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -648,7 +674,9 @@ exports[`Toolbar as element "header" when theme is "warning" should correctly re
 
 exports[`Toolbar as element "header" when theme is "warning" should correctly render componenet when border is set 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="relative bg-yellow-900 text-yellow-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
@@ -670,7 +698,9 @@ exports[`Toolbar as element "header" when theme is "warning" should correctly re
 
 exports[`Toolbar as element "header" when theme is "warning" should correctly render componenet when position is fixed 1`] = `
 <DocumentFragment>
-  <header>
+  <header
+    class="fixed top-0 left-0 w-full bg-yellow-900 text-yellow-50"
+  >
     <div
       class="mx-auto max-w-7xl select-none sm:px-6 lg:px-8"
     >
