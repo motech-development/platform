@@ -14,7 +14,6 @@ jobs:
   setup:
     name: Setup
 
-    # TODO: Remove me
     if: github.event.pull_request.draft == false
 
     runs-on: ubuntu-latest
