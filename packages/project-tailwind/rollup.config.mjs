@@ -4,7 +4,7 @@ import dts from 'rollup-plugin-dts';
 import external from 'rollup-plugin-exclude-dependencies-from-bundle';
 import postcss from 'rollup-plugin-postcss';
 import { swc } from 'rollup-plugin-swc3';
-import pkg from './package.json';
+import pkg from './package.json' assert { type: 'json' };
 
 export default [
   {
