@@ -40,7 +40,7 @@ __metadata:
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
     decimal.js: 10.4.3
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -112,7 +112,7 @@ __metadata:
     cypress-pipe: 2.0.0
     cypress-wait-until: 1.7.2
     decimal.js: 10.4.3
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -194,7 +194,7 @@ __metadata:
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
     decimal.js: 10.4.3
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -252,7 +252,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -300,7 +300,7 @@ __metadata:
     aws-sdk-client-mock-jest: 2.1.1
     aws4-axios: 3.2.8
     axios: 1.4.0
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -349,7 +349,7 @@ __metadata:
     aws-sdk-client-mock-jest: 2.1.1
     aws4-axios: 3.2.8
     axios: 1.4.0
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -398,7 +398,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -444,7 +444,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -4699,7 +4699,7 @@ __metadata:
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
     copy-webpack-plugin: 11.0.0
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -4740,7 +4740,7 @@ __metadata:
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
     cfn-response-async: 1.0.0
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -4806,7 +4806,7 @@ __metadata:
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -5216,10 +5216,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:8.41.0":
-  version: 8.41.0
-  resolution: "@eslint/js@npm:8.41.0"
-  checksum: af013d70fe8d0429cdf5cd8b5dcc6fc384ed026c1eccb0cfe30f5849b968ab91645111373fd1b83282b38955b1bdfbe667c1a7dbda3b06cae753521223cad775
+"@eslint/js@npm:8.42.0":
+  version: 8.42.0
+  resolution: "@eslint/js@npm:8.42.0"
+  checksum: 750558843ac458f7da666122083ee05306fc087ecc1e5b21e7e14e23885775af6c55bcc92283dff1862b7b0d8863ec676c0f18c7faf1219c722fe91a8ece56b6
   languageName: node
   linkType: hard
 
@@ -5643,14 +5643,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@humanwhocodes/config-array@npm:^0.11.8":
-  version: 0.11.8
-  resolution: "@humanwhocodes/config-array@npm:0.11.8"
+"@humanwhocodes/config-array@npm:^0.11.10":
+  version: 0.11.10
+  resolution: "@humanwhocodes/config-array@npm:0.11.10"
   dependencies:
     "@humanwhocodes/object-schema": ^1.2.1
     debug: ^4.1.1
     minimatch: ^3.0.5
-  checksum: 0fd6b3c54f1674ce0a224df09b9c2f9846d20b9e54fabae1281ecfc04f2e6ad69bf19e1d6af6a28f88e8aa3990168b6cb9e1ef755868c3256a630605ec2cb1d3
+  checksum: 1b1302e2403d0e35bc43e66d67a2b36b0ad1119efc704b5faff68c41f791a052355b010fb2d27ef022670f550de24cd6d08d5ecf0821c16326b7dcd0ee5d5d8a
   languageName: node
   linkType: hard
 
@@ -5695,7 +5695,7 @@ __metadata:
     auth0-js: 9.21.0
     axios: 1.4.0
     body-scroll-lock: 3.1.5
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -5770,7 +5770,7 @@ __metadata:
     "@typescript-eslint/parser": 5.59.8
     auth0: 3.0.1
     auth0-deploy-cli: 7.17.3
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6238,7 +6238,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
     aws-lambda-mock-context: 3.2.1
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6281,7 +6281,7 @@ __metadata:
     "@typescript-eslint/parser": 5.59.8
     aws-appsync-auth-link: 3.0.7
     aws-appsync-subscription-link: 3.1.2
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6330,7 +6330,7 @@ __metadata:
     "@types/react-dom": 18.2.4
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6373,7 +6373,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
     axios: 1.4.0
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6428,7 +6428,7 @@ __metadata:
     "@types/styled-components": 5.1.26
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6472,7 +6472,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6484,7 +6484,7 @@ __metadata:
   peerDependencies:
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6503,7 +6503,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6519,7 +6519,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6547,7 +6547,7 @@ __metadata:
     "@types/jest": 29.5.2
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6580,7 +6580,7 @@ __metadata:
     "@types/jest": 29.5.2
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6627,7 +6627,7 @@ __metadata:
     "@types/react": 18.2.8
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6673,7 +6673,7 @@ __metadata:
     "@typescript-eslint/parser": 5.59.8
     aws-sdk-client-mock: 2.1.1
     aws-sdk-client-mock-jest: 2.1.1
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6696,7 +6696,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/semantic-release@workspace:packages/semantic-release"
   dependencies:
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-prettier: 8.8.0
     eslint-import-resolver-node: 0.3.7
@@ -6725,7 +6725,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
     assert: 2.0.0
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6760,7 +6760,7 @@ __metadata:
     "@types/jest": 29.5.2
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6794,7 +6794,7 @@ __metadata:
     "@types/jest": 29.5.2
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6824,7 +6824,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -6844,7 +6844,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@typescript-eslint/eslint-plugin": 5.59.8
     "@typescript-eslint/parser": 5.59.8
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -7367,7 +7367,7 @@ __metadata:
     aws-sdk-client-mock-jest: 2.1.1
     axios: 1.4.0
     axios-mock-adapter: 1.21.4
-    eslint: 8.41.0
+    eslint: 8.42.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.0.0
     eslint-config-prettier: 8.8.0
@@ -16639,15 +16639,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:8.41.0":
-  version: 8.41.0
-  resolution: "eslint@npm:8.41.0"
+"eslint@npm:8.42.0":
+  version: 8.42.0
+  resolution: "eslint@npm:8.42.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.4.0
     "@eslint/eslintrc": ^2.0.3
-    "@eslint/js": 8.41.0
-    "@humanwhocodes/config-array": ^0.11.8
+    "@eslint/js": 8.42.0
+    "@humanwhocodes/config-array": ^0.11.10
     "@humanwhocodes/module-importer": ^1.0.1
     "@nodelib/fs.walk": ^1.2.8
     ajv: ^6.10.0
@@ -16684,7 +16684,7 @@ __metadata:
     text-table: ^0.2.0
   bin:
     eslint: bin/eslint.js
-  checksum: 09979a6f8451dcc508a7005b6670845c8a518376280b3fd96657a406b8b6ef29d0e480d1ba11b4eb48da93d607e0c55c9b877676fe089d09973ec152354e23b2
+  checksum: 07105397b5f2ff4064b983b8971e8c379ec04b1dfcc9d918976b3e00377189000161dac991d82ba14f8759e466091b8c71146f602930ca810c290ee3fcb3faf0
   languageName: node
   linkType: hard
 
