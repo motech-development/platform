@@ -37,7 +37,7 @@
     "@swc/jest": "0.2.26",
     "@types/jest": "29.5.2",
     "@types/qs": "6.9.7",
-    "@types/react": "18.2.10",
+    "@types/react": "18.2.11",
     "@typescript-eslint/eslint-plugin": "5.59.9",
     "@typescript-eslint/parser": "5.59.9",
     "eslint": "8.42.0",
