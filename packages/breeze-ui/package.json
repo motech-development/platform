@@ -45,7 +45,7 @@
     "@motech-development/eslint-config-motech-react": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
-    "@rollup/plugin-commonjs": "25.0.0",
+    "@rollup/plugin-commonjs": "25.0.1",
     "@rollup/plugin-node-resolve": "15.1.0",
     "@storybook/addon-a11y": "6.5.16",
     "@storybook/addon-knobs": "6.4.0",
