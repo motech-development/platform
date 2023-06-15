@@ -5684,7 +5684,7 @@ __metadata:
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 14.0.0
     "@testing-library/user-event": 14.4.3
-    "@types/auth0-js": 9.14.7
+    "@types/auth0-js": 9.21.0
     "@types/jest": 29.5.2
     "@types/react": 18.2.11
     "@types/react-dom": 18.2.4
@@ -9196,10 +9196,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/auth0-js@npm:9.14.7":
-  version: 9.14.7
-  resolution: "@types/auth0-js@npm:9.14.7"
-  checksum: dda4c3355aaeca38a8a330e09392f74acca368ca6ba2f2e91e3ac42cbbbb7a52dddd775942afe168987cca62e909b3541c65f7f36881bd22a769f29715e02ea8
+"@types/auth0-js@npm:9.21.0":
+  version: 9.21.0
+  resolution: "@types/auth0-js@npm:9.21.0"
+  checksum: 4af3f5b124153b4e7fcbefa9a6becbf41807236f1feae61c38a97385010ad32efeb1a379fa99d1d3c89abe1ce61a6dc90754720b28ad0674a2d09d5cfa89a2c9
   languageName: node
   linkType: hard
 
