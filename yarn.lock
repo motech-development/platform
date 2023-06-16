@@ -127,7 +127,7 @@ __metadata:
     graphql: 16.6.0
     i18next: 22.5.1
     i18next-browser-languagedetector: 7.0.2
-    i18next-chained-backend: 4.2.0
+    i18next-chained-backend: 4.3.0
     i18next-resources-to-backend: 1.1.4
     jest: 29.5.0
     jest-date-mock: 1.0.8
@@ -4409,12 +4409,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.19.4, @babel/runtime@npm:^7.20.6, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.21.5, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2, @babel/runtime@npm:^7.9.6":
-  version: 7.22.0
-  resolution: "@babel/runtime@npm:7.22.0"
+"@babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.14.6, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.19.4, @babel/runtime@npm:^7.20.6, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.21.5, @babel/runtime@npm:^7.22.3, @babel/runtime@npm:^7.4.4, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2, @babel/runtime@npm:^7.9.6":
+  version: 7.22.5
+  resolution: "@babel/runtime@npm:7.22.5"
   dependencies:
     regenerator-runtime: ^0.13.11
-  checksum: fa60a963f33de98baf55179b8b4b986d7ed4b97ec4f725e976fd3ecd6f3005096d9df4ef3cd4a6ce46105d619c7cb086567bcf272e4596a63e66ef9b36463bcb
+  checksum: 12a50b7de2531beef38840d17af50c55a094253697600cee255311222390c68eed704829308d4fd305e1b3dfbce113272e428e9d9d45b1730e0fede997eaceb1
   languageName: node
   linkType: hard
 
@@ -5708,7 +5708,7 @@ __metadata:
     formik: 2.4.1
     i18next: 22.5.1
     i18next-browser-languagedetector: 7.0.2
-    i18next-chained-backend: 4.2.0
+    i18next-chained-backend: 4.3.0
     i18next-resources-to-backend: 1.1.4
     jest: 29.5.0
     jest-environment-jsdom: 29.5.0
@@ -19335,12 +19335,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-chained-backend@npm:4.2.0":
-  version: 4.2.0
-  resolution: "i18next-chained-backend@npm:4.2.0"
+"i18next-chained-backend@npm:4.3.0":
+  version: 4.3.0
+  resolution: "i18next-chained-backend@npm:4.3.0"
   dependencies:
-    "@babel/runtime": ^7.19.4
-  checksum: 8ce90573772b04bc5d223eb49f90b8167b6f1c58a01f03dca4309e201c59dd6b0269e040b93d7f0aa1488576a99d7ba95af22330f932b0d6af38a4769da16c4c
+    "@babel/runtime": ^7.22.3
+    i18next-resources-to-backend: 1.1.4
+  checksum: 30cc6b1e00e001d26c3924b7229a80cdcc79e0d192819c2f2a2bb8bd452fbc2299c887dc449793ca755211d63956895346819f96f68cabcf7f80e51f7fe14c34
   languageName: node
   linkType: hard
 
