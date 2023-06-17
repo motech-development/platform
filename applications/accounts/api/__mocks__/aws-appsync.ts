@@ -1,5 +1,7 @@
-import * as AppSync from 'aws-appsync';
+/* eslint-disable class-methods-use-this */
+/* eslint-disable import/prefer-default-export */
+export class AWSAppSyncClient {
+  public mutate() {}
+}
 
-AppSync.AWSAppSyncClient.prototype.mutate = jest.fn();
-
-module.exports = AppSync;
+AWSAppSyncClient.prototype.mutate = jest.fn();
