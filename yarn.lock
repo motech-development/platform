@@ -30,7 +30,7 @@ __metadata:
     "@motech-development/serverless-outputs-env": "workspace:*"
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@types/luxon": 3.3.0
     "@typescript-eslint/eslint-plugin": 5.59.11
@@ -184,7 +184,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@types/luxon": 3.3.0
     "@types/uuid": 9.0.2
@@ -243,7 +243,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@types/luxon": 3.3.0
     "@types/uuid": 9.0.2
@@ -291,7 +291,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@typescript-eslint/eslint-plugin": 5.59.11
     "@typescript-eslint/parser": 5.59.11
@@ -336,7 +336,7 @@ __metadata:
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
     "@types/archiver": 5.3.2
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@types/luxon": 3.3.0
     "@types/qs": 6.9.7
@@ -390,7 +390,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@types/uuid": 9.0.2
     "@typescript-eslint/eslint-plugin": 5.59.11
@@ -435,7 +435,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@types/luxon": 3.3.0
     "@types/uuid": 9.0.2
@@ -4691,7 +4691,7 @@ __metadata:
     "@motech-development/webpack-permissions-plugin": "workspace:*"
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@typescript-eslint/eslint-plugin": 5.59.11
     "@typescript-eslint/parser": 5.59.11
@@ -4732,7 +4732,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@typescript-eslint/eslint-plugin": 5.59.11
     "@typescript-eslint/parser": 5.59.11
@@ -4798,7 +4798,7 @@ __metadata:
     "@octokit/rest": 19.0.11
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@types/luxon": 3.3.0
     "@typescript-eslint/eslint-plugin": 5.59.11
@@ -6233,7 +6233,7 @@ __metadata:
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@typescript-eslint/eslint-plugin": 5.59.11
     "@typescript-eslint/parser": 5.59.11
@@ -7455,7 +7455,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@swc/core": 1.3.63
     "@swc/jest": 0.2.26
-    "@types/aws-lambda": 8.10.117
+    "@types/aws-lambda": 8.10.118
     "@types/jest": 29.5.2
     "@typescript-eslint/eslint-plugin": 5.59.11
     "@typescript-eslint/parser": 5.59.11
@@ -9300,10 +9300,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/aws-lambda@npm:8.10.117":
-  version: 8.10.117
-  resolution: "@types/aws-lambda@npm:8.10.117"
-  checksum: fb842831d14da399a8a7a8829fed3e7e77bae7443bfa0f59549994cd634b4f09b3aed656e4f4c0640dbe0f7ab57a6044ca05bfb7ca73297c50fab7f64bac4fb5
+"@types/aws-lambda@npm:8.10.118":
+  version: 8.10.118
+  resolution: "@types/aws-lambda@npm:8.10.118"
+  checksum: c43b150a7d0574b4b394b30ef7fcc6e6f07d192829b9ee2b7cc008924958240b00057f0d2da2a00cf4a2a4d39a8849f5c68c6ede61884ebff7c5c367acd95430
   languageName: node
   linkType: hard
 
