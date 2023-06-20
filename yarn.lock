@@ -71,7 +71,7 @@ __metadata:
   resolution: "@accounts/client@workspace:applications/accounts/client"
   dependencies:
     "@apollo/client": 3.7.15
-    "@auth0/auth0-react": 2.1.0
+    "@auth0/auth0-react": 2.1.1
     "@fortawesome/fontawesome-svg-core": 6.4.0
     "@fortawesome/free-solid-svg-icons": 6.4.0
     "@fortawesome/react-fontawesome": 0.2.0
@@ -537,22 +537,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth0/auth0-react@npm:2.1.0":
-  version: 2.1.0
-  resolution: "@auth0/auth0-react@npm:2.1.0"
+"@auth0/auth0-react@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@auth0/auth0-react@npm:2.1.1"
   dependencies:
-    "@auth0/auth0-spa-js": ^2.0.4
+    "@auth0/auth0-spa-js": ^2.0.8
   peerDependencies:
     react: ^16.11.0 || ^17 || ^18
     react-dom: ^16.11.0 || ^17 || ^18
-  checksum: f1e480d7ab79bf4b1e621f8d06172c658ac1a2fe5bcea71df7ca29afd2f642020c040865077fb7974aec2b33c5c8c7dba5d438b34e0c4478258ed0eaeef03066
+  checksum: 37093c8ec5a4dc6bff4b04f8b8a3beba5aa378c223dd07ef00d8e0e624ee6eaa15ac6f2464b3d26b02bd272d5b569de9903b6256352c94939285310c877d9da2
   languageName: node
   linkType: hard
 
-"@auth0/auth0-spa-js@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "@auth0/auth0-spa-js@npm:2.0.4"
-  checksum: 1ff91b47cca70bfc911a0bd97ee5a4d9e055784cde7961266ca68d3c4d1721b11aba1d33fee5a1919d1808f21949682041e6cd293bb014e2f1f1edfe454e8f0c
+"@auth0/auth0-spa-js@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "@auth0/auth0-spa-js@npm:2.0.8"
+  checksum: 98a278aa0cc7ee81e8cdcc2c1684adb129461a54a197623d133a257b49961812354f07c962f8f40f5e62b2837dd291e62d61592ea7d7b7666c3ab9030794160d
   languageName: node
   linkType: hard
 
@@ -6313,7 +6313,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/auth@workspace:packages/auth"
   dependencies:
-    "@auth0/auth0-react": 2.1.0
+    "@auth0/auth0-react": 2.1.1
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
