@@ -127,7 +127,7 @@ __metadata:
     graphql: 16.6.0
     i18next: 22.5.1
     i18next-browser-languagedetector: 7.0.2
-    i18next-chained-backend: 4.3.0
+    i18next-chained-backend: 4.4.0
     i18next-resources-to-backend: 1.1.4
     jest: 29.5.0
     jest-date-mock: 1.0.8
@@ -5708,7 +5708,7 @@ __metadata:
     formik: 2.4.2
     i18next: 22.5.1
     i18next-browser-languagedetector: 7.0.2
-    i18next-chained-backend: 4.3.0
+    i18next-chained-backend: 4.4.0
     i18next-resources-to-backend: 1.1.4
     jest: 29.5.0
     jest-environment-jsdom: 29.5.0
@@ -19432,13 +19432,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-chained-backend@npm:4.3.0":
-  version: 4.3.0
-  resolution: "i18next-chained-backend@npm:4.3.0"
+"i18next-chained-backend@npm:4.4.0":
+  version: 4.4.0
+  resolution: "i18next-chained-backend@npm:4.4.0"
   dependencies:
     "@babel/runtime": ^7.22.3
     i18next-resources-to-backend: 1.1.4
-  checksum: 30cc6b1e00e001d26c3924b7229a80cdcc79e0d192819c2f2a2bb8bd452fbc2299c887dc449793ca755211d63956895346819f96f68cabcf7f80e51f7fe14c34
+  checksum: dcf6e90cc5455de515c29e438f24ded50f3e7b0c62d9e7d1591c58559f5d9452efbc0d01f1868029b5d2c6eea7f452215ddd60c36c467409fef7d22c8aaea071
   languageName: node
   linkType: hard
 
