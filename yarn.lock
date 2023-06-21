@@ -125,7 +125,7 @@ __metadata:
     file-saver: 2.0.5
     formik: 2.4.2
     graphql: 16.6.0
-    i18next: 23.0.2
+    i18next: 23.1.0
     i18next-browser-languagedetector: 7.0.2
     i18next-chained-backend: 4.4.0
     i18next-resources-to-backend: 1.1.4
@@ -5706,7 +5706,7 @@ __metadata:
     eslint-plugin-react: 7.32.2
     eslint-plugin-react-hooks: 4.6.0
     formik: 2.4.2
-    i18next: 23.0.2
+    i18next: 23.1.0
     i18next-browser-languagedetector: 7.0.2
     i18next-chained-backend: 4.4.0
     i18next-resources-to-backend: 1.1.4
@@ -19451,12 +19451,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:23.0.2":
-  version: 23.0.2
-  resolution: "i18next@npm:23.0.2"
+"i18next@npm:23.1.0":
+  version: 23.1.0
+  resolution: "i18next@npm:23.1.0"
   dependencies:
     "@babel/runtime": ^7.22.5
-  checksum: f5836cfd4988a59a652d4efa6ed2e7c83b64d42acbfc0c868b2ac9204fb526e1157ca85523d2ef5a4b13722e09ec54ae31d5a63240becddee796fd995264555b
+  checksum: 1d2f28869fb2ea6b0387c77aba9da2c5d933df79c5bef240b6637d48c1e8489127af989c0aeeef87dd2b9123aaef27ab5ece2a79f1010720a54742eed2c100ae
   languageName: node
   linkType: hard
 
