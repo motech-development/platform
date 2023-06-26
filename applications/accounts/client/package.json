@@ -83,7 +83,7 @@
     "@typescript-eslint/parser": "5.60.0",
     "@vitejs/plugin-react-swc": "3.3.2",
     "axe-core": "4.7.2",
-    "cypress": "12.14.0",
+    "cypress": "12.15.0",
     "cypress-axe": "1.4.0",
     "cypress-cloud": "1.7.4",
     "cypress-file-upload": "5.0.8",
