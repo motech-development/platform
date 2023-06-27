@@ -140,7 +140,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-ga: 3.3.1
-    react-i18next: 13.0.0
+    react-i18next: 13.0.1
     react-idle-timer: 5.7.2
     react-router-dom: 6.13.0
     serverless: 3.32.2
@@ -5719,7 +5719,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-ga: 3.3.1
-    react-i18next: 13.0.0
+    react-i18next: 13.0.1
     react-router-dom: 6.13.0
     react-snap: 1.23.0
     serverless: 3.32.2
@@ -26725,21 +26725,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:13.0.0":
-  version: 13.0.0
-  resolution: "react-i18next@npm:13.0.0"
+"react-i18next@npm:13.0.1":
+  version: 13.0.1
+  resolution: "react-i18next@npm:13.0.1"
   dependencies:
     "@babel/runtime": ^7.22.5
     html-parse-stringify: ^3.0.1
   peerDependencies:
-    i18next: ">= 23.0.1"
+    i18next: ">= 23.2.3"
     react: ">= 16.8.0"
   peerDependenciesMeta:
     react-dom:
       optional: true
     react-native:
       optional: true
-  checksum: f897ebb2570f79d2aee01d3d5cf65c0622a1ef07e2536c2d9206d9fe999ece9abf4b4795be99db4326f18fa3858c69745e21b150254d3da0d1f08c77586b1cc4
+  checksum: eac59c4517c07e4e4b182570140ad9b2f7a7920dac5dadd694107ea6359743fe855390192072464fac579d3de1370bf4656b987a8c9c77babeb5b60ff8f17d3c
   languageName: node
   linkType: hard
 
