@@ -22,7 +22,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "webpack": "5.87.0"
+    "webpack": "5.88.0"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
