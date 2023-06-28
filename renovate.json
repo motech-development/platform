@@ -3,12 +3,8 @@
   "ignoreDeps": ["prettier"],
   "packageRules": [
     {
-      "extends": ["schedule:monthly"],
-      "matchPackageNames": ["aws4-axios", "vite-plugin-pwa"],
-      "matchPackagePrefixes": ["@aws-sdk"]
-    },
-    {
       "automerge": true,
+      "extends": ["schedule:monthly"],
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
     },
     {
