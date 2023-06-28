@@ -7,7 +7,7 @@ on:
       - reopened
       - synchronize
 
-concurrency: ephemeral_environment
+concurrency: development_environment
 
 jobs:
   setup:
