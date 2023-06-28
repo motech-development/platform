@@ -3439,17 +3439,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/smithy-client@npm:3.329.0":
-  version: 3.329.0
-  resolution: "@aws-sdk/smithy-client@npm:3.329.0"
-  dependencies:
-    "@aws-sdk/middleware-stack": 3.329.0
-    "@aws-sdk/types": 3.329.0
-    tslib: ^2.5.0
-  checksum: 4235822be0165c44f780a704da01581c8f8476c6a11e2b421d6fa003a30e9ab3bb37c02289b5678194f6d89304b1a576a1fc79b646ac0c58b482f70ea24a4b16
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/smithy-client@npm:3.342.0":
   version: 3.342.0
   resolution: "@aws-sdk/smithy-client@npm:3.342.0"
@@ -3458,17 +3447,6 @@ __metadata:
     "@aws-sdk/types": 3.342.0
     tslib: ^2.5.0
   checksum: af79f4ec9bce5cda76154839f5f2ce24268cc4ec8f496aa5b9a8ff632f88675dc7015363cd57b397691df4de417cc05d706cf7b0c6ae02c686d42e95f204133d
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/smithy-client@npm:3.347.0":
-  version: 3.347.0
-  resolution: "@aws-sdk/smithy-client@npm:3.347.0"
-  dependencies:
-    "@aws-sdk/middleware-stack": 3.347.0
-    "@aws-sdk/types": 3.347.0
-    tslib: ^2.5.0
-  checksum: 90dcc3bd689de075bc718e6e5ea2169bf3a0705525dca62dfe8169ab48919000db1703ebd1decd12fc6439428a9240e252ef3c4ecd361ef0a7cfa5a26902fb24
   languageName: node
   linkType: hard
 
@@ -3511,30 +3489,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/types@npm:3.329.0":
-  version: 3.329.0
-  resolution: "@aws-sdk/types@npm:3.329.0"
-  dependencies:
-    tslib: ^2.5.0
-  checksum: 2bbcd8e6ba2f813dc220c60e7ac0fa0d0990d49f88030fd8235479586716016c8f9d7aeaf1f4c1a64694275f33690bd1dd4ed46e127983201061e063da73f426
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/types@npm:3.342.0":
   version: 3.342.0
   resolution: "@aws-sdk/types@npm:3.342.0"
   dependencies:
     tslib: ^2.5.0
   checksum: c9ec0873304548696deb604fcc4fcdacb726c9e03a65cdb4e9d8643a24ddf83ea32aa9d85b801406670526ca210131d5a8842d3674c73757c03ca5329ed2d13a
-  languageName: node
-  linkType: hard
-
-"@aws-sdk/types@npm:3.347.0, @aws-sdk/types@npm:^3.1.0, @aws-sdk/types@npm:^3.222.0, @aws-sdk/types@npm:^3.25.0":
-  version: 3.347.0
-  resolution: "@aws-sdk/types@npm:3.347.0"
-  dependencies:
-    tslib: ^2.5.0
-  checksum: 799b053d3651f1754e2925b671fe890047d0ff1af69d22b6826d8e74edefcd558c7c7a911d48eaf5930032bcf291dbdbb6dd2d2f0c596bbe52100941aa349221
   languageName: node
   linkType: hard
 
