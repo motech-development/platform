@@ -10,6 +10,11 @@
     {
       "automerge": true,
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
+    },
+    {
+      "matchPaths": ["applications/accounts/api"],
+      "matchPackageNames": ["graphql"],
+      "allowedVersions": "< 16.0.0"
     }
   ],
   "prConcurrentLimit": 1,
