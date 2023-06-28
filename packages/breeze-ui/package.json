@@ -35,7 +35,7 @@
     "react-dom": "18.2.0",
     "react-number-format": "5.2.2",
     "react-popper": "2.3.0",
-    "react-router-dom": "6.13.0",
+    "react-router-dom": "6.14.0",
     "styled-components": "5.3.11",
     "styled-reset": "4.4.7",
     "yup": "1.2.0"
