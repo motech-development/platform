@@ -3,12 +3,16 @@
   "ignoreDeps": ["prettier"],
   "packageRules": [
     {
-      "automerge": true,
       "extends": ["schedule:monthly"],
+      "matchPackageNames": ["aws4-axios", "vite-plugin-pwa"],
+      "matchPackagePrefixes": ["@aws-sdk"]
+    },
+    {
+      "automerge": true,
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
     },
     {
-      "matchPaths": ["applications/accounts/api"],
+      "matchFiles": ["applications/accounts/api/package.json"],
       "matchPackageNames": ["graphql"],
       "allowedVersions": "< 16.0.0"
     }
