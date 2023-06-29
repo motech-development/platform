@@ -7413,7 +7413,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -7462,7 +7462,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -7511,7 +7511,7 @@ __metadata:
     react-dom: 18.2.0
     react-router-dom: 6.14.0
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -7551,7 +7551,7 @@ __metadata:
     prettier: 2.8.8
     react: 18.2.0
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -7615,7 +7615,7 @@ __metadata:
     react-popper: 2.3.0
     react-router-dom: 6.14.0
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -7721,7 +7721,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -7754,7 +7754,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -7808,7 +7808,7 @@ __metadata:
     react: 18.2.0
     react-router-dom: 6.14.0
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -7847,7 +7847,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -7899,7 +7899,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -7934,7 +7934,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -7969,7 +7969,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
     rimraf: 5.0.1
-    rollup: 3.25.1
+    rollup: 3.25.2
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
@@ -30844,9 +30844,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:3.25.1, rollup@npm:^3.21.0":
-  version: 3.25.1
-  resolution: "rollup@npm:3.25.1"
+"rollup@npm:3.25.2, rollup@npm:^3.21.0":
+  version: 3.25.2
+  resolution: "rollup@npm:3.25.2"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -30854,7 +30854,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: f483b28a0605097a725b080c088262b0fa21f7bce66f741df73d9ff0be6a3baaf2927916b094ce95412f4f15cc59bb5eae020f59cae3d3a6993d123faceb5b41
+  checksum: 80034ec8d71022b816cd31c24455d7b06ab8d8ff49ab9e583ceb03e2ebd0f6ad00824c6257fa4f8d12a12c2dceda999cec9509c1fff956e8a707b0add1bf2d9c
   languageName: node
   linkType: hard
 
