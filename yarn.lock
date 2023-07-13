@@ -37,7 +37,7 @@ __metadata:
     "@typescript-eslint/parser": 5.60.1
     aws-appsync: 4.1.9
     aws-lambda-mock-context: 3.2.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     decimal.js: 10.4.3
     eslint: 8.43.0
@@ -191,7 +191,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.60.1
     "@typescript-eslint/parser": 5.60.1
     aws-lambda-mock-context: 3.2.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     decimal.js: 10.4.3
     eslint: 8.43.0
@@ -250,7 +250,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.60.1
     "@typescript-eslint/parser": 5.60.1
     aws-lambda-mock-context: 3.2.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     eslint: 8.43.0
     eslint-config-airbnb-base: 15.0.0
@@ -296,7 +296,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.60.1
     "@typescript-eslint/parser": 5.60.1
     aws-lambda-mock-context: 3.2.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     aws4-axios: 3.2.8
     axios: 1.4.0
@@ -346,7 +346,7 @@ __metadata:
     "@typescript-eslint/parser": 5.60.1
     archiver: 5.3.1
     aws-lambda-mock-context: 3.2.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     aws4-axios: 3.2.8
     axios: 1.4.0
@@ -397,7 +397,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.60.1
     "@typescript-eslint/parser": 5.60.1
     aws-lambda-mock-context: 3.2.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     eslint: 8.43.0
     eslint-config-airbnb-base: 15.0.0
@@ -443,7 +443,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.60.1
     "@typescript-eslint/parser": 5.60.1
     aws-lambda-mock-context: 3.2.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     eslint: 8.43.0
     eslint-config-airbnb-base: 15.0.0
@@ -5846,7 +5846,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.60.1
     "@typescript-eslint/parser": 5.60.1
     aws-lambda-mock-context: 3.2.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     copy-webpack-plugin: 11.0.0
     eslint: 8.43.0
@@ -5887,7 +5887,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.60.1
     "@typescript-eslint/parser": 5.60.1
     aws-lambda-mock-context: 3.2.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     cfn-response-async: 1.0.0
     eslint: 8.43.0
@@ -5954,7 +5954,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.60.1
     "@typescript-eslint/parser": 5.60.1
     aws-lambda-mock-context: 3.2.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     eslint: 8.43.0
     eslint-config-airbnb-base: 15.0.0
@@ -7835,7 +7835,7 @@ __metadata:
     "@types/jest": 29.5.2
     "@typescript-eslint/eslint-plugin": 5.60.1
     "@typescript-eslint/parser": 5.60.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     eslint: 8.43.0
     eslint-config-airbnb-base: 15.0.0
@@ -8622,7 +8622,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.60.1
     "@typescript-eslint/parser": 5.60.1
     aws-lambda-mock-context: 3.2.1
-    aws-sdk-client-mock: 2.1.1
+    aws-sdk-client-mock: 2.2.0
     aws-sdk-client-mock-jest: 2.1.1
     axios: 1.4.0
     axios-mock-adapter: 1.21.5
@@ -13775,14 +13775,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk-client-mock@npm:2.1.1":
-  version: 2.1.1
-  resolution: "aws-sdk-client-mock@npm:2.1.1"
+"aws-sdk-client-mock@npm:2.2.0":
+  version: 2.2.0
+  resolution: "aws-sdk-client-mock@npm:2.2.0"
   dependencies:
     "@types/sinon": ^10.0.10
     sinon: ^14.0.2
     tslib: ^2.1.0
-  checksum: 8330b88cdaeae401390ece094344ed727db0b007369d862a88afc0a29249828b95cce809faa0c2289c1af99528af0e765b4aba8156b948d01a12299390195cea
+  checksum: 25232d56cd0401bc1212730a4a0192efc5154a211a648fe0cb4d71bd693216f63c8f13776ef04b4b36fb8eb70b9a7d19d87a3979816b9fd153450d44515d5598
   languageName: node
   linkType: hard
 
