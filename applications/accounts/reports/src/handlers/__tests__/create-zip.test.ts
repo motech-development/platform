@@ -2,13 +2,21 @@ import { uploader } from '@motech-development/s3-file-operations';
 import Archiver from 'archiver';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { PassThrough } from 'node:stream';
+import { PassThrough, Readable } from 'node:stream';
 import { handler, IEvent } from '../create-zip';
 
 jest.mock('@motech-development/s3-file-operations', () => ({
-  downloadFileStream: jest.fn(() => ({
-    on: jest.fn(),
-  })),
+  downloadFileStream: jest.fn().mockImplementation(() => {
+    const readable = new Readable();
+
+    readable.push('hello');
+
+    readable.push('world');
+
+    readable.push(null);
+
+    return Promise.resolve(readable);
+  }),
   uploader: jest.fn(() => ({
     done: jest.fn(),
   })),
@@ -92,7 +100,11 @@ describe('create-zip', () => {
     });
 
     it('should upload with the correct params', async () => {
+      jest.useFakeTimers();
+
       await handler(event, context, callback);
+
+      jest.runAllTimers();
 
       expect(uploader).toHaveBeenCalledWith(
         'DESTINATION-BUCKET',
