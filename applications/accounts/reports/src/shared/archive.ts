@@ -4,7 +4,7 @@ import {
   uploader,
 } from '@motech-development/s3-file-operations';
 import Archiver from 'archiver';
-import { PassThrough } from 'node:stream';
+import { PassThrough, Readable } from 'node:stream';
 
 interface IArchiveDestination {
   bucket: string;
@@ -19,6 +19,11 @@ interface IArchiveOrigin {
   }[];
 }
 
+interface IDownloadStream {
+  buffer: Buffer;
+  name: string;
+}
+
 const archive = async (
   report: string,
   destination: IArchiveDestination,
@@ -31,8 +36,25 @@ const archive = async (
     destination.key,
     passThrough,
     'application/zip',
-  );
+  ).done();
   const reportBuffer = Buffer.from(report);
+
+  // Patch archiver to work on Node 18+
+  if (process.env.NODE_ENV !== 'test') {
+    const append = archiver.append.bind(archiver);
+
+    archiver.append = function override(data, options) {
+      const zipInputStream = new Readable();
+
+      zipInputStream.push(data);
+
+      zipInputStream.push(null);
+
+      append(zipInputStream, options);
+
+      return this;
+    };
+  }
 
   archiver.pipe(passThrough);
 
@@ -46,34 +68,52 @@ const archive = async (
     });
 
     const downloadStreams = await Promise.all(
-      origin.keys.map(async ({ key, path }) => {
+      origin.keys.map(async ({ key, path }, index) => {
         logger.info('Start downloading file', {
+          index,
           key,
         });
 
         const stream = await downloadFileStream(origin.bucket, key);
 
-        stream.on('data', () => {});
+        return new Promise<IDownloadStream>((resolve, reject) => {
+          const chunks: Uint8Array[] = [];
 
-        stream.on('end', () => {
-          logger.info('File download complete', {
-            key,
+          stream.on('data', (chunk: Uint8Array) => {
+            logger.debug('Writing file chunk', {
+              index,
+              key,
+            });
+
+            chunks.push(chunk);
+          });
+
+          stream.on('end', () => {
+            logger.info('File download complete', {
+              index,
+              key,
+            });
+
+            resolve({
+              buffer: Buffer.concat(chunks),
+              name: path,
+            });
+          });
+
+          stream.on('error', (e) => {
+            reject(e);
           });
         });
-
-        return {
-          name: path,
-          stream,
-        };
       }),
     );
 
-    downloadStreams.forEach(({ name, stream }) => {
+    downloadStreams.forEach(({ buffer, name }, index) => {
       logger.debug('Adding file', {
+        index,
         name,
       });
 
-      archiver.append(stream, {
+      archiver.append(buffer, {
         name,
       });
     });
@@ -85,7 +125,7 @@ const archive = async (
 
   logger.info('Uploading zip...');
 
-  await upload.done();
+  await upload;
 
   logger.info('Upload complete');
 };
