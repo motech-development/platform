@@ -1,3 +1,4 @@
+import logger from '@motech-development/node-logger';
 import {
   downloadFileStream,
   uploader,
@@ -40,23 +41,53 @@ const archive = async (
   });
 
   if (origin.keys && origin.keys.length > 0) {
+    logger.debug('Files', {
+      total: origin.keys.length,
+    });
+
     const downloadStreams = await Promise.all(
-      origin.keys.map(async ({ key, path }) => ({
-        name: path,
-        stream: await downloadFileStream(origin.bucket, key),
-      })),
+      origin.keys.map(async ({ key, path }) => {
+        logger.info('Start downloading file', {
+          key,
+        });
+
+        const stream = await downloadFileStream(origin.bucket, key);
+
+        stream.on('data', () => {});
+
+        stream.on('end', () => {
+          logger.info('File download complete', {
+            key,
+          });
+        });
+
+        return {
+          name: path,
+          stream,
+        };
+      }),
     );
 
     downloadStreams.forEach(({ name, stream }) => {
+      logger.debug('Adding file', {
+        name,
+      });
+
       archiver.append(stream, {
         name,
       });
     });
   }
 
+  logger.info('Archiver finalising');
+
   await archiver.finalize();
 
-  return upload.done();
+  logger.info('Uploading zip...');
+
+  await upload.done();
+
+  logger.info('Upload complete');
 };
 
 export default archive;

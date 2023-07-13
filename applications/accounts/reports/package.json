@@ -12,6 +12,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.342.0",
     "@aws-sdk/lib-dynamodb": "3.342.0",
+    "@motech-development/node-logger": "workspace:*",
     "@motech-development/s3-file-operations": "workspace:*",
     "archiver": "5.3.1",
     "aws4-axios": "3.2.8",

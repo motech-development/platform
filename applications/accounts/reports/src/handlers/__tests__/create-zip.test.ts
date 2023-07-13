@@ -6,7 +6,9 @@ import { PassThrough } from 'node:stream';
 import { handler, IEvent } from '../create-zip';
 
 jest.mock('@motech-development/s3-file-operations', () => ({
-  downloadFileStream: jest.fn(),
+  downloadFileStream: jest.fn(() => ({
+    on: jest.fn(),
+  })),
   uploader: jest.fn(() => ({
     done: jest.fn(),
   })),
