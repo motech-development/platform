@@ -100,11 +100,7 @@ describe('create-zip', () => {
     });
 
     it('should upload with the correct params', async () => {
-      jest.useFakeTimers();
-
       await handler(event, context, callback);
-
-      jest.runAllTimers();
 
       expect(uploader).toHaveBeenCalledWith(
         'DESTINATION-BUCKET',
