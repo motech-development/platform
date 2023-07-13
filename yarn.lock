@@ -330,6 +330,7 @@ __metadata:
     "@aws-sdk/client-dynamodb": 3.342.0
     "@aws-sdk/lib-dynamodb": 3.342.0
     "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/s3-file-operations": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
