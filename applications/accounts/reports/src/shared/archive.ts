@@ -40,21 +40,21 @@ const archive = async (
   const reportBuffer = Buffer.from(report);
 
   // Patch archiver to work on Node 18+
-  if (process.env.NODE_ENV !== 'test') {
-    const append = archiver.append.bind(archiver);
+  const append = archiver.append.bind(archiver);
 
-    archiver.append = function override(data, options) {
-      const zipInputStream = new Readable();
+  archiver.append = function override(data, options) {
+    const readable = new Readable();
 
-      zipInputStream.push(data);
+    readable.push(
+      process.env.NODE_ENV === 'test' ? data.toString('utf8') : data,
+    );
 
-      zipInputStream.push(null);
+    readable.push(null);
 
-      append(zipInputStream, options);
+    append(readable, options);
 
-      return this;
-    };
-  }
+    return this;
+  };
 
   archiver.pipe(passThrough);
 
