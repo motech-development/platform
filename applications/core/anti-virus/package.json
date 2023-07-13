@@ -31,7 +31,7 @@
     "@typescript-eslint/eslint-plugin": "5.60.1",
     "@typescript-eslint/parser": "5.60.1",
     "aws-lambda-mock-context": "3.2.1",
-    "aws-sdk-client-mock": "2.1.1",
+    "aws-sdk-client-mock": "2.2.0",
     "aws-sdk-client-mock-jest": "2.1.1",
     "copy-webpack-plugin": "11.0.0",
     "eslint": "8.43.0",
