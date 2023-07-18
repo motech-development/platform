@@ -22,12 +22,12 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.342.0",
-    "@aws-sdk/lib-storage": "3.342.0",
-    "@aws-sdk/s3-request-presigner": "3.342.0"
+    "@aws-sdk/client-s3": "3.370.0",
+    "@aws-sdk/lib-storage": "3.370.0",
+    "@aws-sdk/s3-request-presigner": "3.370.0"
   },
   "devDependencies": {
-    "@aws-sdk/util-stream-node": "3.342.0",
+    "@aws-sdk/util-stream-node": "3.370.0",
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
@@ -38,8 +38,8 @@
     "@types/jest": "29.5.2",
     "@typescript-eslint/eslint-plugin": "5.60.1",
     "@typescript-eslint/parser": "5.60.1",
-    "aws-sdk-client-mock": "2.2.0",
-    "aws-sdk-client-mock-jest": "2.1.1",
+    "aws-sdk-client-mock": "3.0.0",
+    "aws-sdk-client-mock-jest": "3.0.0",
     "eslint": "8.43.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "17.0.0",
