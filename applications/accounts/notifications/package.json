@@ -10,8 +10,8 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.342.0",
-    "@aws-sdk/lib-dynamodb": "3.342.0",
+    "@aws-sdk/client-dynamodb": "3.370.0",
+    "@aws-sdk/lib-dynamodb": "3.370.0",
     "@motech-development/api-gateway-handler": "workspace:*",
     "luxon": "3.3.0",
     "uuid": "9.0.0",
@@ -30,8 +30,8 @@
     "@typescript-eslint/eslint-plugin": "5.60.1",
     "@typescript-eslint/parser": "5.60.1",
     "aws-lambda-mock-context": "3.2.1",
-    "aws-sdk-client-mock": "2.2.0",
-    "aws-sdk-client-mock-jest": "2.1.1",
+    "aws-sdk-client-mock": "3.0.0",
+    "aws-sdk-client-mock-jest": "3.0.0",
     "eslint": "8.43.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "17.0.0",
