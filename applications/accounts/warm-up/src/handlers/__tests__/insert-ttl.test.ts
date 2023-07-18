@@ -1,5 +1,6 @@
 import {
   DynamoDBClient,
+  DynamoDBClientResolvedConfig,
   ServiceInputTypes,
   ServiceOutputTypes,
 } from '@aws-sdk/client-dynamodb';
@@ -13,7 +14,11 @@ import { handler } from '../insert-ttl';
 describe('insert-ttl', () => {
   let callback: jest.Mock;
   let context: Context;
-  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let ddb: AwsStub<
+    ServiceInputTypes,
+    ServiceOutputTypes,
+    DynamoDBClientResolvedConfig
+  >;
 
   beforeAll(() => {
     advanceTo('2021-04-11T19:45:00+00:00');

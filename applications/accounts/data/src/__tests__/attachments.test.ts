@@ -1,5 +1,6 @@
 import {
   SQSClient,
+  SQSClientResolvedConfig,
   SendMessageBatchCommand,
   ServiceInputTypes,
   ServiceOutputTypes,
@@ -14,7 +15,11 @@ describe('attachments', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: DynamoDBStreamEvent;
-  let sqs: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let sqs: AwsStub<
+    ServiceInputTypes,
+    ServiceOutputTypes,
+    SQSClientResolvedConfig
+  >;
 
   beforeEach(() => {
     context = ctx();

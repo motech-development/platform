@@ -1,5 +1,6 @@
 import {
   DynamoDBClient,
+  DynamoDBClientResolvedConfig,
   ServiceInputTypes,
   ServiceOutputTypes,
 } from '@aws-sdk/client-dynamodb';
@@ -11,7 +12,11 @@ import updateAttachments from '../update-attachments';
 
 describe('update-attachments', () => {
   let bucket: string;
-  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let ddb: AwsStub<
+    ServiceInputTypes,
+    ServiceOutputTypes,
+    DynamoDBClientResolvedConfig
+  >;
   let documentClient: DynamoDBClient;
   let tableName: string;
   let records: SQSRecord[];

@@ -1,5 +1,6 @@
 import {
   DynamoDBClient,
+  DynamoDBClientResolvedConfig,
   ServiceInputTypes,
   ServiceOutputTypes,
 } from '@aws-sdk/client-dynamodb';
@@ -12,7 +13,11 @@ import { handler } from '../get-banks';
 describe('get-banks', () => {
   let callback: jest.Mock;
   let context: Context;
-  let dynamodb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let dynamodb: AwsStub<
+    ServiceInputTypes,
+    ServiceOutputTypes,
+    DynamoDBClientResolvedConfig
+  >;
   let event: APIGatewayProxyEvent;
 
   beforeEach(() => {
