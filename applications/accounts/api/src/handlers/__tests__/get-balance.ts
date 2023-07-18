@@ -1,11 +1,6 @@
-import {
-  DynamoDBClient,
-  DynamoDBClientResolvedConfig,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import getBalance, { IEvent } from '../get-balance';
 import delay from '../../shared/delay';
 import transformBalance, {
@@ -24,11 +19,7 @@ jest.mock('../../shared/transform-balance', () => ({
 }));
 
 describe('get-balance', () => {
-  let ddb: AwsStub<
-    ServiceInputTypes,
-    ServiceOutputTypes,
-    DynamoDBClientResolvedConfig
-  >;
+  let ddb: AwsClientStub<DynamoDBClient>;
   let event: IEvent;
 
   beforeEach(() => {

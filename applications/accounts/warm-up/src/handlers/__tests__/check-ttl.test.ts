@@ -1,23 +1,14 @@
-import {
-  DynamoDBClient,
-  DynamoDBClientResolvedConfig,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { handler, IEvent } from '../check-ttl';
 
 describe('check-ttl', () => {
   let callback: jest.Mock;
   let context: Context;
-  let ddb: AwsStub<
-    ServiceInputTypes,
-    ServiceOutputTypes,
-    DynamoDBClientResolvedConfig
-  >;
+  let ddb: AwsClientStub<DynamoDBClient>;
   let event: IEvent;
 
   beforeEach(() => {
