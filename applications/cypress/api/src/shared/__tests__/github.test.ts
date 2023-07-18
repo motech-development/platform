@@ -1,22 +1,12 @@
-import {
-  GetParameterCommand,
-  SSMClient,
-  SSMClientResolvedConfig,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-ssm';
+import { GetParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit } from '@octokit/rest';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import github from '../github';
 
 describe('github', () => {
   let env: NodeJS.ProcessEnv;
-  let ssm: AwsStub<
-    ServiceInputTypes,
-    ServiceOutputTypes,
-    SSMClientResolvedConfig
-  >;
+  let ssm: AwsClientStub<SSMClient>;
 
   beforeEach(() => {
     env = {

@@ -1,17 +1,12 @@
-import {
-  SQSClient,
-  SendMessageBatchCommand,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-sqs';
+import { SQSClient, SendMessageBatchCommand } from '@aws-sdk/client-sqs';
 import { DynamoDBRecord } from 'aws-lambda';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import deleteAttachments from '../delete-attachments';
 
 describe('delete-attachments', () => {
   let client: SQSClient;
   let queueUrl: string;
-  let sqs: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let sqs: AwsClientStub<SQSClient>;
 
   beforeEach(() => {
     client = new SQSClient({});

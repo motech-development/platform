@@ -1,25 +1,16 @@
-import {
-  DynamoDBClient,
-  DynamoDBClientResolvedConfig,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import { aws4Interceptor } from 'aws4-axios';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import axios from 'axios';
 import { handler, IEvent } from '../unlink-bank';
 
 describe('unlink-bank', () => {
   let callback: jest.Mock;
   let context: Context;
-  let ddb: AwsStub<
-    ServiceInputTypes,
-    ServiceOutputTypes,
-    DynamoDBClientResolvedConfig
-  >;
+  let ddb: AwsClientStub<DynamoDBClient>;
   let event: IEvent;
 
   beforeEach(() => {

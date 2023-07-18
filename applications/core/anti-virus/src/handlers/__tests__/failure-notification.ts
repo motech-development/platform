@@ -1,13 +1,8 @@
-import {
-  SendMessageCommand,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-  SQSClient,
-} from '@aws-sdk/client-sqs';
+import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { getFileData } from '@motech-development/s3-file-operations';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { handler, IEvent } from '../failure-notification';
 
 jest.mock('@motech-development/s3-file-operations', () => ({
@@ -18,7 +13,7 @@ describe('failure-notification', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: IEvent;
-  let sqs: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let sqs: AwsClientStub<SQSClient>;
 
   beforeEach(() => {
     context = ctx();
