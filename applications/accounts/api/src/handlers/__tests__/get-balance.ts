@@ -1,5 +1,6 @@
 import {
   DynamoDBClient,
+  DynamoDBClientResolvedConfig,
   ServiceInputTypes,
   ServiceOutputTypes,
 } from '@aws-sdk/client-dynamodb';
@@ -23,7 +24,11 @@ jest.mock('../../shared/transform-balance', () => ({
 }));
 
 describe('get-balance', () => {
-  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let ddb: AwsStub<
+    ServiceInputTypes,
+    ServiceOutputTypes,
+    DynamoDBClientResolvedConfig
+  >;
   let event: IEvent;
 
   beforeEach(() => {

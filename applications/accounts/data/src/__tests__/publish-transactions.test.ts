@@ -1,5 +1,6 @@
 import {
   DynamoDBClient,
+  DynamoDBClientResolvedConfig,
   ServiceInputTypes,
   ServiceOutputTypes,
 } from '@aws-sdk/client-dynamodb';
@@ -13,7 +14,11 @@ import { handler } from '../publish-transactions';
 describe('schedule-transaction', () => {
   let callback: jest.Mock;
   let context: Context;
-  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let ddb: AwsStub<
+    ServiceInputTypes,
+    ServiceOutputTypes,
+    DynamoDBClientResolvedConfig
+  >;
   let event: DynamoDBStreamEvent;
 
   beforeEach(() => {

@@ -1,6 +1,7 @@
 import {
   DeleteIdentityCommand,
   SESClient,
+  SESClientResolvedConfig,
   ServiceInputTypes,
   ServiceOutputTypes,
   VerifyDomainDkimCommand,
@@ -18,7 +19,11 @@ describe('verify-domain', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: CloudFormationCustomResourceEvent;
-  let ses: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let ses: AwsStub<
+    ServiceInputTypes,
+    ServiceOutputTypes,
+    SESClientResolvedConfig
+  >;
 
   beforeEach(() => {
     context = ctx();

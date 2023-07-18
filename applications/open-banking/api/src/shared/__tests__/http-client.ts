@@ -1,6 +1,7 @@
 import {
   GetParameterCommand,
   SSMClient,
+  SSMClientResolvedConfig,
   ServiceInputTypes,
   ServiceOutputTypes,
 } from '@aws-sdk/client-ssm';
@@ -10,7 +11,11 @@ import httpClient from '../http-client';
 
 describe('http-client', () => {
   let mock: MockAdapter;
-  let ssm: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let ssm: AwsStub<
+    ServiceInputTypes,
+    ServiceOutputTypes,
+    SSMClientResolvedConfig
+  >;
 
   beforeEach(() => {
     mock = new MockAdapter(httpClient);

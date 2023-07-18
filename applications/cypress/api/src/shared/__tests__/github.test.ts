@@ -1,6 +1,7 @@
 import {
   GetParameterCommand,
   SSMClient,
+  SSMClientResolvedConfig,
   ServiceInputTypes,
   ServiceOutputTypes,
 } from '@aws-sdk/client-ssm';
@@ -11,7 +12,11 @@ import github from '../github';
 
 describe('github', () => {
   let env: NodeJS.ProcessEnv;
-  let ssm: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let ssm: AwsStub<
+    ServiceInputTypes,
+    ServiceOutputTypes,
+    SSMClientResolvedConfig
+  >;
 
   beforeEach(() => {
     env = {
