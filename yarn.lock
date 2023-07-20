@@ -61,7 +61,7 @@ __metadata:
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
     typescript: 5.1.6
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-node-externals: 3.0.0
   languageName: unknown
   linkType: soft
@@ -214,7 +214,7 @@ __metadata:
     swc-loader: 0.2.3
     typescript: 5.1.6
     uuid: 9.0.0
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-node-externals: 3.0.0
   languageName: unknown
   linkType: soft
@@ -272,7 +272,7 @@ __metadata:
     swc-loader: 0.2.3
     typescript: 5.1.6
     uuid: 9.0.0
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-node-externals: 3.0.0
     yup: 1.2.0
   languageName: unknown
@@ -318,7 +318,7 @@ __metadata:
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
     typescript: 5.1.6
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-node-externals: 3.0.0
   languageName: unknown
   linkType: soft
@@ -373,7 +373,7 @@ __metadata:
     swc-loader: 0.2.3
     typescript: 5.1.6
     uuid: 9.0.0
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-node-externals: 3.0.0
     yup: 1.2.0
   languageName: unknown
@@ -418,7 +418,7 @@ __metadata:
     swc-loader: 0.2.3
     typescript: 5.1.6
     uuid: 9.0.0
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-node-externals: 3.0.0
     yup: 1.2.0
   languageName: unknown
@@ -466,7 +466,7 @@ __metadata:
     swc-loader: 0.2.3
     typescript: 5.1.6
     uuid: 9.0.0
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-node-externals: 3.0.0
     yup: 1.2.0
   languageName: unknown
@@ -5615,7 +5615,7 @@ __metadata:
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
     typescript: 5.1.6
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-node-externals: 3.0.0
   languageName: unknown
   linkType: soft
@@ -5655,7 +5655,7 @@ __metadata:
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
     typescript: 5.1.6
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-node-externals: 3.0.0
     yup: 1.2.0
   languageName: unknown
@@ -5722,7 +5722,7 @@ __metadata:
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
     typescript: 5.1.6
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-node-externals: 3.0.0
     yup: 1.2.0
   languageName: unknown
@@ -7688,7 +7688,7 @@ __metadata:
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
     typescript: 5.1.6
-    webpack: 5.88.0
+    webpack: 5.88.1
   languageName: unknown
   linkType: soft
 
@@ -7723,7 +7723,7 @@ __metadata:
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.8.2
     typescript: 5.1.6
-    webpack: 5.88.0
+    webpack: 5.88.1
   languageName: unknown
   linkType: soft
 
@@ -8394,7 +8394,7 @@ __metadata:
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
     typescript: 5.1.6
-    webpack: 5.88.0
+    webpack: 5.88.1
     webpack-node-externals: 3.0.0
     yup: 1.2.0
   languageName: unknown
@@ -35394,9 +35394,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5.88.0, webpack@npm:>=4.43.0 <6.0.0, webpack@npm:^5.9.0":
-  version: 5.88.0
-  resolution: "webpack@npm:5.88.0"
+"webpack@npm:5.88.1, webpack@npm:>=4.43.0 <6.0.0, webpack@npm:^5.9.0":
+  version: 5.88.1
+  resolution: "webpack@npm:5.88.1"
   dependencies:
     "@types/eslint-scope": ^3.7.3
     "@types/estree": ^1.0.0
@@ -35427,7 +35427,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 9fd1568b34ec2e99ba97c8509a15ab2576ec80c396e7015551ec814b24cfc11de173acba3e114dafe95f1a6d460781b09d6201e6a1fb15110e1d01a09f61a283
+  checksum: 726e7e05ab2e7c142609a673dd6aa1a711ed97f349418a2a393d650c5ddad172d191257f60e1e37f6b2a77261571c202aabd5ce9240791a686774f0801cf5ec2
   languageName: node
   linkType: hard
 
