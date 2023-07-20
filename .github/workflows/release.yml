@@ -27,7 +27,7 @@ jobs:
           token: ${{ steps.generate_token.outputs.token }}
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
