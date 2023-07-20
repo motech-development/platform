@@ -105,7 +105,7 @@ __metadata:
     axios: 1.4.0
     cypress: 12.17.1
     cypress-axe: 1.4.0
-    cypress-cloud: 1.7.4
+    cypress-cloud: 1.9.1
     cypress-file-upload: 5.0.8
     cypress-localstorage-commands: 2.2.3
     cypress-log-to-output: 1.1.2
@@ -17093,9 +17093,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress-cloud@npm:1.7.4":
-  version: 1.7.4
-  resolution: "cypress-cloud@npm:1.7.4"
+"cypress-cloud@npm:1.9.1":
+  version: 1.9.1
+  resolution: "cypress-cloud@npm:1.9.1"
   dependencies:
     "@cypress/commit-info": ^2.2.0
     axios: ^1.2.0
@@ -17109,18 +17109,21 @@ __metadata:
     execa: ^5.1.1
     getos: ^3.2.1
     globby: ^11.1.0
+    is-absolute: ^1.0.0
+    lil-http-terminator: ^1.2.3
     lodash: ^4.17.21
     nanoid: ^3.3.4
     pretty-ms: ^7.0.1
     source-map-support: ^0.5.21
     table: ^6.8.1
     tmp-promise: ^3.0.3
-    ws: ^8.12.1
+    ts-pattern: ^4.3.0
+    ws: ^8.13.0
   peerDependencies:
     cypress: ">=10.0.0"
   bin:
     cypress-cloud: bin/cli.js
-  checksum: 033f8bb625a31ff7ad29c0f2012f99418ce3f8847738ef71548f6f2979148174c9391e3410ac565b1e22d28fa312b868fff18bce7d74a45be1f1fb998f78061e
+  checksum: 186d17999fc61798031dd84b0d234d18f5762469b9db111080b915a9393c8ec95fffc09dfbebda6427c5f34f61793bd977268142a6085f1bafbfc85d7fe7602a
   languageName: node
   linkType: hard
 
@@ -22414,6 +22417,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-absolute@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "is-absolute@npm:1.0.0"
+  dependencies:
+    is-relative: ^1.0.0
+    is-windows: ^1.0.1
+  checksum: 9d16b2605eda3f3ce755410f1d423e327ad3a898bcb86c9354cf63970ed3f91ba85e9828aa56f5d6a952b9fae43d0477770f78d37409ae8ecc31e59ebc279b27
+  languageName: node
+  linkType: hard
+
 "is-accessor-descriptor@npm:^0.1.6":
   version: 0.1.6
   resolution: "is-accessor-descriptor@npm:0.1.6"
@@ -22941,6 +22954,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-relative@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "is-relative@npm:1.0.0"
+  dependencies:
+    is-unc-path: ^1.0.0
+  checksum: 3271a0df109302ef5e14a29dcd5d23d9788e15ade91a40b942b035827ffbb59f7ce9ff82d036ea798541a52913cbf9d2d0b66456340887b51f3542d57b5a4c05
+  languageName: node
+  linkType: hard
+
 "is-retry-allowed@npm:^2.2.0":
   version: 2.2.0
   resolution: "is-retry-allowed@npm:2.2.0"
@@ -23038,6 +23060,15 @@ __metadata:
   version: 1.0.0
   resolution: "is-typedarray@npm:1.0.0"
   checksum: 3508c6cd0a9ee2e0df2fa2e9baabcdc89e911c7bd5cf64604586697212feec525aa21050e48affb5ffc3df20f0f5d2e2cf79b08caa64e1ccc9578e251763aef7
+  languageName: node
+  linkType: hard
+
+"is-unc-path@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "is-unc-path@npm:1.0.0"
+  dependencies:
+    unc-path-regex: ^0.1.2
+  checksum: e8abfde203f7409f5b03a5f1f8636e3a41e78b983702ef49d9343eb608cdfe691429398e8815157519b987b739bcfbc73ae7cf4c8582b0ab66add5171088eab6
   languageName: node
   linkType: hard
 
@@ -24772,6 +24803,13 @@ __metadata:
     debug: ^2.6.9
     marky: ^1.2.2
   checksum: 82655f1862779dc5a917de62567a23dbf47bbde9a53abbdd4d72b2cf80d6c2595bc84de7ef836c94c76a2e4e3f3ec613a2e1ec021367959d397aeb5aae97a7cb
+  languageName: node
+  linkType: hard
+
+"lil-http-terminator@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "lil-http-terminator@npm:1.2.3"
+  checksum: d270fbb60556c3151f4259c22c1346e39adf2f80c4030ec62bfc73deef5d7fc386fa1104e3816467e5166e44c5cfa10b64f0191bb86d86cf4b874baeb6c1823b
   languageName: node
   linkType: hard
 
@@ -33942,6 +33980,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-pattern@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "ts-pattern@npm:4.3.0"
+  checksum: f5167f6f721212c1e22f8590bb1fc21e27fd591d6fc5af0e467778f8e5b2dc1ae490cf5c633c83a3021a61283a671a53faf250b081c17c0f025e73eb775e5fe3
+  languageName: node
+  linkType: hard
+
 "ts-pnp@npm:^1.1.6":
   version: 1.2.0
   resolution: "ts-pnp@npm:1.2.0"
@@ -34261,6 +34306,13 @@ __metadata:
     buffer: ^5.2.1
     through: ^2.3.8
   checksum: 0e67c4a91f4fa0fc7b4045f8b914d3498c2fc2e8c39c359977708ec85ac6d6029840e97f508675fdbdf21fcb8d276ca502043406f3682b70f075e69aae626d1d
+  languageName: node
+  linkType: hard
+
+"unc-path-regex@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "unc-path-regex@npm:0.1.2"
+  checksum: a05fa2006bf4606051c10fc7968f08ce7b28fa646befafa282813aeb1ac1a56f65cb1b577ca7851af2726198d59475bb49b11776036257b843eaacee2860a4ec
   languageName: node
   linkType: hard
 
@@ -36117,7 +36169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.11.0, ws@npm:^8.12.1, ws@npm:^8.2.3":
+"ws@npm:^8.11.0, ws@npm:^8.13.0, ws@npm:^8.2.3":
   version: 8.13.0
   resolution: "ws@npm:8.13.0"
   peerDependencies:
