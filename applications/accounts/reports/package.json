@@ -55,7 +55,7 @@
     "serverless": "3.32.2",
     "serverless-deployment-bucket": "1.6.0",
     "serverless-prune-plugin": "2.0.2",
-    "serverless-step-functions": "3.13.1",
+    "serverless-step-functions": "3.14.0",
     "serverless-webpack": "5.11.0",
     "swc-loader": "0.2.3",
     "typescript": "5.1.6",

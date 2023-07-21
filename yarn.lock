@@ -321,7 +321,7 @@ __metadata:
     serverless: 3.32.2
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
-    serverless-step-functions: 3.13.1
+    serverless-step-functions: 3.14.0
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
     typescript: 5.1.6
@@ -375,7 +375,7 @@ __metadata:
     serverless: 3.32.2
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
-    serverless-step-functions: 3.13.1
+    serverless-step-functions: 3.14.0
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
     typescript: 5.1.6
@@ -468,7 +468,7 @@ __metadata:
     serverless: 3.32.2
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
-    serverless-step-functions: 3.13.1
+    serverless-step-functions: 3.14.0
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
     typescript: 5.1.6
@@ -5618,7 +5618,7 @@ __metadata:
     serverless: 3.32.2
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
-    serverless-step-functions: 3.13.1
+    serverless-step-functions: 3.14.0
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
     typescript: 5.1.6
@@ -8536,7 +8536,7 @@ __metadata:
     serverless-dynamodb-local: 0.2.40
     serverless-offline: 12.0.4
     serverless-prune-plugin: 2.0.2
-    serverless-step-functions: 3.13.1
+    serverless-step-functions: 3.14.0
     serverless-webpack: 5.11.0
     swc-loader: 0.2.3
     typescript: 5.1.6
@@ -13758,26 +13758,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"asl-path-validator@npm:^0.11.0":
-  version: 0.11.0
-  resolution: "asl-path-validator@npm:0.11.0"
+"asl-path-validator@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "asl-path-validator@npm:0.12.0"
   dependencies:
     jsonpath-plus: ^7.0.0
-  checksum: 923846a181a3bbbc4f838acd34e1c2d4f9cee78966818a8fdec0b305756ca3a0f61f1a1f7ffca0a97ea143bbbbe3a06aa290a3909cececdffa8c7e0d838f4862
+  checksum: 40ff5f227e7f36627312cc2cce08078496107de612343532d4a8da4aacb218b8ba9f774f6f1da62ecc52202f54aa6f5f2cf54f83ed539dc35f8c6cff1a280cc9
   languageName: node
   linkType: hard
 
-"asl-validator@npm:^3.1.0":
-  version: 3.6.0
-  resolution: "asl-validator@npm:3.6.0"
+"asl-validator@npm:^3.8.0":
+  version: 3.8.0
+  resolution: "asl-validator@npm:3.8.0"
   dependencies:
-    ajv: ^8.11.0
-    asl-path-validator: ^0.11.0
-    commander: ^5.1.0
-    jsonpath-plus: ^7.0.0
+    ajv: ^8.12.0
+    asl-path-validator: ^0.12.0
+    commander: ^10.0.1
+    jsonpath-plus: ^7.2.0
+    yaml: ^2.3.1
   bin:
     asl-validator: dist/bin/asl-validator.js
-  checksum: 4bdae16cd1dea930f2d3c3a7348d59a72fd7fbff2c0ad7783432cb397864b36be55ffdffcff3acc05bec799e433fedcebd298b9a9cd0eb9ed441a1006d5fcebe
+  checksum: 03599794953d6680031c5d9d7498e5a88ef3b6c512548ea70373b7851d55008b97aeed00dceef2af4ff55e92c1039b174f8c3fc76ab68aed011c8147d089c26b
   languageName: node
   linkType: hard
 
@@ -16261,7 +16262,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:10.0.1, commander@npm:^10.0.0":
+"commander@npm:10.0.1, commander@npm:^10.0.0, commander@npm:^10.0.1":
   version: 10.0.1
   resolution: "commander@npm:10.0.1"
   checksum: 436901d64a818295803c1996cd856621a74f30b9f9e28a588e726b2b1670665bccd7c1a77007ebf328729f0139838a88a19265858a0fa7a8728c4656796db948
@@ -31834,19 +31835,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-step-functions@npm:3.13.1":
-  version: 3.13.1
-  resolution: "serverless-step-functions@npm:3.13.1"
+"serverless-step-functions@npm:3.14.0":
+  version: 3.14.0
+  resolution: "serverless-step-functions@npm:3.14.0"
   dependencies:
     "@serverless/utils": ^6.7.0
-    asl-validator: ^3.1.0
+    asl-validator: ^3.8.0
     bluebird: ^3.4.0
     chalk: ^4.1.2
     joi: ^17.7.0
     lodash: ^4.17.11
   peerDependencies:
     serverless: ^2.32.0 || 3
-  checksum: dc45b9e234470bf0753f6af7a6e0d5b6f81bc5618806a0bcddad862d02b6d54da172de9e7c9bfbdd4eafc5dd26121fbd0dcabaa0f4d8cc2133d962ab7473853e
+  checksum: fe182d56ac64dd977810c859e4d2c8140d613141d6ccba350dce36e2f5863ffafaab1d5a7a8d32a4b996708710bea485041566ac493e64ad6f66c7dce8c6f874
   languageName: node
   linkType: hard
 
@@ -36431,10 +36432,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.2.2":
-  version: 2.2.2
-  resolution: "yaml@npm:2.2.2"
-  checksum: d90c235e099e30094dcff61ba3350437aef53325db4a6bcd04ca96e1bfe7e348b191f6a7a52b5211e2dbc4eeedb22a00b291527da030de7c189728ef3f2b4eb3
+"yaml@npm:^2.2.2, yaml@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "yaml@npm:2.3.1"
+  checksum: 2c7bc9a7cd4c9f40d3b0b0a98e370781b68b8b7c4515720869aced2b00d92f5da1762b4ffa947f9e795d6cd6b19f410bd4d15fdd38aca7bd96df59bd9486fb54
   languageName: node
   linkType: hard
 
