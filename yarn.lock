@@ -35,7 +35,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     "@motech-development/serverless-outputs-env": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
@@ -92,7 +92,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/query-string-hook": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@testing-library/cypress": 9.0.0
     "@testing-library/dom": 9.3.1
@@ -189,7 +189,7 @@ __metadata:
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
@@ -248,7 +248,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
@@ -296,7 +296,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
@@ -341,7 +341,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/s3-file-operations": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/archiver": 5.3.2
     "@types/aws-lambda": 8.10.119
@@ -396,7 +396,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/s3-file-operations": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
@@ -441,7 +441,7 @@ __metadata:
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
@@ -5594,7 +5594,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@motech-development/webpack-conditional-plugin": "workspace:*"
     "@motech-development/webpack-permissions-plugin": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
@@ -5635,7 +5635,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
@@ -5701,7 +5701,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@octokit/auth-app": 5.0.6
     "@octokit/rest": 19.0.13
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
@@ -6598,7 +6598,7 @@ __metadata:
     "@motech-development/ga-web-vitals": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 14.0.0
@@ -7150,7 +7150,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.3
     "@rollup/plugin-node-resolve": 15.1.0
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
@@ -7188,7 +7188,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.3
     "@rollup/plugin-node-resolve": 15.1.0
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 14.0.0
@@ -7240,7 +7240,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.3
     "@rollup/plugin-node-resolve": 15.1.0
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 14.0.0
@@ -7285,7 +7285,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.3
     "@rollup/plugin-node-resolve": 15.1.0
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.3
     "@types/react": 18.2.15
@@ -7335,7 +7335,7 @@ __metadata:
     "@storybook/manager-webpack5": 6.5.16
     "@storybook/react": 6.5.16
     "@storybook/storybook-deployer": 2.8.16
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 14.0.0
@@ -7460,7 +7460,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.3
     "@rollup/plugin-node-resolve": 15.1.0
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/google.analytics": 0.0.42
     "@types/jest": 29.5.3
@@ -7494,7 +7494,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.3
     "@rollup/plugin-node-resolve": 15.1.0
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.3
     "@typescript-eslint/eslint-plugin": 5.62.0
@@ -7539,7 +7539,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.3
     "@rollup/plugin-node-resolve": 15.1.0
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.3
     "@types/qs": 6.9.7
@@ -7585,7 +7585,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.3
     "@rollup/plugin-node-resolve": 15.1.0
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.3
     "@typescript-eslint/eslint-plugin": 5.62.0
@@ -7636,7 +7636,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.3
     "@rollup/plugin-node-resolve": 15.1.0
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/assert": 1.5.6
     "@types/jest": 29.5.3
@@ -7674,7 +7674,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.3
     "@rollup/plugin-node-resolve": 15.1.0
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.3
     "@typescript-eslint/eslint-plugin": 5.62.0
@@ -7708,7 +7708,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": 25.0.3
     "@rollup/plugin-node-resolve": 15.1.0
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/jest": 29.5.3
     "@typescript-eslint/eslint-plugin": 5.62.0
@@ -8509,7 +8509,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": 1.3.69
+    "@swc/core": 1.3.70
     "@swc/jest": 0.2.26
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
@@ -10956,90 +10956,90 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.3.69":
-  version: 1.3.69
-  resolution: "@swc/core-darwin-arm64@npm:1.3.69"
+"@swc/core-darwin-arm64@npm:1.3.70":
+  version: 1.3.70
+  resolution: "@swc/core-darwin-arm64@npm:1.3.70"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-x64@npm:1.3.69":
-  version: 1.3.69
-  resolution: "@swc/core-darwin-x64@npm:1.3.69"
+"@swc/core-darwin-x64@npm:1.3.70":
+  version: 1.3.70
+  resolution: "@swc/core-darwin-x64@npm:1.3.70"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.3.69":
-  version: 1.3.69
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.69"
+"@swc/core-linux-arm-gnueabihf@npm:1.3.70":
+  version: 1.3.70
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.70"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-gnu@npm:1.3.69":
-  version: 1.3.69
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.69"
+"@swc/core-linux-arm64-gnu@npm:1.3.70":
+  version: 1.3.70
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.70"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.3.69":
-  version: 1.3.69
-  resolution: "@swc/core-linux-arm64-musl@npm:1.3.69"
+"@swc/core-linux-arm64-musl@npm:1.3.70":
+  version: 1.3.70
+  resolution: "@swc/core-linux-arm64-musl@npm:1.3.70"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-gnu@npm:1.3.69":
-  version: 1.3.69
-  resolution: "@swc/core-linux-x64-gnu@npm:1.3.69"
+"@swc/core-linux-x64-gnu@npm:1.3.70":
+  version: 1.3.70
+  resolution: "@swc/core-linux-x64-gnu@npm:1.3.70"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.3.69":
-  version: 1.3.69
-  resolution: "@swc/core-linux-x64-musl@npm:1.3.69"
+"@swc/core-linux-x64-musl@npm:1.3.70":
+  version: 1.3.70
+  resolution: "@swc/core-linux-x64-musl@npm:1.3.70"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-win32-arm64-msvc@npm:1.3.69":
-  version: 1.3.69
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.69"
+"@swc/core-win32-arm64-msvc@npm:1.3.70":
+  version: 1.3.70
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.70"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.3.69":
-  version: 1.3.69
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.69"
+"@swc/core-win32-ia32-msvc@npm:1.3.70":
+  version: 1.3.70
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.70"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.3.69":
-  version: 1.3.69
-  resolution: "@swc/core-win32-x64-msvc@npm:1.3.69"
+"@swc/core-win32-x64-msvc@npm:1.3.70":
+  version: 1.3.70
+  resolution: "@swc/core-win32-x64-msvc@npm:1.3.70"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core@npm:1.3.69, @swc/core@npm:^1.3.61":
-  version: 1.3.69
-  resolution: "@swc/core@npm:1.3.69"
+"@swc/core@npm:1.3.70, @swc/core@npm:^1.3.61":
+  version: 1.3.70
+  resolution: "@swc/core@npm:1.3.70"
   dependencies:
-    "@swc/core-darwin-arm64": 1.3.69
-    "@swc/core-darwin-x64": 1.3.69
-    "@swc/core-linux-arm-gnueabihf": 1.3.69
-    "@swc/core-linux-arm64-gnu": 1.3.69
-    "@swc/core-linux-arm64-musl": 1.3.69
-    "@swc/core-linux-x64-gnu": 1.3.69
-    "@swc/core-linux-x64-musl": 1.3.69
-    "@swc/core-win32-arm64-msvc": 1.3.69
-    "@swc/core-win32-ia32-msvc": 1.3.69
-    "@swc/core-win32-x64-msvc": 1.3.69
+    "@swc/core-darwin-arm64": 1.3.70
+    "@swc/core-darwin-x64": 1.3.70
+    "@swc/core-linux-arm-gnueabihf": 1.3.70
+    "@swc/core-linux-arm64-gnu": 1.3.70
+    "@swc/core-linux-arm64-musl": 1.3.70
+    "@swc/core-linux-x64-gnu": 1.3.70
+    "@swc/core-linux-x64-musl": 1.3.70
+    "@swc/core-win32-arm64-msvc": 1.3.70
+    "@swc/core-win32-ia32-msvc": 1.3.70
+    "@swc/core-win32-x64-msvc": 1.3.70
   peerDependencies:
     "@swc/helpers": ^0.5.0
   dependenciesMeta:
@@ -11066,7 +11066,7 @@ __metadata:
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: 764b5c489030b1cf34ea412d7b7e0680996101d667387c646b44d89e630605f52d48d3ca6c0e63811b0ae675018602dbb132e149c01c9154291ecf180787bd86
+  checksum: 2a3228de3bb497433a7b91815c4ce59bb92a289c9b91245ee42fe0cd12a3dbff73e74fc498e29bb5083abf6867b1fa89b04cd0ac716ba270a455d89f9d491922
   languageName: node
   linkType: hard
 
