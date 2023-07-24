@@ -6,9 +6,13 @@ import App from '../App';
 jest.mock('react-ga');
 
 describe('App', () => {
+  beforeEach(() => {
+    logout.mockResolvedValue(null);
+  });
+
   it('should render when loaded', async () => {
     const { container } = render(
-      <TestProvider>
+      <TestProvider path="/*">
         <App />
       </TestProvider>,
     );
@@ -20,7 +24,7 @@ describe('App', () => {
 
   it('should show a loader when loading', () => {
     const { container } = render(
-      <TestProvider isLoading>
+      <TestProvider isLoading path="/*">
         <App />
       </TestProvider>,
     );
@@ -39,7 +43,7 @@ describe('App', () => {
 
     await act(async () => {
       render(
-        <TestProvider history={history}>
+        <TestProvider history={history} path="/*">
           <App />
         </TestProvider>,
       );
@@ -71,7 +75,7 @@ describe('App', () => {
 
     await act(async () => {
       render(
-        <TestProvider>
+        <TestProvider path="/*">
           <App />
         </TestProvider>,
       );
