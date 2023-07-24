@@ -23,7 +23,7 @@ function MyCompaniesRoutes() {
       logoutParams: {
         returnTo: window.location.origin,
       },
-    });
+    }).catch(() => {});
   };
 
   return (

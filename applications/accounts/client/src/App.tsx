@@ -18,7 +18,7 @@ function App() {
       logoutParams: {
         returnTo: window.location.origin,
       },
-    });
+    }).catch(() => {});
   };
   const onIdle = () => {
     if (isAuthenticated) {
