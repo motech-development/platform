@@ -6687,7 +6687,7 @@ __metadata:
     "@types/jest": 29.5.3
     "@typescript-eslint/eslint-plugin": 5.62.0
     "@typescript-eslint/parser": 5.62.0
-    auth0: 3.0.1
+    auth0: 3.6.0
     auth0-deploy-cli: 7.18.0
     eslint: 8.45.0
     eslint-config-airbnb-base: 15.0.0
@@ -13966,24 +13966,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0@npm:3.0.1":
-  version: 3.0.1
-  resolution: "auth0@npm:3.0.1"
-  dependencies:
-    axios: ^0.27.2
-    form-data: ^3.0.1
-    jsonwebtoken: ^9.0.0
-    jwks-rsa: ^3.0.0
-    lru-memoizer: ^2.1.4
-    rest-facade: ^1.16.3
-    retry: ^0.13.1
-  checksum: f7334d4a19221db6bc7e459ce6610b5bdc98a5d0ae53b8129db7b391fd020da9d8c1c11b28aeb5bb539c668e52c9e4c35b2bcc70059ca09fd5f41a6e0465e6f6
-  languageName: node
-  linkType: hard
-
-"auth0@npm:^3.0.0":
-  version: 3.3.0
-  resolution: "auth0@npm:3.3.0"
+"auth0@npm:3.6.0, auth0@npm:^3.0.0":
+  version: 3.6.0
+  resolution: "auth0@npm:3.6.0"
   dependencies:
     axios: ^0.27.2
     form-data: ^3.0.1
@@ -13993,7 +13978,7 @@ __metadata:
     rest-facade: ^1.16.3
     retry: ^0.13.1
     uuid: ^9.0.0
-  checksum: de6317c5aa16e897db0d4157d0e9cf6df4b19d7c7f21febe17480b145726791f88f4e8d365296ef7a9c817cd5e85dc3e4be6a492f4474d892c35fcf92ab2ca35
+  checksum: 4a79410afd402cef1a198c86a1faaed02dbe0fc71d27330fea2ffccef05acf03f40b50523ce71f67c69660aeedf4315986f0c2751e782de7d4ca9d012d2cbc9d
   languageName: node
   linkType: hard
 
@@ -24610,7 +24595,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jwks-rsa@npm:^3.0.0, jwks-rsa@npm:^3.0.1":
+"jwks-rsa@npm:^3.0.1":
   version: 3.0.1
   resolution: "jwks-rsa@npm:3.0.1"
   dependencies:
