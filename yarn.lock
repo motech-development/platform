@@ -61,7 +61,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.3.0
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-appsync-plugin: 2.3.1
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
@@ -150,7 +150,7 @@ __metadata:
     react-i18next: 13.0.2
     react-idle-timer: 5.7.2
     react-router-dom: 6.14.2
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-finch: 4.0.3
     styled-components: 5.3.11
@@ -214,7 +214,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.3.0
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-webpack: 5.11.0
@@ -233,7 +233,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
@@ -272,7 +272,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.3.0
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-webpack: 5.11.0
@@ -318,7 +318,7 @@ __metadata:
     jest: 29.6.1
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-step-functions: 3.14.0
@@ -372,7 +372,7 @@ __metadata:
     luxon: 3.3.0
     prettier: 2.8.8
     qs: 6.11.2
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-step-functions: 3.14.0
@@ -417,7 +417,7 @@ __metadata:
     jest: 29.6.1
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-offline: 12.0.4
     serverless-prune-plugin: 2.0.2
@@ -465,7 +465,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.3.0
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-step-functions: 3.14.0
@@ -5615,7 +5615,7 @@ __metadata:
     jest: 29.6.1
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-step-functions: 3.14.0
@@ -5656,7 +5656,7 @@ __metadata:
     jest: 29.6.1
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-webpack: 5.11.0
@@ -5675,7 +5675,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
@@ -5723,7 +5723,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.3.0
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
     serverless-webpack: 5.11.0
@@ -5756,7 +5756,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
@@ -6641,7 +6641,7 @@ __metadata:
     react-i18next: 13.0.2
     react-router-dom: 6.14.2
     react-snap: 1.23.0
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-finch: 4.0.3
     styled-components: 5.3.11
@@ -6672,7 +6672,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
   languageName: unknown
   linkType: soft
@@ -7659,7 +7659,7 @@ __metadata:
     rollup-plugin-dts: 5.3.0
     rollup-plugin-exclude-dependencies-from-bundle: 1.1.23
     rollup-plugin-swc3: 0.9.1
-    serverless: 3.32.2
+    serverless: 3.33.0
     tomlify-j0.4: 3.0.0
     typescript: 5.1.6
   languageName: unknown
@@ -8531,7 +8531,7 @@ __metadata:
     jest: 29.6.1
     jest-watch-typeahead: 2.2.2
     prettier: 2.8.8
-    serverless: 3.32.2
+    serverless: 3.33.0
     serverless-deployment-bucket: 1.6.0
     serverless-dynamodb-local: 0.2.40
     serverless-offline: 12.0.4
@@ -14128,9 +14128,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:^2.1265.0, aws-sdk@npm:^2.1389.0, aws-sdk@npm:^2.7.0":
-  version: 2.1392.0
-  resolution: "aws-sdk@npm:2.1392.0"
+"aws-sdk@npm:^2.1265.0, aws-sdk@npm:^2.1404.0, aws-sdk@npm:^2.7.0":
+  version: 2.1421.0
+  resolution: "aws-sdk@npm:2.1421.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -14142,7 +14142,7 @@ __metadata:
     util: ^0.12.4
     uuid: 8.0.0
     xml2js: 0.5.0
-  checksum: e76a6db9a8373cec863652c855a7f3d962ed33f7390ffe5b31d679d93d782295f8f831b49836e92d5d3db693e22c9b266500096001b976be3b1be190ac20c1ad
+  checksum: 9332559bb0ede3271c82796e0ecb83228947426713e06eb85a9973434e1052ed9ee2645c4b0c6a955824c4b3f9e577219b297a066766c4af071d66e135219ad5
   languageName: node
   linkType: hard
 
@@ -17436,10 +17436,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dayjs@npm:^1.10.4, dayjs@npm:^1.11.7":
-  version: 1.11.7
-  resolution: "dayjs@npm:1.11.7"
-  checksum: 5003a7c1dd9ed51385beb658231c3548700b82d3548c0cfbe549d85f2d08e90e972510282b7506941452c58d32136d6362f009c77ca55381a09c704e9f177ebb
+"dayjs@npm:^1.10.4, dayjs@npm:^1.11.8":
+  version: 1.11.9
+  resolution: "dayjs@npm:1.11.9"
+  checksum: a4844d83dc87f921348bb9b1b93af851c51e6f71fa259604809cfe1b49d1230e6b0212dab44d1cb01994c096ad3a77ea1cf18fa55154da6efcc9d3610526ac38
   languageName: node
   linkType: hard
 
@@ -18265,10 +18265,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.1.3":
-  version: 16.1.4
-  resolution: "dotenv@npm:16.1.4"
-  checksum: c1b2e13df4d374a6a29e134c56c7b040ba20500677fe8b9939ea654f3b3badb9aaa0b172e40e4dfa1233a4177dbb8fb79d84cc79a50ac9c9641fe2ad98c14876
+"dotenv@npm:^16.3.1":
+  version: 16.3.1
+  resolution: "dotenv@npm:16.3.1"
+  checksum: 15d75e7279018f4bafd0ee9706593dd14455ddb71b3bcba9c52574460b7ccaf67d5cf8b2c08a5af1a9da6db36c956a04a1192b101ee102a3e0cf8817bbcf3dfd
   languageName: node
   linkType: hard
 
@@ -31584,7 +31584,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.5.3, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.1.2, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.0, semver@npm:^7.5.1, semver@npm:^7.5.2, semver@npm:^7.5.3":
+"semver@npm:7.5.3, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.1.2, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.0, semver@npm:^7.5.2, semver@npm:^7.5.3":
   version: 7.5.3
   resolution: "semver@npm:7.5.3"
   dependencies:
@@ -31878,9 +31878,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless@npm:3.32.2":
-  version: 3.32.2
-  resolution: "serverless@npm:3.32.2"
+"serverless@npm:3.33.0":
+  version: 3.33.0
+  resolution: "serverless@npm:3.33.0"
   dependencies:
     "@serverless/dashboard-plugin": ^6.2.3
     "@serverless/platform-client": ^4.3.2
@@ -31888,7 +31888,7 @@ __metadata:
     ajv: ^8.12.0
     ajv-formats: ^2.1.1
     archiver: ^5.3.1
-    aws-sdk: ^2.1389.0
+    aws-sdk: ^2.1404.0
     bluebird: ^3.7.2
     cachedir: ^2.3.0
     chalk: ^4.1.2
@@ -31896,9 +31896,9 @@ __metadata:
     ci-info: ^3.8.0
     cli-progress-footer: ^2.3.2
     d: ^1.0.1
-    dayjs: ^1.11.7
+    dayjs: ^1.11.8
     decompress: ^4.2.1
-    dotenv: ^16.1.3
+    dotenv: ^16.3.1
     dotenv-expand: ^10.0.0
     essentials: ^1.2.0
     ext: ^1.7.0
@@ -31926,7 +31926,7 @@ __metadata:
     process-utils: ^4.0.0
     promise-queue: ^2.2.5
     require-from-string: ^2.0.2
-    semver: ^7.5.1
+    semver: ^7.5.3
     signal-exit: ^3.0.7
     stream-buffers: ^3.0.2
     strip-ansi: ^6.0.1
@@ -31941,7 +31941,7 @@ __metadata:
   bin:
     serverless: bin/serverless.js
     sls: bin/serverless.js
-  checksum: 4c3ef3ad249c7b88c7da80c53a9e881a1511b3c6ac23669ec8cb4ac04e0c682fe4b7411d2b7f868cfb4213f6b8153536f2132775e9212f6233c2f03776e34641
+  checksum: 233a2d0eb831bc295051f9a91a70b777e04bc97e04cbdaaf62bafc9e55010003b239f432f5c126874cba7497642ab74e8bc6e405a1dd1a7476e2dcf694e3a202
   languageName: node
   linkType: hard
 
