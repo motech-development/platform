@@ -22,7 +22,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "winston": "3.9.0",
+    "winston": "3.10.0",
     "winston-transport": "4.5.0"
   },
   "devDependencies": {
