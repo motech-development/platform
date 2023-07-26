@@ -25,7 +25,7 @@
     "@swc/jest": "0.2.27",
     "@types/aws-lambda": "8.10.119",
     "@types/jest": "29.5.3",
-    "@types/luxon": "3.3.0",
+    "@types/luxon": "3.3.1",
     "@types/uuid": "9.0.2",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",

@@ -39,7 +39,7 @@ __metadata:
     "@swc/jest": 0.2.27
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
-    "@types/luxon": 3.3.0
+    "@types/luxon": 3.3.1
     "@typescript-eslint/eslint-plugin": 5.62.0
     "@typescript-eslint/parser": 5.62.0
     aws-appsync: 4.1.9
@@ -101,7 +101,7 @@ __metadata:
     "@testing-library/user-event": 14.4.3
     "@types/file-saver": 2.0.5
     "@types/jest": 29.5.3
-    "@types/luxon": 3.3.0
+    "@types/luxon": 3.3.1
     "@types/react": 18.2.15
     "@types/react-dom": 18.2.7
     "@types/styled-components": 5.1.26
@@ -193,7 +193,7 @@ __metadata:
     "@swc/jest": 0.2.27
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
-    "@types/luxon": 3.3.0
+    "@types/luxon": 3.3.1
     "@types/uuid": 9.0.2
     "@typescript-eslint/eslint-plugin": 5.62.0
     "@typescript-eslint/parser": 5.62.0
@@ -252,7 +252,7 @@ __metadata:
     "@swc/jest": 0.2.27
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
-    "@types/luxon": 3.3.0
+    "@types/luxon": 3.3.1
     "@types/uuid": 9.0.2
     "@typescript-eslint/eslint-plugin": 5.62.0
     "@typescript-eslint/parser": 5.62.0
@@ -346,7 +346,7 @@ __metadata:
     "@types/archiver": 5.3.2
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
-    "@types/luxon": 3.3.0
+    "@types/luxon": 3.3.1
     "@types/qs": 6.9.7
     "@types/uuid": 9.0.2
     "@typescript-eslint/eslint-plugin": 5.62.0
@@ -445,7 +445,7 @@ __metadata:
     "@swc/jest": 0.2.27
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
-    "@types/luxon": 3.3.0
+    "@types/luxon": 3.3.1
     "@types/uuid": 9.0.2
     "@typescript-eslint/eslint-plugin": 5.62.0
     "@typescript-eslint/parser": 5.62.0
@@ -5705,7 +5705,7 @@ __metadata:
     "@swc/jest": 0.2.27
     "@types/aws-lambda": 8.10.119
     "@types/jest": 29.5.3
-    "@types/luxon": 3.3.0
+    "@types/luxon": 3.3.1
     "@typescript-eslint/eslint-plugin": 5.62.0
     "@typescript-eslint/parser": 5.62.0
     aws-lambda-mock-context: 3.2.1
@@ -7341,7 +7341,7 @@ __metadata:
     "@testing-library/react": 14.0.0
     "@testing-library/user-event": 14.4.3
     "@types/jest": 29.5.3
-    "@types/luxon": 3.3.0
+    "@types/luxon": 3.3.1
     "@types/react": 18.2.15
     "@types/react-dom": 18.2.7
     "@types/styled-components": 5.1.26
@@ -11713,10 +11713,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/luxon@npm:3.3.0":
-  version: 3.3.0
-  resolution: "@types/luxon@npm:3.3.0"
-  checksum: f7e3a89fc3ca404fbc3ea538653ed6860bc28f570a8c4d6d24449b89b9b553b7d6ad6cc94a9e129c5b8c9a2b97f0c365b3017f811e59c4a859a9c219a1c918e0
+"@types/luxon@npm:3.3.1":
+  version: 3.3.1
+  resolution: "@types/luxon@npm:3.3.1"
+  checksum: da8f6158edacae1430f3eca5f4ab4891200ffb34aa521ef6bae407a3c50b3854907098bc4535fb2a66a2779738f3c6c48fdfd86f01117a6f4844b18536cdb7c0
   languageName: node
   linkType: hard
 
