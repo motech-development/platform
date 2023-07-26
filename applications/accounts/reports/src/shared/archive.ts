@@ -46,7 +46,9 @@ const archive = async (
     const readable = new Readable();
 
     readable.push(
-      process.env.NODE_ENV === 'test' ? data.toString('utf8') : data,
+      process.env.NODE_ENV === 'test'
+        ? (data as Buffer).toString('utf8')
+        : data,
     );
 
     readable.push(null);
