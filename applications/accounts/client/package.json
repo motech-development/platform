@@ -85,7 +85,7 @@
     "axe-core": "4.7.2",
     "cypress": "12.17.2",
     "cypress-axe": "1.4.0",
-    "cypress-cloud": "1.9.1",
+    "cypress-cloud": "1.9.2",
     "cypress-file-upload": "5.0.8",
     "cypress-localstorage-commands": "2.2.3",
     "cypress-log-to-output": "1.1.2",
