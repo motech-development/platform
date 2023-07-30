@@ -51,7 +51,7 @@
     "serverless-appsync-plugin": "2.3.1",
     "serverless-deployment-bucket": "1.6.0",
     "serverless-prune-plugin": "2.0.2",
-    "serverless-webpack": "5.11.0",
+    "serverless-webpack": "5.12.0",
     "swc-loader": "0.2.3",
     "typescript": "5.1.6",
     "webpack": "5.88.2",
