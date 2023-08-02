@@ -1,8 +1,8 @@
+import { PassThrough, Readable } from 'node:stream';
 import { uploader } from '@motech-development/s3-file-operations';
 import Archiver from 'archiver';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { PassThrough, Readable } from 'node:stream';
 import { handler, IEvent } from '../create-zip';
 
 jest.mock('@motech-development/s3-file-operations', () => ({

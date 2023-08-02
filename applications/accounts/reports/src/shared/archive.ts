@@ -1,10 +1,10 @@
+import { PassThrough, Readable } from 'node:stream';
 import logger from '@motech-development/node-logger';
 import {
   downloadFileStream,
   uploader,
 } from '@motech-development/s3-file-operations';
 import Archiver from 'archiver';
-import { PassThrough, Readable } from 'node:stream';
 
 interface IArchiveDestination {
   bucket: string;

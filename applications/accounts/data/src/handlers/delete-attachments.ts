@@ -1,10 +1,10 @@
+import { join } from 'node:path';
 import {
   SendMessageBatchCommand,
   SendMessageBatchCommandOutput,
   SQSClient,
 } from '@aws-sdk/client-sqs';
 import { DynamoDBRecord } from 'aws-lambda';
-import { join } from 'node:path';
 import { ITransaction } from '../shared/transaction';
 import { unmarshallOldRecords } from '../shared/unmarshall-records';
 
