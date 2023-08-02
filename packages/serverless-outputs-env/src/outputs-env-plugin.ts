@@ -1,8 +1,8 @@
 import assert, { AssertionError } from 'assert';
 import { writeFile } from 'node:fs';
+import { promisify } from 'node:util';
 import Serverless from 'serverless';
 import tomlify from 'tomlify-j0.4';
-import { promisify } from 'node:util';
 
 interface IHook {
   [name: string]: () => Promise<void>;

@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
   QueryCommand,
@@ -10,7 +11,6 @@ import {
   SQSMessageAttributes,
   SQSRecord,
 } from 'aws-lambda';
-import { join } from 'node:path';
 import publishNotification from '../shared/publish-notification';
 
 interface IData extends SQSMessageAttributes {

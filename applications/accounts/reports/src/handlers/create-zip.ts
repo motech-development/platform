@@ -1,6 +1,6 @@
+import { join } from 'node:path';
 import logger from '@motech-development/node-logger';
 import { Handler } from 'aws-lambda';
-import { join } from 'node:path';
 import { v4 as uuid } from 'uuid';
 import { array, object, string } from 'yup';
 import archive from '../shared/archive';
