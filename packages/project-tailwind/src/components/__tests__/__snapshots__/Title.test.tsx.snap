@@ -1,0 +1,216 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Title when theme is "danger" should render the correct output 1`] = `
+<DocumentFragment>
+  <div>
+    <h2
+      class="font-display text-4xl font-semibold text-left mb-2"
+    >
+      <span
+        class="decoration-clone text-gray-100 px-2 py-1 bg-red-600"
+      >
+        Hello, world
+      </span>
+    </h2>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Title when theme is "danger" should render the correct output when a subtitle is set 1`] = `
+<DocumentFragment>
+  <div>
+    <h2
+      class="font-display text-4xl font-semibold text-left mb-2"
+    >
+      <span
+        class="decoration-clone text-gray-100 px-2 py-1 bg-red-600"
+      >
+        Hello, world
+      </span>
+    </h2>
+  </div>
+  <div>
+    <p
+      class="font-light text-xl text-left mb-2"
+    >
+      <span
+        class="decoration-clone bg-gray-100 text-gray-900 px-2 py-1"
+      >
+        It's nice to see you
+      </span>
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Title when theme is "primary" should render the correct output 1`] = `
+<DocumentFragment>
+  <div>
+    <h2
+      class="font-display text-4xl font-semibold text-left mb-2"
+    >
+      <span
+        class="decoration-clone text-gray-100 px-2 py-1 bg-blue-600"
+      >
+        Hello, world
+      </span>
+    </h2>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Title when theme is "primary" should render the correct output when a subtitle is set 1`] = `
+<DocumentFragment>
+  <div>
+    <h2
+      class="font-display text-4xl font-semibold text-left mb-2"
+    >
+      <span
+        class="decoration-clone text-gray-100 px-2 py-1 bg-blue-600"
+      >
+        Hello, world
+      </span>
+    </h2>
+  </div>
+  <div>
+    <p
+      class="font-light text-xl text-left mb-2"
+    >
+      <span
+        class="decoration-clone bg-gray-100 text-gray-900 px-2 py-1"
+      >
+        It's nice to see you
+      </span>
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Title when theme is "secondary" should render the correct output 1`] = `
+<DocumentFragment>
+  <div>
+    <h2
+      class="font-display text-4xl font-semibold text-left mb-2"
+    >
+      <span
+        class="decoration-clone text-gray-100 px-2 py-1 bg-gray-600"
+      >
+        Hello, world
+      </span>
+    </h2>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Title when theme is "secondary" should render the correct output when a subtitle is set 1`] = `
+<DocumentFragment>
+  <div>
+    <h2
+      class="font-display text-4xl font-semibold text-left mb-2"
+    >
+      <span
+        class="decoration-clone text-gray-100 px-2 py-1 bg-gray-600"
+      >
+        Hello, world
+      </span>
+    </h2>
+  </div>
+  <div>
+    <p
+      class="font-light text-xl text-left mb-2"
+    >
+      <span
+        class="decoration-clone bg-gray-100 text-gray-900 px-2 py-1"
+      >
+        It's nice to see you
+      </span>
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Title when theme is "success" should render the correct output 1`] = `
+<DocumentFragment>
+  <div>
+    <h2
+      class="font-display text-4xl font-semibold text-left mb-2"
+    >
+      <span
+        class="decoration-clone text-gray-100 px-2 py-1 bg-green-600"
+      >
+        Hello, world
+      </span>
+    </h2>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Title when theme is "success" should render the correct output when a subtitle is set 1`] = `
+<DocumentFragment>
+  <div>
+    <h2
+      class="font-display text-4xl font-semibold text-left mb-2"
+    >
+      <span
+        class="decoration-clone text-gray-100 px-2 py-1 bg-green-600"
+      >
+        Hello, world
+      </span>
+    </h2>
+  </div>
+  <div>
+    <p
+      class="font-light text-xl text-left mb-2"
+    >
+      <span
+        class="decoration-clone bg-gray-100 text-gray-900 px-2 py-1"
+      >
+        It's nice to see you
+      </span>
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Title when theme is "warning" should render the correct output 1`] = `
+<DocumentFragment>
+  <div>
+    <h2
+      class="font-display text-4xl font-semibold text-left mb-2"
+    >
+      <span
+        class="decoration-clone text-gray-100 px-2 py-1 bg-yellow-600"
+      >
+        Hello, world
+      </span>
+    </h2>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Title when theme is "warning" should render the correct output when a subtitle is set 1`] = `
+<DocumentFragment>
+  <div>
+    <h2
+      class="font-display text-4xl font-semibold text-left mb-2"
+    >
+      <span
+        class="decoration-clone text-gray-100 px-2 py-1 bg-yellow-600"
+      >
+        Hello, world
+      </span>
+    </h2>
+  </div>
+  <div>
+    <p
+      class="font-light text-xl text-left mb-2"
+    >
+      <span
+        class="decoration-clone bg-gray-100 text-gray-900 px-2 py-1"
+      >
+        It's nice to see you
+      </span>
+    </p>
+  </div>
+</DocumentFragment>
+`;
