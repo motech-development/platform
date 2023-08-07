@@ -1,14 +1,12 @@
 import {
   DeleteIdentityCommand,
   SESClient,
-  ServiceInputTypes,
-  ServiceOutputTypes,
   VerifyDomainDkimCommand,
   VerifyDomainIdentityCommand,
 } from '@aws-sdk/client-ses';
 import { CloudFormationCustomResourceEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { FAILED, SUCCESS, send } from 'cfn-response-async';
 import { handler } from '../verify-domain';
 
@@ -18,7 +16,7 @@ describe('verify-domain', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: CloudFormationCustomResourceEvent;
-  let ses: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let ses: AwsClientStub<SESClient>;
 
   beforeEach(() => {
     context = ctx();

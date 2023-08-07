@@ -22,12 +22,12 @@ jobs:
           private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
       - name: Checkout
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
         with:
           token: ${{ steps.generate_token.outputs.token }}
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn

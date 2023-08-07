@@ -1,10 +1,10 @@
+import { join } from 'node:path';
 import {
   apiGatewayHandler,
   paramCheck,
   response,
 } from '@motech-development/api-gateway-handler';
 import { createSignedUrl } from '@motech-development/s3-file-operations';
-import { join } from 'node:path';
 import { object, string } from 'yup';
 
 const schema = object()

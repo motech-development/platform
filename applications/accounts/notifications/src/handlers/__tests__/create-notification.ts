@@ -1,19 +1,15 @@
-import {
-  DynamoDBClient,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import { handler } from '../create-notification';
 
 describe('create-notification', () => {
   let callback: jest.Mock;
   let context: Context;
-  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let ddb: AwsClientStub<DynamoDBClient>;
   let env: NodeJS.ProcessEnv;
   let event: APIGatewayProxyEvent;
 

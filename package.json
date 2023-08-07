@@ -7,7 +7,7 @@
     "applications/*/*",
     "packages/*"
   ],
-  "packageManager": "yarn@3.5.1",
+  "packageManager": "yarn@3.6.1",
   "scripts": {
     "clean-deps": "find . -name node_modules -exec rm -rf {} \\;",
     "clean-git": "git branch --merged | egrep -v \"(^\\*|main|develop)\" | xargs git branch -d",
@@ -31,19 +31,20 @@
   },
   "homepage": "https://github.com/motech-development/platform#readme",
   "devDependencies": {
-    "@commitlint/cli": "17.6.5",
-    "@commitlint/config-conventional": "17.6.5",
+    "@commitlint/cli": "17.6.7",
+    "@commitlint/config-conventional": "17.6.7",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
-    "@qiwi/multi-semantic-release": "6.7.0",
+    "@qiwi/multi-semantic-release": "7.0.0",
     "@types/is-ci": "3.0.0",
     "commitizen": "4.3.0",
     "cz-conventional-changelog": "3.3.0",
     "husky": "8.0.3",
     "is-ci": "3.0.1",
-    "lint-staged": "13.2.2",
+    "lint-staged": "13.2.3",
     "prettier": "2.8.8",
-    "typescript": "5.0.4"
+    "renovate": "36.18.4",
+    "typescript": "5.1.6"
   },
   "resolutions": {
     "puppeteer": "13.7.0"

@@ -1,20 +1,15 @@
-import {
-  SQSClient,
-  SendMessageBatchCommand,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-sqs';
+import { SQSClient, SendMessageBatchCommand } from '@aws-sdk/client-sqs';
 import logger from '@motech-development/node-logger';
 import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../attachments';
 
 describe('attachments', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: DynamoDBStreamEvent;
-  let sqs: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let sqs: AwsClientStub<SQSClient>;
 
   beforeEach(() => {
     context = ctx();

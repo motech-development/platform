@@ -1,16 +1,12 @@
-import {
-  DynamoDBClient,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBRecord } from 'aws-lambda';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import insertTransactions from '../insert-transactions';
 
 describe('insert-transactions', () => {
-  let ddb: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let ddb: AwsClientStub<DynamoDBClient>;
   let documentClient: DynamoDBClient;
   let tableName: string;
   let records: DynamoDBRecord[];

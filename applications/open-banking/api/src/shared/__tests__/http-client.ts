@@ -1,16 +1,11 @@
-import {
-  GetParameterCommand,
-  SSMClient,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-ssm';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { GetParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import MockAdapter from 'axios-mock-adapter';
 import httpClient from '../http-client';
 
 describe('http-client', () => {
   let mock: MockAdapter;
-  let ssm: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let ssm: AwsClientStub<SSMClient>;
 
   beforeEach(() => {
     mock = new MockAdapter(httpClient);

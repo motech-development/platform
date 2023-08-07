@@ -1,9 +1,9 @@
+import { join, resolve } from 'node:path';
 import {
   createDirectory,
   downloadFile,
 } from '@motech-development/s3-file-operations';
 import { Handler } from 'aws-lambda';
-import { join, resolve } from 'node:path';
 import { scanFile } from '../shared/clam-av';
 import virusDefinitions from '../shared/virus-definitions';
 

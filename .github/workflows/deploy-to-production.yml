@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -63,12 +63,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
         with:
           fetch-depth: 0
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -117,10 +117,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -173,10 +173,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -244,10 +244,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -300,10 +300,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -363,10 +363,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -423,10 +423,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -479,10 +479,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -535,10 +535,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -591,10 +591,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -653,7 +653,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -712,10 +712,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -777,10 +777,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -832,10 +832,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -899,10 +899,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
 
       - name: Set Node version
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3.7.0
         with:
           node-version-file: .nvmrc
           cache: yarn

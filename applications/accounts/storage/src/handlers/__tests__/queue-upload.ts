@@ -1,19 +1,14 @@
-import {
-  SendMessageBatchCommand,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-  SQSClient,
-} from '@aws-sdk/client-sqs';
+import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { Context, S3Event } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../queue-upload';
 
 describe('queue-upload', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: S3Event;
-  let sqs: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let sqs: AwsClientStub<SQSClient>;
 
   beforeEach(() => {
     context = ctx();

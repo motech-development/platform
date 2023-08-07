@@ -1,5 +1,6 @@
-import { Handler } from 'aws-lambda';
 import { join } from 'node:path';
+import logger from '@motech-development/node-logger';
+import { Handler } from 'aws-lambda';
 import { v4 as uuid } from 'uuid';
 import { array, object, string } from 'yup';
 import archive from '../shared/archive';
@@ -27,6 +28,8 @@ export interface IEvent {
 }
 
 export const handler: Handler<IEvent> = async (event) => {
+  logger.info('Start lambda function');
+
   const { DESTINATION_BUCKET, ORIGIN_BUCKET } = process.env;
 
   if (!DESTINATION_BUCKET) {
@@ -41,7 +44,12 @@ export const handler: Handler<IEvent> = async (event) => {
     abortEarly: true,
     stripUnknown: true,
   });
+
   const key = join(owner, companyId, `${uuid()}.zip`);
+
+  logger.debug('Zip key', {
+    key,
+  });
 
   await archive(
     csv,
@@ -54,6 +62,8 @@ export const handler: Handler<IEvent> = async (event) => {
       keys: attachments,
     },
   );
+
+  logger.info('Archiving complete');
 
   return {
     companyId,

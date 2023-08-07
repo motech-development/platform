@@ -1,19 +1,14 @@
-import {
-  SFNClient,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-  StartExecutionCommand,
-} from '@aws-sdk/client-sfn';
+import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
 import { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../delete';
 
 describe('delete', () => {
   let callback: jest.Mock;
   let context: Context;
   let event: SQSEvent;
-  let sfn: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let sfn: AwsClientStub<SFNClient>;
 
   beforeEach(() => {
     context = ctx();
