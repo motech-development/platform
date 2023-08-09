@@ -113,7 +113,7 @@
     "serverless-finch": "4.0.3",
     "typescript": "5.1.6",
     "unfetch": "5.0.0",
-    "vite": "4.4.7",
+    "vite": "4.4.8",
     "vite-plugin-checker": "0.6.1",
     "vite-plugin-eslint": "1.8.1",
     "vite-plugin-pwa": "0.15.2"
