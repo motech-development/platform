@@ -73,8 +73,8 @@ const InternalFileUpload: FC<IInternalFileUpload> = ({
       setFileName(file.name);
 
       Promise.resolve(onSelect(file, form))
-        .then(() => {
-          form.setFieldTouched(name, true);
+        .then(async () => {
+          await form.setFieldTouched(name, true);
         })
         .catch(() => {});
     }
