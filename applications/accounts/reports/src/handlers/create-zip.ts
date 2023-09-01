@@ -1,9 +1,15 @@
 import { join } from 'node:path';
 import logger from '@motech-development/node-logger';
+import { AWSLambda } from '@sentry/serverless';
 import { Handler } from 'aws-lambda';
 import { v4 as uuid } from 'uuid';
 import { array, object, string } from 'yup';
 import archive from '../shared/archive';
+
+AWSLambda.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
 
 const schema = object({
   attachments: array(
@@ -27,7 +33,7 @@ export interface IEvent {
   owner: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = AWSLambda.wrapHandler(async (event) => {
   logger.info('Start lambda function');
 
   const { DESTINATION_BUCKET, ORIGIN_BUCKET } = process.env;
@@ -70,4 +76,4 @@ export const handler: Handler<IEvent> = async (event) => {
     key,
     owner,
   };
-};
+});
