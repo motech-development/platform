@@ -1,6 +1,12 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
+import { AWSLambda } from '@sentry/serverless';
 import { Handler } from 'aws-lambda';
+
+AWSLambda.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
 
 const documentClient = new DynamoDBClient({});
 
@@ -10,7 +16,7 @@ export interface IEvent {
   items: string[][];
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = AWSLambda.wrapHandler(async (event) => {
   const { TABLE, TYPENAME } = process.env;
 
   if (!TABLE) {
@@ -45,4 +51,4 @@ export const handler: Handler<IEvent> = async (event) => {
     complete: current === count - 1,
     current: current + 1,
   };
-};
+});
