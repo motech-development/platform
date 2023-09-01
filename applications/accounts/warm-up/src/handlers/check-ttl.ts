@@ -1,8 +1,14 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
+import { AWSLambda } from '@sentry/serverless';
 import { Handler } from 'aws-lambda';
 import { boolean, number, object, string } from 'yup';
+
+AWSLambda.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
 
 const client = new DynamoDBClient({});
 
@@ -18,7 +24,7 @@ export interface IEvent {
   id: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = AWSLambda.wrapHandler(async (event) => {
   const { TABLE } = process.env;
 
   if (!TABLE) {
@@ -58,4 +64,4 @@ export const handler: Handler<IEvent> = async (event) => {
     complete,
     id,
   };
-};
+});

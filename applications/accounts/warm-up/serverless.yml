@@ -39,12 +39,14 @@ functions:
     handler: src/handlers/check-ttl.handler
     role: WarmUpLambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
   InsertTtl:
     handler: src/handlers/insert-ttl.handler
     role: WarmUpLambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
 stepFunctions:
