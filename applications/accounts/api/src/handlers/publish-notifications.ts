@@ -2,6 +2,7 @@
 import { AttributeValue as DdbAttributeValue } from '@aws-sdk/client-dynamodb';
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
+import { ProfilingIntegration } from '@sentry/profiling-node';
 import { AWSLambda } from '@sentry/serverless';
 import logger from '@motech-development/node-logger';
 import { AWSAppSyncClient } from 'aws-appsync';
@@ -14,6 +15,8 @@ import gql from 'graphql-tag';
 
 AWSLambda.init({
   dsn: process.env.SENTRY_DSN,
+  integrations: [new ProfilingIntegration()],
+  profilesSampleRate: 1.0,
   tracesSampleRate: 1.0,
 });
 

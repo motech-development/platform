@@ -1,6 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import { NativeAttributeValue } from '@aws-sdk/util-dynamodb';
+import { ProfilingIntegration } from '@sentry/profiling-node';
 import { AWSLambda } from '@sentry/serverless';
 import { aws4Interceptor } from 'aws4-axios';
 import { Handler } from 'aws-lambda';
@@ -8,6 +9,8 @@ import axios from 'axios';
 
 AWSLambda.init({
   dsn: process.env.SENTRY_DSN,
+  integrations: [new ProfilingIntegration()],
+  profilesSampleRate: 1.0,
   tracesSampleRate: 1.0,
 });
 

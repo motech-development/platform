@@ -1,12 +1,15 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
+import { ProfilingIntegration } from '@sentry/profiling-node';
 import { AWSLambda } from '@sentry/serverless';
 import { Handler } from 'aws-lambda';
 import { boolean, number, object, string } from 'yup';
 
 AWSLambda.init({
   dsn: process.env.SENTRY_DSN,
+  integrations: [new ProfilingIntegration()],
+  profilesSampleRate: 1.0,
   tracesSampleRate: 1.0,
 });
 

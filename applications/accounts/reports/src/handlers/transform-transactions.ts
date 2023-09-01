@@ -1,4 +1,5 @@
 import { extname, join } from 'node:path';
+import { ProfilingIntegration } from '@sentry/profiling-node';
 import { AWSLambda } from '@sentry/serverless';
 import { Handler } from 'aws-lambda';
 import { DateTime } from 'luxon';
@@ -9,6 +10,8 @@ import { IEvent as IOutput } from './convert-to-csv';
 
 AWSLambda.init({
   dsn: process.env.SENTRY_DSN,
+  integrations: [new ProfilingIntegration()],
+  profilesSampleRate: 1.0,
   tracesSampleRate: 1.0,
 });
 
