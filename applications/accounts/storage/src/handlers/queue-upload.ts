@@ -1,10 +1,16 @@
 import { basename, extname } from 'node:path';
 import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
+import { AWSLambda } from '@sentry/serverless';
 import { S3Handler } from 'aws-lambda';
+
+AWSLambda.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
 
 const sqs = new SQSClient({});
 
-export const handler: S3Handler = async (event) => {
+export const handler: S3Handler = AWSLambda.wrapHandler(async (event) => {
   const { DOWNLOAD_BUCKET, QUEUE_URL } = process.env;
 
   if (!QUEUE_URL) {
@@ -47,4 +53,4 @@ export const handler: S3Handler = async (event) => {
   });
 
   await sqs.send(command);
-};
+});
