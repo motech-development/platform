@@ -529,6 +529,7 @@ functions:
     role: LambdaDataSourceRole
     timeout: 30
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN_ACCOUNTS_BACKEND}
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
   PublishNotifications:
@@ -539,6 +540,7 @@ functions:
           type: dynamodb
           arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN_ACCOUNTS_BACKEND}
       ENDPOINT: ${appsync:url}
 
 resources:

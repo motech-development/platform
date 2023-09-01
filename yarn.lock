@@ -35,6 +35,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     "@motech-development/serverless-outputs-env": "workspace:*"
+    "@sentry/serverless": 7.66.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
     "@types/aws-lambda": 8.10.119
@@ -9168,7 +9169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/node@npm:^7.60.0":
+"@sentry/node@npm:7.66.0, @sentry/node@npm:^7.60.0":
   version: 7.66.0
   resolution: "@sentry/node@npm:7.66.0"
   dependencies:
@@ -9207,6 +9208,21 @@ __metadata:
     "@sentry/types": 7.66.0
     "@sentry/utils": 7.66.0
   checksum: 54b4ea614a4eb79b7a35327249f06612b4bc60209927046736e5ae8b609883e1a295563a5f9377140a21c74e777ae6c81bdb4498f3f920163df9a6fe135241b2
+  languageName: node
+  linkType: hard
+
+"@sentry/serverless@npm:7.66.0":
+  version: 7.66.0
+  resolution: "@sentry/serverless@npm:7.66.0"
+  dependencies:
+    "@sentry/core": 7.66.0
+    "@sentry/node": 7.66.0
+    "@sentry/types": 7.66.0
+    "@sentry/utils": 7.66.0
+    "@types/aws-lambda": ^8.10.62
+    "@types/express": ^4.17.14
+    tslib: ^2.4.1 || ^1.9.3
+  checksum: ef26f65b5758294abd7ef8b3771d6a3b98e73da90629fa88f43905b73600918c5260b0cdecd83c3653a03208ae773a8b782ca03906a5de2a8f3cbcaf434a2559
   languageName: node
   linkType: hard
 
@@ -11281,7 +11297,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/aws-lambda@npm:8.10.119":
+"@types/aws-lambda@npm:8.10.119, @types/aws-lambda@npm:^8.10.62":
   version: 8.10.119
   resolution: "@types/aws-lambda@npm:8.10.119"
   checksum: 56328bd147fcbcd89da641f7cb0a5cfa1c1e0b0728a1c39769b6b912729737f5d7afc0701b0b0e949ba2b869efd53500e78a2d8733b1eb69c3cc27c06b05623b
