@@ -847,6 +847,8 @@ jobs:
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
       REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_DEV }}
+      REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_CLIENT }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
     steps:
       - name: Checkout code
