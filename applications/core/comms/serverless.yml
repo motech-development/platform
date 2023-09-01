@@ -38,6 +38,8 @@ functions:
   VerifyDomain:
     handler: src/verify-domain.handler
     role: LambdaFunctionRole
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
 
 resources:
   Resources:

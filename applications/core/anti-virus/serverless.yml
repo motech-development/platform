@@ -42,20 +42,27 @@ functions:
     role: LambdaFunctionRole
     environment:
       QUEUE_URL: !Ref AntiVirusFailureQueue
+      SENTRY_DSN: ${env:SENTRY_DSN}
 
   MoveFile:
     handler: src/handlers/move-file.handler
     role: LambdaFunctionRole
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
 
   RemoveFile:
     handler: src/handlers/remove-file.handler
     role: LambdaFunctionRole
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
 
   ScanFile:
     handler: src/handlers/scan-file.handler
     memorySize: 2048
     role: LambdaFunctionRole
     timeout: 300
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
 
   StartScan:
     handler: src/handlers/start-scan.handler
@@ -64,6 +71,7 @@ functions:
       - sqs:
           arn: !GetAtt AntiVirusQueue.Arn
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       STATE_MACHINE_ARN: !Ref ScanUploadStateMachine
 
   UpdateDefinitions:
@@ -74,6 +82,8 @@ functions:
     memorySize: 2048
     role: LambdaFunctionRole
     timeout: 300
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
 
 stepFunctions:
   validate: true
