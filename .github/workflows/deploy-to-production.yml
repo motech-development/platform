@@ -295,6 +295,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -358,6 +359,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -418,6 +420,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -474,6 +477,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -530,6 +534,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -586,6 +591,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -645,6 +651,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -707,6 +714,7 @@ jobs:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -890,6 +898,8 @@ jobs:
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_PROD }}
       REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
       REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_PROD }}
+      REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_CLIENT }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 

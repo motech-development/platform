@@ -41,6 +41,7 @@ functions:
     handler: src/handlers/delete-record.handler
     role: LambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TYPENAME: BankSettings
 
   DeleteTrigger:
@@ -50,60 +51,70 @@ functions:
       - sqs:
           arn: !GetAtt AccountsQueue.Arn
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       STATE_MACHINE_ARN: !Ref DeleteCompanyDataStateMachine
 
   DeleteBalance:
     handler: src/handlers/delete-record.handler
     role: LambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TYPENAME: Balance
 
   DeleteSettings:
     handler: src/handlers/delete-record.handler
     role: LambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TYPENAME: Settings
 
   DeleteTypeahead:
     handler: src/handlers/delete-record.handler
     role: LambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TYPENAME: Typeahead
 
   DeleteClients:
     handler: src/handlers/delete-records.handler
     role: LambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TYPENAME: Client
 
   GetClients:
     handler: src/handlers/get-records.handler
     role: LambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TYPENAME: Client
 
   DeleteTransactions:
     handler: src/handlers/delete-records.handler
     role: LambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TYPENAME: Transaction
 
   GetTransactions:
     handler: src/handlers/get-records.handler
     role: LambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TYPENAME: Transaction
 
   DeleteReports:
     handler: src/handlers/delete-records.handler
     role: LambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TYPENAME: Report
 
   GetReports:
     handler: src/handlers/get-records.handler
     role: LambdaFunctionRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TYPENAME: Report
 
   UnlinkBank:
@@ -111,6 +122,7 @@ functions:
     role: LambdaFunctionRole
     environment:
       ENDPOINT: !ImportValue ${self:provider.stage}-OpenBankingApiEndpoint
+      SENTRY_DSN: ${env:SENTRY_DSN}
       STAGE: ${self:provider.stage}
 
 stepFunctions:

@@ -1,11 +1,20 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import logger from '@motech-development/node-logger';
+import { ProfilingIntegration } from '@sentry/profiling-node';
+import { AWSLambda } from '@sentry/serverless';
 import { SQSHandler } from 'aws-lambda';
 import updateAttachments from './handlers/update-attachments';
 
+AWSLambda.init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [new ProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
+
 const documentClient = new DynamoDBClient({});
 
-export const handler: SQSHandler = async (event) => {
+export const handler: SQSHandler = AWSLambda.wrapHandler(async (event) => {
   const { BUCKET, TABLE } = process.env;
 
   if (!TABLE) {
@@ -30,4 +39,4 @@ export const handler: SQSHandler = async (event) => {
   } catch (e) {
     logger.error('An error occurred', e);
   }
-};
+});

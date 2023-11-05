@@ -1,6 +1,15 @@
+import { ProfilingIntegration } from '@sentry/profiling-node';
+import { AWSLambda } from '@sentry/serverless';
 import { Handler } from 'aws-lambda';
 import { json2csv } from 'json-2-csv';
 import { array, object, string } from 'yup';
+
+AWSLambda.init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [new ProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 const schema = object({
   attachments: array(
@@ -40,7 +49,7 @@ export interface IEvent {
   owner: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = AWSLambda.wrapHandler(async (event) => {
   const { attachments, companyId, csv, owner } = await schema.validate(event, {
     abortEarly: true,
     stripUnknown: true,
@@ -55,4 +64,4 @@ export const handler: Handler<IEvent> = async (event) => {
     csv: report,
     owner,
   };
-};
+});

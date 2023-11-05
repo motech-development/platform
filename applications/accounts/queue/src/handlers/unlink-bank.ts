@@ -1,9 +1,18 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import { NativeAttributeValue } from '@aws-sdk/util-dynamodb';
+import { ProfilingIntegration } from '@sentry/profiling-node';
+import { AWSLambda } from '@sentry/serverless';
 import { aws4Interceptor } from 'aws4-axios';
 import { Handler } from 'aws-lambda';
 import axios from 'axios';
+
+AWSLambda.init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [new ProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 interface IItem {
   user: string;
@@ -25,7 +34,7 @@ export interface IEvent {
   owner: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = AWSLambda.wrapHandler(async (event) => {
   const { ENDPOINT, STAGE, TABLE } = process.env;
 
   if (!TABLE) {
@@ -70,4 +79,4 @@ export const handler: Handler<IEvent> = async (event) => {
   return {
     ...event,
   };
-};
+});

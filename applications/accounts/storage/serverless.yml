@@ -50,6 +50,8 @@ functions:
       - sqs:
           arn: !GetAtt DeleteFileQueue.Arn
     role: LambdaFunctionRole
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
 
   QueueUpload:
     handler: src/handlers/queue-upload.handler
@@ -61,6 +63,7 @@ functions:
     role: LambdaFunctionRole
     environment:
       QUEUE_URL: !ImportValue ${self:provider.stage}-AntiVirusQueueUrl
+      SENTRY_DSN: ${env:SENTRY_DSN}
 
   SignedDownload:
     handler: src/handlers/signed-download.handler
@@ -70,6 +73,8 @@ functions:
           method: post
           path: api/v1/signed-download
     role: LambdaFunctionRole
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
 
   SignedUpload:
     handler: src/handlers/signed-upload.handler
@@ -79,6 +84,8 @@ functions:
           method: post
           path: api/v1/signed-upload
     role: LambdaFunctionRole
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
 
 resources:
   Resources:

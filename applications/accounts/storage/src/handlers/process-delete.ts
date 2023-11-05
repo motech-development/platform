@@ -1,7 +1,16 @@
 import { deleteFile } from '@motech-development/s3-file-operations';
+import { ProfilingIntegration } from '@sentry/profiling-node';
+import { AWSLambda } from '@sentry/serverless';
 import { SQSHandler } from 'aws-lambda';
 
-export const handler: SQSHandler = async (event) => {
+AWSLambda.init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [new ProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
+
+export const handler: SQSHandler = AWSLambda.wrapHandler(async (event) => {
   const { DOWNLOAD_BUCKET } = process.env;
 
   if (!DOWNLOAD_BUCKET) {
@@ -20,4 +29,4 @@ export const handler: SQSHandler = async (event) => {
   });
 
   await Promise.all(deletions);
-};
+});

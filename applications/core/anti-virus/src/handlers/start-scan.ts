@@ -1,9 +1,18 @@
 import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
+import { ProfilingIntegration } from '@sentry/profiling-node';
+import { AWSLambda } from '@sentry/serverless';
 import { SQSHandler } from 'aws-lambda';
+
+AWSLambda.init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [new ProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 const stepFunctions = new SFNClient({});
 
-export const handler: SQSHandler = async (event) => {
+export const handler: SQSHandler = AWSLambda.wrapHandler(async (event) => {
   const { STATE_MACHINE_ARN } = process.env;
 
   if (!STATE_MACHINE_ARN) {
@@ -26,4 +35,4 @@ export const handler: SQSHandler = async (event) => {
   });
 
   await Promise.all(executions);
-};
+});

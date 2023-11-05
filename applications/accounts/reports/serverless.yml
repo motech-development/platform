@@ -38,11 +38,14 @@ functions:
   AddReport:
     handler: src/handlers/add-report.handler
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
     role: LambdaFunctionRole
 
   ConvertToCsv:
     handler: src/handlers/convert-to-csv.handler
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
     role: LambdaFunctionRole
 
   CreateZip:
@@ -50,6 +53,7 @@ functions:
     environment:
       DESTINATION_BUCKET: !Ref ReportBucket
       ORIGIN_BUCKET: !ImportValue ${self:provider.stage}-StorageDownloadBucket
+      SENTRY_DSN: ${env:SENTRY_DSN}
     role: LambdaFunctionRole
     timeout: 300
 
@@ -57,23 +61,28 @@ functions:
     handler: src/handlers/generate-download-link.handler
     environment:
       BUCKET: !Ref ReportBucket
+      SENTRY_DSN: ${env:SENTRY_DSN}
     role: LambdaFunctionRole
 
   GetTransactionsReport:
     handler: src/handlers/get-transactions.handler
     environment:
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+      SENTRY_DSN: ${env:SENTRY_DSN}
     role: LambdaFunctionRole
 
   PublishNotificationReport:
     handler: src/handlers/publish-notification.handler
     environment:
       ENDPOINT: !ImportValue ${self:provider.stage}-NotificationsApiEndpoint
+      SENTRY_DSN: ${env:SENTRY_DSN}
       STAGE: ${self:provider.stage}
     role: LambdaFunctionRole
 
   TransformTransactions:
     handler: src/handlers/transform-transactions.handler
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
     role: LambdaFunctionRole
 
 stepFunctions:

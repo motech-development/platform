@@ -2,11 +2,20 @@ import { createReadStream } from 'node:fs';
 import { join } from 'node:path';
 import logger from '@motech-development/node-logger';
 import { createFile } from '@motech-development/s3-file-operations';
+import { ProfilingIntegration } from '@sentry/profiling-node';
+import { AWSLambda } from '@sentry/serverless';
 import { Handler } from 'aws-lambda';
 import { updateDefinitions } from '../shared/clam-av';
 import virusDefinitions from '../shared/virus-definitions';
 
-export const handler: Handler = async () => {
+AWSLambda.init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [new ProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
+
+export const handler: Handler = AWSLambda.wrapHandler(async () => {
   const { BUCKET } = process.env;
 
   if (!BUCKET) {
@@ -34,4 +43,4 @@ export const handler: Handler = async () => {
 
     throw new Error('Unable to update virus definitions');
   }
-};
+});
