@@ -77,7 +77,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/client@workspace:applications/accounts/client"
   dependencies:
-    "@apollo/client": 3.7.17
+    "@apollo/client": 3.9.5
     "@auth0/auth0-react": 2.2.0
     "@fortawesome/fontawesome-svg-core": 6.4.2
     "@fortawesome/free-solid-svg-icons": 6.4.2
@@ -95,7 +95,7 @@ __metadata:
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
     "@testing-library/cypress": 9.0.0
-    "@testing-library/dom": 9.3.1
+    "@testing-library/dom": 9.3.4
     "@testing-library/jest-dom": 5.17.0
     "@testing-library/react": 14.0.0
     "@testing-library/user-event": 14.4.3
@@ -509,25 +509,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:3.7.17":
-  version: 3.7.17
-  resolution: "@apollo/client@npm:3.7.17"
+"@apollo/client@npm:3.9.5":
+  version: 3.9.5
+  resolution: "@apollo/client@npm:3.9.5"
   dependencies:
     "@graphql-typed-document-node/core": ^3.1.1
-    "@wry/context": ^0.7.0
-    "@wry/equality": ^0.5.0
-    "@wry/trie": ^0.4.0
+    "@wry/caches": ^1.0.0
+    "@wry/equality": ^0.5.6
+    "@wry/trie": ^0.5.0
     graphql-tag: ^2.12.6
     hoist-non-react-statics: ^3.3.2
-    optimism: ^0.16.2
+    optimism: ^0.18.0
     prop-types: ^15.7.2
+    rehackt: 0.0.5
     response-iterator: ^0.2.6
     symbol-observable: ^4.0.0
     ts-invariant: ^0.10.3
     tslib: ^2.3.0
     zen-observable-ts: ^1.2.5
   peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+    graphql: ^15.0.0 || ^16.0.0
     graphql-ws: ^5.5.5
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -541,7 +542,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: d25e955f3c409885185405ca5876cb74538becafa202257a27483c07d7faa9ce83b34d4cab4b7fd9ad217f80d768e651881292c406dbbca221c91013917890d7
+  checksum: 49ee8a0c61fb87fe295a2b0d1d279198a8a2bdf02e64291bf6c2d7c906131b3c90a08c3a9527c2f2cc6409ca67e549c761d883fc20d25091435d3097ab5b41ac
   languageName: node
   linkType: hard
 
@@ -6723,7 +6724,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jridgewell/sourcemap-codec@npm:^1.4.10, @jridgewell/sourcemap-codec@npm:^1.4.13, @jridgewell/sourcemap-codec@npm:^1.4.15":
+"@jridgewell/sourcemap-codec@npm:^1.4.10, @jridgewell/sourcemap-codec@npm:^1.4.15":
   version: 1.4.15
   resolution: "@jridgewell/sourcemap-codec@npm:1.4.15"
   checksum: b881c7e503db3fc7f3c1f35a1dd2655a188cc51a3612d76efc8a6eb74728bef5606e6758ee77423e564092b4a518aba569bbb21c9bac5ab7a35b0c6ae7e344c8
@@ -6807,7 +6808,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
@@ -6840,12 +6841,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/appsync-apollo@workspace:packages/appsync-apollo"
   dependencies:
-    "@apollo/client": 3.7.17
+    "@apollo/client": 3.9.5
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
@@ -6897,7 +6898,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/query-string-hook": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
@@ -6942,7 +6943,7 @@ __metadata:
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
@@ -6986,7 +6987,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     "@popperjs/core": 2.11.8
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@storybook/addon-a11y": 6.5.16
     "@storybook/addon-knobs": 6.4.0
@@ -7117,7 +7118,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
@@ -7151,7 +7152,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
@@ -7196,7 +7197,7 @@ __metadata:
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
@@ -7242,7 +7243,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
@@ -7293,11 +7294,11 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
-    "@types/assert": 1.5.6
+    "@types/assert": 1.5.10
     "@types/jest": 29.5.3
     "@types/serverless": 3.12.13
     "@typescript-eslint/eslint-plugin": 6.2.1
@@ -7331,7 +7332,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
@@ -7365,7 +7366,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": 25.0.3
+    "@rollup/plugin-commonjs": 25.0.7
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
@@ -8870,22 +8871,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-commonjs@npm:25.0.3":
-  version: 25.0.3
-  resolution: "@rollup/plugin-commonjs@npm:25.0.3"
+"@rollup/plugin-commonjs@npm:25.0.7":
+  version: 25.0.7
+  resolution: "@rollup/plugin-commonjs@npm:25.0.7"
   dependencies:
     "@rollup/pluginutils": ^5.0.1
     commondir: ^1.0.1
     estree-walker: ^2.0.2
     glob: ^8.0.3
     is-reference: 1.2.1
-    magic-string: ^0.27.0
+    magic-string: ^0.30.3
   peerDependencies:
-    rollup: ^2.68.0||^3.0.0
+    rollup: ^2.68.0||^3.0.0||^4.0.0
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: 1b94218cc80364d218e5d526e9199620151fe8ac489abc293a75741af5ffb2bfa90da06cffc4a1b9a4091a6f8cda63a6f7c557881b12188f9e0a05f08c147fd0
+  checksum: 052e11839a9edc556eda5dcc759ab816dcc57e9f0f905a1e6e14fff954eaa6b1e2d0d544f5bd18d863993c5eba43d8ac9c19d9bb53b1c3b1213f32cfc9d50b2e
   languageName: node
   linkType: hard
 
@@ -10892,9 +10893,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/dom@npm:9.3.1, @testing-library/dom@npm:^9.0.0":
-  version: 9.3.1
-  resolution: "@testing-library/dom@npm:9.3.1"
+"@testing-library/dom@npm:9.3.4, @testing-library/dom@npm:^9.0.0":
+  version: 9.3.4
+  resolution: "@testing-library/dom@npm:9.3.4"
   dependencies:
     "@babel/code-frame": ^7.10.4
     "@babel/runtime": ^7.12.5
@@ -10904,7 +10905,7 @@ __metadata:
     dom-accessibility-api: ^0.5.9
     lz-string: ^1.5.0
     pretty-format: ^27.0.2
-  checksum: 8ee3136451644e39990edea93709c38cf1e8ce5306f3c66273ca00935963faa51ca74e8d92b02eb442ccb842cfa28ca62833e393e075eb269cf9bef6f5600663
+  checksum: dfd6fb0d6c7b4dd716ba3c47309bc9541b4a55772cb61758b4f396b3785efe2dbc75dc63423545c039078c7ffcc5e4b8c67c2db1b6af4799580466036f70026f
   languageName: node
   linkType: hard
 
@@ -11121,10 +11122,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/assert@npm:1.5.6":
-  version: 1.5.6
-  resolution: "@types/assert@npm:1.5.6"
-  checksum: 035e43ee8e83d3140f55d093da74a80ec1aa9b639e8eb632174a27e5c37b7fd2c0c35d64b4d32d8a24f5f9168ca5761b2553073d1c305871a80f34b728de02b0
+"@types/assert@npm:1.5.10":
+  version: 1.5.10
+  resolution: "@types/assert@npm:1.5.10"
+  checksum: 7097597ec32c467dbfe5dbba8e948df87ed6346cf5c39d435d768e0015d5cca3e2bd7b8ba847d4bf94d9b62a5ca6ca4dffe424329bdd357de1481857b45ebde8
   languageName: node
   linkType: hard
 
@@ -12477,6 +12478,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wry/caches@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "@wry/caches@npm:1.0.1"
+  dependencies:
+    tslib: ^2.3.0
+  checksum: 9e89aa8e9e08577b2e4acbe805f406b141ae49c2ac4a2e22acf21fbee68339fa0550e0dee28cf2158799f35bb812326e80212e49e2afd169f39f02ad56ae4ef4
+  languageName: node
+  linkType: hard
+
 "@wry/context@npm:^0.7.0":
   version: 0.7.0
   resolution: "@wry/context@npm:0.7.0"
@@ -12495,30 +12505,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wry/equality@npm:^0.5.0":
-  version: 0.5.3
-  resolution: "@wry/equality@npm:0.5.3"
+"@wry/equality@npm:^0.5.6":
+  version: 0.5.7
+  resolution: "@wry/equality@npm:0.5.7"
   dependencies:
     tslib: ^2.3.0
-  checksum: 7ea8ded51462911217183b93cc3ffbb4d18dc02a62d4a79e0d9983463739bf54106aaeb25649bf33168120bd044b61d135018bfcf4fefad8099c13eac9238aa6
+  checksum: 892f262fae362df80f199b12658ea6966949539d4a3a50c1acf00d94a367d673a38f8efa1abcb726ae9e5cc5e62fce50c540c70f797b7c8a2c4308b401dfd903
   languageName: node
   linkType: hard
 
-"@wry/trie@npm:^0.3.0":
-  version: 0.3.2
-  resolution: "@wry/trie@npm:0.3.2"
-  dependencies:
-    tslib: ^2.3.0
-  checksum: 151d06b519e1ff1c3acf6ee6846161b1d7d50bbecd4c48e5cd1b05f9e37c30602aff02e88f20105f6e6c54ae4123f9c4eb7715044d7fd927d4ba4ec3e755cd36
-  languageName: node
-  linkType: hard
-
-"@wry/trie@npm:^0.4.0":
+"@wry/trie@npm:^0.4.3":
   version: 0.4.3
   resolution: "@wry/trie@npm:0.4.3"
   dependencies:
     tslib: ^2.3.0
   checksum: 106e021125cfafd22250a6631a0438a6a3debae7bd73f6db87fe42aa0757fe67693db0dfbe200ae1f60ba608c3e09ddb8a4e2b3527d56ed0a7e02aa0ee4c94e1
+  languageName: node
+  linkType: hard
+
+"@wry/trie@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@wry/trie@npm:0.5.0"
+  dependencies:
+    tslib: ^2.3.0
+  checksum: 92aeea34152bd8485184236fe328d3d05fc98ee3b431d82ee60cf3584dbf68155419c3d65d0ff3731b204ee79c149440a9b7672784a545afddc8d4342fbf21c9
   languageName: node
   linkType: hard
 
@@ -25622,21 +25632,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:^0.27.0":
-  version: 0.27.0
-  resolution: "magic-string@npm:0.27.0"
-  dependencies:
-    "@jridgewell/sourcemap-codec": ^1.4.13
-  checksum: 273faaa50baadb7a2df6e442eac34ad611304fc08fe16e24fe2e472fd944bfcb73ffb50d2dc972dc04e92784222002af46868cb9698b1be181c81830fd95a13e
-  languageName: node
-  linkType: hard
-
-"magic-string@npm:^0.30.2":
-  version: 0.30.2
-  resolution: "magic-string@npm:0.30.2"
+"magic-string@npm:^0.30.2, magic-string@npm:^0.30.3":
+  version: 0.30.7
+  resolution: "magic-string@npm:0.30.7"
   dependencies:
     "@jridgewell/sourcemap-codec": ^1.4.15
-  checksum: c0bbb9b27b2772e6bfaa5d0f6452d47c462d588ae7c43fbaac062b07836d3ec0140fcdd42a57aa53ed990abafcdd0fc17907813921b5df04eccf43e67674bc57
+  checksum: bdf102e36a44d1728ec61b69d655caba3f66ca58898e292f6debe57dc30896bd37908bfe3464a7464a435831a9e44aa905cebd681e21c2f44bbe4dddf225619f
   languageName: node
   linkType: hard
 
@@ -27834,13 +27835,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"optimism@npm:^0.16.2":
-  version: 0.16.2
-  resolution: "optimism@npm:0.16.2"
+"optimism@npm:^0.18.0":
+  version: 0.18.0
+  resolution: "optimism@npm:0.18.0"
   dependencies:
+    "@wry/caches": ^1.0.0
     "@wry/context": ^0.7.0
-    "@wry/trie": ^0.3.0
-  checksum: a98ed9a0b8ee2b031010222099b60860d52860bf8182889f2695a7cf2185f21aca59020f78e2b47c0ae7697843caa576798d792967314ff59f6aa7c5d9de7f3a
+    "@wry/trie": ^0.4.3
+    tslib: ^2.3.0
+  checksum: d6ed6a90b05ee886dadfe556c7a30227c66843f51278e51eb843977a6a9368b6c50297fcc63fa514f53d8a5a58f8ddc8049c2356bd4ffac32f8961bcb806254d
   languageName: node
   linkType: hard
 
@@ -30578,6 +30581,21 @@ __metadata:
   bin:
     regjsparser: bin/parser
   checksum: 5e1b76afe8f1d03c3beaf9e0d935dd467589c3625f6d65fb8ffa14f224d783a0fed4bf49c2c1b8211043ef92b6117313419edf055a098ed8342e340586741afc
+  languageName: node
+  linkType: hard
+
+"rehackt@npm:0.0.5":
+  version: 0.0.5
+  resolution: "rehackt@npm:0.0.5"
+  peerDependencies:
+    "@types/react": "*"
+    react: "*"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    react:
+      optional: true
+  checksum: 0ece2c9d55541ba6fbafacd1dd9c7676df725a64f3f6ffdf64ce7ff765b0724b60cf27502c389bf09766ba0997c6f22ab1c2da82b96b9820e8d3c3159f3c2595
   languageName: node
   linkType: hard
 
