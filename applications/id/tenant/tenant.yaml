@@ -207,11 +207,7 @@ tenant:
   enabled_locales:
     - en
   flags:
-    universal_login: false
-    dashboard_ui_next: true
     disable_clickjack_protection_headers: false
-    include_email_in_reset_pwd_redirect: true
-    include_email_in_verify_email_redirect: true
   friendly_name: Motech Development
   picture_url: ''
   sandbox_version: '16'
@@ -298,8 +294,7 @@ branding:
 prompts:
   customText: {}
   universal_login_experience: classic
-migrations:
-  role_users_offset_pagination_over_thousand: true
+migrations: []
 actions: []
 triggers: {}
 organizations: []
