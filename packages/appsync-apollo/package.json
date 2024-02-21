@@ -22,7 +22,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@apollo/client": "3.9.5",
+    "@apollo/client": "3.7.17",
     "aws-appsync-auth-link": "3.0.7",
     "aws-appsync-subscription-link": "3.1.2",
     "graphql": "16.8.1",
