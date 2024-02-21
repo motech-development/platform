@@ -294,7 +294,7 @@ branding:
 prompts:
   customText: {}
   universal_login_experience: classic
-migrations: []
+migrations: {}
 actions: []
 triggers: {}
 organizations: []
