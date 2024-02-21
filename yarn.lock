@@ -77,7 +77,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/client@workspace:applications/accounts/client"
   dependencies:
-    "@apollo/client": 3.9.5
+    "@apollo/client": 3.7.17
     "@auth0/auth0-react": 2.2.0
     "@fortawesome/fontawesome-svg-core": 6.4.2
     "@fortawesome/free-solid-svg-icons": 6.4.2
@@ -509,26 +509,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:3.9.5":
-  version: 3.9.5
-  resolution: "@apollo/client@npm:3.9.5"
+"@apollo/client@npm:3.7.17":
+  version: 3.7.17
+  resolution: "@apollo/client@npm:3.7.17"
   dependencies:
     "@graphql-typed-document-node/core": ^3.1.1
-    "@wry/caches": ^1.0.0
-    "@wry/equality": ^0.5.6
-    "@wry/trie": ^0.5.0
+    "@wry/context": ^0.7.0
+    "@wry/equality": ^0.5.0
+    "@wry/trie": ^0.4.0
     graphql-tag: ^2.12.6
     hoist-non-react-statics: ^3.3.2
-    optimism: ^0.18.0
+    optimism: ^0.16.2
     prop-types: ^15.7.2
-    rehackt: 0.0.5
     response-iterator: ^0.2.6
     symbol-observable: ^4.0.0
     ts-invariant: ^0.10.3
     tslib: ^2.3.0
     zen-observable-ts: ^1.2.5
   peerDependencies:
-    graphql: ^15.0.0 || ^16.0.0
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
     graphql-ws: ^5.5.5
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -542,7 +541,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 49ee8a0c61fb87fe295a2b0d1d279198a8a2bdf02e64291bf6c2d7c906131b3c90a08c3a9527c2f2cc6409ca67e549c761d883fc20d25091435d3097ab5b41ac
+  checksum: d25e955f3c409885185405ca5876cb74538becafa202257a27483c07d7faa9ce83b34d4cab4b7fd9ad217f80d768e651881292c406dbbca221c91013917890d7
   languageName: node
   linkType: hard
 
@@ -6841,7 +6840,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/appsync-apollo@workspace:packages/appsync-apollo"
   dependencies:
-    "@apollo/client": 3.9.5
+    "@apollo/client": 3.7.17
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
@@ -12478,15 +12477,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wry/caches@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "@wry/caches@npm:1.0.1"
-  dependencies:
-    tslib: ^2.3.0
-  checksum: 9e89aa8e9e08577b2e4acbe805f406b141ae49c2ac4a2e22acf21fbee68339fa0550e0dee28cf2158799f35bb812326e80212e49e2afd169f39f02ad56ae4ef4
-  languageName: node
-  linkType: hard
-
 "@wry/context@npm:^0.7.0":
   version: 0.7.0
   resolution: "@wry/context@npm:0.7.0"
@@ -12505,7 +12495,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wry/equality@npm:^0.5.6":
+"@wry/equality@npm:^0.5.0":
   version: 0.5.7
   resolution: "@wry/equality@npm:0.5.7"
   dependencies:
@@ -12514,21 +12504,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wry/trie@npm:^0.4.3":
+"@wry/trie@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@wry/trie@npm:0.3.2"
+  dependencies:
+    tslib: ^2.3.0
+  checksum: 151d06b519e1ff1c3acf6ee6846161b1d7d50bbecd4c48e5cd1b05f9e37c30602aff02e88f20105f6e6c54ae4123f9c4eb7715044d7fd927d4ba4ec3e755cd36
+  languageName: node
+  linkType: hard
+
+"@wry/trie@npm:^0.4.0":
   version: 0.4.3
   resolution: "@wry/trie@npm:0.4.3"
   dependencies:
     tslib: ^2.3.0
   checksum: 106e021125cfafd22250a6631a0438a6a3debae7bd73f6db87fe42aa0757fe67693db0dfbe200ae1f60ba608c3e09ddb8a4e2b3527d56ed0a7e02aa0ee4c94e1
-  languageName: node
-  linkType: hard
-
-"@wry/trie@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "@wry/trie@npm:0.5.0"
-  dependencies:
-    tslib: ^2.3.0
-  checksum: 92aeea34152bd8485184236fe328d3d05fc98ee3b431d82ee60cf3584dbf68155419c3d65d0ff3731b204ee79c149440a9b7672784a545afddc8d4342fbf21c9
   languageName: node
   linkType: hard
 
@@ -27835,15 +27825,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"optimism@npm:^0.18.0":
-  version: 0.18.0
-  resolution: "optimism@npm:0.18.0"
+"optimism@npm:^0.16.2":
+  version: 0.16.2
+  resolution: "optimism@npm:0.16.2"
   dependencies:
-    "@wry/caches": ^1.0.0
     "@wry/context": ^0.7.0
-    "@wry/trie": ^0.4.3
-    tslib: ^2.3.0
-  checksum: d6ed6a90b05ee886dadfe556c7a30227c66843f51278e51eb843977a6a9368b6c50297fcc63fa514f53d8a5a58f8ddc8049c2356bd4ffac32f8961bcb806254d
+    "@wry/trie": ^0.3.0
+  checksum: a98ed9a0b8ee2b031010222099b60860d52860bf8182889f2695a7cf2185f21aca59020f78e2b47c0ae7697843caa576798d792967314ff59f6aa7c5d9de7f3a
   languageName: node
   linkType: hard
 
@@ -30581,21 +30569,6 @@ __metadata:
   bin:
     regjsparser: bin/parser
   checksum: 5e1b76afe8f1d03c3beaf9e0d935dd467589c3625f6d65fb8ffa14f224d783a0fed4bf49c2c1b8211043ef92b6117313419edf055a098ed8342e340586741afc
-  languageName: node
-  linkType: hard
-
-"rehackt@npm:0.0.5":
-  version: 0.0.5
-  resolution: "rehackt@npm:0.0.5"
-  peerDependencies:
-    "@types/react": "*"
-    react: "*"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    react:
-      optional: true
-  checksum: 0ece2c9d55541ba6fbafacd1dd9c7676df725a64f3f6ffdf64ce7ff765b0724b60cf27502c389bf09766ba0997c6f22ab1c2da82b96b9820e8d3c3159f3c2595
   languageName: node
   linkType: hard
 
