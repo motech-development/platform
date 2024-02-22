@@ -7121,7 +7121,7 @@ __metadata:
     "@rollup/plugin-node-resolve": 15.1.0
     "@swc/core": 1.3.74
     "@swc/jest": 0.2.28
-    "@types/google.analytics": 0.0.42
+    "@types/google.analytics": 0.0.46
     "@types/jest": 29.5.3
     "@typescript-eslint/eslint-plugin": 6.2.1
     "@typescript-eslint/parser": 6.2.1
@@ -11335,10 +11335,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.analytics@npm:0.0.42":
-  version: 0.0.42
-  resolution: "@types/google.analytics@npm:0.0.42"
-  checksum: c64b3f7991c4bcb1dfe8db902a2e2ebe821ce53a1ca36e6628b4d08d0c24213aa0d4f49492b3144dd6bfa661f53fb1ecf16e83cca522cddd6d9f8419a4b73fe8
+"@types/google.analytics@npm:0.0.46":
+  version: 0.0.46
+  resolution: "@types/google.analytics@npm:0.0.46"
+  checksum: 2fbc3f9a3ea8edc85d197a7943658e664a01c66a054d3b63a6a2e2b3fb674c9b29a23e90fe70703b245f5a5c75b158dd1254c94788c51c26aaed1e429b086552
   languageName: node
   linkType: hard
 
