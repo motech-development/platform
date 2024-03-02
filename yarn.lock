@@ -152,7 +152,7 @@ __metadata:
     react-router-dom: 6.14.2
     serverless: 3.34.0
     serverless-deployment-bucket: 1.6.0
-    serverless-finch: 4.0.3
+    serverless-finch: 4.0.4
     styled-components: 5.3.11
     typescript: 5.1.6
     unfetch: 5.0.0
@@ -6293,7 +6293,7 @@ __metadata:
     react-snap: 1.23.0
     serverless: 3.34.0
     serverless-deployment-bucket: 1.6.0
-    serverless-finch: 4.0.3
+    serverless-finch: 4.0.4
     styled-components: 5.3.11
     typescript: 5.1.6
     vite: 4.5.2
@@ -23269,13 +23269,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is_js@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "is_js@npm:0.9.0"
-  checksum: bf7f0fc52187eda1ca597da0a20b85c4828b9bca5f08c5f2f6dd64d437384bdc9628674c78cee510f9600050871f7d783738d35dc6f5fe80e2a8848be5fbdce9
-  languageName: node
-  linkType: hard
-
 "isarray@npm:1.0.0, isarray@npm:^1.0.0, isarray@npm:~1.0.0":
   version: 1.0.0
   resolution: "isarray@npm:1.0.0"
@@ -31798,15 +31791,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-finch@npm:4.0.3":
-  version: 4.0.3
-  resolution: "serverless-finch@npm:4.0.3"
+"serverless-finch@npm:4.0.4":
+  version: 4.0.4
+  resolution: "serverless-finch@npm:4.0.4"
   dependencies:
     "@serverless/utils": ^6.0.2
-    is_js: ^0.9.0
     mime: ^3.0.0
     minimatch: ^5.0.1
-  checksum: b1dccd6282c0b8a14c37207b73394aac1916aa7b11b4d817b0b60314e2679194964085bcdc09a9f044808380a4f89357846707ca0c65aa11f802cf27bb0af2e0
+  checksum: 5a86bfc4830c8bf0fda1c260d02afb4f5114c11d2361531cd9be3fac89a29595d3ab72850f148e465ad03903c28998e411eb463e660a58ed0e277488c5ba3e39
   languageName: node
   linkType: hard
 
