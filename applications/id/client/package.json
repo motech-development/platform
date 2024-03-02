@@ -72,7 +72,7 @@
     "react-snap": "1.23.0",
     "serverless": "3.34.0",
     "serverless-deployment-bucket": "1.6.0",
-    "serverless-finch": "4.0.3",
+    "serverless-finch": "4.0.4",
     "typescript": "5.1.6",
     "vite": "4.5.2",
     "vite-plugin-checker": "0.6.4",
