@@ -29,7 +29,7 @@
     "@motech-development/breeze-ui": "workspace:*",
     "@motech-development/ga-web-vitals": "workspace:*",
     "@motech-development/query-string-hook": "workspace:*",
-    "axios": "1.6.0",
+    "axios": "1.6.7",
     "decimal.js": "10.4.3",
     "file-saver": "2.0.5",
     "formik": "2.4.3",
