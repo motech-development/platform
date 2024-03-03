@@ -42,7 +42,7 @@ __metadata:
     "@types/luxon": 3.3.1
     "@typescript-eslint/eslint-plugin": 6.2.1
     "@typescript-eslint/parser": 6.2.1
-    aws-appsync: 4.1.9
+    aws-appsync: 4.1.10
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.0.1
     aws-sdk-client-mock-jest: 3.0.1
@@ -6856,7 +6856,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 6.2.1
     "@typescript-eslint/parser": 6.2.1
     aws-appsync-auth-link: 3.0.7
-    aws-appsync-subscription-link: 3.1.2
+    aws-appsync-subscription-link: 3.1.3
     eslint: 8.46.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.1.0
@@ -13918,9 +13918,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-appsync-subscription-link@npm:3.1.2":
-  version: 3.1.2
-  resolution: "aws-appsync-subscription-link@npm:3.1.2"
+"aws-appsync-subscription-link@npm:3.1.3":
+  version: 3.1.3
+  resolution: "aws-appsync-subscription-link@npm:3.1.3"
   dependencies:
     aws-appsync-auth-link: ^3.0.7
     debug: 2.6.9
@@ -13928,13 +13928,13 @@ __metadata:
     zen-observable-ts: ^1.2.5
   peerDependencies:
     "@apollo/client": 3.x
-  checksum: 657b456d838d7d40a4c8ad3eddddbe2a0aa937fb31b46dd44c476684cd9a3ec1cf9c9e96b7b3957fb6d7d90e569f9ca5d2ff706cc483f6f78d77fb2408595561
+  checksum: 8df2080dc0efbf5c3f3c65b4cd32fda7b9875f45803c127f3dcee4fbad06d9a73baa9968dfefdf375d633617fc59063e9f08ca5608fdae43dbe0af98c1b1076a
   languageName: node
   linkType: hard
 
-"aws-appsync-subscription-link@npm:^2.4.2":
-  version: 2.4.2
-  resolution: "aws-appsync-subscription-link@npm:2.4.2"
+"aws-appsync-subscription-link@npm:^2.4.3":
+  version: 2.4.3
+  resolution: "aws-appsync-subscription-link@npm:2.4.3"
   dependencies:
     apollo-link: 1.2.5
     apollo-link-context: 1.0.11
@@ -13946,13 +13946,13 @@ __metadata:
     zen-observable-ts: ^1.2.5
   peerDependencies:
     apollo-client: 2.x
-  checksum: f4a23aacd013be350d05781c0eb62628f6e8eb535017c30c1bf8344a576d31176860ca38c9dc44c6c2086c284cfbbc6e363da40d04574c3a479e397d3a4a2c87
+  checksum: cbafd6074ada6f2ed5cc4e6b179edf42210c580db86eab6ed625db948692b49a8e99db72bd0cc73719c081b8c5f61389ebf867e8d5ec527e9f87f28ccdfc0c51
   languageName: node
   linkType: hard
 
-"aws-appsync@npm:4.1.9":
-  version: 4.1.9
-  resolution: "aws-appsync@npm:4.1.9"
+"aws-appsync@npm:4.1.10":
+  version: 4.1.10
+  resolution: "aws-appsync@npm:4.1.10"
   dependencies:
     "@aws-crypto/sha256-universal": ^1.1.1
     "@aws-sdk/client-s3": ^3.25.0
@@ -13966,7 +13966,7 @@ __metadata:
     apollo-link-http: 1.5.8
     apollo-link-retry: 2.2.7
     aws-appsync-auth-link: ^2.0.8
-    aws-appsync-subscription-link: ^2.4.2
+    aws-appsync-subscription-link: ^2.4.3
     debug: 2.6.9
     redux: ^3.7.2
     redux-thunk: ^2.2.0
@@ -13975,7 +13975,7 @@ __metadata:
     uuid: 3.x
   peerDependencies:
     graphql: 0.13.0 || 14.x || 15.0.0 - 15.3.0
-  checksum: 244fd36a1d58dd80c98155437cafea81994144f0db29f27e146ecb5c503fbeb4b50e3dd67c3c0a1ad4e6dc426f6fd2db3662ffa1661dbf96f80b32f72a7a8799
+  checksum: 76acb9264ae97e3165abedefe0bfa2bcf959739dbacf508ddb4c29dbeec26bad8cad550fc334ac412712524bc062ea0c26e1df5bcb613d9fec51f8041af5b067
   languageName: node
   linkType: hard
 
