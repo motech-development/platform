@@ -33,7 +33,7 @@
     "@types/aws-lambda": "8.10.134",
     "@types/jest": "29.5.12",
     "@types/luxon": "3.3.1",
-    "@types/qs": "6.9.11",
+    "@types/qs": "6.9.12",
     "@types/uuid": "9.0.2",
     "@typescript-eslint/eslint-plugin": "6.2.1",
     "@typescript-eslint/parser": "6.2.1",
