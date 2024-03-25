@@ -94,6 +94,16 @@ functions:
     environment:
       TABLE: !Ref ApplicationTable
 
+  UpdateBalance:
+    handler: src/update-balance.handler
+    role: DataLambdaFunctionRole
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
+    environment:
+      TABLE: !Ref ApplicationTable
+
 resources:
   Resources:
     ApplicationTable:
