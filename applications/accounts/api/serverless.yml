@@ -434,6 +434,7 @@ appSync:
     deleteFileQueue: !ImportValue ${self:provider.stage}-DeleteFileQueueUrlPath
     queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
     stage: ${self:provider.stage}
+
 functions:
   PublishNotifications:
     handler: src/handlers/publish-notifications.handler
@@ -444,6 +445,17 @@ functions:
           arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
     environment:
       ENDPOINT: ${appsync:url}
+
+  UpdateBalance:
+    handler: src/handlers/update-balance.handler
+    role: PublishNotificationsRole
+    events:
+      - stream:
+          type: dynamodb
+          arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
+    environment:
+      ENDPOINT: ${appsync:url}
+
 resources:
   Resources:
     AppSyncOpenBankingServiceRole:
@@ -623,6 +635,10 @@ resources:
                       - ''
                       - - !Ref ${self:custom.resourceName}
                         - /types/Mutation/fields/notificationBeacon
+                    - !Join
+                      - ''
+                      - - !Ref ${self:custom.resourceName}
+                        - /types/Mutation/fields/transactionBeacon
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup

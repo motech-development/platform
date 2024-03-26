@@ -80,8 +80,6 @@ const getBalance = async (id: string, owner: string) => {
   });
 
   await client.send(updateCommand);
-
-  // TODO: Subscription to update UI
 };
 
 export const handler: DynamoDBStreamHandler = async (event) => {
