@@ -160,6 +160,7 @@ resources:
                 - Effect: Allow
                   Action:
                     - dynamodb:DescribeStream
+                    - dynamodb:GetItem
                     - dynamodb:GetRecords
                     - dynamodb:GetShardIterator
                     - dynamodb:ListStreams

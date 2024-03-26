@@ -5,6 +5,7 @@
 #set($defaultGroups = ["Admin"])
 #set($currency = "GBP")
 #set($items = {})
+#set($transactions = [])
 #set($categories = [
 {
     "name": "Corporation tax",
@@ -85,6 +86,7 @@
         "currency": $util.dynamodb.toDynamoDBJson($currency),
         "items": $util.dynamodb.toDynamoDBJson($items),
         "openingBalance": $util.dynamodb.toDynamoDBJson($balance.balance),
+        "transactions": $util.dynamodb.toDynamoDBJson($transactions),
         "vat": $util.dynamodb.toDynamoDBJson($balance.vat)
       },
       "condition": {

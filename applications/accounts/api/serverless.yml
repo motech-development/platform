@@ -1,5 +1,4 @@
 service: accounts-api
-
 provider:
   name: aws
   region: ${opt:region, 'eu-west-1'}
@@ -8,75 +7,59 @@ provider:
   stackName: ${self:custom.prefix}-api
   deploymentBucket:
     name: ${self:service}-deployment-bucket
-
 package:
   individually: true
-
 plugins:
   - serverless-deployment-bucket
   - serverless-appsync-plugin
   - serverless-webpack
   - serverless-prune-plugin
   - '@motech-development/serverless-outputs-env'
-
 custom:
   prefix: accounts-${self:provider.stage}
-
   prune:
     automatic: true
     includeLayers: true
     number: 1
-
   resourceName: GraphQlApi
-
   oidc:
     issuer: https://${env:AUTH0_DOMAIN}/
-
   outputs:
     files:
       - ../client/.env.production
     env:
       AccountsApiUrl: REACT_APP_APPSYNC_URL
       AWS_REGION: REACT_APP_AWS_REGION
-
   webpack:
-    excludeRegex: 'node_modules/@aws-sdk'
+    excludeRegex: node_modules/@aws-sdk
     includeModules:
       nodeModulesRelativeDir: ../../../
     packager: yarn
     packagerOptions:
       noFrozenLockfile: true
-
 appSync:
   name: ${self:custom.prefix}
-
   authentication:
     type: OPENID_CONNECT
     config:
       issuer: ${self:custom.oidc.issuer}
-
   additionalAuthentications:
     - type: AWS_IAM
-
   logging:
     loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
     level: ERROR
-
   xrayEnabled: true
-
   resolvers:
     Query.getBalance:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/balance/getBalance/Query.getBalance.req.vtl
       response: mapping-templates/balance/getBalance/Query.getBalance.res.vtl
-
     Query.getBanks:
       dataSource: OpenBanking
       kind: UNIT
       request: mapping-templates/bank/getBanks/Query.getBanks.req.vtl
       response: mapping-templates/bank/getBanks/Query.getBanks.res.vtl
-
     Query.getBankAccounts:
       kind: PIPELINE
       functions:
@@ -84,19 +67,16 @@ appSync:
         - getBankAccounts
       request: mapping-templates/bank/getBankAccounts/Query.getBankAccounts.req.vtl
       response: mapping-templates/bank/getBankAccounts/Query.getBankAccounts.res.vtl
-
     Mutation.bankCallback:
       dataSource: Resolver
       kind: UNIT
       request: mapping-templates/bank/bankCallback/Mutation.bankCallback.req.vtl
       response: mapping-templates/bank/bankCallback/Mutation.bankCallback.res.vtl
-
     Mutation.createBankConnection:
       dataSource: OpenBanking
       kind: UNIT
       request: mapping-templates/bank/createBankConnection/Mutation.createBankConnection.req.vtl
       response: mapping-templates/bank/createBankConnection/Mutation.createBankConnection.res.vtl
-
     Mutation.deleteBankConnection:
       kind: PIPELINE
       functions:
@@ -105,20 +85,17 @@ appSync:
         - resetBankSettings
       request: mapping-templates/bank/deleteBankConnection/Mutation.deleteBankConnection.req.vtl
       response: mapping-templates/bank/deleteBankConnection/Mutation.deleteBankConnection.res.vtl
-
     Query.getBankSettings:
       kind: PIPELINE
       functions:
         - bankSettings
       request: mapping-templates/bank/getBankSettings/Query.getBankSettings.req.vtl
       response: mapping-templates/bank/getBankSettings/Query.getBankSettings.res.vtl
-
     Mutation.updateBankSettings:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/bank/updateBankSettings/Mutation.updateBankSettings.req.vtl
       response: mapping-templates/bank/updateBankSettings/Mutation.updateBankSettings.res.vtl
-
     Mutation.createClient:
       kind: PIPELINE
       functions:
@@ -129,13 +106,11 @@ appSync:
         - createClient
       request: mapping-templates/client/createClient/Mutation.createClient.req.vtl
       response: mapping-templates/client/createClient/Mutation.createClient.res.vtl
-
     Mutation.deleteClient:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/client/deleteClient/Mutation.deleteClient.req.vtl
       response: mapping-templates/client/deleteClient/Mutation.deleteClient.res.vtl
-
     Mutation.updateClient:
       kind: PIPELINE
       functions:
@@ -146,19 +121,16 @@ appSync:
         - updateClient
       request: mapping-templates/client/updateClient/Mutation.updateClient.req.vtl
       response: mapping-templates/client/updateClient/Mutation.updateClient.res.vtl
-
     Query.getClient:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/client/getClient/Query.getClient.req.vtl
       response: mapping-templates/client/getClient/Query.getClient.res.vtl
-
     Query.getClients:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/client/getClients/Query.getClients.req.vtl
       response: mapping-templates/client/getClients/Query.getClients.res.vtl
-
     Mutation.createCompany:
       kind: PIPELINE
       functions:
@@ -171,7 +143,6 @@ appSync:
         - createCompany
       request: mapping-templates/company/createCompany/Mutation.createCompany.req.vtl
       response: mapping-templates/company/createCompany/Mutation.createCompany.res.vtl
-
     Mutation.deleteCompany:
       kind: PIPELINE
       functions:
@@ -179,7 +150,6 @@ appSync:
         - queueCompanyDelete
       request: mapping-templates/company/deleteCompany/Mutation.deleteCompany.req.vtl
       response: mapping-templates/company/deleteCompany/Mutation.deleteCompany.res.vtl
-
     Mutation.updateCompany:
       kind: PIPELINE
       functions:
@@ -191,38 +161,32 @@ appSync:
         - updateCompany
       request: mapping-templates/company/updateCompany/Mutation.updateCompany.req.vtl
       response: mapping-templates/company/updateCompany/Mutation.updateCompany.res.vtl
-
     Query.getCompanies:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/company/getCompanies/Query.getCompanies.req.vtl
       response: mapping-templates/company/getCompanies/Query.getCompanies.res.vtl
-
     Query.getCompany:
       kind: PIPELINE
       functions:
         - getCompany
       request: mapping-templates/company/getCompany/Query.getCompany.req.vtl
       response: mapping-templates/company/getCompany/Query.getCompany.res.vtl
-
     Query.getNotifications:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/notifications/getNotifications/Query.getNotifications.req.vtl
       response: mapping-templates/notifications/getNotifications/Query.getNotifications.res.vtl
-
     Mutation.markAsRead:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/notifications/markAsRead/Mutation.markAsRead.req.vtl
       response: mapping-templates/notifications/markAsRead/Mutation.markAsRead.res.vtl
-
     Mutation.notificationBeacon:
       dataSource: Resolver
       kind: UNIT
       request: mapping-templates/notifications/notificationBeacon/Mutation.notificationBeacon.req.vtl
       response: mapping-templates/notifications/notificationBeacon/Mutation.notificationBeacon.res.vtl
-
     Mutation.createReport:
       kind: PIPELINE
       functions:
@@ -230,13 +194,11 @@ appSync:
         - createReport
       request: mapping-templates/reports/createReport/Mutation.createReport.req.vtl
       response: mapping-templates/reports/createReport/Mutation.createReport.res.vtl
-
     Query.getReports:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/reports/getReports/Query.getReports.req.vtl
       response: mapping-templates/reports/getReports/Query.getReports.res.vtl
-
     Mutation.updateSettings:
       kind: PIPELINE
       functions:
@@ -244,43 +206,36 @@ appSync:
         - updateSettings
       request: mapping-templates/settings/updateSettings/Mutation.updateSettings.req.vtl
       response: mapping-templates/settings/updateSettings/Mutation.updateSettings.res.vtl
-
     Query.getSettings:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/settings/getSettings/Query.getSettings.req.vtl
       response: mapping-templates/settings/getSettings/Query.getSettings.res.vtl
-
     Mutation.addTransaction:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/transaction/addTransaction/Mutation.addTransaction.req.vtl
       response: mapping-templates/transaction/addTransaction/Mutation.addTransaction.res.vtl
-
     Mutation.deleteTransaction:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/transaction/deleteTransaction/Mutation.deleteTransaction.req.vtl
       response: mapping-templates/transaction/deleteTransaction/Mutation.deleteTransaction.res.vtl
-
     Query.getTransaction:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/transaction/getTransaction/Query.getTransaction.req.vtl
       response: mapping-templates/transaction/getTransaction/Query.getTransaction.res.vtl
-
     Query.getTransactions:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/transaction/getTransactions/Query.getTransactions.req.vtl
       response: mapping-templates/transaction/getTransactions/Query.getTransactions.res.vtl
-
     Mutation.updateTransaction:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/transaction/updateTransaction/Mutation.updateTransaction.req.vtl
       response: mapping-templates/transaction/updateTransaction/Mutation.updateTransaction.res.vtl
-
     Mutation.deleteFile:
       kind: PIPELINE
       functions:
@@ -288,7 +243,6 @@ appSync:
         - deleteFile
       request: mapping-templates/storage/deleteFile/Mutation.deleteFile.req.vtl
       response: mapping-templates/storage/deleteFile/Mutation.deleteFile.res.vtl
-
     Query.requestDownload:
       kind: PIPELINE
       functions:
@@ -296,7 +250,6 @@ appSync:
         - requestDownload
       request: mapping-templates/storage/requestDownload/Query.requestDownload.req.vtl
       response: mapping-templates/storage/requestDownload/Query.requestDownload.res.vtl
-
     Mutation.requestUpload:
       kind: PIPELINE
       functions:
@@ -304,13 +257,11 @@ appSync:
         - requestUpload
       request: mapping-templates/storage/requestUpload/Mutation.requestUpload.req.vtl
       response: mapping-templates/storage/requestUpload/Mutation.requestUpload.res.vtl
-
     Query.getTypeahead:
       dataSource: Data
       kind: UNIT
       request: mapping-templates/typeahead/getTypeahead/Query.getTypeahead.req.vtl
       response: mapping-templates/typeahead/getTypeahead/Query.getTypeahead.res.vtl
-
   schema:
     - schema/address.graphql
     - schema/balance.graphql
@@ -327,142 +278,108 @@ appSync:
     - schema/transaction.graphql
     - schema/typeahead.graphql
     - schema/vat-settings.graphql
-
   pipelineFunctions:
-    # Validation
     address:
       dataSource: Resolver
       request: mapping-templates/shared/address/Pipeline.address.req.vtl
       response: mapping-templates/shared/address/Pipeline.address.res.vtl
-
     bank:
       dataSource: Resolver
       request: mapping-templates/shared/bank/Pipeline.bank.req.vtl
       response: mapping-templates/shared/bank/Pipeline.bank.res.vtl
-
     companyNumber:
       dataSource: Resolver
       request: mapping-templates/shared/companyNumber/Pipeline.companyNumber.req.vtl
       response: mapping-templates/shared/companyNumber/Pipeline.companyNumber.res.vtl
-
     telephone:
       dataSource: Resolver
       request: mapping-templates/shared/telephone/Pipeline.telephone.req.vtl
       response: mapping-templates/shared/telephone/Pipeline.telephone.res.vtl
-
     vatRegistration:
       dataSource: Resolver
       request: mapping-templates/shared/vatRegistration/Pipeline.vatRegistration.req.vtl
       response: mapping-templates/shared/vatRegistration/Pipeline.vatRegistration.res.vtl
-
-    # Utilities
     addressFiltering:
       dataSource: Resolver
       request: mapping-templates/shared/addressFiltering/Pipeline.addressFiltering.req.vtl
       response: mapping-templates/shared/addressFiltering/Pipeline.addressFiltering.res.vtl
-
     bankSettings:
       dataSource: Data
       request: mapping-templates/shared/bankSettings/Pipeline.bankSettings.req.vtl
       response: mapping-templates/shared/bankSettings/Pipeline.bankSettings.res.vtl
-
     getCompany:
       dataSource: Data
       request: mapping-templates/shared/getCompany/Pipeline.getCompany.req.vtl
       response: mapping-templates/shared/getCompany/Pipeline.getCompany.res.vtl
-
-    # Bank
     getBankAccounts:
       dataSource: OpenBanking
       request: mapping-templates/bank/getBankAccounts/Pipeline.getBankAccounts.req.vtl
       response: mapping-templates/bank/getBankAccounts/Pipeline.getBankAccounts.res.vtl
-
     resetBankSettings:
       dataSource: Data
       request: mapping-templates/bank/deleteBankConnection/Pipeline.resetBankSettings.req.vtl
       response: mapping-templates/bank/deleteBankConnection/Pipeline.resetBankSettings.res.vtl
-
     unlinkBank:
       dataSource: OpenBanking
       request: mapping-templates/bank/deleteBankConnection/Pipeline.unlinkBank.req.vtl
       response: mapping-templates/bank/deleteBankConnection/Pipeline.unlinkBank.res.vtl
-
-    # Clients
     createClient:
       dataSource: Data
       request: mapping-templates/client/createClient/Pipeline.createClient.req.vtl
       response: mapping-templates/client/createClient/Pipeline.createClient.res.vtl
-
     getClientCompanyId:
       dataSource: Data
       request: mapping-templates/client/shared/getClientCompanyId/Pipeline.getClientCompanyId.req.vtl
       response: mapping-templates/client/shared/getClientCompanyId/Pipeline.getClientCompanyId.res.vtl
-
     updateClient:
       dataSource: Data
       request: mapping-templates/client/updateClient/Pipeline.updateClient.req.vtl
       response: mapping-templates/client/updateClient/Pipeline.updateClient.res.vtl
-
-    # Companies
     createCompany:
       dataSource: Data
       request: mapping-templates/company/createCompany/Pipeline.createCompany.req.vtl
       response: mapping-templates/company/createCompany/Pipeline.createCompany.res.vtl
-
     deleteCompany:
       dataSource: Data
       request: mapping-templates/company/deleteCompany/Pipeline.deleteCompany.req.vtl
       response: mapping-templates/company/deleteCompany/Pipeline.deleteCompany.res.vtl
-
     queueCompanyDelete:
       dataSource: Queue
       request: mapping-templates/company/deleteCompany/Pipeline.queueCompanyDelete.req.vtl
       response: mapping-templates/company/deleteCompany/Pipeline.queueCompanyDelete.res.vtl
-
     updateCompany:
       dataSource: Data
       request: mapping-templates/company/updateCompany/Pipeline.updateCompany.req.vtl
       response: mapping-templates/company/updateCompany/Pipeline.updateCompany.res.vtl
-
-    # Reports
     createReport:
       dataSource: Reports
       request: mapping-templates/reports/createReport/Pipeline.createReport.req.vtl
       response: mapping-templates/reports/createReport/Pipeline.createReport.res.vtl
-
-    # Settings
     updateSettings:
       dataSource: Data
       request: mapping-templates/settings/updateSettings/Pipeline.updateSettings.req.vtl
       response: mapping-templates/settings/updateSettings/Pipeline.updateSettings.res.vtl
-
-    # Storage
     deleteFile:
       dataSource: Queue
       request: mapping-templates/storage/deleteFile/Pipeline.deleteFile.req.vtl
       response: mapping-templates/storage/deleteFile/Pipeline.deleteFile.res.vtl
-
     requestDownload:
       dataSource: StorageUpload
       request: mapping-templates/storage/requestDownload/Pipeline.requestDownload.req.vtl
       response: mapping-templates/storage/requestDownload/Pipeline.requestDownload.res.vtl
-
     requestUpload:
       dataSource: StorageUpload
       request: mapping-templates/storage/requestUpload/Pipeline.requestUpload.req.vtl
       response: mapping-templates/storage/requestUpload/Pipeline.requestUpload.res.vtl
-
   dataSources:
     Resolver:
       type: NONE
-
     Data:
       type: AMAZON_DYNAMODB
       description: Application table
       config:
         tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
         serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
-
     OpenBanking:
       type: HTTP
       config:
@@ -473,7 +390,6 @@ appSync:
             signingRegion: !Ref AWS::Region
             signingServiceName: execute-api
         serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
-
     Reports:
       type: HTTP
       config:
@@ -484,7 +400,6 @@ appSync:
             signingRegion: !Ref AWS::Region
             signingServiceName: execute-api
         serviceRoleArn: !GetAtt AppSyncReportsServiceRole.Arn
-
     StorageUpload:
       type: HTTP
       config:
@@ -495,28 +410,25 @@ appSync:
             signingRegion: !Ref AWS::Region
             signingServiceName: execute-api
         serviceRoleArn: !GetAtt AppSyncStorageUploadServiceRole.Arn
-
     Queue:
       type: HTTP
       config:
         endpoint: !Join
           - ''
-          - - 'https://sqs.'
+          - - https://sqs.
             - !Ref AWS::Region
-            - '.amazonaws.com/'
+            - .amazonaws.com/
         authorizationConfig:
           authorizationType: AWS_IAM
           awsIamConfig:
             signingRegion: !Ref AWS::Region
             signingServiceName: sqs
         serviceRoleArn: !GetAtt AppSyncQueueServiceRole.Arn
-
   substitutions:
     appTable: !ImportValue ${self:provider.stage}-AccountsApplicationTable
     deleteFileQueue: !ImportValue ${self:provider.stage}-DeleteFileQueueUrlPath
     queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
     stage: ${self:provider.stage}
-
 functions:
   PublishNotifications:
     handler: src/handlers/publish-notifications.handler
@@ -527,7 +439,6 @@ functions:
           arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
     environment:
       ENDPOINT: ${appsync:url}
-
 resources:
   Resources:
     AppSyncOpenBankingServiceRole:
@@ -551,7 +462,6 @@ resources:
                   Action:
                     - execute-api:Invoke
                   Resource: !ImportValue ${self:provider.stage}-OpenBankingApiArn
-
     AppSyncReportsServiceRole:
       Type: AWS::IAM::Role
       Properties:
@@ -573,7 +483,6 @@ resources:
                   Action:
                     - execute-api:Invoke
                   Resource: !ImportValue ${self:provider.stage}-AccountsReportsApiArn
-
     AppSyncStorageUploadServiceRole:
       Type: AWS::IAM::Role
       Properties:
@@ -595,7 +504,6 @@ resources:
                   Action:
                     - execute-api:Invoke
                   Resource: !ImportValue ${self:provider.stage}-StorageUploadApiArn
-
     AppSyncLoggingServiceRole:
       Type: AWS::IAM::Role
       Properties:
@@ -619,7 +527,6 @@ resources:
                     - logs:CreateLogStream
                     - logs:PutLogEvents
                   Resource: '*'
-
     AppSyncDynamoDbServiceRole:
       Type: AWS::IAM::Role
       Properties:
@@ -650,8 +557,7 @@ resources:
                     - !Join
                       - ''
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
-                        - '/index/__typename-data-index'
-
+                        - /index/__typename-data-index
     AppSyncQueueServiceRole:
       Type: AWS::IAM::Role
       Properties:
@@ -675,7 +581,6 @@ resources:
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsQueueArn
                     - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
-
     PublishNotificationsRole:
       Type: AWS::IAM::Role
       Properties:
@@ -704,7 +609,7 @@ resources:
                     - !Join
                       - ''
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
-                        - '/stream/*'
+                        - /stream/*
                 - Effect: Allow
                   Action:
                     - appsync:GraphQL
@@ -712,7 +617,7 @@ resources:
                     - !Join
                       - ''
                       - - !Ref ${self:custom.resourceName}
-                        - '/types/Mutation/fields/notificationBeacon'
+                        - /types/Mutation/fields/notificationBeacon
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup
@@ -720,8 +625,7 @@ resources:
                     - logs:PutLogEvents
                     - logs:DescribeLogStreams
                   Resource:
-                    - 'arn:aws:logs:*:*:*'
-
+                    - arn:aws:logs:*:*:*
   Outputs:
     AccountsApiUrl:
       Description: Accounts API URL
