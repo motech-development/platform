@@ -13,6 +13,7 @@ type Mutation {
   addTransaction(input: TransactionInput!): Transaction!
   deleteTransaction(id: ID!): Transaction!
   updateTransaction(input: TransactionInput!): Transaction!
+  transactionBeacon(id: ID!, input: TransactionBeaconInput!): Balance! @aws_iam
   requestUpload(id: ID!, input: StorageUploadInput!): StorageUpload!
   deleteFile(id: ID!, path: String!): Storage!
   notificationBeacon(id: ID!, input: NotificationInput!): Notification! @aws_iam
@@ -45,6 +46,7 @@ type Query {
 
 type Subscription {
   onBankCallback: BankCallback @aws_subscribe(mutations: ["bankCallback"])
+  onTransaction: Balance @aws_subscribe(mutations: ["transactionBeacon"])
   onNotification(owner: String!): Notification
     @aws_subscribe(mutations: ["notificationBeacon"])
 }
