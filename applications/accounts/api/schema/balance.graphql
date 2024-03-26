@@ -1,4 +1,4 @@
-type Balance {
+type Balance @aws_iam @aws_oidc {
   balance: Float
   currency: String
   id: ID
@@ -6,12 +6,12 @@ type Balance {
   vat: BalanceVat
 }
 
-type BalanceVat {
+type BalanceVat @aws_iam @aws_oidc {
   owed: Float
   paid: Float
 }
 
-type BalanceTransaction {
+type BalanceTransaction @aws_iam @aws_oidc {
   balance: Float
   currency: String
   date: AWSDateTime

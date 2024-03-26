@@ -1,7 +1,7 @@
 import { Decimal } from 'decimal.js';
 import { DateTime } from 'luxon';
 
-interface IBalance {
+export interface IBalance {
   balance: number;
   currency: string;
   date: string;

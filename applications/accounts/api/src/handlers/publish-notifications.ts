@@ -4,12 +4,9 @@ import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
 import { AWSAppSyncClient } from 'aws-appsync';
-import {
-  AttributeValue,
-  DynamoDBRecord,
-  DynamoDBStreamHandler,
-} from 'aws-lambda';
+import { DynamoDBStreamHandler } from 'aws-lambda';
 import gql from 'graphql-tag';
+import { isStreamRecord } from '../shared/utils';
 
 // TODO: Use generated types instead
 interface IRecord {
@@ -20,21 +17,6 @@ interface IRecord {
   owner: string;
   payload: string;
 }
-
-interface IFilteredRecord {
-  eventName: 'INSERT';
-  dynamodb: {
-    NewImage: Record<string, AttributeValue>;
-  };
-}
-
-const isStreamRecord = (value: DynamoDBRecord): value is IFilteredRecord => {
-  if (value.eventName === 'INSERT') {
-    return !!value.dynamodb?.NewImage;
-  }
-
-  return false;
-};
 
 export const mutation = gql`
   mutation NotificationBeacon($id: ID!, $input: NotificationInput!) {
