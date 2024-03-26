@@ -4,10 +4,10 @@ import logger from '@motech-development/node-logger';
 import { DynamoDBStreamHandler } from 'aws-lambda';
 import { ITransaction } from './shared/transaction';
 import { unmarshallNewRecords } from './shared/unmarshall-records';
-import transformBalance, {
+import transformTransactions, {
   IBalanceItem,
   ITransactionItem,
-} from './shared/transform-balance';
+} from './shared/transform-transactions';
 
 const client = new DynamoDBClient({});
 
@@ -58,39 +58,25 @@ const getBalance = async (id: string, owner: string) => {
 
   const transactionsResult = transactions.Items as ITransactionItem[];
 
-  const data = transformBalance(balanceResult, transactionsResult);
+  const data = transformTransactions(balanceResult, transactionsResult);
 
   const now = new Date();
 
   const updateCommand = new UpdateCommand({
     ExpressionAttributeNames: {
-      '#balance': 'balance',
-      '#createdAt': 'createdAt',
-      '#currency': 'currency',
-      '#data': 'data',
-      '#groupsCanAccess': 'groupsCanAccess',
-      '#owner': 'owner',
       '#transactions': 'transactions',
       '#updatedAt': 'updatedAt',
-      '#vat': 'vat',
     },
     ExpressionAttributeValues: {
-      ':balance': data.balance,
-      ':currency': data.currency,
-      ':data': `${owner}:${id}:Typeahead`,
-      ':groupsCanAccess': ['Admin'],
       ':now': now.toISOString(),
-      ':owner': owner,
-      ':transactions': data.transactions,
-      ':vat': data.vat,
+      ':transactions': data,
     },
     Key: {
       __typename: 'Balance',
       id,
     },
     TableName: TABLE,
-    UpdateExpression:
-      'SET #balance = :balance, #currency = :currency, #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #transactions = :transactions, #updatedAt = :now, #vat = :vat',
+    UpdateExpression: 'SET #transactions = :transactions, #updatedAt = :now',
   });
 
   await client.send(updateCommand);
@@ -105,7 +91,7 @@ export const handler: DynamoDBStreamHandler = async (event) => {
   );
 
   const transactions = unmarshalledRecords.map(({ NewImage }) => ({
-    id: NewImage.id,
+    id: NewImage.companyId,
     owner: NewImage.owner,
   }));
 

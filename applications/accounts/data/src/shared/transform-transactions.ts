@@ -34,22 +34,10 @@ export interface ITransactionItem {
   vat: number;
 }
 
-export interface ITransformedBalance {
-  balance: number;
-  currency: string;
-  id: string;
-  transactions: IBalance[];
-  owner: string;
-  vat: {
-    owed: number;
-    paid: number;
-  };
-}
-
-const transformBalance = (
+const transformTransactions = (
   balanceItem?: IBalanceItem,
   transactionItems?: ITransactionItem[],
-): ITransformedBalance => {
+): IBalance[] => {
   if (!balanceItem) {
     throw new Error('Balance not found');
   }
@@ -58,8 +46,7 @@ const transformBalance = (
     throw new Error('No transactions returned');
   }
 
-  const { balance, currency, id, items, openingBalance, owner, vat } =
-    balanceItem;
+  const { currency, items, openingBalance } = balanceItem;
   const transactions = Object.keys(items)
     .filter((key) => items[key] !== 0)
     .map((key, i) => ({
@@ -102,14 +89,7 @@ const transformBalance = (
       return d1 > d2 ? -1 : 1;
     });
 
-  return {
-    balance,
-    currency,
-    id,
-    owner,
-    transactions,
-    vat,
-  };
+  return transactions;
 };
 
-export default transformBalance;
+export default transformTransactions;
