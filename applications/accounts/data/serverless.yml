@@ -84,8 +84,8 @@ functions:
     environment:
       TABLE: !Ref ApplicationTable
 
-  Typeahead:
-    handler: src/typeahead.handler
+  TransformTransactions:
+    handler: src/transform-transactions.handler
     role: DataLambdaFunctionRole
     events:
       - stream:
@@ -94,8 +94,8 @@ functions:
     environment:
       TABLE: !Ref ApplicationTable
 
-  UpdateBalance:
-    handler: src/update-balance.handler
+  Typeahead:
+    handler: src/typeahead.handler
     role: DataLambdaFunctionRole
     events:
       - stream:
