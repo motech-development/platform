@@ -66,7 +66,7 @@ appSync:
 
   resolvers:
     Query.getBalance:
-      dataSource: Lambda
+      dataSource: Data
       kind: UNIT
       request: mapping-templates/balance/getBalance/Query.getBalance.req.vtl
       response: mapping-templates/balance/getBalance/Query.getBalance.res.vtl
@@ -463,12 +463,6 @@ appSync:
         tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
         serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
 
-    Lambda:
-      type: AWS_LAMBDA
-      config:
-        functionArn: !GetAtt LambdaDataSourceLambdaFunction.Arn
-        serviceRoleArn: !GetAtt AppSyncLambdaServiceRole.Arn
-
     OpenBanking:
       type: HTTP
       config:
@@ -524,13 +518,6 @@ appSync:
     stage: ${self:provider.stage}
 
 functions:
-  LambdaDataSource:
-    handler: src/lambda.handler
-    role: LambdaDataSourceRole
-    timeout: 900
-    environment:
-      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
-
   PublishNotifications:
     handler: src/handlers/publish-notifications.handler
     role: PublishNotificationsRole
@@ -688,69 +675,6 @@ resources:
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsQueueArn
                     - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
-
-    AppSyncLambdaServiceRole:
-      Type: AWS::IAM::Role
-      Properties:
-        AssumeRolePolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service:
-                  - appsync.amazonaws.com
-              Action:
-                - sts:AssumeRole
-        Policies:
-          - PolicyName: ${self:custom.prefix}-appsync-lambda-service-role-policy
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - lambda:invokeFunction
-                  Resource:
-                    - !GetAtt LambdaDataSourceLambdaFunction.Arn
-                    - !Join
-                      - ''
-                      - - !GetAtt LambdaDataSourceLambdaFunction.Arn
-                        - ':*'
-
-    LambdaDataSourceRole:
-      Type: AWS::IAM::Role
-      Properties:
-        AssumeRolePolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service:
-                  - lambda.amazonaws.com
-              Action:
-                - sts:AssumeRole
-        Policies:
-          - PolicyName: ${self:custom.prefix}-lambda-data-source-role-policy
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - dynamodb:GetItem
-                    - dynamodb:Query
-                  Resource:
-                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
-                    - !Join
-                      - ''
-                      - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
-                        - '/index/__typename-data-index'
-                - Effect: Allow
-                  Action:
-                    - logs:CreateLogGroup
-                    - logs:CreateLogStream
-                    - logs:PutLogEvents
-                    - logs:DescribeLogStreams
-                  Resource:
-                    - 'arn:aws:logs:*:*:*'
 
     PublishNotificationsRole:
       Type: AWS::IAM::Role
