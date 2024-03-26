@@ -18,6 +18,13 @@ type BalanceTransaction {
   items: [Transaction]
 }
 
+input BalanceTransactionInput {
+  balance: Float
+  currency: String
+  date: AWSDateTime
+  items: [TransactionInput]
+}
+
 input BalanceVatInput {
   owed: Float!
   paid: Float!

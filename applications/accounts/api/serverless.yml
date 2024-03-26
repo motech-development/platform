@@ -236,6 +236,11 @@ appSync:
       kind: UNIT
       request: mapping-templates/transaction/updateTransaction/Mutation.updateTransaction.req.vtl
       response: mapping-templates/transaction/updateTransaction/Mutation.updateTransaction.res.vtl
+    Mutation.transactionBeacon:
+      dataSource: Resolver
+      kind: UNIT
+      request: mapping-templates/transaction/transactionBeacon/Mutation.transactionBeacon.req.vtl
+      response: mapping-templates/transaction/transactionBeacon/Mutation.transactionBeacon.res.vtl
     Mutation.deleteFile:
       kind: PIPELINE
       functions:

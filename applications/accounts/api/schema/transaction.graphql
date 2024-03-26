@@ -40,3 +40,10 @@ input TransactionInput {
   status: TransactionStatus!
   vat: Float!
 }
+
+input TransactionBeaconInput {
+  __typename: String
+  balance: Float
+  transactions: [BalanceTransactionInput]
+  vat: BalanceVatInput
+}
