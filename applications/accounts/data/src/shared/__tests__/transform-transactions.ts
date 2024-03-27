@@ -126,6 +126,7 @@ describe('transform-transactions', () => {
         items: [
           {
             amount: 2960.91,
+            attachment: '',
             category: 'Sales',
             companyId: 'company-id',
             date: '2019-12-31T00:00:00.000Z',
@@ -144,6 +145,7 @@ describe('transform-transactions', () => {
         items: [
           {
             amount: -349,
+            attachment: '',
             category: 'Equipment',
             companyId: 'company-id',
             date: '2019-12-15T00:00:00.000Z',
@@ -162,6 +164,7 @@ describe('transform-transactions', () => {
         items: [
           {
             amount: -2.2,
+            attachment: '',
             category: '',
             companyId: 'company-id',
             date: '2019-12-04T00:00:00.000Z',
@@ -180,6 +183,7 @@ describe('transform-transactions', () => {
         items: [
           {
             amount: -190,
+            attachment: '',
             category: 'Accommodation',
             companyId: 'company-id',
             date: '2019-11-25T00:00:00.000Z',
@@ -269,6 +273,7 @@ describe('transform-transactions', () => {
         items: [
           {
             amount: 2960.91,
+            attachment: '',
             category: 'Sales',
             companyId: 'company-id',
             date: '2019-12-31T00:00:00.000Z',
@@ -287,6 +292,7 @@ describe('transform-transactions', () => {
         items: [
           {
             amount: -349,
+            attachment: '',
             category: 'Equipment',
             companyId: 'company-id',
             date: '2019-12-15T00:00:00.000Z',
@@ -305,6 +311,7 @@ describe('transform-transactions', () => {
         items: [
           {
             amount: -2.2,
+            attachment: '',
             category: '',
             companyId: 'company-id',
             date: '2019-12-04T00:00:00.000Z',
@@ -323,6 +330,7 @@ describe('transform-transactions', () => {
         items: [
           {
             amount: -190,
+            attachment: '',
             category: 'Accommodation',
             companyId: 'company-id',
             date: '2019-11-25T00:00:00.000Z',
@@ -377,6 +385,7 @@ describe('transform-transactions', () => {
         items: [
           {
             amount: 2960.91,
+            attachment: '',
             category: 'Sales',
             companyId: 'company-id',
             date: '2019-12-31T00:00:00.000Z',

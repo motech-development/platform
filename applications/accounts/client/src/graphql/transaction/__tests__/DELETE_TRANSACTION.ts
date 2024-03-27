@@ -1,5 +1,4 @@
 import { ApolloCache, InMemoryCache } from '@apollo/client/cache';
-import GET_BALANCE from '../../balance/GET_BALANCE';
 import { IDeleteTransactionOutput, updateCache } from '../DELETE_TRANSACTION';
 import GET_TRANSACTIONS from '../GET_TRANSACTIONS';
 
@@ -14,55 +13,6 @@ describe('DELETE_TRANSACTION', () => {
         },
       },
     }) as ApolloCache<IDeleteTransactionOutput>;
-
-    cache.writeQuery({
-      data: {
-        getBalance: {
-          __typename: 'Balance',
-          balance: 50,
-          currency: 'GBP',
-          id: 'company-id',
-          transactions: [
-            {
-              balance: 50,
-              currency: 'GBP',
-              date: '2021-08-05T00:00:00.000Z',
-              items: [
-                {
-                  amount: 50,
-                  attachment: null,
-                  description: 'Transaction description 1',
-                  id: 'transaction-id-0',
-                  name: 'Transaction 1',
-                },
-              ],
-            },
-            {
-              balance: 100,
-              currency: 'GBP',
-              date: '2021-08-04T00:00:00.000Z',
-              items: [
-                {
-                  amount: 50,
-                  attachment: null,
-                  description: 'Transaction description 2',
-                  id: 'transaction-id-1',
-                  name: 'Transaction 2',
-                },
-              ],
-            },
-          ],
-          vat: {
-            owed: 0,
-            paid: 0,
-          },
-        },
-      },
-      query: GET_BALANCE,
-      variables: {
-        id: 'company-id',
-      },
-    });
 
     cache.writeQuery({
       data: {
