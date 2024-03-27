@@ -7,7 +7,6 @@ import Connected from '../../../components/Connected';
 import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
-import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
 import ADD_TRANSACTION, {
   IAddTransactionInput,
   IAddTransactionOutput,
@@ -103,7 +102,6 @@ function RecordTransaction() {
     IAddTransactionOutput,
     IAddTransactionInput
   >(ADD_TRANSACTION, {
-    awaitRefetchQueries: true,
     onCompleted: ({ addTransaction }) => {
       if (addTransaction) {
         add({
@@ -121,14 +119,6 @@ function RecordTransaction() {
         navigate(backTo(companyId));
       }
     },
-    refetchQueries: () => [
-      {
-        query: GET_BALANCE,
-        variables: {
-          id: companyId,
-        },
-      },
-    ],
   });
   const save = (input: FormSchema) => {
     mutation({
