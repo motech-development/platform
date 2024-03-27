@@ -2,6 +2,7 @@ type Balance @aws_iam @aws_oidc {
   balance: Float
   currency: String
   id: ID
+  owner: String
   transactions: [BalanceTransaction]
   vat: BalanceVat
 }

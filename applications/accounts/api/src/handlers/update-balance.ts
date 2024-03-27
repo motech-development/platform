@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable import/prefer-default-export */
 import { AttributeValue } from '@aws-sdk/client-dynamodb';
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
@@ -7,7 +6,7 @@ import logger from '@motech-development/node-logger';
 import { AWSAppSyncClient } from 'aws-appsync';
 import { DynamoDBStreamHandler } from 'aws-lambda';
 import gql from 'graphql-tag';
-import { isStreamRecord } from '../shared/utils';
+import { isStreamModifyRecord } from '../shared/utils';
 
 interface ITransaction {
   balance: number;
@@ -18,6 +17,7 @@ interface ITransaction {
 interface IBalance {
   __typename: string;
   balance: number;
+  id: string;
   owner: string;
   transactions: ITransaction;
   vat: {
@@ -26,10 +26,16 @@ interface IBalance {
   };
 }
 
-const mutation = gql`
-  mutation TransactionBeacon($id: ID!, $input: TransactionBeaconInput!) {
-    transactionBeacon(id: $id, input: $input) {
+export const mutation = gql`
+  mutation TransactionBeacon(
+    $id: ID!
+    $owner: String!
+    $input: TransactionBeaconInput!
+  ) {
+    transactionBeacon(id: $id, owner: $owner, input: $input) {
       balance
+      id
+      owner
       transactions {
         balance
         currency
@@ -66,7 +72,7 @@ interface IUpdateBalance {
   };
 }
 
-async function updateBalance(id: string, input: IUpdateBalance) {
+async function updateBalance(id: string, owner: string, input: IUpdateBalance) {
   const credentials = fromNodeProviderChain({});
 
   const { AWS_REGION, ENDPOINT } = process.env;
@@ -89,11 +95,12 @@ async function updateBalance(id: string, input: IUpdateBalance) {
     url: ENDPOINT,
   });
 
-  await client.mutate({
+  return client.mutate({
     mutation,
     variables: {
       id,
       input,
+      owner,
     },
   });
 }
@@ -111,25 +118,26 @@ export const handler: DynamoDBStreamHandler = async (event) => {
 
   const { Records } = event;
 
-  const mutations = Records.filter(isStreamRecord)
+  const mutations = Records.filter(isStreamModifyRecord)
     .map(({ dynamodb }) => {
       const { NewImage } = dynamodb;
 
-      const { __typename, balance, owner, transactions, vat } = unmarshall(
+      const { __typename, balance, id, owner, transactions, vat } = unmarshall(
         NewImage as Record<string, AttributeValue>,
       ) as IBalance;
 
       return {
         __typename,
         balance,
+        id,
         owner,
         transactions,
         vat,
       };
     })
     .filter(({ __typename }) => __typename === 'Balance')
-    .map(({ balance, owner, transactions, vat }) =>
-      updateBalance(owner, {
+    .map(({ balance, id, owner, transactions, vat }) =>
+      updateBalance(id, owner, {
         balance,
         transactions,
         vat,

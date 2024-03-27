@@ -11,12 +11,14 @@ describe('transform-transactions', () => {
 
   it('should throw if transactions are undefined', () => {
     const balance = {
+      __typename: 'balance',
       balance: 0,
       currency: 'GBP',
       id: 'company-id',
       items: {},
       openingBalance: 0,
       owner: 'owner',
+      updatedAt: '2024-03-27',
       vat: {
         owed: 0,
         paid: 0,
@@ -30,12 +32,14 @@ describe('transform-transactions', () => {
 
   it('should return balance when there are no transactions', () => {
     const balance = {
+      __typename: 'Balance',
       balance: 0,
       currency: 'GBP',
       id: 'company-id',
       items: {},
       openingBalance: 0,
       owner: 'owner',
+      updatedAt: '2024-03-27',
       vat: {
         owed: 0,
         paid: 0,
@@ -48,6 +52,7 @@ describe('transform-transactions', () => {
 
   it('should return balance when there are transactions', () => {
     const balance = {
+      __typename: 'Balance',
       balance: 2419.71,
       currency: 'GBP',
       id: 'company-id',
@@ -60,6 +65,7 @@ describe('transform-transactions', () => {
       },
       openingBalance: 0,
       owner: 'owner',
+      updatedAt: '2024-03-27',
       vat: {
         owed: 493.48,
         paid: 98.54,
@@ -190,6 +196,7 @@ describe('transform-transactions', () => {
 
   it('should return balance when there are transactions and starting balance', () => {
     const balance = {
+      __typename: 'Balance',
       balance: 2519.71,
       currency: 'GBP',
       id: 'company-id',
@@ -201,6 +208,7 @@ describe('transform-transactions', () => {
       },
       openingBalance: 100,
       owner: 'owner',
+      updatedAt: '2024-03-27',
       vat: {
         owed: 493.48,
         paid: 98.54,
@@ -331,6 +339,7 @@ describe('transform-transactions', () => {
 
   it('should return the correct balance when the first item is 0', () => {
     const balance = {
+      __typename: 'Balance',
       balance: 3060.91,
       currency: 'GBP',
       id: 'company-id',
@@ -340,6 +349,7 @@ describe('transform-transactions', () => {
       },
       openingBalance: 100,
       owner: 'owner',
+      updatedAt: '2024-03-27',
       vat: {
         owed: 493.48,
         paid: 0,

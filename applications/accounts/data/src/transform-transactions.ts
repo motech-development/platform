@@ -1,35 +1,35 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { GetCommand, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
 import { DynamoDBStreamHandler } from 'aws-lambda';
-import { ITransaction } from './shared/transaction';
-import { unmarshallNewRecords } from './shared/unmarshall-records';
+import { unmarshallAllRecords } from './shared/unmarshall-records';
 import transformTransactions, {
-  IBalanceItem,
+  IBalance,
   ITransactionItem,
 } from './shared/transform-transactions';
 
 const client = new DynamoDBClient({});
 
-const getBalance = async (id: string, owner: string) => {
+const getBalance = async (balance: IBalance) => {
   const { TABLE } = process.env;
 
   if (!TABLE) {
     throw new Error('No table set');
   }
 
-  const getCommand = new GetCommand({
-    Key: {
-      __typename: 'Balance',
-      id,
-    },
-    TableName: TABLE,
+  const { id, owner } = balance;
+
+  logger.info({
+    balance,
   });
 
   const queryCommand = new QueryCommand({
     ExpressionAttributeNames: {
       '#data': 'data',
+      '#date': 'date',
+      '#name': 'name',
       '#owner': 'owner',
+      '#status': 'status',
       '#typename': '__typename',
     },
     ExpressionAttributeValues: {
@@ -41,34 +41,23 @@ const getBalance = async (id: string, owner: string) => {
     IndexName: '__typename-data-index',
     KeyConditionExpression:
       '#typename = :typename AND begins_with(#data, :data)',
+    ProjectionExpression:
+      'amount, attachment, category, companyId, #date, description, id, #name, refund, scheduled, #status, vat',
     ScanIndexForward: false,
     TableName: TABLE,
   });
 
-  const balanceQuery = client.send(getCommand);
-
-  const transactionsQuery = client.send(queryCommand);
-
-  const [balance, transactions] = await Promise.all([
-    balanceQuery,
-    transactionsQuery,
-  ]);
-
-  const balanceResult = balance.Item as IBalanceItem;
+  const transactions = await client.send(queryCommand);
 
   const transactionsResult = transactions.Items as ITransactionItem[];
 
-  const data = transformTransactions(balanceResult, transactionsResult);
-
-  const now = new Date();
+  const data = transformTransactions(balance, transactionsResult);
 
   const updateCommand = new UpdateCommand({
     ExpressionAttributeNames: {
       '#transactions': 'transactions',
-      '#updatedAt': 'updatedAt',
     },
     ExpressionAttributeValues: {
-      ':now': now.toISOString(),
       ':transactions': data,
     },
     Key: {
@@ -76,27 +65,26 @@ const getBalance = async (id: string, owner: string) => {
       id,
     },
     TableName: TABLE,
-    UpdateExpression: 'SET #transactions = :transactions, #updatedAt = :now',
+    UpdateExpression: 'SET #transactions = :transactions',
   });
 
   await client.send(updateCommand);
 };
 
 export const handler: DynamoDBStreamHandler = async (event) => {
-  const unmarshalledRecords = unmarshallNewRecords<ITransaction>(
+  const unmarshalledRecords = unmarshallAllRecords<IBalance>(
     event.Records,
-    'Transaction',
+    'Balance',
   );
 
-  const transactions = unmarshalledRecords.map(({ NewImage }) => ({
-    id: NewImage.companyId,
-    owner: NewImage.owner,
-  }));
+  const transactions = unmarshalledRecords
+    .filter(
+      ({ NewImage, OldImage }) => NewImage.updatedAt !== OldImage.updatedAt,
+    )
+    .map(({ NewImage }) => getBalance(NewImage));
 
   try {
-    await Promise.all(
-      transactions.map(({ id, owner }) => getBalance(id, owner)),
-    );
+    await Promise.all(transactions);
   } catch (e) {
     logger.error('An error occurred', e);
   }
