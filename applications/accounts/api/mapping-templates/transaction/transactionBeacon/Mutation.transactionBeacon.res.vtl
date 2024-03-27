@@ -1,5 +1,7 @@
 {
-  "balance": "$ctx.arguments.input.balance",
-  "transactions": "$ctx.arguments.input.transactions",
-  "vat": "$ctx.arguments.input.vat"
+  "balance": $utils.toJson($ctx.arguments.input.balance),
+  "id": $utils.toJson($ctx.arguments.id),
+  "owner": $utils.toJson($ctx.arguments.owner),
+  "transactions": $utils.toJson($ctx.arguments.input.transactions),
+  "vat": $utils.toJson($ctx.arguments.input.vat)
 }

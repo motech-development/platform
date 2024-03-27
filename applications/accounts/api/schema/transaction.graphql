@@ -10,7 +10,7 @@ type Transactions {
   status: TransactionStatus
 }
 
-type Transaction {
+type Transaction @aws_iam @aws_oidc {
   amount: Float
   attachment: String
   category: String

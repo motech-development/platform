@@ -6,7 +6,7 @@ import logger from '@motech-development/node-logger';
 import { AWSAppSyncClient } from 'aws-appsync';
 import { DynamoDBStreamHandler } from 'aws-lambda';
 import gql from 'graphql-tag';
-import { isStreamRecord } from '../shared/utils';
+import { isStreamInsertRecord } from '../shared/utils';
 
 // TODO: Use generated types instead
 interface IRecord {
@@ -54,7 +54,7 @@ export const handler: DynamoDBStreamHandler = async (event) => {
     region: AWS_REGION,
     url: ENDPOINT,
   });
-  const mutations = Records.filter(isStreamRecord)
+  const mutations = Records.filter(isStreamInsertRecord)
     .map(({ dynamodb }) => {
       const { NewImage } = dynamodb;
       const { __typename, createdAt, id, message, owner, payload } = unmarshall(
