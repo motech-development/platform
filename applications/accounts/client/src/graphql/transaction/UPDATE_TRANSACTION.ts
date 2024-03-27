@@ -46,49 +46,6 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
 
     cache.modify({
       fields: {
-        items: (refs: Reference[], { readField }) => {
-          if (
-            refs.some((ref) => readField('id', ref) === updateTransaction.id)
-          ) {
-            return refs;
-          }
-
-          const newRef = cache.writeFragment({
-            data: updateTransaction,
-            fragment: gql`
-              fragment NewTransaction on Transaction {
-                amount
-                attachment
-                date
-                description
-                id
-                name
-                scheduled
-              }
-            `,
-          });
-
-          return [...refs, newRef].sort((a, b) => {
-            const readA = readField<string>('date', a);
-            const readB = readField<string>('date', b);
-
-            if (readA && readB) {
-              return readA.localeCompare(readB);
-            }
-
-            return 0;
-          });
-        },
-      },
-      id: cache.identify({
-        __typename: 'Transactions',
-        id: updateTransaction.companyId,
-        status: updateTransaction.status,
-      }),
-    });
-
-    cache.modify({
-      fields: {
         items: (refs: Reference[], { readField }) =>
           refs.filter((ref) => readField('id', ref) !== updateTransaction.id),
       },

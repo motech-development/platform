@@ -14,11 +14,9 @@ import DeleteItem from '../../../components/DeleteItem';
 import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
-import GET_BALANCE from '../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION, {
   IDeleteTransactionInput,
   IDeleteTransactionOutput,
-  updateCache as deleteTransactionCache,
 } from '../../../graphql/transaction/DELETE_TRANSACTION';
 import UPDATE_TRANSACTION, {
   IUpdateTransactionInput,
@@ -134,14 +132,7 @@ function ViewTransaction() {
 
     return location;
   };
-  const refetchQueries = () => [
-    {
-      query: GET_BALANCE,
-      variables: {
-        id: companyId,
-      },
-    },
-  ];
+
   const { data, error, loading } = useQuery<
     IViewTransactionOutput,
     IViewTransactionInput
@@ -160,7 +151,6 @@ function ViewTransaction() {
     useMutation<IUpdateTransactionOutput, IUpdateTransactionInput>(
       UPDATE_TRANSACTION,
       {
-        awaitRefetchQueries: true,
         onCompleted: ({ updateTransaction }) => {
           if (updateTransaction) {
             add({
@@ -180,14 +170,12 @@ function ViewTransaction() {
             navigate(backTo(companyId));
           }
         },
-        refetchQueries,
       },
     );
   const [deleteMutation, { loading: deleteLoading }] = useMutation<
     IDeleteTransactionOutput,
     IDeleteTransactionInput
   >(DELETE_TRANSACTION, {
-    awaitRefetchQueries: true,
     onCompleted: ({ deleteTransaction }) => {
       if (deleteTransaction) {
         add({
@@ -211,7 +199,6 @@ function ViewTransaction() {
         message: t('delete-transaction.error'),
       });
     },
-    refetchQueries,
   });
   const launchDeleteModal = () => {
     setModal(true);
@@ -221,7 +208,6 @@ function ViewTransaction() {
   };
   const onDelete = () => {
     deleteMutation({
-      update: deleteTransactionCache,
       variables: {
         id: transactionId,
       },
