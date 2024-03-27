@@ -24,6 +24,7 @@ import WarningText from '../../../components/WarningText';
 import DELETE_TRANSACTION, {
   IDeleteTransactionInput,
   IDeleteTransactionOutput,
+  updateCache,
 } from '../../../graphql/transaction/DELETE_TRANSACTION';
 import GET_TRANSACTIONS, {
   IGetTransactionsInput,
@@ -184,6 +185,7 @@ function PendingTransactions() {
   };
   const onDelete = (id: string) => {
     deleteMutation({
+      update: updateCache,
       variables: {
         id,
       },
