@@ -98,8 +98,6 @@ const transformTransactions = (
           })
           .map((item) => ({
             attachment: '',
-            refund: false,
-            scheduled: false,
             ...item,
           })),
       };

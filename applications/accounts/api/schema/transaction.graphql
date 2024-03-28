@@ -41,9 +41,30 @@ input TransactionInput {
   vat: Float!
 }
 
+type TransactionBeaconTransactionsItemInput {
+  __typename: String
+  amount: Float
+  attachment: String
+  description: String
+  id: ID
+  name: String
+}
+
+input TransactionBeaconTransactionsInput {
+  balance: Float
+  currency: String
+  date: AWSDateTime
+  items: [TransactionBeaconTransactionsItemInput]
+}
+
+input TransactionBeaconVatInput {
+  owed: Float!
+  paid: Float!
+}
+
 input TransactionBeaconInput {
   __typename: String
   balance: Float
-  transactions: [BalanceTransactionInput]
-  vat: BalanceVatInput
+  transactions: [TransactionBeaconTransactionsInput]
+  vat: TransactionBeaconVatInput
 }

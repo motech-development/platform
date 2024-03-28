@@ -81,10 +81,8 @@ export const getBalance = async (
   const queryCommand = new QueryCommand({
     ExpressionAttributeNames: {
       '#data': 'data',
-      '#date': 'date',
       '#name': 'name',
       '#owner': 'owner',
-      '#status': 'status',
       '#typename': '__typename',
     },
     ExpressionAttributeValues: {
@@ -96,8 +94,7 @@ export const getBalance = async (
     IndexName: '__typename-data-index',
     KeyConditionExpression:
       '#typename = :typename AND begins_with(#data, :data)',
-    ProjectionExpression:
-      'amount, attachment, category, companyId, #date, description, id, #name, refund, scheduled, #status, vat',
+    ProjectionExpression: 'amount, attachment, description, id, #name',
     ScanIndexForward: false,
     TableName: tableName,
   });

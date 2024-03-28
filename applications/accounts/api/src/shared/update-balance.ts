@@ -34,16 +34,9 @@ export const mutation = gql`
         items {
           amount
           attachment
-          category
-          companyId
-          date
           description
           id
           name
-          refund
-          scheduled
-          status
-          vat
         }
       }
       vat {
