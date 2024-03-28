@@ -39,6 +39,17 @@ export const handler: DynamoDBStreamHandler = async (event) => {
         NewImage as Record<string, AttributeValue>,
       ) as IBalance;
 
+      logger.info('Balance', {
+        balance: {
+          __typename,
+          balance,
+          id,
+          owner,
+          transactions,
+          vat,
+        },
+      });
+
       return {
         __typename,
         balance,
@@ -58,7 +69,11 @@ export const handler: DynamoDBStreamHandler = async (event) => {
     );
 
   try {
-    await Promise.all(mutations);
+    const result = await Promise.all(mutations);
+
+    logger.info('Update balance result', {
+      result,
+    });
   } catch (e) {
     if (e instanceof Error) {
       logger.error(e.message);

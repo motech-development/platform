@@ -41,7 +41,7 @@ input TransactionInput {
   vat: Float!
 }
 
-type TransactionBeaconTransactionsItemInput {
+input TransactionBeaconTransactionsItemInput {
   __typename: String
   amount: Float
   attachment: String

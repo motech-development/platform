@@ -23,19 +23,24 @@ interface ITransactions {
   balance: number;
   currency: string;
   date: string;
-  items: ITransactionItem[];
+  items: ITransformTransactions[];
 }
 
 export interface ITransactionItem {
   amount: number;
-  category: string;
   companyId: string;
   date: string;
   description: string;
   id: string;
   name: string;
-  status: string;
-  vat: number;
+}
+
+interface ITransformTransactions {
+  amount: number;
+  companyId: string;
+  description: string;
+  id: string;
+  name: string;
 }
 
 const transformTransactions = (
@@ -96,7 +101,7 @@ const transformTransactions = (
 
             return transactionDate.hasSame(currentDate, 'day');
           })
-          .map((item) => ({
+          .map(({ date, ...item }) => ({
             attachment: '',
             ...item,
           })),
