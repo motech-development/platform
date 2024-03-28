@@ -87,6 +87,7 @@ functions:
   TransformTransactions:
     handler: src/transform-transactions.handler
     role: DataLambdaFunctionRole
+    timeout: 900
     events:
       - stream:
           type: dynamodb
