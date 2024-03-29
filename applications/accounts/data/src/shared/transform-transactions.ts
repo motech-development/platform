@@ -112,6 +112,10 @@ const transformTransactions = (
       return acc;
     }, [])
     .filter((transaction) => transaction.items.length !== 0)
+    .filter(
+      (transaction) =>
+        DateTime.fromISO(transaction.date).diffNow('years').years >= -1,
+    )
     .sort((a, b) => {
       const d1 = DateTime.fromISO(a.date);
       const d2 = DateTime.fromISO(b.date);

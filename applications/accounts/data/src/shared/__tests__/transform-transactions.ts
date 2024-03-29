@@ -1,8 +1,15 @@
+import { advanceTo, clear } from 'jest-date-mock';
 import transformTransactions, {
   ITransactionItem,
 } from '../transform-transactions';
 
 describe('transform-transactions', () => {
+  beforeAll(() => {
+    advanceTo('2019-12-04T00:00:00.000Z');
+  });
+
+  afterAll(clear);
+
   it('should throw if balance is undefined', () => {
     expect(() => {
       transformTransactions();
@@ -129,7 +136,6 @@ describe('transform-transactions', () => {
             attachment: '',
             category: 'Sales',
             companyId: 'company-id',
-            date: '2019-12-31T00:00:00.000Z',
             description: 'Invoice #1',
             id: 'transaction-1',
             name: 'Client',
@@ -149,7 +155,6 @@ describe('transform-transactions', () => {
             attachment: '',
             category: 'Equipment',
             companyId: 'company-id',
-            date: '2019-12-15T00:00:00.000Z',
             description: 'iPad',
             id: 'transaction-3',
             name: 'Apple',
@@ -168,7 +173,6 @@ describe('transform-transactions', () => {
             attachment: '',
             category: '',
             companyId: 'company-id',
-            date: '2019-12-04T00:00:00.000Z',
             description: 'Food',
             id: 'transaction-1',
             name: 'Canteen',
@@ -187,7 +191,6 @@ describe('transform-transactions', () => {
             attachment: '',
             category: 'Accommodation',
             companyId: 'company-id',
-            date: '2019-11-25T00:00:00.000Z',
             description: 'Room',
             id: 'transaction-2',
             name: 'Hotel',
@@ -277,7 +280,6 @@ describe('transform-transactions', () => {
             attachment: '',
             category: 'Sales',
             companyId: 'company-id',
-            date: '2019-12-31T00:00:00.000Z',
             description: 'Invoice #1',
             id: 'transaction-1',
             name: 'Client',
@@ -296,7 +298,6 @@ describe('transform-transactions', () => {
             attachment: '',
             category: 'Equipment',
             companyId: 'company-id',
-            date: '2019-12-15T00:00:00.000Z',
             description: 'iPad',
             id: 'transaction-3',
             name: 'Apple',
@@ -315,7 +316,6 @@ describe('transform-transactions', () => {
             attachment: '',
             category: '',
             companyId: 'company-id',
-            date: '2019-12-04T00:00:00.000Z',
             description: 'Food',
             id: 'transaction-1',
             name: 'Canteen',
@@ -334,7 +334,6 @@ describe('transform-transactions', () => {
             attachment: '',
             category: 'Accommodation',
             companyId: 'company-id',
-            date: '2019-11-25T00:00:00.000Z',
             description: 'Room',
             id: 'transaction-2',
             name: 'Hotel',
@@ -389,7 +388,6 @@ describe('transform-transactions', () => {
             attachment: '',
             category: 'Sales',
             companyId: 'company-id',
-            date: '2019-12-31T00:00:00.000Z',
             description: 'Invoice #1',
             id: 'transaction-1',
             name: 'Client',
