@@ -368,7 +368,7 @@ __metadata:
     jest: 29.7.0
     jest-date-mock: 1.0.8
     jest-watch-typeahead: 2.2.2
-    json-2-csv: 4.1.0
+    json-2-csv: 4.1.1
     luxon: 3.3.0
     prettier: 2.8.8
     qs: 6.11.2
@@ -17535,10 +17535,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deeks@npm:3.0.1":
-  version: 3.0.1
-  resolution: "deeks@npm:3.0.1"
-  checksum: 854fa27fd42d1e5ca20b8dcd3be91a240b2646e14dfb7bb35dc8c49c1e64278c6c45e043eacb6deac8b6bcc61d7a749d297fe58bdf86c270321b61732cf58444
+"deeks@npm:3.0.2":
+  version: 3.0.2
+  resolution: "deeks@npm:3.0.2"
+  checksum: 9e971b25ce86f3686545944244daa6794d4046d049c59d9b11be6734748452426b93ea45a5c66a8446318779cef354c3449400760808adb310301d0c622fa32f
   languageName: node
   linkType: hard
 
@@ -17937,10 +17937,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"doc-path@npm:4.0.1":
-  version: 4.0.1
-  resolution: "doc-path@npm:4.0.1"
-  checksum: 90c4d034031990a78a6fab4a31e7d733d2061cec750a464db823feecd928bc1f47814541e17b346f95ea4a695bcd68214353e1abb9f3e28c24c18b34f301e02d
+"doc-path@npm:4.0.2":
+  version: 4.0.2
+  resolution: "doc-path@npm:4.0.2"
+  checksum: e3abd1f091ceceda2e379f5dae7c8aaf0e6524d99dab939cb986d13f84f70c8d286151d3457e911a3b51547b7b53a7dccb6737a8dc3bcf1e9e7c33b0983c421f
   languageName: node
   linkType: hard
 
@@ -24273,13 +24273,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-2-csv@npm:4.1.0":
-  version: 4.1.0
-  resolution: "json-2-csv@npm:4.1.0"
+"json-2-csv@npm:4.1.1":
+  version: 4.1.1
+  resolution: "json-2-csv@npm:4.1.1"
   dependencies:
-    deeks: 3.0.1
-    doc-path: 4.0.1
-  checksum: cc52ef8884f40a8ae94c296cf4cff7673608b08ce31964c478e1d25638107e2e129f45fffad827a315bac087733df1997133d79c86dfcbd5bc67301f9b0cfd82
+    deeks: 3.0.2
+    doc-path: 4.0.2
+  checksum: 6659a7ac5eb1725011d1f93d9df4d573b4a6e6b28b4d92774a5af25f92d3aae2f3c5c938d7864a882da72242f09a2d5dd0a32aef9b40465e06c1f89a1b9c5aca
   languageName: node
   linkType: hard
 
