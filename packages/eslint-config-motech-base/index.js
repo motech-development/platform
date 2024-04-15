@@ -31,9 +31,16 @@ module.exports = {
       parserOptions: {
         project: ['./tsconfig.eslint.json', './tsconfig.json'],
       },
-      plugins: ['@typescript-eslint'],
+      plugins: ['@typescript-eslint', 'simple-import-sort'],
       rules: {
         'max-classes-per-file': ['error', 4],
+        'simple-import-sort/exports': 'error',
+        'simple-import-sort/imports': [
+          'error',
+          {
+            groups: [['^node:', '^@?\\w', '^', '^\\.', '^\\u0000']],
+          },
+        ],
         'sort-keys': [
           'error',
           'asc',
@@ -67,8 +74,16 @@ module.exports = {
           },
         },
       ],
+      plugins: ['simple-import-sort'],
       rules: {
         'max-classes-per-file': ['error', 4],
+        'simple-import-sort/exports': 'error',
+        'simple-import-sort/imports': [
+          'error',
+          {
+            groups: [['^node:', '^@?\\w', '^', '^\\.', '^\\u0000']],
+          },
+        ],
         'sort-keys': [
           'error',
           'asc',
