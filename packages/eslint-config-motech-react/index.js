@@ -56,7 +56,7 @@ module.exports = {
       parserOptions: {
         project: ['./tsconfig.eslint.json', './tsconfig.json'],
       },
-      plugins: ['@typescript-eslint', 'react'],
+      plugins: ['@typescript-eslint', 'react', 'simple-import-sort'],
       rules: {
         ...overrides[0].rules,
         'react/jsx-no-useless-fragment': [
@@ -105,7 +105,7 @@ module.exports = {
           },
         },
       ],
-      plugins: ['react'],
+      plugins: ['react', 'simple-import-sort'],
       rules: {
         ...overrides[1].rules,
         'react/jsx-no-useless-fragment': [
