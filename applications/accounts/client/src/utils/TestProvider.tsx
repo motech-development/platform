@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import {
   IAddToast,
   ToastContext,
@@ -7,7 +8,6 @@ import i18n from 'i18next';
 import { ReactElement, useMemo } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
 
 jest.mock('@auth0/auth0-react');
 

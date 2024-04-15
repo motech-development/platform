@@ -8,8 +8,8 @@ import {
   useState,
 } from 'react';
 import {
-  NumericFormat,
   NumberFormatValues,
+  NumericFormat,
   PatternFormat,
 } from 'react-number-format';
 import styled from 'styled-components';

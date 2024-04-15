@@ -3,8 +3,8 @@ import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
   fireEvent,
-  screen,
   render,
+  screen,
   waitFor,
 } from '@testing-library/react';
 import axios from 'axios';

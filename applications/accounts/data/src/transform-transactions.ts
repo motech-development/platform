@@ -1,10 +1,10 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import logger from '@motech-development/node-logger';
 import { DynamoDBStreamHandler } from 'aws-lambda';
-import { unmarshallAllRecords } from './shared/unmarshall-records';
-import { IBalance } from './shared/transform-transactions';
 import { getBalance } from './shared/balance';
 import extractStream from './shared/extract-stream';
+import { IBalance } from './shared/transform-transactions';
+import { unmarshallAllRecords } from './shared/unmarshall-records';
 
 const documentClient = new DynamoDBClient({});
 

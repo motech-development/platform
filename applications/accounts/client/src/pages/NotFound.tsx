@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import ErrorCard from '../components/ErrorCard';
 import Container from '../components/Container';
+import ErrorCard from '../components/ErrorCard';
 
 function NotFound() {
   const { t } = useTranslation('not-found');

@@ -1,7 +1,7 @@
 import { act, render, waitFor } from '@testing-library/react';
 import { createMocks } from 'react-idle-timer';
-import TestProvider, { add, logout } from '../utils/TestProvider';
 import App from '../App';
+import TestProvider, { add, logout } from '../utils/TestProvider';
 
 jest.mock('react-ga');
 

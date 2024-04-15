@@ -1,4 +1,4 @@
-import { FC, ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, FC } from 'react';
 import BaseLink from '../BaseLink/BaseLink';
 
 const ButtonLink: FC<ButtonHTMLAttributes<HTMLButtonElement>> = (props) => (

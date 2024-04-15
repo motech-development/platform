@@ -1,7 +1,7 @@
 import {
+  faCheckCircle,
   faExclamationCircle,
   faExclamationTriangle,
-  faCheckCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {

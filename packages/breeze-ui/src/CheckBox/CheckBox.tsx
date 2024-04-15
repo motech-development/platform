@@ -1,8 +1,8 @@
 import { Field, FieldProps, FormikProps, FormikValues, getIn } from 'formik';
 import { ChangeEvent, FC } from 'react';
 import CheckableInput from '../CheckableInput/CheckableInput';
-import useInputValidation from '../hooks/useInputValidation';
 import FieldSet from '../FieldSet/FieldSet';
+import useInputValidation from '../hooks/useInputValidation';
 import Legend from '../Legend/Legend';
 import OptionLabel from '../OptionLabel/OptionLabel';
 import OptionLabelText from '../OptionLabelText/OptionLabelText';

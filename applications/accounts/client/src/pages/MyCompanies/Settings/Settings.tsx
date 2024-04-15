@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
+import SettingsForm, { FormSchema } from '../../../components/SettingsForm';
 import DELETE_BANK_CONNECTION, {
   IDeleteBankConnectionInput,
   IDeleteBankConnectionOutput,
 } from '../../../graphql/bank/DELETE_BANK_CONNECTION';
-import SettingsForm, { FormSchema } from '../../../components/SettingsForm';
 import GET_SETTINGS, {
   IGetSettingsInput,
   IGetSettingsOutput,

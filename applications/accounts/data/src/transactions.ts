@@ -1,8 +1,8 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import logger from '@motech-development/node-logger';
 import { DynamoDBStreamHandler } from 'aws-lambda';
-import removeTransactions from './handlers/remove-transactions';
 import insertTransactions from './handlers/insert-transactions';
+import removeTransactions from './handlers/remove-transactions';
 import updateTransactions from './handlers/update-transactions';
 import extractStream from './shared/extract-stream';
 

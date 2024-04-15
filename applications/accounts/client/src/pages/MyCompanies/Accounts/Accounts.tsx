@@ -11,9 +11,9 @@ import {
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import TransactionsList from '../../../components/TransactionsList';
 import Connected from '../../../components/Connected';
 import { formatCurrency } from '../../../components/Currency';
+import TransactionsList from '../../../components/TransactionsList';
 import GET_BALANCE, {
   IGetBalanceInput,
   IGetBalanceOutput,

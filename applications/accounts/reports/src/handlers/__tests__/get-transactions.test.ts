@@ -3,8 +3,8 @@ import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import { handler, IEvent } from '../get-transactions';
 import Status from '../../shared/status';
+import { handler, IEvent } from '../get-transactions';
 
 describe('get-transactions', () => {
   let callback: jest.Mock;

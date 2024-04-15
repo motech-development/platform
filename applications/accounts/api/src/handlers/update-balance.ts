@@ -3,8 +3,8 @@ import { AttributeValue } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
 import { DynamoDBStreamHandler } from 'aws-lambda';
-import { isStreamModifyRecord } from '../shared/utils';
 import updateBalance, { ITransaction } from '../shared/update-balance';
+import { isStreamModifyRecord } from '../shared/utils';
 
 export interface IBalance {
   __typename: string;

@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
-import { render, RenderResult, act } from '@testing-library/react';
+import { act, render, RenderResult } from '@testing-library/react';
 import GET_COMPANIES from '../../../graphql/company/GET_COMPANIES';
 import TestProvider from '../../../utils/TestProvider';
 import MyCompanies from '../MyCompanies';

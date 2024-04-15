@@ -10,9 +10,9 @@ import { createRoot } from 'react-dom/client';
 import { initialize } from 'react-ga';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 import App from './App';
-import './i18n';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import './i18n';
 
 const {
   REACT_APP_AUTH0_AUDIENCE,

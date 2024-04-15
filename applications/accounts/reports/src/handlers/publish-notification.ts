@@ -1,5 +1,5 @@
-import { aws4Interceptor } from 'aws4-axios';
 import { Handler } from 'aws-lambda';
+import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import { stringify } from 'qs';
 import { number, object, string } from 'yup';
