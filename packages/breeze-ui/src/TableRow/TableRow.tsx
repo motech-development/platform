@@ -1,5 +1,5 @@
-import { FC, HTMLAttributes } from 'react';
 import { darken } from 'polished';
+import { FC, HTMLAttributes } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const tableRowTheme = {

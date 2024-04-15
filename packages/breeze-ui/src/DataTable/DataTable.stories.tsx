@@ -1,7 +1,7 @@
 import { storiesOf } from '@storybook/react';
 import BaseStyles from '../BaseStyles/BaseStyles';
-import DataTable from './DataTable';
 import TableCell from '../TableCell/TableCell';
+import DataTable from './DataTable';
 
 const data = [
   {

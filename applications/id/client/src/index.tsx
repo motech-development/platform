@@ -4,8 +4,8 @@ import { StrictMode, Suspense } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { initialize } from 'react-ga';
 import App from './App';
-import './i18n';
 import reportWebVitals from './reportWebVitals';
+import './i18n';
 
 const { REACT_APP_GA } = process.env;
 

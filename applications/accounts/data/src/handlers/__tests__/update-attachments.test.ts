@@ -1,5 +1,5 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { SQSRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';

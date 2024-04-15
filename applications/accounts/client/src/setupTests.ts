@@ -2,8 +2,8 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom';
 import { randomFillSync } from 'crypto';
+import '@testing-library/jest-dom';
 import 'jest-date-mock';
 import 'jest-styled-components';
 import 'unfetch/polyfill';

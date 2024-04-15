@@ -7,7 +7,7 @@ import {
 import { CloudFormationCustomResourceEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import { FAILED, SUCCESS, send } from 'cfn-response-async';
+import { FAILED, send, SUCCESS } from 'cfn-response-async';
 import { handler } from '../verify-domain';
 
 jest.mock('cfn-response-async');

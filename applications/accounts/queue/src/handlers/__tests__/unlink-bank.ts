@@ -1,9 +1,9 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
-import { aws4Interceptor } from 'aws4-axios';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import { handler, IEvent } from '../unlink-bank';
 

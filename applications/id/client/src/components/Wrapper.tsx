@@ -1,5 +1,5 @@
-import { ReactNode, useEffect, useRef } from 'react';
 import { disableBodyScroll } from 'body-scroll-lock';
+import { ReactNode, useEffect, useRef } from 'react';
 
 export interface IWrapperProps {
   children: ReactNode;

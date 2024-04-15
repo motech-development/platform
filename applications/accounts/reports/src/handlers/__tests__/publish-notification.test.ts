@@ -1,6 +1,6 @@
-import { aws4Interceptor } from 'aws4-axios';
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import { handler, IEvent } from '../publish-notification';
 

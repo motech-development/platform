@@ -1,7 +1,7 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { handler } from '../get-accounts';
 import httpClient from '../../shared/http-client';
+import { handler } from '../get-accounts';
 
 describe('get-accounts', () => {
   let callback: jest.Mock;

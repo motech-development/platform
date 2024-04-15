@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
-import useBreakpoint from '../hooks/useBreakpoint';
 import Col from '../Col/Col';
+import useBreakpoint from '../hooks/useBreakpoint';
 import Row from '../Row/Row';
 
 interface IMasonryItemContainerProps {

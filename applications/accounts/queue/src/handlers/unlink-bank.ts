@@ -1,8 +1,8 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import { NativeAttributeValue } from '@aws-sdk/util-dynamodb';
-import { aws4Interceptor } from 'aws4-axios';
 import { Handler } from 'aws-lambda';
+import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 
 interface IItem {

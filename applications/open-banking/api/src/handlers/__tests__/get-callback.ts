@@ -1,7 +1,7 @@
 import { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { handler, IEvent } from '../get-callback';
 import httpClient from '../../shared/http-client';
+import { handler, IEvent } from '../get-callback';
 
 describe('get-callback', () => {
   let callback: jest.Mock;

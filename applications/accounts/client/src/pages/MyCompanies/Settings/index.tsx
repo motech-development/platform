@@ -2,11 +2,11 @@ import { useQuery } from '@apollo/client';
 import { ConditionalRoute } from '@motech-development/auth';
 import { lazy } from 'react';
 import { Route, Routes, useParams } from 'react-router-dom';
+import Connected from '../../../components/Connected';
 import GET_BANK_SETTINGS, {
   IGetBankSettingsInput,
   IGetBankSettingsOutput,
 } from '../../../graphql/bank/GET_BANK_SETTINGS';
-import Connected from '../../../components/Connected';
 import invariant from '../../../utils/invariant';
 
 const Bank = lazy(() => import('./Bank'));

@@ -1,5 +1,5 @@
-import { FC, ReactNode } from 'react';
 import { darken } from 'polished';
+import { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 
 interface IBaseOptionLabel {

@@ -1,4 +1,4 @@
-import { SQSClient, SendMessageBatchCommand } from '@aws-sdk/client-sqs';
+import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
 import logger from '@motech-development/node-logger';
 import { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';

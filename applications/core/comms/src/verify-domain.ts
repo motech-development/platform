@@ -5,7 +5,7 @@ import {
   VerifyDomainIdentityCommand,
 } from '@aws-sdk/client-ses';
 import { CloudFormationCustomResourceHandler } from 'aws-lambda';
-import { FAILED, SUCCESS, send } from 'cfn-response-async';
+import { FAILED, send, SUCCESS } from 'cfn-response-async';
 import { number, object, string } from 'yup';
 
 interface IEvent {

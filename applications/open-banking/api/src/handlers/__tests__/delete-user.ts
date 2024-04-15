@@ -1,7 +1,7 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import { handler } from '../delete-user';
 import httpClient from '../../shared/http-client';
+import { handler } from '../delete-user';
 
 describe('delete-user', () => {
   let callback: jest.Mock;

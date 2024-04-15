@@ -8,11 +8,11 @@ import CheckBox from '../CheckBox/CheckBox';
 import Col from '../Col/Col';
 import DatePicker from '../DatePicker/DatePicker';
 import FileUpload from '../FileUpload/FileUpload';
+import Radio from '../Radio/Radio';
 import Row from '../Row/Row';
+import Select from '../Select/Select';
 import TextBox from '../TextBox/TextBox';
 import Typeahead from '../Typeahead/Typeahead';
-import Radio from '../Radio/Radio';
-import Select from '../Select/Select';
 import Form from './Form';
 
 const stories = storiesOf('Form', module);

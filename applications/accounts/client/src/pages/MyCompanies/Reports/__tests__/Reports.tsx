@@ -1,7 +1,7 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
+import { act, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import ON_NOTIFICATION from '../../../../graphql/notifications/ON_NOTIFICATION';

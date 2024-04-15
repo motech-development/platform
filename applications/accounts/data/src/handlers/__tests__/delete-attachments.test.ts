@@ -1,4 +1,4 @@
-import { SQSClient, SendMessageBatchCommand } from '@aws-sdk/client-sqs';
+import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { DynamoDBRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import deleteAttachments from '../delete-attachments';
