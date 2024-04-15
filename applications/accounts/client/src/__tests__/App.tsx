@@ -3,6 +3,8 @@ import { createMocks } from 'react-idle-timer';
 import App from '../App';
 import TestProvider, { add, logout } from '../utils/TestProvider';
 
+jest.mock('@auth0/auth0-react');
+
 jest.mock('react-ga');
 
 describe('App', () => {
