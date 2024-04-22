@@ -17,7 +17,7 @@
     "@motech-development/node-logger": "workspace:*",
     "decimal.js": "10.4.3",
     "luxon": "3.3.0",
-    "uuid": "9.0.0"
+    "uuid": "9.0.1"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
@@ -28,7 +28,7 @@
     "@types/aws-lambda": "8.10.137",
     "@types/jest": "29.5.12",
     "@types/luxon": "3.3.1",
-    "@types/uuid": "9.0.2",
+    "@types/uuid": "9.0.8",
     "@typescript-eslint/eslint-plugin": "6.2.1",
     "@typescript-eslint/parser": "6.2.1",
     "aws-lambda-mock-context": "3.2.1",
