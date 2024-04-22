@@ -111,7 +111,7 @@ __metadata:
     "@vitejs/plugin-react-swc": 3.3.2
     axe-core: 4.7.2
     axios: 1.6.7
-    cypress: 12.15.0
+    cypress: 12.13.0
     cypress-axe: 1.4.0
     cypress-cloud: 1.9.3
     cypress-file-upload: 5.0.8
@@ -17251,9 +17251,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:12.15.0":
-  version: 12.15.0
-  resolution: "cypress@npm:12.15.0"
+"cypress@npm:12.13.0":
+  version: 12.13.0
+  resolution: "cypress@npm:12.13.0"
   dependencies:
     "@cypress/request": ^2.88.10
     "@cypress/xvfb": ^1.2.4
@@ -17299,7 +17299,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: a1989386bc0843377526c71d60a7c2d64593fbf3209cd5986cb684653d1092007add9d83910906b85e1801637206dd5fa5ce9627c6ada3a20a3a82ec5c2f4d7a
+  checksum: 8e73c7033dadc15caf17b106cd88665107c8bbf3ba66fc266de1f14a2c1401edfa99c222f2ae6070e1ffb8123eb255fb559dc3e5e24460fadf8e05ce74afa41b
   languageName: node
   linkType: hard
 
