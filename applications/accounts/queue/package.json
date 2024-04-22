@@ -15,7 +15,7 @@
     "@aws-sdk/lib-dynamodb": "3.370.0",
     "@aws-sdk/util-dynamodb": "3.370.0",
     "aws4-axios": "3.2.8",
-    "axios": "1.6.7"
+    "axios": "1.6.8"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
