@@ -37,7 +37,7 @@
     "react-popper": "2.3.0",
     "react-router-dom": "6.14.2",
     "styled-components": "5.3.11",
-    "styled-reset": "4.5.1",
+    "styled-reset": "4.5.2",
     "yup": "1.2.0"
   },
   "devDependencies": {
