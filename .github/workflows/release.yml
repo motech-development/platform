@@ -22,7 +22,7 @@ jobs:
           private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v3.6.0
         with:
           token: ${{ steps.generate_token.outputs.token }}
 
