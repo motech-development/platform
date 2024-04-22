@@ -7052,7 +7052,7 @@ __metadata:
     rollup-plugin-swc3: 0.9.1
     storybook-addon-swc: 1.2.0
     styled-components: 5.3.11
-    styled-reset: 4.5.1
+    styled-reset: 4.5.2
     typescript: 5.1.6
     yup: 1.2.0
   languageName: unknown
@@ -33318,12 +33318,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"styled-reset@npm:4.5.1":
-  version: 4.5.1
-  resolution: "styled-reset@npm:4.5.1"
+"styled-reset@npm:4.5.2":
+  version: 4.5.2
+  resolution: "styled-reset@npm:4.5.2"
   peerDependencies:
     styled-components: ">=4.0.0 || >=5.0.0 || >=6.0.0"
-  checksum: ff6c5bbc738017a535a5e74cc3b2e7112652691c8e4acae700fe3d051f870035e2d911e6629a9a626349ccc58ba9842b83793bd9111f4e1c9e1fa695f773d2b8
+  checksum: 17a3d19283c22a5659f0a2b3d4d067edc5556a8c363b79107874a648c2c31f0a2a0fd4d07ce4182e6a3dbef18385b2378abbdf92ebdd6ebb2bbba47c2c5f8fd6
   languageName: node
   linkType: hard
 
