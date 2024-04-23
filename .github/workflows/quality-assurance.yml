@@ -25,10 +25,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.2
 
       - name: Set Node version
-        uses: actions/setup-node@v3.8.2
+        uses: actions/setup-node@v4.0.2
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -38,7 +38,7 @@ jobs:
 
       - name: Restore Node modules
         id: node-modules
-        uses: actions/cache@v3.3.3
+        uses: actions/cache@v4.0.2
         with:
           path: |
             ./node_modules
@@ -50,7 +50,7 @@ jobs:
 
       - name: Restore packages
         id: packages
-        uses: actions/cache@v3.3.3
+        uses: actions/cache@v4.0.2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -59,7 +59,7 @@ jobs:
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v3.3.3
+        uses: actions/cache@v4.0.2
         with:
           path: ~/.cache/Cypress
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
@@ -86,12 +86,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.2
         with:
           fetch-depth: 0
 
       - name: Set Node version
-        uses: actions/setup-node@v3.8.2
+        uses: actions/setup-node@v4.0.2
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -100,7 +100,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v3.3.3
+        uses: actions/cache@v4.0.2
         with:
           path: |
             ./node_modules
@@ -111,7 +111,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v3.3.3
+        uses: actions/cache@v4.0.2
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
