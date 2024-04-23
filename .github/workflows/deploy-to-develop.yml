@@ -269,7 +269,7 @@ jobs:
             ${{ runner.os }}-core-anti-virus-v4-
 
       - name: Deploy
-        uses: nick-fields/retry@v2.8.3
+        uses: nick-fields/retry@v3.0.0
         with:
           command: yarn workspace @core/anti-virus deploy --stage $STAGE
           max_attempts: 3
