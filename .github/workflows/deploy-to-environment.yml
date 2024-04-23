@@ -270,7 +270,7 @@ jobs:
             ${{ runner.os }}-core-anti-virus-v4-
 
       - name: Deploy
-        uses: nick-fields/retry@v2.8.3
+        uses: nick-fields/retry@v3.0.0
         with:
           command: yarn workspace @core/anti-virus deploy --stage $STAGE
           max_attempts: 3
@@ -798,7 +798,7 @@ jobs:
         run: yarn workspace @accounts/api deploy --stage $STAGE
 
       - name: Export env vars
-        uses: xom9ikk/dotenv@v2
+        uses: xom9ikk/dotenv@v2.3.0
         with:
           path: ./applications/accounts/client
           mode: production
@@ -910,7 +910,7 @@ jobs:
         run: yarn workspace @accounts/client build
 
       - name: Smoke tests
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6.6.1
         with:
           command: yarn workspace @accounts/client e2e-ci
           install: false
