@@ -8703,16 +8703,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@qiwi/multi-semantic-release@npm:7.0.0":
-  version: 7.0.0
-  resolution: "@qiwi/multi-semantic-release@npm:7.0.0"
+"@qiwi/multi-semantic-release@npm:7.1.1":
+  version: 7.1.1
+  resolution: "@qiwi/multi-semantic-release@npm:7.1.1"
   dependencies:
-    "@semrel-extra/topo": ^1.13.0
+    "@semrel-extra/topo": ^1.14.0
     blork: ^9.3.0
-    cosmiconfig: ^8.2.0
+    cosmiconfig: ^8.3.6
     debug: ^4.3.4
     detect-indent: ^7.0.1
-    detect-newline: ^4.0.0
+    detect-newline: ^4.0.1
     execa: ^7.1.1
     get-stream: ^6.0.1
     git-log-parser: ^1.2.0
@@ -8726,7 +8726,7 @@ __metadata:
     stream-buffers: ^3.0.2
   bin:
     multi-semantic-release: bin/cli.js
-  checksum: 2b42abf7ea2f07767cbba12754425917e21c445390443a27a5bc657baa57fe1b3a1d267c3cfc4760d1e60ac7bbdbdb2ef57cec1ab08fcf6348d525e39346631c
+  checksum: 27239a663924c6d011886b15cb9889fdb5353aa6c101430cecb1b8e74775e139b8164f6b197f161a5729817c583b56f905d2cff8c86057b276c70e2735f40a0a
   languageName: node
   linkType: hard
 
@@ -9085,15 +9085,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@semrel-extra/topo@npm:^1.13.0":
-  version: 1.13.0
-  resolution: "@semrel-extra/topo@npm:1.13.0"
+"@semrel-extra/topo@npm:^1.14.0":
+  version: 1.14.1
+  resolution: "@semrel-extra/topo@npm:1.14.1"
   dependencies:
-    fast-glob: ^3.2.12
+    fast-glob: ^3.3.2
     js-yaml: ^4.1.0
-    toposource: ^1.1.4
-    tslib: ^2.5.2
-  checksum: 403f763de74a229d8183532ea17a541c231edea422445b0cf2759a782f69d9522fdee4a41c5dc685199fcc65137f484e176de56f1ef6595855f7187531f8e5cc
+    toposource: ^1.2.0
+  checksum: a7c975c17e8262c9ae2281c228f6547b069ff1c0e68b037579784bb8573cce25d0eb2ad5ea8bfe28a6ab4f57cb5cd1df3b7414256b7f24d6a0a0164579f9dc6c
   languageName: node
   linkType: hard
 
@@ -16647,15 +16646,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cosmiconfig@npm:^8.0.0, cosmiconfig@npm:^8.2.0":
-  version: 8.2.0
-  resolution: "cosmiconfig@npm:8.2.0"
+"cosmiconfig@npm:^8.0.0, cosmiconfig@npm:^8.3.6":
+  version: 8.3.6
+  resolution: "cosmiconfig@npm:8.3.6"
   dependencies:
-    import-fresh: ^3.2.1
+    import-fresh: ^3.3.0
     js-yaml: ^4.1.0
-    parse-json: ^5.0.0
+    parse-json: ^5.2.0
     path-type: ^4.0.0
-  checksum: 836d5d8efa750f3fb17b03d6ca74cd3154ed025dffd045304b3ef59637f662bde1e5dc88f8830080d180ec60841719cf4ea2ce73fb21ec694b16865c478ff297
+  peerDependencies:
+    typescript: ">=4.9.5"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: dc339ebea427898c9e03bf01b56ba7afbac07fc7d2a2d5a15d6e9c14de98275a9565da949375aee1809591c152c0a3877bb86dbeaf74d5bd5aaa79955ad9e7a0
   languageName: node
   linkType: hard
 
@@ -17775,10 +17779,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detect-newline@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "detect-newline@npm:4.0.0"
-  checksum: 52767347c70f485b2d1db6493dde57b8c3c1f249e24bad7eb7424cc1129200aa7e671902ede18bc94a8b69e10dec91456aab4c7e2478559d9eedb31ef3847f36
+"detect-newline@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "detect-newline@npm:4.0.1"
+  checksum: 0409ecdfb93419591ccff24fccfe2ddddad29b66637d1ed898872125b25af05014fdeedc9306339577060f69f59fe6e9830cdd80948597f136dfbffefa60599c
   languageName: node
   linkType: hard
 
@@ -19718,16 +19722,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.12, fast-glob@npm:^3.2.2, fast-glob@npm:^3.2.7, fast-glob@npm:^3.2.9":
-  version: 3.2.12
-  resolution: "fast-glob@npm:3.2.12"
+"fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.12, fast-glob@npm:^3.2.2, fast-glob@npm:^3.2.7, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "fast-glob@npm:3.3.2"
   dependencies:
     "@nodelib/fs.stat": ^2.0.2
     "@nodelib/fs.walk": ^1.2.3
     glob-parent: ^5.1.2
     merge2: ^1.3.0
     micromatch: ^4.0.4
-  checksum: 0b1990f6ce831c7e28c4d505edcdaad8e27e88ab9fa65eedadb730438cfc7cde4910d6c975d6b7b8dc8a73da4773702ebcfcd6e3518e73938bb1383badfe01c2
+  checksum: 900e4979f4dbc3313840078419245621259f349950411ca2fa445a2f9a1a6d98c3b5e7e0660c5ccd563aa61abe133a21765c6c0dec8e57da1ba71d8000b05ec1
   languageName: node
   linkType: hard
 
@@ -22204,7 +22208,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"import-fresh@npm:^3.0.0, import-fresh@npm:^3.1.0, import-fresh@npm:^3.2.1":
+"import-fresh@npm:^3.0.0, import-fresh@npm:^3.1.0, import-fresh@npm:^3.2.1, import-fresh@npm:^3.3.0":
   version: 3.3.0
   resolution: "import-fresh@npm:3.3.0"
   dependencies:
@@ -28682,7 +28686,7 @@ __metadata:
     "@commitlint/config-conventional": 17.8.1
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@qiwi/multi-semantic-release": 7.0.0
+    "@qiwi/multi-semantic-release": 7.1.1
     "@types/is-ci": 3.0.4
     commitizen: 4.3.0
     cz-conventional-changelog: 3.3.0
@@ -33837,10 +33841,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"toposource@npm:^1.1.4":
-  version: 1.1.4
-  resolution: "toposource@npm:1.1.4"
-  checksum: 64e5df7c76c63a22e4e90bd4da4e85aa251cfd22d68c71bd9279cdab3b88c16c5a48f5459fb5acca26e3ae8ca52fd568ea020bcc7ff888eec94f0e70130b09f6
+"toposource@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "toposource@npm:1.2.0"
+  checksum: 7f3cb40812c4fb11ca909cc252abf93a43cd00702f08576a7dbca16df1b782892b4e55f75b18c71474bcf243c1fbee3a03f0cff1a0fac99ad23713293f235a4c
   languageName: node
   linkType: hard
 
@@ -34063,7 +34067,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.6.0, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.5.0, tslib@npm:^2.5.2":
+"tslib@npm:2.6.0, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.5.0":
   version: 2.6.0
   resolution: "tslib@npm:2.6.0"
   checksum: c01066038f950016a18106ddeca4649b4d76caa76ec5a31e2a26e10586a59fceb4ee45e96719bf6c715648e7c14085a81fee5c62f7e9ebee68e77a5396e5538f
