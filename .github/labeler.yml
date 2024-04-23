@@ -1,78 +1,79 @@
 repo:
-  - ./*
+  - changed-files:
+      - any-glob-to-any-file: '*'
 
 applications:
-  - applications/*
-  - applications/**/*
+  - changed-files:
+      - any-glob-to-any-file: applications/**
 
 accounts:
-  - applications/accounts/*
-  - applications/accounts/**/*
+  - changed-files:
+      - any-glob-to-any-file: applications/accounts/**
 
 core:
-  - applications/core/*
-  - applications/core/**/*
+  - changed-files:
+      - any-glob-to-any-file: applications/core/**
 
 cypress:
-  - applications/cypress/*
-  - applications/cypress/**/*
+  - changed-files:
+      - any-glob-to-any-file: applications/cypress/**
 
 id:
-  - applications/id/*
-  - applications/id/**/*
+  - changed-files:
+      - any-glob-to-any-file: applications/id/**
 
 open-banking:
-  - applications/open-banking/*
-  - applications/open-banking/**/*
+  - changed-files:
+      - any-glob-to-any-file: applications/open-banking/**
 
 packages:
-  - packages/*
-  - packages/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/**
 
 api-gateway-handler:
-  - packages/api-gateway-handler/*
-  - packages/api-gateway-handler/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/api-gateway-handler/**
 
 appsync-apollo:
-  - packages/appsync-apollo/*
-  - packages/appsync-apollo/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/appsync-apollo/**
 
 auth:
-  - packages/auth/*
-  - packages/auth/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/auth/**
 
 axios-hooks:
-  - packages/axios-hooks/*
-  - packages/axios-hooks/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/axios-hooks/**
 
 breeze-ui:
-  - packages/breeze-ui/*
-  - packages/breeze-ui/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/breeze-ui/**
 
 ga-web-vitals:
-  - packages/ga-web-vitals/*
-  - packages/ga-web-vitals/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/ga-web-vitals/**
 
 node-logger:
-  - packages/node-logger/*
-  - packages/node-logger/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/node-logger/**
 
 query-string-hooks:
-  - packages/query-string-hooks/*
-  - packages/query-string-hooks/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/query-string-hooks/**
 
 s3-file-operations:
-  - packages/s3-file-operations/*
-  - packages/s3-file-operations/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/s3-file-operations/**
 
 serverless-outputs-env:
-  - packages/serverless-outputs-env/*
-  - packages/serverless-outputs-env/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/serverless-outputs-env/**
 
 webpack-conditional-plugin:
-  - packages/webpack-conditional-plugin/*
-  - packages/webpack-conditional-plugin/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/webpack-conditional-plugin/**
 
 webpack-permissions-plugin:
-  - packages/webpack-permissions-plugin/*
-  - packages/webpack-permissions-plugin/**/*
+  - changed-files:
+      - any-glob-to-any-file: packages/webpack-permissions-plugin/**
