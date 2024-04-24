@@ -28,7 +28,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "devDependencies": {
-    "eslint": "8.46.0",
+    "eslint": "8.57.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-import-resolver-node": "0.3.9",
