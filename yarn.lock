@@ -113,7 +113,7 @@ __metadata:
     axios: 1.6.8
     cypress: 12.0.2
     cypress-axe: 1.5.0
-    cypress-cloud: 1.9.3
+    cypress-cloud: 1.10.2
     cypress-file-upload: 5.0.8
     cypress-localstorage-commands: 2.2.5
     cypress-log-to-output: 1.1.2
@@ -5349,6 +5349,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@currents/commit-info@npm:1.0.1-beta.0":
+  version: 1.0.1-beta.0
+  resolution: "@currents/commit-info@npm:1.0.1-beta.0"
+  dependencies:
+    bluebird: 3.5.5
+    check-more-types: 2.24.0
+    debug: 4.3.4
+    execa: 1.0.0
+    lazy-ass: 1.6.0
+    ramda: 0.26.1
+  checksum: 788d779f8ce65715b34794db03752cbfa37f20643ff09b71fd39f485e06b6d959621ad32f499310516f5a8dfcb5c2023de90606a3fa7351f7e339bf7c7925846
+  languageName: node
+  linkType: hard
+
 "@cypress/api@workspace:applications/cypress/api":
   version: 0.0.0-use.local
   resolution: "@cypress/api@workspace:applications/cypress/api"
@@ -5395,20 +5409,6 @@ __metadata:
     yup: 1.2.0
   languageName: unknown
   linkType: soft
-
-"@cypress/commit-info@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@cypress/commit-info@npm:2.2.0"
-  dependencies:
-    bluebird: 3.5.5
-    check-more-types: 2.24.0
-    debug: 4.1.1
-    execa: 1.0.0
-    lazy-ass: 1.6.0
-    ramda: 0.26.1
-  checksum: 211ad54a0c44e7aa6a834f62fac48b7acedb651e67b98b7102809da84659b203ebb12b90f7e2c4e7cfda2493caa2858e3240bd4d10020ac05fb22c38d4a3e273
-  languageName: node
-  linkType: hard
 
 "@cypress/infrastructure@workspace:applications/cypress/infrastructure":
   version: 0.0.0-use.local
@@ -17226,11 +17226,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress-cloud@npm:1.9.3":
-  version: 1.9.3
-  resolution: "cypress-cloud@npm:1.9.3"
+"cypress-cloud@npm:1.10.2":
+  version: 1.10.2
+  resolution: "cypress-cloud@npm:1.10.2"
   dependencies:
-    "@cypress/commit-info": ^2.2.0
+    "@currents/commit-info": 1.0.1-beta.0
     axios: ^1.2.0
     axios-retry: ^3.4.0
     bluebird: ^3.7.2
@@ -17246,17 +17246,16 @@ __metadata:
     lil-http-terminator: ^1.2.3
     lodash: ^4.17.21
     nanoid: ^3.3.4
+    plur: ^4.0.0
     pretty-ms: ^7.0.1
     source-map-support: ^0.5.21
     table: ^6.8.1
     tmp-promise: ^3.0.3
     ts-pattern: ^4.3.0
     ws: ^8.13.0
-  peerDependencies:
-    cypress: ">=10.0.0"
   bin:
     cypress-cloud: bin/cli.js
-  checksum: 1ed292603e054781b95e130d1fc7b464f86f6a8a7a9424661d74d092cbb3c0c59ac980778e11d7d62012190543de7f48e5a0ea23105e4a7e50359f4d260a4a54
+  checksum: b54483992f4666699c9135780059e4d2616c2cb3a6f93a90c3059a00c53b435e2c79808d345b2d082326c9274869c2e0bd0aeb775ebdd8c61cb177c10cee711f
   languageName: node
   linkType: hard
 
@@ -17464,15 +17463,6 @@ __metadata:
     supports-color:
       optional: true
   checksum: 3dbad3f94ea64f34431a9cbf0bafb61853eda57bff2880036153438f50fb5a84f27683ba0d8e5426bf41a8c6ff03879488120cf5b3a761e77953169c0600a708
-  languageName: node
-  linkType: hard
-
-"debug@npm:4.1.1":
-  version: 4.1.1
-  resolution: "debug@npm:4.1.1"
-  dependencies:
-    ms: ^2.1.1
-  checksum: 1e681f5cce94ba10f8dde74b20b42e4d8cf0d2a6700f4c165bb3bb6885565ef5ca5885bf07e704974a835f2415ff095a63164f539988a1f07e8a69fe8b1d65ad
   languageName: node
   linkType: hard
 
@@ -22587,6 +22577,13 @@ __metadata:
   version: 1.9.1
   resolution: "ipaddr.js@npm:1.9.1"
   checksum: f88d3825981486f5a1942414c8d77dd6674dd71c065adcfa46f578d677edcb99fda25af42675cb59db492fdf427b34a5abfcde3982da11a8fd83a500b41cfe77
+  languageName: node
+  linkType: hard
+
+"irregular-plurals@npm:^3.2.0":
+  version: 3.5.0
+  resolution: "irregular-plurals@npm:3.5.0"
+  checksum: 5b663091dc89155df7b2e9d053e8fb11941a0c4be95c4b6549ed3ea020489fdf4f75ea586c915b5b543704252679a5a6e8c6c3587da5ac3fc57b12da90a9aee7
   languageName: node
   linkType: hard
 
@@ -28830,6 +28827,15 @@ __metadata:
     typescript: 5.1.6
   languageName: unknown
   linkType: soft
+
+"plur@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "plur@npm:4.0.0"
+  dependencies:
+    irregular-plurals: ^3.2.0
+  checksum: fea2e903efca67cc5c7a8952fca3db46ae8d9e9353373b406714977e601a5d3b628bcb043c3ad2126c6ff0e73d8020bf43af30a72dd087eff1ec240eb13b90e1
+  languageName: node
+  linkType: hard
 
 "pluralize@npm:^7.0.0":
   version: 7.0.0
