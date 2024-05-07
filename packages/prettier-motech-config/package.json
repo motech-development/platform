@@ -19,9 +19,12 @@
     "index.json"
   ],
   "main": "index.json",
+  "dependencies": {
+    "prettier-plugin-tailwindcss": "0.5.14"
+  },
   "devDependencies": {
     "@motech-development/semantic-release": "workspace:*",
-    "prettier": "2.8.8"
+    "prettier": "3.2.5"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write"
