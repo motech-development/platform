@@ -80,7 +80,7 @@
     "jest-date-mock": "1.0.10",
     "jest-environment-jsdom": "29.7.0",
     "jest-watch-typeahead": "2.2.2",
-    "prettier": "2.8.8",
+    "prettier": "3.2.5",
     "rimraf": "5.0.5",
     "rollup": "3.29.4",
     "rollup-plugin-dts": "5.3.1",

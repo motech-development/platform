@@ -9,7 +9,7 @@
   "devDependencies": {
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
-    "prettier": "2.8.8",
+    "prettier": "3.2.5",
     "serverless": "3.34.0",
     "serverless-deployment-bucket": "1.6.0"
   }
