@@ -17,7 +17,7 @@
     "@aws-sdk/lib-dynamodb": "3.370.0",
     "@aws-sdk/util-dynamodb": "3.370.0",
     "@motech-development/api-gateway-handler": "workspace:*",
-    "axios": "1.6.8",
+    "axios": "1.7.4",
     "yup": "1.2.0"
   },
   "devDependencies": {
