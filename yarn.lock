@@ -8704,9 +8704,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@qiwi/multi-semantic-release@npm:7.1.1":
-  version: 7.1.1
-  resolution: "@qiwi/multi-semantic-release@npm:7.1.1"
+"@qiwi/multi-semantic-release@npm:7.1.2":
+  version: 7.1.2
+  resolution: "@qiwi/multi-semantic-release@npm:7.1.2"
   dependencies:
     "@semrel-extra/topo": ^1.14.0
     blork: ^9.3.0
@@ -8727,7 +8727,7 @@ __metadata:
     stream-buffers: ^3.0.2
   bin:
     multi-semantic-release: bin/cli.js
-  checksum: 27239a663924c6d011886b15cb9889fdb5353aa6c101430cecb1b8e74775e139b8164f6b197f161a5729817c583b56f905d2cff8c86057b276c70e2735f40a0a
+  checksum: 212827d4060a4866f5f068f2d05258604762de230b667dff1d99af9c22e8f0e7e70a031671a147f748e7aba158b11aaa6c7352a64651f23587fce27afa6902c7
   languageName: node
   linkType: hard
 
@@ -28976,7 +28976,7 @@ __metadata:
     "@commitlint/config-conventional": 17.8.1
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@qiwi/multi-semantic-release": 7.1.1
+    "@qiwi/multi-semantic-release": 7.1.2
     "@types/is-ci": 3.0.4
     commitizen: 4.3.0
     cz-conventional-changelog: 3.3.0
