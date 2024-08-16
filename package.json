@@ -35,7 +35,7 @@
     "@commitlint/config-conventional": "17.8.1",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
-    "@qiwi/multi-semantic-release": "7.1.1",
+    "@qiwi/multi-semantic-release": "7.1.2",
     "@types/is-ci": "3.0.4",
     "commitizen": "4.3.0",
     "cz-conventional-changelog": "3.3.0",
