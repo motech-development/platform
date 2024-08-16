@@ -115,7 +115,7 @@ __metadata:
     cypress-axe: 1.5.0
     cypress-cloud: 1.10.2
     cypress-file-upload: 5.0.8
-    cypress-localstorage-commands: 2.2.5
+    cypress-localstorage-commands: 2.2.6
     cypress-log-to-output: 1.1.2
     cypress-pipe: 2.0.0
     cypress-wait-until: 2.0.1
@@ -17334,12 +17334,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress-localstorage-commands@npm:2.2.5":
-  version: 2.2.5
-  resolution: "cypress-localstorage-commands@npm:2.2.5"
+"cypress-localstorage-commands@npm:2.2.6":
+  version: 2.2.6
+  resolution: "cypress-localstorage-commands@npm:2.2.6"
   peerDependencies:
     cypress: ">=2.1.0"
-  checksum: 6003e4165496676edd37a12572caf7b6360421103c9e5a803d2f73ccc744493a852ca3c82fca4cd6990165338952a25a0edd3912e8e855a33b01c3d42ff85f8e
+  checksum: 628fb0c5a7cde07b66d56095dca6b61491d4097b7ba8320d802e918777ddc8856a8fb338cd0caf1331fb81e3f64abbed40ee8571442bb459f93ac8ae5d633601
   languageName: node
   linkType: hard
 
