@@ -56,7 +56,7 @@
     "rollup": "3.29.4",
     "rollup-plugin-dts": "5.3.1",
     "rollup-plugin-exclude-dependencies-from-bundle": "1.1.23",
-    "rollup-plugin-swc3": "0.9.1",
+    "rollup-plugin-swc3": "0.11.2",
     "typescript": "5.1.6"
   },
   "jest": {
