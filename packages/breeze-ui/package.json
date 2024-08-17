@@ -28,7 +28,7 @@
     "@fortawesome/free-solid-svg-icons": "6.4.2",
     "@fortawesome/react-fontawesome": "0.2.0",
     "@popperjs/core": "2.11.8",
-    "formik": "2.4.5",
+    "formik": "2.4.6",
     "luxon": "3.3.0",
     "polished": "4.2.2",
     "react": "18.2.0",
