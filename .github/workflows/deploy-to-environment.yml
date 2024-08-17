@@ -910,7 +910,7 @@ jobs:
         run: yarn workspace @accounts/client build
 
       - name: Smoke tests
-        uses: cypress-io/github-action@v6.6.1
+        uses: cypress-io/github-action@v6.7.2
         with:
           command: yarn workspace @accounts/client e2e-ci
           install: false
