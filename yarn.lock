@@ -6350,7 +6350,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 6.2.1
     "@typescript-eslint/parser": 6.2.1
     auth0: 3.6.0
-    auth0-deploy-cli: 7.21.0
+    auth0-deploy-cli: 7.24.1
     eslint: 8.57.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.1.0
@@ -13972,9 +13972,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0-deploy-cli@npm:7.21.0":
-  version: 7.21.0
-  resolution: "auth0-deploy-cli@npm:7.21.0"
+"auth0-deploy-cli@npm:7.24.1":
+  version: 7.24.1
+  resolution: "auth0-deploy-cli@npm:7.24.1"
   dependencies:
     ajv: ^6.12.6
     auth0: ^3.0.0
@@ -13991,7 +13991,7 @@ __metadata:
     yargs: ^15.3.1
   bin:
     a0deploy: lib/index.js
-  checksum: a4a5cfc5b2281189c8c65dcf6afa33f9c54d88297156f2b41e4314463e71c9358c257971c6dd940ad2f35529316ddba94d9f0849922056e0899ab7a0735d9c44
+  checksum: 53bfc5ce32803c19f0d42aa0a6174784d1d245f7ae3ab218edcafb5113a2f891ac648170658a26071a523cc130f1ed6ce1ef3682e09cc59072bfdb2b3ad5a63b
   languageName: node
   linkType: hard
 
