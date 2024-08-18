@@ -326,7 +326,7 @@ __metadata:
     serverless: 3.34.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
-    serverless-step-functions: 3.14.0
+    serverless-step-functions: 3.21.0
     serverless-webpack: 5.13.0
     swc-loader: 0.2.3
     typescript: 5.1.6
@@ -381,7 +381,7 @@ __metadata:
     serverless: 3.34.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
-    serverless-step-functions: 3.14.0
+    serverless-step-functions: 3.21.0
     serverless-webpack: 5.13.0
     swc-loader: 0.2.3
     typescript: 5.1.6
@@ -476,7 +476,7 @@ __metadata:
     serverless: 3.34.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
-    serverless-step-functions: 3.14.0
+    serverless-step-functions: 3.21.0
     serverless-webpack: 5.13.0
     swc-loader: 0.2.3
     typescript: 5.1.6
@@ -5277,7 +5277,7 @@ __metadata:
     serverless: 3.34.0
     serverless-deployment-bucket: 1.6.0
     serverless-prune-plugin: 2.0.2
-    serverless-step-functions: 3.14.0
+    serverless-step-functions: 3.21.0
     serverless-webpack: 5.13.0
     swc-loader: 0.2.3
     typescript: 5.1.6
@@ -8306,7 +8306,7 @@ __metadata:
     serverless-dynamodb-local: 0.2.40
     serverless-offline: 12.0.4
     serverless-prune-plugin: 2.0.2
-    serverless-step-functions: 3.14.0
+    serverless-step-functions: 3.21.0
     serverless-webpack: 5.13.0
     swc-loader: 0.2.3
     typescript: 5.1.6
@@ -32169,9 +32169,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-step-functions@npm:3.14.0":
-  version: 3.14.0
-  resolution: "serverless-step-functions@npm:3.14.0"
+"serverless-step-functions@npm:3.21.0":
+  version: 3.21.0
+  resolution: "serverless-step-functions@npm:3.21.0"
   dependencies:
     "@serverless/utils": ^6.7.0
     asl-validator: ^3.8.0
@@ -32181,7 +32181,7 @@ __metadata:
     lodash: ^4.17.11
   peerDependencies:
     serverless: ^2.32.0 || 3
-  checksum: fe182d56ac64dd977810c859e4d2c8140d613141d6ccba350dce36e2f5863ffafaab1d5a7a8d32a4b996708710bea485041566ac493e64ad6f66c7dce8c6f874
+  checksum: 9d46a08b183a6d75bf617b3125e2f7a6cf4afa93203e32602cd25a18945b5cfd0c07a5ff94bf7db96ac6cf7b5d330c1e13184c62f6cdaa5a021877048fc0147f
   languageName: node
   linkType: hard
 
