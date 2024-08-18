@@ -40,8 +40,8 @@ __metadata:
     "@types/aws-lambda": 8.10.143
     "@types/jest": 29.5.12
     "@types/luxon": 3.3.1
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-appsync: 4.1.10
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.1.0
@@ -106,8 +106,8 @@ __metadata:
     "@types/react": 18.3.3
     "@types/react-dom": 18.3.0
     "@types/styled-components": 5.1.34
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     "@vitejs/plugin-react-swc": 3.7.0
     axe-core: 4.10.0
     axios: 1.7.4
@@ -197,8 +197,8 @@ __metadata:
     "@types/jest": 29.5.12
     "@types/luxon": 3.3.1
     "@types/uuid": 9.0.8
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.1.0
     aws-sdk-client-mock-jest: 3.1.0
@@ -257,8 +257,8 @@ __metadata:
     "@types/jest": 29.5.12
     "@types/luxon": 3.3.1
     "@types/uuid": 9.0.8
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.1.0
     aws-sdk-client-mock-jest: 3.1.0
@@ -304,8 +304,8 @@ __metadata:
     "@swc/jest": 0.2.36
     "@types/aws-lambda": 8.10.143
     "@types/jest": 29.5.12
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.1.0
     aws-sdk-client-mock-jest: 3.1.0
@@ -354,8 +354,8 @@ __metadata:
     "@types/luxon": 3.3.1
     "@types/qs": 6.9.15
     "@types/uuid": 9.0.8
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     archiver: 5.3.2
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.1.0
@@ -407,8 +407,8 @@ __metadata:
     "@types/aws-lambda": 8.10.143
     "@types/jest": 29.5.12
     "@types/uuid": 9.0.8
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.1.0
     aws-sdk-client-mock-jest: 3.1.0
@@ -454,8 +454,8 @@ __metadata:
     "@types/jest": 29.5.12
     "@types/luxon": 3.3.1
     "@types/uuid": 9.0.8
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.1.0
     aws-sdk-client-mock-jest: 3.1.0
@@ -5256,8 +5256,8 @@ __metadata:
     "@swc/jest": 0.2.36
     "@types/aws-lambda": 8.10.143
     "@types/jest": 29.5.12
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.1.0
     aws-sdk-client-mock-jest: 3.1.0
@@ -5298,8 +5298,8 @@ __metadata:
     "@swc/jest": 0.2.36
     "@types/aws-lambda": 8.10.143
     "@types/jest": 29.5.12
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.1.0
     aws-sdk-client-mock-jest: 3.1.0
@@ -5380,8 +5380,8 @@ __metadata:
     "@types/aws-lambda": 8.10.143
     "@types/jest": 29.5.12
     "@types/luxon": 3.3.1
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.1.0
     aws-sdk-client-mock-jest: 3.1.0
@@ -6423,8 +6423,8 @@ __metadata:
     "@types/react": 18.3.3
     "@types/react-dom": 18.3.0
     "@types/styled-components": 5.1.34
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     "@vitejs/plugin-react-swc": 3.7.0
     auth0-js: 9.22.1
     axios: 1.7.4
@@ -6501,8 +6501,8 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     "@types/jest": 29.5.12
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     auth0: 3.6.0
     auth0-deploy-cli: 7.24.1
     eslint: 8.57.0
@@ -6933,8 +6933,8 @@ __metadata:
     "@swc/jest": 0.2.36
     "@types/aws-lambda": 8.10.143
     "@types/jest": 29.5.12
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-lambda-mock-context: 3.2.1
     eslint: 8.57.0
     eslint-config-airbnb-base: 15.0.0
@@ -6976,8 +6976,8 @@ __metadata:
     "@types/react": 18.3.3
     "@types/react-dom": 18.3.0
     "@types/uuid": 9.0.8
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-appsync-auth-link: 3.0.7
     aws-appsync-subscription-link: 3.1.3
     eslint: 8.57.0
@@ -7028,8 +7028,8 @@ __metadata:
     "@types/jest": 29.5.12
     "@types/react": 18.3.3
     "@types/react-dom": 18.3.0
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.1.0
@@ -7071,8 +7071,8 @@ __metadata:
     "@swc/jest": 0.2.36
     "@types/jest": 29.5.12
     "@types/react": 18.3.3
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     axios: 1.7.4
     eslint: 8.57.0
     eslint-config-airbnb: 19.0.4
@@ -7128,8 +7128,8 @@ __metadata:
     "@types/react": 18.3.3
     "@types/react-dom": 18.3.0
     "@types/styled-components": 5.1.34
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.1.0
@@ -7173,8 +7173,8 @@ __metadata:
   dependencies:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.1.0
@@ -7186,8 +7186,8 @@ __metadata:
     prettier: 3.2.5
     typescript: 5.5.4
   peerDependencies:
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.1.0
@@ -7206,8 +7206,8 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.1.0
@@ -7223,8 +7223,8 @@ __metadata:
     typescript: 5.5.4
   peerDependencies:
     "@motech-development/eslint-config-motech-base": "workspace:*"
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.1.0
@@ -7252,8 +7252,8 @@ __metadata:
     "@swc/jest": 0.2.36
     "@types/google.analytics": 0.0.46
     "@types/jest": 29.5.12
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.1.0
@@ -7286,8 +7286,8 @@ __metadata:
     "@swc/core": 1.7.10
     "@swc/jest": 0.2.36
     "@types/jest": 29.5.12
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.1.0
@@ -7335,8 +7335,8 @@ __metadata:
     "@types/jest": 29.5.12
     "@types/qs": 6.9.15
     "@types/react": 18.3.3
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 17.1.0
@@ -7380,8 +7380,8 @@ __metadata:
     "@swc/core": 1.7.10
     "@swc/jest": 0.2.36
     "@types/jest": 29.5.12
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-sdk-client-mock: 3.1.0
     aws-sdk-client-mock-jest: 3.1.0
     eslint: 8.57.0
@@ -7435,8 +7435,8 @@ __metadata:
     "@types/assert": 1.5.10
     "@types/jest": 29.5.12
     "@types/serverless": 3.12.13
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     assert: 2.0.0
     eslint: 8.57.0
     eslint-config-airbnb-base: 15.0.0
@@ -7472,8 +7472,8 @@ __metadata:
     "@swc/core": 1.7.10
     "@swc/jest": 0.2.36
     "@types/jest": 29.5.12
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.1.0
@@ -7507,8 +7507,8 @@ __metadata:
     "@swc/core": 1.7.10
     "@swc/jest": 0.2.36
     "@types/jest": 29.5.12
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.1.0
@@ -7538,8 +7538,8 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.1.0
@@ -7559,8 +7559,8 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     eslint: 8.57.0
     eslint-config-airbnb-base: 15.0.0
     eslint-config-airbnb-typescript: 17.1.0
@@ -8269,8 +8269,8 @@ __metadata:
     "@swc/jest": 0.2.36
     "@types/aws-lambda": 8.10.143
     "@types/jest": 29.5.12
-    "@typescript-eslint/eslint-plugin": 6.2.1
-    "@typescript-eslint/parser": 6.2.1
+    "@typescript-eslint/eslint-plugin": 6.21.0
+    "@typescript-eslint/parser": 6.21.0
     aws-lambda-mock-context: 3.2.1
     aws-sdk-client-mock: 3.1.0
     aws-sdk-client-mock-jest: 3.1.0
@@ -12057,20 +12057,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:6.2.1":
-  version: 6.2.1
-  resolution: "@typescript-eslint/eslint-plugin@npm:6.2.1"
+"@typescript-eslint/eslint-plugin@npm:6.21.0":
+  version: 6.21.0
+  resolution: "@typescript-eslint/eslint-plugin@npm:6.21.0"
   dependencies:
     "@eslint-community/regexpp": ^4.5.1
-    "@typescript-eslint/scope-manager": 6.2.1
-    "@typescript-eslint/type-utils": 6.2.1
-    "@typescript-eslint/utils": 6.2.1
-    "@typescript-eslint/visitor-keys": 6.2.1
+    "@typescript-eslint/scope-manager": 6.21.0
+    "@typescript-eslint/type-utils": 6.21.0
+    "@typescript-eslint/utils": 6.21.0
+    "@typescript-eslint/visitor-keys": 6.21.0
     debug: ^4.3.4
     graphemer: ^1.4.0
     ignore: ^5.2.4
     natural-compare: ^1.4.0
-    natural-compare-lite: ^1.4.0
     semver: ^7.5.4
     ts-api-utils: ^1.0.1
   peerDependencies:
@@ -12079,25 +12078,25 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: e73f3fe36519d895037d223f3ddf200b97e17bcde9390984118c38733add1edf996357c809ec2db92cec61bc7c9e5a3d9a583e0d0f92fa9c3919b68716a27b37
+  checksum: 5ef2c502255e643e98051e87eb682c2a257e87afd8ec3b9f6274277615e1c2caf3131b352244cfb1987b8b2c415645eeacb9113fa841fc4c9b2ac46e8aed6efd
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:6.2.1":
-  version: 6.2.1
-  resolution: "@typescript-eslint/parser@npm:6.2.1"
+"@typescript-eslint/parser@npm:6.21.0":
+  version: 6.21.0
+  resolution: "@typescript-eslint/parser@npm:6.21.0"
   dependencies:
-    "@typescript-eslint/scope-manager": 6.2.1
-    "@typescript-eslint/types": 6.2.1
-    "@typescript-eslint/typescript-estree": 6.2.1
-    "@typescript-eslint/visitor-keys": 6.2.1
+    "@typescript-eslint/scope-manager": 6.21.0
+    "@typescript-eslint/types": 6.21.0
+    "@typescript-eslint/typescript-estree": 6.21.0
+    "@typescript-eslint/visitor-keys": 6.21.0
     debug: ^4.3.4
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: cf4768cbfc696ce1d4b15ae55b3d2b52761e91a4a80e738cf3a75c501c2257d735cd6e462567965069d0d693a8cf5463ab9e8b97c36c6ed1fccd3c1c09855bdb
+  checksum: 162fe3a867eeeffda7328bce32dae45b52283c68c8cb23258fb9f44971f761991af61f71b8c9fe1aa389e93dfe6386f8509c1273d870736c507d76dd40647b68
   languageName: node
   linkType: hard
 
@@ -12111,22 +12110,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/scope-manager@npm:6.2.1":
-  version: 6.2.1
-  resolution: "@typescript-eslint/scope-manager@npm:6.2.1"
+"@typescript-eslint/scope-manager@npm:6.21.0":
+  version: 6.21.0
+  resolution: "@typescript-eslint/scope-manager@npm:6.21.0"
   dependencies:
-    "@typescript-eslint/types": 6.2.1
-    "@typescript-eslint/visitor-keys": 6.2.1
-  checksum: 3bb461678c7e729895c5ac16781ec7d66efc6ffa944bb49693ce8e9560f9a6cac70929157c0fc0875b2829ae19a5cdabb97973ddcfb7e81c16e22cdd5d39e3fd
+    "@typescript-eslint/types": 6.21.0
+    "@typescript-eslint/visitor-keys": 6.21.0
+  checksum: 71028b757da9694528c4c3294a96cc80bc7d396e383a405eab3bc224cda7341b88e0fc292120b35d3f31f47beac69f7083196c70616434072fbcd3d3e62d3376
   languageName: node
   linkType: hard
 
-"@typescript-eslint/type-utils@npm:6.2.1":
-  version: 6.2.1
-  resolution: "@typescript-eslint/type-utils@npm:6.2.1"
+"@typescript-eslint/type-utils@npm:6.21.0":
+  version: 6.21.0
+  resolution: "@typescript-eslint/type-utils@npm:6.21.0"
   dependencies:
-    "@typescript-eslint/typescript-estree": 6.2.1
-    "@typescript-eslint/utils": 6.2.1
+    "@typescript-eslint/typescript-estree": 6.21.0
+    "@typescript-eslint/utils": 6.21.0
     debug: ^4.3.4
     ts-api-utils: ^1.0.1
   peerDependencies:
@@ -12134,7 +12133,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 7f8d80f03e6ddc1838307a2a4df61dc4bd8400efb9dcc7316063ae293fce54afad238404a0c25cd2cdaceee73ae514f254b850bd7ff11e2def700d5d6b90af05
+  checksum: 77025473f4d80acf1fafcce99c5c283e557686a61861febeba9c9913331f8a41e930bf5cd8b7a54db502a57b6eb8ea6d155cbd4f41349ed00e3d7aeb1f477ddc
   languageName: node
   linkType: hard
 
@@ -12145,10 +12144,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/types@npm:6.2.1":
-  version: 6.2.1
-  resolution: "@typescript-eslint/types@npm:6.2.1"
-  checksum: 388d32f15a9db8ad5d80794caf9ab280d6e5a428efdf4f6a6dfc4069afe4d19da32d628acf638e4c5b92ee77a9a18eecf728a778a3b91cc8a24484af579fc9cf
+"@typescript-eslint/types@npm:6.21.0":
+  version: 6.21.0
+  resolution: "@typescript-eslint/types@npm:6.21.0"
+  checksum: 9501b47d7403417af95fc1fb72b2038c5ac46feac0e1598a46bcb43e56a606c387e9dcd8a2a0abe174c91b509f2d2a8078b093786219eb9a01ab2fbf9ee7b684
   languageName: node
   linkType: hard
 
@@ -12170,38 +12169,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/typescript-estree@npm:6.2.1":
-  version: 6.2.1
-  resolution: "@typescript-eslint/typescript-estree@npm:6.2.1"
+"@typescript-eslint/typescript-estree@npm:6.21.0":
+  version: 6.21.0
+  resolution: "@typescript-eslint/typescript-estree@npm:6.21.0"
   dependencies:
-    "@typescript-eslint/types": 6.2.1
-    "@typescript-eslint/visitor-keys": 6.2.1
+    "@typescript-eslint/types": 6.21.0
+    "@typescript-eslint/visitor-keys": 6.21.0
     debug: ^4.3.4
     globby: ^11.1.0
     is-glob: ^4.0.3
+    minimatch: 9.0.3
     semver: ^7.5.4
     ts-api-utils: ^1.0.1
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 3d9beeb5e36b8827de5c160ed8e5c111dd66ca00671b183409b051e242b291480679b900bb74aaf4895dcae49497037567d3fcbbe67fa9930786ddd01c685f04
+  checksum: dec02dc107c4a541e14fb0c96148f3764b92117c3b635db3a577b5a56fc48df7a556fa853fb82b07c0663b4bf2c484c9f245c28ba3e17e5cb0918ea4cab2ea21
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:6.2.1":
-  version: 6.2.1
-  resolution: "@typescript-eslint/utils@npm:6.2.1"
+"@typescript-eslint/utils@npm:6.21.0":
+  version: 6.21.0
+  resolution: "@typescript-eslint/utils@npm:6.21.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.4.0
     "@types/json-schema": ^7.0.12
     "@types/semver": ^7.5.0
-    "@typescript-eslint/scope-manager": 6.2.1
-    "@typescript-eslint/types": 6.2.1
-    "@typescript-eslint/typescript-estree": 6.2.1
+    "@typescript-eslint/scope-manager": 6.21.0
+    "@typescript-eslint/types": 6.21.0
+    "@typescript-eslint/typescript-estree": 6.21.0
     semver: ^7.5.4
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
-  checksum: d16356a633f39d988a9af159da15e28c6a28fa47abce372061c79cf186d193d148e1c32862c9702ff87e2a06f7a2f82773e4b56320a39f432f4b1a989f8005ad
+  checksum: b129b3a4aebec8468259f4589985cb59ea808afbfdb9c54f02fad11e17d185e2bf72bb332f7c36ec3c09b31f18fc41368678b076323e6e019d06f74ee93f7bf2
   languageName: node
   linkType: hard
 
@@ -12233,13 +12233,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/visitor-keys@npm:6.2.1":
-  version: 6.2.1
-  resolution: "@typescript-eslint/visitor-keys@npm:6.2.1"
+"@typescript-eslint/visitor-keys@npm:6.21.0":
+  version: 6.21.0
+  resolution: "@typescript-eslint/visitor-keys@npm:6.21.0"
   dependencies:
-    "@typescript-eslint/types": 6.2.1
+    "@typescript-eslint/types": 6.21.0
     eslint-visitor-keys: ^3.4.1
-  checksum: c05a1c45129f2cf9a8c49dadc3da10b675232e59b69dfe9fdc0bfb45d3be077ceff78097baf50e502dab3e71ce9fd799d2015e356a4be2787ee10c6c7a44ea8a
+  checksum: 67c7e6003d5af042d8703d11538fca9d76899f0119130b373402819ae43f0bc90d18656aa7add25a24427ccf1a0efd0804157ba83b0d4e145f06107d7d1b7433
   languageName: node
   linkType: hard
 
@@ -27167,13 +27167,6 @@ __metadata:
   version: 0.8.1
   resolution: "native-promise-only@npm:0.8.1"
   checksum: bb4d8416c47d1b2cef0d4eb2c7f3442a9ed04d3734287f4037dfb7ff25948612976928e5baed105081927d5337d3f657e3a42ad2e8cca38a6428a81b32cd6dc4
-  languageName: node
-  linkType: hard
-
-"natural-compare-lite@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "natural-compare-lite@npm:1.4.0"
-  checksum: 5222ac3986a2b78dd6069ac62cbb52a7bf8ffc90d972ab76dfe7b01892485d229530ed20d0c62e79a6b363a663b273db3bde195a1358ce9e5f779d4453887225
   languageName: node
   linkType: hard
 
