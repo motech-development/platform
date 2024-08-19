@@ -11,7 +11,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "auth0": "3.6.0",
+    "auth0": "3.7.2",
     "istanbul-lib-instrument": "6.0.3"
   },
   "devDependencies": {
