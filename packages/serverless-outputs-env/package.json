@@ -22,7 +22,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "assert": "2.0.0",
+    "assert": "2.1.0",
     "serverless": "3.34.0",
     "tomlify-j0.4": "3.0.0"
   },
