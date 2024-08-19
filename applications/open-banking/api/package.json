@@ -24,7 +24,7 @@
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
-    "@swc/core": "1.7.10",
+    "@swc/core": "1.7.11",
     "@swc/jest": "0.2.36",
     "@types/aws-lambda": "8.10.143",
     "@types/jest": "29.5.12",
