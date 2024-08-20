@@ -134,7 +134,7 @@ __metadata:
     file-saver: 2.0.5
     formik: 2.4.6
     graphql: 16.9.0
-    i18next: 23.12.5
+    i18next: 23.12.6
     i18next-browser-languagedetector: 7.2.1
     i18next-chained-backend: 4.6.2
     i18next-resources-to-backend: 1.2.1
@@ -22350,15 +22350,6 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.23.2
   checksum: a2f338c4eec8d5ba09846ae1abdd23afb72086f6395d6160c748d010c82f5c28c30133f6487f0fd3a65e710231d7750b324785f15cac4baf6d24b33227840341
-  languageName: node
-  linkType: hard
-
-"i18next@npm:23.12.5":
-  version: 23.12.5
-  resolution: "i18next@npm:23.12.5"
-  dependencies:
-    "@babel/runtime": ^7.23.2
-  checksum: b2e29c6852601af51cd7cd9b9a5c0926de8986cce5cc68d5934479c6a0e53843efc4ca72ad87b125a21d6bfc3330e264521efb94ba5d0da2219eae4e5b9814ad
   languageName: node
   linkType: hard
 
