@@ -33,7 +33,7 @@ export const handler: Handler<IEvent> = async (event) => {
     stripUnknown: true,
   });
   const now = DateTime.utc();
-  const createdAt = now.toISO() as string;
+  const createdAt = now.toISO();
   const ttl = Math.floor(
     now
       .plus({

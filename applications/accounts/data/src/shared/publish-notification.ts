@@ -10,7 +10,7 @@ const publishNotification = (
   message: string,
 ): Promise<UpdateCommandOutput> => {
   const now = DateTime.utc();
-  const isoString = now.toISO() as string;
+  const isoString = now.toISO();
   const command = new UpdateCommand({
     ExpressionAttributeNames: {
       '#createdAt': 'createdAt',
