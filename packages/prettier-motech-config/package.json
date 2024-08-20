@@ -20,7 +20,7 @@
   ],
   "main": "index.json",
   "dependencies": {
-    "prettier-plugin-tailwindcss": "0.5.14"
+    "prettier-plugin-tailwindcss": "0.6.6"
   },
   "devDependencies": {
     "@motech-development/semantic-release": "workspace:*",
