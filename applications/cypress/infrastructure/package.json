@@ -10,7 +10,7 @@
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
     "prettier": "3.2.5",
-    "serverless": "3.34.0",
+    "serverless": "3.39.0",
     "serverless-deployment-bucket": "1.6.0"
   }
 }
