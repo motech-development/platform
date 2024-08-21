@@ -38,7 +38,7 @@
     "react-router-dom": "6.26.1",
     "styled-components": "5.3.11",
     "styled-reset": "4.5.2",
-    "yup": "1.2.0"
+    "yup": "1.4.0"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",

@@ -21,7 +21,7 @@
     "luxon": "3.5.0",
     "qs": "6.11.2",
     "uuid": "9.0.1",
-    "yup": "1.2.0"
+    "yup": "1.4.0"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
