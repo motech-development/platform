@@ -16,7 +16,7 @@
     "@octokit/auth-app": "6.0.0",
     "@octokit/rest": "20.0.1",
     "luxon": "3.5.0",
-    "yup": "1.2.0"
+    "yup": "1.4.0"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",

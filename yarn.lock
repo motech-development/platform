@@ -175,7 +175,7 @@ __metadata:
     workbox-routing: 7.0.0
     workbox-strategies: 7.0.0
     workbox-streams: 7.0.0
-    yup: 1.2.0
+    yup: 1.4.0
   languageName: unknown
   linkType: soft
 
@@ -285,7 +285,7 @@ __metadata:
     uuid: 9.0.1
     webpack: 5.93.0
     webpack-node-externals: 3.0.0
-    yup: 1.2.0
+    yup: 1.4.0
   languageName: unknown
   linkType: soft
 
@@ -388,7 +388,7 @@ __metadata:
     uuid: 9.0.1
     webpack: 5.93.0
     webpack-node-externals: 3.0.0
-    yup: 1.2.0
+    yup: 1.4.0
   languageName: unknown
   linkType: soft
 
@@ -434,7 +434,7 @@ __metadata:
     uuid: 9.0.1
     webpack: 5.93.0
     webpack-node-externals: 3.0.0
-    yup: 1.2.0
+    yup: 1.4.0
   languageName: unknown
   linkType: soft
 
@@ -483,7 +483,7 @@ __metadata:
     uuid: 9.0.1
     webpack: 5.93.0
     webpack-node-externals: 3.0.0
-    yup: 1.2.0
+    yup: 1.4.0
   languageName: unknown
   linkType: soft
 
@@ -5549,7 +5549,7 @@ __metadata:
     typescript: 5.5.4
     webpack: 5.93.0
     webpack-node-externals: 3.0.0
-    yup: 1.2.0
+    yup: 1.4.0
   languageName: unknown
   linkType: soft
 
@@ -5631,7 +5631,7 @@ __metadata:
     typescript: 5.5.4
     webpack: 5.93.0
     webpack-node-externals: 3.0.0
-    yup: 1.2.0
+    yup: 1.4.0
   languageName: unknown
   linkType: soft
 
@@ -6691,7 +6691,7 @@ __metadata:
     vite-plugin-checker: 0.7.2
     vite-plugin-eslint: 1.8.1
     web-vitals: 3.5.2
-    yup: 1.2.0
+    yup: 1.4.0
   languageName: unknown
   linkType: soft
 
@@ -7381,7 +7381,7 @@ __metadata:
     styled-components: 5.3.11
     styled-reset: 4.5.2
     typescript: 5.5.4
-    yup: 1.2.0
+    yup: 1.4.0
   languageName: unknown
   linkType: soft
 
@@ -8517,7 +8517,7 @@ __metadata:
     typescript: 5.5.4
     webpack: 5.93.0
     webpack-node-externals: 3.0.0
-    yup: 1.2.0
+    yup: 1.4.0
   languageName: unknown
   linkType: soft
 
@@ -37933,15 +37933,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yup@npm:1.2.0":
-  version: 1.2.0
-  resolution: "yup@npm:1.2.0"
+"yup@npm:1.4.0":
+  version: 1.4.0
+  resolution: "yup@npm:1.4.0"
   dependencies:
     property-expr: ^2.0.5
     tiny-case: ^1.0.3
     toposort: ^2.0.2
     type-fest: ^2.19.0
-  checksum: f0cdceb144e358c6155670f3e27404b65b090cc12594fde6db2699523661e13542aaf87ebe8e542b67f29a5f3f9bc5f23a3a3bb09e17f10d125353d35b841fac
+  checksum: 20a2ee0c1e891979ca16b34805b3a3be9ab4bea6ea3d2f9005b998b4dc992d0e4d7b53e5f4d8d9423420046630fb44fdf0ecf7e83bc34dd83392bca046c5229d
   languageName: node
   linkType: hard
 
