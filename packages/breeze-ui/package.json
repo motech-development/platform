@@ -24,9 +24,9 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "6.4.2",
-    "@fortawesome/free-solid-svg-icons": "6.4.2",
-    "@fortawesome/react-fontawesome": "0.2.0",
+    "@fortawesome/fontawesome-svg-core": "6.6.0",
+    "@fortawesome/free-solid-svg-icons": "6.6.0",
+    "@fortawesome/react-fontawesome": "0.2.2",
     "@popperjs/core": "2.11.8",
     "formik": "2.4.6",
     "luxon": "3.5.0",
