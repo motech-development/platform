@@ -348,7 +348,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@swc/core": 1.7.11
     "@swc/jest": 0.2.36
-    "@types/archiver": 5.3.4
+    "@types/archiver": 6.0.2
     "@types/aws-lambda": 8.10.143
     "@types/jest": 29.5.12
     "@types/luxon": 3.4.2
@@ -11888,12 +11888,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/archiver@npm:5.3.4":
-  version: 5.3.4
-  resolution: "@types/archiver@npm:5.3.4"
+"@types/archiver@npm:6.0.2":
+  version: 6.0.2
+  resolution: "@types/archiver@npm:6.0.2"
   dependencies:
     "@types/readdir-glob": "*"
-  checksum: 4ef27b99091ada9b8f13017d5b9e6d42a439e35a7858b30e040c408e081d98d8db6307b0762500288b5da38cab9823c4756b6abae1fdd2658d42bfb09eb7c5fb
+  checksum: 4bef71e5b95863be9880339275ad92c2513dd78d56587653614dc5a74af1d078f5f5926ec996de06e7071a1003e0c2764d0e9d2bb0893a2ffb14ab1718eaf5ca
   languageName: node
   linkType: hard
 
