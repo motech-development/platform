@@ -124,7 +124,7 @@ __metadata:
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 18.0.0
     eslint-config-prettier: 9.1.0
-    eslint-plugin-cypress: 2.15.2
+    eslint-plugin-cypress: 3.5.0
     eslint-plugin-import: 2.29.1
     eslint-plugin-jest: 27.9.0
     eslint-plugin-jsx-a11y: 6.9.0
@@ -6644,7 +6644,7 @@ __metadata:
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 18.0.0
     eslint-config-prettier: 9.1.0
-    eslint-plugin-cypress: 2.15.2
+    eslint-plugin-cypress: 3.5.0
     eslint-plugin-import: 2.29.1
     eslint-plugin-jest: 27.9.0
     eslint-plugin-jsx-a11y: 6.9.0
@@ -7178,7 +7178,7 @@ __metadata:
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 18.0.0
     eslint-config-prettier: 9.1.0
-    eslint-plugin-cypress: 2.15.2
+    eslint-plugin-cypress: 3.5.0
     eslint-plugin-import: 2.29.1
     eslint-plugin-jest: 27.9.0
     eslint-plugin-jsx-a11y: 6.9.0
@@ -7228,7 +7228,7 @@ __metadata:
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 18.0.0
     eslint-config-prettier: 9.1.0
-    eslint-plugin-cypress: 2.15.2
+    eslint-plugin-cypress: 3.5.0
     eslint-plugin-import: 2.29.1
     eslint-plugin-jest: 27.9.0
     eslint-plugin-jsx-a11y: 6.9.0
@@ -7272,7 +7272,7 @@ __metadata:
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 18.0.0
     eslint-config-prettier: 9.1.0
-    eslint-plugin-cypress: 2.15.2
+    eslint-plugin-cypress: 3.5.0
     eslint-plugin-import: 2.29.1
     eslint-plugin-jest: 27.9.0
     eslint-plugin-jsx-a11y: 6.9.0
@@ -7328,7 +7328,7 @@ __metadata:
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 18.0.0
     eslint-config-prettier: 9.1.0
-    eslint-plugin-cypress: 2.15.2
+    eslint-plugin-cypress: 3.5.0
     eslint-plugin-import: 2.29.1
     eslint-plugin-jest: 27.9.0
     eslint-plugin-jsx-a11y: 6.9.0
@@ -7406,7 +7406,7 @@ __metadata:
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 18.0.0
     eslint-config-prettier: 9.1.0
-    eslint-plugin-cypress: 2.15.2
+    eslint-plugin-cypress: 3.5.0
     eslint-plugin-import: 2.29.1
     eslint-plugin-jest: 27.9.0
     eslint-plugin-jsx-a11y: 6.9.0
@@ -7423,7 +7423,7 @@ __metadata:
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 18.0.0
     eslint-config-prettier: 9.1.0
-    eslint-plugin-cypress: 2.15.2
+    eslint-plugin-cypress: 3.5.0
     eslint-plugin-import: 2.29.1
     eslint-plugin-jest: 27.9.0
     eslint-plugin-jsx-a11y: 6.9.0
@@ -7535,7 +7535,7 @@ __metadata:
     eslint-config-airbnb: 19.0.4
     eslint-config-airbnb-typescript: 18.0.0
     eslint-config-prettier: 9.1.0
-    eslint-plugin-cypress: 2.15.2
+    eslint-plugin-cypress: 3.5.0
     eslint-plugin-import: 2.29.1
     eslint-plugin-jest: 27.9.0
     eslint-plugin-jsx-a11y: 6.9.0
@@ -20058,14 +20058,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-cypress@npm:2.15.2":
-  version: 2.15.2
-  resolution: "eslint-plugin-cypress@npm:2.15.2"
+"eslint-plugin-cypress@npm:3.5.0":
+  version: 3.5.0
+  resolution: "eslint-plugin-cypress@npm:3.5.0"
   dependencies:
     globals: ^13.20.0
   peerDependencies:
-    eslint: ">= 3.2.1"
-  checksum: 0ffd8b9b39a22543917e2d9ae0cb7545ce5ea0eea171d947b6e015062f462bf66a208b7e711923d5ad1525f3fb03a3f35c7d978ab88352343302ea885ee98c1b
+    eslint: ">=7"
+  checksum: b13b3e6c0074ab4246f15072f1c4877ffff0b14a891b0e3714cb13b449515446e814df29cbcf63b60dc09a8d301271f1434ded18398f9aa3f11005a3899bc265
   languageName: node
   linkType: hard
 
