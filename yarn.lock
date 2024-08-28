@@ -145,7 +145,7 @@ __metadata:
     jest-watch-typeahead: 2.2.2
     luxon: 3.5.0
     prettier: 3.2.5
-    pwa-asset-generator: 6.3.1
+    pwa-asset-generator: 6.3.2
     react: 18.3.1
     react-dom: 18.3.1
     react-ga: 3.3.1
@@ -6661,7 +6661,7 @@ __metadata:
     jest-styled-components: 7.2.0
     jest-watch-typeahead: 2.2.2
     prettier: 3.2.5
-    pwa-asset-generator: 6.3.1
+    pwa-asset-generator: 6.3.2
     react: 18.3.1
     react-dom: 18.3.1
     react-ga: 3.3.1
@@ -16378,21 +16378,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cheerio@npm:1.0.0-rc.2":
-  version: 1.0.0-rc.2
-  resolution: "cheerio@npm:1.0.0-rc.2"
-  dependencies:
-    css-select: ~1.2.0
-    dom-serializer: ~0.1.0
-    entities: ~1.1.1
-    htmlparser2: ^3.9.1
-    lodash: ^4.15.0
-    parse5: ^3.0.1
-  checksum: f4eaa93f405a9821daaea067459444d5d5d478b23c475a274c2ca434581dce4930ec779a231b5919ce1f80f44deda8b64233f0eabade6b39f9a887070ab7034e
-  languageName: node
-  linkType: hard
-
-"cheerio@npm:^1.0.0-rc.12":
+"cheerio@npm:1.0.0-rc.12":
   version: 1.0.0-rc.12
   resolution: "cheerio@npm:1.0.0-rc.12"
   dependencies:
@@ -16404,6 +16390,20 @@ __metadata:
     parse5: ^7.0.0
     parse5-htmlparser2-tree-adapter: ^7.0.0
   checksum: 5d4c1b7a53cf22d3a2eddc0aff70cf23cbb30d01a4c79013e703a012475c02461aa1fcd99127e8d83a02216386ed6942b2c8103845fd0812300dd199e6e7e054
+  languageName: node
+  linkType: hard
+
+"cheerio@npm:1.0.0-rc.2":
+  version: 1.0.0-rc.2
+  resolution: "cheerio@npm:1.0.0-rc.2"
+  dependencies:
+    css-select: ~1.2.0
+    dom-serializer: ~0.1.0
+    entities: ~1.1.1
+    htmlparser2: ^3.9.1
+    lodash: ^4.15.0
+    parse5: ^3.0.1
+  checksum: f4eaa93f405a9821daaea067459444d5d5d478b23c475a274c2ca434581dce4930ec779a231b5919ce1f80f44deda8b64233f0eabade6b39f9a887070ab7034e
   languageName: node
   linkType: hard
 
@@ -30903,12 +30903,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pwa-asset-generator@npm:6.3.1":
-  version: 6.3.1
-  resolution: "pwa-asset-generator@npm:6.3.1"
+"pwa-asset-generator@npm:6.3.2":
+  version: 6.3.2
+  resolution: "pwa-asset-generator@npm:6.3.2"
   dependencies:
     chalk: ^4.1.2
-    cheerio: ^1.0.0-rc.12
+    cheerio: 1.0.0-rc.12
     chrome-launcher: ^0.15.0
     find-process: ^1.4.7
     lodash.isequal: ^4.5.0
@@ -30921,7 +30921,7 @@ __metadata:
     slash: ^3.0.0
   bin:
     pwa-asset-generator: bin/cli
-  checksum: 2eadfe096fed9fd6b5907c1a18bd1a4116d32a7af4df48ae0e647c7185b2126f6ea394653e2d66d38550357f72d66a019753bb376f29a8855678d246842ec875
+  checksum: 774d4177e771c46262226e65f88a7715fbe397d41bd1139a4c9350eef3f0cb1c10d556ace00f8713c01c73a6a4ff1902512baa7b73752346cbed3e479b55f031
   languageName: node
   linkType: hard
 
