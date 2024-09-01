@@ -117,7 +117,7 @@
     "vite": "4.5.3",
     "vite-plugin-checker": "0.7.2",
     "vite-plugin-eslint": "1.8.1",
-    "vite-plugin-pwa": "0.15.2"
+    "vite-plugin-pwa": "0.20.1"
   },
   "browserslist": {
     "production": [
