@@ -42,7 +42,7 @@
       "settings": {
         "aws.telemetry": false,
         "files.autoSave": "off",
-        "workbench.colorTheme": "Dracula",
+        "workbench.colorTheme": "Dracula Theme",
         "workbench.iconTheme": "vscode-icons"
       }
     }
