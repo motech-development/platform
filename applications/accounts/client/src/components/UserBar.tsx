@@ -59,7 +59,13 @@ function UserBar({ logOut, name, notifications, picture }: IUserBarProps) {
         {picture && (
           <Breakpoint xs={false}>
             <AppBarItem>
-              <Avatar alt="" src={picture} width={32} />
+              <Avatar
+                alt={t('user-bar:photo', {
+                  name,
+                })}
+                src={picture}
+                width={32}
+              />
             </AppBarItem>
           </Breakpoint>
         )}
