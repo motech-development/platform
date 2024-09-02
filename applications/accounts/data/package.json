@@ -25,7 +25,7 @@
     "@motech-development/semantic-release": "workspace:*",
     "@swc/core": "1.7.21",
     "@swc/jest": "0.2.36",
-    "@types/aws-lambda": "8.10.143",
+    "@types/aws-lambda": "8.10.145",
     "@types/jest": "29.5.12",
     "@types/luxon": "3.4.2",
     "@types/uuid": "9.0.8",
