@@ -37,7 +37,7 @@
     "@motech-development/semantic-release": "workspace:*",
     "@rollup/plugin-commonjs": "26.0.1",
     "@rollup/plugin-node-resolve": "15.2.3",
-    "@swc/core": "1.7.21",
+    "@swc/core": "1.7.22",
     "@swc/jest": "0.2.36",
     "@testing-library/jest-dom": "6.5.0",
     "@testing-library/react": "16.0.1",
