@@ -47,7 +47,7 @@
     "typescript": "5.5.4"
   },
   "resolutions": {
-    "nwsapi": "2.2.9",
+    "nwsapi": "2.2.12",
     "puppeteer": "13.7.0"
   },
   "config": {
