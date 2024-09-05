@@ -31387,7 +31387,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pug@npm:^2.0.0-alpha7":
+"pug@npm:3.0.1":
   version: 3.0.1
   resolution: "pug@npm:3.0.1"
   dependencies:
