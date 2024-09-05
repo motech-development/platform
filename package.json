@@ -15,7 +15,7 @@
     "format": "yarn workspaces foreach -v run prettier --ignore-unknown --write .",
     "format-root": "prettier --ignore-unknown --write .",
     "lint": "yarn workspaces foreach -p run lint",
-    "package": "yarn workspaces foreach -pt run package",
+    "package": "yarn workspaces foreach -Wpt run package",
     "prepare": "is-ci || husky",
     "release": "multi-semantic-release",
     "test": "yarn workspaces foreach run test-ci"
