@@ -12,13 +12,13 @@
     "clean-deps": "find . -name node_modules -exec rm -rf {} \\;",
     "clean-git": "git branch --merged | egrep -v \"(^\\*|main|develop)\" | xargs git branch -d",
     "commit": "cz",
-    "format": "yarn workspaces foreach -v run prettier --ignore-unknown --write .",
+    "format": "yarn workspaces foreach -Wv run prettier --ignore-unknown --write .",
     "format-root": "prettier --ignore-unknown --write .",
-    "lint": "yarn workspaces foreach -p run lint",
+    "lint": "yarn workspaces foreach -Wp run lint",
     "package": "yarn workspaces foreach -Wpt run package",
     "prepare": "is-ci || husky",
     "release": "multi-semantic-release",
-    "test": "yarn workspaces foreach run test-ci"
+    "test": "yarn workspaces foreach -W run test-ci"
   },
   "repository": {
     "type": "git",
