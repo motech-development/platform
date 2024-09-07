@@ -42,6 +42,7 @@ module.exports = {
         },
         {
           files: [
+            'codegen.ts',
             'setupTests.ts',
             '*.stories.ts',
             '*.stories.tsx',

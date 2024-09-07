@@ -21,7 +21,7 @@ module.exports = {
           },
         },
         {
-          files: ['setupTests.ts', '*.config.ts'],
+          files: ['codegen.ts', 'setupTests.ts', '*.config.ts'],
           rules: {
             'import/no-extraneous-dependencies': 'off',
           },
