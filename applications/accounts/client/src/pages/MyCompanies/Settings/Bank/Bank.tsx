@@ -14,23 +14,14 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
 import ErrorCard from '../../../../components/ErrorCard';
-import CREATE_BANK_CONNECTION, {
-  ICreateBankConnectionInput,
-  ICreateBankConnectionOutput,
-} from '../../../../graphql/bank/CREATE_BANK_CONNECTION';
-import GET_BANKS, {
-  IGetBanksInput,
-  IGetBanksOutput,
-} from '../../../../graphql/bank/GET_BANKS';
-import ON_BANK_CALLBACK, {
-  IOnBankCallbackOutput,
-} from '../../../../graphql/bank/ON_BANK_CALLBACK';
+import { gql } from '../../../../graphql';
+import { GetBanksQuery } from '../../../../graphql/graphql';
 import invariant from '../../../../utils/invariant';
 
 interface IDataRow {
   connect: (bank: string, user?: string) => Promise<void>;
   connectLabel: string;
-  data: IGetBanksOutput;
+  data: GetBanksQuery;
   selected: string;
 }
 
@@ -69,6 +60,37 @@ function row({ connect, connectLabel, data, selected }: IDataRow) {
   return DataRow;
 }
 
+export const GET_BANKS = gql(/* GraphQL */ `
+  query GetBanks($id: ID!) {
+    getBankSettings(id: $id) {
+      id
+      user
+    }
+    getBanks {
+      items {
+        id
+        name
+      }
+    }
+  }
+`);
+
+export const CREATE_BANK_CONNECTION = gql(/* GraphQL */ `
+  mutation CreateBankConnection($input: BankConnectionInput!) {
+    createBankConnection(input: $input) {
+      status
+    }
+  }
+`);
+
+export const ON_BANK_CALLBACK = gql(/* GraphQL */ `
+  subscription OnBackCallback {
+    onBankCallback {
+      authorisationUrl
+    }
+  }
+`);
+
 // TODO: Get to the bottom of the subscription error
 function Bank() {
   const { companyId } = useParams();
@@ -77,20 +99,14 @@ function Bank() {
 
   const { t } = useTranslation('settings');
   const [selected, setSelected] = useState('');
-  const { data, error, loading } = useQuery<IGetBanksOutput, IGetBanksInput>(
-    GET_BANKS,
-    {
-      variables: {
-        id: companyId,
-      },
+  const { data, error, loading } = useQuery(GET_BANKS, {
+    variables: {
+      id: companyId,
     },
-  );
-  const [mutation] = useMutation<
-    ICreateBankConnectionOutput,
-    ICreateBankConnectionInput
-  >(CREATE_BANK_CONNECTION);
+  });
+  const [mutation] = useMutation(CREATE_BANK_CONNECTION);
   const { data: subscription, loading: subscriptionLoading } =
-    useSubscription<IOnBankCallbackOutput>(ON_BANK_CALLBACK);
+    useSubscription(ON_BANK_CALLBACK);
   const connect = async (bank: string, user?: string) => {
     setSelected(bank);
 

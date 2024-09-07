@@ -16,14 +16,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../../components/Connected';
 import Currency from '../../../../components/Currency';
 import ErrorCard from '../../../../components/ErrorCard';
-import GET_BANK_ACCOUNTS, {
-  IGetBankAccountsInput,
-  IGetBankAccountsOutput,
-} from '../../../../graphql/bank/GET_BANK_ACCOUNTS';
-import UPDATE_BANK_SETTINGS, {
-  IUpdateBankSettingsInput,
-  IUpdateBankSettingsOutput,
-} from '../../../../graphql/bank/UPDATE_BANK_SETTINGS';
+import { gql } from '../../../../graphql';
 import invariant from '../../../../utils/invariant';
 
 interface IDataRow {
@@ -83,6 +76,33 @@ function row({
   return DataRow;
 }
 
+export const GET_BANK_ACCOUNTS = gql(/* GraphQL */ `
+  query GetBankAccounts($id: ID!) {
+    getBankAccounts(id: $id) {
+      items {
+        accountIdentifications {
+          identification
+          type
+        }
+        balance
+        currency
+        id
+        type
+      }
+    }
+  }
+`);
+
+export const UPDATE_BANK_SETTINGS = gql(/* GraphQL */ `
+  mutation UpdateBankSettings($input: BankSettingsInput!) {
+    updateBankSettings(input: $input) {
+      account
+      id
+      user
+    }
+  }
+`);
+
 function SelectAccount() {
   const navigate = useNavigate();
   const { add } = useToast();
@@ -96,19 +116,13 @@ function SelectAccount() {
     data,
     error: bankError,
     loading,
-  } = useQuery<IGetBankAccountsOutput, IGetBankAccountsInput>(
-    GET_BANK_ACCOUNTS,
-    {
-      variables: {
-        id: companyId,
-      },
+  } = useQuery(GET_BANK_ACCOUNTS, {
+    variables: {
+      id: companyId,
     },
-  );
+  });
 
-  const [mutation, { error }] = useMutation<
-    IUpdateBankSettingsOutput,
-    IUpdateBankSettingsInput
-  >(UPDATE_BANK_SETTINGS, {
+  const [mutation, { error }] = useMutation(UPDATE_BANK_SETTINGS, {
     onCompleted: ({ updateBankSettings }) => {
       if (updateBankSettings) {
         const { id } = updateBankSettings;

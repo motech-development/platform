@@ -1,22 +1,22 @@
 type Balance @aws_iam @aws_oidc {
-  balance: Float
-  currency: String
-  id: ID
-  owner: String
-  transactions: [BalanceTransaction]
-  vat: BalanceVat
+  balance: Float!
+  currency: String!
+  id: ID!
+  owner: String!
+  transactions: [BalanceTransaction!]!
+  vat: BalanceVat!
 }
 
 type BalanceVat @aws_iam @aws_oidc {
-  owed: Float
-  paid: Float
+  owed: Float!
+  paid: Float!
 }
 
 type BalanceTransaction @aws_iam @aws_oidc {
-  balance: Float
-  currency: String
-  date: AWSDateTime
-  items: [Transaction]
+  balance: Float!
+  currency: String!
+  date: AWSDateTime!
+  items: [Transaction!]!
 }
 
 input BalanceTransactionInput {

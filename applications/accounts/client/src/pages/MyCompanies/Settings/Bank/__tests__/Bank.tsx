@@ -1,11 +1,12 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
-import CREATE_BANK_CONNECTION from '../../../../../graphql/bank/CREATE_BANK_CONNECTION';
-import GET_BANKS from '../../../../../graphql/bank/GET_BANKS';
-import ON_BANK_CALLBACK from '../../../../../graphql/bank/ON_BANK_CALLBACK';
 import TestProvider from '../../../../../utils/TestProvider';
-import Bank from '../Bank';
+import Bank, {
+  CREATE_BANK_CONNECTION,
+  GET_BANKS,
+  ON_BANK_CALLBACK,
+} from '../Bank';
 
 describe('Bank', () => {
   let component: RenderResult;
