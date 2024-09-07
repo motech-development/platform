@@ -7,6 +7,8 @@
     "build-icons": "pwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --type png --padding '20%' --maskable false",
     "build-splash:landscape": "pwa-asset-generator ./assets/splash.svg ./public --splash-only --background '#161616' --type png --padding 'calc(50vh - 5%) calc(50vw - 10%)' --landscape-only",
     "build-splash:portrait": "pwa-asset-generator ./assets/splash.svg ./public --splash-only --background '#161616' --type png --portrait-only",
+    "codegen.graphql": "graphql-codegen",
+    "codegen.graphql.watch": "run codegen.graphql --watch",
     "deploy": "serverless client deploy --verbose --no-confirm",
     "e2e": "cypress open",
     "e2e-ci": "cypress-cloud --browser chrome --record --parallel",
@@ -62,10 +64,12 @@
     "yup": "1.4.0"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "5.0.2",
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@motech-development/eslint-config-motech-react": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
+    "@parcel/watcher": "2.4.1",
     "@swc/core": "1.7.22",
     "@swc/jest": "0.2.36",
     "@testing-library/cypress": "10.0.2",
