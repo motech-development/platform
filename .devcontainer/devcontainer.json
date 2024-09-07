@@ -30,6 +30,7 @@
         "dbaeumer.vscode-eslint",
         "github.vscode-github-actions",
         "eamodio.gitlens",
+        "graphql.vscode-graphql-syntax",
         "kumar-harsh.graphql-for-vscode",
         "csstools.postcss",
         "esbenp.prettier-vscode",
