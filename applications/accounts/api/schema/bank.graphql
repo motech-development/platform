@@ -1,10 +1,10 @@
 type Bank {
-  id: ID
-  name: String
+  id: ID!
+  name: String!
 }
 
 type Banks {
-  items: [Bank]
+  items: [Bank!]!
 }
 
 type BankAccountIdentification {
@@ -14,18 +14,18 @@ type BankAccountIdentification {
 
 type BankAccount {
   accountIdentifications: [BankAccountIdentification]
-  balance: Float
-  currency: String
-  id: ID
-  type: String
+  balance: Float!
+  currency: String!
+  id: ID!
+  type: String!
 }
 
 type BankAccounts {
-  items: [BankAccount]
+  items: [BankAccount!]!
 }
 
 type BankCallback {
-  authorisationUrl: String
+  authorisationUrl: String!
   status: String
 }
 
@@ -42,8 +42,8 @@ type BankSettings {
   account: String
   bank: String
   consent: String
-  id: ID
-  user: String
+  id: ID!
+  user: String!
 }
 
 input BankCallbackInput {

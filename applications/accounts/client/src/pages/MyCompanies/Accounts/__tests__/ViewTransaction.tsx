@@ -9,10 +9,10 @@ import {
 } from '@testing-library/react';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
-import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import UPDATE_TRANSACTION from '../../../../graphql/transaction/UPDATE_TRANSACTION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
+import { GET_BALANCE } from '../Accounts';
 import { DELETE_FILE, REQUEST_DOWNLOAD } from '../shared/ViewAttachment';
 import ViewTransaction, { VIEW_TRANSACTION } from '../ViewTransaction';
 
@@ -874,9 +874,8 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const [, , , , , , deleteButton] = await screen.findAllByRole(
-            'button',
-          );
+          const [, , , , , , deleteButton] =
+            await screen.findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
@@ -1177,9 +1176,8 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const [, , , , , , deleteButton] = await screen.findAllByRole(
-            'button',
-          );
+          const [, , , , , , deleteButton] =
+            await screen.findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
@@ -1217,9 +1215,8 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const [, , , , , , deleteButton] = await screen.findAllByRole(
-            'button',
-          );
+          const [, , , , , , deleteButton] =
+            await screen.findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 

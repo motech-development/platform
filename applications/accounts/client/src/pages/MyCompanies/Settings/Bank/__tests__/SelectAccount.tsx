@@ -7,10 +7,11 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import GET_BANK_ACCOUNTS from '../../../../../graphql/bank/GET_BANK_ACCOUNTS';
-import UPDATE_BANK_SETTINGS from '../../../../../graphql/bank/UPDATE_BANK_SETTINGS';
 import TestProvider, { add } from '../../../../../utils/TestProvider';
-import SelectAccount from '../SelectAccount';
+import SelectAccount, {
+  GET_BANK_ACCOUNTS,
+  UPDATE_BANK_SETTINGS,
+} from '../SelectAccount';
 
 describe('SelectAccount', () => {
   let component: RenderResult;

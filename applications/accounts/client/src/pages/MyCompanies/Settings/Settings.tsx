@@ -5,10 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import SettingsForm, { FormSchema } from '../../../components/SettingsForm';
-import DELETE_BANK_CONNECTION, {
-  IDeleteBankConnectionInput,
-  IDeleteBankConnectionOutput,
-} from '../../../graphql/bank/DELETE_BANK_CONNECTION';
+import { gql } from '../../../graphql';
 import GET_SETTINGS, {
   IGetSettingsInput,
   IGetSettingsOutput,
@@ -18,6 +15,17 @@ import UPDATE_SETTINGS, {
   IUpdateSettingsOutput,
 } from '../../../graphql/settings/UPDATE_SETTINGS';
 import invariant from '../../../utils/invariant';
+
+export const DELETE_BANK_CONNECTION = gql(/* GraphQL */ `
+  mutation DeleteBankConnection($id: ID!) {
+    deleteBankConnection(id: $id) {
+      account
+      bank
+      id
+      user
+    }
+  }
+`);
 
 function Settings() {
   const backTo = (id: string) => `/my-companies/dashboard/${id}`;
@@ -59,23 +67,23 @@ function Settings() {
         }
       },
     });
-  const [disconnect, { loading: disconnectLoading }] = useMutation<
-    IDeleteBankConnectionOutput,
-    IDeleteBankConnectionInput
-  >(DELETE_BANK_CONNECTION, {
-    onCompleted: () => {
-      add({
-        colour: 'success',
-        message: t('settings.bank-disconnected'),
-      });
+  const [disconnect, { loading: disconnectLoading }] = useMutation(
+    DELETE_BANK_CONNECTION,
+    {
+      onCompleted: () => {
+        add({
+          colour: 'success',
+          message: t('settings.bank-disconnected'),
+        });
+      },
+      onError: () => {
+        add({
+          colour: 'danger',
+          message: t('settings.bank-disconnected-error'),
+        });
+      },
     },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('settings.bank-disconnected-error'),
-      });
-    },
-  });
+  );
   const save = (input: FormSchema) => {
     mutation({
       variables: {

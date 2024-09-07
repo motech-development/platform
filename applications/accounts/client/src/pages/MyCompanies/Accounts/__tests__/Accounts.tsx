@@ -7,10 +7,9 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
-import Accounts from '../Accounts';
+import Accounts, { GET_BALANCE } from '../Accounts';
 
 describe('Accounts', () => {
   let component: RenderResult;

@@ -7,11 +7,10 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import DELETE_BANK_CONNECTION from '../../../../graphql/bank/DELETE_BANK_CONNECTION';
 import GET_SETTINGS from '../../../../graphql/settings/GET_SETTINGS';
 import UPDATE_SETTINGS from '../../../../graphql/settings/UPDATE_SETTINGS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
-import Settings from '../Settings';
+import Settings, { DELETE_BANK_CONNECTION } from '../Settings';
 
 describe('Settings', () => {
   let component: RenderResult;

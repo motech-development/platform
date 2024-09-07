@@ -9,9 +9,9 @@ import {
 } from '@testing-library/react';
 import axios from 'axios';
 import { advanceTo, clear } from 'jest-date-mock';
-import GET_BALANCE from '../../../../graphql/balance/GET_BALANCE';
 import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
+import { GET_BALANCE } from '../Accounts';
 import RecordTransaction, { RECORD_TRANSACTION } from '../RecordTransaction';
 import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 

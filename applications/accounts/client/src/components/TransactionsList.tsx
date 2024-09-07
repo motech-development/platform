@@ -26,7 +26,7 @@ export interface ITransactionsListProps {
     date: string;
     items: {
       amount: number;
-      attachment: string;
+      attachment?: string | null;
       description: string;
       id: string;
       name: string;

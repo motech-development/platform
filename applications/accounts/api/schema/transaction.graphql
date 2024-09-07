@@ -11,18 +11,18 @@ type Transactions {
 }
 
 type Transaction @aws_iam @aws_oidc {
-  amount: Float
+  amount: Float!
   attachment: String
-  category: String
-  companyId: String
-  date: AWSDateTime
-  description: String
-  id: ID
-  name: String
-  refund: Boolean
-  scheduled: Boolean
-  status: TransactionStatus
-  vat: Float
+  category: String!
+  companyId: String!
+  date: AWSDateTime!
+  description: String!
+  id: ID!
+  name: String!
+  refund: Boolean!
+  scheduled: Boolean!
+  status: TransactionStatus!
+  vat: Float!
 }
 
 input TransactionInput {

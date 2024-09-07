@@ -1,9 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, render, RenderResult } from '@testing-library/react';
-import UPDATE_BANK_SETTINGS from '../../../../../graphql/bank/UPDATE_BANK_SETTINGS';
 import TestProvider from '../../../../../utils/TestProvider';
-import Callback from '../Callback';
+import Callback, { UPDATE_BANK_SETTINGS } from '../Callback';
 
 describe('Callback', () => {
   let component: RenderResult;

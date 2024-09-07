@@ -17,6 +17,9 @@ const config: CodegenConfig = {
   documents: ['src/**/*.tsx'],
   generates: {
     './src/graphql/': {
+      config: {
+        skipTypename: true,
+      },
       preset: 'client',
       presetConfig: {
         gqlTagName: 'gql',

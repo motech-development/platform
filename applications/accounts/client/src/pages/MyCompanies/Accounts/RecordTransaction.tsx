@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import Connected from '../../../components/Connected';
 import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
+import { gql } from '../../../graphql';
 import ADD_TRANSACTION, {
   IAddTransactionInput,
   IAddTransactionOutput,
@@ -43,7 +44,7 @@ interface IRecordTransactionOutput {
   };
 }
 
-export const RECORD_TRANSACTION = gql`
+export const RECORD_TRANSACTION = gql(/* GraphQL */ `
   query RecordTransaction($id: ID!) {
     getClients(id: $id) {
       id
@@ -69,7 +70,7 @@ export const RECORD_TRANSACTION = gql`
       suppliers
     }
   }
-`;
+`);
 
 function RecordTransaction() {
   const navigate = useNavigate();

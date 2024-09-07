@@ -14,10 +14,7 @@ import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import { formatCurrency } from '../../../components/Currency';
 import TransactionsList from '../../../components/TransactionsList';
-import GET_BALANCE, {
-  IGetBalanceInput,
-  IGetBalanceOutput,
-} from '../../../graphql/balance/GET_BALANCE';
+import { gql } from '../../../graphql';
 import DELETE_TRANSACTION, {
   IDeleteTransactionInput,
   IDeleteTransactionOutput,
@@ -27,6 +24,32 @@ import ON_TRANSACTION, {
   IOnTransactionOutput,
 } from '../../../graphql/transaction/ON_TRANSACTION';
 import invariant from '../../../utils/invariant';
+
+export const GET_BALANCE = gql(/* GraphQL */ `
+  query GetBalance($id: ID!) {
+    getBalance(id: $id) {
+      balance
+      currency
+      id
+      transactions {
+        balance
+        currency
+        date
+        items {
+          amount
+          attachment
+          description
+          id
+          name
+        }
+      }
+      vat {
+        owed
+        paid
+      }
+    }
+  }
+`);
 
 function Accounts() {
   const { companyId } = useParams();
@@ -40,10 +63,7 @@ function Accounts() {
   const { t } = useTranslation('accounts');
 
   const { add } = useToast();
-  const { data, error, loading, subscribeToMore } = useQuery<
-    IGetBalanceOutput,
-    IGetBalanceInput
-  >(GET_BALANCE, {
+  const { data, error, loading, subscribeToMore } = useQuery(GET_BALANCE, {
     variables: {
       id: companyId,
     },
