@@ -19,7 +19,7 @@ import { GetBanksQuery } from '../../../../graphql/graphql';
 import invariant from '../../../../utils/invariant';
 
 interface IDataRow {
-  connect: (bank: string, user?: string) => Promise<void>;
+  connect: (bank: string, user?: string | null) => Promise<void>;
   connectLabel: string;
   data: GetBanksQuery;
   selected: string;
@@ -107,7 +107,7 @@ function Bank() {
   const [mutation] = useMutation(CREATE_BANK_CONNECTION);
   const { data: subscription, loading: subscriptionLoading } =
     useSubscription(ON_BANK_CALLBACK);
-  const connect = async (bank: string, user?: string) => {
+  const connect = async (bank: string, user?: string | null) => {
     setSelected(bank);
 
     await mutation({

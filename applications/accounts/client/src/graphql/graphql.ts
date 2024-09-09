@@ -158,7 +158,7 @@ export type BankSettings = {
   bank?: Maybe<Scalars['String']['output']>;
   consent?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  user: Scalars['String']['output'];
+  user?: Maybe<Scalars['String']['output']>;
 };
 
 export type BankSettingsInput = {
@@ -913,7 +913,7 @@ export type GetBanksQueryVariables = Exact<{
 }>;
 
 export type GetBanksQuery = {
-  getBankSettings: { id: string; user: string };
+  getBankSettings: { id: string; user?: string | null };
   getBanks: { items: Array<{ id: string; name: string }> };
 };
 
@@ -938,7 +938,11 @@ export type UpdateBankSettingsMutationVariables = Exact<{
 }>;
 
 export type UpdateBankSettingsMutation = {
-  updateBankSettings: { account?: string | null; id: string; user: string };
+  updateBankSettings: {
+    account?: string | null;
+    id: string;
+    user?: string | null;
+  };
 };
 
 export type GetBankAccountsQueryVariables = Exact<{
@@ -969,7 +973,7 @@ export type DeleteBankConnectionMutation = {
     account?: string | null;
     bank?: string | null;
     id: string;
-    user: string;
+    user?: string | null;
   };
 };
 
@@ -978,7 +982,11 @@ export type GetBankSettingsQueryVariables = Exact<{
 }>;
 
 export type GetBankSettingsQuery = {
-  getBankSettings: { account?: string | null; id: string; user: string };
+  getBankSettings: {
+    account?: string | null;
+    id: string;
+    user?: string | null;
+  };
 };
 
 export type GetNotificationsQueryVariables = Exact<{

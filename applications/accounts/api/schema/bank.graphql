@@ -43,7 +43,7 @@ type BankSettings {
   bank: String
   consent: String
   id: ID!
-  user: String!
+  user: String
 }
 
 input BankCallbackInput {
