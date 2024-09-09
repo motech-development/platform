@@ -1,15 +1,15 @@
 type Clients {
-  id: ID
-  items: [Client]
+  id: ID!
+  items: [Client!]!
   nextToken: String
 }
 
 type Client {
-  address: Address
-  companyId: String
-  contact: Contact
-  id: ID
-  name: String
+  address: Address!
+  companyId: String!
+  contact: Contact!
+  id: ID!
+  name: String!
 }
 
 input ClientInput {

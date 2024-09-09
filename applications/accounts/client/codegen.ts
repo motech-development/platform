@@ -20,6 +20,7 @@ const config: CodegenConfig = {
       config: {
         skipTypename: true,
       },
+      plugins: ['typescript-apollo-client-helpers'],
       preset: 'client',
       presetConfig: {
         gqlTagName: 'gql',

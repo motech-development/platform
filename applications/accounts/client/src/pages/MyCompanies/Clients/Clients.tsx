@@ -10,11 +10,35 @@ import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
-import GET_CLIENTS, {
-  IGetClientsInput,
-  IGetClientsOutput,
-} from '../../../graphql/client/GET_CLIENTS';
+import { gql } from '../../../graphql';
 import invariant from '../../../utils/invariant';
+
+export const GET_CLIENTS = gql(/* GraphQL */ `
+  query GetClients($id: ID!) {
+    getClients(id: $id) {
+      id
+      items {
+        address {
+          line1
+          line2
+          line3
+          line4
+          line5
+        }
+        contact {
+          email
+          telephone
+        }
+        id
+        name
+      }
+    }
+    getCompany(id: $id) {
+      id
+      name
+    }
+  }
+`);
 
 function Clients() {
   const { companyId } = useParams();
@@ -22,10 +46,7 @@ function Clients() {
   invariant(companyId);
 
   const { t } = useTranslation(['clients', 'global']);
-  const { data, error, loading } = useQuery<
-    IGetClientsOutput,
-    IGetClientsInput
-  >(GET_CLIENTS, {
+  const { data, error, loading } = useQuery(GET_CLIENTS, {
     variables: {
       id: companyId,
     },
