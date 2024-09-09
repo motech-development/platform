@@ -1,25 +1,35 @@
-import { MutationUpdaterFn, Reference, useMutation } from '@apollo/client';
+import {
+  ApolloCache,
+  MutationUpdaterFunction,
+  Reference,
+  useMutation,
+} from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import ClientForm, { FormSchema } from '../../../components/ClientForm';
 import Connected from '../../../components/Connected';
 import { gql } from '../../../graphql';
-import { CreateClientMutation } from '../../../graphql/graphql';
+import {
+  CreateClientMutation,
+  MutationCreateClientArgs,
+} from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
 
-export const update: MutationUpdaterFn<CreateClientMutation> = (
-  cache,
-  { data },
-) => {
+export const update: MutationUpdaterFunction<
+  CreateClientMutation,
+  MutationCreateClientArgs,
+  unknown,
+  ApolloCache<unknown>
+> = (cache, { data }) => {
   if (data?.createClient) {
     const { createClient } = data;
 
     cache.modify({
       fields: {
-        items: (refs: Reference[], { readField }) => {
+        items: (refs: readonly Reference[], { readField }) => {
           if (refs.some((ref) => readField('id', ref) === createClient.id)) {
-            return refs;
+            return [...refs];
           }
 
           const newRef = cache.writeFragment({
@@ -43,6 +53,10 @@ export const update: MutationUpdaterFn<CreateClientMutation> = (
               }
             `),
           });
+
+          if (!newRef) {
+            return [...refs];
+          }
 
           return [...refs, newRef].sort((a, b) => {
             const readA = readField<string>('name', a);

@@ -1,5 +1,6 @@
 import {
-  MutationUpdaterFn,
+  ApolloCache,
+  MutationUpdaterFunction,
   Reference,
   useMutation,
   useQuery,
@@ -18,19 +19,24 @@ import ClientForm, { FormSchema } from '../../../components/ClientForm';
 import Connected from '../../../components/Connected';
 import DeleteItem from '../../../components/DeleteItem';
 import { gql } from '../../../graphql';
-import { DeleteClientMutation } from '../../../graphql/graphql';
+import {
+  DeleteClientMutation,
+  MutationDeleteClientArgs,
+} from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
 
-export const update: MutationUpdaterFn<DeleteClientMutation> = (
-  cache,
-  { data },
-) => {
+export const update: MutationUpdaterFunction<
+  DeleteClientMutation,
+  MutationDeleteClientArgs,
+  unknown,
+  ApolloCache<unknown>
+> = (cache, { data }) => {
   if (data?.deleteClient) {
     const { deleteClient } = data;
 
     cache.modify({
       fields: {
-        items: (refs: Reference[], { readField }) =>
+        items: (refs: readonly Reference[], { readField }) =>
           refs.filter((ref) => readField('id', ref) !== deleteClient.id),
       },
       id: cache.identify({

@@ -1,4 +1,9 @@
-import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
+import {
+  ApolloCache,
+  gql,
+  MutationUpdaterFunction,
+  Reference,
+} from '@apollo/client';
 
 export interface IDeleteCompanyInput {
   id: string;
@@ -12,16 +17,18 @@ export interface IDeleteCompanyOutput {
   };
 }
 
-export const updateCache: MutationUpdaterFn<IDeleteCompanyOutput> = (
-  cache,
-  { data },
-) => {
+export const updateCache: MutationUpdaterFunction<
+  IDeleteCompanyOutput,
+  IDeleteCompanyInput,
+  unknown,
+  ApolloCache<unknown>
+> = (cache, { data }) => {
   if (data?.deleteCompany) {
     const { deleteCompany } = data;
 
     cache.modify({
       fields: {
-        items: (refs: Reference[], { readField }) =>
+        items: (refs: readonly Reference[], { readField }) =>
           refs.filter((ref) => readField('id', ref) !== deleteCompany.id),
       },
       id: cache.identify({

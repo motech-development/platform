@@ -1,4 +1,9 @@
-import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
+import {
+  ApolloCache,
+  gql,
+  MutationUpdaterFunction,
+  Reference,
+} from '@apollo/client';
 import { findUnique, setItems, spread } from './utils';
 
 export interface IUpdateTransactionInput {
@@ -36,21 +41,23 @@ export interface IUpdateTransactionOutput {
 const getStatus = (status: string) =>
   status === 'confirmed' ? 'pending' : 'confirmed';
 
-export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
-  cache,
-  { data },
-) => {
+export const updateCache: MutationUpdaterFunction<
+  IUpdateTransactionOutput,
+  IUpdateTransactionInput,
+  unknown,
+  ApolloCache<unknown>
+> = (cache, { data }) => {
   if (data?.updateTransaction) {
     const { updateTransaction } = data;
     const otherStatus = getStatus(updateTransaction.status);
 
     cache.modify({
       fields: {
-        items: (refs: Reference[], { readField }) => {
+        items: (refs: readonly Reference[], { readField }) => {
           if (
             refs.some((ref) => readField('id', ref) === updateTransaction.id)
           ) {
-            return refs;
+            return [...refs];
           }
 
           const newRef = cache.writeFragment({
@@ -67,6 +74,10 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
               }
             `,
           });
+
+          if (!newRef) {
+            return [...refs];
+          }
 
           return [...refs, newRef].sort((a, b) => {
             const readA = readField<string>('date', a);
@@ -89,7 +100,7 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
 
     cache.modify({
       fields: {
-        items: (refs: Reference[], { readField }) =>
+        items: (refs: readonly Reference[], { readField }) =>
           refs.filter((ref) => readField('id', ref) !== updateTransaction.id),
       },
       id: cache.identify({
@@ -101,7 +112,7 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
 
     cache.modify({
       fields: {
-        purchases: (items: string[] | null) => {
+        purchases: (items: string[] | Reference) => {
           const descriptions = setItems(items);
           const unique = !descriptions.some(
             findUnique(updateTransaction, 'description'),
@@ -115,7 +126,7 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
 
           return descriptions;
         },
-        sales: (items: string[] | null) => {
+        sales: (items: string[] | Reference) => {
           const descriptions = setItems(items);
           const unique = !descriptions.some(
             findUnique(updateTransaction, 'description'),
@@ -129,7 +140,7 @@ export const updateCache: MutationUpdaterFn<IUpdateTransactionOutput> = (
 
           return descriptions;
         },
-        suppliers: (items: string[] | null) => {
+        suppliers: (items: string[] | Reference) => {
           const suppliers = setItems(items);
           const unique = !suppliers.some(findUnique(updateTransaction, 'name'));
 
