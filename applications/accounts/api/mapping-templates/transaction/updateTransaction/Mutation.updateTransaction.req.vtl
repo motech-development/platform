@@ -2,11 +2,10 @@
 #set($companyId = $ctx.args.input.companyId)
 #set($date = $ctx.args.input.date)
 #set($status = $ctx.args.input.status)
-#set($typename = $ctx.args.input["__typename"])
+#set($typename = "Transaction")
 #set($owner = $ctx.identity.sub)
 #set($data = "$owner:$companyId:$status:$date")
 
-#set($input = $ctx.args.input.remove("__typename"))
 #set($input = $ctx.args.input.remove("id"))
 #set($input = $ctx.args.input.remove("companyId"))
 

@@ -1,4 +1,9 @@
-import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
+import {
+  ApolloCache,
+  gql,
+  MutationUpdaterFunction,
+  Reference,
+} from '@apollo/client';
 
 export interface IDeleteTransactionInput {
   id: string;
@@ -16,16 +21,18 @@ interface ITransaction {
   items: Reference[];
 }
 
-export const updateCache: MutationUpdaterFn<IDeleteTransactionOutput> = (
-  cache,
-  { data },
-) => {
+export const updateCache: MutationUpdaterFunction<
+  IDeleteTransactionOutput,
+  IDeleteTransactionInput,
+  unknown,
+  ApolloCache<unknown>
+> = (cache, { data }) => {
   if (data?.deleteTransaction) {
     const { deleteTransaction } = data;
 
     cache.modify({
       fields: {
-        items: (refs: Reference[], { readField }) =>
+        items: (refs: readonly Reference[], { readField }) =>
           refs.filter((ref) => readField('id', ref) !== deleteTransaction.id),
       },
       id: cache.identify({
@@ -35,10 +42,12 @@ export const updateCache: MutationUpdaterFn<IDeleteTransactionOutput> = (
       }),
     });
 
-    cache.modify({
+    cache.modify<{
+      transactions: ITransaction[];
+    }>({
       fields: {
-        transactions: (transactions: ITransaction[], { readField }) =>
-          transactions.filter((transaction) =>
+        transactions: (transactions, { readField }) =>
+          (transactions as ITransaction[]).filter((transaction) =>
             transaction.items.every(
               (item) => readField('id', item) !== deleteTransaction.id,
             ),

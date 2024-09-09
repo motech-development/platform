@@ -59,7 +59,7 @@ describe('ADD_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -100,7 +100,7 @@ describe('ADD_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -161,7 +161,7 @@ describe('ADD_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -202,7 +202,7 @@ describe('ADD_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -263,7 +263,7 @@ describe('ADD_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -304,7 +304,7 @@ describe('ADD_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -393,7 +393,7 @@ describe('ADD_TRANSACTION', () => {
         },
       };
 
-      updateCache(cache, input);
+      updateCache(cache, input, {});
 
       const result = cache.readQuery({
         query: GET_TRANSACTIONS,
@@ -471,7 +471,7 @@ describe('ADD_TRANSACTION', () => {
         },
       };
 
-      updateCache(cache, input);
+      updateCache(cache, input, {});
 
       const result = cache.readQuery({
         query: GET_TRANSACTIONS,
@@ -520,7 +520,7 @@ describe('ADD_TRANSACTION', () => {
   });
 
   it('should not modify cache if no data is passed', () => {
-    updateCache(cache, {});
+    updateCache(cache, {}, {});
 
     expect(cache.modify).not.toHaveBeenCalled();
   });

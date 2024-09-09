@@ -58,7 +58,7 @@ describe('UPDATE_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -98,7 +98,7 @@ describe('UPDATE_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -158,7 +158,7 @@ describe('UPDATE_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -198,7 +198,7 @@ describe('UPDATE_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -258,7 +258,7 @@ describe('UPDATE_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -298,7 +298,7 @@ describe('UPDATE_TRANSACTION', () => {
           },
         };
 
-        updateCache(cache, input);
+        updateCache(cache, input, {});
 
         const result = cache.readQuery({
           query: GET_TYPEAHEAD,
@@ -429,7 +429,7 @@ describe('UPDATE_TRANSACTION', () => {
         },
       };
 
-      updateCache(cache, input);
+      updateCache(cache, input, {});
 
       const confirmed = cache.readQuery({
         query: GET_TRANSACTIONS,
@@ -539,7 +539,7 @@ describe('UPDATE_TRANSACTION', () => {
         },
       };
 
-      updateCache(cache, input);
+      updateCache(cache, input, {});
 
       const confirmed = cache.readQuery({
         query: GET_TRANSACTIONS,
@@ -649,7 +649,7 @@ describe('UPDATE_TRANSACTION', () => {
         },
       };
 
-      updateCache(cache, input);
+      updateCache(cache, input, {});
 
       const confirmed = cache.readQuery({
         query: GET_TRANSACTIONS,
@@ -741,7 +741,7 @@ describe('UPDATE_TRANSACTION', () => {
   });
 
   it('should not modify cache if no data is passed', () => {
-    updateCache(cache, {});
+    updateCache(cache, {}, {});
 
     expect(cache.modify).not.toHaveBeenCalled();
   });

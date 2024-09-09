@@ -1,4 +1,9 @@
-import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
+import {
+  ApolloCache,
+  gql,
+  MutationUpdaterFunction,
+  Reference,
+} from '@apollo/client';
 import { findUnique, setItems, spread } from './utils';
 
 export interface IAddTransactionInput {
@@ -35,16 +40,18 @@ export interface IAddTransactionOutput {
   };
 }
 
-export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
-  cache,
-  { data },
-) => {
+export const updateCache: MutationUpdaterFunction<
+  IAddTransactionOutput,
+  IAddTransactionInput,
+  unknown,
+  ApolloCache<unknown>
+> = (cache, { data }) => {
   if (data?.addTransaction) {
     const { addTransaction } = data;
 
     cache.modify({
       fields: {
-        purchases: (items: string[] | null) => {
+        purchases: (items: string[] | Reference) => {
           const descriptions = setItems(items);
           const unique = !descriptions.some(
             findUnique(addTransaction, 'description'),
@@ -58,7 +65,7 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
 
           return descriptions;
         },
-        sales: (items: string[] | null) => {
+        sales: (items: string[] | Reference) => {
           const descriptions = setItems(items);
           const unique = !descriptions.some(
             findUnique(addTransaction, 'description'),
@@ -72,7 +79,7 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
 
           return descriptions;
         },
-        suppliers: (items: string[] | null) => {
+        suppliers: (items: string[] | Reference) => {
           const suppliers = setItems(items);
           const unique = !suppliers.some(findUnique(addTransaction, 'name'));
 
@@ -93,9 +100,9 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
 
     cache.modify({
       fields: {
-        items: (refs: Reference[], { readField }) => {
+        items: (refs: readonly Reference[], { readField }) => {
           if (refs.some((ref) => readField('id', ref) === addTransaction.id)) {
-            return refs;
+            return [...refs];
           }
 
           const newRef = cache.writeFragment({
@@ -112,6 +119,10 @@ export const updateCache: MutationUpdaterFn<IAddTransactionOutput> = (
               }
             `,
           });
+
+          if (!newRef) {
+            return [...refs];
+          }
 
           return [...refs, newRef].sort((a, b) => {
             const readA = readField<string>('date', a);

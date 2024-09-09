@@ -1,4 +1,9 @@
-import { gql, MutationUpdaterFn, Reference } from '@apollo/client';
+import {
+  ApolloCache,
+  gql,
+  MutationUpdaterFunction,
+  Reference,
+} from '@apollo/client';
 
 export interface IAddCompanyInput {
   input: {
@@ -64,18 +69,20 @@ export interface IAddCompanyOutput {
   };
 }
 
-export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
-  cache,
-  { data },
-) => {
+export const updateCache: MutationUpdaterFunction<
+  IAddCompanyOutput,
+  IAddCompanyInput,
+  unknown,
+  ApolloCache<unknown>
+> = (cache, { data }) => {
   if (data?.createCompany) {
     const { createCompany } = data;
 
     cache.modify({
       fields: {
-        items: (refs: Reference[], { readField }) => {
+        items: (refs: readonly Reference[], { readField }) => {
           if (refs.some((ref) => readField('id', ref) === createCompany.id)) {
-            return refs;
+            return [...refs];
           }
 
           const newRef = cache.writeFragment({
@@ -103,6 +110,10 @@ export const updateCache: MutationUpdaterFn<IAddCompanyOutput> = (
               }
             `,
           });
+
+          if (!newRef) {
+            return [...refs];
+          }
 
           return [...refs, newRef].sort((a, b) => {
             const readA = readField<string>('name', a);

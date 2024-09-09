@@ -58,7 +58,7 @@ describe('DELETE_COMPANY', () => {
       },
     };
 
-    updateCache(cache, input);
+    updateCache(cache, input, {});
 
     const result = cache.readQuery({
       query: GET_COMPANIES,
@@ -87,7 +87,7 @@ describe('DELETE_COMPANY', () => {
       },
     };
 
-    updateCache(cache, input);
+    updateCache(cache, input, {});
 
     const result = cache.readQuery({
       query: GET_COMPANIES,
@@ -128,7 +128,7 @@ describe('DELETE_COMPANY', () => {
   });
 
   it('should not modify cache if no data is passed', () => {
-    updateCache(cache, {});
+    updateCache(cache, {}, {});
 
     expect(cache.modify).not.toHaveBeenCalled();
   });

@@ -651,7 +651,7 @@ describe('UpdateDetails', () => {
         },
       };
 
-      update(cache, input);
+      update(cache, input, {});
 
       const result = cache.readQuery({
         query: GET_CLIENTS,
@@ -684,7 +684,7 @@ describe('UpdateDetails', () => {
         },
       };
 
-      update(cache, input);
+      update(cache, input, {});
 
       const result = cache.readQuery({
         query: GET_CLIENTS,
@@ -723,7 +723,7 @@ describe('UpdateDetails', () => {
     });
 
     it('should not modify cache if no data is passed', () => {
-      update(cache, {});
+      update(cache, {}, {});
 
       expect(cache.modify).not.toHaveBeenCalled();
     });

@@ -5,6 +5,7 @@ import {
   InMemoryCache,
   InMemoryCacheConfig,
 } from '@apollo/client';
+import { removeTypenameFromVariables } from '@apollo/client/link/remove-typename';
 import { createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
 import { ReactNode, useMemo } from 'react';
@@ -44,7 +45,9 @@ function Apollo({
         type: 'OPENID_CONNECT' as const,
       };
       const cache = new InMemoryCache(cacheConfig);
+      const removeTypenameLink = removeTypenameFromVariables();
       const link = ApolloLink.from([
+        removeTypenameLink,
         createAuthLink({
           auth,
           region,
