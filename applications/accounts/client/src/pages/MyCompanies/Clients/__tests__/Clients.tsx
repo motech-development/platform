@@ -1,8 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { act, render, RenderResult } from '@testing-library/react';
-import GET_CLIENTS from '../../../../graphql/client/GET_CLIENTS';
 import TestProvider from '../../../../utils/TestProvider';
-import Clients from '../Clients';
+import Clients, { GET_CLIENTS } from '../Clients';
 
 describe('Clients', () => {
   let component: RenderResult;

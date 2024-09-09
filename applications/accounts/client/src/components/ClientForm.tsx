@@ -9,15 +9,16 @@ import {
 } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
+import { GetClientQuery } from '../graphql/graphql';
 import { useAddress, useContactDetails } from '../hooks/schema';
 import { AddressFields, ContactDetailsFields } from './CommonFields';
 
 const formSchema = {
   address: {
     line1: '',
-    line2: '',
+    line2: undefined,
     line3: '',
-    line4: '',
+    line4: undefined,
     line5: '',
   },
   companyId: '',
@@ -29,7 +30,7 @@ const formSchema = {
   name: '',
 };
 
-export type FormSchema = typeof formSchema;
+export type FormSchema = GetClientQuery['getClient'];
 
 export interface IClientFormProps {
   backTo: string;

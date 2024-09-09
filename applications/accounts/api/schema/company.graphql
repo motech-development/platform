@@ -9,8 +9,8 @@ type Company {
   bank: BankDetails
   companyNumber: String
   contact: Contact
-  id: ID
-  name: String
+  id: ID!
+  name: String!
   owner: String
 }
 

@@ -1,4 +1,9 @@
-import { useMutation, useQuery } from '@apollo/client';
+import {
+  MutationUpdaterFn,
+  Reference,
+  useMutation,
+  useQuery,
+} from '@apollo/client';
 import {
   Button,
   Col,
@@ -12,20 +17,81 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ClientForm, { FormSchema } from '../../../components/ClientForm';
 import Connected from '../../../components/Connected';
 import DeleteItem from '../../../components/DeleteItem';
-import DELETE_CLIENT, {
-  IDeleteClientInput,
-  IDeleteClientOutput,
-  updateCache,
-} from '../../../graphql/client/DELETE_CLIENT';
-import GET_CLIENT, {
-  IGetClientInput,
-  IGetClientOutput,
-} from '../../../graphql/client/GET_CLIENT';
-import UPDATE_CLIENT, {
-  IUpdateClientInput,
-  IUpdateClientOutput,
-} from '../../../graphql/client/UPDATE_CLIENT';
+import { gql } from '../../../graphql';
+import { DeleteClientMutation } from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
+
+export const update: MutationUpdaterFn<DeleteClientMutation> = (
+  cache,
+  { data },
+) => {
+  if (data?.deleteClient) {
+    const { deleteClient } = data;
+
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) =>
+          refs.filter((ref) => readField('id', ref) !== deleteClient.id),
+      },
+      id: cache.identify({
+        __typename: 'Clients',
+        id: deleteClient.companyId,
+      }),
+    });
+  }
+};
+
+export const GET_CLIENT = gql(/* GraphQL */ `
+  query GetClient($id: ID!) {
+    getClient(id: $id) {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      companyId
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  }
+`);
+
+export const UPDATE_CLIENT = gql(/* GraphQL */ `
+  mutation UpdateClient($input: ClientInput!) {
+    updateClient(input: $input) {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      companyId
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  }
+`);
+
+export const DELETE_CLIENT = gql(/* GraphQL */ `
+  mutation DeleteClient($id: ID!) {
+    deleteClient(id: $id) {
+      companyId
+      id
+      name
+    }
+  }
+`);
 
 function UpdateDetails() {
   const backTo = (id: string) => `/my-companies/clients/${id}`;
@@ -38,16 +104,13 @@ function UpdateDetails() {
   invariant(clientId);
   invariant(companyId);
 
-  const { data, error, loading } = useQuery<IGetClientOutput, IGetClientInput>(
-    GET_CLIENT,
-    {
-      variables: {
-        id: clientId,
-      },
+  const { data, error, loading } = useQuery(GET_CLIENT, {
+    variables: {
+      id: clientId,
     },
-  );
+  });
   const [mutation, { error: updateError, loading: updateLoading }] =
-    useMutation<IUpdateClientOutput, IUpdateClientInput>(UPDATE_CLIENT, {
+    useMutation(UPDATE_CLIENT, {
       onCompleted: ({ updateClient }) => {
         if (updateClient) {
           const { companyId: id, name } = updateClient;
@@ -71,7 +134,7 @@ function UpdateDetails() {
       },
     });
   const [deleteMutation, { error: deleteError, loading: deleteLoading }] =
-    useMutation<IDeleteClientOutput, IDeleteClientInput>(DELETE_CLIENT, {
+    useMutation(DELETE_CLIENT, {
       onCompleted: ({ deleteClient }) => {
         if (deleteClient) {
           const { companyId: id, name } = deleteClient;
@@ -108,7 +171,7 @@ function UpdateDetails() {
   };
   const onDelete = () => {
     deleteMutation({
-      update: updateCache,
+      update,
       variables: {
         id: clientId,
       },

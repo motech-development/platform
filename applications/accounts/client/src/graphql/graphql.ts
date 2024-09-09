@@ -1,5 +1,11 @@
 /* eslint-disable */
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import {
+  FieldPolicy,
+  FieldReadFunction,
+  TypePolicies,
+  TypePolicy,
+} from '@apollo/client/cache';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -39,15 +45,14 @@ export type Scalars = {
 };
 
 export type Address = {
-  line1?: Maybe<Scalars['String']['output']>;
+  line1: Scalars['String']['output'];
   line2?: Maybe<Scalars['String']['output']>;
-  line3?: Maybe<Scalars['String']['output']>;
+  line3: Scalars['String']['output'];
   line4?: Maybe<Scalars['String']['output']>;
-  line5?: Maybe<Scalars['String']['output']>;
+  line5: Scalars['String']['output'];
 };
 
 export type AddressInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   line1: Scalars['String']['input'];
   line2?: InputMaybe<Scalars['String']['input']>;
   line3: Scalars['String']['input'];
@@ -169,11 +174,11 @@ export type Banks = {
 };
 
 export type Client = {
-  address?: Maybe<Address>;
-  companyId?: Maybe<Scalars['String']['output']>;
-  contact?: Maybe<Contact>;
-  id?: Maybe<Scalars['ID']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+  address: Address;
+  companyId: Scalars['String']['output'];
+  contact: Contact;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type ClientInput = {
@@ -186,8 +191,8 @@ export type ClientInput = {
 };
 
 export type Clients = {
-  id?: Maybe<Scalars['ID']['output']>;
-  items?: Maybe<Array<Maybe<Client>>>;
+  id: Scalars['ID']['output'];
+  items: Array<Client>;
   nextToken?: Maybe<Scalars['String']['output']>;
 };
 
@@ -202,8 +207,8 @@ export type Company = {
   bank?: Maybe<BankDetails>;
   companyNumber?: Maybe<Scalars['String']['output']>;
   contact?: Maybe<Contact>;
-  id?: Maybe<Scalars['ID']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
   owner?: Maybe<Scalars['String']['output']>;
 };
 
@@ -218,12 +223,11 @@ export type CompanyInput = {
 };
 
 export type Contact = {
-  email?: Maybe<Scalars['AWSEmail']['output']>;
-  telephone?: Maybe<Scalars['String']['output']>;
+  email: Scalars['AWSEmail']['output'];
+  telephone: Scalars['String']['output'];
 };
 
 export type ContactInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   email: Scalars['AWSEmail']['input'];
   telephone: Scalars['String']['input'];
 };
@@ -698,10 +702,7 @@ export type RecordTransactionQueryVariables = Exact<{
 }>;
 
 export type RecordTransactionQuery = {
-  getClients: {
-    id?: string | null;
-    items?: Array<{ id?: string | null; name?: string | null } | null> | null;
-  };
+  getClients: { id: string; items: Array<{ id: string; name: string }> };
   getSettings: {
     id?: string | null;
     categories?: Array<{
@@ -724,10 +725,7 @@ export type ViewTransactionQueryVariables = Exact<{
 }>;
 
 export type ViewTransactionQuery = {
-  getClients: {
-    id?: string | null;
-    items?: Array<{ id?: string | null; name?: string | null } | null> | null;
-  };
+  getClients: { id: string; items: Array<{ id: string; name: string }> };
   getSettings: {
     id?: string | null;
     categories?: Array<{
@@ -780,6 +778,111 @@ export type RequestDownloadQueryVariables = Exact<{
 }>;
 
 export type RequestDownloadQuery = { requestDownload: { url?: string | null } };
+
+export type NewClientFragment = {
+  companyId: string;
+  id: string;
+  name: string;
+  address: {
+    line1: string;
+    line2?: string | null;
+    line3: string;
+    line4?: string | null;
+    line5: string;
+  };
+  contact: { email: string; telephone: string };
+} & { ' $fragmentName'?: 'NewClientFragment' };
+
+export type CreateClientMutationVariables = Exact<{
+  input: ClientInput;
+}>;
+
+export type CreateClientMutation = {
+  createClient: {
+    companyId: string;
+    id: string;
+    name: string;
+    address: {
+      line1: string;
+      line2?: string | null;
+      line3: string;
+      line4?: string | null;
+      line5: string;
+    };
+    contact: { email: string; telephone: string };
+  };
+};
+
+export type GetClientsQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type GetClientsQuery = {
+  getClients: {
+    id: string;
+    items: Array<{
+      id: string;
+      name: string;
+      address: {
+        line1: string;
+        line2?: string | null;
+        line3: string;
+        line4?: string | null;
+        line5: string;
+      };
+      contact: { email: string; telephone: string };
+    }>;
+  };
+  getCompany: { id: string; name: string };
+};
+
+export type GetClientQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type GetClientQuery = {
+  getClient: {
+    companyId: string;
+    id: string;
+    name: string;
+    address: {
+      line1: string;
+      line2?: string | null;
+      line3: string;
+      line4?: string | null;
+      line5: string;
+    };
+    contact: { email: string; telephone: string };
+  };
+};
+
+export type UpdateClientMutationVariables = Exact<{
+  input: ClientInput;
+}>;
+
+export type UpdateClientMutation = {
+  updateClient: {
+    companyId: string;
+    id: string;
+    name: string;
+    address: {
+      line1: string;
+      line2?: string | null;
+      line3: string;
+      line4?: string | null;
+      line5: string;
+    };
+    contact: { email: string; telephone: string };
+  };
+};
+
+export type DeleteClientMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type DeleteClientMutation = {
+  deleteClient: { companyId: string; id: string; name: string };
+};
 
 export type CreateReportMutationVariables = Exact<{
   input: ReportInput;
@@ -906,6 +1009,52 @@ export type MarkAsReadMutation = {
   };
 };
 
+export const NewClientFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'NewClient' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Client' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'address' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'line1' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'line2' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'line3' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'line4' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'line5' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'companyId' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'contact' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'telephone' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<NewClientFragment, unknown>;
 export const GetBalanceDocument = {
   kind: 'Document',
   definitions: [
@@ -1509,6 +1658,422 @@ export const RequestDownloadDocument = {
 } as unknown as DocumentNode<
   RequestDownloadQuery,
   RequestDownloadQueryVariables
+>;
+export const CreateClientDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateClient' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'input' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'ClientInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createClient' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'input' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'address' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'line1' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line2' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line3' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line4' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line5' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'companyId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'contact' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'telephone' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateClientMutation,
+  CreateClientMutationVariables
+>;
+export const GetClientsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetClients' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getClients' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'items' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'address' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'line1' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'line2' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'line3' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'line4' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'line5' },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'contact' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'email' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'telephone' },
+                            },
+                          ],
+                        },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getCompany' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetClientsQuery, GetClientsQueryVariables>;
+export const GetClientDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetClient' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getClient' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'address' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'line1' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line2' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line3' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line4' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line5' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'companyId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'contact' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'telephone' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetClientQuery, GetClientQueryVariables>;
+export const UpdateClientDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateClient' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'input' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'ClientInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateClient' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'input' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'address' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'line1' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line2' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line3' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line4' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line5' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'companyId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'contact' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'telephone' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateClientMutation,
+  UpdateClientMutationVariables
+>;
+export const DeleteClientDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteClient' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteClient' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'companyId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteClientMutation,
+  DeleteClientMutationVariables
 >;
 export const CreateReportDocument = {
   kind: 'Document',
@@ -2211,3 +2776,720 @@ export const MarkAsReadDocument = {
     },
   ],
 } as unknown as DocumentNode<MarkAsReadMutation, MarkAsReadMutationVariables>;
+export type AddressKeySpecifier = (
+  | 'line1'
+  | 'line2'
+  | 'line3'
+  | 'line4'
+  | 'line5'
+  | AddressKeySpecifier
+)[];
+export type AddressFieldPolicy = {
+  line1?: FieldPolicy<any> | FieldReadFunction<any>;
+  line2?: FieldPolicy<any> | FieldReadFunction<any>;
+  line3?: FieldPolicy<any> | FieldReadFunction<any>;
+  line4?: FieldPolicy<any> | FieldReadFunction<any>;
+  line5?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BalanceKeySpecifier = (
+  | 'balance'
+  | 'currency'
+  | 'id'
+  | 'owner'
+  | 'transactions'
+  | 'vat'
+  | BalanceKeySpecifier
+)[];
+export type BalanceFieldPolicy = {
+  balance?: FieldPolicy<any> | FieldReadFunction<any>;
+  currency?: FieldPolicy<any> | FieldReadFunction<any>;
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  owner?: FieldPolicy<any> | FieldReadFunction<any>;
+  transactions?: FieldPolicy<any> | FieldReadFunction<any>;
+  vat?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BalanceTransactionKeySpecifier = (
+  | 'balance'
+  | 'currency'
+  | 'date'
+  | 'items'
+  | BalanceTransactionKeySpecifier
+)[];
+export type BalanceTransactionFieldPolicy = {
+  balance?: FieldPolicy<any> | FieldReadFunction<any>;
+  currency?: FieldPolicy<any> | FieldReadFunction<any>;
+  date?: FieldPolicy<any> | FieldReadFunction<any>;
+  items?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BalanceVatKeySpecifier = (
+  | 'owed'
+  | 'paid'
+  | BalanceVatKeySpecifier
+)[];
+export type BalanceVatFieldPolicy = {
+  owed?: FieldPolicy<any> | FieldReadFunction<any>;
+  paid?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BankKeySpecifier = ('id' | 'name' | BankKeySpecifier)[];
+export type BankFieldPolicy = {
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  name?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BankAccountKeySpecifier = (
+  | 'accountIdentifications'
+  | 'balance'
+  | 'currency'
+  | 'id'
+  | 'type'
+  | BankAccountKeySpecifier
+)[];
+export type BankAccountFieldPolicy = {
+  accountIdentifications?: FieldPolicy<any> | FieldReadFunction<any>;
+  balance?: FieldPolicy<any> | FieldReadFunction<any>;
+  currency?: FieldPolicy<any> | FieldReadFunction<any>;
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  type?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BankAccountIdentificationKeySpecifier = (
+  | 'identification'
+  | 'type'
+  | BankAccountIdentificationKeySpecifier
+)[];
+export type BankAccountIdentificationFieldPolicy = {
+  identification?: FieldPolicy<any> | FieldReadFunction<any>;
+  type?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BankAccountsKeySpecifier = ('items' | BankAccountsKeySpecifier)[];
+export type BankAccountsFieldPolicy = {
+  items?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BankCallbackKeySpecifier = (
+  | 'authorisationUrl'
+  | 'status'
+  | BankCallbackKeySpecifier
+)[];
+export type BankCallbackFieldPolicy = {
+  authorisationUrl?: FieldPolicy<any> | FieldReadFunction<any>;
+  status?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BankConnectionKeySpecifier = (
+  | 'status'
+  | BankConnectionKeySpecifier
+)[];
+export type BankConnectionFieldPolicy = {
+  status?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BankDetailsKeySpecifier = (
+  | 'accountNumber'
+  | 'sortCode'
+  | BankDetailsKeySpecifier
+)[];
+export type BankDetailsFieldPolicy = {
+  accountNumber?: FieldPolicy<any> | FieldReadFunction<any>;
+  sortCode?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BankSettingsKeySpecifier = (
+  | 'account'
+  | 'bank'
+  | 'consent'
+  | 'id'
+  | 'user'
+  | BankSettingsKeySpecifier
+)[];
+export type BankSettingsFieldPolicy = {
+  account?: FieldPolicy<any> | FieldReadFunction<any>;
+  bank?: FieldPolicy<any> | FieldReadFunction<any>;
+  consent?: FieldPolicy<any> | FieldReadFunction<any>;
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  user?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type BanksKeySpecifier = ('items' | BanksKeySpecifier)[];
+export type BanksFieldPolicy = {
+  items?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type ClientKeySpecifier = (
+  | 'address'
+  | 'companyId'
+  | 'contact'
+  | 'id'
+  | 'name'
+  | ClientKeySpecifier
+)[];
+export type ClientFieldPolicy = {
+  address?: FieldPolicy<any> | FieldReadFunction<any>;
+  companyId?: FieldPolicy<any> | FieldReadFunction<any>;
+  contact?: FieldPolicy<any> | FieldReadFunction<any>;
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  name?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type ClientsKeySpecifier = (
+  | 'id'
+  | 'items'
+  | 'nextToken'
+  | ClientsKeySpecifier
+)[];
+export type ClientsFieldPolicy = {
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  items?: FieldPolicy<any> | FieldReadFunction<any>;
+  nextToken?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type CompaniesKeySpecifier = (
+  | 'id'
+  | 'items'
+  | 'nextToken'
+  | CompaniesKeySpecifier
+)[];
+export type CompaniesFieldPolicy = {
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  items?: FieldPolicy<any> | FieldReadFunction<any>;
+  nextToken?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type CompanyKeySpecifier = (
+  | 'address'
+  | 'bank'
+  | 'companyNumber'
+  | 'contact'
+  | 'id'
+  | 'name'
+  | 'owner'
+  | CompanyKeySpecifier
+)[];
+export type CompanyFieldPolicy = {
+  address?: FieldPolicy<any> | FieldReadFunction<any>;
+  bank?: FieldPolicy<any> | FieldReadFunction<any>;
+  companyNumber?: FieldPolicy<any> | FieldReadFunction<any>;
+  contact?: FieldPolicy<any> | FieldReadFunction<any>;
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  name?: FieldPolicy<any> | FieldReadFunction<any>;
+  owner?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type ContactKeySpecifier = (
+  | 'email'
+  | 'telephone'
+  | ContactKeySpecifier
+)[];
+export type ContactFieldPolicy = {
+  email?: FieldPolicy<any> | FieldReadFunction<any>;
+  telephone?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type ExpenseCategoryKeySpecifier = (
+  | 'name'
+  | 'protect'
+  | 'vatRate'
+  | ExpenseCategoryKeySpecifier
+)[];
+export type ExpenseCategoryFieldPolicy = {
+  name?: FieldPolicy<any> | FieldReadFunction<any>;
+  protect?: FieldPolicy<any> | FieldReadFunction<any>;
+  vatRate?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type MutationKeySpecifier = (
+  | 'addTransaction'
+  | 'bankCallback'
+  | 'createBankConnection'
+  | 'createClient'
+  | 'createCompany'
+  | 'createReport'
+  | 'deleteBankConnection'
+  | 'deleteClient'
+  | 'deleteCompany'
+  | 'deleteFile'
+  | 'deleteTransaction'
+  | 'markAsRead'
+  | 'notificationBeacon'
+  | 'requestUpload'
+  | 'transactionBeacon'
+  | 'updateBankSettings'
+  | 'updateClient'
+  | 'updateCompany'
+  | 'updateSettings'
+  | 'updateTransaction'
+  | MutationKeySpecifier
+)[];
+export type MutationFieldPolicy = {
+  addTransaction?: FieldPolicy<any> | FieldReadFunction<any>;
+  bankCallback?: FieldPolicy<any> | FieldReadFunction<any>;
+  createBankConnection?: FieldPolicy<any> | FieldReadFunction<any>;
+  createClient?: FieldPolicy<any> | FieldReadFunction<any>;
+  createCompany?: FieldPolicy<any> | FieldReadFunction<any>;
+  createReport?: FieldPolicy<any> | FieldReadFunction<any>;
+  deleteBankConnection?: FieldPolicy<any> | FieldReadFunction<any>;
+  deleteClient?: FieldPolicy<any> | FieldReadFunction<any>;
+  deleteCompany?: FieldPolicy<any> | FieldReadFunction<any>;
+  deleteFile?: FieldPolicy<any> | FieldReadFunction<any>;
+  deleteTransaction?: FieldPolicy<any> | FieldReadFunction<any>;
+  markAsRead?: FieldPolicy<any> | FieldReadFunction<any>;
+  notificationBeacon?: FieldPolicy<any> | FieldReadFunction<any>;
+  requestUpload?: FieldPolicy<any> | FieldReadFunction<any>;
+  transactionBeacon?: FieldPolicy<any> | FieldReadFunction<any>;
+  updateBankSettings?: FieldPolicy<any> | FieldReadFunction<any>;
+  updateClient?: FieldPolicy<any> | FieldReadFunction<any>;
+  updateCompany?: FieldPolicy<any> | FieldReadFunction<any>;
+  updateSettings?: FieldPolicy<any> | FieldReadFunction<any>;
+  updateTransaction?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type NotificationKeySpecifier = (
+  | 'createdAt'
+  | 'id'
+  | 'message'
+  | 'owner'
+  | 'payload'
+  | 'read'
+  | NotificationKeySpecifier
+)[];
+export type NotificationFieldPolicy = {
+  createdAt?: FieldPolicy<any> | FieldReadFunction<any>;
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  owner?: FieldPolicy<any> | FieldReadFunction<any>;
+  payload?: FieldPolicy<any> | FieldReadFunction<any>;
+  read?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type NotificationsKeySpecifier = (
+  | 'id'
+  | 'items'
+  | NotificationsKeySpecifier
+)[];
+export type NotificationsFieldPolicy = {
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  items?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type QueryKeySpecifier = (
+  | 'getBalance'
+  | 'getBankAccounts'
+  | 'getBankSettings'
+  | 'getBanks'
+  | 'getClient'
+  | 'getClients'
+  | 'getCompanies'
+  | 'getCompany'
+  | 'getNotifications'
+  | 'getReports'
+  | 'getSettings'
+  | 'getTransaction'
+  | 'getTransactions'
+  | 'getTypeahead'
+  | 'requestDownload'
+  | QueryKeySpecifier
+)[];
+export type QueryFieldPolicy = {
+  getBalance?: FieldPolicy<any> | FieldReadFunction<any>;
+  getBankAccounts?: FieldPolicy<any> | FieldReadFunction<any>;
+  getBankSettings?: FieldPolicy<any> | FieldReadFunction<any>;
+  getBanks?: FieldPolicy<any> | FieldReadFunction<any>;
+  getClient?: FieldPolicy<any> | FieldReadFunction<any>;
+  getClients?: FieldPolicy<any> | FieldReadFunction<any>;
+  getCompanies?: FieldPolicy<any> | FieldReadFunction<any>;
+  getCompany?: FieldPolicy<any> | FieldReadFunction<any>;
+  getNotifications?: FieldPolicy<any> | FieldReadFunction<any>;
+  getReports?: FieldPolicy<any> | FieldReadFunction<any>;
+  getSettings?: FieldPolicy<any> | FieldReadFunction<any>;
+  getTransaction?: FieldPolicy<any> | FieldReadFunction<any>;
+  getTransactions?: FieldPolicy<any> | FieldReadFunction<any>;
+  getTypeahead?: FieldPolicy<any> | FieldReadFunction<any>;
+  requestDownload?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type ReportKeySpecifier = (
+  | 'createdAt'
+  | 'downloadUrl'
+  | 'id'
+  | 'ttl'
+  | ReportKeySpecifier
+)[];
+export type ReportFieldPolicy = {
+  createdAt?: FieldPolicy<any> | FieldReadFunction<any>;
+  downloadUrl?: FieldPolicy<any> | FieldReadFunction<any>;
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  ttl?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type ReportRequestKeySpecifier = (
+  | 'status'
+  | ReportRequestKeySpecifier
+)[];
+export type ReportRequestFieldPolicy = {
+  status?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type ReportsKeySpecifier = (
+  | 'id'
+  | 'items'
+  | 'nextToken'
+  | ReportsKeySpecifier
+)[];
+export type ReportsFieldPolicy = {
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  items?: FieldPolicy<any> | FieldReadFunction<any>;
+  nextToken?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type SettingsKeySpecifier = (
+  | 'categories'
+  | 'id'
+  | 'vat'
+  | 'yearEnd'
+  | SettingsKeySpecifier
+)[];
+export type SettingsFieldPolicy = {
+  categories?: FieldPolicy<any> | FieldReadFunction<any>;
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  vat?: FieldPolicy<any> | FieldReadFunction<any>;
+  yearEnd?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type SettingsYearEndKeySpecifier = (
+  | 'day'
+  | 'month'
+  | SettingsYearEndKeySpecifier
+)[];
+export type SettingsYearEndFieldPolicy = {
+  day?: FieldPolicy<any> | FieldReadFunction<any>;
+  month?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type StorageKeySpecifier = ('path' | StorageKeySpecifier)[];
+export type StorageFieldPolicy = {
+  path?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type StorageDownloadKeySpecifier = (
+  | 'url'
+  | StorageDownloadKeySpecifier
+)[];
+export type StorageDownloadFieldPolicy = {
+  url?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type StorageUploadKeySpecifier = (
+  | 'id'
+  | 'url'
+  | StorageUploadKeySpecifier
+)[];
+export type StorageUploadFieldPolicy = {
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  url?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type SubscriptionKeySpecifier = (
+  | 'onBankCallback'
+  | 'onNotification'
+  | 'onTransaction'
+  | SubscriptionKeySpecifier
+)[];
+export type SubscriptionFieldPolicy = {
+  onBankCallback?: FieldPolicy<any> | FieldReadFunction<any>;
+  onNotification?: FieldPolicy<any> | FieldReadFunction<any>;
+  onTransaction?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type TransactionKeySpecifier = (
+  | 'amount'
+  | 'attachment'
+  | 'category'
+  | 'companyId'
+  | 'date'
+  | 'description'
+  | 'id'
+  | 'name'
+  | 'refund'
+  | 'scheduled'
+  | 'status'
+  | 'vat'
+  | TransactionKeySpecifier
+)[];
+export type TransactionFieldPolicy = {
+  amount?: FieldPolicy<any> | FieldReadFunction<any>;
+  attachment?: FieldPolicy<any> | FieldReadFunction<any>;
+  category?: FieldPolicy<any> | FieldReadFunction<any>;
+  companyId?: FieldPolicy<any> | FieldReadFunction<any>;
+  date?: FieldPolicy<any> | FieldReadFunction<any>;
+  description?: FieldPolicy<any> | FieldReadFunction<any>;
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  name?: FieldPolicy<any> | FieldReadFunction<any>;
+  refund?: FieldPolicy<any> | FieldReadFunction<any>;
+  scheduled?: FieldPolicy<any> | FieldReadFunction<any>;
+  status?: FieldPolicy<any> | FieldReadFunction<any>;
+  vat?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type TransactionsKeySpecifier = (
+  | 'id'
+  | 'items'
+  | 'nextToken'
+  | 'status'
+  | TransactionsKeySpecifier
+)[];
+export type TransactionsFieldPolicy = {
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  items?: FieldPolicy<any> | FieldReadFunction<any>;
+  nextToken?: FieldPolicy<any> | FieldReadFunction<any>;
+  status?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type TypeaheadKeySpecifier = (
+  | 'id'
+  | 'purchases'
+  | 'sales'
+  | 'suppliers'
+  | TypeaheadKeySpecifier
+)[];
+export type TypeaheadFieldPolicy = {
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  purchases?: FieldPolicy<any> | FieldReadFunction<any>;
+  sales?: FieldPolicy<any> | FieldReadFunction<any>;
+  suppliers?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type VatSettingsKeySpecifier = (
+  | 'charge'
+  | 'pay'
+  | 'registration'
+  | 'scheme'
+  | VatSettingsKeySpecifier
+)[];
+export type VatSettingsFieldPolicy = {
+  charge?: FieldPolicy<any> | FieldReadFunction<any>;
+  pay?: FieldPolicy<any> | FieldReadFunction<any>;
+  registration?: FieldPolicy<any> | FieldReadFunction<any>;
+  scheme?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type StrictTypedTypePolicies = {
+  Address?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | AddressKeySpecifier
+      | (() => undefined | AddressKeySpecifier);
+    fields?: AddressFieldPolicy;
+  };
+  Balance?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BalanceKeySpecifier
+      | (() => undefined | BalanceKeySpecifier);
+    fields?: BalanceFieldPolicy;
+  };
+  BalanceTransaction?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BalanceTransactionKeySpecifier
+      | (() => undefined | BalanceTransactionKeySpecifier);
+    fields?: BalanceTransactionFieldPolicy;
+  };
+  BalanceVat?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BalanceVatKeySpecifier
+      | (() => undefined | BalanceVatKeySpecifier);
+    fields?: BalanceVatFieldPolicy;
+  };
+  Bank?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?: false | BankKeySpecifier | (() => undefined | BankKeySpecifier);
+    fields?: BankFieldPolicy;
+  };
+  BankAccount?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BankAccountKeySpecifier
+      | (() => undefined | BankAccountKeySpecifier);
+    fields?: BankAccountFieldPolicy;
+  };
+  BankAccountIdentification?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BankAccountIdentificationKeySpecifier
+      | (() => undefined | BankAccountIdentificationKeySpecifier);
+    fields?: BankAccountIdentificationFieldPolicy;
+  };
+  BankAccounts?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BankAccountsKeySpecifier
+      | (() => undefined | BankAccountsKeySpecifier);
+    fields?: BankAccountsFieldPolicy;
+  };
+  BankCallback?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BankCallbackKeySpecifier
+      | (() => undefined | BankCallbackKeySpecifier);
+    fields?: BankCallbackFieldPolicy;
+  };
+  BankConnection?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BankConnectionKeySpecifier
+      | (() => undefined | BankConnectionKeySpecifier);
+    fields?: BankConnectionFieldPolicy;
+  };
+  BankDetails?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BankDetailsKeySpecifier
+      | (() => undefined | BankDetailsKeySpecifier);
+    fields?: BankDetailsFieldPolicy;
+  };
+  BankSettings?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BankSettingsKeySpecifier
+      | (() => undefined | BankSettingsKeySpecifier);
+    fields?: BankSettingsFieldPolicy;
+  };
+  Banks?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BanksKeySpecifier
+      | (() => undefined | BanksKeySpecifier);
+    fields?: BanksFieldPolicy;
+  };
+  Client?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | ClientKeySpecifier
+      | (() => undefined | ClientKeySpecifier);
+    fields?: ClientFieldPolicy;
+  };
+  Clients?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | ClientsKeySpecifier
+      | (() => undefined | ClientsKeySpecifier);
+    fields?: ClientsFieldPolicy;
+  };
+  Companies?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | CompaniesKeySpecifier
+      | (() => undefined | CompaniesKeySpecifier);
+    fields?: CompaniesFieldPolicy;
+  };
+  Company?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | CompanyKeySpecifier
+      | (() => undefined | CompanyKeySpecifier);
+    fields?: CompanyFieldPolicy;
+  };
+  Contact?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | ContactKeySpecifier
+      | (() => undefined | ContactKeySpecifier);
+    fields?: ContactFieldPolicy;
+  };
+  ExpenseCategory?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | ExpenseCategoryKeySpecifier
+      | (() => undefined | ExpenseCategoryKeySpecifier);
+    fields?: ExpenseCategoryFieldPolicy;
+  };
+  Mutation?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | MutationKeySpecifier
+      | (() => undefined | MutationKeySpecifier);
+    fields?: MutationFieldPolicy;
+  };
+  Notification?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | NotificationKeySpecifier
+      | (() => undefined | NotificationKeySpecifier);
+    fields?: NotificationFieldPolicy;
+  };
+  Notifications?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | NotificationsKeySpecifier
+      | (() => undefined | NotificationsKeySpecifier);
+    fields?: NotificationsFieldPolicy;
+  };
+  Query?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | QueryKeySpecifier
+      | (() => undefined | QueryKeySpecifier);
+    fields?: QueryFieldPolicy;
+  };
+  Report?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | ReportKeySpecifier
+      | (() => undefined | ReportKeySpecifier);
+    fields?: ReportFieldPolicy;
+  };
+  ReportRequest?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | ReportRequestKeySpecifier
+      | (() => undefined | ReportRequestKeySpecifier);
+    fields?: ReportRequestFieldPolicy;
+  };
+  Reports?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | ReportsKeySpecifier
+      | (() => undefined | ReportsKeySpecifier);
+    fields?: ReportsFieldPolicy;
+  };
+  Settings?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | SettingsKeySpecifier
+      | (() => undefined | SettingsKeySpecifier);
+    fields?: SettingsFieldPolicy;
+  };
+  SettingsYearEnd?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | SettingsYearEndKeySpecifier
+      | (() => undefined | SettingsYearEndKeySpecifier);
+    fields?: SettingsYearEndFieldPolicy;
+  };
+  Storage?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | StorageKeySpecifier
+      | (() => undefined | StorageKeySpecifier);
+    fields?: StorageFieldPolicy;
+  };
+  StorageDownload?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | StorageDownloadKeySpecifier
+      | (() => undefined | StorageDownloadKeySpecifier);
+    fields?: StorageDownloadFieldPolicy;
+  };
+  StorageUpload?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | StorageUploadKeySpecifier
+      | (() => undefined | StorageUploadKeySpecifier);
+    fields?: StorageUploadFieldPolicy;
+  };
+  Subscription?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | SubscriptionKeySpecifier
+      | (() => undefined | SubscriptionKeySpecifier);
+    fields?: SubscriptionFieldPolicy;
+  };
+  Transaction?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | TransactionKeySpecifier
+      | (() => undefined | TransactionKeySpecifier);
+    fields?: TransactionFieldPolicy;
+  };
+  Transactions?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | TransactionsKeySpecifier
+      | (() => undefined | TransactionsKeySpecifier);
+    fields?: TransactionsFieldPolicy;
+  };
+  Typeahead?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | TypeaheadKeySpecifier
+      | (() => undefined | TypeaheadKeySpecifier);
+    fields?: TypeaheadFieldPolicy;
+  };
+  VatSettings?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | VatSettingsKeySpecifier
+      | (() => undefined | VatSettingsKeySpecifier);
+    fields?: VatSettingsFieldPolicy;
+  };
+};
+export type TypedTypePolicies = StrictTypedTypePolicies & TypePolicies;

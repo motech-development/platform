@@ -1,15 +1,89 @@
-import { useMutation } from '@apollo/client';
+import { MutationUpdaterFn, Reference, useMutation } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import ClientForm, { FormSchema } from '../../../components/ClientForm';
 import Connected from '../../../components/Connected';
-import ADD_CLIENT, {
-  IAddClientInput,
-  IAddClientOutput,
-  updateCache,
-} from '../../../graphql/client/ADD_CLIENT';
+import { gql } from '../../../graphql';
+import { CreateClientMutation } from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
+
+export const update: MutationUpdaterFn<CreateClientMutation> = (
+  cache,
+  { data },
+) => {
+  if (data?.createClient) {
+    const { createClient } = data;
+
+    cache.modify({
+      fields: {
+        items: (refs: Reference[], { readField }) => {
+          if (refs.some((ref) => readField('id', ref) === createClient.id)) {
+            return refs;
+          }
+
+          const newRef = cache.writeFragment({
+            data: createClient,
+            fragment: gql(/* GraphQL */ `
+              fragment NewClient on Client {
+                address {
+                  line1
+                  line2
+                  line3
+                  line4
+                  line5
+                }
+                companyId
+                contact {
+                  email
+                  telephone
+                }
+                id
+                name
+              }
+            `),
+          });
+
+          return [...refs, newRef].sort((a, b) => {
+            const readA = readField<string>('name', a);
+            const readB = readField<string>('name', b);
+
+            if (readA && readB) {
+              return readA.localeCompare(readB);
+            }
+
+            return 0;
+          });
+        },
+      },
+      id: cache.identify({
+        __typename: 'Clients',
+        id: createClient.companyId,
+      }),
+    });
+  }
+};
+
+export const ADD_CLIENT = gql(/* GraphQL */ `
+  mutation CreateClient($input: ClientInput!) {
+    createClient(input: $input) {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      companyId
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  }
+`);
 
 function AddClient() {
   const navigate = useNavigate();
@@ -20,10 +94,7 @@ function AddClient() {
   const { t } = useTranslation('clients');
   const { add } = useToast();
   const backTo = (id: string) => `/my-companies/clients/${id}`;
-  const [mutation, { error, loading }] = useMutation<
-    IAddClientOutput,
-    IAddClientInput
-  >(ADD_CLIENT, {
+  const [mutation, { error, loading }] = useMutation(ADD_CLIENT, {
     onCompleted: ({ createClient }) => {
       if (createClient) {
         const { companyId: id, name } = createClient;
@@ -48,7 +119,7 @@ function AddClient() {
   });
   const save = (input: FormSchema) => {
     mutation({
-      update: updateCache,
+      update,
       variables: {
         input,
       },
