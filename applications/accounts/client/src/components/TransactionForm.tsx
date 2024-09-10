@@ -51,7 +51,7 @@ export type FormSchema = {
 
 interface IFormSchema {
   amount: number | string;
-  attachment: string;
+  attachment?: string | null;
   category: string;
   companyId: string;
   date: string;

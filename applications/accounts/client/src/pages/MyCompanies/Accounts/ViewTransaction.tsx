@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import {
   Button,
   Col,
@@ -14,6 +14,7 @@ import DeleteItem from '../../../components/DeleteItem';
 import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
+import { gql } from '../../../graphql';
 import DELETE_TRANSACTION, {
   IDeleteTransactionInput,
   IDeleteTransactionOutput,
@@ -27,49 +28,7 @@ import invariant from '../../../utils/invariant';
 import UploadAttachment from './shared/UploadAttachment';
 import ViewAttachment from './shared/ViewAttachment';
 
-interface IViewTransactionInput {
-  companyId: string;
-  transactionId: string;
-}
-
-interface IViewTransactionOutput {
-  getClients?: {
-    items: {
-      name: string;
-    }[];
-  };
-  getSettings?: {
-    categories: {
-      name: string;
-      vatRate: number;
-    }[];
-    id: string;
-    vat: {
-      pay: number;
-    };
-  };
-  getTransaction?: {
-    amount: number;
-    attachment: string;
-    category: string;
-    companyId: string;
-    date: string;
-    description: string;
-    id: string;
-    name: string;
-    refund: boolean;
-    scheduled: boolean;
-    status: string;
-    vat: number;
-  };
-  getTypeahead?: {
-    purchases: string[];
-    sales: string[];
-    suppliers: string[];
-  };
-}
-
-export const VIEW_TRANSACTION = gql`
+export const VIEW_TRANSACTION = gql(/* GraphQL */ `
   query ViewTransaction($companyId: ID!, $transactionId: ID!) {
     getClients(id: $companyId) {
       id
@@ -109,7 +68,7 @@ export const VIEW_TRANSACTION = gql`
       suppliers
     }
   }
-`;
+`);
 
 function ViewTransaction() {
   const navigate = useNavigate();
@@ -133,10 +92,7 @@ function ViewTransaction() {
     return location;
   };
 
-  const { data, error, loading } = useQuery<
-    IViewTransactionOutput,
-    IViewTransactionInput
-  >(VIEW_TRANSACTION, {
+  const { data, error, loading } = useQuery(VIEW_TRANSACTION, {
     onCompleted: ({ getTransaction }) => {
       if (getTransaction?.attachment) {
         setAttachment(getTransaction.attachment);

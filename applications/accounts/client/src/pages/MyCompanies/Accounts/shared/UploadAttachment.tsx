@@ -1,37 +1,19 @@
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { usePut } from '@motech-development/axios-hooks';
 import { FileUpload, useToast } from '@motech-development/breeze-ui';
 import { FormikProps, FormikValues } from 'formik';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { gql } from '../../../../graphql';
 
-interface IRequestUploadInput {
-  id: string;
-  input: {
-    contentType: string;
-    extension: string;
-    metadata: {
-      id?: string;
-      typename: string;
-    };
-  };
-}
-
-interface IRequestUploadOutput {
-  requestUpload?: {
-    id: string;
-    url: string;
-  };
-}
-
-export const REQUEST_UPLOAD = gql`
+export const REQUEST_UPLOAD = gql(/* GraphQL */ `
   mutation RequestUpload($id: ID!, $input: StorageUploadInput!) {
     requestUpload(id: $id, input: $input) {
       id
       url
     }
   }
-`;
+`);
 
 export interface IUploadAttachmentProps {
   id: string;
@@ -67,10 +49,7 @@ function UploadAttachment({
       message: t('uploads.add.error'),
     });
   };
-  const [mutation, { loading: mutationLoading }] = useMutation<
-    IRequestUploadOutput,
-    IRequestUploadInput
-  >(REQUEST_UPLOAD, {
+  const [mutation, { loading: mutationLoading }] = useMutation(REQUEST_UPLOAD, {
     onCompleted: (data) => {
       const { requestUpload } = data;
 

@@ -443,8 +443,8 @@ export type StorageDownload = {
 };
 
 export type StorageUpload = {
-  id?: Maybe<Scalars['ID']['output']>;
-  url?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  url: Scalars['String']['output'];
 };
 
 export type StorageUploadInput = {
@@ -538,10 +538,10 @@ export type Transactions = {
 };
 
 export type Typeahead = {
-  id?: Maybe<Scalars['ID']['output']>;
-  purchases?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  sales?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  suppliers?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  id: Scalars['ID']['output'];
+  purchases: Array<Scalars['String']['output']>;
+  sales: Array<Scalars['String']['output']>;
+  suppliers: Array<Scalars['String']['output']>;
 };
 
 export enum VatScheme {
@@ -601,10 +601,10 @@ export type RecordTransactionQuery = {
     vat: { pay: number };
   };
   getTypeahead: {
-    id?: string | null;
-    purchases?: Array<string | null> | null;
-    sales?: Array<string | null> | null;
-    suppliers?: Array<string | null> | null;
+    id: string;
+    purchases: Array<string>;
+    sales: Array<string>;
+    suppliers: Array<string>;
   };
 };
 
@@ -635,10 +635,10 @@ export type ViewTransactionQuery = {
     vat: number;
   };
   getTypeahead: {
-    id?: string | null;
-    purchases?: Array<string | null> | null;
-    sales?: Array<string | null> | null;
-    suppliers?: Array<string | null> | null;
+    id: string;
+    purchases: Array<string>;
+    sales: Array<string>;
+    suppliers: Array<string>;
   };
 };
 
@@ -648,7 +648,7 @@ export type RequestUploadMutationVariables = Exact<{
 }>;
 
 export type RequestUploadMutation = {
-  requestUpload: { id?: string | null; url?: string | null };
+  requestUpload: { id: string; url: string };
 };
 
 export type DeleteFileMutationVariables = Exact<{

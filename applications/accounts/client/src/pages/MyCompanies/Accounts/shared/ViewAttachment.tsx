@@ -1,47 +1,26 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { useLazyGet } from '@motech-development/axios-hooks';
 import { Button, Col, Row, useToast } from '@motech-development/breeze-ui';
 import { saveAs } from 'file-saver';
 import { useTranslation } from 'react-i18next';
 import FileDownload from '../../../../components/FileDownload';
+import { gql } from '../../../../graphql';
 
-interface IDeleteFileInput {
-  id: string;
-  path: string;
-}
-
-interface IDeleteFileOutput {
-  deleteFile?: {
-    path: string;
-  };
-}
-
-export const DELETE_FILE = gql`
+export const DELETE_FILE = gql(/* GraphQL */ `
   mutation DeleteFile($id: ID!, $path: String!) {
     deleteFile(id: $id, path: $path) {
       path
     }
   }
-`;
+`);
 
-interface IRequestDownloadInput {
-  id: string;
-  path: string;
-}
-
-interface IRequestDownloadOutput {
-  requestDownload?: {
-    url: string;
-  };
-}
-
-export const REQUEST_DOWNLOAD = gql`
+export const REQUEST_DOWNLOAD = gql(/* GraphQL */ `
   query RequestDownload($id: ID!, $path: String!) {
     requestDownload(id: $id, path: $path) {
       url
     }
   }
-`;
+`);
 
 export interface IDeleteTransactionProps {
   id: string;
@@ -73,31 +52,28 @@ function DeleteTransaction({ id, onDelete, path }: IDeleteTransactionProps) {
     responseType: 'blob',
   });
   const [request, { data: requestData, loading: requestLoading }] =
-    useLazyQuery<IRequestDownloadOutput, IRequestDownloadInput>(
-      REQUEST_DOWNLOAD,
-      {
-        onError,
-      },
-    );
-  const [deleteFile, { loading: deleteFileLoading }] = useMutation<
-    IDeleteFileOutput,
-    IDeleteFileInput
-  >(DELETE_FILE, {
-    onCompleted: () => {
-      add({
-        colour: 'success',
-        message: t('uploads.delete.success'),
-      });
+    useLazyQuery(REQUEST_DOWNLOAD, {
+      onError,
+    });
+  const [deleteFile, { loading: deleteFileLoading }] = useMutation(
+    DELETE_FILE,
+    {
+      onCompleted: () => {
+        add({
+          colour: 'success',
+          message: t('uploads.delete.success'),
+        });
 
-      onDelete('');
+        onDelete('');
+      },
+      onError: () => {
+        add({
+          colour: 'danger',
+          message: t('uploads.delete.error'),
+        });
+      },
     },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('uploads.delete.error'),
-      });
-    },
-  });
+  );
 
   return (
     <Row>
