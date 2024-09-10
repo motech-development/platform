@@ -145,7 +145,10 @@
         "createdAt": $util.dynamodb.toDynamoDBJson($createdAt),
         "data": $util.dynamodb.toDynamoDBJson($typeaheadData),
         "groupsCanAccess": $util.dynamodb.toDynamoDBJson($defaultGroups),
-        "owner": $util.dynamodb.toDynamoDBJson($owner)
+        "owner": $util.dynamodb.toDynamoDBJson($owner),
+        "purchases": $util.dynamodb.toDynamoDBJson([]),
+        "sales": $util.dynamodb.toDynamoDBJson([]),
+        "suppliers": $util.dynamodb.toDynamoDBJson([])
       },
       "condition": {
         "expression": "attribute_not_exists(id)"
