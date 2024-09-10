@@ -16,9 +16,7 @@ import { AddressFields, ContactDetailsFields } from './CommonFields';
 const formSchema = {
   address: {
     line1: '',
-    line2: undefined,
     line3: '',
-    line4: undefined,
     line5: '',
   },
   companyId: '',
