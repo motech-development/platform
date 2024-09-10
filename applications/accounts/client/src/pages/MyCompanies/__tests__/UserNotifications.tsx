@@ -6,11 +6,11 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import ON_NOTIFICATION from '../../../graphql/notifications/ON_NOTIFICATION';
 import TestProvider from '../../../utils/TestProvider';
 import UserNotifications, {
   GET_NOTIFICATIONS,
   MARK_AS_READ,
+  ON_NOTIFICATION,
 } from '../UserNotifications';
 
 describe('UserNotifications', () => {

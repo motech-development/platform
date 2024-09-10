@@ -9,11 +9,12 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { number, object, string } from 'yup';
+import { TransactionStatus } from '../graphql/graphql';
 
 const formSchema = {
   companyId: '',
   currency: '',
-  status: '',
+  status: '' as TransactionStatus,
   year: 0,
   yearEnd: {
     day: 0,

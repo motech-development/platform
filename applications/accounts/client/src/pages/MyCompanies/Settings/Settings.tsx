@@ -1,35 +1,64 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import SettingsForm, { FormSchema } from '../../../components/SettingsForm';
 import { gql } from '../../../graphql';
-import GET_SETTINGS, {
-  IGetSettingsInput,
-  IGetSettingsOutput,
-} from '../../../graphql/settings/GET_SETTINGS';
-import UPDATE_SETTINGS, {
-  IUpdateSettingsInput,
-  IUpdateSettingsOutput,
-} from '../../../graphql/settings/UPDATE_SETTINGS';
 import invariant from '../../../utils/invariant';
 
-export const DELETE_BANK_CONNECTION = gql(/* GraphQL */ `
-  mutation DeleteBankConnection($id: ID!) {
-    deleteBankConnection(id: $id) {
-      account
-      bank
+export const GET_SETTINGS = gql(/* GraphQL */ `
+  query GetSettings($id: ID!) {
+    getCompany(id: $id) {
       id
-      user
+      name
+    }
+    getSettings(id: $id) {
+      categories {
+        name
+        protect
+        vatRate
+      }
+      id
+      vat {
+        charge
+        pay
+        registration
+        scheme
+      }
+      yearEnd {
+        day
+        month
+      }
+    }
+  }
+`);
+
+export const UPDATE_SETTINGS = gql(/* GraphQL */ `
+  mutation UpdateSettings($input: SettingsInput!) {
+    updateSettings(input: $input) {
+      categories {
+        name
+        protect
+        vatRate
+      }
+      id
+      vat {
+        charge
+        pay
+        registration
+        scheme
+      }
+      yearEnd {
+        day
+        month
+      }
     }
   }
 `);
 
 function Settings() {
   const backTo = (id: string) => `/my-companies/dashboard/${id}`;
-  const [connected, setConnected] = useState(false);
   const { companyId } = useParams();
 
   invariant(companyId);
@@ -37,16 +66,13 @@ function Settings() {
   const navigate = useNavigate();
   const { t } = useTranslation('settings');
   const { add } = useToast();
-  const { data, error, loading } = useQuery<
-    IGetSettingsOutput,
-    IGetSettingsInput
-  >(GET_SETTINGS, {
+  const { data, error, loading } = useQuery(GET_SETTINGS, {
     variables: {
       id: companyId,
     },
   });
   const [mutation, { error: updateError, loading: updateLoading }] =
-    useMutation<IUpdateSettingsOutput, IUpdateSettingsInput>(UPDATE_SETTINGS, {
+    useMutation(UPDATE_SETTINGS, {
       onCompleted: ({ updateSettings }) => {
         if (updateSettings) {
           const { id } = updateSettings;
@@ -67,23 +93,6 @@ function Settings() {
         }
       },
     });
-  const [disconnect, { loading: disconnectLoading }] = useMutation(
-    DELETE_BANK_CONNECTION,
-    {
-      onCompleted: () => {
-        add({
-          colour: 'success',
-          message: t('settings.bank-disconnected'),
-        });
-      },
-      onError: () => {
-        add({
-          colour: 'danger',
-          message: t('settings.bank-disconnected-error'),
-        });
-      },
-    },
-  );
   const save = (input: FormSchema) => {
     mutation({
       variables: {
@@ -91,19 +100,6 @@ function Settings() {
       },
     }).catch(() => {});
   };
-  const onDisconnect = (id: string) => {
-    disconnect({
-      variables: {
-        id,
-      },
-    }).catch(() => {});
-  };
-
-  useEffect(() => {
-    if (data?.getBankSettings) {
-      setConnected(!!data.getBankSettings.account);
-    }
-  }, [data]);
 
   return (
     <Connected error={error || updateError} loading={loading}>
@@ -116,16 +112,9 @@ function Settings() {
             />
           )}
 
-          {data.getBankSettings && data.getSettings && (
+          {data.getSettings && (
             <SettingsForm
               backTo={backTo(companyId)}
-              bank={{
-                connected,
-                disconnectLoading,
-                link: `/my-companies/settings/${companyId}/bank`,
-                name: data.getBankSettings.bank,
-                onDisconnect: () => onDisconnect(companyId),
-              }}
               initialValues={data.getSettings}
               loading={updateLoading}
               onSave={save}

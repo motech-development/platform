@@ -5,14 +5,13 @@ enum VatScheme {
 }
 
 type VatSettings {
-  charge: Float
-  pay: Float
+  charge: Float!
+  pay: Float!
   registration: String
-  scheme: VatScheme
+  scheme: VatScheme!
 }
 
 input VatSettingsInput {
-  __typename: String
   charge: Float!
   pay: Float!
   registration: String

@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { useAuth0 } from '@auth0/auth0-react';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,10 +21,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
-import ON_NOTIFICATION, {
-  IOnNotificationInput,
-  IOnNotificationOutput,
-} from '../../../graphql/notifications/ON_NOTIFICATION';
+import { gql } from '../../../graphql';
 import invariant from '../../../utils/invariant';
 
 interface IReport {
@@ -51,20 +48,6 @@ interface IDataRow {
   download: (url: string) => Promise<Blob | undefined>;
   label: string;
 }
-
-export const GET_REPORTS = gql`
-  query GetReports($id: ID!, $count: Int, $nextToken: String) {
-    getReports(id: $id, count: $count, nextToken: $nextToken) {
-      id
-      items {
-        createdAt
-        downloadUrl
-        id
-        ttl
-      }
-    }
-  }
-`;
 
 function row({ download, label }: IDataRow) {
   function DataRow({ createdAt, downloadUrl, ttl }: Exclude<IReport, 'id'>) {
@@ -94,6 +77,33 @@ function row({ download, label }: IDataRow) {
 
   return DataRow;
 }
+
+export const GET_REPORTS = gql(/* GraphQL */ `
+  query GetReports($id: ID!, $count: Int, $nextToken: String) {
+    getReports(id: $id, count: $count, nextToken: $nextToken) {
+      id
+      items {
+        createdAt
+        downloadUrl
+        id
+        ttl
+      }
+    }
+  }
+`);
+
+export const ON_NOTIFICATION = gql(/* GraphQL */ `
+  subscription OnNotification($owner: String!) {
+    onNotification(owner: $owner) {
+      createdAt
+      id
+      message
+      owner
+      payload
+      read
+    }
+  }
+`);
 
 function Reports() {
   const { companyId } = useParams();
@@ -138,17 +148,16 @@ function Reports() {
     renderCount.current += 1;
 
     if (renderCount.current >= renderCheck) {
-      unsubscribe = subscribeToMore<
-        IOnNotificationOutput,
-        IOnNotificationInput
-      >({
+      unsubscribe = subscribeToMore({
         document: ON_NOTIFICATION,
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data?.onNotification || !prev.getReports) {
             return prev;
           }
 
-          const payload = parse(subscriptionData.data.onNotification.payload);
+          const payload = parse(
+            subscriptionData.data.onNotification.payload ?? '',
+          );
           const result = [...prev.getReports.items, payload];
           const items = result.filter(
             (a, index) => result.findIndex((b) => a.id === b.id) === index,

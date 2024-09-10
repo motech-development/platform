@@ -3,9 +3,8 @@ import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { advanceTo, clear } from 'jest-date-mock';
-import GET_SETTINGS from '../../../../graphql/settings/GET_SETTINGS';
 import TestProvider, { add } from '../../../../utils/TestProvider';
-import CreateReport, { CREATE_REPORT } from '../CreateReport';
+import CreateReport, { CREATE_REPORT, GET_SETTINGS } from '../CreateReport';
 
 describe('CreateReport', () => {
   let history: string[];

@@ -99,80 +99,6 @@ export type BalanceVatInput = {
   paid: Scalars['Float']['input'];
 };
 
-export type Bank = {
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-};
-
-export type BankAccount = {
-  accountIdentifications?: Maybe<Array<Maybe<BankAccountIdentification>>>;
-  balance: Scalars['Float']['output'];
-  currency: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  type: Scalars['String']['output'];
-};
-
-export type BankAccountIdentification = {
-  identification?: Maybe<Scalars['String']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-export type BankAccounts = {
-  items: Array<BankAccount>;
-};
-
-export type BankCallback = {
-  authorisationUrl: Scalars['String']['output'];
-  status?: Maybe<Scalars['String']['output']>;
-};
-
-export type BankCallbackInput = {
-  authorisationUrl: Scalars['String']['input'];
-  id: Scalars['ID']['input'];
-};
-
-export type BankConnection = {
-  status?: Maybe<Scalars['String']['output']>;
-};
-
-export type BankConnectionInput = {
-  bank: Scalars['String']['input'];
-  callback: Scalars['String']['input'];
-  companyId: Scalars['String']['input'];
-  user?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type BankDetails = {
-  accountNumber?: Maybe<Scalars['String']['output']>;
-  sortCode?: Maybe<Scalars['String']['output']>;
-};
-
-export type BankDetailsInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
-  accountNumber: Scalars['String']['input'];
-  sortCode: Scalars['String']['input'];
-};
-
-export type BankSettings = {
-  account?: Maybe<Scalars['String']['output']>;
-  bank?: Maybe<Scalars['String']['output']>;
-  consent?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  user?: Maybe<Scalars['String']['output']>;
-};
-
-export type BankSettingsInput = {
-  account?: InputMaybe<Scalars['String']['input']>;
-  bank?: InputMaybe<Scalars['String']['input']>;
-  consent?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['ID']['input'];
-  user?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type Banks = {
-  items: Array<Bank>;
-};
-
 export type Client = {
   address: Address;
   companyId: Scalars['String']['output'];
@@ -204,7 +130,6 @@ export type Companies = {
 
 export type Company = {
   address?: Maybe<Address>;
-  bank?: Maybe<BankDetails>;
   companyNumber?: Maybe<Scalars['String']['output']>;
   contact?: Maybe<Contact>;
   id: Scalars['ID']['output'];
@@ -215,7 +140,6 @@ export type Company = {
 export type CompanyInput = {
   __typename?: InputMaybe<Scalars['String']['input']>;
   address: AddressInput;
-  bank: BankDetailsInput;
   companyNumber: Scalars['String']['input'];
   contact: ContactInput;
   id: Scalars['ID']['input'];
@@ -240,13 +164,12 @@ export type CreateCompanyInput = {
 };
 
 export type ExpenseCategory = {
-  name?: Maybe<Scalars['String']['output']>;
-  protect?: Maybe<Scalars['Boolean']['output']>;
-  vatRate?: Maybe<Scalars['Float']['output']>;
+  name: Scalars['String']['output'];
+  protect: Scalars['Boolean']['output'];
+  vatRate: Scalars['Float']['output'];
 };
 
 export type ExpenseCategoryInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   protect: Scalars['Boolean']['input'];
   vatRate: Scalars['Float']['input'];
@@ -263,12 +186,9 @@ export type MetadataInput = {
 
 export type Mutation = {
   addTransaction: Transaction;
-  bankCallback: BankCallback;
-  createBankConnection: BankConnection;
   createClient: Client;
   createCompany: Company;
   createReport: ReportRequest;
-  deleteBankConnection: BankSettings;
   deleteClient: Client;
   deleteCompany: Company;
   deleteFile: Storage;
@@ -277,7 +197,6 @@ export type Mutation = {
   notificationBeacon: Notification;
   requestUpload: StorageUpload;
   transactionBeacon: Balance;
-  updateBankSettings: BankSettings;
   updateClient: Client;
   updateCompany: Company;
   updateSettings: Settings;
@@ -286,14 +205,6 @@ export type Mutation = {
 
 export type MutationAddTransactionArgs = {
   input: TransactionInput;
-};
-
-export type MutationBankCallbackArgs = {
-  input: BankCallbackInput;
-};
-
-export type MutationCreateBankConnectionArgs = {
-  input: BankConnectionInput;
 };
 
 export type MutationCreateClientArgs = {
@@ -306,10 +217,6 @@ export type MutationCreateCompanyArgs = {
 
 export type MutationCreateReportArgs = {
   input: ReportInput;
-};
-
-export type MutationDeleteBankConnectionArgs = {
-  id: Scalars['ID']['input'];
 };
 
 export type MutationDeleteClientArgs = {
@@ -350,10 +257,6 @@ export type MutationTransactionBeaconArgs = {
   owner: Scalars['String']['input'];
 };
 
-export type MutationUpdateBankSettingsArgs = {
-  input: BankSettingsInput;
-};
-
 export type MutationUpdateClientArgs = {
   input: ClientInput;
 };
@@ -371,12 +274,12 @@ export type MutationUpdateTransactionArgs = {
 };
 
 export type Notification = {
-  createdAt?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-  message?: Maybe<Scalars['String']['output']>;
-  owner?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  message: Scalars['String']['output'];
+  owner: Scalars['String']['output'];
   payload?: Maybe<Scalars['String']['output']>;
-  read?: Maybe<Scalars['Boolean']['output']>;
+  read: Scalars['Boolean']['output'];
 };
 
 export type NotificationInput = {
@@ -395,9 +298,6 @@ export type Notifications = {
 
 export type Query = {
   getBalance: Balance;
-  getBankAccounts: BankAccounts;
-  getBankSettings: BankSettings;
-  getBanks: Banks;
   getClient: Client;
   getClients: Clients;
   getCompanies: Companies;
@@ -412,14 +312,6 @@ export type Query = {
 };
 
 export type QueryGetBalanceArgs = {
-  id: Scalars['ID']['input'];
-};
-
-export type QueryGetBankAccountsArgs = {
-  id: Scalars['ID']['input'];
-};
-
-export type QueryGetBankSettingsArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -512,27 +404,25 @@ export type Reports = {
 };
 
 export type Settings = {
-  categories?: Maybe<Array<Maybe<ExpenseCategory>>>;
-  id?: Maybe<Scalars['ID']['output']>;
-  vat?: Maybe<VatSettings>;
-  yearEnd?: Maybe<SettingsYearEnd>;
+  categories: Array<ExpenseCategory>;
+  id: Scalars['ID']['output'];
+  vat: VatSettings;
+  yearEnd: SettingsYearEnd;
 };
 
 export type SettingsInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
-  categories: Array<InputMaybe<ExpenseCategoryInput>>;
+  categories: Array<ExpenseCategoryInput>;
   id: Scalars['ID']['input'];
   vat: VatSettingsInput;
   yearEnd: SettingsYearEndInput;
 };
 
 export type SettingsYearEnd = {
-  day?: Maybe<Scalars['Float']['output']>;
-  month?: Maybe<Scalars['Float']['output']>;
+  day: Scalars['Float']['output'];
+  month: Scalars['Float']['output'];
 };
 
 export type SettingsYearEndInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   day: Scalars['Float']['input'];
   month: Scalars['Float']['input'];
 };
@@ -557,7 +447,6 @@ export type StorageUploadInput = {
 };
 
 export type Subscription = {
-  onBankCallback?: Maybe<BankCallback>;
   onNotification?: Maybe<Notification>;
   onTransaction?: Maybe<Balance>;
 };
@@ -658,14 +547,13 @@ export enum VatScheme {
 }
 
 export type VatSettings = {
-  charge?: Maybe<Scalars['Float']['output']>;
-  pay?: Maybe<Scalars['Float']['output']>;
+  charge: Scalars['Float']['output'];
+  pay: Scalars['Float']['output'];
   registration?: Maybe<Scalars['String']['output']>;
-  scheme?: Maybe<VatScheme>;
+  scheme: VatScheme;
 };
 
 export type VatSettingsInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   charge: Scalars['Float']['input'];
   pay: Scalars['Float']['input'];
   registration?: InputMaybe<Scalars['String']['input']>;
@@ -704,12 +592,9 @@ export type RecordTransactionQueryVariables = Exact<{
 export type RecordTransactionQuery = {
   getClients: { id: string; items: Array<{ id: string; name: string }> };
   getSettings: {
-    id?: string | null;
-    categories?: Array<{
-      name?: string | null;
-      vatRate?: number | null;
-    } | null> | null;
-    vat?: { pay?: number | null } | null;
+    id: string;
+    categories: Array<{ name: string; vatRate: number }>;
+    vat: { pay: number };
   };
   getTypeahead: {
     id?: string | null;
@@ -727,12 +612,9 @@ export type ViewTransactionQueryVariables = Exact<{
 export type ViewTransactionQuery = {
   getClients: { id: string; items: Array<{ id: string; name: string }> };
   getSettings: {
-    id?: string | null;
-    categories?: Array<{
-      name?: string | null;
-      vatRate?: number | null;
-    } | null> | null;
-    vat?: { pay?: number | null } | null;
+    id: string;
+    categories: Array<{ name: string; vatRate: number }>;
+    vat: { pay: number };
   };
   getTransaction: {
     amount: number;
@@ -884,6 +766,25 @@ export type DeleteClientMutation = {
   deleteClient: { companyId: string; id: string; name: string };
 };
 
+export type GetSettingsQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type GetSettingsQuery = {
+  getCompany: { id: string; name: string };
+  getSettings: {
+    id: string;
+    categories: Array<{ name: string; protect: boolean; vatRate: number }>;
+    vat: {
+      charge: number;
+      pay: number;
+      registration?: string | null;
+      scheme: VatScheme;
+    };
+    yearEnd: { day: number; month: number };
+  };
+};
+
 export type CreateReportMutationVariables = Exact<{
   input: ReportInput;
 }>;
@@ -908,84 +809,36 @@ export type GetReportsQuery = {
   };
 };
 
-export type GetBanksQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
+export type OnNotificationSubscriptionVariables = Exact<{
+  owner: Scalars['String']['input'];
 }>;
 
-export type GetBanksQuery = {
-  getBankSettings: { id: string; user?: string | null };
-  getBanks: { items: Array<{ id: string; name: string }> };
-};
-
-export type CreateBankConnectionMutationVariables = Exact<{
-  input: BankConnectionInput;
-}>;
-
-export type CreateBankConnectionMutation = {
-  createBankConnection: { status?: string | null };
-};
-
-export type OnBackCallbackSubscriptionVariables = Exact<{
-  [key: string]: never;
-}>;
-
-export type OnBackCallbackSubscription = {
-  onBankCallback?: { authorisationUrl: string } | null;
-};
-
-export type UpdateBankSettingsMutationVariables = Exact<{
-  input: BankSettingsInput;
-}>;
-
-export type UpdateBankSettingsMutation = {
-  updateBankSettings: {
-    account?: string | null;
+export type OnNotificationSubscription = {
+  onNotification?: {
+    createdAt: string;
     id: string;
-    user?: string | null;
-  };
+    message: string;
+    owner: string;
+    payload?: string | null;
+    read: boolean;
+  } | null;
 };
 
-export type GetBankAccountsQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
+export type UpdateSettingsMutationVariables = Exact<{
+  input: SettingsInput;
 }>;
 
-export type GetBankAccountsQuery = {
-  getBankAccounts: {
-    items: Array<{
-      balance: number;
-      currency: string;
-      id: string;
-      type: string;
-      accountIdentifications?: Array<{
-        identification?: string | null;
-        type?: string | null;
-      } | null> | null;
-    }>;
-  };
-};
-
-export type DeleteBankConnectionMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-export type DeleteBankConnectionMutation = {
-  deleteBankConnection: {
-    account?: string | null;
-    bank?: string | null;
+export type UpdateSettingsMutation = {
+  updateSettings: {
     id: string;
-    user?: string | null;
-  };
-};
-
-export type GetBankSettingsQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-export type GetBankSettingsQuery = {
-  getBankSettings: {
-    account?: string | null;
-    id: string;
-    user?: string | null;
+    categories: Array<{ name: string; protect: boolean; vatRate: number }>;
+    vat: {
+      charge: number;
+      pay: number;
+      registration?: string | null;
+      scheme: VatScheme;
+    };
+    yearEnd: { day: number; month: number };
   };
 };
 
@@ -998,10 +851,10 @@ export type GetNotificationsQuery = {
   getNotifications: {
     id?: string | null;
     items?: Array<{
-      createdAt?: string | null;
-      id?: string | null;
-      message?: string | null;
-      read?: boolean | null;
+      createdAt: string;
+      id: string;
+      message: string;
+      read: boolean;
     } | null> | null;
   };
 };
@@ -1012,9 +865,7 @@ export type MarkAsReadMutationVariables = Exact<{
 }>;
 
 export type MarkAsReadMutation = {
-  markAsRead: {
-    items?: Array<{ id?: string | null; read?: boolean | null } | null> | null;
-  };
+  markAsRead: { items?: Array<{ id: string; read: boolean } | null> | null };
 };
 
 export const NewClientFragmentDoc = {
@@ -2083,6 +1934,123 @@ export const DeleteClientDocument = {
   DeleteClientMutation,
   DeleteClientMutationVariables
 >;
+export const GetSettingsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetSettings' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getCompany' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getSettings' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'categories' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'protect' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'vatRate' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'vat' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'charge' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'pay' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'registration' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'scheme' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'yearEnd' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'day' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'month' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetSettingsQuery, GetSettingsQueryVariables>;
 export const CreateReportDocument = {
   kind: 'Document',
   definitions: [
@@ -2233,146 +2201,54 @@ export const GetReportsDocument = {
     },
   ],
 } as unknown as DocumentNode<GetReportsQuery, GetReportsQueryVariables>;
-export const GetBanksDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'GetBanks' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'getBankSettings' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'user' } },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'getBanks' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'items' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<GetBanksQuery, GetBanksQueryVariables>;
-export const CreateBankConnectionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'CreateBankConnection' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'input' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'BankConnectionInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'createBankConnection' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'input' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'input' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreateBankConnectionMutation,
-  CreateBankConnectionMutationVariables
->;
-export const OnBackCallbackDocument = {
+export const OnNotificationDocument = {
   kind: 'Document',
   definitions: [
     {
       kind: 'OperationDefinition',
       operation: 'subscription',
-      name: { kind: 'Name', value: 'OnBackCallback' },
+      name: { kind: 'Name', value: 'OnNotification' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'owner' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'onBankCallback' },
+            name: { kind: 'Name', value: 'onNotification' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'owner' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'owner' },
+                },
+              },
+            ],
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'authorisationUrl' },
-                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'owner' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'payload' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'read' } },
               ],
             },
           },
@@ -2381,16 +2257,16 @@ export const OnBackCallbackDocument = {
     },
   ],
 } as unknown as DocumentNode<
-  OnBackCallbackSubscription,
-  OnBackCallbackSubscriptionVariables
+  OnNotificationSubscription,
+  OnNotificationSubscriptionVariables
 >;
-export const UpdateBankSettingsDocument = {
+export const UpdateSettingsDocument = {
   kind: 'Document',
   definitions: [
     {
       kind: 'OperationDefinition',
       operation: 'mutation',
-      name: { kind: 'Name', value: 'UpdateBankSettings' },
+      name: { kind: 'Name', value: 'UpdateSettings' },
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
@@ -2402,7 +2278,7 @@ export const UpdateBankSettingsDocument = {
             kind: 'NonNullType',
             type: {
               kind: 'NamedType',
-              name: { kind: 'Name', value: 'BankSettingsInput' },
+              name: { kind: 'Name', value: 'SettingsInput' },
             },
           },
         },
@@ -2412,7 +2288,7 @@ export const UpdateBankSettingsDocument = {
         selections: [
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'updateBankSettings' },
+            name: { kind: 'Name', value: 'updateSettings' },
             arguments: [
               {
                 kind: 'Argument',
@@ -2426,89 +2302,55 @@ export const UpdateBankSettingsDocument = {
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'account' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'user' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  UpdateBankSettingsMutation,
-  UpdateBankSettingsMutationVariables
->;
-export const GetBankAccountsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'GetBankAccounts' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'getBankAccounts' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'items' },
+                  name: { kind: 'Name', value: 'categories' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'protect' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'vatRate' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'vat' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'accountIdentifications' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'identification' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'type' },
-                            },
-                          ],
-                        },
+                        name: { kind: 'Name', value: 'charge' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'pay' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'registration' },
                       },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'balance' },
+                        name: { kind: 'Name', value: 'scheme' },
                       },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'currency' },
-                      },
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'yearEnd' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'day' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'month' } },
                     ],
                   },
                 },
@@ -2520,109 +2362,8 @@ export const GetBankAccountsDocument = {
     },
   ],
 } as unknown as DocumentNode<
-  GetBankAccountsQuery,
-  GetBankAccountsQueryVariables
->;
-export const DeleteBankConnectionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'DeleteBankConnection' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'deleteBankConnection' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'account' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'bank' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'user' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  DeleteBankConnectionMutation,
-  DeleteBankConnectionMutationVariables
->;
-export const GetBankSettingsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'GetBankSettings' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'getBankSettings' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'account' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'user' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  GetBankSettingsQuery,
-  GetBankSettingsQueryVariables
+  UpdateSettingsMutation,
+  UpdateSettingsMutationVariables
 >;
 export const GetNotificationsDocument = {
   kind: 'Document',
@@ -2838,83 +2579,6 @@ export type BalanceVatFieldPolicy = {
   owed?: FieldPolicy<any> | FieldReadFunction<any>;
   paid?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type BankKeySpecifier = ('id' | 'name' | BankKeySpecifier)[];
-export type BankFieldPolicy = {
-  id?: FieldPolicy<any> | FieldReadFunction<any>;
-  name?: FieldPolicy<any> | FieldReadFunction<any>;
-};
-export type BankAccountKeySpecifier = (
-  | 'accountIdentifications'
-  | 'balance'
-  | 'currency'
-  | 'id'
-  | 'type'
-  | BankAccountKeySpecifier
-)[];
-export type BankAccountFieldPolicy = {
-  accountIdentifications?: FieldPolicy<any> | FieldReadFunction<any>;
-  balance?: FieldPolicy<any> | FieldReadFunction<any>;
-  currency?: FieldPolicy<any> | FieldReadFunction<any>;
-  id?: FieldPolicy<any> | FieldReadFunction<any>;
-  type?: FieldPolicy<any> | FieldReadFunction<any>;
-};
-export type BankAccountIdentificationKeySpecifier = (
-  | 'identification'
-  | 'type'
-  | BankAccountIdentificationKeySpecifier
-)[];
-export type BankAccountIdentificationFieldPolicy = {
-  identification?: FieldPolicy<any> | FieldReadFunction<any>;
-  type?: FieldPolicy<any> | FieldReadFunction<any>;
-};
-export type BankAccountsKeySpecifier = ('items' | BankAccountsKeySpecifier)[];
-export type BankAccountsFieldPolicy = {
-  items?: FieldPolicy<any> | FieldReadFunction<any>;
-};
-export type BankCallbackKeySpecifier = (
-  | 'authorisationUrl'
-  | 'status'
-  | BankCallbackKeySpecifier
-)[];
-export type BankCallbackFieldPolicy = {
-  authorisationUrl?: FieldPolicy<any> | FieldReadFunction<any>;
-  status?: FieldPolicy<any> | FieldReadFunction<any>;
-};
-export type BankConnectionKeySpecifier = (
-  | 'status'
-  | BankConnectionKeySpecifier
-)[];
-export type BankConnectionFieldPolicy = {
-  status?: FieldPolicy<any> | FieldReadFunction<any>;
-};
-export type BankDetailsKeySpecifier = (
-  | 'accountNumber'
-  | 'sortCode'
-  | BankDetailsKeySpecifier
-)[];
-export type BankDetailsFieldPolicy = {
-  accountNumber?: FieldPolicy<any> | FieldReadFunction<any>;
-  sortCode?: FieldPolicy<any> | FieldReadFunction<any>;
-};
-export type BankSettingsKeySpecifier = (
-  | 'account'
-  | 'bank'
-  | 'consent'
-  | 'id'
-  | 'user'
-  | BankSettingsKeySpecifier
-)[];
-export type BankSettingsFieldPolicy = {
-  account?: FieldPolicy<any> | FieldReadFunction<any>;
-  bank?: FieldPolicy<any> | FieldReadFunction<any>;
-  consent?: FieldPolicy<any> | FieldReadFunction<any>;
-  id?: FieldPolicy<any> | FieldReadFunction<any>;
-  user?: FieldPolicy<any> | FieldReadFunction<any>;
-};
-export type BanksKeySpecifier = ('items' | BanksKeySpecifier)[];
-export type BanksFieldPolicy = {
-  items?: FieldPolicy<any> | FieldReadFunction<any>;
-};
 export type ClientKeySpecifier = (
   | 'address'
   | 'companyId'
@@ -2954,7 +2618,6 @@ export type CompaniesFieldPolicy = {
 };
 export type CompanyKeySpecifier = (
   | 'address'
-  | 'bank'
   | 'companyNumber'
   | 'contact'
   | 'id'
@@ -2964,7 +2627,6 @@ export type CompanyKeySpecifier = (
 )[];
 export type CompanyFieldPolicy = {
   address?: FieldPolicy<any> | FieldReadFunction<any>;
-  bank?: FieldPolicy<any> | FieldReadFunction<any>;
   companyNumber?: FieldPolicy<any> | FieldReadFunction<any>;
   contact?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -2993,12 +2655,9 @@ export type ExpenseCategoryFieldPolicy = {
 };
 export type MutationKeySpecifier = (
   | 'addTransaction'
-  | 'bankCallback'
-  | 'createBankConnection'
   | 'createClient'
   | 'createCompany'
   | 'createReport'
-  | 'deleteBankConnection'
   | 'deleteClient'
   | 'deleteCompany'
   | 'deleteFile'
@@ -3007,7 +2666,6 @@ export type MutationKeySpecifier = (
   | 'notificationBeacon'
   | 'requestUpload'
   | 'transactionBeacon'
-  | 'updateBankSettings'
   | 'updateClient'
   | 'updateCompany'
   | 'updateSettings'
@@ -3016,12 +2674,9 @@ export type MutationKeySpecifier = (
 )[];
 export type MutationFieldPolicy = {
   addTransaction?: FieldPolicy<any> | FieldReadFunction<any>;
-  bankCallback?: FieldPolicy<any> | FieldReadFunction<any>;
-  createBankConnection?: FieldPolicy<any> | FieldReadFunction<any>;
   createClient?: FieldPolicy<any> | FieldReadFunction<any>;
   createCompany?: FieldPolicy<any> | FieldReadFunction<any>;
   createReport?: FieldPolicy<any> | FieldReadFunction<any>;
-  deleteBankConnection?: FieldPolicy<any> | FieldReadFunction<any>;
   deleteClient?: FieldPolicy<any> | FieldReadFunction<any>;
   deleteCompany?: FieldPolicy<any> | FieldReadFunction<any>;
   deleteFile?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -3030,7 +2685,6 @@ export type MutationFieldPolicy = {
   notificationBeacon?: FieldPolicy<any> | FieldReadFunction<any>;
   requestUpload?: FieldPolicy<any> | FieldReadFunction<any>;
   transactionBeacon?: FieldPolicy<any> | FieldReadFunction<any>;
-  updateBankSettings?: FieldPolicy<any> | FieldReadFunction<any>;
   updateClient?: FieldPolicy<any> | FieldReadFunction<any>;
   updateCompany?: FieldPolicy<any> | FieldReadFunction<any>;
   updateSettings?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -3064,9 +2718,6 @@ export type NotificationsFieldPolicy = {
 };
 export type QueryKeySpecifier = (
   | 'getBalance'
-  | 'getBankAccounts'
-  | 'getBankSettings'
-  | 'getBanks'
   | 'getClient'
   | 'getClients'
   | 'getCompanies'
@@ -3082,9 +2733,6 @@ export type QueryKeySpecifier = (
 )[];
 export type QueryFieldPolicy = {
   getBalance?: FieldPolicy<any> | FieldReadFunction<any>;
-  getBankAccounts?: FieldPolicy<any> | FieldReadFunction<any>;
-  getBankSettings?: FieldPolicy<any> | FieldReadFunction<any>;
-  getBanks?: FieldPolicy<any> | FieldReadFunction<any>;
   getClient?: FieldPolicy<any> | FieldReadFunction<any>;
   getClients?: FieldPolicy<any> | FieldReadFunction<any>;
   getCompanies?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -3171,13 +2819,11 @@ export type StorageUploadFieldPolicy = {
   url?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type SubscriptionKeySpecifier = (
-  | 'onBankCallback'
   | 'onNotification'
   | 'onTransaction'
   | SubscriptionKeySpecifier
 )[];
 export type SubscriptionFieldPolicy = {
-  onBankCallback?: FieldPolicy<any> | FieldReadFunction<any>;
   onNotification?: FieldPolicy<any> | FieldReadFunction<any>;
   onTransaction?: FieldPolicy<any> | FieldReadFunction<any>;
 };
@@ -3277,66 +2923,6 @@ export type StrictTypedTypePolicies = {
       | BalanceVatKeySpecifier
       | (() => undefined | BalanceVatKeySpecifier);
     fields?: BalanceVatFieldPolicy;
-  };
-  Bank?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?: false | BankKeySpecifier | (() => undefined | BankKeySpecifier);
-    fields?: BankFieldPolicy;
-  };
-  BankAccount?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?:
-      | false
-      | BankAccountKeySpecifier
-      | (() => undefined | BankAccountKeySpecifier);
-    fields?: BankAccountFieldPolicy;
-  };
-  BankAccountIdentification?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?:
-      | false
-      | BankAccountIdentificationKeySpecifier
-      | (() => undefined | BankAccountIdentificationKeySpecifier);
-    fields?: BankAccountIdentificationFieldPolicy;
-  };
-  BankAccounts?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?:
-      | false
-      | BankAccountsKeySpecifier
-      | (() => undefined | BankAccountsKeySpecifier);
-    fields?: BankAccountsFieldPolicy;
-  };
-  BankCallback?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?:
-      | false
-      | BankCallbackKeySpecifier
-      | (() => undefined | BankCallbackKeySpecifier);
-    fields?: BankCallbackFieldPolicy;
-  };
-  BankConnection?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?:
-      | false
-      | BankConnectionKeySpecifier
-      | (() => undefined | BankConnectionKeySpecifier);
-    fields?: BankConnectionFieldPolicy;
-  };
-  BankDetails?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?:
-      | false
-      | BankDetailsKeySpecifier
-      | (() => undefined | BankDetailsKeySpecifier);
-    fields?: BankDetailsFieldPolicy;
-  };
-  BankSettings?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?:
-      | false
-      | BankSettingsKeySpecifier
-      | (() => undefined | BankSettingsKeySpecifier);
-    fields?: BankSettingsFieldPolicy;
-  };
-  Banks?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?:
-      | false
-      | BanksKeySpecifier
-      | (() => undefined | BanksKeySpecifier);
-    fields?: BanksFieldPolicy;
   };
   Client?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?:

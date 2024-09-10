@@ -1,10 +1,10 @@
 type Notification @aws_iam @aws_oidc {
-  createdAt: String
-  id: ID
-  message: String
-  owner: String
+  createdAt: String!
+  id: ID!
+  message: String!
+  owner: String!
   payload: String
-  read: Boolean
+  read: Boolean!
 }
 
 type Notifications {

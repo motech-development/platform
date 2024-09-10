@@ -37,24 +37,16 @@ const documents = {
     types.UpdateClientDocument,
   '\n  mutation DeleteClient($id: ID!) {\n    deleteClient(id: $id) {\n      companyId\n      id\n      name\n    }\n  }\n':
     types.DeleteClientDocument,
+  '\n  query GetSettings($id: ID!) {\n    getCompany(id: $id) {\n      id\n      name\n    }\n    getSettings(id: $id) {\n      categories {\n        name\n        protect\n        vatRate\n      }\n      id\n      vat {\n        charge\n        pay\n        registration\n        scheme\n      }\n      yearEnd {\n        day\n        month\n      }\n    }\n  }\n':
+    types.GetSettingsDocument,
   '\n  mutation CreateReport($input: ReportInput!) {\n    createReport(input: $input) {\n      status\n    }\n  }\n':
     types.CreateReportDocument,
   '\n  query GetReports($id: ID!, $count: Int, $nextToken: String) {\n    getReports(id: $id, count: $count, nextToken: $nextToken) {\n      id\n      items {\n        createdAt\n        downloadUrl\n        id\n        ttl\n      }\n    }\n  }\n':
     types.GetReportsDocument,
-  '\n  query GetBanks($id: ID!) {\n    getBankSettings(id: $id) {\n      id\n      user\n    }\n    getBanks {\n      items {\n        id\n        name\n      }\n    }\n  }\n':
-    types.GetBanksDocument,
-  '\n  mutation CreateBankConnection($input: BankConnectionInput!) {\n    createBankConnection(input: $input) {\n      status\n    }\n  }\n':
-    types.CreateBankConnectionDocument,
-  '\n  subscription OnBackCallback {\n    onBankCallback {\n      authorisationUrl\n    }\n  }\n':
-    types.OnBackCallbackDocument,
-  '\n  mutation UpdateBankSettings($input: BankSettingsInput!) {\n    updateBankSettings(input: $input) {\n      account\n      id\n      user\n    }\n  }\n':
-    types.UpdateBankSettingsDocument,
-  '\n  query GetBankAccounts($id: ID!) {\n    getBankAccounts(id: $id) {\n      items {\n        accountIdentifications {\n          identification\n          type\n        }\n        balance\n        currency\n        id\n        type\n      }\n    }\n  }\n':
-    types.GetBankAccountsDocument,
-  '\n  mutation DeleteBankConnection($id: ID!) {\n    deleteBankConnection(id: $id) {\n      account\n      bank\n      id\n      user\n    }\n  }\n':
-    types.DeleteBankConnectionDocument,
-  '\n  query GetBankSettings($id: ID!) {\n    getBankSettings(id: $id) {\n      account\n      id\n      user\n    }\n  }\n':
-    types.GetBankSettingsDocument,
+  '\n  subscription OnNotification($owner: String!) {\n    onNotification(owner: $owner) {\n      createdAt\n      id\n      message\n      owner\n      payload\n      read\n    }\n  }\n':
+    types.OnNotificationDocument,
+  '\n  mutation UpdateSettings($input: SettingsInput!) {\n    updateSettings(input: $input) {\n      categories {\n        name\n        protect\n        vatRate\n      }\n      id\n      vat {\n        charge\n        pay\n        registration\n        scheme\n      }\n      yearEnd {\n        day\n        month\n      }\n    }\n  }\n':
+    types.UpdateSettingsDocument,
   '\n  query GetNotifications($id: ID!, $count: Int) {\n    getNotifications(id: $id, count: $count) {\n      id\n      items {\n        createdAt\n        id\n        message\n        read\n      }\n    }\n  }\n':
     types.GetNotificationsDocument,
   '\n  mutation MarkAsRead($id: ID!, $input: MarkNotificationsInput!) {\n    markAsRead(id: $id, input: $input) {\n      items {\n        id\n        read\n      }\n    }\n  }\n':
@@ -151,6 +143,12 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
+  source: '\n  query GetSettings($id: ID!) {\n    getCompany(id: $id) {\n      id\n      name\n    }\n    getSettings(id: $id) {\n      categories {\n        name\n        protect\n        vatRate\n      }\n      id\n      vat {\n        charge\n        pay\n        registration\n        scheme\n      }\n      yearEnd {\n        day\n        month\n      }\n    }\n  }\n',
+): (typeof documents)['\n  query GetSettings($id: ID!) {\n    getCompany(id: $id) {\n      id\n      name\n    }\n    getSettings(id: $id) {\n      categories {\n        name\n        protect\n        vatRate\n      }\n      id\n      vat {\n        charge\n        pay\n        registration\n        scheme\n      }\n      yearEnd {\n        day\n        month\n      }\n    }\n  }\n'];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(
   source: '\n  mutation CreateReport($input: ReportInput!) {\n    createReport(input: $input) {\n      status\n    }\n  }\n',
 ): (typeof documents)['\n  mutation CreateReport($input: ReportInput!) {\n    createReport(input: $input) {\n      status\n    }\n  }\n'];
 /**
@@ -163,44 +161,14 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: '\n  query GetBanks($id: ID!) {\n    getBankSettings(id: $id) {\n      id\n      user\n    }\n    getBanks {\n      items {\n        id\n        name\n      }\n    }\n  }\n',
-): (typeof documents)['\n  query GetBanks($id: ID!) {\n    getBankSettings(id: $id) {\n      id\n      user\n    }\n    getBanks {\n      items {\n        id\n        name\n      }\n    }\n  }\n'];
+  source: '\n  subscription OnNotification($owner: String!) {\n    onNotification(owner: $owner) {\n      createdAt\n      id\n      message\n      owner\n      payload\n      read\n    }\n  }\n',
+): (typeof documents)['\n  subscription OnNotification($owner: String!) {\n    onNotification(owner: $owner) {\n      createdAt\n      id\n      message\n      owner\n      payload\n      read\n    }\n  }\n'];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: '\n  mutation CreateBankConnection($input: BankConnectionInput!) {\n    createBankConnection(input: $input) {\n      status\n    }\n  }\n',
-): (typeof documents)['\n  mutation CreateBankConnection($input: BankConnectionInput!) {\n    createBankConnection(input: $input) {\n      status\n    }\n  }\n'];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(
-  source: '\n  subscription OnBackCallback {\n    onBankCallback {\n      authorisationUrl\n    }\n  }\n',
-): (typeof documents)['\n  subscription OnBackCallback {\n    onBankCallback {\n      authorisationUrl\n    }\n  }\n'];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(
-  source: '\n  mutation UpdateBankSettings($input: BankSettingsInput!) {\n    updateBankSettings(input: $input) {\n      account\n      id\n      user\n    }\n  }\n',
-): (typeof documents)['\n  mutation UpdateBankSettings($input: BankSettingsInput!) {\n    updateBankSettings(input: $input) {\n      account\n      id\n      user\n    }\n  }\n'];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(
-  source: '\n  query GetBankAccounts($id: ID!) {\n    getBankAccounts(id: $id) {\n      items {\n        accountIdentifications {\n          identification\n          type\n        }\n        balance\n        currency\n        id\n        type\n      }\n    }\n  }\n',
-): (typeof documents)['\n  query GetBankAccounts($id: ID!) {\n    getBankAccounts(id: $id) {\n      items {\n        accountIdentifications {\n          identification\n          type\n        }\n        balance\n        currency\n        id\n        type\n      }\n    }\n  }\n'];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(
-  source: '\n  mutation DeleteBankConnection($id: ID!) {\n    deleteBankConnection(id: $id) {\n      account\n      bank\n      id\n      user\n    }\n  }\n',
-): (typeof documents)['\n  mutation DeleteBankConnection($id: ID!) {\n    deleteBankConnection(id: $id) {\n      account\n      bank\n      id\n      user\n    }\n  }\n'];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(
-  source: '\n  query GetBankSettings($id: ID!) {\n    getBankSettings(id: $id) {\n      account\n      id\n      user\n    }\n  }\n',
-): (typeof documents)['\n  query GetBankSettings($id: ID!) {\n    getBankSettings(id: $id) {\n      account\n      id\n      user\n    }\n  }\n'];
+  source: '\n  mutation UpdateSettings($input: SettingsInput!) {\n    updateSettings(input: $input) {\n      categories {\n        name\n        protect\n        vatRate\n      }\n      id\n      vat {\n        charge\n        pay\n        registration\n        scheme\n      }\n      yearEnd {\n        day\n        month\n      }\n    }\n  }\n',
+): (typeof documents)['\n  mutation UpdateSettings($input: SettingsInput!) {\n    updateSettings(input: $input) {\n      categories {\n        name\n        protect\n        vatRate\n      }\n      id\n      vat {\n        charge\n        pay\n        registration\n        scheme\n      }\n      yearEnd {\n        day\n        month\n      }\n    }\n  }\n'];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
