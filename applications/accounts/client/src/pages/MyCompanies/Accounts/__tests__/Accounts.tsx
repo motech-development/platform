@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
-import Accounts, { GET_BALANCE } from '../Accounts';
+import Accounts, { GET_BALANCE, ON_TRANSACTION } from '../Accounts';
 
 describe('Accounts', () => {
   let component: RenderResult;
@@ -130,6 +130,56 @@ describe('Accounts', () => {
                 companyId: 'company-id',
                 id: 'transaction-2',
                 status: 'confirmed',
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: ON_TRANSACTION,
+            variables: {
+              id: 'company-id',
+              owner: 'user-id',
+            },
+          },
+          result: {
+            data: {
+              onTransaction: {
+                balance: 180,
+                transactions: [
+                  {
+                    balance: 180,
+                    currency: 'GBP',
+                    date: '2020-04-15T14:07:18+0000',
+                    items: [
+                      {
+                        amount: -20,
+                        attachment: '',
+                        description: 'Lunch',
+                        id: 'transaction-2',
+                        name: 'KFC',
+                      },
+                    ],
+                  },
+                  {
+                    balance: 200,
+                    currency: 'GBP',
+                    date: '2020-04-13T14:07:18+0000',
+                    items: [
+                      {
+                        amount: 200,
+                        attachment: '',
+                        description: 'Invoice #1',
+                        id: 'transaction-1',
+                        name: 'Client',
+                      },
+                    ],
+                  },
+                ],
+                vat: {
+                  owed: 100,
+                  paid: 99.9,
+                },
               },
             },
           },
@@ -419,6 +469,56 @@ describe('Accounts', () => {
             query: DELETE_TRANSACTION,
             variables: {
               id: 'transaction-2',
+            },
+          },
+        },
+        {
+          request: {
+            query: ON_TRANSACTION,
+            variables: {
+              id: 'company-id',
+              owner: 'user-id',
+            },
+          },
+          result: {
+            data: {
+              onTransaction: {
+                balance: 180,
+                transactions: [
+                  {
+                    balance: 180,
+                    currency: 'GBP',
+                    date: '2020-04-15T14:07:18+0000',
+                    items: [
+                      {
+                        amount: -20,
+                        attachment: '',
+                        description: 'Lunch',
+                        id: 'transaction-2',
+                        name: 'KFC',
+                      },
+                    ],
+                  },
+                  {
+                    balance: 200,
+                    currency: 'GBP',
+                    date: '2020-04-13T14:07:18+0000',
+                    items: [
+                      {
+                        amount: 200,
+                        attachment: '',
+                        description: 'Invoice #1',
+                        id: 'transaction-1',
+                        name: 'Client',
+                      },
+                    ],
+                  },
+                ],
+                vat: {
+                  owed: 100,
+                  paid: 99.9,
+                },
+              },
             },
           },
         },
