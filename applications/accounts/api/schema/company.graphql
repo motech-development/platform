@@ -1,6 +1,6 @@
 type Companies {
-  id: ID
-  items: [Company]
+  id: ID!
+  items: [Company!]!
   nextToken: String
 }
 

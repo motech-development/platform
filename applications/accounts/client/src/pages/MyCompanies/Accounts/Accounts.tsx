@@ -19,10 +19,6 @@ import DELETE_TRANSACTION, {
   IDeleteTransactionInput,
   IDeleteTransactionOutput,
 } from '../../../graphql/transaction/DELETE_TRANSACTION';
-import ON_TRANSACTION, {
-  IOnTransactionInput,
-  IOnTransactionOutput,
-} from '../../../graphql/transaction/ON_TRANSACTION';
 import invariant from '../../../utils/invariant';
 
 export const GET_BALANCE = gql(/* GraphQL */ `
@@ -31,6 +27,30 @@ export const GET_BALANCE = gql(/* GraphQL */ `
       balance
       currency
       id
+      transactions {
+        balance
+        currency
+        date
+        items {
+          amount
+          attachment
+          description
+          id
+          name
+        }
+      }
+      vat {
+        owed
+        paid
+      }
+    }
+  }
+`);
+
+export const ON_TRANSACTION = gql(/* GraphQL */ `
+  subscription OnTransaction($id: ID!, $owner: String!) {
+    onTransaction(id: $id, owner: $owner) {
+      balance
       transactions {
         balance
         currency
@@ -99,7 +119,7 @@ function Accounts() {
     renderCount.current += 1;
 
     if (renderCount.current >= renderCheck) {
-      unsubscribe = subscribeToMore<IOnTransactionOutput, IOnTransactionInput>({
+      unsubscribe = subscribeToMore({
         document: ON_TRANSACTION,
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data?.onTransaction || !prev.getBalance) {

@@ -131,8 +131,8 @@ export type Clients = {
 };
 
 export type Companies = {
-  id?: Maybe<Scalars['ID']['output']>;
-  items?: Maybe<Array<Maybe<Company>>>;
+  id: Scalars['ID']['output'];
+  items: Array<Company>;
   nextToken?: Maybe<Scalars['String']['output']>;
 };
 
@@ -589,6 +589,30 @@ export type GetBalanceQuery = {
   };
 };
 
+export type OnTransactionSubscriptionVariables = Exact<{
+  id: Scalars['ID']['input'];
+  owner: Scalars['String']['input'];
+}>;
+
+export type OnTransactionSubscription = {
+  onTransaction?: {
+    balance: number;
+    transactions: Array<{
+      balance: number;
+      currency: string;
+      date: string;
+      items: Array<{
+        amount: number;
+        attachment?: string | null;
+        description: string;
+        id: string;
+        name: string;
+      }>;
+    }>;
+    vat: { owed: number; paid: number };
+  } | null;
+};
+
 export type RecordTransactionQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -664,6 +688,43 @@ export type RequestDownloadQueryVariables = Exact<{
 }>;
 
 export type RequestDownloadQuery = { requestDownload: { url?: string | null } };
+
+export type NewCompanyFragment = {
+  companyNumber: string;
+  id: string;
+  name: string;
+  address: {
+    line1: string;
+    line2?: string | null;
+    line3: string;
+    line4?: string | null;
+    line5: string;
+  };
+  bank: { accountNumber: string; sortCode: string };
+  contact: { email: string; telephone: string };
+} & { ' $fragmentName'?: 'NewCompanyFragment' };
+
+export type CreateCompanyMutationVariables = Exact<{
+  input: CreateCompanyInput;
+}>;
+
+export type CreateCompanyMutation = {
+  createCompany: {
+    companyNumber: string;
+    id: string;
+    name: string;
+    owner?: string | null;
+    address: {
+      line1: string;
+      line2?: string | null;
+      line3: string;
+      line4?: string | null;
+      line5: string;
+    };
+    bank: { accountNumber: string; sortCode: string };
+    contact: { email: string; telephone: string };
+  };
+};
 
 export type NewClientFragment = {
   companyId: string;
@@ -770,6 +831,51 @@ export type DeleteClientMutation = {
   deleteClient: { companyId: string; id: string; name: string };
 };
 
+export type GetCompanyQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type GetCompanyQuery = {
+  getCompany: {
+    companyNumber: string;
+    id: string;
+    name: string;
+    address: {
+      line1: string;
+      line2?: string | null;
+      line3: string;
+      line4?: string | null;
+      line5: string;
+    };
+    bank: { accountNumber: string; sortCode: string };
+    contact: { email: string; telephone: string };
+  };
+};
+
+export type GetCompaniesQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type GetCompaniesQuery = {
+  getCompanies: {
+    id: string;
+    items: Array<{
+      companyNumber: string;
+      id: string;
+      name: string;
+      address: {
+        line1: string;
+        line2?: string | null;
+        line3: string;
+        line4?: string | null;
+        line5: string;
+      };
+      bank: { accountNumber: string; sortCode: string };
+      contact: { email: string; telephone: string };
+    }>;
+  };
+};
+
 export type GetSettingsQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -846,6 +952,35 @@ export type UpdateSettingsMutation = {
   };
 };
 
+export type UpdateCompanyMutationVariables = Exact<{
+  input: CompanyInput;
+}>;
+
+export type UpdateCompanyMutation = {
+  updateCompany: {
+    companyNumber: string;
+    id: string;
+    name: string;
+    address: {
+      line1: string;
+      line2?: string | null;
+      line3: string;
+      line4?: string | null;
+      line5: string;
+    };
+    bank: { accountNumber: string; sortCode: string };
+    contact: { email: string; telephone: string };
+  };
+};
+
+export type DeleteCompanyMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type DeleteCompanyMutation = {
+  deleteCompany: { id: string; name: string; owner?: string | null };
+};
+
 export type GetNotificationsQueryVariables = Exact<{
   id: Scalars['ID']['input'];
   count?: InputMaybe<Scalars['Int']['input']>;
@@ -872,6 +1007,66 @@ export type MarkAsReadMutation = {
   markAsRead: { items?: Array<{ id: string; read: boolean } | null> | null };
 };
 
+export const NewCompanyFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'NewCompany' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Company' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'address' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'line1' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'line2' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'line3' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'line4' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'line5' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'bank' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'accountNumber' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'sortCode' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'companyNumber' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'contact' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'telephone' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<NewCompanyFragment, unknown>;
 export const NewClientFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -1023,6 +1218,134 @@ export const GetBalanceDocument = {
     },
   ],
 } as unknown as DocumentNode<GetBalanceQuery, GetBalanceQueryVariables>;
+export const OnTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'subscription',
+      name: { kind: 'Name', value: 'OnTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'owner' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'onTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'owner' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'owner' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'transactions' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'balance' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'currency' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'items' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'amount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'attachment' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'description' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'vat' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'owed' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'paid' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  OnTransactionSubscription,
+  OnTransactionSubscriptionVariables
+>;
 export const RecordTransactionDocument = {
   kind: 'Document',
   definitions: [
@@ -1522,6 +1845,111 @@ export const RequestDownloadDocument = {
   RequestDownloadQuery,
   RequestDownloadQueryVariables
 >;
+export const CreateCompanyDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateCompany' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'input' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CreateCompanyInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createCompany' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'input' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'address' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'line1' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line2' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line3' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line4' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line5' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'bank' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'accountNumber' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'sortCode' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'companyNumber' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'contact' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'telephone' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'owner' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateCompanyMutation,
+  CreateCompanyMutationVariables
+>;
 export const CreateClientDocument = {
   kind: 'Document',
   definitions: [
@@ -1938,6 +2366,224 @@ export const DeleteClientDocument = {
   DeleteClientMutation,
   DeleteClientMutationVariables
 >;
+export const GetCompanyDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetCompany' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getCompany' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'address' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'line1' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line2' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line3' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line4' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line5' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'bank' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'accountNumber' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'sortCode' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'companyNumber' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'contact' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'telephone' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetCompanyQuery, GetCompanyQueryVariables>;
+export const GetCompaniesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetCompanies' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getCompanies' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'items' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'address' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'line1' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'line2' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'line3' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'line4' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'line5' },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'bank' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'accountNumber' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'sortCode' },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'companyNumber' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'contact' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'email' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'telephone' },
+                            },
+                          ],
+                        },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetCompaniesQuery, GetCompaniesQueryVariables>;
 export const GetSettingsDocument = {
   kind: 'Document',
   definitions: [
@@ -2368,6 +3014,160 @@ export const UpdateSettingsDocument = {
 } as unknown as DocumentNode<
   UpdateSettingsMutation,
   UpdateSettingsMutationVariables
+>;
+export const UpdateCompanyDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateCompany' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'input' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CompanyInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateCompany' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'input' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'address' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'line1' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line2' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line3' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line4' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'line5' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'bank' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'accountNumber' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'sortCode' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'companyNumber' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'contact' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'telephone' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateCompanyMutation,
+  UpdateCompanyMutationVariables
+>;
+export const DeleteCompanyDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteCompany' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteCompany' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'owner' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteCompanyMutation,
+  DeleteCompanyMutationVariables
 >;
 export const GetNotificationsDocument = {
   kind: 'Document',

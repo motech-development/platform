@@ -11,6 +11,7 @@ import {
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { number, object } from 'yup';
+import { VatScheme } from '../graphql/graphql';
 import {
   useAddress,
   useBank,
@@ -62,7 +63,7 @@ const formSchema = {
     charge: 20,
     pay: 20,
     registration: '',
-    scheme: '',
+    scheme: '' as VatScheme,
   },
   yearEnd: {
     day: today.getDate(),

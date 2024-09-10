@@ -1,3 +1,4 @@
+import { ApolloCache, InMemoryCache } from '@apollo/client';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -7,11 +8,15 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import DELETE_COMPANY from '../../../graphql/company/DELETE_COMPANY';
-import GET_COMPANY from '../../../graphql/company/GET_COMPANY';
-import UPDATE_COMPANY from '../../../graphql/company/UPDATE_COMPANY';
+import { Companies, DeleteClientMutation } from '../../../graphql/graphql';
 import TestProvider, { add } from '../../../utils/TestProvider';
-import UpdateDetails from '../UpdateDetails';
+import { GET_COMPANIES } from '../MyCompanies';
+import UpdateDetails, {
+  DELETE_COMPANY,
+  GET_COMPANY,
+  update,
+  UPDATE_COMPANY,
+} from '../UpdateDetails';
 
 describe('UpdateDetails', () => {
   let component: RenderResult;
@@ -602,6 +607,137 @@ describe('UpdateDetails', () => {
       });
 
       await expect(findByTestId('/my-companies')).resolves.toBeInTheDocument();
+    });
+  });
+
+  describe('cache', () => {
+    let cache: ApolloCache<DeleteClientMutation>;
+
+    beforeEach(() => {
+      cache =
+        new InMemoryCache() as unknown as ApolloCache<DeleteClientMutation>;
+
+      cache.writeQuery({
+        data: {
+          getCompanies: {
+            __typename: 'Companies',
+            id: 'user-id',
+            items: [
+              {
+                address: {
+                  line1: '1 Street',
+                  line2: '',
+                  line3: 'Town',
+                  line4: 'County',
+                  line5: 'KT1 1NE',
+                },
+                bank: {
+                  accountNumber: '12345678',
+                  sortCode: '12-34-56',
+                },
+                companyNumber: '12345678',
+                contact: {
+                  email: 'info@contact.com',
+                  telephone: '07712345678',
+                },
+                id: 'company-uuid-1',
+                name: 'New company',
+              },
+            ],
+          } as Companies,
+        },
+        query: GET_COMPANIES,
+        variables: {
+          id: 'user-id',
+        },
+      });
+
+      jest.spyOn(cache, 'modify');
+    });
+
+    it('should remove company from cache if item exists', () => {
+      const input = {
+        data: {
+          deleteCompany: {
+            id: 'company-uuid-1',
+            name: 'New company',
+            owner: 'user-id',
+          },
+        },
+      };
+
+      update(cache, input, {});
+
+      const result = cache.readQuery({
+        query: GET_COMPANIES,
+        variables: {
+          id: 'user-id',
+        },
+      });
+
+      expect(result).toEqual({
+        getCompanies: {
+          __typename: 'Companies',
+          id: 'user-id',
+          items: [],
+        },
+      });
+    });
+
+    it('should not remove company from cache if item does not exist', () => {
+      const input = {
+        data: {
+          deleteCompany: {
+            id: 'company-uuid-2',
+            name: 'New company',
+            owner: 'user-id',
+          },
+        },
+      };
+
+      update(cache, input, {});
+
+      const result = cache.readQuery({
+        query: GET_COMPANIES,
+        variables: {
+          id: 'user-id',
+        },
+      });
+
+      expect(result).toEqual({
+        getCompanies: {
+          __typename: 'Companies',
+          id: 'user-id',
+          items: [
+            {
+              address: {
+                line1: '1 Street',
+                line2: '',
+                line3: 'Town',
+                line4: 'County',
+                line5: 'KT1 1NE',
+              },
+              bank: {
+                accountNumber: '12345678',
+                sortCode: '12-34-56',
+              },
+              companyNumber: '12345678',
+              contact: {
+                email: 'info@contact.com',
+                telephone: '07712345678',
+              },
+              id: 'company-uuid-1',
+              name: 'New company',
+            },
+          ],
+        },
+      });
+    });
+
+    it('should not modify cache if no data is passed', () => {
+      update(cache, {}, {});
+
+      expect(cache.modify).not.toHaveBeenCalled();
     });
   });
 });

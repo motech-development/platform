@@ -8,6 +8,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import { object } from 'yup';
+import { GetCompanyQuery } from '../graphql/graphql';
 import {
   useAddress,
   useBank,
@@ -21,28 +22,7 @@ import {
   ContactDetailsFields,
 } from './CommonFields';
 
-const formSchema = {
-  address: {
-    line1: '',
-    line2: '',
-    line3: '',
-    line4: '',
-    line5: '',
-  },
-  bank: {
-    accountNumber: '',
-    sortCode: '',
-  },
-  companyNumber: '',
-  contact: {
-    email: '',
-    telephone: '',
-  },
-  id: '',
-  name: '',
-};
-
-export type FormSchema = typeof formSchema;
+export type FormSchema = GetCompanyQuery['getCompany'];
 
 export interface ICompanyFormProps {
   backTo: string;

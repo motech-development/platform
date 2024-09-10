@@ -10,18 +10,40 @@ import {
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import Connected from '../../components/Connected';
-import GET_COMPANIES, {
-  IGetCompaniesInput,
-  IGetCompaniesOutput,
-} from '../../graphql/company/GET_COMPANIES';
+import { gql } from '../../graphql';
+
+export const GET_COMPANIES = gql(/* GraphQL */ `
+  query GetCompanies($id: ID!) {
+    getCompanies(id: $id) {
+      id
+      items {
+        address {
+          line1
+          line2
+          line3
+          line4
+          line5
+        }
+        bank {
+          accountNumber
+          sortCode
+        }
+        companyNumber
+        contact {
+          email
+          telephone
+        }
+        id
+        name
+      }
+    }
+  }
+`);
 
 function MyCompanies() {
   const { t } = useTranslation('my-companies');
   const { user } = useAuth0();
-  const { data, error, loading } = useQuery<
-    IGetCompaniesOutput,
-    IGetCompaniesInput
-  >(GET_COMPANIES, {
+  const { data, error, loading } = useQuery(GET_COMPANIES, {
     variables: {
       id: user?.sub as string,
     },

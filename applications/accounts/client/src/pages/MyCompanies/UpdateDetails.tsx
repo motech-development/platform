@@ -1,4 +1,10 @@
-import { useMutation, useQuery } from '@apollo/client';
+import {
+  ApolloCache,
+  MutationUpdaterFunction,
+  Reference,
+  useMutation,
+  useQuery,
+} from '@apollo/client';
 import {
   Button,
   Col,
@@ -12,20 +18,94 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CompanyForm, { FormSchema } from '../../components/CompanyForm';
 import Connected from '../../components/Connected';
 import DeleteItem from '../../components/DeleteItem';
-import DELETE_COMPANY, {
-  IDeleteCompanyInput,
-  IDeleteCompanyOutput,
-  updateCache,
-} from '../../graphql/company/DELETE_COMPANY';
-import GET_COMPANY, {
-  IGetCompanyInput,
-  IGetCompanyOutput,
-} from '../../graphql/company/GET_COMPANY';
-import UPDATE_COMPANY, {
-  IUpdateCompanyInput,
-  IUpdateCompanyOutput,
-} from '../../graphql/company/UPDATE_COMPANY';
+import { gql } from '../../graphql';
+import {
+  DeleteCompanyMutation,
+  MutationDeleteCompanyArgs,
+} from '../../graphql/graphql';
 import invariant from '../../utils/invariant';
+
+export const update: MutationUpdaterFunction<
+  DeleteCompanyMutation,
+  MutationDeleteCompanyArgs,
+  unknown,
+  ApolloCache<unknown>
+> = (cache, { data }) => {
+  if (data?.deleteCompany) {
+    const { deleteCompany } = data;
+
+    cache.modify({
+      fields: {
+        items: (refs: readonly Reference[], { readField }) =>
+          refs.filter((ref) => readField('id', ref) !== deleteCompany.id),
+      },
+      id: cache.identify({
+        __typename: 'Companies',
+        id: deleteCompany.owner,
+      }),
+    });
+  }
+};
+
+export const GET_COMPANY = gql(/* GraphQL */ `
+  query GetCompany($id: ID!) {
+    getCompany(id: $id) {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      bank {
+        accountNumber
+        sortCode
+      }
+      companyNumber
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  }
+`);
+
+export const UPDATE_COMPANY = gql(/* GraphQL */ `
+  mutation UpdateCompany($input: CompanyInput!) {
+    updateCompany(input: $input) {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      bank {
+        accountNumber
+        sortCode
+      }
+      companyNumber
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  }
+`);
+
+export const DELETE_COMPANY = gql(/* GraphQL */ `
+  mutation DeleteCompany($id: ID!) {
+    deleteCompany(id: $id) {
+      id
+      name
+      owner
+    }
+  }
+`);
 
 function UpdateDetails() {
   const backTo = (id: string) => `/my-companies/dashboard/${id}`;
@@ -38,7 +118,7 @@ function UpdateDetails() {
 
   const [modal, setModal] = useState(false);
   const [mutation, { error: updateError, loading: updateLoading }] =
-    useMutation<IUpdateCompanyOutput, IUpdateCompanyInput>(UPDATE_COMPANY, {
+    useMutation(UPDATE_COMPANY, {
       onCompleted: ({ updateCompany }) => {
         if (updateCompany) {
           const { id, name } = updateCompany;
@@ -61,40 +141,37 @@ function UpdateDetails() {
         }
       },
     });
-  const [deleteMutation, { loading: deleteLoading }] = useMutation<
-    IDeleteCompanyOutput,
-    IDeleteCompanyInput
-  >(DELETE_COMPANY, {
-    onCompleted: ({ deleteCompany }) => {
-      if (deleteCompany) {
-        const { name } = deleteCompany;
+  const [deleteMutation, { loading: deleteLoading }] = useMutation(
+    DELETE_COMPANY,
+    {
+      onCompleted: ({ deleteCompany }) => {
+        if (deleteCompany) {
+          const { name } = deleteCompany;
 
-        add({
-          colour: 'success',
-          message: t('delete-company.success', {
-            name,
-          }),
-        });
-      } else {
+          add({
+            colour: 'success',
+            message: t('delete-company.success', {
+              name,
+            }),
+          });
+        } else {
+          add({
+            colour: 'danger',
+            message: t('delete-company.retry'),
+          });
+        }
+
+        navigate('/my-companies');
+      },
+      onError: () => {
         add({
           colour: 'danger',
-          message: t('delete-company.retry'),
+          message: t('delete-company.error'),
         });
-      }
-
-      navigate('/my-companies');
+      },
     },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('delete-company.error'),
-      });
-    },
-  });
-  const { data, error, loading } = useQuery<
-    IGetCompanyOutput,
-    IGetCompanyInput
-  >(GET_COMPANY, {
+  );
+  const { data, error, loading } = useQuery(GET_COMPANY, {
     variables: {
       id: companyId,
     },
@@ -107,7 +184,7 @@ function UpdateDetails() {
   };
   const onDelete = () => {
     deleteMutation({
-      update: updateCache,
+      update,
       variables: {
         id: companyId,
       },
