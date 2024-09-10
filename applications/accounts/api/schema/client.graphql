@@ -13,7 +13,6 @@ type Client {
 }
 
 input ClientInput {
-  __typename: String
   address: AddressInput!
   companyId: String!
   contact: ContactInput!

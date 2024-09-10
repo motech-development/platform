@@ -32,7 +32,6 @@ input BalanceVatInput {
 }
 
 input BalanceInput {
-  __typename: String
   balance: Float!
   vat: BalanceVatInput!
 }
