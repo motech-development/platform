@@ -1,24 +1,22 @@
 type SettingsYearEnd {
-  day: Float
-  month: Float
+  day: Float!
+  month: Float!
 }
 
 type Settings {
-  categories: [ExpenseCategory]
-  id: ID
-  vat: VatSettings
-  yearEnd: SettingsYearEnd
+  categories: [ExpenseCategory!]!
+  id: ID!
+  vat: VatSettings!
+  yearEnd: SettingsYearEnd!
 }
 
 input SettingsYearEndInput {
-  __typename: String
   day: Float!
   month: Float!
 }
 
 input SettingsInput {
-  __typename: String
-  categories: [ExpenseCategoryInput]!
+  categories: [ExpenseCategoryInput!]!
   id: ID!
   vat: VatSettingsInput!
   yearEnd: SettingsYearEndInput!

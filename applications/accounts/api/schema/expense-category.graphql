@@ -1,11 +1,10 @@
 type ExpenseCategory {
-  name: String
-  protect: Boolean
-  vatRate: Float
+  name: String!
+  protect: Boolean!
+  vatRate: Float!
 }
 
 input ExpenseCategoryInput {
-  __typename: String
   name: String!
   protect: Boolean!
   vatRate: Float!

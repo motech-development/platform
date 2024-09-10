@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -11,12 +11,9 @@ import {
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import ON_NOTIFICATION, {
-  IOnNotificationInput,
-  IOnNotificationOutput,
-} from '../../graphql/notifications/ON_NOTIFICATION';
+import { gql } from '../../graphql';
 
-export const GET_NOTIFICATIONS = gql`
+export const GET_NOTIFICATIONS = gql(/* GraphQL */ `
   query GetNotifications($id: ID!, $count: Int) {
     getNotifications(id: $id, count: $count) {
       id
@@ -28,7 +25,20 @@ export const GET_NOTIFICATIONS = gql`
       }
     }
   }
-`;
+`);
+
+export const ON_NOTIFICATION = gql(/* GraphQL */ `
+  subscription OnNotification($owner: String!) {
+    onNotification(owner: $owner) {
+      createdAt
+      id
+      message
+      owner
+      payload
+      read
+    }
+  }
+`);
 
 interface IGetNotificationsInput {
   count: number;
@@ -47,7 +57,7 @@ interface IGetNotificationsOutput {
   };
 }
 
-export const MARK_AS_READ = gql`
+export const MARK_AS_READ = gql(/* GraphQL */ `
   mutation MarkAsRead($id: ID!, $input: MarkNotificationsInput!) {
     markAsRead(id: $id, input: $input) {
       items {
@@ -56,23 +66,7 @@ export const MARK_AS_READ = gql`
       }
     }
   }
-`;
-
-interface IMarkAsReadInput {
-  id: string;
-  input: {
-    ids: string[];
-  };
-}
-
-interface IMarkAsReadOutput {
-  markAsRead?: {
-    items: {
-      id: string;
-      read: boolean;
-    }[];
-  };
-}
+`);
 
 const SupportText = styled(Typography)`
   && {
@@ -133,9 +127,7 @@ function UserNotifications({ id }: IUserNotificationsProps) {
       id,
     },
   });
-  const [markAsRead] = useMutation<IMarkAsReadOutput, IMarkAsReadInput>(
-    MARK_AS_READ,
-  );
+  const [markAsRead] = useMutation(MARK_AS_READ);
 
   useEffect(
     () => {
@@ -144,10 +136,7 @@ function UserNotifications({ id }: IUserNotificationsProps) {
       renderCount.current += 1;
 
       if (renderCount.current >= renderCheck) {
-        unsubscribe = subscribeToMore<
-          IOnNotificationOutput,
-          IOnNotificationInput
-        >({
+        unsubscribe = subscribeToMore({
           document: ON_NOTIFICATION,
           updateQuery: (prev, { subscriptionData }) => {
             if (

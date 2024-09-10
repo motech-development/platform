@@ -1,8 +1,4 @@
 type Mutation {
-  bankCallback(input: BankCallbackInput!): BankCallback!
-  createBankConnection(input: BankConnectionInput!): BankConnection!
-  deleteBankConnection(id: ID!): BankSettings!
-  updateBankSettings(input: BankSettingsInput!): BankSettings!
   createClient(input: ClientInput!): Client!
   deleteClient(id: ID!): Client!
   updateClient(input: ClientInput!): Client!
@@ -27,9 +23,6 @@ type Mutation {
 
 type Query {
   getBalance(id: ID!): Balance!
-  getBanks: Banks!
-  getBankAccounts(id: ID!): BankAccounts!
-  getBankSettings(id: ID!): BankSettings!
   getClients(id: ID!, count: Int, nextToken: String): Clients!
   getClient(id: ID!): Client!
   getCompanies(id: ID!, count: Int, nextToken: String): Companies!
@@ -49,7 +42,6 @@ type Query {
 }
 
 type Subscription {
-  onBankCallback: BankCallback @aws_subscribe(mutations: ["bankCallback"])
   onTransaction(id: ID!, owner: String!): Balance
     @aws_subscribe(mutations: ["transactionBeacon"])
   onNotification(owner: String!): Notification

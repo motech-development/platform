@@ -11,6 +11,7 @@ import { FieldArray, Form, Formik } from 'formik';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { array, boolean, object, string } from 'yup';
+import { VatScheme } from '../graphql/graphql';
 import { useVatSettings, useYearEnd } from '../hooks/schema';
 import { VatSettingsFields, YearEndFields } from './CommonFields';
 
@@ -24,8 +25,8 @@ export type FormSchema = {
   vat: {
     charge: number;
     pay: number;
-    registration: string;
-    scheme: string;
+    registration?: string | null;
+    scheme: VatScheme;
   };
   yearEnd: {
     day: number;
@@ -35,13 +36,6 @@ export type FormSchema = {
 
 export interface ISettingsFormProps {
   backTo: string;
-  bank: {
-    connected: boolean;
-    disconnectLoading: boolean;
-    link: string;
-    name: string;
-    onDisconnect: () => void;
-  };
   initialValues: FormSchema;
   loading: boolean;
   onSave(value: FormSchema): void;
@@ -49,13 +43,11 @@ export interface ISettingsFormProps {
 
 function SettingsForm({
   backTo,
-  bank,
   initialValues,
   loading,
   onSave,
 }: ISettingsFormProps) {
   const { t } = useTranslation('settings');
-  const { connected, disconnectLoading, link, name, onDisconnect } = bank;
   const vat = useVatSettings();
   const yearEnd = useYearEnd();
   const validationSchema = object<FormSchema>()
@@ -187,42 +179,6 @@ function SettingsForm({
 
                     <YearEndFields prefix="yearEnd" />
                   </Card>
-                </Col>
-
-                <Col>
-                  <Card padding="lg">
-                    <Typography rule component="h3" variant="h3">
-                      {t('settings-form.bank.title')}
-                    </Typography>
-
-                    {connected ? (
-                      <Typography component="p" variant="lead" margin="none">
-                        {t('settings-form.bank.lead-connected', {
-                          name,
-                        })}
-                      </Typography>
-                    ) : (
-                      <Typography component="p" variant="lead" margin="none">
-                        {t('settings-form.bank.lead-connect')}
-                      </Typography>
-                    )}
-                  </Card>
-
-                  {connected ? (
-                    <Button
-                      block
-                      size="lg"
-                      colour="danger"
-                      loading={disconnectLoading}
-                      onClick={onDisconnect}
-                    >
-                      {t('settings-form.bank.disconnect')}
-                    </Button>
-                  ) : (
-                    <LinkButton block size="lg" to={link}>
-                      {t('settings-form.bank.connect')}
-                    </LinkButton>
-                  )}
                 </Col>
               </Row>
             </Col>

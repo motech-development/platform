@@ -55,47 +55,6 @@ appSync:
       kind: UNIT
       request: mapping-templates/balance/getBalance/Query.getBalance.req.vtl
       response: mapping-templates/balance/getBalance/Query.getBalance.res.vtl
-    Query.getBanks:
-      dataSource: OpenBanking
-      kind: UNIT
-      request: mapping-templates/bank/getBanks/Query.getBanks.req.vtl
-      response: mapping-templates/bank/getBanks/Query.getBanks.res.vtl
-    Query.getBankAccounts:
-      kind: PIPELINE
-      functions:
-        - bankSettings
-        - getBankAccounts
-      request: mapping-templates/bank/getBankAccounts/Query.getBankAccounts.req.vtl
-      response: mapping-templates/bank/getBankAccounts/Query.getBankAccounts.res.vtl
-    Mutation.bankCallback:
-      dataSource: Resolver
-      kind: UNIT
-      request: mapping-templates/bank/bankCallback/Mutation.bankCallback.req.vtl
-      response: mapping-templates/bank/bankCallback/Mutation.bankCallback.res.vtl
-    Mutation.createBankConnection:
-      dataSource: OpenBanking
-      kind: UNIT
-      request: mapping-templates/bank/createBankConnection/Mutation.createBankConnection.req.vtl
-      response: mapping-templates/bank/createBankConnection/Mutation.createBankConnection.res.vtl
-    Mutation.deleteBankConnection:
-      kind: PIPELINE
-      functions:
-        - bankSettings
-        - unlinkBank
-        - resetBankSettings
-      request: mapping-templates/bank/deleteBankConnection/Mutation.deleteBankConnection.req.vtl
-      response: mapping-templates/bank/deleteBankConnection/Mutation.deleteBankConnection.res.vtl
-    Query.getBankSettings:
-      kind: PIPELINE
-      functions:
-        - bankSettings
-      request: mapping-templates/bank/getBankSettings/Query.getBankSettings.req.vtl
-      response: mapping-templates/bank/getBankSettings/Query.getBankSettings.res.vtl
-    Mutation.updateBankSettings:
-      dataSource: Data
-      kind: UNIT
-      request: mapping-templates/bank/updateBankSettings/Mutation.updateBankSettings.req.vtl
-      response: mapping-templates/bank/updateBankSettings/Mutation.updateBankSettings.res.vtl
     Mutation.createClient:
       kind: PIPELINE
       functions:
@@ -136,7 +95,6 @@ appSync:
       functions:
         - address
         - addressFiltering
-        - bank
         - companyNumber
         - telephone
         - vatRegistration
@@ -155,7 +113,6 @@ appSync:
       functions:
         - address
         - addressFiltering
-        - bank
         - companyNumber
         - telephone
         - updateCompany
@@ -270,7 +227,6 @@ appSync:
   schema:
     - schema/address.graphql
     - schema/balance.graphql
-    - schema/bank.graphql
     - schema/client.graphql
     - schema/company.graphql
     - schema/contact.graphql
@@ -288,10 +244,6 @@ appSync:
       dataSource: Resolver
       request: mapping-templates/shared/address/Pipeline.address.req.vtl
       response: mapping-templates/shared/address/Pipeline.address.res.vtl
-    bank:
-      dataSource: Resolver
-      request: mapping-templates/shared/bank/Pipeline.bank.req.vtl
-      response: mapping-templates/shared/bank/Pipeline.bank.res.vtl
     companyNumber:
       dataSource: Resolver
       request: mapping-templates/shared/companyNumber/Pipeline.companyNumber.req.vtl
@@ -308,26 +260,10 @@ appSync:
       dataSource: Resolver
       request: mapping-templates/shared/addressFiltering/Pipeline.addressFiltering.req.vtl
       response: mapping-templates/shared/addressFiltering/Pipeline.addressFiltering.res.vtl
-    bankSettings:
-      dataSource: Data
-      request: mapping-templates/shared/bankSettings/Pipeline.bankSettings.req.vtl
-      response: mapping-templates/shared/bankSettings/Pipeline.bankSettings.res.vtl
     getCompany:
       dataSource: Data
       request: mapping-templates/shared/getCompany/Pipeline.getCompany.req.vtl
       response: mapping-templates/shared/getCompany/Pipeline.getCompany.res.vtl
-    getBankAccounts:
-      dataSource: OpenBanking
-      request: mapping-templates/bank/getBankAccounts/Pipeline.getBankAccounts.req.vtl
-      response: mapping-templates/bank/getBankAccounts/Pipeline.getBankAccounts.res.vtl
-    resetBankSettings:
-      dataSource: Data
-      request: mapping-templates/bank/deleteBankConnection/Pipeline.resetBankSettings.req.vtl
-      response: mapping-templates/bank/deleteBankConnection/Pipeline.resetBankSettings.res.vtl
-    unlinkBank:
-      dataSource: OpenBanking
-      request: mapping-templates/bank/deleteBankConnection/Pipeline.unlinkBank.req.vtl
-      response: mapping-templates/bank/deleteBankConnection/Pipeline.unlinkBank.res.vtl
     createClient:
       dataSource: Data
       request: mapping-templates/client/createClient/Pipeline.createClient.req.vtl
@@ -385,16 +321,6 @@ appSync:
       config:
         tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
         serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
-    OpenBanking:
-      type: HTTP
-      config:
-        endpoint: !ImportValue ${self:provider.stage}-OpenBankingApiEndpoint
-        authorizationConfig:
-          authorizationType: AWS_IAM
-          awsIamConfig:
-            signingRegion: !Ref AWS::Region
-            signingServiceName: execute-api
-        serviceRoleArn: !GetAtt AppSyncOpenBankingServiceRole.Arn
     Reports:
       type: HTTP
       config:
@@ -458,27 +384,6 @@ functions:
 
 resources:
   Resources:
-    AppSyncOpenBankingServiceRole:
-      Type: AWS::IAM::Role
-      Properties:
-        AssumeRolePolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service:
-                  - appsync.amazonaws.com
-              Action:
-                - sts:AssumeRole
-        Policies:
-          - PolicyName: ${self:custom.prefix}-appsync-open-banking-service-role-policy
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - execute-api:Invoke
-                  Resource: !ImportValue ${self:provider.stage}-OpenBankingApiArn
     AppSyncReportsServiceRole:
       Type: AWS::IAM::Role
       Properties:

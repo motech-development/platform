@@ -4,9 +4,8 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
-import ON_NOTIFICATION from '../../../../graphql/notifications/ON_NOTIFICATION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
-import Reports, { GET_REPORTS } from '../Reports';
+import Reports, { GET_REPORTS, ON_NOTIFICATION } from '../Reports';
 
 describe('Reports', () => {
   let history: string[];
