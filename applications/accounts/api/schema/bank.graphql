@@ -1,0 +1,9 @@
+type BankDetails {
+  accountNumber: String!
+  sortCode: String!
+}
+
+input BankDetailsInput {
+  accountNumber: String!
+  sortCode: String!
+}

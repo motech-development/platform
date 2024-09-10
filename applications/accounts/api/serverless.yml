@@ -227,6 +227,7 @@ appSync:
   schema:
     - schema/address.graphql
     - schema/balance.graphql
+    - schema/bank.graphql
     - schema/client.graphql
     - schema/company.graphql
     - schema/contact.graphql
