@@ -179,7 +179,6 @@ describe('RecordTransaction', () => {
                     contentType: 'application/pdf',
                     extension: 'pdf',
                     metadata: {
-                      id: undefined,
                       typename: 'Transaction',
                     },
                   },
@@ -650,7 +649,6 @@ describe('RecordTransaction', () => {
                     contentType: 'application/pdf',
                     extension: 'pdf',
                     metadata: {
-                      id: undefined,
                       typename: 'Transaction',
                     },
                   },
@@ -1347,7 +1345,6 @@ describe('RecordTransaction', () => {
                   contentType: 'application/pdf',
                   extension: 'pdf',
                   metadata: {
-                    id: undefined,
                     typename: 'Transaction',
                   },
                 },
