@@ -26,7 +26,6 @@ type Transaction @aws_iam @aws_oidc {
 }
 
 input TransactionInput {
-  __typename: String
   amount: Float!
   attachment: String!
   category: String!
@@ -42,7 +41,6 @@ input TransactionInput {
 }
 
 input TransactionBeaconTransactionsItemInput {
-  __typename: String
   amount: Float
   attachment: String
   description: String
@@ -63,7 +61,6 @@ input TransactionBeaconVatInput {
 }
 
 input TransactionBeaconInput {
-  __typename: String
   balance: Float
   transactions: [TransactionBeaconTransactionsInput]
   vat: TransactionBeaconVatInput

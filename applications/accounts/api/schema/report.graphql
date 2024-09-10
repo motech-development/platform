@@ -16,13 +16,11 @@ type ReportRequest {
 }
 
 input ReportYearEndInput {
-  __typename: String
   day: Int!
   month: Int!
 }
 
 input ReportInput {
-  __typename: String
   companyId: ID!
   currency: String!
   status: TransactionStatus!

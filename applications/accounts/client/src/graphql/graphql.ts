@@ -70,7 +70,6 @@ export type Balance = {
 };
 
 export type BalanceInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   balance: Scalars['Float']['input'];
   vat: BalanceVatInput;
 };
@@ -118,7 +117,6 @@ export type Client = {
 };
 
 export type ClientInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   address: AddressInput;
   companyId: Scalars['String']['input'];
   contact: ContactInput;
@@ -390,7 +388,6 @@ export type Report = {
 };
 
 export type ReportInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   companyId: Scalars['ID']['input'];
   currency: Scalars['String']['input'];
   status: TransactionStatus;
@@ -403,7 +400,6 @@ export type ReportRequest = {
 };
 
 export type ReportYearEndInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   day: Scalars['Int']['input'];
   month: Scalars['Int']['input'];
 };
@@ -487,7 +483,6 @@ export type Transaction = {
 };
 
 export type TransactionBeaconInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   balance?: InputMaybe<Scalars['Float']['input']>;
   transactions?: InputMaybe<
     Array<InputMaybe<TransactionBeaconTransactionsInput>>
@@ -503,7 +498,6 @@ export type TransactionBeaconTransactionsInput = {
 };
 
 export type TransactionBeaconTransactionsItemInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   amount?: InputMaybe<Scalars['Float']['input']>;
   attachment?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -517,7 +511,6 @@ export type TransactionBeaconVatInput = {
 };
 
 export type TransactionInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   amount: Scalars['Float']['input'];
   attachment: Scalars['String']['input'];
   category: Scalars['String']['input'];
