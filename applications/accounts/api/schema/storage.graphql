@@ -7,8 +7,8 @@ type StorageDownload {
 }
 
 type StorageUpload {
-  id: ID
-  url: String
+  id: ID!
+  url: String!
 }
 
 input MetadataInput {
