@@ -99,6 +99,16 @@ export type BalanceVatInput = {
   paid: Scalars['Float']['input'];
 };
 
+export type BankDetails = {
+  accountNumber: Scalars['String']['output'];
+  sortCode: Scalars['String']['output'];
+};
+
+export type BankDetailsInput = {
+  accountNumber: Scalars['String']['input'];
+  sortCode: Scalars['String']['input'];
+};
+
 export type Client = {
   address: Address;
   companyId: Scalars['String']['output'];
@@ -129,17 +139,18 @@ export type Companies = {
 };
 
 export type Company = {
-  address?: Maybe<Address>;
-  companyNumber?: Maybe<Scalars['String']['output']>;
-  contact?: Maybe<Contact>;
+  address: Address;
+  bank: BankDetails;
+  companyNumber: Scalars['String']['output'];
+  contact: Contact;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   owner?: Maybe<Scalars['String']['output']>;
 };
 
 export type CompanyInput = {
-  __typename?: InputMaybe<Scalars['String']['input']>;
   address: AddressInput;
+  bank: BankDetailsInput;
   companyNumber: Scalars['String']['input'];
   contact: ContactInput;
   id: Scalars['ID']['input'];
@@ -2579,6 +2590,15 @@ export type BalanceVatFieldPolicy = {
   owed?: FieldPolicy<any> | FieldReadFunction<any>;
   paid?: FieldPolicy<any> | FieldReadFunction<any>;
 };
+export type BankDetailsKeySpecifier = (
+  | 'accountNumber'
+  | 'sortCode'
+  | BankDetailsKeySpecifier
+)[];
+export type BankDetailsFieldPolicy = {
+  accountNumber?: FieldPolicy<any> | FieldReadFunction<any>;
+  sortCode?: FieldPolicy<any> | FieldReadFunction<any>;
+};
 export type ClientKeySpecifier = (
   | 'address'
   | 'companyId'
@@ -2618,6 +2638,7 @@ export type CompaniesFieldPolicy = {
 };
 export type CompanyKeySpecifier = (
   | 'address'
+  | 'bank'
   | 'companyNumber'
   | 'contact'
   | 'id'
@@ -2627,6 +2648,7 @@ export type CompanyKeySpecifier = (
 )[];
 export type CompanyFieldPolicy = {
   address?: FieldPolicy<any> | FieldReadFunction<any>;
+  bank?: FieldPolicy<any> | FieldReadFunction<any>;
   companyNumber?: FieldPolicy<any> | FieldReadFunction<any>;
   contact?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -2923,6 +2945,13 @@ export type StrictTypedTypePolicies = {
       | BalanceVatKeySpecifier
       | (() => undefined | BalanceVatKeySpecifier);
     fields?: BalanceVatFieldPolicy;
+  };
+  BankDetails?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | BankDetailsKeySpecifier
+      | (() => undefined | BankDetailsKeySpecifier);
+    fields?: BankDetailsFieldPolicy;
   };
   Client?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?:

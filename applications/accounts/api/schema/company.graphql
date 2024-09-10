@@ -5,17 +5,18 @@ type Companies {
 }
 
 type Company {
-  address: Address
-  companyNumber: String
-  contact: Contact
+  address: Address!
+  bank: BankDetails!
+  companyNumber: String!
+  contact: Contact!
   id: ID!
   name: String!
   owner: String
 }
 
 input CompanyInput {
-  __typename: String
   address: AddressInput!
+  bank: BankDetailsInput!
   companyNumber: String!
   contact: ContactInput!
   id: ID!
