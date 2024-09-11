@@ -1,3 +1,4 @@
+import { ApolloCache, InMemoryCache } from '@apollo/client';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -9,11 +10,34 @@ import {
 } from '@testing-library/react';
 import axios from 'axios';
 import { advanceTo, clear } from 'jest-date-mock';
-import ADD_TRANSACTION from '../../../../graphql/transaction/ADD_TRANSACTION';
+import { gql } from '../../../../graphql';
+import {
+  AddTransactionMutation,
+  Balance,
+  Transactions,
+  TransactionStatus,
+  Typeahead,
+} from '../../../../graphql/graphql';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import { GET_BALANCE } from '../Accounts';
-import RecordTransaction, { RECORD_TRANSACTION } from '../RecordTransaction';
+import { GET_TRANSACTIONS } from '../PendingTransactions';
+import RecordTransaction, {
+  ADD_TRANSACTION,
+  RECORD_TRANSACTION,
+  update,
+} from '../RecordTransaction';
 import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
+
+const GET_TYPEAHEAD = gql(/* GraphQL */ `
+  query GetTypeahead($id: ID!) {
+    getTypeahead(id: $id) {
+      id
+      purchases
+      sales
+      suppliers
+    }
+  }
+`);
 
 describe('RecordTransaction', () => {
   let history: string[];
@@ -153,7 +177,6 @@ describe('RecordTransaction', () => {
               result: {
                 data: {
                   addTransaction: {
-                    __typename: 'Transaction',
                     amount: -999.99,
                     attachment: 'company-id/test-id.pdf',
                     category: 'Equipment',
@@ -1009,7 +1032,6 @@ describe('RecordTransaction', () => {
             result: {
               data: {
                 addTransaction: {
-                  __typename: 'Transaction',
                   amount: 999.99,
                   attachment: '',
                   category: 'Equipment',
@@ -1318,7 +1340,6 @@ describe('RecordTransaction', () => {
             result: {
               data: {
                 addTransaction: {
-                  __typename: 'Transaction',
                   amount: 999.99,
                   attachment: '',
                   category: 'Sales',
@@ -1630,7 +1651,6 @@ describe('RecordTransaction', () => {
             result: {
               data: {
                 addTransaction: {
-                  __typename: 'Transaction',
                   amount: -999.99,
                   attachment: '',
                   category: 'Sales',
@@ -1743,6 +1763,516 @@ describe('RecordTransaction', () => {
           ),
         ).resolves.toBeInTheDocument();
       });
+    });
+  });
+
+  describe('cache', () => {
+    let cache: ApolloCache<AddTransactionMutation>;
+
+    beforeEach(() => {
+      cache = new InMemoryCache({
+        typePolicies: {
+          Transactions: {
+            keyFields: ['id', 'status'],
+          },
+        },
+      }) as unknown as ApolloCache<AddTransactionMutation>;
+
+      jest.spyOn(cache, 'modify');
+    });
+
+    describe('typeahead', () => {
+      describe('with null data', () => {
+        beforeEach(() => {
+          cache.writeQuery({
+            data: {
+              getTypeahead: {
+                __typename: 'Typeahead',
+                id: 'company-id',
+                purchases: [],
+                sales: [],
+                suppliers: [],
+              } as Typeahead,
+            },
+            query: GET_TYPEAHEAD,
+            variables: {
+              id: 'company-id',
+            },
+          });
+        });
+
+        it('should add sale description to the typeahead', () => {
+          const input = {
+            data: {
+              addTransaction: {
+                amount: 100,
+                attachment: '',
+                category: 'Sales',
+                companyId: 'company-id',
+                date: '2021-02-22',
+                description: 'A sale',
+                id: 'transaction-id',
+                name: 'A client',
+                refund: false,
+                scheduled: false,
+                status: TransactionStatus.Confirmed,
+                vat: 0,
+              },
+            },
+          };
+
+          update(cache, input, {});
+
+          const result = cache.readQuery({
+            query: GET_TYPEAHEAD,
+            variables: {
+              id: 'company-id',
+            },
+          });
+
+          expect(result).toEqual({
+            getTypeahead: {
+              __typename: 'Typeahead',
+              id: 'company-id',
+              purchases: [],
+              sales: ['A sale'],
+              suppliers: [],
+            },
+          });
+        });
+
+        it('should add purchase description and supplier to the typeahead', () => {
+          const input = {
+            data: {
+              addTransaction: {
+                amount: 100,
+                attachment: '',
+                category: 'Bills',
+                companyId: 'company-id',
+                date: '2021-02-22',
+                description: 'A purchase',
+                id: 'transaction-id',
+                name: 'Your favourite shop',
+                refund: false,
+                scheduled: false,
+                status: TransactionStatus.Confirmed,
+                vat: 0,
+              },
+            },
+          };
+
+          update(cache, input, {});
+
+          const result = cache.readQuery({
+            query: GET_TYPEAHEAD,
+            variables: {
+              id: 'company-id',
+            },
+          });
+
+          expect(result).toEqual({
+            getTypeahead: {
+              __typename: 'Typeahead',
+              id: 'company-id',
+              purchases: ['A purchase'],
+              sales: [],
+              suppliers: ['Your favourite shop'],
+            },
+          });
+        });
+      });
+
+      describe('without null data', () => {
+        beforeEach(() => {
+          cache.writeQuery({
+            data: {
+              getTypeahead: {
+                __typename: 'Typeahead',
+                id: 'company-id',
+                purchases: ['B Purchase'],
+                sales: ['B Sale'],
+                suppliers: ['B Supplier'],
+              } as Typeahead,
+            },
+            query: GET_TYPEAHEAD,
+            variables: {
+              id: 'company-id',
+            },
+          });
+        });
+
+        it('should add sale description to the typeahead', () => {
+          const input = {
+            data: {
+              addTransaction: {
+                amount: 100,
+                attachment: '',
+                category: 'Sales',
+                companyId: 'company-id',
+                date: '2021-02-22',
+                description: 'A sale',
+                id: 'transaction-id',
+                name: 'A client',
+                refund: false,
+                scheduled: false,
+                status: TransactionStatus.Confirmed,
+                vat: 0,
+              },
+            },
+          };
+
+          update(cache, input, {});
+
+          const result = cache.readQuery({
+            query: GET_TYPEAHEAD,
+            variables: {
+              id: 'company-id',
+            },
+          });
+
+          expect(result).toEqual({
+            getTypeahead: {
+              __typename: 'Typeahead',
+              id: 'company-id',
+              purchases: ['B Purchase'],
+              sales: ['A sale', 'B Sale'],
+              suppliers: ['B Supplier'],
+            },
+          });
+        });
+
+        it('should add purchase description and supplier to the typeahead', () => {
+          const input = {
+            data: {
+              addTransaction: {
+                amount: 100,
+                attachment: '',
+                category: 'Bills',
+                companyId: 'company-id',
+                date: '2021-02-22',
+                description: 'A purchase',
+                id: 'transaction-id',
+                name: 'Your favourite shop',
+                refund: false,
+                scheduled: false,
+                status: TransactionStatus.Confirmed,
+                vat: 0,
+              },
+            },
+          };
+
+          update(cache, input, {});
+
+          const result = cache.readQuery({
+            query: GET_TYPEAHEAD,
+            variables: {
+              id: 'company-id',
+            },
+          });
+
+          expect(result).toEqual({
+            getTypeahead: {
+              __typename: 'Typeahead',
+              id: 'company-id',
+              purchases: ['A purchase', 'B Purchase'],
+              sales: ['B Sale'],
+              suppliers: ['B Supplier', 'Your favourite shop'],
+            },
+          });
+        });
+      });
+
+      describe('with set data', () => {
+        beforeEach(() => {
+          cache.writeQuery({
+            data: {
+              getTypeahead: {
+                __typename: 'Typeahead',
+                id: 'company-id',
+                purchases: ['A purchase'],
+                sales: ['A sale'],
+                suppliers: ['Your favourite shop'],
+              } as Typeahead,
+            },
+            query: GET_TYPEAHEAD,
+            variables: {
+              id: 'company-id',
+            },
+          });
+        });
+
+        it('should not add sale description to the typeahead', () => {
+          const input = {
+            data: {
+              addTransaction: {
+                amount: 100,
+                attachment: '',
+                category: 'Sales',
+                companyId: 'company-id',
+                date: '2021-02-22',
+                description: 'A sale',
+                id: 'transaction-id',
+                name: 'A client',
+                refund: false,
+                scheduled: false,
+                status: TransactionStatus.Confirmed,
+                vat: 0,
+              },
+            },
+          };
+
+          update(cache, input, {});
+
+          const result = cache.readQuery({
+            query: GET_TYPEAHEAD,
+            variables: {
+              id: 'company-id',
+            },
+          });
+
+          expect(result).toEqual({
+            getTypeahead: {
+              __typename: 'Typeahead',
+              id: 'company-id',
+              purchases: ['A purchase'],
+              sales: ['A sale'],
+              suppliers: ['Your favourite shop'],
+            },
+          });
+        });
+
+        it('should not add purchase description and supplier to the typeahead', () => {
+          const input = {
+            data: {
+              addTransaction: {
+                amount: 100,
+                attachment: '',
+                category: 'Bills',
+                companyId: 'company-id',
+                date: '2021-02-22',
+                description: 'A purchase',
+                id: 'transaction-id',
+                name: 'Your favourite shop',
+                refund: false,
+                scheduled: false,
+                status: TransactionStatus.Confirmed,
+                vat: 0,
+              },
+            },
+          };
+
+          update(cache, input, {});
+
+          const result = cache.readQuery({
+            query: GET_TYPEAHEAD,
+            variables: {
+              id: 'company-id',
+            },
+          });
+
+          expect(result).toEqual({
+            getTypeahead: {
+              __typename: 'Typeahead',
+              id: 'company-id',
+              purchases: ['A purchase'],
+              sales: ['A sale'],
+              suppliers: ['Your favourite shop'],
+            },
+          });
+        });
+      });
+    });
+
+    describe('transactions', () => {
+      beforeEach(() => {
+        cache.writeQuery({
+          data: {
+            getBalance: {
+              __typename: 'Balance',
+              currency: 'GBP',
+              id: 'company-id',
+              transactions: [],
+            } as unknown as Balance,
+            getTransactions: {
+              __typename: 'Transactions',
+              id: 'company-id',
+              items: [
+                {
+                  amount: 100,
+                  attachment: '',
+                  date: '2021-02-21',
+                  description: 'A purchase',
+                  id: 'transaction-id-0',
+                  name: 'Your favourite shop',
+                  scheduled: false,
+                },
+                {
+                  amount: 100,
+                  attachment: '',
+                  date: '2021-02-23',
+                  description: 'A purchase',
+                  id: 'transaction-id-1',
+                  name: 'Your favourite shop',
+                  scheduled: false,
+                },
+              ],
+              status: TransactionStatus.Confirmed,
+            } as unknown as Transactions,
+          },
+          query: GET_TRANSACTIONS,
+          variables: {
+            id: 'company-id',
+            status: TransactionStatus.Confirmed,
+          },
+        });
+      });
+
+      it('should add transaction to transactions list', () => {
+        const input = {
+          data: {
+            addTransaction: {
+              __typename: 'Transaction',
+              amount: 100,
+              attachment: '',
+              category: 'Bills',
+              companyId: 'company-id',
+              date: '2021-02-22',
+              description: 'A purchase',
+              id: 'transaction-id-2',
+              name: 'Your favourite shop',
+              refund: false,
+              scheduled: false,
+              status: TransactionStatus.Confirmed,
+              vat: 0,
+            },
+          },
+        };
+
+        update(cache, input, {});
+
+        const result = cache.readQuery({
+          query: GET_TRANSACTIONS,
+          variables: {
+            id: 'company-id',
+            status: TransactionStatus.Confirmed,
+          },
+        });
+
+        expect(result).toEqual({
+          getBalance: {
+            __typename: 'Balance',
+            currency: 'GBP',
+            id: 'company-id',
+            transactions: [],
+          },
+          getTransactions: {
+            __typename: 'Transactions',
+            id: 'company-id',
+            items: [
+              {
+                amount: 100,
+                attachment: '',
+                date: '2021-02-21',
+                description: 'A purchase',
+                id: 'transaction-id-0',
+                name: 'Your favourite shop',
+                scheduled: false,
+              },
+              {
+                __typename: 'Transaction',
+                amount: 100,
+                attachment: '',
+                date: '2021-02-22',
+                description: 'A purchase',
+                id: 'transaction-id-2',
+                name: 'Your favourite shop',
+                scheduled: false,
+              },
+              {
+                amount: 100,
+                attachment: '',
+                date: '2021-02-23',
+                description: 'A purchase',
+                id: 'transaction-id-1',
+                name: 'Your favourite shop',
+                scheduled: false,
+              },
+            ],
+            status: TransactionStatus.Confirmed,
+          },
+        });
+      });
+
+      it('should not add a duplicate transaction', () => {
+        const input = {
+          data: {
+            addTransaction: {
+              amount: 999,
+              attachment: '',
+              category: 'Bills',
+              companyId: 'company-id',
+              date: '2021-02-22',
+              description: 'A purchase',
+              id: 'transaction-id-1',
+              name: 'Your favourite shop',
+              refund: false,
+              scheduled: false,
+              status: TransactionStatus.Confirmed,
+              vat: 0,
+            },
+          },
+        };
+
+        update(cache, input, {});
+
+        const result = cache.readQuery({
+          query: GET_TRANSACTIONS,
+          variables: {
+            id: 'company-id',
+            status: TransactionStatus.Confirmed,
+          },
+        });
+
+        expect(result).toEqual({
+          getBalance: {
+            __typename: 'Balance',
+            currency: 'GBP',
+            id: 'company-id',
+            transactions: [],
+          },
+          getTransactions: {
+            __typename: 'Transactions',
+            id: 'company-id',
+            items: [
+              {
+                amount: 100,
+                attachment: '',
+                date: '2021-02-21',
+                description: 'A purchase',
+                id: 'transaction-id-0',
+                name: 'Your favourite shop',
+                scheduled: false,
+              },
+              {
+                amount: 100,
+                attachment: '',
+                date: '2021-02-23',
+                description: 'A purchase',
+                id: 'transaction-id-1',
+                name: 'Your favourite shop',
+                scheduled: false,
+              },
+            ],
+            status: TransactionStatus.Confirmed,
+          },
+        });
+      });
+    });
+
+    it('should not modify cache if no data is passed', () => {
+      update(cache, {}, {});
+
+      expect(cache.modify).not.toHaveBeenCalled();
     });
   });
 });

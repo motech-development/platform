@@ -18,6 +18,7 @@ import { FormikProps, FormikValues, getIn } from 'formik';
 import { ChangeEvent, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { boolean, date, number, object, string } from 'yup';
+import { TransactionStatus } from '../graphql/graphql';
 
 const formSchema = {
   amount: '',
@@ -45,7 +46,7 @@ export type FormSchema = {
   name: string;
   refund: boolean;
   scheduled: boolean;
-  status: string;
+  status: TransactionStatus;
   vat: number;
 };
 
