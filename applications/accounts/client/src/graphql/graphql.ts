@@ -531,10 +531,10 @@ export enum TransactionStatus {
 }
 
 export type Transactions = {
-  id?: Maybe<Scalars['ID']['output']>;
-  items?: Maybe<Array<Maybe<Transaction>>>;
+  id: Scalars['ID']['output'];
+  items: Array<Transaction>;
   nextToken?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<TransactionStatus>;
+  status: TransactionStatus;
 };
 
 export type Typeahead = {
@@ -589,6 +589,18 @@ export type GetBalanceQuery = {
   };
 };
 
+export type DeleteTransactionMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type DeleteTransactionMutation = {
+  deleteTransaction: {
+    companyId: string;
+    id: string;
+    status: TransactionStatus;
+  };
+};
+
 export type OnTransactionSubscriptionVariables = Exact<{
   id: Scalars['ID']['input'];
   owner: Scalars['String']['input'];
@@ -613,6 +625,42 @@ export type OnTransactionSubscription = {
   } | null;
 };
 
+export type GetTransactionsQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+  status: TransactionStatus;
+}>;
+
+export type GetTransactionsQuery = {
+  getBalance: {
+    currency: string;
+    id: string;
+    transactions: Array<{ items: Array<{ id: string }> }>;
+  };
+  getTransactions: {
+    id: string;
+    status: TransactionStatus;
+    items: Array<{
+      amount: number;
+      attachment?: string | null;
+      date: string;
+      description: string;
+      id: string;
+      name: string;
+      scheduled: boolean;
+    }>;
+  };
+};
+
+export type NewTransactionFragment = {
+  amount: number;
+  attachment?: string | null;
+  date: string;
+  description: string;
+  id: string;
+  name: string;
+  scheduled: boolean;
+} & { ' $fragmentName'?: 'NewTransactionFragment' };
+
 export type RecordTransactionQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -629,6 +677,27 @@ export type RecordTransactionQuery = {
     purchases: Array<string>;
     sales: Array<string>;
     suppliers: Array<string>;
+  };
+};
+
+export type AddTransactionMutationVariables = Exact<{
+  input: TransactionInput;
+}>;
+
+export type AddTransactionMutation = {
+  addTransaction: {
+    amount: number;
+    attachment?: string | null;
+    category: string;
+    companyId: string;
+    date: string;
+    description: string;
+    id: string;
+    name: string;
+    refund: boolean;
+    scheduled: boolean;
+    status: TransactionStatus;
+    vat: number;
   };
 };
 
@@ -658,6 +727,39 @@ export type ViewTransactionQuery = {
     status: TransactionStatus;
     vat: number;
   };
+  getTypeahead: {
+    id: string;
+    purchases: Array<string>;
+    sales: Array<string>;
+    suppliers: Array<string>;
+  };
+};
+
+export type UpdateTransactionMutationVariables = Exact<{
+  input: TransactionInput;
+}>;
+
+export type UpdateTransactionMutation = {
+  updateTransaction: {
+    amount: number;
+    attachment?: string | null;
+    category: string;
+    companyId: string;
+    date: string;
+    description: string;
+    id: string;
+    name: string;
+    scheduled: boolean;
+    status: TransactionStatus;
+    vat: number;
+  };
+};
+
+export type GetTypeaheadQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type GetTypeaheadQuery = {
   getTypeahead: {
     id: string;
     purchases: Array<string>;
@@ -1007,6 +1109,31 @@ export type MarkAsReadMutation = {
   markAsRead: { items?: Array<{ id: string; read: boolean } | null> | null };
 };
 
+export const NewTransactionFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'NewTransaction' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Transaction' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'attachment' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'scheduled' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<NewTransactionFragment, unknown>;
 export const NewCompanyFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -1218,6 +1345,56 @@ export const GetBalanceDocument = {
     },
   ],
 } as unknown as DocumentNode<GetBalanceQuery, GetBalanceQueryVariables>;
+export const DeleteTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'companyId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteTransactionMutation,
+  DeleteTransactionMutationVariables
+>;
 export const OnTransactionDocument = {
   kind: 'Document',
   definitions: [
@@ -1346,6 +1523,148 @@ export const OnTransactionDocument = {
   OnTransactionSubscription,
   OnTransactionSubscriptionVariables
 >;
+export const GetTransactionsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetTransactions' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'status' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'TransactionStatus' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getBalance' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'transactions' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'items' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getTransactions' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'status' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'status' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'items' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'amount' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'attachment' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'description' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'scheduled' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetTransactionsQuery,
+  GetTransactionsQueryVariables
+>;
 export const RecordTransactionDocument = {
   kind: 'Document',
   definitions: [
@@ -1471,6 +1790,71 @@ export const RecordTransactionDocument = {
 } as unknown as DocumentNode<
   RecordTransactionQuery,
   RecordTransactionQueryVariables
+>;
+export const AddTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AddTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'input' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'TransactionInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'addTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'input' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'attachment' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'category' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'companyId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'refund' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'scheduled' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'vat' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  AddTransactionMutation,
+  AddTransactionMutationVariables
 >;
 export const ViewTransactionDocument = {
   kind: 'Document',
@@ -1643,6 +2027,118 @@ export const ViewTransactionDocument = {
   ViewTransactionQuery,
   ViewTransactionQueryVariables
 >;
+export const UpdateTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'input' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'TransactionInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'input' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'attachment' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'category' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'companyId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'scheduled' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'vat' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateTransactionMutation,
+  UpdateTransactionMutationVariables
+>;
+export const GetTypeaheadDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetTypeahead' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getTypeahead' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'purchases' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'sales' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'suppliers' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetTypeaheadQuery, GetTypeaheadQueryVariables>;
 export const RequestUploadDocument = {
   kind: 'Document',
   definitions: [

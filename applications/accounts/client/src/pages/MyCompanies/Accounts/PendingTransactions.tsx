@@ -1,4 +1,10 @@
-import { useMutation, useQuery } from '@apollo/client';
+import {
+  ApolloCache,
+  MutationUpdaterFunction,
+  Reference,
+  useMutation,
+  useQuery,
+} from '@apollo/client';
 import {
   Button,
   Col,
@@ -21,20 +27,19 @@ import Scheduled from '../../../components/Scheduled';
 import TransactionArrow from '../../../components/TransactionArrow';
 import TransactionDetailsCell from '../../../components/TransactionDetailsCell';
 import WarningText from '../../../components/WarningText';
-import DELETE_TRANSACTION, {
-  IDeleteTransactionInput,
-  IDeleteTransactionOutput,
-  updateCache,
-} from '../../../graphql/transaction/DELETE_TRANSACTION';
-import GET_TRANSACTIONS, {
-  IGetTransactionsInput,
-  IGetTransactionsOutput,
-} from '../../../graphql/transaction/GET_TRANSACTIONS';
+import { gql } from '../../../graphql';
+import {
+  DeleteTransactionMutation,
+  GetTransactionsQuery,
+  MutationDeleteTransactionArgs,
+  Transactions,
+  TransactionStatus,
+} from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
 
 interface IDataRow {
   companyId: string;
-  data: IGetTransactionsOutput;
+  data: GetTransactionsQuery;
   deleteLabel: string;
   launchDeleteModal: (id: string, name: string) => void;
   noAttachmentLabel: string;
@@ -44,7 +49,7 @@ interface IDataRow {
 
 interface IDataRowComponent {
   amount: number;
-  attachment: string;
+  attachment?: string | null;
   date: string;
   description: string;
   id: string;
@@ -132,6 +137,83 @@ function row({
   return DataRow;
 }
 
+export const update: MutationUpdaterFunction<
+  DeleteTransactionMutation,
+  MutationDeleteTransactionArgs,
+  unknown,
+  ApolloCache<unknown>
+> = (cache, { data }) => {
+  if (data?.deleteTransaction) {
+    const { deleteTransaction } = data;
+
+    cache.modify({
+      fields: {
+        items: (refs: readonly Reference[], { readField }) =>
+          refs.filter((ref) => readField('id', ref) !== deleteTransaction.id),
+      },
+      id: cache.identify({
+        __typename: 'Transactions',
+        id: deleteTransaction.companyId,
+        status: deleteTransaction.status,
+      }),
+    });
+
+    cache.modify<{
+      transactions: Transactions[];
+    }>({
+      fields: {
+        transactions: (transactions, { readField }) =>
+          (transactions as Transactions[]).filter((transaction) =>
+            transaction.items.every(
+              (item) => readField('id', item) !== deleteTransaction.id,
+            ),
+          ),
+      },
+      id: cache.identify({
+        __typename: 'Balance',
+        id: deleteTransaction.companyId,
+      }),
+    });
+  }
+};
+
+export const GET_TRANSACTIONS = gql(/* GraphQL */ `
+  query GetTransactions($id: ID!, $status: TransactionStatus!) {
+    getBalance(id: $id) {
+      currency
+      id
+      transactions {
+        items {
+          id
+        }
+      }
+    }
+    getTransactions(id: $id, status: $status) {
+      id
+      items {
+        amount
+        attachment
+        date
+        description
+        id
+        name
+        scheduled
+      }
+      status
+    }
+  }
+`);
+
+export const DELETE_TRANSACTION = gql(/* GraphQL */ `
+  mutation DeleteTransaction($id: ID!) {
+    deleteTransaction(id: $id) {
+      companyId
+      id
+      status
+    }
+  }
+`);
+
 function PendingTransactions() {
   const [transaction, setTransaction] = useState({
     id: '',
@@ -143,13 +225,10 @@ function PendingTransactions() {
   invariant(companyId);
 
   const { add } = useToast();
-  const { data, error, loading } = useQuery<
-    IGetTransactionsOutput,
-    IGetTransactionsInput
-  >(GET_TRANSACTIONS, {
+  const { data, error, loading } = useQuery(GET_TRANSACTIONS, {
     variables: {
       id: companyId,
-      status: 'pending',
+      status: TransactionStatus.Pending,
     },
   });
   const onDismiss = () => {
@@ -158,25 +237,25 @@ function PendingTransactions() {
       name: '',
     });
   };
-  const [deleteMutation, { loading: deleteLoading }] = useMutation<
-    IDeleteTransactionOutput,
-    IDeleteTransactionInput
-  >(DELETE_TRANSACTION, {
-    onCompleted: () => {
-      add({
-        colour: 'success',
-        message: t('delete-transaction.success'),
-      });
+  const [deleteMutation, { loading: deleteLoading }] = useMutation(
+    DELETE_TRANSACTION,
+    {
+      onCompleted: () => {
+        add({
+          colour: 'success',
+          message: t('delete-transaction.success'),
+        });
 
-      onDismiss();
+        onDismiss();
+      },
+      onError: () => {
+        add({
+          colour: 'danger',
+          message: t('delete-transaction.error'),
+        });
+      },
     },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('delete-transaction.error'),
-      });
-    },
-  });
+  );
   const launchDeleteModal = (id: string, name: string) => {
     setTransaction({
       id,
@@ -185,7 +264,7 @@ function PendingTransactions() {
   };
   const onDelete = (id: string) => {
     deleteMutation({
-      update: updateCache,
+      update,
       variables: {
         id,
       },

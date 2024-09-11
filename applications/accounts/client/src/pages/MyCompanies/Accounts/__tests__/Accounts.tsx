@@ -7,9 +7,12 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import DELETE_TRANSACTION from '../../../../graphql/transaction/DELETE_TRANSACTION';
 import TestProvider, { add } from '../../../../utils/TestProvider';
-import Accounts, { GET_BALANCE, ON_TRANSACTION } from '../Accounts';
+import Accounts, {
+  DELETE_TRANSACTION,
+  GET_BALANCE,
+  ON_TRANSACTION,
+} from '../Accounts';
 
 describe('Accounts', () => {
   let component: RenderResult;

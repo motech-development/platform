@@ -15,10 +15,6 @@ import Connected from '../../../components/Connected';
 import { formatCurrency } from '../../../components/Currency';
 import TransactionsList from '../../../components/TransactionsList';
 import { gql } from '../../../graphql';
-import DELETE_TRANSACTION, {
-  IDeleteTransactionInput,
-  IDeleteTransactionOutput,
-} from '../../../graphql/transaction/DELETE_TRANSACTION';
 import invariant from '../../../utils/invariant';
 
 export const GET_BALANCE = gql(/* GraphQL */ `
@@ -43,6 +39,16 @@ export const GET_BALANCE = gql(/* GraphQL */ `
         owed
         paid
       }
+    }
+  }
+`);
+
+export const DELETE_TRANSACTION = gql(/* GraphQL */ `
+  mutation DeleteTransaction($id: ID!) {
+    deleteTransaction(id: $id) {
+      companyId
+      id
+      status
     }
   }
 `);
@@ -88,23 +94,23 @@ function Accounts() {
       id: companyId,
     },
   });
-  const [deleteMutation, { loading: deleteLoading }] = useMutation<
-    IDeleteTransactionOutput,
-    IDeleteTransactionInput
-  >(DELETE_TRANSACTION, {
-    onCompleted: () => {
-      add({
-        colour: 'success',
-        message: t('delete-transaction.success'),
-      });
+  const [deleteMutation, { loading: deleteLoading }] = useMutation(
+    DELETE_TRANSACTION,
+    {
+      onCompleted: () => {
+        add({
+          colour: 'success',
+          message: t('delete-transaction.success'),
+        });
+      },
+      onError: () => {
+        add({
+          colour: 'danger',
+          message: t('delete-transaction.error'),
+        });
+      },
     },
-    onError: () => {
-      add({
-        colour: 'danger',
-        message: t('delete-transaction.error'),
-      });
-    },
-  });
+  );
   const onDelete = (id: string) => {
     deleteMutation({
       variables: {

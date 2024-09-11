@@ -1,4 +1,10 @@
-import { useMutation, useQuery } from '@apollo/client';
+import {
+  ApolloCache,
+  MutationUpdaterFunction,
+  Reference,
+  useMutation,
+  useQuery,
+} from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,41 +14,119 @@ import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
 import { gql } from '../../../graphql';
-import ADD_TRANSACTION, {
-  IAddTransactionInput,
-  IAddTransactionOutput,
-  updateCache,
-} from '../../../graphql/transaction/ADD_TRANSACTION';
+import {
+  AddTransactionMutation,
+  MutationAddTransactionArgs,
+} from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
+import { findUnique, setItems, spread } from '../../../utils/transactions';
 import UploadAttachment from './shared/UploadAttachment';
 import ViewAttachment from './shared/ViewAttachment';
 
-interface IRecordTransactionInput {
-  id: string;
-}
+export const update: MutationUpdaterFunction<
+  AddTransactionMutation,
+  MutationAddTransactionArgs,
+  unknown,
+  ApolloCache<unknown>
+> = (cache, { data }) => {
+  if (data?.addTransaction) {
+    const { addTransaction } = data;
 
-interface IRecordTransactionOutput {
-  getClients?: {
-    items: {
-      id: string;
-      name: string;
-    }[];
-  };
-  getSettings?: {
-    categories: {
-      name: string;
-      vatRate: number;
-    }[];
-    vat: {
-      pay: number;
-    };
-  };
-  getTypeahead?: {
-    purchases: string[];
-    sales: string[];
-    suppliers: string[];
-  };
-}
+    cache.modify({
+      fields: {
+        purchases: (items: string[] | Reference) => {
+          const descriptions = setItems(items);
+          const unique = !descriptions.some(
+            findUnique(addTransaction, 'description'),
+          );
+
+          if (spread(addTransaction.category !== 'Sales', unique)) {
+            return [...descriptions, addTransaction.description].sort((a, b) =>
+              a.localeCompare(b),
+            );
+          }
+
+          return descriptions;
+        },
+        sales: (items: string[] | Reference) => {
+          const descriptions = setItems(items);
+          const unique = !descriptions.some(
+            findUnique(addTransaction, 'description'),
+          );
+
+          if (spread(addTransaction.category === 'Sales', unique)) {
+            return [...descriptions, addTransaction.description].sort((a, b) =>
+              a.localeCompare(b),
+            );
+          }
+
+          return descriptions;
+        },
+        suppliers: (items: string[] | Reference) => {
+          const suppliers = setItems(items);
+          const unique = !suppliers.some(findUnique(addTransaction, 'name'));
+
+          if (spread(addTransaction.category !== 'Sales', unique)) {
+            return [...suppliers, addTransaction.name].sort((a, b) =>
+              a.localeCompare(b),
+            );
+          }
+
+          return suppliers;
+        },
+      },
+      id: cache.identify({
+        __typename: 'Typeahead',
+        id: addTransaction.companyId,
+      }),
+    });
+
+    cache.modify({
+      fields: {
+        items: (refs: readonly Reference[], { readField }) => {
+          if (refs.some((ref) => readField('id', ref) === addTransaction.id)) {
+            return [...refs];
+          }
+
+          const newRef = cache.writeFragment({
+            data: addTransaction,
+            fragment: gql(/* GraphQL */ `
+              fragment NewTransaction on Transaction {
+                amount
+                attachment
+                date
+                description
+                id
+                name
+                scheduled
+              }
+            `),
+          });
+
+          if (!newRef) {
+            return [...refs];
+          }
+
+          return [...refs, newRef].sort((a, b) => {
+            const readA = readField<string>('date', a);
+            const readB = readField<string>('date', b);
+
+            if (readA && readB) {
+              return readA.localeCompare(readB);
+            }
+
+            return 0;
+          });
+        },
+      },
+      id: cache.identify({
+        __typename: 'Transactions',
+        id: addTransaction.companyId,
+        status: addTransaction.status,
+      }),
+    });
+  }
+};
 
 export const RECORD_TRANSACTION = gql(/* GraphQL */ `
   query RecordTransaction($id: ID!) {
@@ -72,6 +156,25 @@ export const RECORD_TRANSACTION = gql(/* GraphQL */ `
   }
 `);
 
+export const ADD_TRANSACTION = gql(/* GraphQL */ `
+  mutation AddTransaction($input: TransactionInput!) {
+    addTransaction(input: $input) {
+      amount
+      attachment
+      category
+      companyId
+      date
+      description
+      id
+      name
+      refund
+      scheduled
+      status
+      vat
+    }
+  }
+`);
+
 function RecordTransaction() {
   const navigate = useNavigate();
   const { companyId } = useParams();
@@ -91,39 +194,36 @@ function RecordTransaction() {
 
     return location;
   };
-  const { data, error, loading } = useQuery<
-    IRecordTransactionOutput,
-    IRecordTransactionInput
-  >(RECORD_TRANSACTION, {
+  const { data, error, loading } = useQuery(RECORD_TRANSACTION, {
     variables: {
       id: companyId,
     },
   });
-  const [mutation, { error: addError, loading: addLoading }] = useMutation<
-    IAddTransactionOutput,
-    IAddTransactionInput
-  >(ADD_TRANSACTION, {
-    onCompleted: ({ addTransaction }) => {
-      if (addTransaction) {
-        add({
-          colour: 'success',
-          message: t('record-transaction.success'),
-        });
+  const [mutation, { error: addError, loading: addLoading }] = useMutation(
+    ADD_TRANSACTION,
+    {
+      onCompleted: ({ addTransaction }) => {
+        if (addTransaction) {
+          add({
+            colour: 'success',
+            message: t('record-transaction.success'),
+          });
 
-        navigate(backTo(addTransaction.companyId, addTransaction.status));
-      } else {
-        add({
-          colour: 'danger',
-          message: t('record-transaction.retry'),
-        });
+          navigate(backTo(addTransaction.companyId, addTransaction.status));
+        } else {
+          add({
+            colour: 'danger',
+            message: t('record-transaction.retry'),
+          });
 
-        navigate(backTo(companyId));
-      }
+          navigate(backTo(companyId));
+        }
+      },
     },
-  });
+  );
   const save = (input: FormSchema) => {
     mutation({
-      update: updateCache,
+      update,
       variables: {
         input,
       },

@@ -4,10 +4,10 @@ enum TransactionStatus {
 }
 
 type Transactions {
-  id: ID
-  items: [Transaction]
+  id: ID!
+  items: [Transaction!]!
   nextToken: String
-  status: TransactionStatus
+  status: TransactionStatus!
 }
 
 type Transaction @aws_iam @aws_oidc {
