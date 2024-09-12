@@ -141,13 +141,6 @@ stepFunctions:
                     Resource: !GetAtt DeleteTypeaheadLambdaFunction.Arn
                     End: true
 
-              - StartAt: UnlinkBank
-                States:
-                  UnlinkBank:
-                    Type: Task
-                    Resource: !GetAtt UnlinkBankLambdaFunction.Arn
-                    Next: DeleteBankSettings
-
                   DeleteBankSettings:
                     Type: Task
                     Resource: !GetAtt DeleteBankSettingsLambdaFunction.Arn
