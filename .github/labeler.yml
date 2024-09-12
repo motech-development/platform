@@ -22,10 +22,6 @@ id:
   - changed-files:
       - any-glob-to-any-file: applications/id/**
 
-open-banking:
-  - changed-files:
-      - any-glob-to-any-file: applications/open-banking/**
-
 packages:
   - changed-files:
       - any-glob-to-any-file: packages/**
