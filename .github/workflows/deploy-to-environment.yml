@@ -8,7 +8,9 @@ on:
       - reopened
       - synchronize
 
-concurrency: development_environment
+concurrency:
+  cancel-in-progress: true
+  group: development_environment
 
 jobs:
   setup:
@@ -742,9 +744,10 @@ jobs:
           mode: production
 
       - name: Publish URL
-        uses: unsplash/comment-on-pr@master
+        uses: mshick/add-pr-comment@v2.8.2
         with:
-          msg: |
+          message-id: config
+          message: |
             Add these params to your `.env.local` file
 
             ```
