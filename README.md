@@ -29,10 +29,6 @@ Auth0 tenant
 
 Motech Development cloud infrastructure as code
 
-### Open banking
-
-Open Banking API
-
 ## Packages
 
 Reusable NPM packages used in our applications
