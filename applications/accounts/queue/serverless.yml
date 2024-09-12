@@ -141,6 +141,8 @@ stepFunctions:
                     Resource: !GetAtt DeleteTypeaheadLambdaFunction.Arn
                     End: true
 
+              - StartAt: DeleteBankSettings
+                States:
                   DeleteBankSettings:
                     Type: Task
                     Resource: !GetAtt DeleteBankSettingsLambdaFunction.Arn
