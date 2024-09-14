@@ -3,10 +3,19 @@ import { AttributeValue as DdbAttributeValue } from '@aws-sdk/client-dynamodb';
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
+import { init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { AWSAppSyncClient } from 'aws-appsync';
 import { DynamoDBStreamHandler } from 'aws-lambda';
 import gql from 'graphql-tag';
 import { isStreamInsertRecord } from '../shared/utils';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 // TODO: Use generated types instead
 interface IRecord {
@@ -31,7 +40,7 @@ export const mutation = gql`
   }
 `;
 
-export const handler: DynamoDBStreamHandler = async (event) => {
+export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
   const credentials = fromNodeProviderChain({});
 
   const { AWS_REGION, ENDPOINT } = process.env;
@@ -97,4 +106,4 @@ export const handler: DynamoDBStreamHandler = async (event) => {
       logger.error('Unhandled exception', e);
     }
   }
-};
+});

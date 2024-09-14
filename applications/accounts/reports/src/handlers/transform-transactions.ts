@@ -1,10 +1,19 @@
 import { extname, join } from 'node:path';
+import { init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { Handler } from 'aws-lambda';
 import { DateTime } from 'luxon';
 import { array, number, object, string } from 'yup';
 import slug from '../shared/slug';
 import Status from '../shared/status';
 import { IEvent as IOutput } from './convert-to-csv';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 const schema = object({
   companyId: string().required(),
@@ -61,7 +70,7 @@ export interface IEvent {
   owner: string;
 }
 
-export const handler: Handler<IEvent, IOutput> = async (event) => {
+export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
   const result = await schema.validate(event, {
     abortEarly: true,
     stripUnknown: true,
@@ -115,4 +124,4 @@ export const handler: Handler<IEvent, IOutput> = async (event) => {
     csv,
     owner: result.owner,
   };
-};
+});

@@ -1,8 +1,17 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { NativeAttributeValue } from '@aws-sdk/util-dynamodb';
+import { init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { Handler } from 'aws-lambda';
 import chunk from '../shared/chunk';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 interface IItem {
   id: string;
@@ -18,7 +27,7 @@ export interface IEvent {
   owner: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { TABLE, TYPENAME } = process.env;
 
   if (!TABLE) {
@@ -69,4 +78,4 @@ export const handler: Handler<IEvent> = async (event) => {
   return {
     complete: true,
   };
-};
+});

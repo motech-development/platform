@@ -1,8 +1,17 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
+import { init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { Handler } from 'aws-lambda';
 import { boolean, number, object, string } from 'yup';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 const client = new DynamoDBClient({});
 
@@ -18,7 +27,7 @@ export interface IEvent {
   id: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { TABLE } = process.env;
 
   if (!TABLE) {
@@ -58,4 +67,4 @@ export const handler: Handler<IEvent> = async (event) => {
     complete,
     id,
   };
-};
+});

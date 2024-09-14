@@ -371,6 +371,7 @@ functions:
           type: dynamodb
           arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       ENDPOINT: ${appsync:url}
 
   UpdateBalance:

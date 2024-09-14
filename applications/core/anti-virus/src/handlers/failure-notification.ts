@@ -1,6 +1,15 @@
 import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { getFileData } from '@motech-development/s3-file-operations';
+import { init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { Handler } from 'aws-lambda';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 const sqs = new SQSClient({});
 
@@ -9,7 +18,7 @@ export interface IEvent {
   key: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { QUEUE_URL } = process.env;
 
   if (!QUEUE_URL) {
@@ -52,4 +61,4 @@ export const handler: Handler<IEvent> = async (event) => {
     from,
     key,
   };
-};
+});

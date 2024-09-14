@@ -1,5 +1,14 @@
 import { moveFile } from '@motech-development/s3-file-operations';
+import { init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { Handler } from 'aws-lambda';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 export interface IEvent {
   from: string;
@@ -7,8 +16,8 @@ export interface IEvent {
   to: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { from, key, to } = event;
 
   await moveFile(from, to, key);
-};
+});

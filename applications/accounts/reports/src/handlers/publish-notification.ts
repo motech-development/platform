@@ -1,8 +1,17 @@
+import { init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { Handler } from 'aws-lambda';
 import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import { stringify } from 'qs';
 import { number, object, string } from 'yup';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 const instance = axios.create();
 
@@ -30,7 +39,7 @@ export interface IEvent {
   };
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { ENDPOINT, STAGE } = process.env;
 
   if (!ENDPOINT) {
@@ -65,4 +74,4 @@ export const handler: Handler<IEvent> = async (event) => {
   return {
     complete: true,
   };
-};
+});
