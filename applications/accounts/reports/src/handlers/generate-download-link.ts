@@ -1,6 +1,15 @@
 import { createSignedUrl } from '@motech-development/s3-file-operations';
+import { init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { Handler } from 'aws-lambda';
 import { object, string } from 'yup';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 const schema = object({
   companyId: string().required(),
@@ -14,7 +23,7 @@ export interface IEvent {
   owner: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { BUCKET } = process.env;
 
   if (!BUCKET) {
@@ -33,4 +42,4 @@ export const handler: Handler<IEvent> = async (event) => {
     key,
     owner,
   };
-};
+});

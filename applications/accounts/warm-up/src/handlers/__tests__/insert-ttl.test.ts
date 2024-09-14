@@ -28,7 +28,7 @@ describe('insert-ttl', () => {
   afterAll(clear);
 
   it('should throw an error if table is not set', async () => {
-    await expect(handler(null, context, callback)).rejects.toThrow(
+    await expect(handler({}, context, callback)).rejects.toThrow(
       'No table set',
     );
   });
@@ -62,7 +62,7 @@ describe('insert-ttl', () => {
     });
 
     it('should input the correct data into the database', async () => {
-      await handler(null, context, callback);
+      await handler({}, context, callback);
 
       expect(ddb).toReceiveCommandWith(PutCommand, {
         Item: {
@@ -77,7 +77,7 @@ describe('insert-ttl', () => {
     });
 
     it('should complete correctly', async () => {
-      await expect(handler(null, context, callback)).resolves.toEqual({
+      await expect(handler({}, context, callback)).resolves.toEqual({
         id: 'test-uuid',
       });
     });

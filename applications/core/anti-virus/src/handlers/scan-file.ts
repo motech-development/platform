@@ -3,9 +3,18 @@ import {
   createDirectory,
   downloadFile,
 } from '@motech-development/s3-file-operations';
+import { init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { Handler } from 'aws-lambda';
 import { scanFile } from '../shared/clam-av';
 import virusDefinitions from '../shared/virus-definitions';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 export interface IEvent {
   from: string;
@@ -13,7 +22,7 @@ export interface IEvent {
   to: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { BUCKET } = process.env;
 
   if (!BUCKET) {
@@ -39,4 +48,4 @@ export const handler: Handler<IEvent> = async (event) => {
     result,
     to,
   };
-};
+});

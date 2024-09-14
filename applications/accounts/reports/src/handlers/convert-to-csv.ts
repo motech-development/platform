@@ -1,6 +1,15 @@
+import { init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { Handler } from 'aws-lambda';
 import { json2csv } from 'json-2-csv';
 import { array, object, string } from 'yup';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 const schema = object({
   attachments: array(
@@ -40,7 +49,7 @@ export interface IEvent {
   owner: string;
 }
 
-export const handler: Handler<IEvent> = async (event) => {
+export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { attachments, companyId, csv, owner } = await schema.validate(event, {
     abortEarly: true,
     stripUnknown: true,
@@ -55,4 +64,4 @@ export const handler: Handler<IEvent> = async (event) => {
     csv: report,
     owner,
   };
-};
+});

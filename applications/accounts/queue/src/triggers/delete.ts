@@ -1,9 +1,18 @@
 import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
+import { init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { Handler, SQSEvent } from 'aws-lambda';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profilesSampleRate: 1.0,
+  tracesSampleRate: 1.0,
+});
 
 const stepFunctions = new SFNClient({});
 
-export const handler: Handler<SQSEvent> = async (event) => {
+export const handler: Handler<SQSEvent> = wrapHandler(async (event) => {
   const { STATE_MACHINE_ARN } = process.env;
 
   if (!STATE_MACHINE_ARN) {
@@ -32,4 +41,4 @@ export const handler: Handler<SQSEvent> = async (event) => {
       return null;
     }),
   );
-};
+});
