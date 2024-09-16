@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, cloneElement, isValidElement } from 'react';
+import { cloneElement, isValidElement, ReactElement, ReactNode } from 'react';
 
 /** Reusable slot component base props */
 export interface ISlot {

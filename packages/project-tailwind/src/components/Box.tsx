@@ -1,4 +1,4 @@
-import { ElementType, ComponentProps, ReactElement, forwardRef } from 'react';
+import { ComponentProps, ElementType, forwardRef, ReactElement } from 'react';
 
 /** Default component element */
 const DEFAULT_ELEMENT = 'div';
