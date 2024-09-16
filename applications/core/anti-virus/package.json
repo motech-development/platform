@@ -26,7 +26,7 @@
     "@motech-development/semantic-release": "workspace:*",
     "@motech-development/webpack-conditional-plugin": "workspace:*",
     "@motech-development/webpack-permissions-plugin": "workspace:*",
-    "@swc/core": "1.7.22",
+    "@swc/core": "1.7.26",
     "@swc/jest": "0.2.36",
     "@types/aws-lambda": "8.10.145",
     "@types/jest": "29.5.12",
