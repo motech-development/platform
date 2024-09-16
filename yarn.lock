@@ -362,7 +362,7 @@ __metadata:
     "@types/uuid": "npm:9.0.8"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
-    archiver: "npm:5.3.2"
+    archiver: "npm:7.0.1"
     aws-lambda-mock-context: "npm:3.2.1"
     aws-sdk-client-mock: "npm:4.0.1"
     aws-sdk-client-mock-jest: "npm:4.0.1"
@@ -16481,22 +16481,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"archiver@npm:5.3.2, archiver@npm:^5.3.0, archiver@npm:^5.3.1":
-  version: 5.3.2
-  resolution: "archiver@npm:5.3.2"
-  dependencies:
-    archiver-utils: "npm:^2.1.0"
-    async: "npm:^3.2.4"
-    buffer-crc32: "npm:^0.2.1"
-    readable-stream: "npm:^3.6.0"
-    readdir-glob: "npm:^1.1.2"
-    tar-stream: "npm:^2.2.0"
-    zip-stream: "npm:^4.1.0"
-  checksum: 10c0/973384d749b3fa96f44ceda1603a65aaa3f24a267230d69a4df9d7b607d38d3ebc6c18c358af76eb06345b6b331ccb9eca07bd079430226b5afce95de22dfade
-  languageName: node
-  linkType: hard
-
-"archiver@npm:^7.0.1":
+"archiver@npm:7.0.1, archiver@npm:^7.0.1":
   version: 7.0.1
   resolution: "archiver@npm:7.0.1"
   dependencies:
@@ -16508,6 +16493,21 @@ __metadata:
     tar-stream: "npm:^3.0.0"
     zip-stream: "npm:^6.0.1"
   checksum: 10c0/02afd87ca16f6184f752db8e26884e6eff911c476812a0e7f7b26c4beb09f06119807f388a8e26ed2558aa8ba9db28646ebd147a4f99e46813b8b43158e1438e
+  languageName: node
+  linkType: hard
+
+"archiver@npm:^5.3.0, archiver@npm:^5.3.1":
+  version: 5.3.2
+  resolution: "archiver@npm:5.3.2"
+  dependencies:
+    archiver-utils: "npm:^2.1.0"
+    async: "npm:^3.2.4"
+    buffer-crc32: "npm:^0.2.1"
+    readable-stream: "npm:^3.6.0"
+    readdir-glob: "npm:^1.1.2"
+    tar-stream: "npm:^2.2.0"
+    zip-stream: "npm:^4.1.0"
+  checksum: 10c0/973384d749b3fa96f44ceda1603a65aaa3f24a267230d69a4df9d7b607d38d3ebc6c18c358af76eb06345b6b331ccb9eca07bd079430226b5afce95de22dfade
   languageName: node
   linkType: hard
 

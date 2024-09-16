@@ -16,7 +16,7 @@
     "@motech-development/s3-file-operations": "workspace:*",
     "@sentry/aws-serverless": "8.30.0",
     "@sentry/profiling-node": "8.30.0",
-    "archiver": "5.3.2",
+    "archiver": "7.0.1",
     "aws4-axios": "3.2.8",
     "axios": "1.7.6",
     "json-2-csv": "4.1.0",
