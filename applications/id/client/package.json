@@ -40,7 +40,7 @@
     "@motech-development/eslint-config-motech-react": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
-    "@swc/core": "1.7.22",
+    "@swc/core": "1.7.26",
     "@swc/jest": "0.2.36",
     "@testing-library/jest-dom": "6.5.0",
     "@testing-library/react": "16.0.1",
