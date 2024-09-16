@@ -6,9 +6,9 @@ import {
 } from '@heroicons/react/24/solid';
 import {
   ComponentPropsWithoutRef,
+  forwardRef,
   Fragment,
   ReactNode,
-  forwardRef,
   useEffect,
   useRef,
   useState,
@@ -17,7 +17,6 @@ import { NumericFormat, PatternFormat } from 'react-number-format';
 import TextareaAutosize, {
   TextareaAutosizeProps,
 } from 'react-textarea-autosize';
-import { Box } from './Box';
 import useMergeRefs from '../utilities/refs';
 import {
   Sizing,
@@ -26,6 +25,7 @@ import {
   TTheme,
   useTailwind,
 } from '../utilities/tailwind';
+import { Box } from './Box';
 import { Button } from './Button';
 import { Tooltip } from './Tooltip';
 import { Typography } from './Typography';

@@ -1,7 +1,7 @@
-import { mockViewport } from 'jsdom-testing-mocks';
 import { act } from '@testing-library/react';
-import { Input, Radio, Select, Textarea, Upload } from '../Form';
+import { mockViewport } from 'jsdom-testing-mocks';
 import { setup, sizing, themes } from '../../utilities/jest';
+import { Input, Radio, Select, Textarea, Upload } from '../Form';
 
 describe('Form', () => {
   beforeAll(() => {

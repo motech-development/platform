@@ -1,10 +1,10 @@
 import { Slot } from '@radix-ui/react-slot';
 import { ComponentPropsWithoutRef, forwardRef } from 'react';
 import {
-  TTheme,
-  TSizing,
-  Themes,
   Sizing,
+  Themes,
+  TSizing,
+  TTheme,
   useTailwind,
 } from '../utilities/tailwind';
 import { ISlot } from './Slot';
