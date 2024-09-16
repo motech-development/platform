@@ -1,9 +1,12 @@
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 import { act, waitFor } from '@testing-library/react';
+import { mockAnimationsApi } from 'jsdom-testing-mocks';
 import { setup, sizing, themes } from '../../utilities/jest';
 import { Alert } from '../Alert';
 
 describe('Alert', () => {
+  mockAnimationsApi();
+
   describe('dismiss', () => {
     beforeAll(() => {
       jest.useFakeTimers();
@@ -20,11 +23,9 @@ describe('Alert', () => {
         <Alert dismissable message="Hello, world" onDismiss={onDismiss} />,
       );
 
-      await act(async () => {
-        const button = getByTestId('alert-dismiss-button');
+      const button = getByTestId('alert-dismiss-button');
 
-        await user.click(button);
-      });
+      await user.click(button);
 
       await waitFor(() => expect(onDismiss).toHaveBeenCalledWith());
     });
@@ -34,21 +35,25 @@ describe('Alert', () => {
         <Alert dismissable message="Hello, world" />,
       );
 
-      await act(async () => {
-        const button = getByTestId('alert-dismiss-button');
+      const button = getByTestId('alert-dismiss-button');
 
-        await user.click(button);
-      });
+      await user.click(button);
+
+      await waitFor(() => expect(button).not.toBeInTheDocument());
 
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should automatically dismiss an alert', () => {
-      const { asFragment } = setup(
+    it('should automatically dismiss an alert', async () => {
+      const { asFragment, getByText } = setup(
         <Alert dismissable={1000} message="Hello, world" />,
       );
 
+      const text = getByText('Hello, world');
+
       act(() => jest.advanceTimersByTime(1000));
+
+      await waitFor(() => expect(text).not.toBeInTheDocument());
 
       expect(asFragment()).toMatchSnapshot();
     });
