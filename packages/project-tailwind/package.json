@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@floating-ui/react": "0.24.2",
-    "@headlessui/react": "1.7.15",
+    "@headlessui/react": "2.1.8",
     "@heroicons/react": "2.0.18",
     "@radix-ui/react-slot": "^1.0.2",
     "clsx": "1.2.1",

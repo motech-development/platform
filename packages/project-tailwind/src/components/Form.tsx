@@ -1,4 +1,11 @@
-import { Listbox, RadioGroup, Transition } from '@headlessui/react';
+import {
+  Description,
+  Label as HeadlessUiLabel,
+  Listbox,
+  Radio as HeadlessUiRadio,
+  RadioGroup,
+  Transition,
+} from '@headlessui/react';
 import {
   CheckIcon,
   ChevronUpDownIcon,
@@ -26,12 +33,9 @@ import {
   TTheme,
   useTailwind,
 } from '../utilities/tailwind';
-// import { Box } from './Box';
 import { Button } from './Button';
 import { Tooltip } from './Tooltip';
 import { Typography } from './Typography';
-
-// TODO: Select
 
 /** Get message utility type */
 type TGetMessage =
@@ -1034,27 +1038,27 @@ export const Radio = forwardRef<HTMLElement, IRadioProps>(
       >
         <Container
           label={
-            <RadioGroup.Label as={Label} required={required} theme={theme}>
+            <HeadlessUiLabel as={Label} required={required} theme={theme}>
               {label}
-            </RadioGroup.Label>
+            </HeadlessUiLabel>
           }
           input={
             <div className={wrapperStyles}>
               {options.map((option) => (
-                <RadioGroup.Option
+                <HeadlessUiRadio
                   key={option.value}
                   className={inputStyles(option.disabled)}
                   disabled={option.disabled}
                   value={option.value}
                 >
-                  <RadioGroup.Label as="span">{option.label}</RadioGroup.Label>
-                </RadioGroup.Option>
+                  <HeadlessUiLabel as="span">{option.label}</HeadlessUiLabel>
+                </HeadlessUiRadio>
               ))}
             </div>
           }
           helpText={
             hasDescription && (
-              <RadioGroup.Description
+              <Description
                 as={HelpText}
                 id={describedById}
                 theme={theme}

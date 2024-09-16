@@ -1,4 +1,3 @@
-import { act } from '@testing-library/react';
 import { mockViewport } from 'jsdom-testing-mocks';
 import { setup, sizing, themes } from '../../utilities/jest';
 import { Input, Radio, Select, Textarea, Upload } from '../Form';
@@ -38,11 +37,9 @@ describe('Form', () => {
         <Input label="Test input" name="testInput" decimalScale={2} />,
       );
 
-      await act(async () => {
-        const input = getByLabelText('Test input');
+      const input = getByLabelText('Test input');
 
-        await user.type(input, '100');
-      });
+      await user.type(input, '100');
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -52,11 +49,9 @@ describe('Form', () => {
         <Input label="Test input" name="testInput" format="##-##-##" />,
       );
 
-      await act(async () => {
-        const input = getByLabelText('Test input');
+      const input = getByLabelText('Test input');
 
-        await user.type(input, '123456');
-      });
+      await user.type(input, '123456');
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -66,11 +61,9 @@ describe('Form', () => {
         <Input label="Test input" name="testInput" prefix="£" />,
       );
 
-      await act(async () => {
-        const input = getByLabelText('Test input');
+      const input = getByLabelText('Test input');
 
-        await user.type(input, '100');
-      });
+      await user.type(input, '100');
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -80,11 +73,9 @@ describe('Form', () => {
         <Input label="Test input" name="testInput" suffix="px" />,
       );
 
-      await act(async () => {
-        const input = getByLabelText('Test input');
+      const input = getByLabelText('Test input');
 
-        await user.type(input, '100');
-      });
+      await user.type(input, '100');
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -98,11 +89,9 @@ describe('Form', () => {
         />,
       );
 
-      await act(async () => {
-        const parent = getByTestId('tooltip-parent-element');
+      const parent = getByTestId('tooltip-parent-element');
 
-        await user.hover(parent);
-      });
+      await user.hover(parent);
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -165,11 +154,9 @@ describe('Form', () => {
         />,
       );
 
-      await act(async () => {
-        const parent = getByTestId('tooltip-parent-element');
+      const parent = getByTestId('tooltip-parent-element');
 
-        await user.hover(parent);
-      });
+      await user.hover(parent);
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -257,11 +244,9 @@ describe('Form', () => {
         />,
       );
 
-      await act(async () => {
-        const parent = getByTestId('tooltip-parent-element');
+      const parent = getByTestId('tooltip-parent-element');
 
-        await user.hover(parent);
-      });
+      await user.hover(parent);
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -275,11 +260,9 @@ describe('Form', () => {
         <Upload label="Test input" name="testInput" />,
       );
 
-      await act(async () => {
-        const input = getByLabelText('Test input');
+      const input = getByLabelText('Test input');
 
-        await user.upload(input, file);
-      });
+      await user.upload(input, file);
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -389,11 +372,9 @@ describe('Form', () => {
         />,
       );
 
-      await act(async () => {
-        const parent = getByTestId('tooltip-parent-element');
+      const parent = getByTestId('tooltip-parent-element');
 
-        await user.hover(parent);
-      });
+      await user.hover(parent);
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -436,15 +417,13 @@ describe('Form', () => {
           />,
         );
 
-        await act(async () => {
-          const option = getByLabelText('16 GB');
+        const option = getByLabelText('16 GB');
 
-          await user.click(option);
+        await user.click(option);
 
-          const other = getByLabelText('128 GB');
+        const other = getByLabelText('128 GB');
 
-          await user.click(other);
-        });
+        await user.click(other);
 
         expect(asFragment()).toMatchSnapshot();
       });
@@ -459,11 +438,9 @@ describe('Form', () => {
           />,
         );
 
-        await act(async () => {
-          const option = getByLabelText('16 GB');
+        const option = getByLabelText('16 GB');
 
-          await user.click(option);
-        });
+        await user.click(option);
 
         expect(asFragment()).toMatchSnapshot();
       });
@@ -544,11 +521,9 @@ describe('Form', () => {
         />,
       );
 
-      await act(async () => {
-        const parent = getByTestId('tooltip-parent-element');
+      const parent = getByTestId('tooltip-parent-element');
 
-        await user.hover(parent);
-      });
+      await user.hover(parent);
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -571,11 +546,9 @@ describe('Form', () => {
         <Select label="Test input" name="testInput" options={options} />,
       );
 
-      await act(async () => {
-        const parent = getByTestId('select-button');
+      const parent = getByTestId('select-button');
 
-        await user.click(parent);
-      });
+      await user.click(parent);
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -587,17 +560,13 @@ describe('Form', () => {
 
       const firstRender = asFragment();
 
-      await act(async () => {
-        const parent = getByTestId('select-button');
+      const parent = getByTestId('select-button');
 
-        await user.click(parent);
-      });
+      await user.click(parent);
 
-      await act(async () => {
-        const item = getByText('64 GB');
+      const item = getByText('64 GB');
 
-        await user.click(item);
-      });
+      await user.click(item);
 
       expect(firstRender).toMatchDiffSnapshot(asFragment());
     });
