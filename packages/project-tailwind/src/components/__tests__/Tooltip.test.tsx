@@ -1,7 +1,7 @@
 import { Side } from '@floating-ui/react';
+import { act } from '@testing-library/react';
 import { mockViewport } from 'jsdom-testing-mocks';
 import { ReactNode } from 'react';
-import { act } from 'react-dom/test-utils';
 import { setup, themes } from '../../utilities/jest';
 import { Tooltip } from '../Tooltip';
 

@@ -6,6 +6,7 @@ import {
 } from '@heroicons/react/24/solid';
 import {
   ComponentPropsWithoutRef,
+  ComponentPropsWithRef,
   forwardRef,
   Fragment,
   ReactNode,
@@ -25,7 +26,7 @@ import {
   TTheme,
   useTailwind,
 } from '../utilities/tailwind';
-import { Box } from './Box';
+// import { Box } from './Box';
 import { Button } from './Button';
 import { Tooltip } from './Tooltip';
 import { Typography } from './Typography';
@@ -283,6 +284,138 @@ function ValidationMessage({
   );
 }
 
+/** InputType component properties */
+interface IInputTypeProps extends ComponentPropsWithRef<'input'> {
+  /** Limit number of digits after decimal point */
+  decimalScale?: number;
+
+  description: TGetMessage;
+
+  error: TGetMessage;
+
+  /** Define input pattern using `#` character */
+  format?: string;
+
+  /** Supporting text */
+  helpText?: string;
+
+  /** Input name */
+  name: string;
+
+  /** Prefix value to display */
+  prefix?: string;
+
+  /** Component spacing */
+  spacing?: TSizing;
+
+  /** Suffix value to display */
+  suffix?: string;
+
+  /** Component theme */
+  theme?: TTheme;
+
+  /** Tooltip status */
+  tooltip?: boolean;
+}
+
+/**
+ * Internal component return correct input
+ *
+ * @param props - Component props
+ *
+ * @returns InputType component
+ */
+function InputType({
+  className,
+  decimalScale,
+  defaultValue,
+  description,
+  error,
+  format,
+  helpText,
+  name,
+  prefix,
+  ref,
+  spacing,
+  suffix,
+  theme,
+  tooltip,
+  type,
+  value,
+  ...rest
+}: IInputTypeProps) {
+  const { createStyles } = useTailwind(theme, spacing);
+
+  const inputStyles = createStyles({
+    classNames: [
+      'block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600',
+      className,
+    ],
+    theme: {
+      danger: ['border-red-300'],
+      primary: ['border-blue-300'],
+      secondary: ['border-gray-300'],
+      success: ['border-green-300'],
+      warning: ['border-yellow-300'],
+    },
+  });
+
+  if (format) {
+    return (
+      <PatternFormat
+        id={name}
+        className={inputStyles}
+        format={format}
+        getInputRef={ref}
+        name={name}
+        aria-describedby={description.id}
+        aria-errormessage={tooltip ? error.id : undefined}
+        aria-invalid={error.hasMessage}
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...rest}
+      />
+    );
+  }
+
+  if (decimalScale || prefix || suffix) {
+    const valueIsNumericString = Boolean(prefix || suffix);
+
+    return (
+      <NumericFormat
+        id={name}
+        className={inputStyles}
+        decimalScale={decimalScale}
+        fixedDecimalScale={Boolean(decimalScale)}
+        getInputRef={ref}
+        name={name}
+        prefix={prefix}
+        suffix={suffix}
+        valueIsNumericString={valueIsNumericString}
+        aria-describedby={description.id}
+        aria-errormessage={tooltip ? error.id : undefined}
+        aria-invalid={error.hasMessage}
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...rest}
+      />
+    );
+  }
+
+  return (
+    <input
+      id={name}
+      className={inputStyles}
+      defaultValue={defaultValue}
+      type={type}
+      value={value}
+      name={name}
+      aria-describedby={description.id}
+      aria-errormessage={tooltip ? error.id : undefined}
+      aria-invalid={error.hasMessage}
+      {...rest}
+    />
+  );
+}
+
 /** Supported text input types */
 enum InputTypes {
   /** Email */
@@ -347,6 +480,7 @@ export const Input = forwardRef<HTMLInputElement, IInputProps>(
       'aria-describedby': ariaDescribedby,
       className,
       decimalScale,
+      defaultValue,
       errorMessage,
       format,
       helpText,
@@ -358,87 +492,16 @@ export const Input = forwardRef<HTMLInputElement, IInputProps>(
       suffix,
       theme = Themes.SECONDARY,
       type = InputTypes.TEXT,
+      value,
       ...rest
     },
     ref,
   ) => {
     const { getMessage, setTooltip, tooltip } = useInput(name);
 
-    const {
-      hasMessage: hasDescription,
-      id: describedById,
-      message: description,
-    } = getMessage('description', helpText);
+    const description = getMessage('description', helpText);
 
-    const {
-      hasMessage: hasError,
-      id: errorMessageId,
-      message: error,
-    } = getMessage('error', errorMessage);
-
-    const { createStyles } = useTailwind(theme, spacing);
-
-    const inputStyles = createStyles({
-      classNames: [
-        'block w-full text-sm pr-10 disabled:bg-gray-50 disabled:text-gray-600',
-        className,
-      ],
-      theme: {
-        danger: ['border-red-300'],
-        primary: ['border-blue-300'],
-        secondary: ['border-gray-300'],
-        success: ['border-green-300'],
-        warning: ['border-yellow-300'],
-      },
-    });
-
-    /**
-     * Decide what component to render input as
-     *
-     * @returns Required component
-     */
-    function renderAs() {
-      if (format) {
-        return PatternFormat;
-      }
-
-      if (decimalScale || prefix || suffix) {
-        return NumericFormat;
-      }
-
-      return 'input';
-    }
-
-    /**
-     * Additional props for formatted inputs
-     *
-     * @returns Additional props
-     */
-    function additionalProps() {
-      if (format) {
-        return {
-          format,
-          getInputRef: ref,
-        };
-      }
-
-      if (decimalScale || prefix || suffix) {
-        const valueIsNumericString = Boolean(prefix || suffix);
-
-        return {
-          decimalScale,
-          fixedDecimalScale: Boolean(decimalScale),
-          getInputRef: ref,
-          prefix,
-          suffix,
-          valueIsNumericString,
-        };
-      }
-
-      return {
-        ref,
-      };
-    }
+    const error = getMessage('error', errorMessage);
 
     return (
       <Container
@@ -450,29 +513,41 @@ export const Input = forwardRef<HTMLInputElement, IInputProps>(
           </Label>
         }
         input={
-          <Box
-            id={name}
-            className={inputStyles}
-            as={renderAs()}
-            type={type}
+          <InputType
+            className={className}
+            decimalScale={decimalScale}
+            defaultValue={defaultValue}
+            error={error}
+            description={description}
+            format={format}
+            helpText={helpText}
             name={name}
-            aria-describedby={describedById}
-            aria-errormessage={tooltip ? errorMessageId : undefined}
-            aria-invalid={hasError}
-            {...additionalProps()}
+            prefix={prefix}
+            ref={ref}
+            spacing={spacing}
+            suffix={suffix}
+            theme={theme}
+            tooltip={tooltip}
+            type={type}
+            value={value}
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...rest}
           />
         }
         helpText={
-          hasDescription && (
-            <HelpText id={describedById} theme={theme} message={description} />
+          description.hasMessage && (
+            <HelpText
+              id={description.id}
+              theme={theme}
+              message={description.message}
+            />
           )
         }
         validationMessage={
-          hasError && (
+          error.hasMessage && (
             <ValidationMessage
-              id={errorMessageId}
-              message={error}
+              id={error.id}
+              message={error.message}
               onVisibilityChange={setTooltip}
             />
           )
