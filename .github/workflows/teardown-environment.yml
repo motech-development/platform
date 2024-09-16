@@ -78,6 +78,7 @@ jobs:
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       DEFINITIONS_BUCKET: s3://anti-virus-${{ github.event.pull_request.number || github.event.inputs.stage }}-definitions
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
@@ -134,6 +135,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
@@ -190,6 +192,7 @@ jobs:
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       DOWNLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-downloads
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
       UPLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-uploads
 
@@ -252,6 +255,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
@@ -303,6 +307,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
@@ -409,6 +414,7 @@ jobs:
       AWS_DEFAULT_REGION: eu-west-1
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REPORTS_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-reports
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
@@ -464,6 +470,7 @@ jobs:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
 
     steps:
