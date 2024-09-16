@@ -8,9 +8,7 @@ on:
       - reopened
       - synchronize
 
-concurrency:
-  cancel-in-progress: true
-  group: development_environment
+concurrency: development_environment
 
 jobs:
   setup:
