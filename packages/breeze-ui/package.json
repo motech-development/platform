@@ -15,7 +15,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "run prebuild && rollup -c",
-    "deploy": "storybook-to-ghpages --ci --host-token-env-variable=GITHUB_TOKEN",
+    "deploy": "storybook build --docs",
     "lint": "eslint './src/**/*.{ts,tsx}'",
     "package": "run build",
     "prebuild": "rimraf ./lib",
@@ -50,6 +50,7 @@
     "@rollup/plugin-node-resolve": "15.2.3",
     "@storybook/addon-a11y": "8.3.1",
     "@storybook/addon-knobs": "8.0.1",
+    "@storybook/addons": "7.6.17",
     "@storybook/react": "8.3.1",
     "@storybook/react-vite": "8.3.1",
     "@storybook/storybook-deployer": "2.8.16",
