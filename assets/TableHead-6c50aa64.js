@@ -1,3 +1,0 @@
-import{s as a}from"./BaseStyles-ba442780.js";const e=a.thead`
-  font-weight: 600;
-`;try{e.displayName="TableHead",e.__docgenInfo={description:"",displayName:"TableHead",props:{ref:{defaultValue:null,description:"",name:"ref",required:!1,type:{name:"((instance: HTMLTableSectionElement | null) => void) | RefObject<HTMLTableSectionElement> | null"}},theme:{defaultValue:null,description:"",name:"theme",required:!1,type:{name:"any"}},as:{defaultValue:null,description:"",name:"as",required:!1,type:{name:"undefined"}},forwardedAs:{defaultValue:null,description:"",name:"forwardedAs",required:!1,type:{name:"undefined"}}}}}catch{}export{e as T};
