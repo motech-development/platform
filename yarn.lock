@@ -61,7 +61,7 @@ __metadata:
     serverless-appsync-plugin: "npm:2.8.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
-    serverless-webpack: "npm:5.14.1"
+    serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.5.4"
     webpack: "npm:5.94.0"
@@ -222,7 +222,7 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
-    serverless-webpack: "npm:5.14.1"
+    serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.5.4"
     uuid: "npm:9.0.1"
@@ -281,7 +281,7 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
-    serverless-webpack: "npm:5.14.1"
+    serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.5.4"
     uuid: "npm:9.0.1"
@@ -331,7 +331,7 @@ __metadata:
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
     serverless-step-functions: "npm:3.21.0"
-    serverless-webpack: "npm:5.14.1"
+    serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.5.4"
     webpack: "npm:5.94.0"
@@ -388,7 +388,7 @@ __metadata:
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
     serverless-step-functions: "npm:3.21.0"
-    serverless-webpack: "npm:5.14.1"
+    serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.5.4"
     uuid: "npm:9.0.1"
@@ -436,7 +436,7 @@ __metadata:
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-offline: "npm:13.8.0"
     serverless-prune-plugin: "npm:2.0.2"
-    serverless-webpack: "npm:5.14.1"
+    serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.5.4"
     uuid: "npm:9.0.1"
@@ -487,7 +487,7 @@ __metadata:
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
     serverless-step-functions: "npm:3.21.0"
-    serverless-webpack: "npm:5.14.1"
+    serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.5.4"
     uuid: "npm:9.0.1"
@@ -5511,7 +5511,7 @@ __metadata:
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
     serverless-step-functions: "npm:3.21.0"
-    serverless-webpack: "npm:5.14.1"
+    serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.5.4"
     webpack: "npm:5.94.0"
@@ -5554,7 +5554,7 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
-    serverless-webpack: "npm:5.14.1"
+    serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.5.4"
     webpack: "npm:5.94.0"
@@ -5627,7 +5627,7 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
-    serverless-webpack: "npm:5.14.1"
+    serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.5.4"
     webpack: "npm:5.94.0"
@@ -31797,7 +31797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.1.2, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.1, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.2":
+"semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.1.2, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.1, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.2, semver@npm:^7.6.3":
   version: 7.6.3
   resolution: "semver@npm:7.6.3"
   bin:
@@ -32014,9 +32014,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-webpack@npm:5.14.1":
-  version: 5.14.1
-  resolution: "serverless-webpack@npm:5.14.1"
+"serverless-webpack@npm:5.14.2":
+  version: 5.14.2
+  resolution: "serverless-webpack@npm:5.14.2"
   dependencies:
     archiver: "npm:^7.0.1"
     bluebird: "npm:^3.7.2"
@@ -32025,7 +32025,7 @@ __metadata:
     glob: "npm:^8.1.0"
     is-builtin-module: "npm:^3.2.1"
     lodash: "npm:^4.17.21"
-    semver: "npm:^7.6.2"
+    semver: "npm:^7.6.3"
   peerDependencies:
     serverless: 1 || 2 || 3
     ts-node: ">= 8.3.0"
@@ -32033,7 +32033,7 @@ __metadata:
   peerDependenciesMeta:
     ts-node:
       optional: true
-  checksum: 10c0/fcfaedde7a33e13e993e9f0bbce55f42db62f5f28959c864001478b7aa9b24ed587ada72ca950da8145fa19b082abd24b93d6fd5e4813af4c02b7f9680ee8cd4
+  checksum: 10c0/655bca2d9cf930affb392fb611dbba3ddb5658e29cb4bb730634d9d886ff039f2a9a51607edb87c7cdde49047eae44d1754c0a531a279259f586e74c8df85cd2
   languageName: node
   linkType: hard
 
