@@ -17,7 +17,7 @@
     "@sentry/aws-serverless": "8.30.0",
     "@sentry/profiling-node": "8.30.0",
     "aws4-axios": "3.2.8",
-    "axios": "1.7.6"
+    "axios": "1.7.7"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
