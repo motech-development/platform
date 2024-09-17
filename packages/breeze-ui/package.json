@@ -15,7 +15,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "run prebuild && rollup -c",
-    "deploy": "storybook build --docs",
+    "deploy": "storybook build",
     "lint": "eslint './src/**/*.{ts,tsx}'",
     "package": "run build",
     "prebuild": "rimraf ./lib",
