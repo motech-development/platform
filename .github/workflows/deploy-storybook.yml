@@ -91,10 +91,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
-      - name: Deploy
+      - name: Build
         run: yarn workspace @motech-development/breeze-ui deploy
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./packages/breeze-ui/storybook-static
