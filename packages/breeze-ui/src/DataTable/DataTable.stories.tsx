@@ -1,11 +1,9 @@
-import { withKnobs } from '@storybook/addon-knobs';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import TableCell from '../TableCell/TableCell';
 import DataTable from './DataTable';
 
 export default {
   component: DataTable,
-  decorators: [withKnobs],
 };
 
 const data = [

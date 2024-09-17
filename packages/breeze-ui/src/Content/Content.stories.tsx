@@ -1,11 +1,9 @@
-import { withKnobs } from '@storybook/addon-knobs';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Typography from '../Typography/Typography';
 import Content from './Content';
 
 export default {
   component: Content,
-  decorators: [withKnobs],
 };
 
 export const BasicContent = {
