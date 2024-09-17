@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunk_motech_development_breeze_ui=self.webpackChunk_motech_development_breeze_ui||[]).push([[873],{"../../node_modules/react-dom/client.js":(e,o,t)=>{var d=t("../../node_modules/react-dom/index.js");o.createRoot=d.createRoot,o.hydrateRoot=d.hydrateRoot}}]);
