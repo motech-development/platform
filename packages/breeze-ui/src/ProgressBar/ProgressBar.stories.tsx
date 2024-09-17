@@ -1,16 +1,19 @@
 import { number, withKnobs } from '@storybook/addon-knobs';
-import { storiesOf } from '@storybook/react';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import ProgressBar from './ProgressBar';
 
-const stories = storiesOf('ProgressBar', module);
+export default {
+  component: ProgressBar,
+  decorators: [withKnobs],
+};
 
-stories.addDecorator(withKnobs);
+export const BasicProgressBar = {
+  name: 'Basic progress bar',
+  render: () => (
+    <>
+      <BaseStyles />
 
-stories.add('Basic progress bar', () => (
-  <>
-    <BaseStyles />
-
-    <ProgressBar max={number('Max', 100)} progress={number('Progress', 50)} />
-  </>
-));
+      <ProgressBar max={number('Max', 100)} progress={number('Progress', 50)} />
+    </>
+  ),
+};

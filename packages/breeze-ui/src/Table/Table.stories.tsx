@@ -1,9 +1,12 @@
-import { storiesOf } from '@storybook/react';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import TableBody from '../TableBody/TableBody';
 import TableCell from '../TableCell/TableCell';
 import TableRow from '../TableRow/TableRow';
 import Table from './Table';
+
+export default {
+  component: Table,
+};
 
 const data = [
   {
@@ -44,40 +47,41 @@ const data = [
   },
 ];
 
-const stories = storiesOf('Table', module);
+export const BasicTable = {
+  name: 'Basic table',
+  render: () => (
+    <>
+      <BaseStyles />
 
-stories.add('Basic table', () => (
-  <>
-    <BaseStyles />
-
-    <Table>
-      {data.map((item) => (
-        <TableBody key={item.date}>
-          <TableRow colour="primary">
-            <TableCell as="th">Date</TableCell>
-            <TableCell as="th">Balance</TableCell>
-          </TableRow>
-
-          <TableRow colour="primary">
-            <TableCell as="th">{item.date}</TableCell>
-            <TableCell as="th">£{item.balance.toString()}</TableCell>
-          </TableRow>
-
-          <TableRow colour="secondary">
-            <TableCell as="th">Transaction</TableCell>
-            <TableCell as="th">Value</TableCell>
-          </TableRow>
-
-          {item.transactions.map((transaction) => (
-            <TableRow key={transaction.id}>
-              <TableCell>{transaction.description}</TableCell>
-              <TableCell>£{transaction.amount}</TableCell>
+      <Table>
+        {data.map((item) => (
+          <TableBody key={item.date}>
+            <TableRow colour="primary">
+              <TableCell as="th">Date</TableCell>
+              <TableCell as="th">Balance</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      ))}
 
-      <TableBody />
-    </Table>
-  </>
-));
+            <TableRow colour="primary">
+              <TableCell as="th">{item.date}</TableCell>
+              <TableCell as="th">£{item.balance.toString()}</TableCell>
+            </TableRow>
+
+            <TableRow colour="secondary">
+              <TableCell as="th">Transaction</TableCell>
+              <TableCell as="th">Value</TableCell>
+            </TableRow>
+
+            {item.transactions.map((transaction) => (
+              <TableRow key={transaction.id}>
+                <TableCell>{transaction.description}</TableCell>
+                <TableCell>£{transaction.amount}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        ))}
+
+        <TableBody />
+      </Table>
+    </>
+  ),
+};

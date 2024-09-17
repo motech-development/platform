@@ -1,12 +1,15 @@
 import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
-import { storiesOf } from '@storybook/react';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Card from '../Card/Card';
 import Typography from './Typography';
 
+export default {
+  component: Typography,
+  decorators: [withKnobs],
+};
+
 type Components = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
 
-const stories = storiesOf('Typography', module);
 const components = {
   H1: 'h1',
   H2: 'h2',
@@ -33,24 +36,28 @@ const margin = {
   Small: 'sm',
 };
 
-stories.addDecorator(withKnobs);
+export const BasicTypography = {
+  name: 'Basic typography',
+  render: () => (
+    <>
+      <BaseStyles />
 
-stories.add('Basic typography', () => (
-  <>
-    <BaseStyles />
-
-    <Card>
-      <Typography
-        align={
-          select('Alignment', alignment, 'left') as 'left' | 'right' | 'center'
-        }
-        variant={select('Variant', variants, 'h1') as Components | 'lead'}
-        component={select('Component', components, 'h1') as Components}
-        margin={select('Margin', margin, 'md') as 'lg' | 'md' | 'sm' | 'none'}
-        rule={boolean('Horizontal rule', false)}
-      >
-        {text('Text', 'Hello world')}
-      </Typography>
-    </Card>
-  </>
-));
+      <Card>
+        <Typography
+          align={
+            select('Alignment', alignment, 'left') as
+              | 'left'
+              | 'right'
+              | 'center'
+          }
+          variant={select('Variant', variants, 'h1') as Components | 'lead'}
+          component={select('Component', components, 'h1') as Components}
+          margin={select('Margin', margin, 'md') as 'lg' | 'md' | 'sm' | 'none'}
+          rule={boolean('Horizontal rule', false)}
+        >
+          {text('Text', 'Hello world')}
+        </Typography>
+      </Card>
+    </>
+  ),
+};

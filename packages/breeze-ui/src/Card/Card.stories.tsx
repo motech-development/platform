@@ -1,23 +1,27 @@
 import { select, text, withKnobs } from '@storybook/addon-knobs';
-import { storiesOf } from '@storybook/react';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Card from './Card';
 
-const stories = storiesOf('Card', module);
+export default {
+  component: Card,
+  decorators: [withKnobs],
+};
+
 const padding = {
   Large: 'lg',
   Medium: 'md',
   Small: 'sm',
 };
 
-stories.addDecorator(withKnobs);
+export const BasicCard = {
+  name: 'Basic card',
+  render: () => (
+    <>
+      <BaseStyles />
 
-stories.add('Basic card', () => (
-  <>
-    <BaseStyles />
-
-    <Card padding={select('Padding', padding, 'md') as 'sm' | 'md' | 'lg'}>
-      {text('Text', 'Hello world')}
-    </Card>
-  </>
-));
+      <Card padding={select('Padding', padding, 'md') as 'sm' | 'md' | 'lg'}>
+        {text('Text', 'Hello world')}
+      </Card>
+    </>
+  ),
+};

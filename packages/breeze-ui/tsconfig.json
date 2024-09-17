@@ -11,5 +11,5 @@
   },
   "exclude": ["lib"],
   "extends": "../../tsconfig.json",
-  "include": ["src"]
+  "include": ["**/*.ts", "**/*.tsx"]
 }

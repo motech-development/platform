@@ -1,19 +1,22 @@
 import { text, withKnobs } from '@storybook/addon-knobs';
-import { storiesOf } from '@storybook/react';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import PageTitle from './PageTitle';
 
-const stories = storiesOf('PageTitle', module);
+export default {
+  component: PageTitle,
+  decorators: [withKnobs],
+};
 
-stories.addDecorator(withKnobs);
+export const BasicTypography = {
+  name: 'Basic typography',
+  render: () => (
+    <>
+      <BaseStyles />
 
-stories.add('Basic typography', () => (
-  <>
-    <BaseStyles />
-
-    <PageTitle
-      title={text('Title', 'Page title')}
-      subTitle={text('Subtitle', '')}
-    />
-  </>
-));
+      <PageTitle
+        title={text('Title', 'Page title')}
+        subTitle={text('Subtitle', '')}
+      />
+    </>
+  ),
+};
