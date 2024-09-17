@@ -27,7 +27,7 @@ describe('webpack-permissions-plugin', () => {
     pluginName = jest.fn();
 
     compiler.hooks.done.tap = (
-      name: string | TapOptions<'sync', Stats, null, null>,
+      name: string | TapOptions,
       fn: (arg1: Stats, arg2: null, arg3: null) => void,
     ) => {
       pluginName(name);
