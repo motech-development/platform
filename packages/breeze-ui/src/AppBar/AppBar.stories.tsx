@@ -1,5 +1,4 @@
 import { boolean, select, withKnobs } from '@storybook/addon-knobs';
-import { storiesOf } from '@storybook/react';
 import styled from 'styled-components';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Notifications from '../Notifications/Notifications';
@@ -7,13 +6,17 @@ import TableCell from '../TableCell/TableCell';
 import Typography from '../Typography/Typography';
 import AppBar from './AppBar';
 
+export default {
+  component: AppBar,
+  decorators: [withKnobs],
+};
+
 const Title = styled(Typography)`
   && {
     margin: 0;
   }
 `;
 
-const stories = storiesOf('AppBar', module);
 const elements = {
   Div: 'div',
   Header: 'header',
@@ -23,10 +26,9 @@ const colours = {
   Secondary: 'secondary',
 };
 
-stories.addDecorator(withKnobs);
-
-stories
-  .add('Basic app bar', () => (
+export const BasicAppBar = {
+  name: 'Basic app bar',
+  render: () => (
     <>
       <BaseStyles />
 
@@ -40,8 +42,12 @@ stories
         </Title>
       </AppBar>
     </>
-  ))
-  .add('App bar with notifications', () => (
+  ),
+};
+
+export const AppBarWithNotifications = {
+  name: 'App bar with notifications',
+  render: () => (
     <>
       <BaseStyles />
 
@@ -71,4 +77,5 @@ stories
         />
       </AppBar>
     </>
-  ));
+  ),
+};

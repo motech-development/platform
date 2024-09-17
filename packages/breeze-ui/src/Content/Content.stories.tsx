@@ -1,18 +1,24 @@
-import { storiesOf } from '@storybook/react';
+import { withKnobs } from '@storybook/addon-knobs';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Typography from '../Typography/Typography';
 import Content from './Content';
 
-const stories = storiesOf('Content', module);
+export default {
+  component: Content,
+  decorators: [withKnobs],
+};
 
-stories.add('Basic content', () => (
-  <>
-    <BaseStyles />
+export const BasicContent = {
+  name: 'Basic content',
+  render: () => (
+    <>
+      <BaseStyles />
 
-    <Content>
-      <Typography component="h1" variant="h1">
-        Hello world
-      </Typography>
-    </Content>
-  </>
-));
+      <Content>
+        <Typography component="h1" variant="h1">
+          Hello world
+        </Typography>
+      </Content>
+    </>
+  ),
+};

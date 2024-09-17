@@ -1,11 +1,14 @@
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
-import { storiesOf } from '@storybook/react';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Alert, { AlertTheme } from './Alert';
 
-const stories = storiesOf('Alert', module);
+export default {
+  component: Alert,
+  decorators: [withKnobs],
+};
+
 const colours = {
   Danger: 'danger',
   Primary: 'primary',
@@ -23,25 +26,26 @@ const colour = (): AlertTheme =>
 const spacing = () => select('Spacing', margins, 'md') as 'sm' | 'md' | 'lg';
 const dismissable = () => boolean('Dismissable', false);
 
-stories.addDecorator(withKnobs);
+export const VariousAlerts = {
+  name: 'Various alerts',
+  render: () => (
+    <>
+      <BaseStyles />
 
-stories.add('Various alerts', () => (
-  <>
-    <BaseStyles />
+      <Alert
+        message={message()}
+        colour={colour()}
+        dismissable={dismissable()}
+        spacing={spacing()}
+      />
 
-    <Alert
-      message={message()}
-      colour={colour()}
-      dismissable={dismissable()}
-      spacing={spacing()}
-    />
-
-    <Alert
-      message={message()}
-      colour={colour()}
-      dismissable={dismissable()}
-      icon={<FontAwesomeIcon icon={faExclamationTriangle} />}
-      spacing={spacing()}
-    />
-  </>
-));
+      <Alert
+        message={message()}
+        colour={colour()}
+        dismissable={dismissable()}
+        icon={<FontAwesomeIcon icon={faExclamationTriangle} />}
+        spacing={spacing()}
+      />
+    </>
+  ),
+};

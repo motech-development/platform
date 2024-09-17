@@ -1,7 +1,12 @@
-import { storiesOf } from '@storybook/react';
+import { withKnobs } from '@storybook/addon-knobs';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import TableCell from '../TableCell/TableCell';
 import DataTable from './DataTable';
+
+export default {
+  component: DataTable,
+  decorators: [withKnobs],
+};
 
 const data = [
   {
@@ -18,27 +23,28 @@ const data = [
   },
 ];
 
-const stories = storiesOf('DataTable', module);
+export const BasicDataTable = {
+  name: 'Basic data table',
+  render: () => (
+    <>
+      <BaseStyles />
 
-stories.add('Basic data table', () => (
-  <>
-    <BaseStyles />
-
-    <DataTable
-      items={data}
-      header={
-        <>
-          <TableCell as="th">Name</TableCell>
-          <TableCell as="th">Price</TableCell>
-        </>
-      }
-      row={({ name, price }) => (
-        <>
-          <TableCell>{name}</TableCell>
-          <TableCell>{price}</TableCell>
-        </>
-      )}
-      noResults={<p>No data found</p>}
-    />
-  </>
-));
+      <DataTable
+        items={data}
+        header={
+          <>
+            <TableCell as="th">Name</TableCell>
+            <TableCell as="th">Price</TableCell>
+          </>
+        }
+        row={({ name, price }) => (
+          <>
+            <TableCell>{name}</TableCell>
+            <TableCell>{price}</TableCell>
+          </>
+        )}
+        noResults={<p>No data found</p>}
+      />
+    </>
+  ),
+};

@@ -1,17 +1,24 @@
-import { storiesOf } from '@storybook/react';
+import { withKnobs } from '@storybook/addon-knobs';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Card from '../Card/Card';
 import Calendar from './Calendar';
 
-const stories = storiesOf('Calendar', module);
+export default {
+  component: Calendar,
+  decorators: [withKnobs],
+};
+
 const onDateChange = () => {};
 
-stories.add('Basic calendar', () => (
-  <>
-    <BaseStyles />
+export const BasicCalendar = {
+  name: 'Basic calendar',
+  render: () => (
+    <>
+      <BaseStyles />
 
-    <Card padding="lg">
-      <Calendar id="test" onDateChange={onDateChange} />
-    </Card>
-  </>
-));
+      <Card padding="lg">
+        <Calendar id="test" onDateChange={onDateChange} />
+      </Card>
+    </>
+  ),
+};

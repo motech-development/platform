@@ -1,10 +1,13 @@
 import { boolean, select, text, withKnobs } from '@storybook/addon-knobs';
-import { storiesOf } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import LinkButton from './LinkButton';
 
-const stories = storiesOf('LinkButton', module);
+export default {
+  component: LinkButton,
+  decorators: [withKnobs],
+};
+
 const colour = {
   Danger: 'danger',
   Primary: 'primary',
@@ -17,24 +20,25 @@ const size = {
   Small: 'sm',
 };
 
-stories.addDecorator(withKnobs);
-
-stories.add('Basic link button', () => (
-  <MemoryRouter>
-    <BaseStyles />
-    <LinkButton
-      block={boolean('Block display', false)}
-      colour={
-        select('Colour', colour, 'primary') as
-          | 'danger'
-          | 'primary'
-          | 'secondary'
-          | 'success'
-      }
-      size={select('Size', size, 'md') as 'sm' | 'md' | 'lg'}
-      to={text('To', '/home')}
-    >
-      {text('Title', 'Button')}
-    </LinkButton>
-  </MemoryRouter>
-));
+export const BasicLinkButton = {
+  name: 'Basic link button',
+  render: () => (
+    <MemoryRouter>
+      <BaseStyles />
+      <LinkButton
+        block={boolean('Block display', false)}
+        colour={
+          select('Colour', colour, 'primary') as
+            | 'danger'
+            | 'primary'
+            | 'secondary'
+            | 'success'
+        }
+        size={select('Size', size, 'md') as 'sm' | 'md' | 'lg'}
+        to={text('To', '/home')}
+      >
+        {text('Title', 'Button')}
+      </LinkButton>
+    </MemoryRouter>
+  ),
+};

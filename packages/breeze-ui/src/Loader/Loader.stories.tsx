@@ -1,22 +1,26 @@
 import { select, withKnobs } from '@storybook/addon-knobs';
-import { storiesOf } from '@storybook/react';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Loader from './Loader';
 
-const stories = storiesOf('Loader', module);
+export default {
+  component: Loader,
+  decorators: [withKnobs],
+};
+
 const colour = {
   Default: 'default',
   Secondary: 'secondary',
 };
 
-stories.addDecorator(withKnobs);
+export const BasicLoader = {
+  name: 'Basic loader',
+  render: () => (
+    <>
+      <BaseStyles />
 
-stories.add('Basic loader', () => (
-  <>
-    <BaseStyles />
-
-    <Loader
-      colour={select('Colour', colour, 'default') as 'default' | 'secondary'}
-    />
-  </>
-));
+      <Loader
+        colour={select('Colour', colour, 'default') as 'default' | 'secondary'}
+      />
+    </>
+  ),
+};
