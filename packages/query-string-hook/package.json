@@ -35,7 +35,7 @@
     "@rollup/plugin-node-resolve": "15.2.3",
     "@swc/core": "1.7.26",
     "@swc/jest": "0.2.36",
-    "@types/jest": "29.5.12",
+    "@types/jest": "29.5.13",
     "@types/qs": "6.9.15",
     "@types/react": "18.3.5",
     "@typescript-eslint/eslint-plugin": "6.2.1",
