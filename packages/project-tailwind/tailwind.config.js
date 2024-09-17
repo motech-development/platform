@@ -1,7 +1,7 @@
-/** @type {import('tailwindcss').Config} */
 // eslint-disable-next-line import/no-extraneous-dependencies
 const forms = require('@tailwindcss/forms');
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{ts,tsx}'],
   plugins: [forms],
