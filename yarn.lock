@@ -8264,7 +8264,7 @@ __metadata:
     prettier: "npm:3.2.5"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
-    react-number-format: "npm:5.4.1"
+    react-number-format: "npm:5.4.2"
     react-popper: "npm:2.3.0"
     react-router-dom: "npm:6.26.1"
     rimraf: "npm:6.0.1"
@@ -30352,13 +30352,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-number-format@npm:5.4.1":
-  version: 5.4.1
-  resolution: "react-number-format@npm:5.4.1"
+"react-number-format@npm:5.4.2":
+  version: 5.4.2
+  resolution: "react-number-format@npm:5.4.2"
   peerDependencies:
     react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/7ebca5f3f524f8db8d3838379e259581cb8c921d65062645a4cb2ae99469d6eaa2bcc842f5122eed6d6b71165ac450b4fb93ecb0ee3ae09918c5e8a7a0a42324
+  checksum: 10c0/5e0500156added2f4dc5ecc72bee0b59545bc1f2c05a059a3a321a014b9e6519a5b4b8b0fa32dfede240ce4b501c1c742deeb0f02d1bfb534b46269d2faae50a
   languageName: node
   linkType: hard
 
