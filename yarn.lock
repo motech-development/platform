@@ -5279,30 +5279,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/cli@npm:19.4.1":
-  version: 19.4.1
-  resolution: "@commitlint/cli@npm:19.4.1"
+"@commitlint/cli@npm:19.5.0":
+  version: 19.5.0
+  resolution: "@commitlint/cli@npm:19.5.0"
   dependencies:
-    "@commitlint/format": "npm:^19.3.0"
-    "@commitlint/lint": "npm:^19.4.1"
-    "@commitlint/load": "npm:^19.4.0"
-    "@commitlint/read": "npm:^19.4.0"
-    "@commitlint/types": "npm:^19.0.3"
-    execa: "npm:^8.0.1"
+    "@commitlint/format": "npm:^19.5.0"
+    "@commitlint/lint": "npm:^19.5.0"
+    "@commitlint/load": "npm:^19.5.0"
+    "@commitlint/read": "npm:^19.5.0"
+    "@commitlint/types": "npm:^19.5.0"
+    tinyexec: "npm:^0.3.0"
     yargs: "npm:^17.0.0"
   bin:
     commitlint: cli.js
-  checksum: 10c0/a829b91e690b3dd44fab9661d7defdb3bd2556f014e122a004b3ffaf25673f2c0916a112db651a9af3168f8ebdc91828d1ee4db7a1f3cef7e7f4ff9b9699aabf
+  checksum: 10c0/a9fb05f3de2634764a7f36f693f39e90594dfc9174e6293a43c582c6a9181f69b346094790e3268e3482d7bb0d1d29c64e15785fb50278c8628f73750214a398
   languageName: node
   linkType: hard
 
-"@commitlint/config-conventional@npm:19.4.1":
-  version: 19.4.1
-  resolution: "@commitlint/config-conventional@npm:19.4.1"
+"@commitlint/config-conventional@npm:19.5.0":
+  version: 19.5.0
+  resolution: "@commitlint/config-conventional@npm:19.5.0"
   dependencies:
-    "@commitlint/types": "npm:^19.0.3"
+    "@commitlint/types": "npm:^19.5.0"
     conventional-changelog-conventionalcommits: "npm:^7.0.2"
-  checksum: 10c0/aece8757a2263735d9a131b6b2eeeeff2c30106a902b74b0f6de13c1b3724594ed3b94986c1d4bd5ad70b7ba1569ed8b8441ac171dc0343b4d45f733b397011c
+  checksum: 10c0/a7dc6c0d23a8bc521c8f1083a4a04d605de35485786c9d0953610f85d23411f672676d1c77b4a1bb7c86a974f915df31ac0c95f2bcb02f5efa3a5b897a77a897
   languageName: node
   linkType: hard
 
@@ -5337,7 +5337,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/format@npm:^19.3.0":
+"@commitlint/format@npm:^19.5.0":
   version: 19.5.0
   resolution: "@commitlint/format@npm:19.5.0"
   dependencies:
@@ -5357,7 +5357,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/lint@npm:^19.4.1":
+"@commitlint/lint@npm:^19.5.0":
   version: 19.5.0
   resolution: "@commitlint/lint@npm:19.5.0"
   dependencies:
@@ -5369,7 +5369,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/load@npm:>6.1.1, @commitlint/load@npm:^19.4.0":
+"@commitlint/load@npm:>6.1.1, @commitlint/load@npm:^19.5.0":
   version: 19.5.0
   resolution: "@commitlint/load@npm:19.5.0"
   dependencies:
@@ -5405,7 +5405,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/read@npm:^19.4.0":
+"@commitlint/read@npm:^19.5.0":
   version: 19.5.0
   resolution: "@commitlint/read@npm:19.5.0"
   dependencies:
@@ -5460,7 +5460,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/types@npm:^19.0.3, @commitlint/types@npm:^19.5.0":
+"@commitlint/types@npm:^19.5.0":
   version: 19.5.0
   resolution: "@commitlint/types@npm:19.5.0"
   dependencies:
@@ -29234,8 +29234,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "platform@workspace:."
   dependencies:
-    "@commitlint/cli": "npm:19.4.1"
-    "@commitlint/config-conventional": "npm:19.4.1"
+    "@commitlint/cli": "npm:19.5.0"
+    "@commitlint/config-conventional": "npm:19.5.0"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     "@qiwi/multi-semantic-release": "npm:7.1.2"
