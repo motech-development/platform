@@ -15,7 +15,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "run prebuild && rollup -c",
-    "deploy": "storybook-to-ghpages --ci --host-token-env-variable=GITHUB_TOKEN",
+    "deploy": "storybook build",
     "lint": "eslint './src/**/*.{ts,tsx}'",
     "package": "run build",
     "prebuild": "rimraf ./lib",
@@ -50,7 +50,6 @@
     "@storybook/addon-links": "8.3.1",
     "@storybook/react": "8.3.1",
     "@storybook/react-vite": "8.3.1",
-    "@storybook/storybook-deployer": "2.8.16",
     "@storybook/test": "8.3.1",
     "@swc/core": "1.7.22",
     "@swc/jest": "0.2.36",
