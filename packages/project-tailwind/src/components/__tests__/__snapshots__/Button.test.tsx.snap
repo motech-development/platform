@@ -1,0 +1,671 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Button as element "a" danger should render the correct output when block element 1`] = `
+<DocumentFragment>
+  <a
+    class="block w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" danger should render the correct output when disabled 1`] = `
+<DocumentFragment>
+  <a
+    class="cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-red-600 text-red-50"
+    disabled=""
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" danger should render the correct output when size is lg 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" danger should render the correct output when size is md 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" danger should render the correct output when size is none 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" danger should render the correct output when size is sm 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" primary should render the correct output when block element 1`] = `
+<DocumentFragment>
+  <a
+    class="block w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" primary should render the correct output when disabled 1`] = `
+<DocumentFragment>
+  <a
+    class="cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-blue-50"
+    disabled=""
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" primary should render the correct output when size is lg 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" primary should render the correct output when size is md 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" primary should render the correct output when size is none 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" primary should render the correct output when size is sm 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" secondary should render the correct output when block element 1`] = `
+<DocumentFragment>
+  <a
+    class="block w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" secondary should render the correct output when disabled 1`] = `
+<DocumentFragment>
+  <a
+    class="cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-gray-100 text-gray-600"
+    disabled=""
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" secondary should render the correct output when size is lg 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" secondary should render the correct output when size is md 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" secondary should render the correct output when size is none 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" secondary should render the correct output when size is sm 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" success should render the correct output when block element 1`] = `
+<DocumentFragment>
+  <a
+    class="block w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" success should render the correct output when disabled 1`] = `
+<DocumentFragment>
+  <a
+    class="cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-green-600 text-green-50"
+    disabled=""
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" success should render the correct output when size is lg 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" success should render the correct output when size is md 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" success should render the correct output when size is none 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" success should render the correct output when size is sm 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" warning should render the correct output when block element 1`] = `
+<DocumentFragment>
+  <a
+    class="block w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" warning should render the correct output when disabled 1`] = `
+<DocumentFragment>
+  <a
+    class="cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-yellow-600 text-yellow-50"
+    disabled=""
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" warning should render the correct output when size is lg 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" warning should render the correct output when size is md 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" warning should render the correct output when size is none 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "a" warning should render the correct output when size is sm 1`] = `
+<DocumentFragment>
+  <a
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+    href="https://motech-development.github.io/platform/"
+  >
+    Hello, world
+  </a>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" danger should render the correct output when block element 1`] = `
+<DocumentFragment>
+  <button
+    class="block w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" danger should render the correct output when disabled 1`] = `
+<DocumentFragment>
+  <button
+    class="cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-red-600 text-red-50"
+    disabled=""
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" danger should render the correct output when size is lg 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" danger should render the correct output when size is md 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" danger should render the correct output when size is none 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" danger should render the correct output when size is sm 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-red-600 text-red-50 hover:bg-red-700 focus:ring-red-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" primary should render the correct output when block element 1`] = `
+<DocumentFragment>
+  <button
+    class="block w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" primary should render the correct output when disabled 1`] = `
+<DocumentFragment>
+  <button
+    class="cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-blue-50"
+    disabled=""
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" primary should render the correct output when size is lg 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" primary should render the correct output when size is md 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" primary should render the correct output when size is none 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" primary should render the correct output when size is sm 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-blue-600 text-blue-50 hover:bg-blue-700 focus:ring-blue-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" secondary should render the correct output when block element 1`] = `
+<DocumentFragment>
+  <button
+    class="block w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" secondary should render the correct output when disabled 1`] = `
+<DocumentFragment>
+  <button
+    class="cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-gray-100 text-gray-600"
+    disabled=""
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" secondary should render the correct output when size is lg 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" secondary should render the correct output when size is md 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" secondary should render the correct output when size is none 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" secondary should render the correct output when size is sm 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-gray-100 text-gray-600 hover:bg-gray-300 focus:ring-gray-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" success should render the correct output when block element 1`] = `
+<DocumentFragment>
+  <button
+    class="block w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" success should render the correct output when disabled 1`] = `
+<DocumentFragment>
+  <button
+    class="cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-green-600 text-green-50"
+    disabled=""
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" success should render the correct output when size is lg 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" success should render the correct output when size is md 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" success should render the correct output when size is none 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" success should render the correct output when size is sm 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-green-600 text-green-50 hover:bg-green-700 focus:ring-green-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" warning should render the correct output when block element 1`] = `
+<DocumentFragment>
+  <button
+    class="block w-full group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" warning should render the correct output when disabled 1`] = `
+<DocumentFragment>
+  <button
+    class="cursor-not-allowed bg-opacity-75 hover:bg-opacity-75 inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-yellow-600 text-yellow-50"
+    disabled=""
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" warning should render the correct output when size is lg 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-4 px-6 text-lg bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" warning should render the correct output when size is md 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" warning should render the correct output when size is none 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-2 px-4 text-base bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
+
+exports[`Button as element "button" warning should render the correct output when size is sm 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-block group items-center relative shadow-2xl inline-flex font-display justify-center font-medium transition-colors select-none focus:outline-none focus:ring-2 focus:ring-offset-2 py-0 px-2 text-sm bg-yellow-600 text-yellow-50 hover:bg-yellow-700 focus:ring-yellow-500"
+    type="button"
+  >
+    Hello, world
+  </button>
+</DocumentFragment>
+`;
