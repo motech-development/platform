@@ -113,7 +113,7 @@ __metadata:
     axios: "npm:1.7.7"
     cypress: "npm:12.0.2"
     cypress-axe: "npm:1.5.0"
-    cypress-cloud: "npm:1.10.2"
+    cypress-cloud: "npm:1.11.0"
     cypress-file-upload: "npm:5.0.8"
     cypress-localstorage-commands: "npm:2.2.6"
     cypress-log-to-output: "npm:1.1.2"
@@ -18420,9 +18420,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress-cloud@npm:1.10.2":
-  version: 1.10.2
-  resolution: "cypress-cloud@npm:1.10.2"
+"cypress-cloud@npm:1.11.0":
+  version: 1.11.0
+  resolution: "cypress-cloud@npm:1.11.0"
   dependencies:
     "@currents/commit-info": "npm:1.0.1-beta.0"
     axios: "npm:^1.2.0"
@@ -18449,7 +18449,7 @@ __metadata:
     ws: "npm:^8.13.0"
   bin:
     cypress-cloud: bin/cli.js
-  checksum: 10c0/e9614c0690aaaf443d317e432b78746ccc6fd5aeb64cb8cf3ccb1040013e7d436d49ee6fb338f97639661eb9bb71f333ded294f7960b817d2703ecfe49de88d8
+  checksum: 10c0/fcc17687bdd5a93d003364de7937de6fa6f14b186da4b0bc054806e5d1e3da8817ba170d916ba5174cd4a29423a118542f8800fc7c8b95c31d7100ce18fb9ce8
   languageName: node
   linkType: hard
 
