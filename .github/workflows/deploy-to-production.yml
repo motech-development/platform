@@ -419,7 +419,7 @@ jobs:
 
     needs:
       - setup
-      - accounts-data
+      - deploy-accounts-data
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
