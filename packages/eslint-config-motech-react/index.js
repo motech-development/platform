@@ -7,7 +7,7 @@ module.exports = {
         'eslint:recommended',
         'airbnb',
         'airbnb/hooks',
-        'airbnb-typescript',
+        '@kesills/airbnb-typescript',
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
         'plugin:react/jsx-runtime',
