@@ -8545,7 +8545,7 @@ __metadata:
     "@rollup/plugin-node-resolve": "npm:15.2.3"
     "@swc/core": "npm:1.7.26"
     "@swc/jest": "npm:0.2.36"
-    "@types/assert": "npm:1.5.10"
+    "@types/assert": "npm:1.5.11"
     "@types/jest": "npm:29.5.13"
     "@types/serverless": "npm:3.12.22"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
@@ -13179,10 +13179,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/assert@npm:1.5.10":
-  version: 1.5.10
-  resolution: "@types/assert@npm:1.5.10"
-  checksum: 10c0/8481cbd7ef4f5114b676e622af055a926f1ab434210bfc9ab4921a31d01f8f4710f0d8835c7882ad4aa56a51315d14a73703678e0008b38bd910e19f0d724c42
+"@types/assert@npm:1.5.11":
+  version: 1.5.11
+  resolution: "@types/assert@npm:1.5.11"
+  checksum: 10c0/2edfaee2f57595c01b25d57fc8145715d3b925d4856ecd10fb7ba178431cc5a297324c89d849713d2f58b9f0fa57f0ea9b497feaef937f6f222d0ef38464a20e
   languageName: node
   linkType: hard
 
