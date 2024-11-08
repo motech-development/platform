@@ -109,7 +109,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
     "@vitejs/plugin-react-swc": "npm:3.7.1"
-    axe-core: "npm:4.10.0"
+    axe-core: "npm:4.10.2"
     axios: "npm:1.7.7"
     cypress: "npm:12.0.2"
     cypress-axe: "npm:1.5.0"
@@ -7623,7 +7623,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
     auth0: "npm:3.7.2"
-    auth0-deploy-cli: "npm:7.24.2"
+    auth0-deploy-cli: "npm:7.24.3"
     eslint: "npm:8.57.0"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-config-airbnb-typescript: "npm:18.0.0"
@@ -15674,9 +15674,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0-deploy-cli@npm:7.24.2":
-  version: 7.24.2
-  resolution: "auth0-deploy-cli@npm:7.24.2"
+"auth0-deploy-cli@npm:7.24.3":
+  version: 7.24.3
+  resolution: "auth0-deploy-cli@npm:7.24.3"
   dependencies:
     ajv: "npm:^6.12.6"
     auth0: "npm:^3.0.0"
@@ -15693,7 +15693,7 @@ __metadata:
     yargs: "npm:^15.3.1"
   bin:
     a0deploy: lib/index.js
-  checksum: 10c0/a7142a9d2c5b529176a71e9a4ffc0295ed9f2c17ae4850dd70c01521871c3d193d57d22d245f94ec066552d73a29c6dbdca7afeb3a21573574301041801055f6
+  checksum: 10c0/d00e6292ebaf52c80fb9ffbe1213f67264d05623c9a3c06aa8e2944641a15b62f32e0b263a0f915737208a7b388ef07e861edb31f34ce97153c746de374ce915
   languageName: node
   linkType: hard
 
@@ -15918,10 +15918,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:4.10.0, axe-core@npm:^4.10.0, axe-core@npm:^4.2.0":
-  version: 4.10.0
-  resolution: "axe-core@npm:4.10.0"
-  checksum: 10c0/732c171d48caaace5e784895c4dacb8ca6155e9d98045138ebe3952f78457dd05b92c57d05b41ce2a570aff87dbd0471e8398d2c0f6ebe79617b746c8f658998
+"axe-core@npm:4.10.2, axe-core@npm:^4.10.0, axe-core@npm:^4.2.0":
+  version: 4.10.2
+  resolution: "axe-core@npm:4.10.2"
+  checksum: 10c0/0e20169077de96946a547fce0df39d9aeebe0077f9d3eeff4896518b96fde857f80b98f0d4279274a7178791744dd5a54bb4f322de45b4f561ffa2586ff9a09d
   languageName: node
   linkType: hard
 
