@@ -8547,7 +8547,7 @@ __metadata:
     "@swc/jest": "npm:0.2.36"
     "@types/assert": "npm:1.5.11"
     "@types/jest": "npm:29.5.14"
-    "@types/serverless": "npm:3.12.22"
+    "@types/serverless": "npm:3.12.23"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
     assert: "npm:2.1.0"
@@ -13816,10 +13816,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/serverless@npm:3.12.22":
-  version: 3.12.22
-  resolution: "@types/serverless@npm:3.12.22"
-  checksum: 10c0/74c25926374d8dd6433bceb9202a2961a1f027f4188ed9425cfe079087636f2c059cef4e35b52b0a15efa26a922559bd66f65761c1dbdc952ab3f192a50b0d1c
+"@types/serverless@npm:3.12.23":
+  version: 3.12.23
+  resolution: "@types/serverless@npm:3.12.23"
+  checksum: 10c0/1290d3f1c14f2907722130e662ef0dd2cb42a49a07a32707312763a0289a9f6fff1e1d3c7466a03874a5b2a86107a51da37b867da0521e2a4e0e2e4e229a022d
   languageName: node
   linkType: hard
 
