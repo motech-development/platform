@@ -30,7 +30,7 @@
     "@motech-development/eslint-config-motech-react": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
-    "@rollup/plugin-commonjs": "26.0.1",
+    "@rollup/plugin-commonjs": "26.0.3",
     "@rollup/plugin-node-resolve": "15.2.3",
     "@swc/core": "1.7.26",
     "@swc/jest": "0.2.36",
