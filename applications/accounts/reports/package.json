@@ -33,7 +33,7 @@
     "@swc/jest": "0.2.36",
     "@types/archiver": "6.0.3",
     "@types/aws-lambda": "8.10.145",
-    "@types/jest": "29.5.13",
+    "@types/jest": "29.5.14",
     "@types/luxon": "3.4.2",
     "@types/qs": "6.9.16",
     "@types/uuid": "9.0.8",
