@@ -1,24 +1,28 @@
 {
-  "extends": ["config:base"],
+  "extends": ["config:recommended"],
   "ignoreDeps": ["prettier"],
   "packageRules": [
     {
       "extends": ["schedule:monthly"],
-      "matchPackageNames": ["aws4-axios", "renovate", "vite-plugin-pwa"],
-      "matchPackagePrefixes": ["@aws-sdk"]
+      "matchPackageNames": [
+        "aws4-axios",
+        "renovate",
+        "vite-plugin-pwa",
+        "@aws-sdk{/,}**"
+      ]
     },
     {
       "automerge": true,
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
     },
     {
-      "matchFiles": ["applications/accounts/api/package.json"],
+      "matchFileNames": ["applications/accounts/api/package.json"],
       "matchPackageNames": ["graphql"],
       "allowedVersions": "< 16.0.0"
     }
   ],
   "prConcurrentLimit": 1,
   "rebaseWhen": "behind-base-branch",
-  "stabilityDays": 5,
+  "minimumReleaseAge": "5 days",
   "timezone": "Europe/London"
 }
