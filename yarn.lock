@@ -63,7 +63,7 @@ __metadata:
     serverless-prune-plugin: "npm:2.0.2"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     webpack: "npm:5.94.0"
     webpack-node-externals: "npm:3.0.0"
   languageName: unknown
@@ -156,7 +156,7 @@ __metadata:
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-finch: "npm:4.0.4"
     styled-components: "npm:5.3.11"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     unfetch: "npm:5.0.0"
     vite: "npm:4.5.5"
     vite-plugin-checker: "npm:0.8.0"
@@ -224,7 +224,7 @@ __metadata:
     serverless-prune-plugin: "npm:2.0.2"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     uuid: "npm:9.0.1"
     webpack: "npm:5.94.0"
     webpack-node-externals: "npm:3.0.0"
@@ -283,7 +283,7 @@ __metadata:
     serverless-prune-plugin: "npm:2.0.2"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     uuid: "npm:9.0.1"
     webpack: "npm:5.94.0"
     webpack-node-externals: "npm:3.0.0"
@@ -330,10 +330,10 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
-    serverless-step-functions: "npm:3.21.0"
+    serverless-step-functions: "npm:3.21.1"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     webpack: "npm:5.94.0"
     webpack-node-externals: "npm:3.0.0"
   languageName: unknown
@@ -387,10 +387,10 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
-    serverless-step-functions: "npm:3.21.0"
+    serverless-step-functions: "npm:3.21.1"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     uuid: "npm:9.0.1"
     webpack: "npm:5.94.0"
     webpack-node-externals: "npm:3.0.0"
@@ -438,7 +438,7 @@ __metadata:
     serverless-prune-plugin: "npm:2.0.2"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     uuid: "npm:9.0.1"
     webpack: "npm:5.94.0"
     webpack-node-externals: "npm:3.0.0"
@@ -486,10 +486,10 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
-    serverless-step-functions: "npm:3.21.0"
+    serverless-step-functions: "npm:3.21.1"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     uuid: "npm:9.0.1"
     webpack: "npm:5.94.0"
     webpack-node-externals: "npm:3.0.0"
@@ -5510,10 +5510,10 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.0.2"
-    serverless-step-functions: "npm:3.21.0"
+    serverless-step-functions: "npm:3.21.1"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     webpack: "npm:5.94.0"
     webpack-node-externals: "npm:3.0.0"
   languageName: unknown
@@ -5556,7 +5556,7 @@ __metadata:
     serverless-prune-plugin: "npm:2.0.2"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     webpack: "npm:5.94.0"
     webpack-node-externals: "npm:3.0.0"
     yup: "npm:1.4.0"
@@ -5629,7 +5629,7 @@ __metadata:
     serverless-prune-plugin: "npm:2.0.2"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     webpack: "npm:5.94.0"
     webpack-node-externals: "npm:3.0.0"
     yup: "npm:1.4.0"
@@ -7580,7 +7580,7 @@ __metadata:
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-finch: "npm:4.0.4"
     styled-components: "npm:5.3.11"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     vite: "npm:4.5.5"
     vite-plugin-checker: "npm:0.8.0"
     vite-plugin-eslint: "npm:1.8.1"
@@ -8064,7 +8064,7 @@ __metadata:
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
     rollup-plugin-swc3: "npm:0.11.2"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
 
@@ -8114,7 +8114,7 @@ __metadata:
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
     rollup-plugin-swc3: "npm:0.11.2"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     unfetch: "npm:5.0.0"
     uuid: "npm:9.0.1"
   languageName: unknown
@@ -8164,7 +8164,7 @@ __metadata:
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
     rollup-plugin-swc3: "npm:0.11.2"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
 
@@ -8205,7 +8205,7 @@ __metadata:
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
     rollup-plugin-swc3: "npm:0.11.2"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
 
@@ -8274,7 +8274,7 @@ __metadata:
     storybook: "npm:8.3.1"
     styled-components: "npm:5.3.11"
     styled-reset: "npm:4.5.2"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     vite: "npm:4.5.5"
     yup: "npm:1.4.0"
   languageName: unknown
@@ -8297,7 +8297,7 @@ __metadata:
     eslint-plugin-jest: "npm:28.8.3"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     prettier: "npm:3.2.5"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
   peerDependencies:
     "@typescript-eslint/eslint-plugin": 6.2.1
     "@typescript-eslint/parser": 6.2.1
@@ -8333,7 +8333,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:4.6.2"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     prettier: "npm:3.2.5"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
   peerDependencies:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@typescript-eslint/eslint-plugin": 6.2.1
@@ -8383,7 +8383,7 @@ __metadata:
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
     rollup-plugin-swc3: "npm:0.11.2"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
 
@@ -8417,7 +8417,7 @@ __metadata:
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
     rollup-plugin-swc3: "npm:0.11.2"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     winston: "npm:3.14.2"
     winston-transport: "npm:4.7.1"
   languageName: unknown
@@ -8473,7 +8473,7 @@ __metadata:
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
     rollup-plugin-swc3: "npm:0.11.2"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
 
@@ -8513,7 +8513,7 @@ __metadata:
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
     rollup-plugin-swc3: "npm:0.11.2"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
 
@@ -8569,7 +8569,7 @@ __metadata:
     rollup-plugin-swc3: "npm:0.11.2"
     serverless: "npm:3.39.0"
     tomlify-j0.4: "npm:3.0.0"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
 
@@ -8603,7 +8603,7 @@ __metadata:
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
     rollup-plugin-swc3: "npm:0.11.2"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     webpack: "npm:5.94.0"
   languageName: unknown
   linkType: soft
@@ -8639,7 +8639,7 @@ __metadata:
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
     rollup-plugin-swc3: "npm:0.11.2"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
     webpack: "npm:5.94.0"
   languageName: unknown
   linkType: soft
@@ -29150,7 +29150,7 @@ __metadata:
     lint-staged: "npm:15.2.10"
     prettier: "npm:3.2.5"
     renovate: "npm:36.109.4"
-    typescript: "npm:5.6.2"
+    typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
 
@@ -31865,9 +31865,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-step-functions@npm:3.21.0":
-  version: 3.21.0
-  resolution: "serverless-step-functions@npm:3.21.0"
+"serverless-step-functions@npm:3.21.1":
+  version: 3.21.1
+  resolution: "serverless-step-functions@npm:3.21.1"
   dependencies:
     "@serverless/utils": "npm:^6.7.0"
     asl-validator: "npm:^3.8.0"
@@ -31876,8 +31876,8 @@ __metadata:
     joi: "npm:^17.7.0"
     lodash: "npm:^4.17.11"
   peerDependencies:
-    serverless: ^2.32.0 || 3
-  checksum: 10c0/d99ae5ddc9d20613f339eead93567cc5bf01c95b36c4dc509f86d777cc34da0d91d2a28aa3f4e36c9bbfd875e2039d42f7b91e707490bd45c5dc9dab487971ea
+    serverless: ">=2.32.0"
+  checksum: 10c0/007b464a5b5777c353187ed4788ad39f3d1e62de9c9c338c65e222dbc6e457181a2634c84b4ae173a9d53ca381e3aaaa06f1c96ba19d00c6b03097c735bc11d5
   languageName: node
   linkType: hard
 
@@ -34149,23 +34149,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.6.2":
-  version: 5.6.2
-  resolution: "typescript@npm:5.6.2"
+"typescript@npm:5.6.3":
+  version: 5.6.3
+  resolution: "typescript@npm:5.6.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/3ed8297a8c7c56b7fec282532503d1ac795239d06e7c4966b42d4330c6cf433a170b53bcf93a130a7f14ccc5235de5560df4f1045eb7f3550b46ebed16d3c5e5
+  checksum: 10c0/44f61d3fb15c35359bc60399cb8127c30bae554cd555b8e2b46d68fa79d680354b83320ad419ff1b81a0bdf324197b29affe6cc28988cd6a74d4ac60c94f9799
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.6.2#optional!builtin<compat/typescript>":
-  version: 5.6.2
-  resolution: "typescript@patch:typescript@npm%3A5.6.2#optional!builtin<compat/typescript>::version=5.6.2&hash=8c6c40"
+"typescript@patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>":
+  version: 5.6.3
+  resolution: "typescript@patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>::version=5.6.3&hash=8c6c40"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/94eb47e130d3edd964b76da85975601dcb3604b0c848a36f63ac448d0104e93819d94c8bdf6b07c00120f2ce9c05256b8b6092d23cf5cf1c6fa911159e4d572f
+  checksum: 10c0/7c9d2e07c81226d60435939618c91ec2ff0b75fbfa106eec3430f0fcf93a584bc6c73176676f532d78c3594fe28a54b36eb40b3d75593071a7ec91301533ace7
   languageName: node
   linkType: hard
 
