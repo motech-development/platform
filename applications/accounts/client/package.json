@@ -71,7 +71,7 @@
     "@motech-development/eslint-config-motech-react": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
-    "@parcel/watcher": "2.4.1",
+    "@parcel/watcher": "2.5.0",
     "@sentry/vite-plugin": "2.22.6",
     "@swc/core": "1.7.26",
     "@swc/jest": "0.2.36",
