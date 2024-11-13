@@ -39,7 +39,7 @@
     "eslint-config-airbnb-typescript": "18.0.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-import-resolver-node": "0.3.9",
-    "eslint-plugin-import": "2.30.0",
+    "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.8.3",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "fork-ts-checker-webpack-plugin": "9.0.2",
