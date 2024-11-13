@@ -48,7 +48,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     fork-ts-checker-webpack-plugin: "npm:9.0.2"
     graphql: "npm:15.9.0"
@@ -126,7 +126,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-cypress: "npm:3.6.0"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-jsx-a11y: "npm:6.10.2"
     eslint-plugin-react: "npm:7.36.1"
     eslint-plugin-react-hooks: "npm:4.6.2"
@@ -211,7 +211,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     fork-ts-checker-webpack-plugin: "npm:9.0.2"
     jest: "npm:29.7.0"
@@ -270,7 +270,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     fork-ts-checker-webpack-plugin: "npm:9.0.2"
     jest: "npm:29.7.0"
@@ -321,7 +321,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     fork-ts-checker-webpack-plugin: "npm:9.0.2"
     jest: "npm:29.7.0"
@@ -374,7 +374,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     fork-ts-checker-webpack-plugin: "npm:9.0.2"
     jest: "npm:29.7.0"
@@ -426,7 +426,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     fork-ts-checker-webpack-plugin: "npm:9.0.2"
     jest: "npm:29.7.0"
@@ -475,7 +475,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     fork-ts-checker-webpack-plugin: "npm:9.0.2"
     jest: "npm:29.7.0"
@@ -5501,7 +5501,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     fork-ts-checker-webpack-plugin: "npm:9.0.2"
     jest: "npm:29.7.0"
@@ -5545,7 +5545,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     fork-ts-checker-webpack-plugin: "npm:9.0.2"
     jest: "npm:29.7.0"
@@ -5617,7 +5617,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     fork-ts-checker-webpack-plugin: "npm:9.0.2"
     jest: "npm:29.7.0"
@@ -7554,7 +7554,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-cypress: "npm:3.6.0"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-jsx-a11y: "npm:6.10.2"
     eslint-plugin-react: "npm:7.36.1"
     eslint-plugin-react-hooks: "npm:4.6.2"
@@ -7630,7 +7630,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     istanbul-lib-instrument: "npm:6.0.3"
     jest: "npm:29.7.0"
@@ -8053,7 +8053,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     fork-ts-checker-webpack-plugin: "npm:9.0.2"
     jest: "npm:29.7.0"
@@ -8097,7 +8097,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-cypress: "npm:3.6.0"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-jsx-a11y: "npm:6.10.2"
     eslint-plugin-react: "npm:7.36.1"
     eslint-plugin-react-hooks: "npm:4.6.2"
@@ -8147,7 +8147,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-cypress: "npm:3.6.0"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-jsx-a11y: "npm:6.10.2"
     eslint-plugin-react: "npm:7.36.1"
     eslint-plugin-react-hooks: "npm:4.6.2"
@@ -8191,7 +8191,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-cypress: "npm:3.6.0"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-jsx-a11y: "npm:6.10.2"
     eslint-plugin-react: "npm:7.36.1"
     eslint-plugin-react-hooks: "npm:4.6.2"
@@ -8248,7 +8248,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-cypress: "npm:3.6.0"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-jsx-a11y: "npm:6.10.2"
     eslint-plugin-react: "npm:7.36.1"
     eslint-plugin-react-hooks: "npm:4.6.2"
@@ -8294,7 +8294,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     prettier: "npm:3.2.5"
     typescript: "npm:5.6.3"
@@ -8307,7 +8307,7 @@ __metadata:
     eslint-config-prettier: 9.1.0
     eslint-import-resolver-node: 0.3.9
     eslint-plugin-import: 2.31.0
-    eslint-plugin-jest: 28.8.3
+    eslint-plugin-jest: 28.9.0
     eslint-plugin-simple-import-sort: 12.1.1
   languageName: unknown
   linkType: soft
@@ -8327,7 +8327,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-cypress: "npm:3.6.0"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-jsx-a11y: "npm:6.10.2"
     eslint-plugin-react: "npm:7.36.1"
     eslint-plugin-react-hooks: "npm:4.6.2"
@@ -8344,7 +8344,7 @@ __metadata:
     eslint-config-prettier: 9.1.0
     eslint-plugin-cypress: 3.6.0
     eslint-plugin-import: 2.31.0
-    eslint-plugin-jest: 28.8.3
+    eslint-plugin-jest: 28.9.0
     eslint-plugin-jsx-a11y: 6.10.2
     eslint-plugin-react: 7.36.1
     eslint-plugin-react-hooks: 4.6.2
@@ -8373,7 +8373,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     jest: "npm:29.7.0"
     jest-watch-typeahead: "npm:2.2.2"
@@ -8407,7 +8407,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     jest: "npm:29.7.0"
     jest-watch-typeahead: "npm:2.2.2"
@@ -8456,7 +8456,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-cypress: "npm:3.6.0"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-jsx-a11y: "npm:6.10.2"
     eslint-plugin-react: "npm:7.36.1"
     eslint-plugin-react-hooks: "npm:4.6.2"
@@ -8503,7 +8503,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     jest: "npm:29.7.0"
     jest-watch-typeahead: "npm:2.2.2"
@@ -8526,7 +8526,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     jest: "npm:29.7.0"
     jest-watch-typeahead: "npm:2.2.2"
@@ -8557,7 +8557,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     jest: "npm:29.7.0"
     jest-watch-typeahead: "npm:2.2.2"
@@ -8593,7 +8593,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     jest: "npm:29.7.0"
     jest-watch-typeahead: "npm:2.2.2"
@@ -8628,7 +8628,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     filehound: "npm:1.17.6"
     jest: "npm:29.7.0"
@@ -8659,7 +8659,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     prettier: "npm:3.2.5"
   languageName: unknown
@@ -8680,7 +8680,7 @@ __metadata:
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-jest: "npm:28.8.3"
+    eslint-plugin-jest: "npm:28.9.0"
     eslint-plugin-simple-import-sort: "npm:12.1.1"
     prettier: "npm:3.2.5"
   languageName: unknown
@@ -20424,9 +20424,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:28.8.3":
-  version: 28.8.3
-  resolution: "eslint-plugin-jest@npm:28.8.3"
+"eslint-plugin-jest@npm:28.9.0":
+  version: 28.9.0
+  resolution: "eslint-plugin-jest@npm:28.9.0"
   dependencies:
     "@typescript-eslint/utils": "npm:^6.0.0 || ^7.0.0 || ^8.0.0"
   peerDependencies:
@@ -20438,7 +20438,7 @@ __metadata:
       optional: true
     jest:
       optional: true
-  checksum: 10c0/beacf85c2fbb39ef9b9839472a8a837cdbab6549b29abaff8999034ac41021e1f06d1779db3ea9d0f966be52e5daeacfd05c239d686370d8b8cb9c68d60e59b6
+  checksum: 10c0/56b0d2fb18a32bf56b0eb8c7790c355513535a239451d9d00184829cbd0ba35b6c68eec64e850a6299453f9c37338b6797d3184594c0326c8fdcc029024065b8
   languageName: node
   linkType: hard
 
