@@ -145,7 +145,7 @@ __metadata:
     jest-watch-typeahead: "npm:2.2.2"
     luxon: "npm:3.5.0"
     prettier: "npm:3.2.5"
-    pwa-asset-generator: "npm:6.3.2"
+    pwa-asset-generator: "npm:6.4.0"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     react-ga: "npm:3.3.1"
@@ -7569,7 +7569,7 @@ __metadata:
     jest-styled-components: "npm:7.2.0"
     jest-watch-typeahead: "npm:2.2.2"
     prettier: "npm:3.2.5"
-    pwa-asset-generator: "npm:6.3.2"
+    pwa-asset-generator: "npm:6.4.0"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     react-ga: "npm:3.3.1"
@@ -30006,9 +30006,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pwa-asset-generator@npm:6.3.2":
-  version: 6.3.2
-  resolution: "pwa-asset-generator@npm:6.3.2"
+"pwa-asset-generator@npm:6.4.0":
+  version: 6.4.0
+  resolution: "pwa-asset-generator@npm:6.4.0"
   dependencies:
     chalk: "npm:^4.1.2"
     cheerio: "npm:1.0.0-rc.12"
@@ -30024,7 +30024,7 @@ __metadata:
     slash: "npm:^3.0.0"
   bin:
     pwa-asset-generator: bin/cli
-  checksum: 10c0/b21f2b571d718a63c6bcbcd2a5148e88850fc04dd86649fd8dc283b0a2f9b72f1fe1ec3ab8dc79c6f16a263d3899bbb2ee2878da213c9961b5d1643818b5c46f
+  checksum: 10c0/3e0574ec83047e92219c7612147dbda5ea7129ec8339dc46aaf4c200832f07c9e0c5adf922060d4899b92e1807a38da115f129e0c30d32d6774cbf507efe6db6
   languageName: node
   linkType: hard
 
