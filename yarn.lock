@@ -60,7 +60,7 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-appsync-plugin: "npm:2.9.1"
     serverless-deployment-bucket: "npm:1.6.0"
-    serverless-prune-plugin: "npm:2.0.2"
+    serverless-prune-plugin: "npm:2.1.0"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.6.3"
@@ -221,7 +221,7 @@ __metadata:
     prettier: "npm:3.2.5"
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
-    serverless-prune-plugin: "npm:2.0.2"
+    serverless-prune-plugin: "npm:2.1.0"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.6.3"
@@ -280,7 +280,7 @@ __metadata:
     prettier: "npm:3.2.5"
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
-    serverless-prune-plugin: "npm:2.0.2"
+    serverless-prune-plugin: "npm:2.1.0"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.6.3"
@@ -329,7 +329,7 @@ __metadata:
     prettier: "npm:3.2.5"
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
-    serverless-prune-plugin: "npm:2.0.2"
+    serverless-prune-plugin: "npm:2.1.0"
     serverless-step-functions: "npm:3.21.1"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
@@ -386,7 +386,7 @@ __metadata:
     qs: "npm:6.11.2"
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
-    serverless-prune-plugin: "npm:2.0.2"
+    serverless-prune-plugin: "npm:2.1.0"
     serverless-step-functions: "npm:3.21.1"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
@@ -435,7 +435,7 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-offline: "npm:13.8.3"
-    serverless-prune-plugin: "npm:2.0.2"
+    serverless-prune-plugin: "npm:2.1.0"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.6.3"
@@ -485,7 +485,7 @@ __metadata:
     prettier: "npm:3.2.5"
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
-    serverless-prune-plugin: "npm:2.0.2"
+    serverless-prune-plugin: "npm:2.1.0"
     serverless-step-functions: "npm:3.21.1"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
@@ -5509,7 +5509,7 @@ __metadata:
     prettier: "npm:3.2.5"
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
-    serverless-prune-plugin: "npm:2.0.2"
+    serverless-prune-plugin: "npm:2.1.0"
     serverless-step-functions: "npm:3.21.1"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
@@ -5553,7 +5553,7 @@ __metadata:
     prettier: "npm:3.2.5"
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
-    serverless-prune-plugin: "npm:2.0.2"
+    serverless-prune-plugin: "npm:2.1.0"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.6.3"
@@ -5626,7 +5626,7 @@ __metadata:
     prettier: "npm:3.2.5"
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
-    serverless-prune-plugin: "npm:2.0.2"
+    serverless-prune-plugin: "npm:2.1.0"
     serverless-webpack: "npm:5.14.2"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.6.3"
@@ -32003,14 +32003,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-prune-plugin@npm:2.0.2":
-  version: 2.0.2
-  resolution: "serverless-prune-plugin@npm:2.0.2"
+"serverless-prune-plugin@npm:2.1.0":
+  version: 2.1.0
+  resolution: "serverless-prune-plugin@npm:2.1.0"
   dependencies:
     bluebird: "npm:^3.7.2"
   peerDependencies:
-    serverless: 1 || 2 || 3
-  checksum: 10c0/87c2e99d27059a2ac95bf86753c15cc59fee05d0929ec3fa177393611b21196f38648002574aee4cf1b1d240b46bfda6e7557b3884408141a5863a622dacdf69
+    serverless: 1.x || 2.x || 3.x || 4.x
+  checksum: 10c0/ed91b6734818586878e640f14eccdc7eef0b0fa9b91bf03281495e00bb435a35c75c918f5341496e06178391a1ae1c4c22d6996b1c0bae661591162979f42730
   languageName: node
   linkType: hard
 
