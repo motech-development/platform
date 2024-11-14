@@ -5695,6 +5695,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dual-bundle/import-meta-resolve@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@dual-bundle/import-meta-resolve@npm:4.1.0"
+  checksum: 10c0/55069e550ee2710e738dd8bbd34aba796cede456287454b50c3be46fbef8695d00625677f3f41f5ffbec1174c0f57f314da9a908388bc9f8ad41a8438db884d9
+  languageName: node
+  linkType: hard
+
 "@emotion/babel-plugin@npm:^11.12.0":
   version: 11.12.0
   resolution: "@emotion/babel-plugin@npm:11.12.0"
@@ -6353,10 +6360,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/deepmerge@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "@fastify/deepmerge@npm:1.3.0"
-  checksum: 10c0/8115ed7b891189ee4ebba554a105cb69111615bdb2961f8c58a80872fac9d7b74b2c6317d545a7d378325d094ce73a91fc9c5d7d6189476779cd5a5493cb1351
+"@fastify/deepmerge@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@fastify/deepmerge@npm:2.0.0"
+  checksum: 10c0/ebed25084e8b5fe1b28127f408df9b683c1d0d45358ba4b98e101b75fbf6144c311608a3c1f6787dcd77a3afd6034116256440e7aaef6af12a1cd8b57c1069a3
   languageName: node
   linkType: hard
 
@@ -8063,7 +8070,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
@@ -8113,7 +8120,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.6.3"
     unfetch: "npm:5.0.0"
     uuid: "npm:9.0.1"
@@ -8163,7 +8170,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
@@ -8204,7 +8211,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
@@ -8270,7 +8277,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     storybook: "npm:8.3.1"
     styled-components: "npm:5.3.11"
     styled-reset: "npm:4.5.2"
@@ -8382,7 +8389,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
@@ -8416,7 +8423,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.6.3"
     winston: "npm:3.14.2"
     winston-transport: "npm:4.7.1"
@@ -8472,7 +8479,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
@@ -8512,7 +8519,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.6.3"
   languageName: unknown
   linkType: soft
@@ -8566,7 +8573,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     serverless: "npm:3.39.0"
     tomlify-j0.4: "npm:3.0.0"
     typescript: "npm:5.6.3"
@@ -8602,7 +8609,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.6.3"
     webpack: "npm:5.94.0"
   languageName: unknown
@@ -8638,7 +8645,7 @@ __metadata:
     rollup: "npm:4.25.0"
     rollup-plugin-dts: "npm:6.1.1"
     rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
-    rollup-plugin-swc3: "npm:0.11.2"
+    rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.6.3"
     webpack: "npm:5.94.0"
   languageName: unknown
@@ -10542,19 +10549,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/pluginutils@npm:^5.0.1, @rollup/pluginutils@npm:^5.0.2, @rollup/pluginutils@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@rollup/pluginutils@npm:5.1.0"
+"@rollup/pluginutils@npm:^5.0.1, @rollup/pluginutils@npm:^5.0.2, @rollup/pluginutils@npm:^5.1.2":
+  version: 5.1.3
+  resolution: "@rollup/pluginutils@npm:5.1.3"
   dependencies:
     "@types/estree": "npm:^1.0.0"
     estree-walker: "npm:^2.0.2"
-    picomatch: "npm:^2.3.1"
+    picomatch: "npm:^4.0.2"
   peerDependencies:
     rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: 10c0/c7bed15711f942d6fdd3470fef4105b73991f99a478605e13d41888963330a6f9e32be37e6ddb13f012bc7673ff5e54f06f59fd47109436c1c513986a8a7612d
+  checksum: 10c0/ba46ad588733fb01d184ee3bc7a127d626158bc840b5874a94c129ff62689d12f16f537530709c54da6f3b71f67d705c4e09235b1dc9542e9d47ee8f2d0b8b9e
   languageName: node
   linkType: hard
 
@@ -22102,7 +22109,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-tsconfig@npm:^4.7.3":
+"get-tsconfig@npm:^4.8.1":
   version: 4.8.1
   resolution: "get-tsconfig@npm:4.8.1"
   dependencies:
@@ -31387,29 +31394,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-plugin-swc3@npm:0.11.2":
-  version: 0.11.2
-  resolution: "rollup-plugin-swc3@npm:0.11.2"
+"rollup-plugin-swc3@npm:0.12.1":
+  version: 0.12.1
+  resolution: "rollup-plugin-swc3@npm:0.12.1"
   dependencies:
-    "@fastify/deepmerge": "npm:^1.3.0"
-    "@rollup/pluginutils": "npm:^5.1.0"
-    get-tsconfig: "npm:^4.7.3"
-    rollup-preserve-directives: "npm:^1.1.1"
+    "@dual-bundle/import-meta-resolve": "npm:^4.1.0"
+    "@fastify/deepmerge": "npm:^2.0.0"
+    "@rollup/pluginutils": "npm:^5.1.2"
+    get-tsconfig: "npm:^4.8.1"
+    rollup-preserve-directives: "npm:^1.1.2"
   peerDependencies:
     "@swc/core": ">=1.2.165"
     rollup: ^2.0.0 || ^3.0.0 || ^4.0.0
-  checksum: 10c0/02b4fa2679be94d1d30a3f91a55a30608fc822183063d4714b36f4ae83dd210a78ecc57aa56d87204f1695826bd3907ce4927de4b42fd060339880d5ac973ee7
+  checksum: 10c0/61d9b734aaf944702d86e8918dbe3c4e8d0cf88ccec272bd28908c777befa0a981ec964c835b0571545d71b8a053e11c09b3bc0f626240f21199836bd791e973
   languageName: node
   linkType: hard
 
-"rollup-preserve-directives@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "rollup-preserve-directives@npm:1.1.1"
+"rollup-preserve-directives@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "rollup-preserve-directives@npm:1.1.2"
   dependencies:
     magic-string: "npm:^0.30.5"
   peerDependencies:
     rollup: ^2.0.0 || ^3.0.0 || ^4.0.0
-  checksum: 10c0/a472dc02df5d93bf81ee7fe5befffd5ace1f7a2f9224a41518a2c8d70e16c1b62e9ac4f5f03d5f5b4193c3c84323aaedfb7e3243a4707a89e1bd4bb84543b2f2
+  checksum: 10c0/42005dfb2667295a260ee13709e600aa96c819b67347eccfe4b9a1b2cbd2a966409f59e9a4ecd05c6ba1cfd8ba63a108edc61af0fe31da9e5a4dc3fd93c2b594
   languageName: node
   linkType: hard
 
