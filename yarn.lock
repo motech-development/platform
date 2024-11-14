@@ -7545,7 +7545,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
     "@vitejs/plugin-react-swc": "npm:3.7.1"
-    auth0-js: "npm:9.26.1"
+    auth0-js: "npm:9.28.0"
     axios: "npm:1.7.7"
     body-scroll-lock: "npm:3.1.5"
     eslint: "npm:8.57.1"
@@ -15588,9 +15588,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0-js@npm:9.26.1":
-  version: 9.26.1
-  resolution: "auth0-js@npm:9.26.1"
+"auth0-js@npm:9.28.0":
+  version: 9.28.0
+  resolution: "auth0-js@npm:9.28.0"
   dependencies:
     base64-js: "npm:^1.5.1"
     idtoken-verifier: "npm:^2.2.4"
@@ -15600,7 +15600,7 @@ __metadata:
     superagent: "npm:^7.1.5"
     url-join: "npm:^4.0.1"
     winchan: "npm:^0.2.2"
-  checksum: 10c0/4a5d102196fab47a9e8c66e07323cc4c49df7217727e19ee3c4de1754cae8d837c35366cb34d2be047bbe85fa32edfd13760522f4d86e408d5c296477ebc87a5
+  checksum: 10c0/d2ab6cc4a94e6707d85feb5bfcf61c147c1569ddf3e8ab95c46812317937ba6f2970ebdd4b260fa37cd9bead0b0c9d0f5951a3009d802ce999f4ee8b77bb1625
   languageName: node
   linkType: hard
 
