@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "winston": "3.17.0",
-    "winston-transport": "4.7.1"
+    "winston-transport": "4.9.0"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
