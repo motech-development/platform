@@ -5245,16 +5245,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chromatic-com/storybook@npm:1.9.0":
-  version: 1.9.0
-  resolution: "@chromatic-com/storybook@npm:1.9.0"
+"@chromatic-com/storybook@npm:3.2.2":
+  version: 3.2.2
+  resolution: "@chromatic-com/storybook@npm:3.2.2"
   dependencies:
-    chromatic: "npm:^11.4.0"
+    chromatic: "npm:^11.15.0"
     filesize: "npm:^10.0.12"
     jsonfile: "npm:^6.1.0"
     react-confetti: "npm:^6.1.0"
     strip-ansi: "npm:^7.1.0"
-  checksum: 10c0/c4b0fbfcb3394c2814e445471b1528179c2144d70d4a13c9a70545c2f2052c6366f73893b16e1490e658d43d905fc726bbb78d7c126c839a3c7ee3d8f3ad21c2
+  peerDependencies:
+    storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
+  checksum: 10c0/7b8da1ddb399c804337ff28a28594b548392b7bead52f66615b98e201cdeb4d31184b9e355791ba5d0d8cfdd2bea7d38355ecd0058f26f4790f9a887107bde0f
   languageName: node
   linkType: hard
 
@@ -8213,7 +8215,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/breeze-ui@workspace:packages/breeze-ui"
   dependencies:
-    "@chromatic-com/storybook": "npm:1.9.0"
+    "@chromatic-com/storybook": "npm:3.2.2"
     "@fortawesome/fontawesome-svg-core": "npm:6.6.0"
     "@fortawesome/free-solid-svg-icons": "npm:6.6.0"
     "@fortawesome/react-fontawesome": "npm:0.2.2"
@@ -17220,9 +17222,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromatic@npm:^11.4.0":
-  version: 11.10.2
-  resolution: "chromatic@npm:11.10.2"
+"chromatic@npm:^11.15.0":
+  version: 11.18.1
+  resolution: "chromatic@npm:11.18.1"
   peerDependencies:
     "@chromatic-com/cypress": ^0.*.* || ^1.0.0
     "@chromatic-com/playwright": ^0.*.* || ^1.0.0
@@ -17235,7 +17237,7 @@ __metadata:
     chroma: dist/bin.js
     chromatic: dist/bin.js
     chromatic-cli: dist/bin.js
-  checksum: 10c0/167633dc1d3d0309af4524e7603a887d3481bc6005a2c0cb955d9ca0e17223bd0335a01844835fe34f1823df308032d6b238bced644a755a3f7c265728ac5e41
+  checksum: 10c0/7f95a702f33047badb4ef1c8e3a400ed4e8cb738926505fd6de632b60fc43fd6e9fa3a3d35756c8b285366c9c72085b330af7bdb5ec5c1672a39262a86540163
   languageName: node
   linkType: hard
 
