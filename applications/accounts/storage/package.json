@@ -13,8 +13,8 @@
     "@aws-sdk/client-sqs": "3.370.0",
     "@motech-development/api-gateway-handler": "workspace:*",
     "@motech-development/s3-file-operations": "workspace:*",
-    "@sentry/aws-serverless": "8.30.0",
-    "@sentry/profiling-node": "8.30.0",
+    "@sentry/aws-serverless": "8.38.0",
+    "@sentry/profiling-node": "8.38.0",
     "uuid": "9.0.1",
     "yup": "1.4.0"
   },

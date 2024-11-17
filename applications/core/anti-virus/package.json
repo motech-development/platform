@@ -17,8 +17,8 @@
     "@aws-sdk/client-sqs": "3.370.0",
     "@motech-development/node-logger": "workspace:*",
     "@motech-development/s3-file-operations": "workspace:*",
-    "@sentry/aws-serverless": "8.30.0",
-    "@sentry/profiling-node": "8.30.0"
+    "@sentry/aws-serverless": "8.38.0",
+    "@sentry/profiling-node": "8.38.0"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
