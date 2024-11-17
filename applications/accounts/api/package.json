@@ -28,7 +28,7 @@
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
     "@motech-development/serverless-outputs-env": "workspace:*",
-    "@swc/core": "1.9.1",
+    "@swc/core": "1.9.2",
     "@swc/jest": "0.2.37",
     "@types/aws-lambda": "8.10.145",
     "@types/jest": "29.5.14",
