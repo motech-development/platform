@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-ses": "3.370.0",
-    "@sentry/aws-serverless": "8.38.0",
-    "@sentry/profiling-node": "8.38.0",
+    "@sentry/aws-serverless": "8.39.0",
+    "@sentry/profiling-node": "8.39.0",
     "cfn-response-async": "1.0.0",
     "yup": "1.4.0"
   },
