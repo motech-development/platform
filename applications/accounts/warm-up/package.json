@@ -14,8 +14,8 @@
     "@aws-sdk/client-dynamodb": "3.370.0",
     "@aws-sdk/lib-dynamodb": "3.370.0",
     "@motech-development/node-logger": "workspace:*",
-    "@sentry/aws-serverless": "8.38.0",
-    "@sentry/profiling-node": "8.38.0",
+    "@sentry/aws-serverless": "8.39.0",
+    "@sentry/profiling-node": "8.39.0",
     "luxon": "3.5.0",
     "uuid": "9.0.1",
     "yup": "1.4.0"
