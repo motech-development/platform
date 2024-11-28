@@ -139,7 +139,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-id-v4-
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
@@ -220,7 +220,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-core-anti-virus-v4-
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
@@ -304,7 +304,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cypress-api-v4-
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
@@ -374,7 +374,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-queue-v4-
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
@@ -444,7 +444,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-storage-v4-
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
@@ -514,7 +514,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-data-v4-
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
@@ -584,7 +584,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-warm-up-v4-
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
@@ -657,7 +657,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-notifications-v4-
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
@@ -729,7 +729,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-reports-v4-
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
@@ -762,6 +762,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -813,7 +814,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-api-v4-
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
