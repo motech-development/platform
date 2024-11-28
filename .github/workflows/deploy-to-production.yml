@@ -165,14 +165,16 @@ jobs:
       AUTH0_SES_ACCESS_KEY_ID: ${{ secrets.AUTH0_SES_ACCESS_KEY_ID }}
       AUTH0_SES_ACCESS_SECRET_KEY: ${{ secrets.AUTH0_SES_ACCESS_SECRET_KEY }}
       AUTH0_SES_REGION: ${{ secrets.AUTH0_SES_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PREFIX: id
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       PUBLIC_URL: https://id.${{ secrets.PROD_DOMAIN }}
       REACT_APP_GA: ${{ secrets.GA_ID_PROD }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -217,6 +219,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-id-v4-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy ID infrastructure
         run: yarn workspace @id/infrastructure deploy --stage $STAGE
 
@@ -238,11 +246,13 @@ jobs:
     needs: unit-test
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -286,6 +296,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-core-anti-virus-v4-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         uses: nick-fields/retry@v3.0.0
         with:
@@ -301,12 +317,14 @@ jobs:
     needs: unit-test
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -351,6 +369,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-core-v4-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy core infrastructure
         run: yarn workspace @core/infrastructure deploy --stage $STAGE
 
@@ -363,11 +387,13 @@ jobs:
     needs: deploy-anti-virus
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -411,6 +437,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-storage-v4-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/storage deploy --stage $STAGE
 
@@ -422,11 +454,13 @@ jobs:
       - deploy-accounts-data
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -470,6 +504,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-queue-v4-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/queue deploy --stage $STAGE
 
@@ -479,11 +519,13 @@ jobs:
     needs: deploy-accounts-storage
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -527,6 +569,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-data-v4-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/data deploy --stage $STAGE
 
@@ -536,11 +584,13 @@ jobs:
     needs: deploy-accounts-data
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -584,6 +634,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-warm-up-v4-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/warm-up deploy --stage $STAGE
 
@@ -596,11 +652,13 @@ jobs:
       - deploy-accounts-storage
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -644,6 +702,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-reports-v4-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/reports deploy --stage $STAGE
 
@@ -658,11 +722,13 @@ jobs:
 
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -714,6 +780,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-api-v4-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/api deploy --stage $STAGE
 
@@ -723,11 +795,13 @@ jobs:
     needs: deploy-infrastructure
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -770,6 +844,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-infrastructure-v4-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/infrastructure deploy --stage $STAGE
 
@@ -779,10 +859,12 @@ jobs:
     needs: deploy-accounts-data
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -826,6 +908,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-notifications-v4-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/notifications deploy --stage $STAGE
 
@@ -837,8 +925,6 @@ jobs:
       - deploy-accounts-infrastructure
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       REACT_APP_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_PROD }}
@@ -852,6 +938,10 @@ jobs:
     environment:
       name: Accounts
       url: https://accounts.motechdevelopment.co.uk # TODO: Find a way to do this using env var or output
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -905,6 +995,12 @@ jobs:
 
       - name: Build client
         run: yarn workspace @accounts/client build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
         run: yarn workspace @accounts/client deploy --stage $STAGE
