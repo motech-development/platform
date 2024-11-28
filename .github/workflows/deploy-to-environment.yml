@@ -92,6 +92,10 @@ jobs:
       STAGE: develop
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -169,6 +173,10 @@ jobs:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -253,6 +261,10 @@ jobs:
       STAGE: develop
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -315,6 +327,10 @@ jobs:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -382,6 +398,10 @@ jobs:
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -448,6 +468,10 @@ jobs:
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -513,6 +537,10 @@ jobs:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -583,6 +611,10 @@ jobs:
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -650,6 +682,10 @@ jobs:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -722,6 +758,10 @@ jobs:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
