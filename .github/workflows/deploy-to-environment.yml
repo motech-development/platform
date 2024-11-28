@@ -85,8 +85,6 @@ jobs:
       AUTH0_SES_ACCESS_KEY_ID: ${{ secrets.AUTH0_SES_ACCESS_KEY_ID }}
       AUTH0_SES_ACCESS_SECRET_KEY: ${{ secrets.AUTH0_SES_ACCESS_SECRET_KEY }}
       AUTH0_SES_REGION: ${{ secrets.AUTH0_SES_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PREFIX: id-develop
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       PUBLIC_URL: https://id-develop.${{ secrets.PROD_DOMAIN }}
@@ -137,6 +135,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-id-v4-
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy ID infrastructure
         run: yarn workspace @id/infrastructure deploy --stage $STAGE
 
@@ -161,10 +165,8 @@ jobs:
     needs: setup
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -210,6 +212,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-core-anti-virus-v4-
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         uses: nick-fields/retry@v3.0.0
         with:
@@ -237,8 +245,6 @@ jobs:
     needs: setup
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CY_API_KEY: ${{ secrets.CY_API_KEY }}
       CY_API_GITHUB_PRIVATE_KEY: ${{ secrets.CY_API_GITHUB_PRIVATE_KEY }}
       CY_API_GITHUB_APP_ID: ${{ secrets.CY_API_GITHUB_APP_ID }}
@@ -286,6 +292,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cypress-api-v4-
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @cypress/api deploy --stage $STAGE
 
@@ -300,8 +312,6 @@ jobs:
       - accounts-data
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -348,6 +358,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-queue-v4-
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/queue deploy --stage $STAGE
 
@@ -362,8 +378,6 @@ jobs:
       - anti-virus
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -410,6 +424,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-storage-v4-
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/storage deploy --stage $STAGE
 
@@ -424,8 +444,6 @@ jobs:
       - accounts-storage
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -472,6 +490,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-data-v4-
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/data deploy --stage $STAGE
 
@@ -486,8 +510,6 @@ jobs:
       - accounts-data
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -534,6 +556,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-warm-up-v4-
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/warm-up deploy --stage $STAGE
 
@@ -552,8 +580,6 @@ jobs:
       - accounts-data
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -599,6 +625,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-notifications-v4-
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/notifications deploy --stage $STAGE
 
@@ -615,8 +647,6 @@ jobs:
       - accounts-storage
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -663,6 +693,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-reports-v4-
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Deploy
         run: yarn workspace @accounts/reports deploy --stage $STAGE
 
@@ -682,8 +718,6 @@ jobs:
 
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
@@ -738,6 +772,12 @@ jobs:
           key: ${{ runner.os }}-accounts-api-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-api-v4-
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
         run: yarn workspace @accounts/api deploy --stage $STAGE
