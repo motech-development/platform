@@ -74,12 +74,14 @@ jobs:
       - accounts-storage
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       DEFINITIONS_BUCKET: s3://anti-virus-${{ github.event.pull_request.number || github.event.inputs.stage }}-definitions
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -112,6 +114,12 @@ jobs:
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Clear bucket
         continue-on-error: true
@@ -133,10 +141,12 @@ jobs:
       - accounts-api
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -169,6 +179,12 @@ jobs:
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Teardown
         run: yarn workspace @accounts/queue teardown --stage $STAGE
@@ -188,13 +204,15 @@ jobs:
       - accounts-reports
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       DOWNLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-downloads
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
       UPLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-uploads
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -227,6 +245,12 @@ jobs:
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Clear bucket
         continue-on-error: true
@@ -253,10 +277,12 @@ jobs:
       - accounts-warm-up
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -289,6 +315,12 @@ jobs:
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Teardown
         run: yarn workspace @accounts/data teardown --stage $STAGE
@@ -305,10 +337,12 @@ jobs:
       - setup
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -341,6 +375,12 @@ jobs:
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Teardown
         run: yarn workspace @accounts/warm-up teardown --stage $STAGE
@@ -358,9 +398,11 @@ jobs:
       - accounts-reports
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -394,6 +436,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Teardown
         run: yarn workspace @accounts/notifications teardown --stage $STAGE
 
@@ -410,12 +458,14 @@ jobs:
       - accounts-api
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_DEFAULT_REGION: eu-west-1
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       REPORTS_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-reports
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -449,6 +499,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
       - name: Clear bucket
         continue-on-error: true
         run: aws s3 rm $REPORTS_BUCKET --recursive
@@ -468,10 +524,12 @@ jobs:
 
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -504,6 +562,12 @@ jobs:
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Teardown
         run: yarn workspace @accounts/api teardown --stage $STAGE
