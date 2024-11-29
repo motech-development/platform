@@ -55,7 +55,7 @@
     "rollup-plugin-dts": "6.1.1",
     "rollup-plugin-exclude-dependencies-from-bundle": "1.1.23",
     "rollup-plugin-swc3": "0.12.1",
-    "typescript": "5.6.3"
+    "typescript": "5.7.2"
   },
   "jest": {
     "collectCoverageFrom": [
