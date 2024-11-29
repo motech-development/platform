@@ -113,7 +113,7 @@ __metadata:
     axios: "npm:1.7.7"
     cypress: "npm:12.0.2"
     cypress-axe: "npm:1.5.0"
-    cypress-cloud: "npm:1.11.0"
+    cypress-cloud: "npm:1.12.0"
     cypress-file-upload: "npm:5.0.8"
     cypress-localstorage-commands: "npm:2.2.6"
     cypress-log-to-output: "npm:1.1.2"
@@ -15940,7 +15940,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.7.7, axios@npm:^1.2.0, axios@npm:^1.6.2":
+"axios@npm:1.7.7":
   version: 1.7.7
   resolution: "axios@npm:1.7.7"
   dependencies:
@@ -15948,6 +15948,17 @@ __metadata:
     form-data: "npm:^4.0.0"
     proxy-from-env: "npm:^1.1.0"
   checksum: 10c0/4499efc89e86b0b49ffddc018798de05fab26e3bf57913818266be73279a6418c3ce8f9e934c7d2d707ab8c095e837fc6c90608fb7715b94d357720b5f568af7
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.6.2, axios@npm:^1.7.4":
+  version: 1.7.8
+  resolution: "axios@npm:1.7.8"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.0"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10c0/23ae2d0105aea9170c34ac9b6f30d9b2ab2fa8b1370205d2f7ce98b9f9510ab420148c13359ee837ea5a4bf2fb028ff225bd2fc92052fb0c478c6b4a836e2d5f
   languageName: node
   linkType: hard
 
@@ -18483,12 +18494,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress-cloud@npm:1.11.0":
-  version: 1.11.0
-  resolution: "cypress-cloud@npm:1.11.0"
+"cypress-cloud@npm:1.12.0":
+  version: 1.12.0
+  resolution: "cypress-cloud@npm:1.12.0"
   dependencies:
     "@currents/commit-info": "npm:1.0.1-beta.0"
-    axios: "npm:^1.2.0"
+    axios: "npm:^1.7.4"
     axios-retry: "npm:^3.4.0"
     bluebird: "npm:^3.7.2"
     chalk: "npm:^4.1.2"
@@ -18509,10 +18520,10 @@ __metadata:
     table: "npm:^6.8.1"
     tmp-promise: "npm:^3.0.3"
     ts-pattern: "npm:^4.3.0"
-    ws: "npm:^8.13.0"
+    ws: "npm:^8.17.1"
   bin:
     cypress-cloud: bin/cli.js
-  checksum: 10c0/fcc17687bdd5a93d003364de7937de6fa6f14b186da4b0bc054806e5d1e3da8817ba170d916ba5174cd4a29423a118542f8800fc7c8b95c31d7100ce18fb9ce8
+  checksum: 10c0/8a4854b05ba95466cc6fe16210ef5fd9db8602dd1745d177dddd67a6567a942f2f04f9eab938420e90f01396e821b675feb24c0d2c45ee9d9419252347108dc9
   languageName: node
   linkType: hard
 
@@ -35699,7 +35710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.11.0, ws@npm:^8.12.0, ws@npm:^8.13.0, ws@npm:^8.17.1, ws@npm:^8.18.0, ws@npm:^8.2.3":
+"ws@npm:^8.11.0, ws@npm:^8.12.0, ws@npm:^8.17.1, ws@npm:^8.18.0, ws@npm:^8.2.3":
   version: 8.18.0
   resolution: "ws@npm:8.18.0"
   peerDependencies:
