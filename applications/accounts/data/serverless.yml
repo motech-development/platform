@@ -52,6 +52,7 @@ functions:
     events:
       - sqs:
           arn: !ImportValue ${self:provider.stage}-AntiVirusFailureQueueArn
+          batchSize: 10
     role: DataLambdaFunctionRole
     environment:
       BUCKET: !ImportValue ${self:provider.stage}-StorageUploadBucket

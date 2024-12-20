@@ -70,6 +70,7 @@ functions:
     events:
       - sqs:
           arn: !GetAtt AntiVirusQueue.Arn
+          batchSize: 10
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       STATE_MACHINE_ARN: !Ref ScanUploadStateMachine
