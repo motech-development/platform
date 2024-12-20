@@ -145,7 +145,7 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy ID infrastructure
-        run: yarn workspace @id/infrastructure deploy --stage $STAGE
+        run: yarn workspace @id/infrastructure deploy --stage $STAGE --force
 
       - name: Build ID client
         run: yarn workspace @id/client build
@@ -154,7 +154,7 @@ jobs:
         run: yarn workspace @id/emails build
 
       - name: Deploy client
-        run: yarn workspace @id/client deploy --stage $STAGE
+        run: yarn workspace @id/client deploy --stage $STAGE --force
 
       - name: Deploy to Auth0
         run: yarn workspace @id/tenant deploy -c config.json
@@ -227,7 +227,7 @@ jobs:
       - name: Deploy
         uses: nick-fields/retry@v3.0.0
         with:
-          command: yarn workspace @core/anti-virus deploy --stage $STAGE
+          command: yarn workspace @core/anti-virus deploy --stage $STAGE --force
           max_attempts: 3
           on_retry_command: yarn workspace @core/anti-virus clean
           retry_on: error
@@ -304,7 +304,7 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @cypress/api deploy --stage $STAGE
+        run: yarn workspace @cypress/api deploy --stage $STAGE --force
 
   # Accounts (queue)
   accounts-queue:
@@ -374,7 +374,7 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/queue deploy --stage $STAGE
+        run: yarn workspace @accounts/queue deploy --stage $STAGE --force
 
   # Accounts (storage)
   accounts-storage:
@@ -444,7 +444,7 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/storage deploy --stage $STAGE
+        run: yarn workspace @accounts/storage deploy --stage $STAGE --force
 
   # Accounts (data)
   accounts-data:
@@ -514,7 +514,7 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/data deploy --stage $STAGE
+        run: yarn workspace @accounts/data deploy --stage $STAGE --force
 
   # Accounts (notifications)
   accounts-notifications:
@@ -583,7 +583,7 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/notifications deploy --stage $STAGE
+        run: yarn workspace @accounts/notifications deploy --stage $STAGE --force
 
   # Accounts (reports)
   accounts-reports:
@@ -655,7 +655,7 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/reports deploy --stage $STAGE
+        run: yarn workspace @accounts/reports deploy --stage $STAGE --force
 
   # Accounts (API)
   accounts-api:
@@ -739,4 +739,4 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/api deploy --stage $STAGE
+        run: yarn workspace @accounts/api deploy --stage $STAGE --force
