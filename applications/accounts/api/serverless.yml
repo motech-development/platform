@@ -370,6 +370,8 @@ functions:
       - stream:
           type: dynamodb
           arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
+          batchSize: 20
+          startingPosition: LATEST
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       ENDPOINT: ${appsync:url}
@@ -381,6 +383,8 @@ functions:
       - stream:
           type: dynamodb
           arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
+          batchSize: 20
+          startingPosition: LATEST
     environment:
       ENDPOINT: ${appsync:url}
 
