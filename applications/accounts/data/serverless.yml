@@ -41,7 +41,6 @@ functions:
       - stream:
           type: dynamodb
           arn: !GetAtt ApplicationTable.StreamArn
-          batchSize: 20
           startingPosition: LATEST
     environment:
       ATTACHMENT_QUEUE: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
@@ -65,7 +64,6 @@ functions:
       - stream:
           type: dynamodb
           arn: !GetAtt ApplicationTable.StreamArn
-          batchSize: 20
           startingPosition: LATEST
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
@@ -78,7 +76,6 @@ functions:
       - stream:
           type: dynamodb
           arn: !GetAtt ApplicationTable.StreamArn
-          batchSize: 20
           startingPosition: LATEST
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
@@ -91,7 +88,6 @@ functions:
       - stream:
           type: dynamodb
           arn: !GetAtt ApplicationTable.StreamArn
-          batchSize: 20
           startingPosition: LATEST
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
@@ -105,7 +101,6 @@ functions:
       - stream:
           type: dynamodb
           arn: !GetAtt ApplicationTable.StreamArn
-          batchSize: 20
           startingPosition: LATEST
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
@@ -118,7 +113,6 @@ functions:
       - stream:
           type: dynamodb
           arn: !GetAtt ApplicationTable.StreamArn
-          batchSize: 20
           startingPosition: LATEST
     environment:
       TABLE: !Ref ApplicationTable
