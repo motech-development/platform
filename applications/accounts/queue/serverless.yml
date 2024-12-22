@@ -47,10 +47,9 @@ functions:
   DeleteTrigger:
     handler: src/triggers/delete.handler
     role: TriggerLambdaFunctionRole
-    # events:
-    #   - sqs:
-    #       arn: !GetAtt AccountsQueue.Arn
-    #       batchSize: 20
+    events:
+      - sqs:
+          arn: !GetAtt AccountsQueue.Arn
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       STATE_MACHINE_ARN: !Ref DeleteCompanyDataStateMachine
