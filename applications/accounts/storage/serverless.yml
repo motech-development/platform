@@ -49,7 +49,7 @@ functions:
     events:
       - sqs:
           arn: !GetAtt DeleteFileQueue.Arn
-          batchSize: 10
+          batchSize: 20
     role: LambdaFunctionRole
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
