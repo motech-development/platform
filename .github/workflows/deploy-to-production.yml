@@ -1003,4 +1003,4 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/client deploy
+        run: yarn workspace @accounts/client deploy --stage $STAGE
