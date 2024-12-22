@@ -46,10 +46,10 @@ custom:
 functions:
   ProcessDelete:
     handler: src/handlers/process-delete.handler
-    events:
-      - sqs:
-          arn: !GetAtt DeleteFileQueue.Arn
-          batchSize: 20
+    # events:
+    #   - sqs:
+    #       arn: !GetAtt DeleteFileQueue.Arn
+    #       batchSize: 20
     role: LambdaFunctionRole
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}

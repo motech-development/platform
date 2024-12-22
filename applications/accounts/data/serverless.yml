@@ -49,10 +49,10 @@ functions:
 
   ClearAttachments:
     handler: src/clear-attachments.handler
-    events:
-      - sqs:
-          arn: !ImportValue ${self:provider.stage}-AntiVirusFailureQueueArn
-          batchSize: 20
+    # events:
+    #   - sqs:
+    #       arn: !ImportValue ${self:provider.stage}-AntiVirusFailureQueueArn
+    #       batchSize: 20
     role: DataLambdaFunctionRole
     environment:
       BUCKET: !ImportValue ${self:provider.stage}-StorageUploadBucket

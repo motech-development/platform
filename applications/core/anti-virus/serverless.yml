@@ -67,10 +67,10 @@ functions:
   StartScan:
     handler: src/handlers/start-scan.handler
     role: StartScanLambdaFunctionRole
-    events:
-      - sqs:
-          arn: !GetAtt AntiVirusQueue.Arn
-          batchSize: 20
+    # events:
+    #   - sqs:
+    #       arn: !GetAtt AntiVirusQueue.Arn
+    #       batchSize: 20
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       STATE_MACHINE_ARN: !Ref ScanUploadStateMachine
