@@ -217,7 +217,7 @@ __metadata:
     ts-node: "npm:10.9.2"
     typescript: "npm:5.7.2"
   bin:
-    data-restore: bin/data-restore.js
+    data-restore: bin/infrastructure.js
   languageName: unknown
   linkType: soft
 

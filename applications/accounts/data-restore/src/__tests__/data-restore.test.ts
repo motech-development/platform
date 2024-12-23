@@ -12,7 +12,7 @@ import { handler } from '../data-restore';
 
 jest.mock('@motech-development/node-logger');
 
-describe('data-restore handler', () => {
+describe('data-restore', () => {
   let callback: jest.Mock;
   let context: Context;
   let ddb: AwsClientStub<DynamoDBClient>;

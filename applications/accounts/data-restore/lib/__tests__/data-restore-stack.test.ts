@@ -2,7 +2,7 @@ import { App } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { DataRestoreStack } from '../data-restore-stack';
 
-describe('DomainStack', () => {
+describe('DataRestoreStack', () => {
   let app: App;
 
   beforeEach(() => {
