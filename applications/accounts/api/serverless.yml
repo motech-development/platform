@@ -366,11 +366,11 @@ functions:
   PublishNotifications:
     handler: src/handlers/publish-notifications.handler
     role: PublishNotificationsRole
-    # events:
-    #   - stream:
-    #       type: dynamodb
-    #       arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
-    #       startingPosition: LATEST
+    events:
+      - stream:
+          type: dynamodb
+          arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
+          startingPosition: LATEST
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       ENDPOINT: ${appsync:url}
@@ -378,11 +378,11 @@ functions:
   UpdateBalance:
     handler: src/handlers/update-balance.handler
     role: PublishNotificationsRole
-    # events:
-    #   - stream:
-    #       type: dynamodb
-    #       arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
-    #       startingPosition: LATEST
+    events:
+      - stream:
+          type: dynamodb
+          arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
+          startingPosition: LATEST
     environment:
       ENDPOINT: ${appsync:url}
 

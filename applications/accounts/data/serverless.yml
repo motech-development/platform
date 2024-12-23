@@ -37,11 +37,11 @@ functions:
   Attachments:
     handler: src/attachments.handler
     role: DataLambdaFunctionRole
-    # events:
-    #   - stream:
-    #       type: dynamodb
-    #       arn: !GetAtt ApplicationTable.StreamArn
-    #       startingPosition: LATEST
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
+          startingPosition: LATEST
     environment:
       ATTACHMENT_QUEUE: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
       SENTRY_DSN: ${env:SENTRY_DSN}
@@ -60,11 +60,11 @@ functions:
   PublishTransactions:
     handler: src/publish-transactions.handler
     role: DataLambdaFunctionRole
-    # events:
-    #   - stream:
-    #       type: dynamodb
-    #       arn: !GetAtt ApplicationTable.StreamArn
-    #       startingPosition: LATEST
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
+          startingPosition: LATEST
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !Ref ApplicationTable
@@ -72,11 +72,11 @@ functions:
   ScheduleTransactions:
     handler: src/schedule-transactions.handler
     role: DataLambdaFunctionRole
-    # events:
-    #   - stream:
-    #       type: dynamodb
-    #       arn: !GetAtt ApplicationTable.StreamArn
-    #       startingPosition: LATEST
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
+          startingPosition: LATEST
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !Ref ApplicationTable
@@ -84,11 +84,11 @@ functions:
   Transactions:
     handler: src/transactions.handler
     role: DataLambdaFunctionRole
-    # events:
-    #   - stream:
-    #       type: dynamodb
-    #       arn: !GetAtt ApplicationTable.StreamArn
-    #       startingPosition: LATEST
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
+          startingPosition: LATEST
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !Ref ApplicationTable
@@ -97,11 +97,11 @@ functions:
     handler: src/transform-transactions.handler
     role: DataLambdaFunctionRole
     timeout: 900
-    # events:
-    #   - stream:
-    #       type: dynamodb
-    #       arn: !GetAtt ApplicationTable.StreamArn
-    #       startingPosition: LATEST
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
+          startingPosition: LATEST
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !Ref ApplicationTable
@@ -109,11 +109,11 @@ functions:
   Typeahead:
     handler: src/typeahead.handler
     role: DataLambdaFunctionRole
-    # events:
-    #   - stream:
-    #       type: dynamodb
-    #       arn: !GetAtt ApplicationTable.StreamArn
-    #       startingPosition: LATEST
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
+          startingPosition: LATEST
     environment:
       TABLE: !Ref ApplicationTable
 
