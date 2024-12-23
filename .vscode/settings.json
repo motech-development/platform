@@ -15,6 +15,7 @@
   ],
   "explorer.autoReveal": false,
   "explorer.openEditors.visible": 0,
+  "github.copilot.editor.enableAutoCompletions": false,
   "search.followSymlinks": false,
   "typescript.tsdk": "node_modules/typescript/lib"
 }
