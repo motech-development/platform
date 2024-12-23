@@ -29,7 +29,7 @@ async function clear(target: string) {
 
   const { Items } = await client.send(scan);
 
-  logger.info(`Found ${Items?.length || 0} items to clear`);
+  logger.info(`Found ${Items?.length ?? 0} items to clear`);
 
   if (Items && Items.length > 0) {
     const batches = chunkArray(Items, 25);
@@ -65,7 +65,7 @@ async function restore(source: string, target: string) {
 
   const { Items } = await client.send(scan);
 
-  logger.info(`Found ${Items?.length || 0} items to restore`);
+  logger.info(`Found ${Items?.length ?? 0} items to restore`);
 
   if (Items && Items.length > 0) {
     const items = Items.map((item) => unmarshall(item));

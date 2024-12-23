@@ -169,6 +169,57 @@ describe('data-restore', () => {
 
         expect(logger.error).toHaveBeenCalledWith(error.message);
       });
+
+      it('should log an error if restore has en error', async () => {
+        const error = new Error('Test error');
+
+        const items = Array.from({ length: 10 }, (_, i) => ({
+          data: {
+            S: `data${i + 1}`,
+          },
+          id: {
+            S: `${i + 1}`,
+          },
+        }));
+
+        ddb
+          .on(ScanCommand, {
+            TableName: 'target-table',
+          })
+          .resolves({
+            Items: items,
+          })
+          .on(ScanCommand, {
+            TableName: 'source-table',
+          })
+          .resolves({
+            Items: items,
+          })
+          .on(BatchWriteItemCommand)
+          .resolvesOnce({})
+          .rejectsOnce(error)
+          .on(UpdateTableCommand, {
+            StreamSpecification: {
+              StreamEnabled: false,
+            },
+            TableName: 'target-table',
+          })
+          .resolves({})
+          .on(UpdateTableCommand, {
+            StreamSpecification: {
+              StreamEnabled: true,
+            },
+            TableName: 'target-table',
+          })
+          .resolves({});
+
+        await handler(null, context, callback);
+
+        expect(logger.error).toHaveBeenCalledWith(
+          'Error processing batch 1 of 1',
+          error,
+        );
+      });
     });
   });
 });
