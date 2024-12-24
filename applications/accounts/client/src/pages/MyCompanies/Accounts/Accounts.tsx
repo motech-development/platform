@@ -15,30 +15,31 @@ import Connected from '../../../components/Connected';
 import { formatCurrency } from '../../../components/Currency';
 import TransactionsList from '../../../components/TransactionsList';
 import { gql } from '../../../graphql';
+import { TransactionStatus } from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
 
 export const GET_BALANCE = gql(/* GraphQL */ `
-  query GetBalance($id: ID!) {
+  query GetBalance($id: ID!, $status: TransactionStatus!) {
     getBalance(id: $id) {
       balance
       currency
       id
-      transactions {
-        balance
-        currency
-        date
-        items {
-          amount
-          attachment
-          description
-          id
-          name
-        }
-      }
       vat {
         owed
         paid
       }
+    }
+    getTransactions(id: $id, status: $status) {
+      id
+      items {
+        amount
+        attachment
+        date
+        description
+        id
+        name
+      }
+      status
     }
   }
 `);
@@ -57,18 +58,6 @@ export const ON_TRANSACTION = gql(/* GraphQL */ `
   subscription OnTransaction($id: ID!, $owner: String!) {
     onTransaction(id: $id, owner: $owner) {
       balance
-      transactions {
-        balance
-        currency
-        date
-        items {
-          amount
-          attachment
-          description
-          id
-          name
-        }
-      }
       vat {
         owed
         paid
@@ -92,6 +81,7 @@ function Accounts() {
   const { data, error, loading, subscribeToMore } = useQuery(GET_BALANCE, {
     variables: {
       id: companyId,
+      status: TransactionStatus.Confirmed,
     },
   });
   const [deleteMutation, { loading: deleteLoading }] = useMutation(
@@ -136,6 +126,9 @@ function Accounts() {
             getBalance: {
               ...prev.getBalance,
               ...subscriptionData.data.onTransaction,
+            },
+            getTransactions: {
+              ...prev.getTransactions,
             },
           };
         },
@@ -258,9 +251,10 @@ function Accounts() {
 
           <TransactionsList
             companyId={data.getBalance.id}
+            currency={data.getBalance.currency}
             loading={deleteLoading}
             onDelete={onDelete}
-            transactions={data.getBalance.transactions}
+            transactions={data.getTransactions.items}
           />
         </>
       )}

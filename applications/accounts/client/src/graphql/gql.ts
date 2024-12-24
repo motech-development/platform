@@ -11,13 +11,14 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * 3. It does not support dead code elimination, so it will add unused operations.
  *
  * Therefore it is highly recommended to use the babel or swc plugin for production.
+ * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 const documents = {
-  '\n  query GetBalance($id: ID!) {\n    getBalance(id: $id) {\n      balance\n      currency\n      id\n      transactions {\n        balance\n        currency\n        date\n        items {\n          amount\n          attachment\n          description\n          id\n          name\n        }\n      }\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n':
+  '\n  query GetBalance($id: ID!, $status: TransactionStatus!) {\n    getBalance(id: $id) {\n      balance\n      currency\n      id\n      vat {\n        owed\n        paid\n      }\n    }\n    getTransactions(id: $id, status: $status) {\n      id\n      items {\n        amount\n        attachment\n        date\n        description\n        id\n        name\n      }\n      status\n    }\n  }\n':
     types.GetBalanceDocument,
   '\n  mutation DeleteTransaction($id: ID!) {\n    deleteTransaction(id: $id) {\n      companyId\n      id\n      status\n    }\n  }\n':
     types.DeleteTransactionDocument,
-  '\n  subscription OnTransaction($id: ID!, $owner: String!) {\n    onTransaction(id: $id, owner: $owner) {\n      balance\n      transactions {\n        balance\n        currency\n        date\n        items {\n          amount\n          attachment\n          description\n          id\n          name\n        }\n      }\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n':
+  '\n  subscription OnTransaction($id: ID!, $owner: String!) {\n    onTransaction(id: $id, owner: $owner) {\n      balance\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n':
     types.OnTransactionDocument,
   '\n  query GetTransactions($id: ID!, $status: TransactionStatus!) {\n    getBalance(id: $id) {\n      currency\n      id\n      transactions {\n        items {\n          id\n        }\n      }\n    }\n    getTransactions(id: $id, status: $status) {\n      id\n      items {\n        amount\n        attachment\n        date\n        description\n        id\n        name\n        scheduled\n      }\n      status\n    }\n  }\n':
     types.GetTransactionsDocument,
@@ -97,8 +98,8 @@ export function gql(source: string): unknown;
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: '\n  query GetBalance($id: ID!) {\n    getBalance(id: $id) {\n      balance\n      currency\n      id\n      transactions {\n        balance\n        currency\n        date\n        items {\n          amount\n          attachment\n          description\n          id\n          name\n        }\n      }\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n',
-): (typeof documents)['\n  query GetBalance($id: ID!) {\n    getBalance(id: $id) {\n      balance\n      currency\n      id\n      transactions {\n        balance\n        currency\n        date\n        items {\n          amount\n          attachment\n          description\n          id\n          name\n        }\n      }\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n'];
+  source: '\n  query GetBalance($id: ID!, $status: TransactionStatus!) {\n    getBalance(id: $id) {\n      balance\n      currency\n      id\n      vat {\n        owed\n        paid\n      }\n    }\n    getTransactions(id: $id, status: $status) {\n      id\n      items {\n        amount\n        attachment\n        date\n        description\n        id\n        name\n      }\n      status\n    }\n  }\n',
+): (typeof documents)['\n  query GetBalance($id: ID!, $status: TransactionStatus!) {\n    getBalance(id: $id) {\n      balance\n      currency\n      id\n      vat {\n        owed\n        paid\n      }\n    }\n    getTransactions(id: $id, status: $status) {\n      id\n      items {\n        amount\n        attachment\n        date\n        description\n        id\n        name\n      }\n      status\n    }\n  }\n'];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -109,8 +110,8 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: '\n  subscription OnTransaction($id: ID!, $owner: String!) {\n    onTransaction(id: $id, owner: $owner) {\n      balance\n      transactions {\n        balance\n        currency\n        date\n        items {\n          amount\n          attachment\n          description\n          id\n          name\n        }\n      }\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n',
-): (typeof documents)['\n  subscription OnTransaction($id: ID!, $owner: String!) {\n    onTransaction(id: $id, owner: $owner) {\n      balance\n      transactions {\n        balance\n        currency\n        date\n        items {\n          amount\n          attachment\n          description\n          id\n          name\n        }\n      }\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n'];
+  source: '\n  subscription OnTransaction($id: ID!, $owner: String!) {\n    onTransaction(id: $id, owner: $owner) {\n      balance\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n',
+): (typeof documents)['\n  subscription OnTransaction($id: ID!, $owner: String!) {\n    onTransaction(id: $id, owner: $owner) {\n      balance\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n'];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

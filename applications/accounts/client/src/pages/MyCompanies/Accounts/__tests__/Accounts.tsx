@@ -31,6 +31,7 @@ describe('Accounts', () => {
             query: GET_BALANCE,
             variables: {
               id: 'company-id',
+              status: 'confirmed',
             },
           },
           result: {
@@ -39,40 +40,32 @@ describe('Accounts', () => {
                 balance: 180,
                 currency: 'GBP',
                 id: 'company-id',
-                transactions: [
-                  {
-                    balance: 180,
-                    currency: 'GBP',
-                    date: '2020-04-15T14:07:18+0000',
-                    items: [
-                      {
-                        amount: -20,
-                        attachment: '',
-                        description: 'Lunch',
-                        id: 'transaction-2',
-                        name: 'KFC',
-                      },
-                    ],
-                  },
-                  {
-                    balance: 200,
-                    currency: 'GBP',
-                    date: '2020-04-13T14:07:18+0000',
-                    items: [
-                      {
-                        amount: 200,
-                        attachment: '',
-                        description: 'Invoice #1',
-                        id: 'transaction-1',
-                        name: 'Client',
-                      },
-                    ],
-                  },
-                ],
                 vat: {
                   owed: 100,
                   paid: 99.9,
                 },
+              },
+              getTransactions: {
+                id: 'company-id',
+                items: [
+                  {
+                    amount: -20,
+                    attachment: '',
+                    date: '2020-04-15T14:07:18+0000',
+                    description: 'Lunch',
+                    id: 'transaction-2',
+                    name: 'KFC',
+                  },
+                  {
+                    amount: 200,
+                    attachment: '',
+                    date: '2020-04-13T14:07:18+0000',
+                    description: 'Invoice #1',
+                    id: 'transaction-1',
+                    name: 'Client',
+                  },
+                ],
+                status: 'confirmed',
               },
             },
           },
@@ -82,6 +75,7 @@ describe('Accounts', () => {
             query: GET_BALANCE,
             variables: {
               id: 'company-id',
+              status: 'confirmed',
             },
           },
           result: {
@@ -90,32 +84,24 @@ describe('Accounts', () => {
                 balance: 200,
                 currency: 'GBP',
                 id: 'company-id',
-                transactions: [
-                  {
-                    balance: 0,
-                    currency: 'GBP',
-                    date: '2020-04-15T14:07:18+0000',
-                    items: [],
-                  },
-                  {
-                    balance: 200,
-                    currency: 'GBP',
-                    date: '2020-04-13T14:07:18+0000',
-                    items: [
-                      {
-                        amount: 200,
-                        attachment: '',
-                        description: 'Invoice #1',
-                        id: 'transaction-1',
-                        name: 'Client',
-                      },
-                    ],
-                  },
-                ],
                 vat: {
                   owed: 100,
                   paid: 0,
                 },
+              },
+              getTransactions: {
+                id: 'company-id',
+                items: [
+                  {
+                    amount: 200,
+                    attachment: '',
+                    date: '2020-04-13T14:07:18+0000',
+                    description: 'Invoice #1',
+                    id: 'transaction-1',
+                    name: 'Client',
+                  },
+                ],
+                status: 'confirmed',
               },
             },
           },
@@ -149,36 +135,6 @@ describe('Accounts', () => {
             data: {
               onTransaction: {
                 balance: 180,
-                transactions: [
-                  {
-                    balance: 180,
-                    currency: 'GBP',
-                    date: '2020-04-15T14:07:18+0000',
-                    items: [
-                      {
-                        amount: -20,
-                        attachment: '',
-                        description: 'Lunch',
-                        id: 'transaction-2',
-                        name: 'KFC',
-                      },
-                    ],
-                  },
-                  {
-                    balance: 200,
-                    currency: 'GBP',
-                    date: '2020-04-13T14:07:18+0000',
-                    items: [
-                      {
-                        amount: 200,
-                        attachment: '',
-                        description: 'Invoice #1',
-                        id: 'transaction-1',
-                        name: 'Client',
-                      },
-                    ],
-                  },
-                ],
                 vat: {
                   owed: 100,
                   paid: 99.9,
@@ -377,6 +333,7 @@ describe('Accounts', () => {
             query: GET_BALANCE,
             variables: {
               id: 'company-id',
+              status: 'confirmed',
             },
           },
           result: {
@@ -385,40 +342,32 @@ describe('Accounts', () => {
                 balance: 180,
                 currency: 'GBP',
                 id: 'company-id',
-                transactions: [
-                  {
-                    balance: 180,
-                    currency: 'GBP',
-                    date: '2020-04-15T14:07:18+0000',
-                    items: [
-                      {
-                        amount: -20,
-                        attachment: '',
-                        description: 'Lunch',
-                        id: 'transaction-2',
-                        name: 'KFC',
-                      },
-                    ],
-                  },
-                  {
-                    balance: 200,
-                    currency: 'GBP',
-                    date: '2020-04-13T14:07:18+0000',
-                    items: [
-                      {
-                        amount: 200,
-                        attachment: '',
-                        description: 'Invoice #1',
-                        id: 'transaction-1',
-                        name: 'Client',
-                      },
-                    ],
-                  },
-                ],
                 vat: {
                   owed: 100,
                   paid: 99.9,
                 },
+              },
+              getTransactions: {
+                id: 'company-id',
+                items: [
+                  {
+                    amount: -20,
+                    attachment: '',
+                    date: '2020-04-15T14:07:18+0000',
+                    description: 'Lunch',
+                    id: 'transaction-2',
+                    name: 'KFC',
+                  },
+                  {
+                    amount: 200,
+                    attachment: '',
+                    date: '2020-04-13T14:07:18+0000',
+                    description: 'Invoice #1',
+                    id: 'transaction-1',
+                    name: 'Client',
+                  },
+                ],
+                status: 'confirmed',
               },
             },
           },
@@ -428,6 +377,7 @@ describe('Accounts', () => {
             query: GET_BALANCE,
             variables: {
               id: 'company-id',
+              status: 'confirmed',
             },
           },
           result: {
@@ -436,32 +386,24 @@ describe('Accounts', () => {
                 balance: 200,
                 currency: 'GBP',
                 id: 'company-id',
-                transactions: [
-                  {
-                    balance: 0,
-                    currency: 'GBP',
-                    date: '2020-04-15T14:07:18+0000',
-                    items: [],
-                  },
-                  {
-                    balance: 200,
-                    currency: 'GBP',
-                    date: '2020-04-13T14:07:18+0000',
-                    items: [
-                      {
-                        amount: 200,
-                        attachment: '',
-                        description: 'Invoice #1',
-                        id: 'transaction-1',
-                        name: 'Client',
-                      },
-                    ],
-                  },
-                ],
                 vat: {
                   owed: 100,
                   paid: 0,
                 },
+              },
+              getTransactions: {
+                id: 'company-id',
+                items: [
+                  {
+                    amount: 200,
+                    attachment: '',
+                    date: '2020-04-13T14:07:18+0000',
+                    description: 'Invoice #1',
+                    id: 'transaction-1',
+                    name: 'Client',
+                  },
+                ],
+                status: 'confirmed',
               },
             },
           },
