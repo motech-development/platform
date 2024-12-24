@@ -566,6 +566,7 @@ export type VatSettingsInput = {
 
 export type GetBalanceQueryVariables = Exact<{
   id: Scalars['ID']['input'];
+  status: TransactionStatus;
 }>;
 
 export type GetBalanceQuery = {
@@ -573,19 +574,19 @@ export type GetBalanceQuery = {
     balance: number;
     currency: string;
     id: string;
-    transactions: Array<{
-      balance: number;
-      currency: string;
-      date: string;
-      items: Array<{
-        amount: number;
-        attachment?: string | null;
-        description: string;
-        id: string;
-        name: string;
-      }>;
-    }>;
     vat: { owed: number; paid: number };
+  };
+  getTransactions: {
+    id: string;
+    status: TransactionStatus;
+    items: Array<{
+      amount: number;
+      attachment?: string | null;
+      date: string;
+      description: string;
+      id: string;
+      name: string;
+    }>;
   };
 };
 
@@ -609,18 +610,6 @@ export type OnTransactionSubscriptionVariables = Exact<{
 export type OnTransactionSubscription = {
   onTransaction?: {
     balance: number;
-    transactions: Array<{
-      balance: number;
-      currency: string;
-      date: string;
-      items: Array<{
-        amount: number;
-        attachment?: string | null;
-        description: string;
-        id: string;
-        name: string;
-      }>;
-    }>;
     vat: { owed: number; paid: number };
   } | null;
 };
@@ -1256,6 +1245,20 @@ export const GetBalanceDocument = {
             type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
           },
         },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'status' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'TransactionStatus' },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: 'SelectionSet',
@@ -1281,53 +1284,6 @@ export const GetBalanceDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'transactions' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'balance' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'currency' },
-                      },
-                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'items' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'amount' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'attachment' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'description' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
                   name: { kind: 'Name', value: 'vat' },
                   selectionSet: {
                     kind: 'SelectionSet',
@@ -1337,6 +1293,59 @@ export const GetBalanceDocument = {
                     ],
                   },
                 },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getTransactions' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'status' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'status' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'items' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'amount' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'attachment' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'description' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
               ],
             },
           },
@@ -1454,53 +1463,6 @@ export const OnTransactionDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'transactions' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'balance' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'currency' },
-                      },
-                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'items' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'amount' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'attachment' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'description' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'vat' },

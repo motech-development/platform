@@ -16,6 +16,7 @@ describe('TransactionsList', () => {
       <TestProvider>
         <TransactionsList
           companyId={companyId}
+          currency="GBP"
           loading={false}
           transactions={[]}
           onDelete={onDelete}
@@ -34,32 +35,20 @@ describe('TransactionsList', () => {
     beforeEach(async () => {
       const transactions = [
         {
-          balance: 180,
-          currency: 'GBP',
+          amount: -20,
+          attachment: '',
           date: '2020-04-15T14:07:18+0000',
-          items: [
-            {
-              amount: -20,
-              attachment: '',
-              description: 'Lunch',
-              id: 'transaction-2',
-              name: 'KFC',
-            },
-          ],
+          description: 'Lunch',
+          id: 'transaction-2',
+          name: 'KFC',
         },
         {
-          balance: 200,
-          currency: 'GBP',
+          amount: 200,
+          attachment: 'invoice.pdf',
           date: '2020-04-13T14:07:18+0000',
-          items: [
-            {
-              amount: 200,
-              attachment: 'invoice.pdf',
-              description: 'Invoice #1',
-              id: 'transaction-1',
-              name: 'Client',
-            },
-          ],
+          description: 'Invoice #1',
+          id: 'transaction-1',
+          name: 'Client',
         },
       ];
 
@@ -68,6 +57,7 @@ describe('TransactionsList', () => {
           <TestProvider>
             <TransactionsList
               companyId={companyId}
+              currency="GBP"
               loading={false}
               transactions={transactions}
               onDelete={onDelete}
@@ -97,7 +87,7 @@ describe('TransactionsList', () => {
       const { findAllByRole } = component;
       const [, total] = await findAllByRole('columnheader');
 
-      expect(total).toHaveTextContent('£180.00');
+      expect(total).toHaveTextContent('-£20.00');
     });
 
     it('should have a view link button', async () => {
