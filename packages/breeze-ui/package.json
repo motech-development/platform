@@ -41,7 +41,7 @@
     "yup": "1.4.0"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "3.2.2",
+    "@chromatic-com/storybook": "3.2.3",
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@motech-development/eslint-config-motech-react": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
