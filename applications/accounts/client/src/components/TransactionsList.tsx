@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { Decimal } from 'decimal.js';
+import { DateTime as Luxon } from 'luxon';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Currency from './Currency';
@@ -83,11 +84,21 @@ function TransactionsList({
       <Table>
         {transactions
           .reduce<IGroupedTransactions['transactions']>((aggregate, item) => {
-            const today = aggregate.find(({ date }) => date === item.date);
+            const today = aggregate.find(({ date }) => {
+              const start = Luxon.fromISO(date);
+
+              const end = Luxon.fromISO(item.date);
+
+              return start.hasSame(end, 'day');
+            });
 
             if (today) {
-              return aggregate.map((group) =>
-                group.date === item.date
+              return aggregate.map((group) => {
+                const start = Luxon.fromISO(group.date);
+
+                const end = Luxon.fromISO(item.date);
+
+                return start.hasSame(end, 'day')
                   ? {
                       ...group,
                       amount: new Decimal(group.amount)
@@ -100,8 +111,8 @@ function TransactionsList({
                         },
                       ],
                     }
-                  : group,
-              );
+                  : group;
+              });
             }
 
             return [
@@ -117,6 +128,7 @@ function TransactionsList({
               },
             ];
           }, [])
+          .sort((a, b) => b.date.localeCompare(a.date))
           .map(({ amount, date, items }) => (
             <TableBody key={date}>
               <TableRow colour="primary">
