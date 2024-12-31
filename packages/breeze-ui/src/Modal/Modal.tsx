@@ -5,6 +5,8 @@ import Card from '../Card/Card';
 import Loader from '../Loader/Loader';
 import Overlay from '../Overlay/Overlay';
 
+type TModalSize = 'sm' | 'lg';
+
 const ModalOuter = styled.div`
   bottom: 0;
   left: 0;
@@ -24,11 +26,17 @@ const ModalContent = styled.div`
   pointer-events: auto;
 `;
 
-const ModalDialog = styled.div`
-  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px 0 rgba(0, 0, 0, 0.14),
+interface IModalDialogProps {
+  size: TModalSize;
+}
+
+const ModalDialog = styled.div<IModalDialogProps>`
+  box-shadow:
+    0 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0 5px 8px 0 rgba(0, 0, 0, 0.14),
     0 1px 14px 0 rgba(0, 0, 0, 0.12);
   margin: 5rem auto;
-  max-width: 500px;
+  max-width: ${({ size }) => (size === 'sm' ? '500px' : '90vw')};
   pointer-events: none;
   position: relative;
 `;
@@ -36,11 +44,18 @@ const ModalDialog = styled.div`
 export interface IModalProps {
   children: ReactNode;
   isOpen: boolean;
+  size?: TModalSize;
   title: string;
-  onDismiss(): void;
+  onDismiss: () => void;
 }
 
-const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss, title }) => {
+const Modal: FC<IModalProps> = ({
+  children,
+  isOpen,
+  onDismiss,
+  size = 'sm',
+  title,
+}) => {
   const output = document.createElement('div');
   const doNotDismiss = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -54,7 +69,7 @@ const Modal: FC<IModalProps> = ({ children, isOpen, onDismiss, title }) => {
         tabIndex={-1}
         onClick={onDismiss}
       >
-        <ModalDialog role="document">
+        <ModalDialog size={size} role="document">
           <ModalContent onClick={doNotDismiss}>
             <Card padding="lg">{children}</Card>
           </ModalContent>

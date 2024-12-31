@@ -1,4 +1,4 @@
-import { boolean, withKnobs } from '@storybook/addon-knobs';
+import { boolean, select, withKnobs } from '@storybook/addon-knobs';
 import BaseStyles from '../BaseStyles/BaseStyles';
 import Button from '../Button/Button';
 import Typography from '../Typography/Typography';
@@ -11,6 +11,11 @@ export default {
 
 const onDismiss = () => {};
 
+const size = {
+  Large: 'lg',
+  Small: 'sm',
+};
+
 export const BasicModal = {
   name: 'Basic modal',
   render: () => (
@@ -19,6 +24,7 @@ export const BasicModal = {
 
       <Modal
         isOpen={boolean('Show', true)}
+        size={select('Size', size, 'sm') as 'sm' | 'lg'}
         title="My modal"
         onDismiss={onDismiss}
       >
