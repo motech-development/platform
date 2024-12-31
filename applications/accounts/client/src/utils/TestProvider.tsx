@@ -115,7 +115,13 @@ function TestProvider({
   );
 
   return (
-    <MemoryRouter initialEntries={history}>
+    <MemoryRouter
+      initialEntries={history}
+      future={{
+        v7_relativeSplatPath: true,
+        v7_startTransition: true,
+      }}
+    >
       <ToastProvider>
         <ToastContext.Provider value={toastProvider}>
           <I18nextProvider i18n={testI18n}>

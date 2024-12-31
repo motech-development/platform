@@ -68,6 +68,7 @@
   },
   "transaction-form": {
     "cancel": "Cancel",
+    "close": "Close",
     "save": "Save",
     "currency": "£",
     "transaction-details": {
@@ -134,7 +135,6 @@
     },
     "upload": {
       "delete-file": "Delete file",
-      "download-file": "Download file",
       "purchase": {
         "heading": "Invoice or receipt",
         "help-text": "Attach a invoice or receipt to this transaction"
@@ -146,7 +146,8 @@
       "upload": {
         "button": "Browse",
         "label": "Select file to upload"
-      }
+      },
+      "view-file": "View file"
     }
   },
   "no-transactions": {

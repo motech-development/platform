@@ -18,6 +18,14 @@ import ViewTransaction, {
   VIEW_TRANSACTION,
 } from '../ViewTransaction';
 
+jest.mock(
+  'pdfjs-dist/build/pdf.worker.min.mjs?url',
+  () => 'pdfjs-dist/build/pdf.worker.min.mjs',
+  {
+    virtual: true,
+  },
+);
+
 describe('ViewTransaction', () => {
   let history: string[];
   let mocks: MockedResponse[];
@@ -558,9 +566,19 @@ describe('ViewTransaction', () => {
       });
 
       it('should download the attachment', async () => {
-        const downloadButton = await screen.findByText(
-          'transaction-form.upload.download-file',
+        const viewButton = await screen.findByText(
+          'transaction-form.upload.view-file',
         );
+
+        await act(async () => {
+          fireEvent.click(viewButton);
+
+          await waitForApollo(0);
+        });
+
+        await screen.findByRole('dialog');
+
+        const downloadButton = await screen.findByLabelText('download');
 
         await act(async () => {
           fireEvent.click(downloadButton);
@@ -574,9 +592,19 @@ describe('ViewTransaction', () => {
       });
 
       it('should display a success toast when attachment is downloaded', async () => {
-        const downloadButton = await screen.findByText(
-          'transaction-form.upload.download-file',
+        const viewButton = await screen.findByText(
+          'transaction-form.upload.view-file',
         );
+
+        await act(async () => {
+          fireEvent.click(viewButton);
+
+          await waitForApollo(0);
+        });
+
+        await screen.findByRole('dialog');
+
+        const downloadButton = await screen.findByLabelText('download');
 
         await act(async () => {
           fireEvent.click(downloadButton);
@@ -598,12 +626,12 @@ describe('ViewTransaction', () => {
           isAxiosError: true,
         });
 
-        const downloadButton = await screen.findByText(
-          'transaction-form.upload.download-file',
+        const viewButton = await screen.findByText(
+          'transaction-form.upload.view-file',
         );
 
         await act(async () => {
-          fireEvent.click(downloadButton);
+          fireEvent.click(viewButton);
 
           await waitForApollo(0);
 
@@ -895,12 +923,12 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast if file fails to download', async () => {
-        const downloadButton = await screen.findByText(
-          'transaction-form.upload.download-file',
+        const viewButton = await screen.findByText(
+          'transaction-form.upload.view-file',
         );
 
         await act(async () => {
-          fireEvent.click(downloadButton);
+          fireEvent.click(viewButton);
 
           await waitForApollo(0);
 
@@ -1233,12 +1261,12 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast if file fails to delete', async () => {
-        const downloadButton = await screen.findByText(
-          'transaction-form.upload.download-file',
+        const viewButton = await screen.findByText(
+          'transaction-form.upload.view-file',
         );
 
         await act(async () => {
-          fireEvent.click(downloadButton);
+          fireEvent.click(viewButton);
 
           await waitForApollo(0);
         });
