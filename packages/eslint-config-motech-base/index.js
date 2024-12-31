@@ -9,7 +9,7 @@ module.exports = {
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
         'prettier',
       ],
-      files: ['*.ts'],
+      files: ['*.mts', '*.ts'],
       overrides: [
         {
           extends: ['plugin:jest/recommended'],
@@ -21,7 +21,7 @@ module.exports = {
           },
         },
         {
-          files: ['codegen.ts', 'setupTests.ts', '*.config.ts'],
+          files: ['codegen.ts', 'setupTests.ts', '*.config.mts', '*.config.ts'],
           rules: {
             'import/no-extraneous-dependencies': 'off',
           },
