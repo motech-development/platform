@@ -372,7 +372,7 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.1.0"
-    serverless-step-functions: "npm:3.21.1"
+    serverless-step-functions: "npm:3.21.2"
     serverless-webpack: "npm:5.15.0"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.7.2"
@@ -429,7 +429,7 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.1.0"
-    serverless-step-functions: "npm:3.21.1"
+    serverless-step-functions: "npm:3.21.2"
     serverless-webpack: "npm:5.15.0"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.7.2"
@@ -528,7 +528,7 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.1.0"
-    serverless-step-functions: "npm:3.21.1"
+    serverless-step-functions: "npm:3.21.2"
     serverless-webpack: "npm:5.15.0"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.7.2"
@@ -5585,7 +5585,7 @@ __metadata:
     serverless: "npm:3.39.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-prune-plugin: "npm:2.1.0"
-    serverless-step-functions: "npm:3.21.1"
+    serverless-step-functions: "npm:3.21.2"
     serverless-webpack: "npm:5.15.0"
     swc-loader: "npm:0.2.6"
     typescript: "npm:5.7.2"
@@ -31924,9 +31924,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serverless-step-functions@npm:3.21.1":
-  version: 3.21.1
-  resolution: "serverless-step-functions@npm:3.21.1"
+"serverless-step-functions@npm:3.21.2":
+  version: 3.21.2
+  resolution: "serverless-step-functions@npm:3.21.2"
   dependencies:
     "@serverless/utils": "npm:^6.7.0"
     asl-validator: "npm:^3.8.0"
@@ -31936,7 +31936,7 @@ __metadata:
     lodash: "npm:^4.17.11"
   peerDependencies:
     serverless: ">=2.32.0"
-  checksum: 10c0/007b464a5b5777c353187ed4788ad39f3d1e62de9c9c338c65e222dbc6e457181a2634c84b4ae173a9d53ca381e3aaaa06f1c96ba19d00c6b03097c735bc11d5
+  checksum: 10c0/6f526b51a62eacac834b27cc45cc4b12657d4835dfa5e8e21fe11fc53b8fb6daf25898b06a7c34ec1417c48f7e8be4cb626c6e7481bd31d7e49322c238fc206f
   languageName: node
   linkType: hard
 
