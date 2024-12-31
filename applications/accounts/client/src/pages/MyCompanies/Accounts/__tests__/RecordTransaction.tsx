@@ -39,6 +39,10 @@ const GET_TYPEAHEAD = gql(/* GraphQL */ `
   }
 `);
 
+jest.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => 'service-worker', {
+  virtual: true,
+});
+
 describe('RecordTransaction', () => {
   let history: string[];
   let mocks: MockedResponse[];

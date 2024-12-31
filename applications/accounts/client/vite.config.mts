@@ -1,9 +1,22 @@
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
 import react from '@vitejs/plugin-react-swc';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, normalizePath } from 'vite';
 import checker from 'vite-plugin-checker';
 import eslint from 'vite-plugin-eslint';
 import { VitePWA } from 'vite-plugin-pwa';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
+
+const require = createRequire(import.meta.url);
+
+const cMapsDir = normalizePath(
+  join(dirname(require.resolve('pdfjs-dist/package.json')), 'cmaps'),
+);
+
+const standardFontsDir = normalizePath(
+  join(dirname(require.resolve('pdfjs-dist/package.json')), 'standard_fonts'),
+);
 
 export default defineConfig(({ command, mode }) => {
   const {
@@ -34,6 +47,18 @@ export default defineConfig(({ command, mode }) => {
       }),
       checker({
         typescript: true,
+      }),
+      viteStaticCopy({
+        targets: [
+          {
+            dest: '',
+            src: cMapsDir,
+          },
+          {
+            dest: '',
+            src: standardFontsDir,
+          },
+        ],
       }),
       VitePWA({
         devOptions: {

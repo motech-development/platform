@@ -7,7 +7,7 @@
     "src",
     "codegen.ts",
     "cypress.config.ts",
-    "vite.config.ts",
+    "vite.config.mts",
     "__mocks__"
   ]
 }
