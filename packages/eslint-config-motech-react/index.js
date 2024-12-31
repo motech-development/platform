@@ -13,7 +13,7 @@ module.exports = {
         'plugin:react/jsx-runtime',
         'prettier',
       ],
-      files: ['*.ts', '*.tsx'],
+      files: ['*.mts', '*.ts', '*.tsx'],
       overrides: [
         {
           extends: ['plugin:cypress/recommended'],
@@ -46,6 +46,7 @@ module.exports = {
             'setupTests.ts',
             '*.stories.ts',
             '*.stories.tsx',
+            '*.config.mts',
             '*.config.ts',
           ],
           rules: {
