@@ -101,7 +101,6 @@ __metadata:
     "@testing-library/react": "npm:16.0.1"
     "@testing-library/user-event": "npm:14.5.2"
     "@types/file-saver": "npm:2.0.7"
-    "@types/identity-obj-proxy": "npm:^3"
     "@types/jest": "npm:29.5.14"
     "@types/luxon": "npm:3.4.2"
     "@types/react": "npm:18.3.18"
@@ -13690,13 +13689,6 @@ __metadata:
   version: 2.0.4
   resolution: "@types/http-errors@npm:2.0.4"
   checksum: 10c0/494670a57ad4062fee6c575047ad5782506dd35a6b9ed3894cea65830a94367bd84ba302eb3dde331871f6d70ca287bfedb1b2cf658e6132cd2cbd427ab56836
-  languageName: node
-  linkType: hard
-
-"@types/identity-obj-proxy@npm:^3":
-  version: 3.0.2
-  resolution: "@types/identity-obj-proxy@npm:3.0.2"
-  checksum: 10c0/9277c7bf75aaf3688b659ad86f33eb57bd9fab9a5ed342adfbab6b6a804b8f7ce2f0a9ce0394dc6e73b3128d61920c5d35d71b825b84bfe28a97f86f5360c7e3
   languageName: node
   linkType: hard
 

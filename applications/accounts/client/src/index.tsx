@@ -40,6 +40,7 @@ invariant(REACT_APP_SENTRY_DSN);
 
 init({
   dsn: REACT_APP_SENTRY_DSN,
+  enabled: process.env.NODE_ENV === 'production',
   integrations: [
     new BrowserTracing({
       routingInstrumentation: reactRouterV6Instrumentation(
