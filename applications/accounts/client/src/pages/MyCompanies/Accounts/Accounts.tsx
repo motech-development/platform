@@ -19,7 +19,7 @@ import { TransactionStatus } from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
 
 export const GET_BALANCE = gql(/* GraphQL */ `
-  query GetBalance($id: ID!, $status: TransactionStatus!) {
+  query GetBalance($count: Int, $id: ID!, $status: TransactionStatus!) {
     getBalance(id: $id) {
       balance
       currency
@@ -29,7 +29,7 @@ export const GET_BALANCE = gql(/* GraphQL */ `
         paid
       }
     }
-    getTransactions(id: $id, status: $status) {
+    getTransactions(count: $count, id: $id, status: $status) {
       id
       items {
         amount
@@ -39,6 +39,7 @@ export const GET_BALANCE = gql(/* GraphQL */ `
         id
         name
       }
+      nextToken
       status
     }
   }
@@ -80,6 +81,7 @@ function Accounts() {
   const { add } = useToast();
   const { data, error, loading, subscribeToMore } = useQuery(GET_BALANCE, {
     variables: {
+      count: 100,
       id: companyId,
       status: TransactionStatus.Confirmed,
     },

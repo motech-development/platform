@@ -30,6 +30,7 @@ describe('Accounts', () => {
           request: {
             query: GET_BALANCE,
             variables: {
+              count: 100,
               id: 'company-id',
               status: 'confirmed',
             },
@@ -65,6 +66,7 @@ describe('Accounts', () => {
                     name: 'Client',
                   },
                 ],
+                nextToken: null,
                 status: 'confirmed',
               },
             },
@@ -74,6 +76,7 @@ describe('Accounts', () => {
           request: {
             query: GET_BALANCE,
             variables: {
+              count: 100,
               id: 'company-id',
               status: 'confirmed',
             },
@@ -101,6 +104,7 @@ describe('Accounts', () => {
                     name: 'Client',
                   },
                 ],
+                nextToken: null,
                 status: 'confirmed',
               },
             },
@@ -332,6 +336,7 @@ describe('Accounts', () => {
           request: {
             query: GET_BALANCE,
             variables: {
+              count: 100,
               id: 'company-id',
               status: 'confirmed',
             },
@@ -367,6 +372,7 @@ describe('Accounts', () => {
                     name: 'Client',
                   },
                 ],
+                nextToken: null,
                 status: 'confirmed',
               },
             },
@@ -376,6 +382,7 @@ describe('Accounts', () => {
           request: {
             query: GET_BALANCE,
             variables: {
+              count: 100,
               id: 'company-id',
               status: 'confirmed',
             },
@@ -403,6 +410,7 @@ describe('Accounts', () => {
                     name: 'Client',
                   },
                 ],
+                nextToken: null,
                 status: 'confirmed',
               },
             },

@@ -565,6 +565,7 @@ export type VatSettingsInput = {
 };
 
 export type GetBalanceQueryVariables = Exact<{
+  count?: InputMaybe<Scalars['Int']['input']>;
   id: Scalars['ID']['input'];
   status: TransactionStatus;
 }>;
@@ -578,6 +579,7 @@ export type GetBalanceQuery = {
   };
   getTransactions: {
     id: string;
+    nextToken?: string | null;
     status: TransactionStatus;
     items: Array<{
       amount: number;
@@ -1239,6 +1241,14 @@ export const GetBalanceDocument = {
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'count' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
           type: {
             kind: 'NonNullType',
@@ -1302,6 +1312,14 @@ export const GetBalanceDocument = {
             arguments: [
               {
                 kind: 'Argument',
+                name: { kind: 'Name', value: 'count' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'count' },
+                },
+              },
+              {
+                kind: 'Argument',
                 name: { kind: 'Name', value: 'id' },
                 value: {
                   kind: 'Variable',
@@ -1345,6 +1363,7 @@ export const GetBalanceDocument = {
                     ],
                   },
                 },
+                { kind: 'Field', name: { kind: 'Name', value: 'nextToken' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
               ],
             },
