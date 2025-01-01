@@ -27,7 +27,12 @@
     "expressionValues": {
       ":owner": $util.dynamodb.toDynamoDBJson($owner)
     }
-  }
+  },
+  #if($status == "confirmed")
+    "scanIndexForward": false
+  #else
+    "scanIndexForward": true
+  #end
   #if($ctx.args.count)
     ,"limit": $ctx.args.count
   #end
