@@ -2,15 +2,8 @@ import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { AWSAppSyncClient } from 'aws-appsync';
 import gql from 'graphql-tag';
 
-export interface ITransaction {
-  balance: number;
-  currency: string;
-  date: string;
-}
-
 interface IUpdateBalance {
   balance?: number;
-  transactions?: ITransaction;
   vat?: {
     owed: number;
     paid: number;
@@ -27,18 +20,6 @@ export const mutation = gql`
       balance
       id
       owner
-      transactions {
-        balance
-        currency
-        date
-        items {
-          amount
-          attachment
-          description
-          id
-          name
-        }
-      }
       vat {
         owed
         paid

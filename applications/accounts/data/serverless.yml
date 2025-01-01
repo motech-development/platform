@@ -93,19 +93,6 @@ functions:
       SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !Ref ApplicationTable
 
-  TransformTransactions:
-    handler: src/transform-transactions.handler
-    role: DataLambdaFunctionRole
-    timeout: 900
-    events:
-      - stream:
-          type: dynamodb
-          arn: !GetAtt ApplicationTable.StreamArn
-          startingPosition: LATEST
-    environment:
-      SENTRY_DSN: ${env:SENTRY_DSN}
-      TABLE: !Ref ApplicationTable
-
   Typeahead:
     handler: src/typeahead.handler
     role: DataLambdaFunctionRole

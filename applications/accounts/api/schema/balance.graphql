@@ -3,7 +3,6 @@ type Balance @aws_iam @aws_oidc {
   currency: String!
   id: ID!
   owner: String!
-  transactions: [BalanceTransaction!]!
   vat: BalanceVat!
 }
 
@@ -12,18 +11,10 @@ type BalanceVat @aws_iam @aws_oidc {
   paid: Float!
 }
 
-type BalanceTransaction @aws_iam @aws_oidc {
-  balance: Float!
-  currency: String!
-  date: AWSDateTime!
-  items: [Transaction!]!
-}
-
 input BalanceTransactionInput {
   balance: Float
   currency: String
   date: AWSDateTime
-  items: [TransactionInput]
 }
 
 input BalanceVatInput {
