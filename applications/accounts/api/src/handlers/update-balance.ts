@@ -3,7 +3,7 @@ import { AttributeValue } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
 import { DynamoDBStreamHandler } from 'aws-lambda';
-import updateBalance, { ITransaction } from '../shared/update-balance';
+import updateBalance from '../shared/update-balance';
 import { isStreamModifyRecord } from '../shared/utils';
 
 export interface IBalance {
@@ -11,7 +11,6 @@ export interface IBalance {
   balance: number;
   id: string;
   owner: string;
-  transactions: ITransaction;
   vat: {
     owed: number;
     paid: number;
@@ -35,7 +34,7 @@ export const handler: DynamoDBStreamHandler = async (event) => {
     .map(({ dynamodb }) => {
       const { NewImage } = dynamodb;
 
-      const { __typename, balance, id, owner, transactions, vat } = unmarshall(
+      const { __typename, balance, id, owner, vat } = unmarshall(
         NewImage as Record<string, AttributeValue>,
       ) as IBalance;
 
@@ -45,7 +44,6 @@ export const handler: DynamoDBStreamHandler = async (event) => {
           balance,
           id,
           owner,
-          transactions,
           vat,
         },
       });
@@ -55,15 +53,13 @@ export const handler: DynamoDBStreamHandler = async (event) => {
         balance,
         id,
         owner,
-        transactions,
         vat,
       };
     })
     .filter(({ __typename }) => __typename === 'Balance')
-    .map(({ balance, id, owner, transactions, vat }) =>
+    .map(({ balance, id, owner, vat }) =>
       updateBalance(id, owner, {
         balance,
-        transactions,
         vat,
       }),
     );

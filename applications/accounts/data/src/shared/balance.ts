@@ -1,17 +1,8 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import {
-  QueryCommand,
-  UpdateCommand,
-  UpdateCommandOutput,
-} from '@aws-sdk/lib-dynamodb';
-import logger from '@motech-development/node-logger';
+import { UpdateCommand, UpdateCommandOutput } from '@aws-sdk/lib-dynamodb';
 import { Decimal } from 'decimal.js';
 import aggregatedDay from './aggregated-day';
 import { ITransaction, TransactionStatus } from './transaction';
-import transformTransactions, {
-  IBalance,
-  ITransactionItem,
-} from './transform-transactions';
 
 interface IVatUtility {
   name: 'amount' | 'vat';
@@ -65,63 +56,6 @@ const commonUpdate = (tableName: string, record: ITransaction) => {
     },
     TableName: tableName,
   };
-};
-
-export const getBalance = async (
-  documentClient: DynamoDBClient,
-  tableName: string,
-  balance: IBalance,
-) => {
-  const { id, owner } = balance;
-
-  logger.info({
-    balance,
-  });
-
-  const queryCommand = new QueryCommand({
-    ExpressionAttributeNames: {
-      '#data': 'data',
-      '#date': 'date',
-      '#name': 'name',
-      '#owner': 'owner',
-      '#typename': '__typename',
-    },
-    ExpressionAttributeValues: {
-      ':data': `${owner}:${id}:confirmed`,
-      ':owner': owner,
-      ':typename': 'Transaction',
-    },
-    FilterExpression: '#owner = :owner',
-    IndexName: '__typename-data-index',
-    KeyConditionExpression:
-      '#typename = :typename AND begins_with(#data, :data)',
-    ProjectionExpression: 'amount, attachment, #date, description, id, #name',
-    ScanIndexForward: false,
-    TableName: tableName,
-  });
-
-  const transactions = await documentClient.send(queryCommand);
-
-  const transactionsResult = transactions.Items as ITransactionItem[];
-
-  const data = transformTransactions(balance, transactionsResult);
-
-  const updateCommand = new UpdateCommand({
-    ExpressionAttributeNames: {
-      '#transactions': 'transactions',
-    },
-    ExpressionAttributeValues: {
-      ':transactions': data,
-    },
-    Key: {
-      __typename: 'Balance',
-      id,
-    },
-    TableName: tableName,
-    UpdateExpression: 'SET #transactions = :transactions',
-  });
-
-  await documentClient.send(updateCommand);
 };
 
 export const insert = (

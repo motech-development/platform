@@ -48,13 +48,6 @@ input TransactionBeaconTransactionsItemInput {
   name: String
 }
 
-input TransactionBeaconTransactionsInput {
-  balance: Float
-  currency: String
-  date: AWSDateTime
-  items: [TransactionBeaconTransactionsItemInput]
-}
-
 input TransactionBeaconVatInput {
   owed: Float!
   paid: Float!
@@ -62,6 +55,5 @@ input TransactionBeaconVatInput {
 
 input TransactionBeaconInput {
   balance: Float
-  transactions: [TransactionBeaconTransactionsInput]
   vat: TransactionBeaconVatInput
 }
