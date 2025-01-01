@@ -46,12 +46,6 @@ describe('PendingTransactions', () => {
               getBalance: {
                 currency: 'GBP',
                 id: 'company-id',
-                transactions: [
-                  {
-                    id: 'transaction-id',
-                    items: [],
-                  },
-                ],
               },
               getTransactions: {
                 id: 'company-id',
@@ -230,12 +224,6 @@ describe('PendingTransactions', () => {
               getBalance: {
                 currency: 'GBP',
                 id: 'company-id',
-                transactions: [
-                  {
-                    id: 'transaction-id',
-                    items: [],
-                  },
-                ],
               },
               getTransactions: {
                 id: 'company-id',
@@ -344,12 +332,6 @@ describe('PendingTransactions', () => {
               getBalance: {
                 currency: 'GBP',
                 id: 'company-id',
-                transactions: [
-                  {
-                    id: 'transaction-id',
-                    items: [],
-                  },
-                ],
               },
               getTransactions: {
                 id: 'company-id',
@@ -405,22 +387,6 @@ describe('PendingTransactions', () => {
             __typename: 'Balance',
             currency: 'GBP',
             id: 'company-id',
-            transactions: [
-              {
-                items: [
-                  {
-                    id: 'transaction-id-0',
-                  },
-                ],
-              },
-              {
-                items: [
-                  {
-                    id: 'transaction-id-1',
-                  },
-                ],
-              },
-            ],
           } as unknown as Balance,
           getTransactions: {
             __typename: 'Transactions',
@@ -484,15 +450,6 @@ describe('PendingTransactions', () => {
           __typename: 'Balance',
           currency: 'GBP',
           id: 'company-id',
-          transactions: [
-            {
-              items: [
-                {
-                  id: 'transaction-id-1',
-                },
-              ],
-            },
-          ],
         },
         getTransactions: {
           __typename: 'Transactions',

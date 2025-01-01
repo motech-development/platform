@@ -182,11 +182,6 @@ export const GET_TRANSACTIONS = gql(/* GraphQL */ `
     getBalance(id: $id) {
       currency
       id
-      transactions {
-        items {
-          id
-        }
-      }
     }
     getTransactions(id: $id, status: $status) {
       id

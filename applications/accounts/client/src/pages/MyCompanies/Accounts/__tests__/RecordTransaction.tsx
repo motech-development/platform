@@ -2095,7 +2095,6 @@ describe('RecordTransaction', () => {
               __typename: 'Balance',
               currency: 'GBP',
               id: 'company-id',
-              transactions: [],
             } as unknown as Balance,
             getTransactions: {
               __typename: 'Transactions',
@@ -2167,7 +2166,6 @@ describe('RecordTransaction', () => {
             __typename: 'Balance',
             currency: 'GBP',
             id: 'company-id',
-            transactions: [],
           },
           getTransactions: {
             __typename: 'Transactions',
@@ -2242,7 +2240,6 @@ describe('RecordTransaction', () => {
             __typename: 'Balance',
             currency: 'GBP',
             id: 'company-id',
-            transactions: [],
           },
           getTransactions: {
             __typename: 'Transactions',

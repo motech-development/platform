@@ -1,14 +1,17 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { useAuth0 } from '@auth0/auth0-react';
 import {
+  Button,
   Card,
+  Col,
   LinkButton,
   Masonry,
   PageTitle,
+  Row,
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -19,7 +22,12 @@ import { TransactionStatus } from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
 
 export const GET_BALANCE = gql(/* GraphQL */ `
-  query GetBalance($count: Int, $id: ID!, $status: TransactionStatus!) {
+  query GetBalance(
+    $count: Int
+    $id: ID!
+    $status: TransactionStatus!
+    $nextToken: String
+  ) {
     getBalance(id: $id) {
       balance
       currency
@@ -29,7 +37,12 @@ export const GET_BALANCE = gql(/* GraphQL */ `
         paid
       }
     }
-    getTransactions(count: $count, id: $id, status: $status) {
+    getTransactions(
+      count: $count
+      id: $id
+      status: $status
+      nextToken: $nextToken
+    ) {
       id
       items {
         amount
@@ -77,15 +90,18 @@ function Accounts() {
   const renderCheck = process.env.NODE_ENV === 'development' ? 2 : 1;
   const renderCount = useRef(0);
   const { t } = useTranslation('accounts');
-
+  const [loadingMore, setLoadingMore] = useState(false);
   const { add } = useToast();
-  const { data, error, loading, subscribeToMore } = useQuery(GET_BALANCE, {
-    variables: {
-      count: 100,
-      id: companyId,
-      status: TransactionStatus.Confirmed,
+  const { data, error, fetchMore, loading, subscribeToMore } = useQuery(
+    GET_BALANCE,
+    {
+      variables: {
+        count: 100,
+        id: companyId,
+        status: TransactionStatus.Confirmed,
+      },
     },
-  });
+  );
   const [deleteMutation, { loading: deleteLoading }] = useMutation(
     DELETE_TRANSACTION,
     {
@@ -109,6 +125,19 @@ function Accounts() {
         id,
       },
     }).catch(() => {});
+  };
+  const onLoadMore = (nextToken: string) => {
+    setLoadingMore(true);
+
+    fetchMore({
+      variables: {
+        nextToken,
+      },
+    })
+      .catch(() => {})
+      .finally(() => {
+        setLoadingMore(false);
+      });
   };
 
   useEffect(() => {
@@ -251,13 +280,31 @@ function Accounts() {
             </>
           </Masonry>
 
-          <TransactionsList
-            companyId={data.getBalance.id}
-            currency={data.getBalance.currency}
-            loading={deleteLoading}
-            onDelete={onDelete}
-            transactions={data.getTransactions.items}
-          />
+          <Row>
+            <Col xs={12}>
+              <TransactionsList
+                companyId={data.getBalance.id}
+                currency={data.getBalance.currency}
+                loading={deleteLoading}
+                onDelete={onDelete}
+                transactions={data.getTransactions.items}
+              />
+            </Col>
+
+            {data.getTransactions.nextToken && (
+              <Col xs={12}>
+                <Button
+                  block
+                  loading={loadingMore}
+                  onClick={() => {
+                    onLoadMore(data.getTransactions.nextToken!);
+                  }}
+                >
+                  {t('accounts.load-more')}
+                </Button>
+              </Col>
+            )}
+          </Row>
         </>
       )}
     </Connected>
