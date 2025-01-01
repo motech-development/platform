@@ -105,7 +105,6 @@ describe('update-balance', () => {
           id: 'balance-id',
           input: {
             balance: 0,
-            transactions: [],
             vat: {
               owed: 0,
               paid: 0,
