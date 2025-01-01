@@ -1,3 +1,4 @@
+import { Reference } from '@apollo/client';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Apollo } from '@motech-development/appsync-apollo';
 import { Loader } from '@motech-development/breeze-ui';
@@ -11,8 +12,22 @@ export interface IApolloClientProps {
   children: ReactNode;
 }
 
+function filterRefs(incoming: Reference[], existing: Reference[] = []) {
+  return [...existing, ...incoming].filter(
+    ({ __ref }, index, self) =>
+      // eslint-disable-next-line no-underscore-dangle
+      index === self.findIndex((item) => item.__ref === __ref),
+  );
+}
+
 const typePolicies: StrictTypedTypePolicies = {
   Transactions: {
+    fields: {
+      items: {
+        merge: (existing: Reference[] | undefined, incoming: Reference[]) =>
+          filterRefs(incoming, existing),
+      },
+    },
     keyFields: ['id', 'status'],
   },
 };

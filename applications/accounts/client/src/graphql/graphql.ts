@@ -65,7 +65,6 @@ export type Balance = {
   currency: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   owner: Scalars['String']['output'];
-  transactions: Array<BalanceTransaction>;
   vat: BalanceVat;
 };
 
@@ -74,18 +73,10 @@ export type BalanceInput = {
   vat: BalanceVatInput;
 };
 
-export type BalanceTransaction = {
-  balance: Scalars['Float']['output'];
-  currency: Scalars['String']['output'];
-  date: Scalars['AWSDateTime']['output'];
-  items: Array<Transaction>;
-};
-
 export type BalanceTransactionInput = {
   balance?: InputMaybe<Scalars['Float']['input']>;
   currency?: InputMaybe<Scalars['String']['input']>;
   date?: InputMaybe<Scalars['AWSDateTime']['input']>;
-  items?: InputMaybe<Array<InputMaybe<TransactionInput>>>;
 };
 
 export type BalanceVat = {
@@ -484,17 +475,7 @@ export type Transaction = {
 
 export type TransactionBeaconInput = {
   balance?: InputMaybe<Scalars['Float']['input']>;
-  transactions?: InputMaybe<
-    Array<InputMaybe<TransactionBeaconTransactionsInput>>
-  >;
   vat?: InputMaybe<TransactionBeaconVatInput>;
-};
-
-export type TransactionBeaconTransactionsInput = {
-  balance?: InputMaybe<Scalars['Float']['input']>;
-  currency?: InputMaybe<Scalars['String']['input']>;
-  date?: InputMaybe<Scalars['AWSDateTime']['input']>;
-  items?: InputMaybe<Array<InputMaybe<TransactionBeaconTransactionsItemInput>>>;
 };
 
 export type TransactionBeaconTransactionsItemInput = {
@@ -568,6 +549,7 @@ export type GetBalanceQueryVariables = Exact<{
   count?: InputMaybe<Scalars['Int']['input']>;
   id: Scalars['ID']['input'];
   status: TransactionStatus;
+  nextToken?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 export type GetBalanceQuery = {
@@ -622,11 +604,7 @@ export type GetTransactionsQueryVariables = Exact<{
 }>;
 
 export type GetTransactionsQuery = {
-  getBalance: {
-    currency: string;
-    id: string;
-    transactions: Array<{ items: Array<{ id: string }> }>;
-  };
+  getBalance: { currency: string; id: string };
   getTransactions: {
     id: string;
     status: TransactionStatus;
@@ -1269,6 +1247,14 @@ export const GetBalanceDocument = {
             },
           },
         },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'nextToken' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
       ],
       selectionSet: {
         kind: 'SelectionSet',
@@ -1332,6 +1318,14 @@ export const GetBalanceDocument = {
                 value: {
                   kind: 'Variable',
                   name: { kind: 'Name', value: 'status' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'nextToken' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'nextToken' },
                 },
               },
             ],
@@ -1556,28 +1550,6 @@ export const GetTransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'currency' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'transactions' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'items' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
               ],
             },
           },
@@ -3826,7 +3798,6 @@ export type BalanceKeySpecifier = (
   | 'currency'
   | 'id'
   | 'owner'
-  | 'transactions'
   | 'vat'
   | BalanceKeySpecifier
 )[];
@@ -3835,21 +3806,7 @@ export type BalanceFieldPolicy = {
   currency?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   owner?: FieldPolicy<any> | FieldReadFunction<any>;
-  transactions?: FieldPolicy<any> | FieldReadFunction<any>;
   vat?: FieldPolicy<any> | FieldReadFunction<any>;
-};
-export type BalanceTransactionKeySpecifier = (
-  | 'balance'
-  | 'currency'
-  | 'date'
-  | 'items'
-  | BalanceTransactionKeySpecifier
-)[];
-export type BalanceTransactionFieldPolicy = {
-  balance?: FieldPolicy<any> | FieldReadFunction<any>;
-  currency?: FieldPolicy<any> | FieldReadFunction<any>;
-  date?: FieldPolicy<any> | FieldReadFunction<any>;
-  items?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type BalanceVatKeySpecifier = (
   | 'owed'
@@ -4201,13 +4158,6 @@ export type StrictTypedTypePolicies = {
       | BalanceKeySpecifier
       | (() => undefined | BalanceKeySpecifier);
     fields?: BalanceFieldPolicy;
-  };
-  BalanceTransaction?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
-    keyFields?:
-      | false
-      | BalanceTransactionKeySpecifier
-      | (() => undefined | BalanceTransactionKeySpecifier);
-    fields?: BalanceTransactionFieldPolicy;
   };
   BalanceVat?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?:
