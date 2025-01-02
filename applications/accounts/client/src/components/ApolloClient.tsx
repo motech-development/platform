@@ -20,7 +20,7 @@ function filterRefs(incoming: Reference[], existing: Reference[] = []) {
   );
 }
 
-const typePolicies: StrictTypedTypePolicies = {
+export const typePolicies: StrictTypedTypePolicies = {
   Transactions: {
     fields: {
       items: {

@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -7,6 +8,7 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
+import { typePolicies } from '../../../../components/ApolloClient';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import Accounts, {
   DELETE_TRANSACTION,
@@ -15,6 +17,7 @@ import Accounts, {
 } from '../Accounts';
 
 describe('Accounts', () => {
+  let cache: InMemoryCache;
   let component: RenderResult;
   let history: string[];
   let mocks: MockedResponse[];
@@ -25,6 +28,9 @@ describe('Accounts', () => {
 
   describe('success', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        typePolicies,
+      });
       mocks = [
         {
           request: {
@@ -38,18 +44,22 @@ describe('Accounts', () => {
           result: {
             data: {
               getBalance: {
+                __typename: 'Balance',
                 balance: 180,
                 currency: 'GBP',
                 id: 'company-id',
                 vat: {
+                  __typename: 'BalanceVat',
                   owed: 100,
                   paid: 99.9,
                 },
               },
               getTransactions: {
+                __typename: 'Transactions',
                 id: 'company-id',
                 items: [
                   {
+                    __typename: 'Transaction',
                     amount: -20,
                     attachment: '',
                     date: '2020-04-15T14:07:18+0000',
@@ -58,6 +68,7 @@ describe('Accounts', () => {
                     name: 'KFC',
                   },
                   {
+                    __typename: 'Transaction',
                     amount: 200,
                     attachment: '',
                     date: '2020-04-13T14:07:18+0000',
@@ -66,7 +77,7 @@ describe('Accounts', () => {
                     name: 'Client',
                   },
                 ],
-                nextToken: null,
+                nextToken: 'sdiflhoiheow',
                 status: 'confirmed',
               },
             },
@@ -84,18 +95,65 @@ describe('Accounts', () => {
           result: {
             data: {
               getBalance: {
+                __typename: 'Balance',
                 balance: 200,
                 currency: 'GBP',
                 id: 'company-id',
                 vat: {
+                  __typename: 'BalanceVat',
                   owed: 100,
                   paid: 0,
                 },
               },
               getTransactions: {
+                __typename: 'Transactions',
                 id: 'company-id',
                 items: [
                   {
+                    __typename: 'Transaction',
+                    amount: 200,
+                    attachment: '',
+                    date: '2020-04-13T14:07:18+0000',
+                    description: 'Invoice #1',
+                    id: 'transaction-1',
+                    name: 'Client',
+                  },
+                ],
+                nextToken: 'sdiflhoiheow',
+                status: 'confirmed',
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: GET_BALANCE,
+            variables: {
+              count: 100,
+              id: 'company-id',
+              nextToken: 'sdiflhoiheow',
+              status: 'confirmed',
+            },
+          },
+          result: {
+            data: {
+              getBalance: {
+                __typename: 'Balance',
+                balance: 200,
+                currency: 'GBP',
+                id: 'company-id',
+                vat: {
+                  __typename: 'BalanceVat',
+                  owed: 100,
+                  paid: 0,
+                },
+              },
+              getTransactions: {
+                __typename: 'Transactions',
+                id: 'company-id',
+                items: [
+                  {
+                    __typename: 'Transaction',
                     amount: 200,
                     attachment: '',
                     date: '2020-04-13T14:07:18+0000',
@@ -138,8 +196,10 @@ describe('Accounts', () => {
           result: {
             data: {
               onTransaction: {
+                __typename: 'Balance',
                 balance: 180,
                 vat: {
+                  __typename: 'BalanceVat',
                   owed: 100,
                   paid: 99.9,
                 },
@@ -152,7 +212,7 @@ describe('Accounts', () => {
       await act(async () => {
         component = render(
           <TestProvider path="/accounts/:companyId" history={history}>
-            <MockedProvider mocks={mocks}>
+            <MockedProvider addTypename cache={cache} mocks={mocks}>
               <Accounts />
             </MockedProvider>
           </TestProvider>,
@@ -280,7 +340,7 @@ describe('Accounts', () => {
       await findByRole('dialog');
 
       await act(async () => {
-        const [, , cancelButton] = await findAllByRole('button');
+        const [, , , cancelButton] = await findAllByRole('button');
 
         fireEvent.click(cancelButton);
       });
@@ -311,7 +371,7 @@ describe('Accounts', () => {
       });
 
       await act(async () => {
-        const [, , , deleteButton] = await findAllByRole('button');
+        const [, , , , deleteButton] = await findAllByRole('button');
 
         await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
@@ -326,6 +386,22 @@ describe('Accounts', () => {
           message: 'delete-transaction.success',
         }),
       );
+    });
+
+    it('should load more items', async () => {
+      const { findAllByRole, findByText } = component;
+
+      await findByText('accounts.title');
+
+      const [, , button] = await findAllByRole('button');
+
+      await act(async () => {
+        fireEvent.click(button);
+
+        await waitForApollo(0);
+      });
+
+      await waitFor(() => expect(button).not.toBeInTheDocument());
     });
   });
 
@@ -344,18 +420,22 @@ describe('Accounts', () => {
           result: {
             data: {
               getBalance: {
+                __typename: 'Balance',
                 balance: 180,
                 currency: 'GBP',
                 id: 'company-id',
                 vat: {
+                  __typename: 'BalanceVat',
                   owed: 100,
                   paid: 99.9,
                 },
               },
               getTransactions: {
+                __typename: 'Transactions',
                 id: 'company-id',
                 items: [
                   {
+                    __typename: 'Transaction',
                     amount: -20,
                     attachment: '',
                     date: '2020-04-15T14:07:18+0000',
@@ -364,6 +444,7 @@ describe('Accounts', () => {
                     name: 'KFC',
                   },
                   {
+                    __typename: 'Transaction',
                     amount: 200,
                     attachment: '',
                     date: '2020-04-13T14:07:18+0000',
@@ -390,18 +471,22 @@ describe('Accounts', () => {
           result: {
             data: {
               getBalance: {
+                __typename: 'Balance',
                 balance: 200,
                 currency: 'GBP',
                 id: 'company-id',
                 vat: {
+                  __typename: 'BalanceVat',
                   owed: 100,
                   paid: 0,
                 },
               },
               getTransactions: {
+                __typename: 'Transactions',
                 id: 'company-id',
                 items: [
                   {
+                    __typename: 'Transaction',
                     amount: 200,
                     attachment: '',
                     date: '2020-04-13T14:07:18+0000',
@@ -436,38 +521,10 @@ describe('Accounts', () => {
           result: {
             data: {
               onTransaction: {
+                __typename: 'Balance',
                 balance: 180,
-                transactions: [
-                  {
-                    balance: 180,
-                    currency: 'GBP',
-                    date: '2020-04-15T14:07:18+0000',
-                    items: [
-                      {
-                        amount: -20,
-                        attachment: '',
-                        description: 'Lunch',
-                        id: 'transaction-2',
-                        name: 'KFC',
-                      },
-                    ],
-                  },
-                  {
-                    balance: 200,
-                    currency: 'GBP',
-                    date: '2020-04-13T14:07:18+0000',
-                    items: [
-                      {
-                        amount: 200,
-                        attachment: '',
-                        description: 'Invoice #1',
-                        id: 'transaction-1',
-                        name: 'Client',
-                      },
-                    ],
-                  },
-                ],
                 vat: {
+                  __typename: 'BalanceVat',
                   owed: 100,
                   paid: 99.9,
                 },
