@@ -180,7 +180,7 @@ function Accounts() {
 
   return (
     <Connected error={error} loading={loading}>
-      {data && data.getBalance && data.getTransactions && (
+      {data?.getBalance && (
         <>
           <PageTitle
             title={t('accounts.title')}
