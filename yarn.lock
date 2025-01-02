@@ -199,8 +199,8 @@ __metadata:
     "@types/jest": "npm:29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
-    aws-cdk: "npm:2.173.2"
-    aws-cdk-lib: "npm:2.173.2"
+    aws-cdk: "npm:2.173.4"
+    aws-cdk-lib: "npm:2.173.4"
     aws-lambda-mock-context: "npm:3.2.1"
     aws-sdk-client-mock: "npm:4.1.0"
     aws-sdk-client-mock-jest: "npm:4.1.0"
@@ -15953,9 +15953,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-cdk-lib@npm:2.173.2":
-  version: 2.173.2
-  resolution: "aws-cdk-lib@npm:2.173.2"
+"aws-cdk-lib@npm:2.173.4":
+  version: 2.173.4
+  resolution: "aws-cdk-lib@npm:2.173.4"
   dependencies:
     "@aws-cdk/asset-awscli-v1": "npm:^2.2.208"
     "@aws-cdk/asset-kubectl-v20": "npm:^2.1.3"
@@ -15974,13 +15974,13 @@ __metadata:
     yaml: "npm:1.10.2"
   peerDependencies:
     constructs: ^10.0.0
-  checksum: 10c0/b788dc56cc97eb09e0ffeabbdc439cea95d24cb3f0ff8b832d3730de2c9a7dc9ee94f861100516e4822e619e7575681a35ccb1cad8339ecc0cbc0ba9eac8a39e
+  checksum: 10c0/896ea222f5eeb51db2a552b2432da1576608eec56a11eb184af42582eed4ce98ed68ab4e679faec79bcd900fa666652aeb39852c06d517c37c699248630dce13
   languageName: node
   linkType: hard
 
-"aws-cdk@npm:2.173.2":
-  version: 2.173.2
-  resolution: "aws-cdk@npm:2.173.2"
+"aws-cdk@npm:2.173.4":
+  version: 2.173.4
+  resolution: "aws-cdk@npm:2.173.4"
   dependencies:
     fsevents: "npm:2.3.2"
   dependenciesMeta:
@@ -15988,7 +15988,7 @@ __metadata:
       optional: true
   bin:
     cdk: bin/cdk
-  checksum: 10c0/f7c0b14875e59e6190bd21c653ec1b346729db91d9ad399848a8e6e9a6d0944f230bdce0c59a5334337ceab98700e02b0995cf97badb32b02b6bece548abe88d
+  checksum: 10c0/fe349aad9371f488456b02c88147fd872152f7f64360ed458e4dcb2dbf3b779d24a786ec52a1985a4b834d4f67abf0aff37538eb9f26563a515928074d9ce9bf
   languageName: node
   linkType: hard
 
