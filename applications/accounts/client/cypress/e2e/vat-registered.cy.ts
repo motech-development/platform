@@ -867,7 +867,7 @@ describe('VAT registered', () => {
         cy.fixture<Blob>('upload/invoice.pdf').then((file) => {
           const transaction = res[6];
 
-          cy.findAllByTestId(`View ${transaction.supplier}`).eq(0).safeClick();
+          cy.findAllByTestId(`View ${transaction.supplier}`).eq(1).safeClick();
 
           cy.findByRole('heading', {
             name: 'View transaction',
@@ -928,7 +928,7 @@ describe('VAT registered', () => {
       cy.fixture<TAccounts>('data/account.json').then((res) => {
         const transaction = res[0];
 
-        cy.findAllByTestId(`Delete ${transaction.supplier}`).eq(0).click();
+        cy.findAllByTestId(`Delete ${transaction.supplier}`).eq(1).click();
 
         cy.a11yWithLogs();
 
