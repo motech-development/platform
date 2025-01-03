@@ -9,9 +9,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Tooltip, Typography } from '@motech-development/breeze-ui';
 // eslint-disable-next-line import/extensions
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Document, Page, pdfjs } from 'react-pdf';
+import { Document as PdfDocument, Page as PdfPage, pdfjs } from 'react-pdf';
 import styled from 'styled-components';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -29,16 +29,16 @@ interface IDocumentViewerProps {
   onDownload: () => void;
 }
 
-interface IDocProps {
-  zoom: number;
-}
-
-const Doc = styled(Document)<IDocProps>`
+const Document = styled(PdfDocument)`
   align-items: center;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  zoom: ${({ zoom }) => `${zoom}%`};
+`;
+
+const Page = styled(PdfPage)`
+  display: flex;
+  justify-content: center;
 `;
 
 const Container = styled.div`
@@ -56,9 +56,15 @@ const Content = styled.div`
 const Toolbar = styled.div`
   border-bottom: 2.5px solid #007fa8;
   display: flex;
-  flex-direction: row;
+  flex-direction: column-reverse;
+  gap: 20px;
   justify-content: space-between;
   padding: 0 0 20px;
+
+  @media (min-width: 576px) {
+    flex-direction: row;
+    gap: 0;
+  }
 `;
 
 const ToolbarContent = styled.div`
@@ -67,7 +73,12 @@ const ToolbarContent = styled.div`
 `;
 
 const ToolbarSpacer = styled.div`
+  flex: 1;
   width: 20px;
+
+  @media (min-width: 576px) {
+    flex: auto;
+  }
 `;
 
 const Zoom = styled.div`
@@ -86,6 +97,10 @@ function DocumentViewer({ file, onClose, onDownload }: IDocumentViewerProps) {
 
   const [rotate, setRotate] = useState(0);
 
+  const [width, setWidth] = useState(0);
+
+  const ref = useRef<HTMLDivElement>(null);
+
   const rotateDocument = () => {
     setRotate(rotate === 270 ? 0 : rotate + 90);
   };
@@ -97,6 +112,12 @@ function DocumentViewer({ file, onClose, onDownload }: IDocumentViewerProps) {
   const zoomOut = () => {
     setZoom(zoom - 10);
   };
+
+  useLayoutEffect(() => {
+    if (ref.current) {
+      setWidth(ref.current.offsetWidth * 0.5);
+    }
+  }, [ref]);
 
   return (
     <Container>
@@ -176,20 +197,24 @@ function DocumentViewer({ file, onClose, onDownload }: IDocumentViewerProps) {
         </ToolbarContent>
       </Toolbar>
 
-      <Content>
-        <Doc
+      <Content ref={ref}>
+        <Document
           file={file}
           options={options}
           rotate={rotate}
-          zoom={zoom}
           onLoadSuccess={({ numPages }) => {
             setPages(numPages);
           }}
         >
           {Array.from(new Array(pages), (_, index) => (
-            <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+            <Page
+              key={`page_${index + 1}`}
+              width={width}
+              scale={(zoom / 100) * 2}
+              pageNumber={index + 1}
+            />
           ))}
-        </Doc>
+        </Document>
       </Content>
     </Container>
   );
