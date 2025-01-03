@@ -1,5 +1,4 @@
 import {
-  faClose,
   faDownload,
   faMagnifyingGlassMinus,
   faMagnifyingGlassPlus,
@@ -9,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Tooltip, Typography } from '@motech-development/breeze-ui';
 // eslint-disable-next-line import/extensions
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Document as PdfDocument, Page as PdfPage, pdfjs } from 'react-pdf';
 import styled from 'styled-components';
@@ -24,8 +23,8 @@ const options = {
 };
 
 interface IDocumentViewerProps {
+  buttons?: ReactNode;
   file: Blob;
-  onClose?: () => void;
   onDownload: () => void;
 }
 
@@ -88,7 +87,7 @@ const Zoom = styled.div`
   padding: 0 15px;
 `;
 
-function DocumentViewer({ file, onClose, onDownload }: IDocumentViewerProps) {
+function DocumentViewer({ buttons, file, onDownload }: IDocumentViewerProps) {
   const { t } = useTranslation('document-viewer');
 
   const [pages, setPages] = useState(0);
@@ -181,19 +180,13 @@ function DocumentViewer({ file, onClose, onDownload }: IDocumentViewerProps) {
             message={t('download')}
           />
 
-          <ToolbarSpacer />
+          {buttons && (
+            <>
+              <ToolbarSpacer />
 
-          <Tooltip
-            id="close"
-            parent={
-              <Button aria-label={t('close')} colour="danger" onClick={onClose}>
-                <FontAwesomeIcon icon={faClose} />
-              </Button>
-            }
-            placement="top"
-            colour="primary"
-            message={t('close')}
-          />
+              {buttons}
+            </>
+          )}
         </ToolbarContent>
       </Toolbar>
 
