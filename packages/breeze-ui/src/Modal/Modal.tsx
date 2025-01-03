@@ -56,29 +56,9 @@ const Modal: FC<IModalProps> = ({
   size = 'sm',
   title,
 }) => {
-  const output = document.createElement('div');
   const doNotDismiss = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
   };
-  const modal = (
-    <Suspense fallback={<Loader />}>
-      <ModalOuter
-        aria-modal
-        aria-label={title}
-        role="dialog"
-        tabIndex={-1}
-        onClick={onDismiss}
-      >
-        <ModalDialog size={size} role="document">
-          <ModalContent onClick={doNotDismiss}>
-            <Card padding="lg">{children}</Card>
-          </ModalContent>
-        </ModalDialog>
-      </ModalOuter>
-
-      <Overlay />
-    </Suspense>
-  );
 
   useEffect(() => {
     const keyboardEvent = (e: KeyboardEvent) => {
@@ -87,18 +67,14 @@ const Modal: FC<IModalProps> = ({
       }
     };
 
-    document.body.appendChild(output);
-
     document.addEventListener('keydown', keyboardEvent, false);
 
     return () => {
-      document.body.removeChild(output);
-
       document.body.style.removeProperty('overflow');
 
       document.removeEventListener('keydown', keyboardEvent, false);
     };
-  }, [output, onDismiss]);
+  }, [onDismiss]);
 
   useEffect(() => {
     if (isOpen) {
@@ -107,7 +83,26 @@ const Modal: FC<IModalProps> = ({
   }, [isOpen]);
 
   if (isOpen) {
-    return createPortal(modal, output);
+    return createPortal(
+      <Suspense fallback={<Loader />}>
+        <ModalOuter
+          aria-modal
+          aria-label={title}
+          role="dialog"
+          tabIndex={-1}
+          onClick={onDismiss}
+        >
+          <ModalDialog size={size} role="document">
+            <ModalContent onClick={doNotDismiss}>
+              <Card padding="lg">{children}</Card>
+            </ModalContent>
+          </ModalDialog>
+        </ModalOuter>
+
+        <Overlay />
+      </Suspense>,
+      document.body,
+    );
   }
 
   return null;

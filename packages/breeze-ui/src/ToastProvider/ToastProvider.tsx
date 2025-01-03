@@ -10,7 +10,6 @@ import {
   ReactNode,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -73,7 +72,6 @@ export interface IToastProviderProps {
 }
 
 const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
-  const output = document.createElement('div');
   const [toasts, setToasts] = useState<IToast[]>([]);
   const add = useCallback(
     ({ colour, message, onDismiss }: IAddToast) => {
@@ -91,42 +89,21 @@ const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
     },
     [toasts],
   );
-  const remove = useCallback(
-    (id: string) =>
-      setToasts(
-        toasts.filter((t) => {
-          if (t.id === id && t.onDismiss) {
-            t.onDismiss();
-          }
+  const remove = useCallback((id: string) => {
+    setToasts((value) => {
+      const item = value.findIndex((t) => t.id === id);
 
-          return t.id !== id;
-        }),
-      ),
-    [toasts],
-  );
-  const alerts = (
-    <ToastContainer>
-      {toasts.map(({ colour, id, message }) => (
-        <Alert
-          spacing="lg"
-          key={id}
-          dismissable={5000}
-          icon={<FontAwesomeIcon icon={selectIcon(colour)} />}
-          colour={colour}
-          message={message}
-          onDismiss={() => remove(id)}
-        />
-      ))}
-    </ToastContainer>
-  );
+      if (value[item]?.onDismiss) {
+        value[item].onDismiss();
+      }
 
-  useEffect(() => {
-    document.body.appendChild(output);
+      if (item !== -1) {
+        value.splice(item, 1);
+      }
 
-    return () => {
-      document.body.removeChild(output);
-    };
-  }, [output]);
+      return value;
+    });
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -140,7 +117,24 @@ const ToastProvider: FC<IToastProviderProps> = ({ children }) => {
     <ToastContext.Provider value={value}>
       {children}
 
-      {createPortal(alerts, output)}
+      {createPortal(
+        <ToastContainer>
+          {toasts.map(({ colour, id, message }) => (
+            <Alert
+              spacing="lg"
+              key={id}
+              dismissable={5000}
+              icon={<FontAwesomeIcon icon={selectIcon(colour)} />}
+              colour={colour}
+              message={message}
+              onDismiss={() => {
+                remove(id);
+              }}
+            />
+          ))}
+        </ToastContainer>,
+        document.body,
+      )}
     </ToastContext.Provider>
   );
 };
