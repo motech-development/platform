@@ -1066,7 +1066,7 @@ describe('VAT registered', () => {
           name: 'View file',
         }).click();
 
-        cy.findByLabelText('Download').safeClick();
+        cy.findByLabelText('Download').click();
 
         cy.get('div:contains("The download has started")').should('be.visible');
       });
