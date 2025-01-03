@@ -18,7 +18,7 @@
     "@sentry/profiling-node": "8.40.0",
     "archiver": "5.3.2",
     "aws4-axios": "3.2.8",
-    "axios": "1.7.7",
+    "axios": "1.7.9",
     "json-2-csv": "4.1.0",
     "luxon": "3.5.0",
     "qs": "6.13.1",
