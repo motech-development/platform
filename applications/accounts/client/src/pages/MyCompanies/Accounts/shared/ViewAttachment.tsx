@@ -1,10 +1,13 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useLazyGet } from '@motech-development/axios-hooks';
 import {
   Button,
   Col,
   Modal,
   Row,
+  Tooltip,
   useToast,
 } from '@motech-development/breeze-ui';
 import { saveAs } from 'file-saver';
@@ -158,7 +161,23 @@ function DeleteTransaction({ id, onDelete, path }: IDeleteTransactionProps) {
             {file && (
               <DocumentViewer
                 file={file}
-                onClose={onDismiss}
+                buttons={
+                  <Tooltip
+                    id="close"
+                    parent={
+                      <Button
+                        aria-label={t('transaction-form.close')}
+                        colour="danger"
+                        onClick={onDismiss}
+                      >
+                        <FontAwesomeIcon icon={faClose} />
+                      </Button>
+                    }
+                    placement="top"
+                    colour="danger"
+                    message={t('transaction-form.close')}
+                  />
+                }
                 onDownload={onDownload}
               />
             )}
