@@ -32,7 +32,7 @@ __metadata:
     "@sentry/profiling-node": "npm:8.40.0"
     "@swc/core": "npm:1.10.4"
     "@swc/jest": "npm:0.2.37"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@types/luxon": "npm:3.4.2"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
@@ -195,7 +195,7 @@ __metadata:
     "@swc/core": "npm:1.10.4"
     "@swc/helpers": "npm:0.5.15"
     "@swc/jest": "npm:0.2.37"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
@@ -240,7 +240,7 @@ __metadata:
     "@sentry/profiling-node": "npm:8.40.0"
     "@swc/core": "npm:1.10.4"
     "@swc/jest": "npm:0.2.37"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@types/luxon": "npm:3.4.2"
     "@types/uuid": "npm:9.0.8"
@@ -300,7 +300,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@swc/core": "npm:1.10.4"
     "@swc/jest": "npm:0.2.37"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@types/luxon": "npm:3.4.2"
     "@types/uuid": "npm:9.0.8"
@@ -351,7 +351,7 @@ __metadata:
     "@sentry/profiling-node": "npm:8.40.0"
     "@swc/core": "npm:1.10.4"
     "@swc/jest": "npm:0.2.37"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
@@ -400,7 +400,7 @@ __metadata:
     "@swc/core": "npm:1.10.4"
     "@swc/jest": "npm:0.2.37"
     "@types/archiver": "npm:6.0.3"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@types/luxon": "npm:3.4.2"
     "@types/qs": "npm:6.9.17"
@@ -457,7 +457,7 @@ __metadata:
     "@sentry/profiling-node": "npm:8.40.0"
     "@swc/core": "npm:1.10.4"
     "@swc/jest": "npm:0.2.37"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@types/uuid": "npm:9.0.8"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
@@ -505,7 +505,7 @@ __metadata:
     "@sentry/profiling-node": "npm:8.40.0"
     "@swc/core": "npm:1.10.4"
     "@swc/jest": "npm:0.2.37"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@types/luxon": "npm:3.4.2"
     "@types/uuid": "npm:9.0.8"
@@ -5565,7 +5565,7 @@ __metadata:
     "@sentry/profiling-node": "npm:8.40.0"
     "@swc/core": "npm:1.10.4"
     "@swc/jest": "npm:0.2.37"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
@@ -5609,7 +5609,7 @@ __metadata:
     "@sentry/profiling-node": "npm:8.40.0"
     "@swc/core": "npm:1.10.4"
     "@swc/jest": "npm:0.2.37"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
@@ -5690,7 +5690,7 @@ __metadata:
     "@octokit/rest": "npm:20.1.1"
     "@swc/core": "npm:1.10.4"
     "@swc/jest": "npm:0.2.37"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@types/luxon": "npm:3.4.2"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
@@ -8151,7 +8151,7 @@ __metadata:
     "@rollup/plugin-node-resolve": "npm:15.3.1"
     "@swc/core": "npm:1.10.4"
     "@swc/jest": "npm:0.2.37"
-    "@types/aws-lambda": "npm:8.10.146"
+    "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
@@ -13429,10 +13429,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/aws-lambda@npm:8.10.146, @types/aws-lambda@npm:^8.10.62":
-  version: 8.10.146
-  resolution: "@types/aws-lambda@npm:8.10.146"
-  checksum: 10c0/372ea946e17e3f66523dd66b231cf7d1c10b34633c4f1e03dadb6414b9a4e20423e7437e57f359327b5c2dd89ba3c5c24e8029b6ef40b8cc872d3f32123e59ff
+"@types/aws-lambda@npm:8.10.147, @types/aws-lambda@npm:^8.10.62":
+  version: 8.10.147
+  resolution: "@types/aws-lambda@npm:8.10.147"
+  checksum: 10c0/c77bcb18a935fb26f5b1164aaadf46b3d11d6c001a95c6e9f2ff72f7d9ed4e7f28075a3abf9f9585cc75510acbc29c7a6441e66727902eae1bd39ac8dc28351e
   languageName: node
   linkType: hard
 
