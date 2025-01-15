@@ -38,7 +38,7 @@ export interface ISettingsFormProps {
   backTo: string;
   initialValues: FormSchema;
   loading: boolean;
-  onSave(value: FormSchema): void;
+  onSave: (value: FormSchema) => void;
 }
 
 function SettingsForm({
