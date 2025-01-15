@@ -111,8 +111,8 @@ __metadata:
     "@types/styled-components": "npm:5.1.34"
     "@typescript-eslint/eslint-plugin": "npm:8.8.1"
     "@typescript-eslint/parser": "npm:8.8.1"
-    "@vitejs/plugin-react-swc": "npm:3.7.0"
-    axe-core: "npm:4.10.0"
+    "@vitejs/plugin-react-swc": "npm:3.7.2"
+    axe-core: "npm:4.10.2"
     axios: "npm:1.7.9"
     cypress: "npm:12.0.2"
     cypress-axe: "npm:1.5.0"
@@ -194,6 +194,7 @@ __metadata:
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
+    "@stylistic/eslint-plugin": "npm:2.9.0"
     "@swc/core": "npm:1.10.4"
     "@swc/helpers": "npm:0.5.15"
     "@swc/jest": "npm:0.2.37"
@@ -210,7 +211,6 @@ __metadata:
     esbuild: "npm:0.24.2"
     eslint: "npm:8.57.1"
     eslint-config-airbnb-base: "npm:15.0.0"
-    eslint-config-airbnb-typescript: "npm:18.0.0"
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
@@ -13145,7 +13145,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core@npm:1.10.4, @swc/core@npm:^1.5.7, @swc/core@npm:^1.7.26":
+"@swc/core@npm:1.10.4, @swc/core@npm:^1.7.26":
   version: 1.10.4
   resolution: "@swc/core@npm:1.10.4"
   dependencies:
@@ -14374,17 +14374,6 @@ __metadata:
   version: 1.2.0
   resolution: "@ungap/structured-clone@npm:1.2.0"
   checksum: 10c0/8209c937cb39119f44eb63cf90c0b73e7c754209a6411c707be08e50e29ee81356dca1a848a405c8bdeebfe2f5e4f831ad310ae1689eeef65e7445c090c6657d
-  languageName: node
-  linkType: hard
-
-"@vitejs/plugin-react-swc@npm:3.7.0":
-  version: 3.7.0
-  resolution: "@vitejs/plugin-react-swc@npm:3.7.0"
-  dependencies:
-    "@swc/core": "npm:^1.5.7"
-  peerDependencies:
-    vite: ^4 || ^5
-  checksum: 10c0/f9f562c87f0fd384d160c5d499056841f8a38050fc01f5295d3394a77c288eca1f78f6df3aa08c01f3f5cb3e4937c6490607ac87b700d87bab425b7c4dc15e91
   languageName: node
   linkType: hard
 
@@ -16098,14 +16087,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:4.10.0":
-  version: 4.10.0
-  resolution: "axe-core@npm:4.10.0"
-  checksum: 10c0/732c171d48caaace5e784895c4dacb8ca6155e9d98045138ebe3952f78457dd05b92c57d05b41ce2a570aff87dbd0471e8398d2c0f6ebe79617b746c8f658998
-  languageName: node
-  linkType: hard
-
-"axe-core@npm:^4.10.0, axe-core@npm:^4.2.0":
+"axe-core@npm:4.10.2, axe-core@npm:^4.10.0, axe-core@npm:^4.2.0":
   version: 4.10.2
   resolution: "axe-core@npm:4.10.2"
   checksum: 10c0/0e20169077de96946a547fce0df39d9aeebe0077f9d3eeff4896518b96fde857f80b98f0d4279274a7178791744dd5a54bb4f322de45b4f561ffa2586ff9a09d
@@ -20482,19 +20464,6 @@ __metadata:
     eslint: ^7.32.0 || ^8.2.0
     eslint-plugin-import: ^2.25.2
   checksum: 10c0/93639d991654414756f82ad7860aac30b0dc6797277b7904ddb53ed88a32c470598696bbc6c503e066414024d305221974d3769e6642de65043bedf29cbbd30f
-  languageName: node
-  linkType: hard
-
-"eslint-config-airbnb-typescript@npm:18.0.0":
-  version: 18.0.0
-  resolution: "eslint-config-airbnb-typescript@npm:18.0.0"
-  dependencies:
-    eslint-config-airbnb-base: "npm:^15.0.0"
-  peerDependencies:
-    "@typescript-eslint/eslint-plugin": ^7.0.0
-    "@typescript-eslint/parser": ^7.0.0
-    eslint: ^8.56.0
-  checksum: 10c0/8bfedda75f746f04972ce4cc5f32257bcc7953122360827d8afdd1e2c7c13a296eabacd50588de83ea74bab0f4bc7f383f460708ef267ac72c891daddfa44749
   languageName: node
   linkType: hard
 
