@@ -36,7 +36,7 @@ export const REQUEST_DOWNLOAD = gql(/* GraphQL */ `
 export interface IDeleteTransactionProps {
   id: string;
   path: string;
-  onDelete(name: string): void;
+  onDelete: (name: string) => void;
 }
 
 function DeleteTransaction({ id, onDelete, path }: IDeleteTransactionProps) {

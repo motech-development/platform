@@ -12,8 +12,8 @@ export type FormSchema = typeof formSchema;
 export interface IConfirmDeleteProps {
   loading: boolean;
   name: string;
-  onCancel(): void;
-  onDelete(input: FormSchema): void;
+  onCancel: () => void;
+  onDelete: (input: FormSchema) => void;
 }
 
 function ConfirmDelete({

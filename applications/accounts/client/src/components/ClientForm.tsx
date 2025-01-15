@@ -35,7 +35,7 @@ export interface IClientFormProps {
   companyId?: string;
   initialValues?: FormSchema;
   loading: boolean;
-  onSave(value: FormSchema): void;
+  onSave: (value: FormSchema) => void;
 }
 
 function ClientForm({

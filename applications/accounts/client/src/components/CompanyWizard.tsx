@@ -76,7 +76,7 @@ export type FormSchema = typeof formSchema;
 export interface ICompanyWizardProps {
   backTo: string;
   loading: boolean;
-  onSave(value: FormSchema): void;
+  onSave: (value: FormSchema) => void;
 }
 
 function CompanyWizard({ backTo, loading, onSave }: ICompanyWizardProps) {

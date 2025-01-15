@@ -79,7 +79,7 @@ export interface ITransactionForm {
   suppliers?: string[] | null;
   uploader: ReactNode;
   vat: number;
-  onSave(value: FormSchema): void;
+  onSave: (value: FormSchema) => void;
 }
 
 interface IFormValues extends FormSchema {
