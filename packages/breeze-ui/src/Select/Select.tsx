@@ -101,14 +101,14 @@ interface IInternalSelect extends FieldProps {
   disabled: boolean;
   helpText: string;
   label: string;
-  onChange(
+  onChange: (
     e: ChangeEvent<HTMLSelectElement>,
     form: FormikProps<FormikValues>,
-  ): void;
+  ) => void;
   options: ISelectOption[];
   placeholder: string;
   readOnly: boolean;
-  setFocus(focus: boolean): void;
+  setFocus: (focus: boolean) => void;
   spacing: SelectSpacing;
 }
 
@@ -217,10 +217,10 @@ export interface ISelectProps {
   placeholder: string;
   readOnly?: boolean;
   spacing?: SelectSpacing;
-  onChange?(
+  onChange?: (
     e: ChangeEvent<HTMLSelectElement>,
     form: FormikProps<FormikValues>,
-  ): void;
+  ) => void;
 }
 
 const Select: FC<ISelectProps> = ({
