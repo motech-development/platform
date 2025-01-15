@@ -306,8 +306,10 @@ describe('insert-scheduled-transactions', () => {
     clear();
   });
 
-  it('should return update with the correct params', () => {
-    insertScheduledTransactions(documentClient, tableName, records);
+  it('should return update with the correct params', async () => {
+    await Promise.all(
+      insertScheduledTransactions(documentClient, tableName, records),
+    );
 
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
@@ -370,8 +372,10 @@ describe('insert-scheduled-transactions', () => {
     });
   });
 
-  it('should call update the correct number of times', () => {
-    insertScheduledTransactions(documentClient, tableName, records);
+  it('should call update the correct number of times', async () => {
+    await Promise.all(
+      insertScheduledTransactions(documentClient, tableName, records),
+    );
 
     expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
   });
