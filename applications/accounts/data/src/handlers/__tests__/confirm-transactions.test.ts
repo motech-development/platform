@@ -80,8 +80,8 @@ describe('confirm-transactions', () => {
     clear();
   });
 
-  it('should return update with the correct params', () => {
-    confirmTransactions(documentClient, tableName, records);
+  it('should return update with the correct params', async () => {
+    await Promise.all(confirmTransactions(documentClient, tableName, records));
 
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
@@ -106,8 +106,8 @@ describe('confirm-transactions', () => {
     });
   });
 
-  it('should create notification', () => {
-    confirmTransactions(documentClient, tableName, records);
+  it('should create notification', async () => {
+    await Promise.all(confirmTransactions(documentClient, tableName, records));
 
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
@@ -134,8 +134,8 @@ describe('confirm-transactions', () => {
     });
   });
 
-  it('should call update the correct number of times', () => {
-    confirmTransactions(documentClient, tableName, records);
+  it('should call update the correct number of times', async () => {
+    await Promise.all(confirmTransactions(documentClient, tableName, records));
 
     expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
   });
