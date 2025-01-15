@@ -21,10 +21,10 @@ interface IInternalRadio extends FieldProps {
   options: IRadioOption[];
   readOnly: boolean;
   spacing: RadioSpacing;
-  onChange(
+  onChange: (
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
-  ): void;
+  ) => void;
 }
 
 const InternalRadio: FC<IInternalRadio> = ({
@@ -96,10 +96,10 @@ export interface IRadioProps {
   options: IRadioOption[];
   readOnly?: boolean;
   spacing?: RadioSpacing;
-  onChange?(
+  onChange?: (
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
-  ): void;
+  ) => void;
 }
 
 const Radio: FC<IRadioProps> = ({

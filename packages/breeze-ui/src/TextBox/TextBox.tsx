@@ -83,12 +83,12 @@ interface IInternalTextBox extends FieldProps {
   format: string;
   helpText: string;
   label: string;
-  onChange(
+  onChange: (
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
-  ): Promise<void> | void;
+  ) => Promise<void> | void;
   prefix: string;
-  setFocus(focus: boolean): void;
+  setFocus: (focus: boolean) => void;
   spacing: InputSpacing;
   suffix: string;
 }
@@ -243,10 +243,10 @@ export interface ITextBoxProps {
   spacing?: InputSpacing;
   suffix?: string;
   type?: 'email' | 'number' | 'password' | 'text';
-  onChange?(
+  onChange?: (
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
-  ): Promise<void> | void;
+  ) => Promise<void> | void;
 }
 
 const TextBox: FC<ITextBoxProps> = ({
