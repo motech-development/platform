@@ -29,7 +29,9 @@ const NotificationButton = styled(Button)`
 `;
 
 const NotificationContainer = styled.div`
-  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px 0 rgba(0, 0, 0, 0.14),
+  box-shadow:
+    0 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0 5px 8px 0 rgba(0, 0, 0, 0.14),
     0 1px 14px 0 rgba(0, 0, 0, 0.12);
 `;
 
@@ -66,7 +68,7 @@ export interface INotificationsProps<T> {
   noResults: ReactNode;
   placement?: Placement;
   row: (item: T) => ReactNode;
-  onClose(): void | Promise<void>;
+  onClose: () => void | Promise<void>;
 }
 
 function Notifications<T>({
@@ -84,8 +86,9 @@ function Notifications<T>({
   const [referenceElement, setReferenceElement] =
     useState<HTMLDivElement | null>(null);
   const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null);
-  const [popperElement, setPopperElement] =
-    useState<HTMLDivElement | null>(null);
+  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
+    null,
+  );
   const { attributes, styles } = usePopper(referenceElement, popperElement, {
     modifiers: [
       {

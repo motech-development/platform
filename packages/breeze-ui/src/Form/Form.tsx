@@ -50,8 +50,8 @@ export interface IFormProps {
   cancel?: ReactNode;
   initialValues: FormikValues;
   loading?: boolean;
-  onPreSubmit?(values: FormikValues): FormikValues | Promise<FormikValues>;
-  onSubmit(values: FormikValues): void | Promise<void>;
+  onPreSubmit?: (values: FormikValues) => FormikValues | Promise<FormikValues>;
+  onSubmit: (values: FormikValues) => void | Promise<void>;
   submitLabel: string;
   validationSchema: ObjectSchema<FormikValues>;
 }
