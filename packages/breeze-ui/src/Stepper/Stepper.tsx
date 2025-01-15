@@ -12,7 +12,7 @@ export interface IStepperProps {
   onStart?: ReactNode;
   previousLabel: string;
   start?: number;
-  enableNext?(step: number): boolean;
+  enableNext?: (step: number) => boolean;
 }
 
 const Stepper: FC<IStepperProps> = ({

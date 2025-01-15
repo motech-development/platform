@@ -69,7 +69,7 @@ interface IDates {
   date: DateTime;
   id: string;
   view: DateTime;
-  onSelect(day: number, month: number, year: number): void;
+  onSelect: (day: number, month: number, year: number) => void;
 }
 
 const Dates: FC<IDates> = ({ date, id, onSelect, view }) => {
@@ -199,7 +199,7 @@ const selectMoment = (start: DateTime, date?: DateTime) => date || start;
 export interface ICalendarProps {
   selectedDate?: string;
   id: string;
-  onDateChange(date: string): void;
+  onDateChange: (date: string) => void;
 }
 
 const Calendar: FC<ICalendarProps> = ({
