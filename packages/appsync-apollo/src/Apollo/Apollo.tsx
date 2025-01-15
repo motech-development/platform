@@ -18,7 +18,7 @@ export interface IApolloProps {
   isAuthenticated: boolean;
   isLoading: boolean;
   unauthorised: ReactNode;
-  getTokenSilently(): Promise<string | undefined>;
+  getTokenSilently: () => Promise<string | undefined>;
 }
 
 function Apollo({
