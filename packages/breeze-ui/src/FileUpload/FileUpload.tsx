@@ -46,7 +46,10 @@ interface IInternalFileUpload extends FieldProps {
   label: string;
   loading: boolean;
   spacing: FileUploadSpacing;
-  onSelect(file: File, form: FormikProps<FormikValues>): void | Promise<void>;
+  onSelect: (
+    file: File,
+    form: FormikProps<FormikValues>,
+  ) => void | Promise<void>;
 }
 
 const InternalFileUpload: FC<IInternalFileUpload> = ({
@@ -140,7 +143,10 @@ export interface IFileUploadProps {
   loading?: boolean;
   name: string;
   spacing?: FileUploadSpacing;
-  onSelect(file: File, form: FormikProps<FormikValues>): void | Promise<void>;
+  onSelect: (
+    file: File,
+    form: FormikProps<FormikValues>,
+  ) => void | Promise<void>;
 }
 
 const FileUpload: FC<IFileUploadProps> = ({

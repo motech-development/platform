@@ -41,7 +41,7 @@ export const handler = apiGatewayHandler(async (event) => {
       },
       200,
     );
-  } catch (e) {
+  } catch {
     return response(
       {
         message: 'Invalid request',

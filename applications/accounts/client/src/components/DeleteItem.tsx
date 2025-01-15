@@ -12,8 +12,8 @@ export interface IDeleteItemProps {
   name: string;
   title: string;
   warning: string;
-  onDelete(): void;
-  onDismiss(): void;
+  onDelete: () => void;
+  onDismiss: () => void;
 }
 
 function DeleteItem({
