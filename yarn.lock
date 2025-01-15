@@ -194,6 +194,7 @@ __metadata:
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
+    "@stylistic/eslint-plugin": "npm:2.9.0"
     "@swc/core": "npm:1.11.5"
     "@swc/helpers": "npm:0.5.15"
     "@swc/jest": "npm:0.2.37"
@@ -210,7 +211,6 @@ __metadata:
     esbuild: "npm:0.25.0"
     eslint: "npm:8.57.1"
     eslint-config-airbnb-base: "npm:15.0.0"
-    eslint-config-airbnb-typescript: "npm:18.0.0"
     eslint-config-prettier: "npm:9.1.0"
     eslint-import-resolver-node: "npm:0.3.9"
     eslint-plugin-import: "npm:2.31.0"
@@ -20184,19 +20184,6 @@ __metadata:
     eslint: ^7.32.0 || ^8.2.0
     eslint-plugin-import: ^2.25.2
   checksum: 10c0/93639d991654414756f82ad7860aac30b0dc6797277b7904ddb53ed88a32c470598696bbc6c503e066414024d305221974d3769e6642de65043bedf29cbbd30f
-  languageName: node
-  linkType: hard
-
-"eslint-config-airbnb-typescript@npm:18.0.0":
-  version: 18.0.0
-  resolution: "eslint-config-airbnb-typescript@npm:18.0.0"
-  dependencies:
-    eslint-config-airbnb-base: "npm:^15.0.0"
-  peerDependencies:
-    "@typescript-eslint/eslint-plugin": ^7.0.0
-    "@typescript-eslint/parser": ^7.0.0
-    eslint: ^8.56.0
-  checksum: 10c0/8bfedda75f746f04972ce4cc5f32257bcc7953122360827d8afdd1e2c7c13a296eabacd50588de83ea74bab0f4bc7f383f460708ef267ac72c891daddfa44749
   languageName: node
   linkType: hard
 
