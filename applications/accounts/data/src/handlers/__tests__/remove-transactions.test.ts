@@ -234,8 +234,8 @@ describe('remove-transactions', () => {
     clear();
   });
 
-  it('should return update with the correct params', () => {
-    removeTransactions(documentClient, tableName, records);
+  it('should return update with the correct params', async () => {
+    await Promise.all(removeTransactions(documentClient, tableName, records));
 
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
@@ -307,8 +307,8 @@ describe('remove-transactions', () => {
     });
   });
 
-  it('should call update the correct number of times', () => {
-    removeTransactions(documentClient, tableName, records);
+  it('should call update the correct number of times', async () => {
+    await Promise.all(removeTransactions(documentClient, tableName, records));
 
     expect(ddb).toReceiveCommandTimes(UpdateCommand, 3);
   });

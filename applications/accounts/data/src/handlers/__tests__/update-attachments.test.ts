@@ -110,7 +110,9 @@ describe('update-attachments', () => {
   });
 
   it('should query with the correct params', async () => {
-    await updateAttachments(documentClient, tableName, bucket, records);
+    await Promise.all(
+      await updateAttachments(documentClient, tableName, bucket, records),
+    );
 
     expect(ddb).toReceiveCommandWith(QueryCommand, {
       ExpressionAttributeNames: {
@@ -135,7 +137,9 @@ describe('update-attachments', () => {
   });
 
   it('should return update with the correct params', async () => {
-    await updateAttachments(documentClient, tableName, bucket, records);
+    await Promise.all(
+      await updateAttachments(documentClient, tableName, bucket, records),
+    );
 
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
@@ -151,7 +155,9 @@ describe('update-attachments', () => {
   });
 
   it('should create notification', async () => {
-    await updateAttachments(documentClient, tableName, bucket, records);
+    await Promise.all(
+      await updateAttachments(documentClient, tableName, bucket, records),
+    );
 
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
@@ -179,7 +185,9 @@ describe('update-attachments', () => {
   });
 
   it('should call update the correct number of times', async () => {
-    await updateAttachments(documentClient, tableName, bucket, records);
+    await Promise.all(
+      await updateAttachments(documentClient, tableName, bucket, records),
+    );
 
     expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
   });
