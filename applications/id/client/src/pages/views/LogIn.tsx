@@ -6,8 +6,8 @@ import AuthForm, { FormSchema } from '../../components/AuthForm';
 
 export interface ILogInProps {
   client: WebAuth;
-  handleError(e: Auth0Error | null): void;
-  setView(view: string): void;
+  handleError: (e: Auth0Error | null) => void;
+  setView: (view: string) => void;
 }
 
 function LogIn({ client, handleError, setView }: ILogInProps) {

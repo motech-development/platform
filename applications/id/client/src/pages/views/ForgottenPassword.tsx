@@ -8,7 +8,7 @@ import ForgottenPasswordForm, {
 
 export interface IForgottenPasswordProps {
   client: WebAuth;
-  setView(view: string): void;
+  setView: (view: string) => void;
 }
 
 function ForgottenPassword({ client, setView }: IForgottenPasswordProps) {
