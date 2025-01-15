@@ -45,7 +45,7 @@ export const handler = apiGatewayHandler(async (event) => {
     await client.send(command);
 
     return response('', 201);
-  } catch (e) {
+  } catch {
     return response(
       {
         message: 'Invalid request',
