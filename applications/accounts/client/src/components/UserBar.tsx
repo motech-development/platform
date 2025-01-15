@@ -43,7 +43,7 @@ export interface IUserBarProps {
   name: string;
   notifications: ReactNode;
   picture?: string;
-  logOut(): void;
+  logOut: () => void;
 }
 
 function UserBar({ logOut, name, notifications, picture }: IUserBarProps) {
