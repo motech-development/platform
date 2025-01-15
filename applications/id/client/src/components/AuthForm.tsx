@@ -22,7 +22,7 @@ export interface IAuthFormProps {
   loading: boolean;
   name?: boolean;
   submit: string;
-  onChange(): void;
+  onChange: () => void;
   onSubmit: (value: FormSchema) => void;
 }
 
