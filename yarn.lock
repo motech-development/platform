@@ -160,7 +160,7 @@ __metadata:
     styled-components: "npm:5.3.11"
     typescript: "npm:5.7.2"
     unfetch: "npm:5.0.0"
-    vite: "npm:4.5.5"
+    vite: "npm:4.5.6"
     vite-plugin-checker: "npm:0.8.0"
     vite-plugin-eslint: "npm:1.8.1"
     vite-plugin-pwa: "npm:0.20.1"
@@ -7682,7 +7682,7 @@ __metadata:
     serverless-finch: "npm:4.0.4"
     styled-components: "npm:5.3.11"
     typescript: "npm:5.7.2"
-    vite: "npm:4.5.5"
+    vite: "npm:4.5.6"
     vite-plugin-checker: "npm:0.8.0"
     vite-plugin-eslint: "npm:1.8.1"
     web-vitals: "npm:3.5.2"
@@ -8384,7 +8384,7 @@ __metadata:
     styled-components: "npm:5.3.11"
     styled-reset: "npm:4.5.2"
     typescript: "npm:5.7.2"
-    vite: "npm:4.5.5"
+    vite: "npm:4.5.6"
     yup: "npm:1.4.0"
   languageName: unknown
   linkType: soft
@@ -35353,9 +35353,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:4.5.5":
-  version: 4.5.5
-  resolution: "vite@npm:4.5.5"
+"vite@npm:4.5.6":
+  version: 4.5.6
+  resolution: "vite@npm:4.5.6"
   dependencies:
     esbuild: "npm:^0.18.10"
     fsevents: "npm:~2.3.2"
@@ -35389,7 +35389,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/cde5a1d80ae61b2c0b2e2a04938e10aa8821a4c2c625f1dcd6eff179f0c9ce98a5b3c8fd62b54a81299568f7747fff4d35ffecc0e7f7ff34d76124d94a24ce9b
+  checksum: 10c0/26b3e247219a38c2815302b2e003a64aa2f37d1884693906914b909bb7f0275f234a6b465bc8c587b1d58ed00c8dc52887722e05f0c298bb2e5657e61cda5829
   languageName: node
   linkType: hard
 
