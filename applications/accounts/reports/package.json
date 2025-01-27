@@ -61,7 +61,7 @@
     "serverless-step-functions": "3.21.2",
     "serverless-webpack": "5.15.0",
     "swc-loader": "0.2.6",
-    "typescript": "5.7.2",
+    "typescript": "5.7.3",
     "webpack": "5.96.1",
     "webpack-node-externals": "3.0.0"
   },
