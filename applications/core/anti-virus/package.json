@@ -18,7 +18,7 @@
     "@motech-development/node-logger": "workspace:*",
     "@motech-development/s3-file-operations": "workspace:*",
     "@sentry/aws-serverless": "8.49.0",
-    "@sentry/profiling-node": "8.40.0"
+    "@sentry/profiling-node": "8.49.0"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
