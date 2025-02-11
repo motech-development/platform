@@ -125,6 +125,6 @@ jobs:
         run: ./scripts/sonar-scanner-path-fix.sh
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@4.2.1
+        uses: SonarSource/sonarqube-scan-action@v4.2.1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
