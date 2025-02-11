@@ -170,7 +170,9 @@ describe('Form', () => {
       const input = await findByLabelText('Test');
 
       fireEvent.change(input, {
-        target: { focus: () => {}, value: '000000' },
+        target: {
+          value: '000000',
+        },
       });
 
       const button = await findByRole('button');
@@ -216,7 +218,9 @@ describe('Form', () => {
       const input = await findByLabelText('Test');
 
       fireEvent.change(input, {
-        target: { focus: () => {}, value: '20' },
+        target: {
+          value: '20',
+        },
       });
 
       const button = await findByRole('button');
@@ -262,7 +266,9 @@ describe('Form', () => {
       const input = await findByLabelText('Test');
 
       fireEvent.change(input, {
-        target: { focus: () => {}, value: '20' },
+        target: {
+          value: '20',
+        },
       });
 
       const button = await findByRole('button');
@@ -345,7 +351,9 @@ describe('Form', () => {
       const input = await findByLabelText('Test');
 
       fireEvent.change(input, {
-        target: { focus: () => {}, value: '20' },
+        target: {
+          value: '20',
+        },
       });
 
       const button = await findByRole('button');
