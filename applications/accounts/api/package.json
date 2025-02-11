@@ -16,7 +16,7 @@
     "@aws-sdk/util-dynamodb": "3.370.0",
     "@motech-development/node-logger": "workspace:*",
     "@sentry/aws-serverless": "8.49.0",
-    "@sentry/profiling-node": "8.40.0",
+    "@sentry/profiling-node": "8.49.0",
     "aws-appsync": "4.1.10",
     "decimal.js": "10.4.3",
     "graphql": "15.9.0",
