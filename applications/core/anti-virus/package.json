@@ -17,7 +17,7 @@
     "@aws-sdk/client-sqs": "3.370.0",
     "@motech-development/node-logger": "workspace:*",
     "@motech-development/s3-file-operations": "workspace:*",
-    "@sentry/aws-serverless": "8.40.0",
+    "@sentry/aws-serverless": "8.49.0",
     "@sentry/profiling-node": "8.40.0"
   },
   "devDependencies": {
