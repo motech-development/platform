@@ -1,4 +1,4 @@
-import{s as r,j as a,L as c}from"./BaseStyles-5cc577b5.js";import{b as f,B as h}from"./BaseButton-6e871efe.js";import{L as v}from"./Loader-96caa853.js";const l={lg:{height:"36px",margin:"-18px 0 0 -18px",width:"36px"},md:{height:"28px",margin:"-14px 0 0 -14px",width:"28px"},sm:{height:"20px",margin:"-10px 0 0 -10px",width:"20px"}},y=r(v)`
+import{s as r,j as a,L as c}from"./BaseStyles-5cc577b5.js";import{b as f,B as h}from"./BaseButton-906db398.js";import{L as v}from"./Loader-96caa853.js";const l={lg:{height:"36px",margin:"-18px 0 0 -18px",width:"36px"},md:{height:"28px",margin:"-14px 0 0 -14px",width:"28px"},sm:{height:"20px",margin:"-10px 0 0 -10px",width:"20px"}},y=r(v)`
   ${({$size:e})=>`
     height: ${l[e].height};
     margin: ${l[e].margin};
