@@ -8346,7 +8346,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.7.3"
   languageName: unknown
@@ -8396,7 +8396,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.7.3"
     unfetch: "npm:5.0.0"
@@ -8446,7 +8446,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.7.3"
   languageName: unknown
@@ -8487,7 +8487,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.7.3"
   languageName: unknown
@@ -8553,7 +8553,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     storybook: "npm:8.4.7"
     styled-components: "npm:5.3.11"
@@ -8665,7 +8665,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.7.3"
   languageName: unknown
@@ -8699,7 +8699,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.7.3"
     winston: "npm:3.17.0"
@@ -8755,7 +8755,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.7.3"
   languageName: unknown
@@ -8795,7 +8795,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.7.3"
   languageName: unknown
@@ -8849,7 +8849,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     serverless: "npm:3.39.0"
     tomlify-j0.4: "npm:3.0.0"
@@ -8885,7 +8885,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.7.3"
     webpack: "npm:5.96.1"
@@ -8921,7 +8921,7 @@ __metadata:
     rimraf: "npm:6.0.1"
     rollup: "npm:4.30.0"
     rollup-plugin-dts: "npm:6.1.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.23"
+    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
     rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:5.7.3"
     webpack: "npm:5.96.1"
@@ -31817,12 +31817,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-plugin-exclude-dependencies-from-bundle@npm:1.1.23":
-  version: 1.1.23
-  resolution: "rollup-plugin-exclude-dependencies-from-bundle@npm:1.1.23"
+"rollup-plugin-exclude-dependencies-from-bundle@npm:1.1.24":
+  version: 1.1.24
+  resolution: "rollup-plugin-exclude-dependencies-from-bundle@npm:1.1.24"
   peerDependencies:
     rollup: "*"
-  checksum: 10c0/697af1e06c572b594bdd4a058763c82001d2af4a873c1a1c472b89f30c73838de9f5eb358e773440ede5d6ca1396c7572a534c49f3c39436f66426e5a31f26fa
+  checksum: 10c0/6c53bfa60ef8e25410abd17d7e66c5711e7861331173a7156f8fe8ca92ecf4c1f2ac45f35dbb231270625661fe7014b6a6570a5e81d6d4b0b49f7d8a2826ae52
   languageName: node
   linkType: hard
 
