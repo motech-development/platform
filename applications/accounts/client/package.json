@@ -20,7 +20,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@apollo/client": "3.12.4",
+    "@apollo/client": "3.12.10",
     "@auth0/auth0-react": "2.2.4",
     "@fortawesome/fontawesome-svg-core": "6.7.2",
     "@fortawesome/free-solid-svg-icons": "6.7.2",

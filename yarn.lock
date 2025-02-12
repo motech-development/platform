@@ -73,7 +73,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/client@workspace:applications/accounts/client"
   dependencies:
-    "@apollo/client": "npm:3.12.4"
+    "@apollo/client": "npm:3.12.10"
     "@auth0/auth0-react": "npm:2.2.4"
     "@fortawesome/fontawesome-svg-core": "npm:6.7.2"
     "@fortawesome/free-solid-svg-icons": "npm:6.7.2"
@@ -572,9 +572,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:3.12.4":
-  version: 3.12.4
-  resolution: "@apollo/client@npm:3.12.4"
+"@apollo/client@npm:3.12.10":
+  version: 3.12.10
+  resolution: "@apollo/client@npm:3.12.10"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.1.1"
     "@wry/caches": "npm:^1.0.0"
@@ -585,14 +585,13 @@ __metadata:
     optimism: "npm:^0.18.0"
     prop-types: "npm:^15.7.2"
     rehackt: "npm:^0.1.0"
-    response-iterator: "npm:^0.2.6"
     symbol-observable: "npm:^4.0.0"
     ts-invariant: "npm:^0.10.3"
     tslib: "npm:^2.3.0"
     zen-observable-ts: "npm:^1.2.5"
   peerDependencies:
     graphql: ^15.0.0 || ^16.0.0
-    graphql-ws: ^5.5.5
+    graphql-ws: ^5.5.5 || ^6.0.3
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
     subscriptions-transport-ws: ^0.9.0 || ^0.11.0
@@ -605,7 +604,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 10c0/6b30b14d576230cb56b0bb9b328c81f33631640e3d97a1185a20ede7e200dfa79502d695c347920e8c930a36e50870a41f5244ae2167d0123ad56973642528e6
+  checksum: 10c0/05ad40938094b3ae16eceeee93de16e20068c31a37fa31ef8bf92d3a739baad26f1fe763ce85068ef4d9bea54313e233b712eb7719103c699e4be56bc77b72df
   languageName: node
   linkType: hard
 
@@ -8356,7 +8355,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/appsync-apollo@workspace:packages/appsync-apollo"
   dependencies:
-    "@apollo/client": "npm:3.12.4"
+    "@apollo/client": "npm:3.12.10"
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
@@ -31653,13 +31652,6 @@ __metadata:
   bin:
     resolve: bin/resolve
   checksum: 10c0/78ad6edb8309a2bfb720c2c1898f7907a37f858866ce11a5974643af1203a6a6e05b2fa9c53d8064a673a447b83d42569260c306d43628bff5bb101969708355
-  languageName: node
-  linkType: hard
-
-"response-iterator@npm:^0.2.6":
-  version: 0.2.6
-  resolution: "response-iterator@npm:0.2.6"
-  checksum: 10c0/60e6b552cd610643269d5d916d270cc8a4bea978cbe4779d6ef8083ac6b89006795508034e4c4ebe204eded75ac32bf243589ba82c1184591dde0674f6db785e
   languageName: node
   linkType: hard
 
