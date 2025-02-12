@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -101,7 +101,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -183,7 +183,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -270,7 +270,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -337,7 +337,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -407,7 +407,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -477,7 +477,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -547,7 +547,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -620,7 +620,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -692,7 +692,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -769,7 +769,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -882,7 +882,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Set Node version
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
           cache: yarn
