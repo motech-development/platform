@@ -1,4 +1,4 @@
-import{s as p,j as o,B as i}from"./BaseStyles-5cc577b5.js";import{T as d}from"./Typography-360f3e12.js";import"./index-cb576d23.js";import"./_commonjsHelpers-de833af9.js";const l=p.section`
+import{s as p,j as o,B as i}from"./BaseStyles-5cc577b5.js";import{T as d}from"./Typography-47417900.js";import"./index-cb576d23.js";import"./_commonjsHelpers-de833af9.js";const l=p.section`
   background-color: #f8f8f8;
   color: #000;
   display: block;
