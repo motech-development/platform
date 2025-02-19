@@ -199,7 +199,7 @@ __metadata:
     "@types/jest": "npm:29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
-    aws-cdk: "npm:2.174.0"
+    aws-cdk: "npm:2.178.2"
     aws-cdk-lib: "npm:2.177.0"
     aws-lambda-mock-context: "npm:3.2.1"
     aws-sdk-client-mock: "npm:4.1.0"
@@ -16282,9 +16282,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-cdk@npm:2.174.0":
-  version: 2.174.0
-  resolution: "aws-cdk@npm:2.174.0"
+"aws-cdk@npm:2.178.2":
+  version: 2.178.2
+  resolution: "aws-cdk@npm:2.178.2"
   dependencies:
     fsevents: "npm:2.3.2"
   dependenciesMeta:
@@ -16292,7 +16292,7 @@ __metadata:
       optional: true
   bin:
     cdk: bin/cdk
-  checksum: 10c0/5063e97863d9c014b2e555ace73f08cacf7e1684a3d4b7f4a4381435c836d417739846a7eec889671b19a041e9249513c381d6377a9110504652173e940c7b3e
+  checksum: 10c0/f563c2ccc3144f1ca8e3dfdeb8d3b556030e231869b26406b1c365dcafb19e1b7781903e2183731f068b1864afc33c89a2eea2641b1f9b386601d0c6adf5f8ed
   languageName: node
   linkType: hard
 
