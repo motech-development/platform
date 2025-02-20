@@ -74,7 +74,7 @@ __metadata:
   resolution: "@accounts/client@workspace:applications/accounts/client"
   dependencies:
     "@apollo/client": "npm:3.13.1"
-    "@auth0/auth0-react": "npm:2.2.4"
+    "@auth0/auth0-react": "npm:2.3.0"
     "@fortawesome/fontawesome-svg-core": "npm:6.7.2"
     "@fortawesome/free-solid-svg-icons": "npm:6.7.2"
     "@fortawesome/react-fontawesome": "npm:0.2.2"
@@ -655,15 +655,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth0/auth0-react@npm:2.2.4":
-  version: 2.2.4
-  resolution: "@auth0/auth0-react@npm:2.2.4"
+"@auth0/auth0-react@npm:2.3.0":
+  version: 2.3.0
+  resolution: "@auth0/auth0-react@npm:2.3.0"
   dependencies:
     "@auth0/auth0-spa-js": "npm:^2.1.3"
   peerDependencies:
-    react: ^16.11.0 || ^17 || ^18
-    react-dom: ^16.11.0 || ^17 || ^18
-  checksum: 10c0/d294141692676eb4dbf5672e4293a924a656a1d2fc87d53f7c1cca69626557316ab2caa4ec0624986e822a21e015ce58ded67daba47be5b8bd66453e484f150e
+    react: ^16.11.0 || ^17 || ^18 || ^19
+    react-dom: ^16.11.0 || ^17 || ^18 || ^19
+  checksum: 10c0/ef4dfde5abd64204bfbd654692b84c5e6e1f2166833874d0e6da0f2a02ff2fa1130f2e93014518bffb69fa1c3ac7901ce06bd49832f93a64c8a5bd962a4e0cdd
   languageName: node
   linkType: hard
 
@@ -8408,7 +8408,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@motech-development/auth@workspace:packages/auth"
   dependencies:
-    "@auth0/auth0-react": "npm:2.2.4"
+    "@auth0/auth0-react": "npm:2.3.0"
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
