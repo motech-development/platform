@@ -21,7 +21,7 @@ import{s as o,j as l,L as c}from"./BaseStyles-5cc577b5.js";import{c as u}from"./
     border-bottom: 2px solid ${a[e].border};
     color: ${a[e].colour};
   `}
-`,n=({colour:e="default",...a})=>l.jsx(c,{theme:b,children:l.jsx(m,{$colour:e,...a})});try{n.displayName="TableRow",n.__docgenInfo={description:"",displayName:"TableRow",props:{colour:{defaultValue:{value:"default"},description:"",name:"colour",required:!1,type:{name:"enum",value:[{value:'"default"'},{value:'"primary"'},{value:'"secondary"'}]}}}}}catch{}const i=(e,a="inherit")=>`
+`,n=({colour:e="default",...a})=>l.jsx(c,{theme:b,children:l.jsx(m,{$colour:e,...a})});try{n.displayName="TableRow",n.__docgenInfo={description:"",displayName:"TableRow",props:{colour:{defaultValue:{value:"default"},description:"",name:"colour",required:!1,type:{name:"enum",value:[{value:'"primary"'},{value:'"secondary"'},{value:'"default"'}]}}}}}catch{}const i=(e,a="inherit")=>`
   padding: 10px;
   text-align: ${a};
   vertical-align: middle;
