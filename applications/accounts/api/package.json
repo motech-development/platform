@@ -19,7 +19,7 @@
     "@sentry/profiling-node": "8.49.0",
     "aws-appsync": "4.1.10",
     "decimal.js": "10.5.0",
-    "graphql": "15.9.0",
+    "graphql": "15.10.1",
     "graphql-tag": "2.12.6",
     "luxon": "3.5.0"
   },
