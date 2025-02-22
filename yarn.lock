@@ -41,7 +41,7 @@ __metadata:
     aws-lambda-mock-context: "npm:3.2.1"
     aws-sdk-client-mock: "npm:4.1.0"
     aws-sdk-client-mock-jest: "npm:4.1.0"
-    decimal.js: "npm:10.4.3"
+    decimal.js: "npm:10.5.0"
     eslint: "npm:8.57.1"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-config-airbnb-typescript: "npm:18.0.0"
@@ -119,7 +119,7 @@ __metadata:
     cypress-log-to-output: "npm:1.1.2"
     cypress-pipe: "npm:2.0.0"
     cypress-wait-until: "npm:3.0.2"
-    decimal.js: "npm:10.4.3"
+    decimal.js: "npm:10.5.0"
     eslint: "npm:8.57.1"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:18.0.0"
@@ -249,7 +249,7 @@ __metadata:
     aws-lambda-mock-context: "npm:3.2.1"
     aws-sdk-client-mock: "npm:4.1.0"
     aws-sdk-client-mock-jest: "npm:4.1.0"
-    decimal.js: "npm:10.4.3"
+    decimal.js: "npm:10.5.0"
     eslint: "npm:8.57.1"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-config-airbnb-typescript: "npm:18.0.0"
@@ -19443,10 +19443,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decimal.js@npm:10.4.3, decimal.js@npm:^10.4.2":
-  version: 10.4.3
-  resolution: "decimal.js@npm:10.4.3"
-  checksum: 10c0/6d60206689ff0911f0ce968d40f163304a6c1bc739927758e6efc7921cfa630130388966f16bf6ef6b838cb33679fbe8e7a78a2f3c478afce841fd55ac8fb8ee
+"decimal.js@npm:10.5.0, decimal.js@npm:^10.4.2":
+  version: 10.5.0
+  resolution: "decimal.js@npm:10.5.0"
+  checksum: 10c0/785c35279df32762143914668df35948920b6c1c259b933e0519a69b7003fc0a5ed2a766b1e1dda02574450c566b21738a45f15e274b47c2ac02072c0d1f3ac3
   languageName: node
   linkType: hard
 
