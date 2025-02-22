@@ -17,7 +17,7 @@
     "@motech-development/node-logger": "workspace:*",
     "@sentry/aws-serverless": "8.49.0",
     "@sentry/profiling-node": "8.49.0",
-    "decimal.js": "10.4.3",
+    "decimal.js": "10.5.0",
     "luxon": "3.5.0",
     "uuid": "9.0.1"
   },
