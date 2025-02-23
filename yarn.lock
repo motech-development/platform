@@ -30,7 +30,7 @@ __metadata:
     "@motech-development/serverless-outputs-env": "workspace:*"
     "@sentry/aws-serverless": "npm:8.49.0"
     "@sentry/profiling-node": "npm:8.49.0"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
@@ -93,7 +93,7 @@ __metadata:
     "@parcel/watcher": "npm:2.5.1"
     "@sentry/react": "npm:7.120.0"
     "@sentry/vite-plugin": "npm:2.23.0"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@testing-library/cypress": "npm:10.0.3"
     "@testing-library/dom": "npm:10.4.0"
@@ -192,7 +192,7 @@ __metadata:
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/helpers": "npm:0.5.15"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
@@ -238,7 +238,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@sentry/aws-serverless": "npm:8.49.0"
     "@sentry/profiling-node": "npm:8.49.0"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
@@ -298,7 +298,7 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
@@ -349,7 +349,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@sentry/aws-serverless": "npm:8.49.0"
     "@sentry/profiling-node": "npm:8.49.0"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
@@ -397,7 +397,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@sentry/aws-serverless": "npm:8.49.0"
     "@sentry/profiling-node": "npm:8.49.0"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/archiver": "npm:6.0.3"
     "@types/aws-lambda": "npm:8.10.147"
@@ -455,7 +455,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@sentry/aws-serverless": "npm:8.49.0"
     "@sentry/profiling-node": "npm:8.49.0"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
@@ -503,7 +503,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@sentry/aws-serverless": "npm:8.49.0"
     "@sentry/profiling-node": "npm:8.49.0"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
@@ -5562,7 +5562,7 @@ __metadata:
     "@motech-development/webpack-permissions-plugin": "workspace:*"
     "@sentry/aws-serverless": "npm:8.49.0"
     "@sentry/profiling-node": "npm:8.49.0"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
@@ -5606,7 +5606,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@sentry/aws-serverless": "npm:8.49.0"
     "@sentry/profiling-node": "npm:8.49.0"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
@@ -5687,7 +5687,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@octokit/auth-app": "npm:6.1.3"
     "@octokit/rest": "npm:20.1.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
@@ -7807,7 +7807,7 @@ __metadata:
     "@motech-development/ga-web-vitals": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@testing-library/jest-dom": "npm:6.6.3"
     "@testing-library/react": "npm:16.2.0"
@@ -8324,7 +8324,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": "npm:28.0.2"
     "@rollup/plugin-node-resolve": "npm:15.3.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
     "@types/jest": "npm:29.5.14"
@@ -8363,7 +8363,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": "npm:28.0.2"
     "@rollup/plugin-node-resolve": "npm:15.3.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@testing-library/jest-dom": "npm:6.6.3"
     "@testing-library/react": "npm:16.2.0"
@@ -8416,7 +8416,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": "npm:28.0.2"
     "@rollup/plugin-node-resolve": "npm:15.3.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@testing-library/jest-dom": "npm:6.6.3"
     "@testing-library/react": "npm:16.2.0"
@@ -8462,7 +8462,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": "npm:28.0.2"
     "@rollup/plugin-node-resolve": "npm:15.3.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/jest": "npm:29.5.14"
     "@types/react": "npm:18.3.18"
@@ -8513,7 +8513,7 @@ __metadata:
     "@storybook/addons": "npm:7.6.17"
     "@storybook/react": "npm:8.5.6"
     "@storybook/react-vite": "npm:8.5.6"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@testing-library/jest-dom": "npm:6.6.3"
     "@testing-library/react": "npm:16.2.0"
@@ -8645,7 +8645,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": "npm:28.0.2"
     "@rollup/plugin-node-resolve": "npm:15.3.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/google.analytics": "npm:0.0.46"
     "@types/jest": "npm:29.5.14"
@@ -8680,7 +8680,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": "npm:28.0.2"
     "@rollup/plugin-node-resolve": "npm:15.3.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/jest": "npm:29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
@@ -8727,7 +8727,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": "npm:28.0.2"
     "@rollup/plugin-node-resolve": "npm:15.3.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/jest": "npm:29.5.14"
     "@types/qs": "npm:6.9.17"
@@ -8774,7 +8774,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": "npm:28.0.2"
     "@rollup/plugin-node-resolve": "npm:15.3.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/jest": "npm:29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
@@ -8827,7 +8827,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": "npm:28.0.2"
     "@rollup/plugin-node-resolve": "npm:15.3.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/assert": "npm:1.5.11"
     "@types/jest": "npm:29.5.14"
@@ -8866,7 +8866,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": "npm:28.0.2"
     "@rollup/plugin-node-resolve": "npm:15.3.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/jest": "npm:29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
@@ -8901,7 +8901,7 @@ __metadata:
     "@motech-development/semantic-release": "workspace:*"
     "@rollup/plugin-commonjs": "npm:28.0.2"
     "@rollup/plugin-node-resolve": "npm:15.3.1"
-    "@swc/core": "npm:1.10.16"
+    "@swc/core": "npm:1.10.17"
     "@swc/jest": "npm:0.2.37"
     "@types/jest": "npm:29.5.14"
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
@@ -13197,9 +13197,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.10.16":
-  version: 1.10.16
-  resolution: "@swc/core-darwin-arm64@npm:1.10.16"
+"@swc/core-darwin-arm64@npm:1.10.17":
+  version: 1.10.17
+  resolution: "@swc/core-darwin-arm64@npm:1.10.17"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
@@ -13211,9 +13211,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-x64@npm:1.10.16":
-  version: 1.10.16
-  resolution: "@swc/core-darwin-x64@npm:1.10.16"
+"@swc/core-darwin-x64@npm:1.10.17":
+  version: 1.10.17
+  resolution: "@swc/core-darwin-x64@npm:1.10.17"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
@@ -13225,9 +13225,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.10.16":
-  version: 1.10.16
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.10.16"
+"@swc/core-linux-arm-gnueabihf@npm:1.10.17":
+  version: 1.10.17
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.10.17"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
@@ -13239,9 +13239,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-gnu@npm:1.10.16":
-  version: 1.10.16
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.10.16"
+"@swc/core-linux-arm64-gnu@npm:1.10.17":
+  version: 1.10.17
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.10.17"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
@@ -13253,9 +13253,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.10.16":
-  version: 1.10.16
-  resolution: "@swc/core-linux-arm64-musl@npm:1.10.16"
+"@swc/core-linux-arm64-musl@npm:1.10.17":
+  version: 1.10.17
+  resolution: "@swc/core-linux-arm64-musl@npm:1.10.17"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
@@ -13267,9 +13267,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-gnu@npm:1.10.16":
-  version: 1.10.16
-  resolution: "@swc/core-linux-x64-gnu@npm:1.10.16"
+"@swc/core-linux-x64-gnu@npm:1.10.17":
+  version: 1.10.17
+  resolution: "@swc/core-linux-x64-gnu@npm:1.10.17"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
@@ -13281,9 +13281,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.10.16":
-  version: 1.10.16
-  resolution: "@swc/core-linux-x64-musl@npm:1.10.16"
+"@swc/core-linux-x64-musl@npm:1.10.17":
+  version: 1.10.17
+  resolution: "@swc/core-linux-x64-musl@npm:1.10.17"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
@@ -13295,9 +13295,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-win32-arm64-msvc@npm:1.10.16":
-  version: 1.10.16
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.10.16"
+"@swc/core-win32-arm64-msvc@npm:1.10.17":
+  version: 1.10.17
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.10.17"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -13309,9 +13309,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.10.16":
-  version: 1.10.16
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.10.16"
+"@swc/core-win32-ia32-msvc@npm:1.10.17":
+  version: 1.10.17
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.10.17"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
@@ -13323,9 +13323,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.10.16":
-  version: 1.10.16
-  resolution: "@swc/core-win32-x64-msvc@npm:1.10.16"
+"@swc/core-win32-x64-msvc@npm:1.10.17":
+  version: 1.10.17
+  resolution: "@swc/core-win32-x64-msvc@npm:1.10.17"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -13337,20 +13337,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core@npm:1.10.16":
-  version: 1.10.16
-  resolution: "@swc/core@npm:1.10.16"
+"@swc/core@npm:1.10.17":
+  version: 1.10.17
+  resolution: "@swc/core@npm:1.10.17"
   dependencies:
-    "@swc/core-darwin-arm64": "npm:1.10.16"
-    "@swc/core-darwin-x64": "npm:1.10.16"
-    "@swc/core-linux-arm-gnueabihf": "npm:1.10.16"
-    "@swc/core-linux-arm64-gnu": "npm:1.10.16"
-    "@swc/core-linux-arm64-musl": "npm:1.10.16"
-    "@swc/core-linux-x64-gnu": "npm:1.10.16"
-    "@swc/core-linux-x64-musl": "npm:1.10.16"
-    "@swc/core-win32-arm64-msvc": "npm:1.10.16"
-    "@swc/core-win32-ia32-msvc": "npm:1.10.16"
-    "@swc/core-win32-x64-msvc": "npm:1.10.16"
+    "@swc/core-darwin-arm64": "npm:1.10.17"
+    "@swc/core-darwin-x64": "npm:1.10.17"
+    "@swc/core-linux-arm-gnueabihf": "npm:1.10.17"
+    "@swc/core-linux-arm64-gnu": "npm:1.10.17"
+    "@swc/core-linux-arm64-musl": "npm:1.10.17"
+    "@swc/core-linux-x64-gnu": "npm:1.10.17"
+    "@swc/core-linux-x64-musl": "npm:1.10.17"
+    "@swc/core-win32-arm64-msvc": "npm:1.10.17"
+    "@swc/core-win32-ia32-msvc": "npm:1.10.17"
+    "@swc/core-win32-x64-msvc": "npm:1.10.17"
     "@swc/counter": "npm:^0.1.3"
     "@swc/types": "npm:^0.1.17"
   peerDependencies:
@@ -13379,7 +13379,7 @@ __metadata:
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: 10c0/155f4a2db6e1342084fa205883a9628d34ee2c14e511125630f5531fead732de2c4569d40545cd7b8976072cfed0e5ddf5cd72067abd24ce81e237dd90d8ee69
+  checksum: 10c0/d8e177b90960efa7edabf739d08026e70ffea572c8a2b00385b758ad7ef5e70eefb02459154c9b0288dba0a3c18d773e6b01b2a76016b35fb5cb5d027f59e681
   languageName: node
   linkType: hard
 
