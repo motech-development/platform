@@ -302,7 +302,7 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        uses: nick-fields/retry@v3.0.0
+        uses: nick-fields/retry@v3.0.1
         with:
           command: yarn workspace @core/anti-virus deploy --stage $STAGE
           max_attempts: 3
