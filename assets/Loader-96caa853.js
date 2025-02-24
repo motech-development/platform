@@ -33,4 +33,4 @@ import{s,j as r}from"./BaseStyles-5cc577b5.js";const o=s.circle`
       transform: rotate(360deg);
     }
   }
-`,a=({colour:e="default",className:t=""})=>r.jsx(i,{className:t,viewBox:"0 0 50 50",children:r.jsx(o,{$colour:e,cx:"25",cy:"25",r:"20",fill:"none",strokeWidth:"4"})}),n=a;try{a.displayName="Loader",a.__docgenInfo={description:"",displayName:"Loader",props:{className:{defaultValue:{value:""},description:"",name:"className",required:!1,type:{name:"string"}},colour:{defaultValue:{value:"default"},description:"",name:"colour",required:!1,type:{name:"enum",value:[{value:'"secondary"'},{value:'"default"'}]}}}}}catch{}export{n as L};
+`,a=({colour:e="default",className:t=""})=>r.jsx(i,{className:t,viewBox:"0 0 50 50",children:r.jsx(o,{$colour:e,cx:"25",cy:"25",r:"20",fill:"none",strokeWidth:"4"})}),n=a;try{a.displayName="Loader",a.__docgenInfo={description:"",displayName:"Loader",props:{className:{defaultValue:{value:""},description:"",name:"className",required:!1,type:{name:"string"}},colour:{defaultValue:{value:"default"},description:"",name:"colour",required:!1,type:{name:"enum",value:[{value:'"default"'},{value:'"secondary"'}]}}}}}catch{}export{n as L};
