@@ -48,7 +48,7 @@
     "react-i18next": "13.5.0",
     "react-idle-timer": "5.7.2",
     "react-pdf": "9.2.1",
-    "react-router-dom": "6.28.1",
+    "react-router-dom": "6.30.0",
     "styled-components": "5.3.11",
     "web-vitals": "3.5.2",
     "workbox-background-sync": "7.3.0",
