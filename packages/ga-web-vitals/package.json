@@ -27,7 +27,7 @@
     "@motech-development/semantic-release": "workspace:*",
     "@rollup/plugin-commonjs": "28.0.2",
     "@rollup/plugin-node-resolve": "15.3.1",
-    "@swc/core": "1.10.18",
+    "@swc/core": "1.11.5",
     "@swc/jest": "0.2.37",
     "@types/google.analytics": "0.0.46",
     "@types/jest": "29.5.14",
