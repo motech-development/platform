@@ -74,7 +74,7 @@
     "@motech-development/semantic-release": "workspace:*",
     "@parcel/watcher": "2.5.1",
     "@sentry/vite-plugin": "2.23.0",
-    "@swc/core": "1.10.18",
+    "@swc/core": "1.11.5",
     "@swc/jest": "0.2.37",
     "@testing-library/cypress": "10.0.3",
     "@testing-library/dom": "10.4.0",
