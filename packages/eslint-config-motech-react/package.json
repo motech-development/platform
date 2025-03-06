@@ -42,7 +42,7 @@
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
     "prettier": "3.2.5",
-    "typescript": "5.7.3"
+    "typescript": "5.8.2"
   },
   "peerDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
