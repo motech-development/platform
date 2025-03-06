@@ -76,7 +76,7 @@
     "serverless-finch": "4.0.4",
     "typescript": "5.8.2",
     "vite": "4.5.9",
-    "vite-plugin-checker": "0.8.0",
+    "vite-plugin-checker": "0.9.0",
     "vite-plugin-eslint": "1.8.1"
   },
   "browserslist": {
