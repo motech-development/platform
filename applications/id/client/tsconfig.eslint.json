@@ -3,5 +3,5 @@
     "noEmit": true
   },
   "extends": "./tsconfig.json",
-  "include": ["src", "vite.config.ts", "__mocks__"]
+  "include": ["src", "vite.config.mts", "__mocks__"]
 }
