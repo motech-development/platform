@@ -8,7 +8,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { number, object, string } from 'yup';
+import { mixed, number, object, string } from 'yup';
 import { TransactionStatus } from '../graphql/graphql';
 
 const formSchema = {
@@ -49,7 +49,9 @@ function ExportForm({
     .shape({
       companyId: string().required(),
       currency: string().required(),
-      status: string().oneOf(['confirmed', 'pending']).required(),
+      status: mixed<TransactionStatus>()
+        .oneOf(Object.values(TransactionStatus))
+        .required(),
       year: number().required(),
       yearEnd: object()
         .shape({
@@ -85,11 +87,14 @@ function ExportForm({
       zone: 'utc',
     },
   );
-  const year = now
-    .minus({
-      year: fullYearEnd > now ? 2 : 1,
-    })
-    .toFormat('yyyy');
+  const year = parseInt(
+    now
+      .minus({
+        year: fullYearEnd > now ? 2 : 1,
+      })
+      .toFormat('yyyy'),
+    10,
+  );
   const initialValues = {
     ...formSchema,
     companyId,

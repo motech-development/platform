@@ -31,7 +31,7 @@ describe('CreateReport', () => {
                 companyId: 'company-id',
                 currency: 'create-report.currency',
                 status: 'confirmed',
-                year: '2020',
+                year: 2020,
                 yearEnd: {
                   day: 5,
                   month: 3,
@@ -218,7 +218,7 @@ describe('CreateReport', () => {
                 companyId: 'company-id',
                 currency: 'create-report.currency',
                 status: 'confirmed',
-                year: '2019',
+                year: 2019,
                 yearEnd: {
                   day: 5,
                   month: 3,

@@ -56,6 +56,7 @@ function ClientForm({
       address,
       companyId: string().required(),
       contact,
+      id: string().ensure(),
       name: string().required(t('client-form.client-details.name.required')),
     })
     .required();
