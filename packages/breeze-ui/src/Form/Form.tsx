@@ -1,5 +1,5 @@
 import { Form as FormikForm, Formik, FormikValues } from 'formik';
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { ObjectSchema } from 'yup';
 import Button from '../Button/Button';
 import Col from '../Col/Col';
@@ -8,9 +8,7 @@ import Row from '../Row/Row';
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && !Array.isArray(value) && value !== null;
 
-function encodeNullValues<T extends Record<string, unknown>>(
-  values: T,
-): Record<string, T> {
+function encodeNullValues<T extends Record<string, unknown>>(values: T): T {
   const initialValues = {
     ...values,
   };
@@ -36,37 +34,37 @@ function encodeNullValues<T extends Record<string, unknown>>(
       ...aggregate,
       [key]: value,
     };
-  }, {});
+  }, {} as T);
 }
 
-function formNormaliser<T extends Record<string, unknown>>(values: T) {
+function formNormaliser<T extends Record<string, object>>(values: T) {
   return encodeNullValues({
     ...values,
   });
 }
 
-export interface IFormProps {
+export interface IFormProps<T extends FormikValues = FormikValues> {
   children: ReactNode;
   cancel?: ReactNode;
-  initialValues: FormikValues;
+  initialValues: T;
   loading?: boolean;
-  onPreSubmit?: (values: FormikValues) => FormikValues | Promise<FormikValues>;
-  onSubmit: (values: FormikValues) => void | Promise<void>;
+  onPreSubmit?: (values: T) => T | Promise<T>;
+  onSubmit: (values: T) => void | Promise<void>;
   submitLabel: string;
-  validationSchema: ObjectSchema<FormikValues>;
+  validationSchema: ObjectSchema<T>;
 }
 
-const Form: FC<IFormProps> = ({
+function Form<T extends FormikValues = FormikValues>({
   children,
   cancel = null,
   initialValues,
   loading = false,
-  onPreSubmit = null,
+  onPreSubmit,
   onSubmit,
   submitLabel,
   validationSchema,
-}) => {
-  const doSubmit = async (values: FormikValues) => {
+}: IFormProps<T>) {
+  const doSubmit = async (values: T) => {
     const payload = onPreSubmit
       ? await Promise.resolve(onPreSubmit(values))
       : values;
@@ -113,6 +111,6 @@ const Form: FC<IFormProps> = ({
       )}
     </Formik>
   );
-};
+}
 
 export default Form;
