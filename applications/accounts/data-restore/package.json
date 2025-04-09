@@ -15,7 +15,7 @@
     "@aws-sdk/client-dynamodb": "3.370.0",
     "@aws-sdk/util-dynamodb": "3.370.0",
     "@motech-development/node-logger": "workspace:*",
-    "aws-cdk-lib": "2.179.0",
+    "aws-cdk-lib": "2.187.0",
     "constructs": "10.4.2"
   },
   "devDependencies": {
