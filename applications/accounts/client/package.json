@@ -126,7 +126,7 @@
     "vite": "4.5.13",
     "vite-plugin-checker": "0.9.0",
     "vite-plugin-eslint": "1.8.1",
-    "vite-plugin-pwa": "0.20.1",
+    "vite-plugin-pwa": "0.21.2",
     "vite-plugin-static-copy": "2.2.0"
   },
   "browserslist": {
