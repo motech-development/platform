@@ -200,7 +200,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:6.2.1"
     "@typescript-eslint/parser": "npm:6.2.1"
     aws-cdk: "npm:2.1001.0"
-    aws-cdk-lib: "npm:2.187.0"
+    aws-cdk-lib: "npm:2.189.1"
     aws-lambda-mock-context: "npm:3.2.1"
     aws-sdk-client-mock: "npm:4.1.0"
     aws-sdk-client-mock-jest: "npm:4.1.0"
@@ -15715,9 +15715,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-cdk-lib@npm:2.187.0":
-  version: 2.187.0
-  resolution: "aws-cdk-lib@npm:2.187.0"
+"aws-cdk-lib@npm:2.189.1":
+  version: 2.189.1
+  resolution: "aws-cdk-lib@npm:2.189.1"
   dependencies:
     "@aws-cdk/asset-awscli-v1": "npm:^2.2.229"
     "@aws-cdk/asset-node-proxy-agent-v6": "npm:^2.1.0"
@@ -15735,7 +15735,7 @@ __metadata:
     yaml: "npm:1.10.2"
   peerDependencies:
     constructs: ^10.0.0
-  checksum: 10c0/9b2d97e3e21d296ccf73d099512d380bbc9fd464acd5c02e521b869af82a2c74eef7dd70695012759911bf02eb0e77267b4283b2b7b10643b740c59dea727398
+  checksum: 10c0/6603cc1756f10e8046627c975a15a35b95ed33bd20adf97d4838b52a5e3594e604cfe89be622fbbb7ab34559ca0584c146aab452fdb6d7222dc4f1f0469665cc
   languageName: node
   linkType: hard
 
