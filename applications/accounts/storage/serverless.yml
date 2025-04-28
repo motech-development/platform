@@ -18,7 +18,6 @@ package:
 plugins:
   - serverless-deployment-bucket
   - serverless-webpack
-  - serverless-offline
   - serverless-prune-plugin
 
 custom:
@@ -38,10 +37,6 @@ custom:
     packager: yarn
     packagerOptions:
       noFrozenLockfile: true
-
-  serverless-offline:
-    httpPort: 4100
-    useChildProcesses: true
 
 functions:
   ProcessDelete:
