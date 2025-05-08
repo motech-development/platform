@@ -6,8 +6,8 @@ import AuthForm, { FormSchema } from '../../components/AuthForm';
 
 export interface ISignUpProps {
   client: WebAuth;
-  handleError(e: Auth0Error | null): void;
-  setView(view: string): void;
+  handleError: (e: Auth0Error | null) => void;
+  setView: (view: string) => void;
 }
 
 function SignUp({ client, handleError, setView }: ISignUpProps) {

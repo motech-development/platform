@@ -2,7 +2,7 @@ import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 
 const BaseStyles = createGlobalStyle`
-  ${reset}
+  ${reset as string}
 
   body,
   html {

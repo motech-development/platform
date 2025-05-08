@@ -306,8 +306,8 @@ describe('insert-typeahead', () => {
     clear();
   });
 
-  it('should return update with the correct params', () => {
-    insertTypeahead(documentClient, tableName, records);
+  it('should return update with the correct params', async () => {
+    await Promise.all(insertTypeahead(documentClient, tableName, records));
 
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
@@ -414,8 +414,8 @@ describe('insert-typeahead', () => {
     });
   });
 
-  it('should call update the correct number of times', () => {
-    insertTypeahead(documentClient, tableName, records);
+  it('should call update the correct number of times', async () => {
+    await Promise.all(insertTypeahead(documentClient, tableName, records));
 
     expect(ddb).toReceiveCommandTimes(UpdateCommand, 4);
   });

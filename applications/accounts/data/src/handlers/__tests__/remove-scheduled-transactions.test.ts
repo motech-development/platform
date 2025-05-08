@@ -306,8 +306,10 @@ describe('remove-scheduled-transactions', () => {
     clear();
   });
 
-  it('should return update with the correct params', () => {
-    removeScheduledTransactions(documentClient, tableName, records);
+  it('should return update with the correct params', async () => {
+    await Promise.all(
+      removeScheduledTransactions(documentClient, tableName, records),
+    );
 
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ConditionExpression: 'attribute_exists(id)',
@@ -356,8 +358,10 @@ describe('remove-scheduled-transactions', () => {
     });
   });
 
-  it('should call update the correct number of times', () => {
-    removeScheduledTransactions(documentClient, tableName, records);
+  it('should call update the correct number of times', async () => {
+    await Promise.all(
+      removeScheduledTransactions(documentClient, tableName, records),
+    );
 
     expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
   });

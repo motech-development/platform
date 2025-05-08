@@ -16,10 +16,10 @@ interface IInternalCheckBox extends FieldProps {
   legend: string;
   readOnly: boolean;
   spacing: CheckBoxSpacing;
-  onChange(
+  onChange: (
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
-  ): void;
+  ) => void;
 }
 
 const InternalCheckBox: FC<IInternalCheckBox> = ({
@@ -82,10 +82,10 @@ export interface ICheckBoxProps {
   name: string;
   readOnly?: boolean;
   spacing?: CheckBoxSpacing;
-  onChange?(
+  onChange?: (
     e: ChangeEvent<HTMLInputElement>,
     form: FormikProps<FormikValues>,
-  ): void;
+  ) => void;
 }
 
 const CheckBox: FC<ICheckBoxProps> = ({

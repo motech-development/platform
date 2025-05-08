@@ -5,7 +5,7 @@ import { ReactNode, useEffect } from 'react';
 export interface IWithAuthProps {
   children: ReactNode;
   fallback: ReactNode;
-  onError(message: string): void;
+  onError: (message: string) => void;
 }
 
 function WithAuth({ children, fallback, onError }: IWithAuthProps) {

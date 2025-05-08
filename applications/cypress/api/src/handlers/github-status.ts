@@ -5,7 +5,7 @@ import {
   response,
 } from '@motech-development/api-gateway-handler';
 import logger from '@motech-development/node-logger';
-import { number, object, string } from 'yup';
+import { mixed, number, object, string } from 'yup';
 import github from '../shared/github';
 
 enum Event {
@@ -30,7 +30,9 @@ const schema = object({
     remoteOrigin: string().url().required(),
     sha: string().required(),
   }).required(),
-  event: string().required(),
+  event: mixed<Event>()
+    .oneOf(Object.values(Event).map((e) => e))
+    .required(),
   failures: number().required(),
   flaky: number().required(),
   overall: number().required(),

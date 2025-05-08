@@ -35,7 +35,7 @@ export interface IClientFormProps {
   companyId?: string;
   initialValues?: FormSchema;
   loading: boolean;
-  onSave(value: FormSchema): void;
+  onSave: (value: FormSchema) => void;
 }
 
 function ClientForm({
@@ -56,6 +56,7 @@ function ClientForm({
       address,
       companyId: string().required(),
       contact,
+      id: string().ensure(),
       name: string().required(t('client-form.client-details.name.required')),
     })
     .required();

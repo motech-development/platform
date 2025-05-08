@@ -16,8 +16,8 @@ export interface IForgottenPasswordFormProps {
   helpText?: ReactNode;
   loading: boolean;
   submit: string;
-  onChange(): void;
-  onSubmit(value: FormSchema): void;
+  onChange: () => void;
+  onSubmit: (value: FormSchema) => void;
 }
 
 function ForgottenPasswordForm({

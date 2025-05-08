@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 export interface IFileDownload {
   loading: boolean;
-  onDownload(): Promise<void>;
+  onDownload: () => Promise<void>;
 }
 
 function FileDownload({ loading, onDownload }: IFileDownload) {

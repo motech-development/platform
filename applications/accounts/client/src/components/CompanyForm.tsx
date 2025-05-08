@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
-import { object } from 'yup';
+import { object, string } from 'yup';
 import { GetCompanyQuery } from '../graphql/graphql';
 import {
   useAddress,
@@ -28,7 +28,7 @@ export interface ICompanyFormProps {
   backTo: string;
   initialValues: FormSchema;
   loading: boolean;
-  onSave(value: FormSchema): void;
+  onSave: (value: FormSchema) => void;
 }
 
 function CompanyForm({
@@ -48,6 +48,7 @@ function CompanyForm({
       address,
       bank,
       contact,
+      id: string().required(),
     })
     .required();
 

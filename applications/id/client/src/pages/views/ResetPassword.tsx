@@ -10,7 +10,7 @@ interface IError {
 }
 
 export interface IResetPasswordProps {
-  setView(view: string): void;
+  setView: (view: string) => void;
 }
 
 function ResetPassword({ setView }: IResetPasswordProps) {
