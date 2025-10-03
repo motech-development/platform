@@ -17,7 +17,7 @@ import { Decimal } from 'decimal.js';
 import { FormikProps, FormikValues, getIn } from 'formik';
 import { ChangeEvent, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { boolean, date, number, object, string } from 'yup';
+import { boolean, number, object, string } from 'yup';
 import { TransactionStatus } from '../graphql/graphql';
 
 const formSchema = {
@@ -82,8 +82,20 @@ export interface ITransactionForm {
   onSave: (value: FormSchema) => void;
 }
 
-interface IFormValues extends FormSchema {
+interface IFormValues {
+  amount: number;
+  attachment?: string;
+  category: string;
+  companyId: string;
+  date: string;
+  description: string;
+  id?: string;
+  name: string;
+  refund: boolean;
+  scheduled: boolean;
+  status: string;
   transaction: string;
+  vat: number;
 }
 
 function TransactionForm({
@@ -132,7 +144,7 @@ function TransactionForm({
     vat: initialValues.vat
       ? Math.abs(initialValues.vat as number)
       : initialValues.vat,
-  };
+  } as IFormValues;
   const [transactionType, setTransactionType] = useState(
     formValues.transaction,
   );
@@ -144,7 +156,7 @@ function TransactionForm({
   const [pending, setPending] = useState(initialValues.status === 'pending');
   const { t } = useTranslation('accounts');
   const currency = t('transaction-form.currency');
-  const validationSchema = object<FormSchema>()
+  const validationSchema = object<IFormValues>()
     .shape({
       amount: number().required(
         t('transaction-form.transaction-amount.amount.required'),
@@ -154,7 +166,7 @@ function TransactionForm({
         t('transaction-form.transaction-amount.category.required'),
       ),
       companyId: string().required(),
-      date: date().required(
+      date: string().required(
         t('transaction-form.transaction-details.date.required'),
       ),
       description: string().required(
@@ -291,7 +303,7 @@ function TransactionForm({
 
       setFieldValue(name, value === 'true').catch(() => {});
     };
-  const onPreSubmit = ({ transaction, ...value }: IFormValues) => {
+  const onPreSubmit = ({ transaction, ...value }: IFormValues): FormSchema => {
     const isPurchase = transaction === 'Purchase';
 
     const category = isPurchase
@@ -315,8 +327,10 @@ function TransactionForm({
     return {
       ...value,
       amount,
-      attachment,
+      attachment: attachment || '',
       category,
+      id: value.id || '',
+      status: value.status as TransactionStatus,
       vat: value.refund ? -Math.abs(value.vat) : value.vat,
     };
   };
@@ -332,12 +346,16 @@ function TransactionForm({
 
   return (
     <Form
-      initialValues={formValues}
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+      initialValues={formValues as any}
       loading={loading}
-      validationSchema={validationSchema}
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+      validationSchema={validationSchema as any}
       submitLabel={t('transaction-form.save')}
-      onPreSubmit={onPreSubmit}
-      onSubmit={onSave}
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+      onPreSubmit={onPreSubmit as any}
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+      onSubmit={onSave as any}
       cancel={
         <LinkButton block to={backTo} colour="secondary" size="lg">
           {t('transaction-form.cancel')}
