@@ -1,4 +1,4 @@
-import{s as t,j as e,B as m}from"./BaseStyles-5cc577b5.js";import{d as n}from"./index-d8a6010f.js";import{T as g}from"./Typography-159954e2.js";import"./index-cb576d23.js";import"./_commonjsHelpers-de833af9.js";const o=t(g)`
+import{s as t,j as e,B as m}from"./BaseStyles-5cc577b5.js";import{d as n}from"./index-d8a6010f.js";import{T as g}from"./Typography-fd0859c4.js";import"./index-cb576d23.js";import"./_commonjsHelpers-de833af9.js";const o=t(g)`
   line-height: 1.4;
   margin: 0 0 0.2rem;
 `,u=t.span`
