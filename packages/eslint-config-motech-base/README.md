@@ -24,16 +24,11 @@ npm i -D @motech-development/eslint-config-motech-base
 
 2. Extend your ESLint config.
 
-```json
-{
-  "extends": "@motech-development/eslint-config-motech-base"
-}
-```
-
 ```js
-module.exports = {
-  extends: '@motech-development/eslint-config-motech-base',
-};
+import base from '@motech-development/eslint-config-motech-base';
+import { defineConfig } from 'eslint/config';
+
+export default defineConfig(base);
 ```
 
-3. Configure TypeScript by ensuring there is both a `tsconfig.json` and `tsconfig.eslint.json` file in your project. The latter config is for any additional files that are outside your TypeScript project that are picked up by ESLint.
+3. Configure TypeScript by ensuring there is a `tsconfig.json` file in your project.

@@ -16,24 +16,25 @@
     "access": "public"
   },
   "files": [
-    "index.js"
+    "index.mjs"
   ],
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
-    "lint": "eslint \"index.js\""
+    "lint": "eslint \"index.mjs\""
   },
   "dependencies": {
+    "@eslint/eslintrc": "3.3.1",
+    "@eslint/js": "9.37.0",
     "@kesills/eslint-config-airbnb-typescript": "20.0.0",
     "@stylistic/eslint-plugin": "2.9.0",
-    "@typescript-eslint/eslint-plugin": "8.8.1",
-    "@typescript-eslint/parser": "8.8.1",
-    "eslint": "8.57.1",
+    "eslint": "9.37.0",
     "eslint-config-airbnb-base": "15.0.0",
-    "eslint-config-prettier": "10.0.1",
+    "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-node": "0.3.9",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.11.0",
-    "eslint-plugin-simple-import-sort": "12.1.1"
+    "eslint-plugin-simple-import-sort": "12.1.1",
+    "typescript-eslint": "8.45.0"
   },
   "devDependencies": {
     "@motech-development/prettier-motech-config": "workspace:*",
@@ -42,6 +43,8 @@
     "typescript": "5.8.2"
   },
   "peerDependencies": {
+    "@eslint/eslintrc": "3.3.1",
+    "@eslint/js": "9.37.0",
     "@kesills/eslint-config-airbnb-typescript": "20.0.0",
     "@stylistic/eslint-plugin": "2.9.0",
     "@typescript-eslint/eslint-plugin": "8.8.1",
@@ -49,13 +52,12 @@
     "eslint": "8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-prettier": "10.0.1",
-    "eslint-import-resolver-node": "0.3.9",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.11.0",
     "eslint-plugin-simple-import-sort": "12.1.1"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "*.{js,ts}": "eslint --fix"
+    "*.{js,mjs,ts}": "eslint --fix"
   }
 }
