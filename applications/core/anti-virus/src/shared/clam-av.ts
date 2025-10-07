@@ -24,7 +24,6 @@ export const scanFile = async (
 
     return true;
   } catch (e) {
-    // eslint-disable-next-line no-console
     logger.error(e);
 
     return false;

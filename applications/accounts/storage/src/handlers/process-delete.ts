@@ -25,7 +25,7 @@ export const handler: SQSHandler = wrapHandler(async (event) => {
       return deleteFile(DOWNLOAD_BUCKET, key.stringValue);
     }
 
-    return null;
+    return Promise.resolve();
   });
 
   await Promise.all(deletions);
