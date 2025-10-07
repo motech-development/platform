@@ -5,7 +5,8 @@ export default defineConfig([
   config,
   {
     rules: {
-      'no-console': 'off',
+      'import/prefer-default-export': 'off',
+      'no-underscore-dangle': 'off',
     },
   },
 ]);
