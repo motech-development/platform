@@ -15,6 +15,7 @@ docker exec -t -w /home/docker s3-antivirus-builder dnf -y install \
   clamav \
   clamav-lib \
   clamav-update \
+  findutils \
   json-c \
   pcre2 \
   libxml2 \
