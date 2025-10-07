@@ -25,10 +25,10 @@ npm i -D @motech-development/eslint-config-motech-base
 2. Extend your ESLint config.
 
 ```js
-import base from '@motech-development/eslint-config-motech-base';
+import config from '@motech-development/eslint-config-motech-base';
 import { defineConfig } from 'eslint/config';
 
-export default defineConfig(base);
+export default defineConfig(config);
 ```
 
 3. Configure TypeScript by ensuring there is a `tsconfig.json` file in your project.

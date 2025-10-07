@@ -23,14 +23,16 @@
   ],
   "main": "index.js",
   "scripts": {
-    "lint": "eslint \"index.js\" \"src\"",
+    "lint": "eslint \"eslint.config.mjs\" \"index.js\" \"src\"",
     "test": "jest --watch",
     "test-ci": "jest --coverage --runInBand"
   },
   "devDependencies": {
-    "eslint": "8.57.1",
+    "@eslint/eslintrc": "3.3.1",
+    "@eslint/js": "9.37.0",
+    "eslint": "9.37.0",
     "eslint-config-airbnb-base": "15.0.0",
-    "eslint-config-prettier": "10.0.1",
+    "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-node": "0.3.9",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.11.0",
