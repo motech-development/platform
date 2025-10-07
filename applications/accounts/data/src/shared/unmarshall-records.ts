@@ -47,7 +47,6 @@ export const unmarshallAllRecords = <T extends IRecord>(
     })
     .filter(
       ({ NewImage, OldImage }) =>
-        // eslint-disable-next-line no-underscore-dangle
         NewImage.__typename === typename && OldImage.__typename === typename,
     );
 
@@ -70,11 +69,7 @@ export const unmarshallNewRecords = <T extends IRecord>(
         ) as T,
       };
     })
-    .filter(
-      ({ NewImage }) =>
-        // eslint-disable-next-line no-underscore-dangle
-        NewImage.__typename === typename,
-    );
+    .filter(({ NewImage }) => NewImage.__typename === typename);
 
 export const unmarshallOldRecords = <T extends IRecord>(
   records: DynamoDBRecord[],
@@ -95,8 +90,4 @@ export const unmarshallOldRecords = <T extends IRecord>(
         ) as T,
       };
     })
-    .filter(
-      ({ OldImage }) =>
-        // eslint-disable-next-line no-underscore-dangle
-        OldImage.__typename === typename,
-    );
+    .filter(({ OldImage }) => OldImage.__typename === typename);

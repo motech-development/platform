@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { writeFile } from 'node:fs';
 import Serverless, { Options } from 'serverless';
 import tomlify from 'tomlify-j0.4';

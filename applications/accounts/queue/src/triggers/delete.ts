@@ -38,7 +38,7 @@ export const handler: Handler<SQSEvent> = wrapHandler(async (event) => {
         return stepFunctions.send(command);
       }
 
-      return null;
+      return Promise.resolve();
     }),
   );
 });

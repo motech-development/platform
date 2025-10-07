@@ -7,7 +7,7 @@ module.exports = {
         async afterAllInstalled() {
           try {
             await execute('yarn prepare');
-          } catch (e) {
+          } catch {
             /* empty */
           }
         },
