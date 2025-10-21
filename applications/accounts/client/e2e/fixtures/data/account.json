@@ -1,0 +1,90 @@
+[
+  {
+    "type": "Sales",
+    "supplier": "Motech Development",
+    "description": "Confirmed invoice",
+    "amount": "2000",
+    "vat": "310"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "Airport hotel",
+    "description": "Business trip",
+    "category": "5",
+    "amount": "97.6",
+    "vat": "16.27"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "Low Cost Air",
+    "description": "Return flight to London",
+    "category": "6",
+    "amount": "112",
+    "vat": "0"
+  },
+  {
+    "type": "Sales",
+    "supplier": "Motech Development",
+    "description": "Pending invoice",
+    "scheduled": "true",
+    "amount": "2000",
+    "vat": "310"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "Airport hotel",
+    "description": "Business trip",
+    "scheduled": "false",
+    "category": "5",
+    "amount": "97.6",
+    "vat": "16.27"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "Low Cost Air",
+    "description": "Return flight to London",
+    "scheduled": "false",
+    "category": "6",
+    "amount": "112",
+    "vat": "0"
+  },
+  {
+    "type": "Sales",
+    "supplier": "Motech Development",
+    "description": "Confirmed invoice",
+    "amount": "2500",
+    "vat": "387.50"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "HMRC",
+    "description": "VAT quarterly payment",
+    "category": "4",
+    "amount": "100",
+    "vat": "0"
+  },
+  {
+    "type": "Sales",
+    "supplier": "Motech Development",
+    "description": "Confirmed invoice",
+    "amount": "500",
+    "vat": "77.5"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "Airport hotel",
+    "description": "Business trip",
+    "scheduled": "false",
+    "category": "5",
+    "amount": "20",
+    "vat": "3.33"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "HMRC",
+    "description": "VAT quarterly payment",
+    "category": "4",
+    "amount": "77.5",
+    "vat": "0"
+  }
+]
