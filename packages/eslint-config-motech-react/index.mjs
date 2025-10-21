@@ -2,7 +2,6 @@ import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import eslintConfigMotechBase from '@motech-development/eslint-config-motech-base';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
-import pluginCypress from 'eslint-plugin-cypress';
 import pluginReact from 'eslint-plugin-react';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tseslint from 'typescript-eslint';
@@ -54,8 +53,13 @@ export default [
     },
   },
   {
-    extends: [pluginCypress.configs.recommended],
-    files: ['**/cypress/**/*.{mts,ts}'],
+    files: ['**/e2e/**/*.{mts,ts}'],
+    rules: {
+      'import/no-extraneous-dependencies': 'off',
+      'no-console': 'off',
+      'no-empty-pattern': 'off',
+      'react-hooks/rules-of-hooks': 'off',
+    },
   },
   {
     ...eslintConfigMotechBase[1],
@@ -97,8 +101,13 @@ export default [
     },
   },
   {
-    extends: [pluginCypress.configs.recommended],
-    files: ['**/cypress/**/*.{js,jsx,mjs}'],
+    files: ['**/e2e/**/*.{js,mjs}'],
+    rules: {
+      'import/no-extraneous-dependencies': 'off',
+      'no-console': 'off',
+      'no-empty-pattern': 'off',
+      'react-hooks/rules-of-hooks': 'off',
+    },
   },
   {
     ...eslintConfigMotechBase[4],
