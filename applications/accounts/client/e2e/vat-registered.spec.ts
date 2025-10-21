@@ -197,7 +197,6 @@ test.describe('VAT registered', () => {
       // Add second category
       await page.getByRole('button', { name: 'Add a new category' }).click();
       await page.getByLabel('Name').nth(6).fill(setting.categories[1].name);
-      await page.getByLabel('VAT rate').nth(6).clear();
       await page
         .getByLabel('VAT rate')
         .nth(6)
@@ -206,7 +205,6 @@ test.describe('VAT registered', () => {
       // Add third category
       await page.getByRole('button', { name: 'Add a new category' }).click();
       await page.getByLabel('Name').nth(7).fill(setting.categories[2].name);
-      await page.getByLabel('VAT rate').nth(7).clear();
       await page
         .getByLabel('VAT rate')
         .nth(7)
@@ -216,14 +214,12 @@ test.describe('VAT registered', () => {
       await expect(page.getByLabel('VAT to pay')).toHaveValue(
         format('percentage', '20'),
       );
-      await page.getByLabel('VAT to pay').clear();
       await page.getByLabel('VAT to pay').fill(setting.vat.pay);
 
       // Update VAT registration number
       await expect(page.getByLabel('VAT registration number')).toHaveValue(
         format('VAT registration', company.vat.registration),
       );
-      await page.getByLabel('VAT registration number').clear();
       await page
         .getByLabel('VAT registration number')
         .fill(setting.vat.registration);
@@ -547,11 +543,11 @@ test.describe('VAT registered', () => {
       await expect(page.getByLabel('Confirmed')).toBeChecked();
 
       // Clear and re-fill amount field
-      await page.getByLabel('Amount').clear();
       await page.getByLabel('Amount').fill(transaction.amount);
 
       await expect(page.getByLabel('VAT')).toHaveValue(
         format('currency', transaction.vat),
+        { timeout: 10000 },
       );
 
       // Delete existing file

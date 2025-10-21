@@ -847,6 +847,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    timeout-minutes: 60
+
     needs:
       - setup
       - auth0-tenant
@@ -939,4 +941,4 @@ jobs:
         run: yarn workspace @accounts/client build
 
       - name: Smoke tests
-        run: yarn workspace @accounts/client e2e-ci
+        run: yarn workspace @accounts/client e2e-ci --shard=${{ matrix.containers }}/2
