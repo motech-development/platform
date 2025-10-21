@@ -147,7 +147,7 @@ function Reports() {
 
     renderCount.current += 1;
 
-    if (renderCount.current >= renderCheck) {
+    if (renderCount.current >= renderCheck && user?.sub) {
       unsubscribe = subscribeToMore({
         document: ON_NOTIFICATION,
         updateQuery: (prev, { subscriptionData }) => {
@@ -158,20 +158,25 @@ function Reports() {
           const payload = parse(
             subscriptionData.data.onNotification.payload ?? '',
           );
-          const result = [...prev.getReports.items, payload];
-          const items = result.filter(
-            (a, index) => result.findIndex((b) => a.id === b.id) === index,
+
+          // Check if item already exists before adding
+          const itemExists = prev.getReports.items.some(
+            (item) => item.id === payload.id,
           );
+
+          if (itemExists) {
+            return prev; // Don't add duplicate
+          }
 
           return {
             getReports: {
               ...prev.getReports,
-              items,
+              items: [...prev.getReports.items, payload],
             },
           };
         },
         variables: {
-          owner: user?.sub as string,
+          owner: user.sub,
         },
       });
     }
@@ -182,7 +187,7 @@ function Reports() {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user?.sub]);
 
   return (
     <Connected error={error} loading={loading}>
