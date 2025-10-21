@@ -56,7 +56,7 @@ jobs:
         id: cache
         uses: actions/cache@v4.2.2
         with:
-          path: ~/.cache/Cypress
+          path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-cache-
@@ -862,13 +862,8 @@ jobs:
           - 2
 
     env:
-      CURRENTS_API_URL: ${{ secrets.CYPRESS_API_URL }}
-      CURRENTS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      CYPRESS_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
-      CYPRESS_AUTH_URL: ${{ secrets.CYPRESS_AUTH_URL_DEV }}
-      CYPRESS_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
-      CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
-      CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       REACT_APP_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
@@ -910,9 +905,10 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore cache
+        id: cache
         uses: actions/cache@v4.2.2
         with:
-          path: ~/.cache/Cypress
+          path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-cache-
@@ -935,13 +931,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-client-v4-
 
+      - name: Install Playwright browsers
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn workspace @accounts/client playwright install --with-deps
+
       - name: Build client
         run: yarn workspace @accounts/client build
 
       - name: Smoke tests
-        uses: cypress-io/github-action@v6.7.14
-        with:
-          command: yarn workspace @accounts/client e2e-ci
-          install: false
-          start: yarn workspace @accounts/client serve
-          wait-on: http://localhost:3000
+        run: yarn workspace @accounts/client e2e-ci
