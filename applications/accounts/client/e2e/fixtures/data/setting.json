@@ -1,0 +1,44 @@
+[
+  {
+    "categories": [
+      {
+        "name": "Accommodation",
+        "vatRate": "20"
+      },
+      {
+        "name": "Travel",
+        "vatRate": "0"
+      },
+      {
+        "name": "Sustenance",
+        "vatRate": "20"
+      }
+    ],
+    "vat": {
+      "charge": "20",
+      "pay": "15.5",
+      "registration": "657497583",
+      "scheme": "flatRate"
+    }
+  },
+  {
+    "categories": [
+      {
+        "name": "Accommodation",
+        "vatRate": "20"
+      },
+      {
+        "name": "Travel",
+        "vatRate": "0"
+      }
+    ],
+    "vat": {
+      "charge": "0",
+      "pay": "0"
+    },
+    "yearEnd": {
+      "day": "1",
+      "month": "0"
+    }
+  }
+]
