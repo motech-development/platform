@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import TestProvider from '../../utils/TestProvider';
-import ApolloClient from '../ApolloClient';
+import ApolloClient, { typePolicies } from '../ApolloClient';
 
 describe('ApolloClient', () => {
   it('should show error if no AppSync settings are set', async () => {
@@ -69,5 +69,9 @@ describe('ApolloClient', () => {
 
       await expect(findByTestId('content')).resolves.toBeInTheDocument();
     });
+  });
+
+  it('should contain the correct type policy', () => {
+    expect(typePolicies).toMatchSnapshot();
   });
 });

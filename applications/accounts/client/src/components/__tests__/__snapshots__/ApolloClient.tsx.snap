@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ApolloClient should contain the correct type policy 1`] = `
+{
+  "Mutation": {
+    "fields": {
+      "deleteTransaction": {
+        "merge": [Function],
+      },
+    },
+  },
+  "Transactions": {
+    "fields": {
+      "items": {
+        "merge": [Function],
+        "read": [Function],
+      },
+    },
+    "keyFields": [
+      "id",
+      "status",
+    ],
+  },
+}
+`;
