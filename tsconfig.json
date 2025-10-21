@@ -17,5 +17,5 @@
     "strict": true,
     "strictNullChecks": true
   },
-  "exclude": ["node_modules/cypress", "dist"]
+  "exclude": ["dist"]
 }

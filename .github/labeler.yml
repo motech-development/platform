@@ -14,10 +14,6 @@ core:
   - changed-files:
       - any-glob-to-any-file: applications/core/**
 
-cypress:
-  - changed-files:
-      - any-glob-to-any-file: applications/cypress/**
-
 id:
   - changed-files:
       - any-glob-to-any-file: applications/id/**
