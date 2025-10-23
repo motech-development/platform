@@ -1,5 +1,11 @@
 /* eslint-disable no-underscore-dangle */
-import { gql, Reference, StoreObject } from '@apollo/client';
+import {
+  type FieldFunctionOptions,
+  gql,
+  InMemoryCache,
+  Reference,
+  StoreObject,
+} from '@apollo/client';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Apollo } from '@motech-development/appsync-apollo';
 import { Loader } from '@motech-development/breeze-ui';
@@ -22,6 +28,128 @@ function filterRefs(incoming: Reference[], existing: Reference[] = []) {
     ({ __ref }, index, self) =>
       index === self.findIndex((item) => item.__ref === __ref),
   );
+}
+
+function parseNotificationPayload(payload: string | null): unknown {
+  if (!payload) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(payload);
+  } catch {
+    // If JSON parsing fails, try to parse as query string
+    const urlParams = new URLSearchParams(payload);
+    const reportId = urlParams.get('id');
+    const reportCreatedAt = urlParams.get('createdAt');
+    const downloadUrl = urlParams.get('downloadUrl');
+    const ttl = urlParams.get('ttl');
+
+    if (reportId && reportCreatedAt && downloadUrl) {
+      return {
+        createdAt: reportCreatedAt,
+        downloadUrl,
+        id: reportId,
+        ttl: ttl ? Number.parseInt(ttl, 10) : undefined,
+      };
+    }
+  }
+
+  return null;
+}
+
+function updateReportsCache(
+  cache: InMemoryCache,
+  reportData: Report,
+  existingReports: unknown,
+  readField: FieldFunctionOptions['readField'],
+) {
+  if (
+    existingReports &&
+    typeof existingReports === 'object' &&
+    existingReports !== null &&
+    '__ref' in existingReports
+  ) {
+    const reportsRef = existingReports as Reference;
+    const reportsId = readField('id', reportsRef);
+
+    if (reportsId) {
+      cache.modify({
+        fields: {
+          items: (existingItems, { readField: rf2 }) => {
+            const items = (existingItems as Reference[]) || [];
+
+            // Check if item already exists
+            const itemExists = items.some(
+              (item) => rf2('id', item) === reportData.id,
+            );
+
+            if (itemExists) {
+              return items;
+            }
+
+            // Add the new report to the items array
+            const newItemRef = {
+              __ref: cache.identify({
+                __typename: 'Report',
+                id: reportData.id,
+              }),
+            };
+
+            return [...items, newItemRef];
+          },
+        },
+        id: reportsRef.__ref,
+      });
+    }
+  }
+}
+
+function updateNotificationsCache(
+  cache: InMemoryCache,
+  notificationData: { id: string },
+  existingNotifications: unknown,
+  readField: FieldFunctionOptions['readField'],
+) {
+  if (
+    existingNotifications &&
+    typeof existingNotifications === 'object' &&
+    existingNotifications !== null &&
+    '__ref' in existingNotifications
+  ) {
+    const notificationsRef = existingNotifications as Reference;
+    const notificationsId = readField('id', notificationsRef);
+
+    if (notificationsId) {
+      cache.modify({
+        fields: {
+          items: (existingItems, { readField: rf2 }) => {
+            const items = (existingItems as Reference[]) || [];
+
+            // Check if notification already exists
+            const notificationExists = items.some(
+              (item) => rf2('id', item) === notificationData.id,
+            );
+
+            if (notificationExists) {
+              return items;
+            }
+
+            // Add the new notification to the items array
+            const newNotificationRef = {
+              __ref: cache.identify({
+                __typename: 'Notification',
+                id: notificationData.id,
+              }),
+            };
+
+            return [newNotificationRef, ...items]; // Add to beginning for notifications
+          },
+        },
+        id: notificationsRef.__ref,
+      });
+    }
+  }
 }
 
 export const typePolicies: StrictTypedTypePolicies = {
@@ -101,7 +229,9 @@ export const typePolicies: StrictTypedTypePolicies = {
           incoming: OnNotificationSubscription['onNotification'],
           { cache, readField },
         ) => {
-          if (!incoming) return existing;
+          if (!incoming) {
+            return existing;
+          }
 
           // If incoming is a reference, read the actual data
           if (
@@ -140,30 +270,9 @@ export const typePolicies: StrictTypedTypePolicies = {
 
           // Parse the payload to extract report data
           try {
-            let parsedPayload: unknown = null;
-
-            if (notificationData.payload) {
-              // Try to parse as JSON first
-              try {
-                parsedPayload = JSON.parse(notificationData.payload);
-              } catch {
-                // If JSON parsing fails, try to parse as query string
-                const urlParams = new URLSearchParams(notificationData.payload);
-                const reportId = urlParams.get('id');
-                const reportCreatedAt = urlParams.get('createdAt');
-                const downloadUrl = urlParams.get('downloadUrl');
-                const ttl = urlParams.get('ttl');
-
-                if (reportId && reportCreatedAt && downloadUrl) {
-                  parsedPayload = {
-                    createdAt: reportCreatedAt,
-                    downloadUrl,
-                    id: reportId,
-                    ttl: ttl ? parseInt(ttl, 10) : undefined,
-                  };
-                }
-              }
-            }
+            const parsedPayload = parseNotificationPayload(
+              notificationData.payload ?? null,
+            );
 
             // If this is a report notification, update the getReports cache
             if (
@@ -194,49 +303,7 @@ export const typePolicies: StrictTypedTypePolicies = {
               cache.modify({
                 fields: {
                   getReports(existingReports: unknown, { readField: rf }) {
-                    if (!existingReports) return existingReports;
-
-                    // If existingReports is a reference, we need to modify the referenced object
-                    if (
-                      typeof existingReports === 'object' &&
-                      existingReports !== null &&
-                      '__ref' in existingReports
-                    ) {
-                      const reportsRef = existingReports as Reference;
-                      const reportsId = rf('id', reportsRef);
-
-                      if (reportsId) {
-                        // Modify the Reports object directly
-                        cache.modify({
-                          fields: {
-                            items(existingItems, { readField: rf2 }) {
-                              const items =
-                                (existingItems as Reference[]) || [];
-
-                              // Check if item already exists
-                              const itemExists = items.some(
-                                (item) => rf2('id', item) === reportData.id,
-                              );
-
-                              if (itemExists) {
-                                return items;
-                              }
-
-                              // Add the new report to the items array
-                              const newItemRef = {
-                                __ref: cache.identify({
-                                  __typename: 'Report',
-                                  id: reportData.id,
-                                }),
-                              };
-
-                              return [...items, newItemRef];
-                            },
-                          },
-                          id: reportsRef.__ref,
-                        });
-                      }
-                    }
+                    updateReportsCache(cache, reportData, existingReports, rf);
 
                     return existingReports;
                   },
@@ -276,48 +343,12 @@ export const typePolicies: StrictTypedTypePolicies = {
                 existingNotifications: unknown,
                 { readField: rf },
               ) {
-                if (!existingNotifications) return existingNotifications;
-
-                // If existingNotifications is a reference, we need to modify the referenced object
-                if (
-                  typeof existingNotifications === 'object' &&
-                  existingNotifications !== null &&
-                  '__ref' in existingNotifications
-                ) {
-                  const notificationsRef = existingNotifications as Reference;
-                  const notificationsId = rf('id', notificationsRef);
-
-                  if (notificationsId) {
-                    // Modify the Notifications object directly
-                    cache.modify({
-                      fields: {
-                        items(existingItems, { readField: rf2 }) {
-                          const items = (existingItems as Reference[]) || [];
-
-                          // Check if notification already exists
-                          const notificationExists = items.some(
-                            (item) => rf2('id', item) === notificationData.id,
-                          );
-
-                          if (notificationExists) {
-                            return items;
-                          }
-
-                          // Add the new notification to the items array
-                          const newNotificationRef = {
-                            __ref: cache.identify({
-                              __typename: 'Notification',
-                              id: notificationData.id,
-                            }),
-                          };
-
-                          return [newNotificationRef, ...items]; // Add to beginning for notifications
-                        },
-                      },
-                      id: notificationsRef.__ref,
-                    });
-                  }
-                }
+                updateNotificationsCache(
+                  cache,
+                  notificationData,
+                  existingNotifications,
+                  rf,
+                );
 
                 return existingNotifications;
               },
@@ -338,6 +369,7 @@ export const typePolicies: StrictTypedTypePolicies = {
         // Filter out dangling references on read, so evicted items disappear from lists
         read: (existing: Reference[] | undefined, { canRead }) => {
           const list = existing ?? [];
+
           return list.filter((ref) => canRead(ref));
         },
       },
