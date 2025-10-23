@@ -51,3 +51,4 @@ jobs:
         run: yarn release
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          NPM_TOKEN: ${{ env.ACTIONS_ID_TOKEN_REQUEST_TOKEN }}
