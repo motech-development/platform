@@ -1,10 +1,4 @@
-import {
-  ApolloCache,
-  MutationUpdaterFunction,
-  Reference,
-  useMutation,
-  useQuery,
-} from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import {
   Button,
   Col,
@@ -29,10 +23,7 @@ import TransactionDetailsCell from '../../../components/TransactionDetailsCell';
 import WarningText from '../../../components/WarningText';
 import { gql } from '../../../graphql';
 import {
-  DeleteTransactionMutation,
   GetTransactionsQuery,
-  MutationDeleteTransactionArgs,
-  Transactions,
   TransactionStatus,
 } from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
@@ -137,46 +128,6 @@ function row({
   return DataRow;
 }
 
-export const update: MutationUpdaterFunction<
-  DeleteTransactionMutation,
-  MutationDeleteTransactionArgs,
-  unknown,
-  ApolloCache<unknown>
-> = (cache, { data }) => {
-  if (data?.deleteTransaction) {
-    const { deleteTransaction } = data;
-
-    cache.modify({
-      fields: {
-        items: (refs: readonly Reference[], { readField }) =>
-          refs.filter((ref) => readField('id', ref) !== deleteTransaction.id),
-      },
-      id: cache.identify({
-        __typename: 'Transactions',
-        id: deleteTransaction.companyId,
-        status: deleteTransaction.status,
-      }),
-    });
-
-    cache.modify<{
-      transactions: Transactions[];
-    }>({
-      fields: {
-        transactions: (transactions, { readField }) =>
-          (transactions as Transactions[]).filter((transaction) =>
-            transaction.items.every(
-              (item) => readField('id', item) !== deleteTransaction.id,
-            ),
-          ),
-      },
-      id: cache.identify({
-        __typename: 'Balance',
-        id: deleteTransaction.companyId,
-      }),
-    });
-  }
-};
-
 export const GET_TRANSACTIONS = gql(/* GraphQL */ `
   query GetTransactions($id: ID!, $status: TransactionStatus!) {
     getBalance(id: $id) {
@@ -259,7 +210,6 @@ function PendingTransactions() {
   };
   const onDelete = (id: string) => {
     deleteMutation({
-      update,
       variables: {
         id,
       },
