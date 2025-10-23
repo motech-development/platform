@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useQuery, useSubscription } from '@apollo/client';
 import { useAuth0 } from '@auth0/auth0-react';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,9 +15,7 @@ import {
   TableCell,
   useToast,
 } from '@motech-development/breeze-ui';
-import { useQs } from '@motech-development/query-string-hook';
 import { saveAs } from 'file-saver';
-import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -110,12 +108,9 @@ function Reports() {
 
   invariant(companyId);
 
-  const renderCheck = process.env.NODE_ENV === 'development' ? 2 : 1;
-  const renderCount = useRef(0);
   const { user } = useAuth0();
   const { add } = useToast();
   const { t } = useTranslation('reports');
-  const { parse } = useQs<IReport>();
   const [download] = useLazyGet<Blob>({
     onCompleted: (blob) => {
       saveAs(blob, 'report.zip');
@@ -133,7 +128,7 @@ function Reports() {
     },
     responseType: 'blob',
   });
-  const { data, error, loading, subscribeToMore } = useQuery<
+  const { data, error, loading } = useQuery<
     IGetReportsOutput,
     IGetReportsInput
   >(GET_REPORTS, {
@@ -142,52 +137,12 @@ function Reports() {
     },
   });
 
-  useEffect(() => {
-    let unsubscribe: () => void;
-
-    renderCount.current += 1;
-
-    if (renderCount.current >= renderCheck && user?.sub) {
-      unsubscribe = subscribeToMore({
-        document: ON_NOTIFICATION,
-        updateQuery: (prev, { subscriptionData }) => {
-          if (!subscriptionData.data?.onNotification || !prev.getReports) {
-            return prev;
-          }
-
-          const payload = parse(
-            subscriptionData.data.onNotification.payload ?? '',
-          );
-
-          // Check if item already exists before adding
-          const itemExists = prev.getReports.items.some(
-            (item) => item.id === payload.id,
-          );
-
-          if (itemExists) {
-            return prev; // Don't add duplicate
-          }
-
-          return {
-            getReports: {
-              ...prev.getReports,
-              items: [...prev.getReports.items, payload],
-            },
-          };
-        },
-        variables: {
-          owner: user.sub,
-        },
-      });
-    }
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.sub]);
+  useSubscription(ON_NOTIFICATION, {
+    skip: !user?.sub,
+    variables: {
+      owner: user!.sub!,
+    },
+  });
 
   return (
     <Connected error={error} loading={loading}>

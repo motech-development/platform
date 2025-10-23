@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery, useSubscription } from '@apollo/client';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -8,7 +8,6 @@ import {
   TableCell,
   Typography,
 } from '@motech-development/breeze-ui';
-import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { gql } from '../../graphql';
@@ -116,61 +115,23 @@ export interface IUserNotificationsProps {
 
 function UserNotifications({ id }: IUserNotificationsProps) {
   const { t } = useTranslation('user-notifications');
-  const renderCheck = process.env.NODE_ENV === 'development' ? 2 : 1;
-  const renderCount = useRef(0);
-  const { data, subscribeToMore } = useQuery<
-    IGetNotificationsOutput,
-    IGetNotificationsInput
-  >(GET_NOTIFICATIONS, {
-    variables: {
-      count: 5,
-      id,
+  const { data } = useQuery<IGetNotificationsOutput, IGetNotificationsInput>(
+    GET_NOTIFICATIONS,
+    {
+      variables: {
+        count: 5,
+        id,
+      },
     },
-  });
+  );
   const [markAsRead] = useMutation(MARK_AS_READ);
 
-  useEffect(
-    () => {
-      let unsubscribe: () => void;
-
-      renderCount.current += 1;
-
-      if (renderCount.current >= renderCheck) {
-        unsubscribe = subscribeToMore({
-          document: ON_NOTIFICATION,
-          updateQuery: (prev, { subscriptionData }) => {
-            if (
-              !subscriptionData.data?.onNotification ||
-              !prev.getNotifications
-            ) {
-              return prev;
-            }
-
-            return {
-              getNotifications: {
-                ...prev.getNotifications,
-                items: [
-                  subscriptionData.data.onNotification,
-                  ...prev.getNotifications.items,
-                ],
-              },
-            };
-          },
-          variables: {
-            owner: id,
-          },
-        });
-      }
-
-      return () => {
-        if (unsubscribe) {
-          unsubscribe();
-        }
-      };
+  useSubscription(ON_NOTIFICATION, {
+    skip: !id,
+    variables: {
+      owner: id,
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  });
 
   if (!data?.getNotifications) {
     return null;

@@ -1,13 +1,16 @@
+import { InMemoryCache } from '@apollo/client';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
+import { typePolicies } from '../../../../components/ApolloClient';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import Reports, { GET_REPORTS, ON_NOTIFICATION } from '../Reports';
 
 describe('Reports', () => {
+  let cache: InMemoryCache;
   let history: string[];
   let mocks: MockedResponse[];
 
@@ -21,6 +24,11 @@ describe('Reports', () => {
 
   describe('when there are reports returned', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        addTypename: true,
+        typePolicies,
+      });
+
       mocks = [
         {
           request: {
@@ -32,15 +40,18 @@ describe('Reports', () => {
           result: {
             data: {
               getReports: {
+                __typename: 'Reports',
                 id: 'company-id',
                 items: [
                   {
+                    __typename: 'Report',
                     createdAt: '2021-04-11T21:05:33.303Z',
                     downloadUrl: 'https://download.url/report-1.zip',
                     id: 'report-1',
                     ttl: 1618205610,
                   },
                   {
+                    __typename: 'Report',
                     createdAt: '2021-04-11T21:05:33.303Z',
                     downloadUrl: 'https://download.url/report-2.zip',
                     id: 'report-2',
@@ -61,6 +72,7 @@ describe('Reports', () => {
           result: {
             data: {
               onNotification: {
+                __typename: 'Notification',
                 createdAt: '2020-07-01T00:00:00.000Z',
                 id: 'notification-2',
                 message: 'Notification_2',
@@ -77,7 +89,7 @@ describe('Reports', () => {
       await act(async () => {
         render(
           <TestProvider path="/reports/:companyId" history={history}>
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <Reports />
             </MockedProvider>
           </TestProvider>,
@@ -218,6 +230,11 @@ describe('Reports', () => {
 
   describe('when a duplicate report is sent', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        addTypename: true,
+        typePolicies,
+      });
+
       mocks = [
         {
           request: {
@@ -229,15 +246,18 @@ describe('Reports', () => {
           result: {
             data: {
               getReports: {
+                __typename: 'Reports',
                 id: 'company-id',
                 items: [
                   {
+                    __typename: 'Report',
                     createdAt: '2021-04-11T21:05:33.303Z',
                     downloadUrl: 'https://download.url/report-1.zip',
                     id: 'report-1',
                     ttl: 1618205610,
                   },
                   {
+                    __typename: 'Report',
                     createdAt: '2021-04-11T21:05:33.303Z',
                     downloadUrl: 'https://download.url/report-2.zip',
                     id: 'report-2',
@@ -258,6 +278,7 @@ describe('Reports', () => {
           result: {
             data: {
               onNotification: {
+                __typename: 'Notification',
                 createdAt: '2020-07-01T00:00:00.000Z',
                 id: 'notification-2',
                 message: 'Notification_2',
@@ -274,7 +295,7 @@ describe('Reports', () => {
       await act(async () => {
         render(
           <TestProvider path="/reports/:companyId" history={history}>
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <Reports />
             </MockedProvider>
           </TestProvider>,
@@ -303,6 +324,11 @@ describe('Reports', () => {
 
   describe('when there are no reports returned', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        addTypename: true,
+        typePolicies,
+      });
+
       mocks = [
         {
           request: {
@@ -314,6 +340,7 @@ describe('Reports', () => {
           result: {
             data: {
               getReports: {
+                __typename: 'Reports',
                 id: 'company-id',
                 items: [],
               },
@@ -338,7 +365,7 @@ describe('Reports', () => {
       await act(async () => {
         render(
           <TestProvider path="/reports/:companyId" history={history}>
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <Reports />
             </MockedProvider>
           </TestProvider>,

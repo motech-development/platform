@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import {
   act,
@@ -6,6 +7,7 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
+import { typePolicies } from '../../../components/ApolloClient';
 import TestProvider from '../../../utils/TestProvider';
 import UserNotifications, {
   GET_NOTIFICATIONS,
@@ -14,11 +16,17 @@ import UserNotifications, {
 } from '../UserNotifications';
 
 describe('UserNotifications', () => {
+  let cache: InMemoryCache;
   let component: RenderResult;
   let mocks: MockedResponse[];
 
   describe('when there is no data', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        addTypename: true,
+        typePolicies,
+      });
+
       mocks = [
         {
           request: {
@@ -52,7 +60,7 @@ describe('UserNotifications', () => {
       await act(async () => {
         component = render(
           <TestProvider>
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <UserNotifications id="user-id" />
             </MockedProvider>
           </TestProvider>,
@@ -73,6 +81,11 @@ describe('UserNotifications', () => {
 
   describe('when there is data', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        addTypename: true,
+        typePolicies,
+      });
+
       mocks = [
         {
           request: {
@@ -85,9 +98,11 @@ describe('UserNotifications', () => {
           result: {
             data: {
               getNotifications: {
+                __typename: 'Notifications',
                 id: 'user-id',
                 items: [
                   {
+                    __typename: 'Notification',
                     createdAt: '2020-07-01T00:00:00.000Z',
                     id: 'notification-1',
                     message: 'Notification_1',
@@ -109,6 +124,7 @@ describe('UserNotifications', () => {
           result: {
             data: {
               onNotification: {
+                __typename: 'Notification',
                 createdAt: '2020-07-01T00:00:00.000Z',
                 id: 'notification-2',
                 message: 'Notification_2',
@@ -119,12 +135,37 @@ describe('UserNotifications', () => {
             },
           },
         },
+        {
+          request: {
+            query: MARK_AS_READ,
+            variables: {
+              id: 'user-id',
+              input: {
+                ids: ['notification-2'],
+              },
+            },
+          },
+          result: {
+            data: {
+              markAsRead: {
+                __typename: 'Notifications',
+                items: [
+                  {
+                    __typename: 'Notification',
+                    id: 'notification-2',
+                    read: true,
+                  },
+                ],
+              },
+            },
+          },
+        },
       ];
 
       await act(async () => {
         component = render(
           <TestProvider>
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <UserNotifications id="user-id" />
             </MockedProvider>
           </TestProvider>,
@@ -161,6 +202,11 @@ describe('UserNotifications', () => {
 
   describe('when new notifications comes in', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        addTypename: true,
+        typePolicies,
+      });
+
       mocks = [
         {
           request: {
@@ -173,9 +219,11 @@ describe('UserNotifications', () => {
           result: {
             data: {
               getNotifications: {
+                __typename: 'Notifications',
                 id: 'user-id',
                 items: [
                   {
+                    __typename: 'Notification',
                     createdAt: '2020-07-01T00:00:00.000Z',
                     id: 'notification-1',
                     message: 'Notification_1',
@@ -197,6 +245,7 @@ describe('UserNotifications', () => {
           result: {
             data: {
               onNotification: {
+                __typename: 'Notification',
                 createdAt: '2020-07-01T00:00:00.000Z',
                 id: 'notification-2',
                 message: 'Notification_2',
@@ -220,8 +269,10 @@ describe('UserNotifications', () => {
           result: {
             data: {
               markAsRead: {
+                __typename: 'Notifications',
                 items: [
                   {
+                    __typename: 'Notification',
                     id: 'notification-2',
                     read: true,
                   },
@@ -235,7 +286,7 @@ describe('UserNotifications', () => {
       await act(async () => {
         component = render(
           <TestProvider>
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <UserNotifications id="user-id" />
             </MockedProvider>
           </TestProvider>,

@@ -1,4 +1,4 @@
-import { ApolloCache, InMemoryCache } from '@apollo/client';
+import { InMemoryCache } from '@apollo/client';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -8,20 +8,15 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
-import {
-  Balance,
-  DeleteTransactionMutation,
-  Transactions,
-  TransactionStatus,
-} from '../../../../graphql/graphql';
+import { typePolicies } from '../../../../components/ApolloClient';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import PendingTransactions, {
   DELETE_TRANSACTION,
   GET_TRANSACTIONS,
-  update,
 } from '../PendingTransactions';
 
 describe('PendingTransactions', () => {
+  let cache: InMemoryCache;
   let component: RenderResult;
   let history: string[];
   let mocks: MockedResponse[];
@@ -32,6 +27,10 @@ describe('PendingTransactions', () => {
 
   describe('success', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        typePolicies,
+      });
+
       mocks = [
         {
           request: {
@@ -99,7 +98,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,
@@ -210,6 +209,10 @@ describe('PendingTransactions', () => {
 
   describe('failure', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        typePolicies,
+      });
+
       mocks = [
         {
           request: {
@@ -269,7 +272,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,
@@ -318,6 +321,10 @@ describe('PendingTransactions', () => {
 
   describe('no data', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        typePolicies,
+      });
+
       mocks = [
         {
           request: {
@@ -349,7 +356,7 @@ describe('PendingTransactions', () => {
             path="/accounts/:companyId/pending-transactions"
             history={history}
           >
-            <MockedProvider mocks={mocks}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <PendingTransactions />
             </MockedProvider>
           </TestProvider>,
@@ -366,114 +373,6 @@ describe('PendingTransactions', () => {
 
       expect(heading).toBeInTheDocument();
       expect(description).toBeInTheDocument();
-    });
-  });
-
-  describe('cache', () => {
-    let cache: ApolloCache<DeleteTransactionMutation>;
-
-    beforeEach(() => {
-      cache = new InMemoryCache({
-        typePolicies: {
-          Transactions: {
-            keyFields: ['id', 'status'],
-          },
-        },
-      }) as unknown as ApolloCache<DeleteTransactionMutation>;
-
-      cache.writeQuery({
-        data: {
-          getBalance: {
-            __typename: 'Balance',
-            currency: 'GBP',
-            id: 'company-id',
-          } as unknown as Balance,
-          getTransactions: {
-            __typename: 'Transactions',
-            id: 'company-id',
-            items: [
-              {
-                amount: 100,
-                attachment: '',
-                date: '2021-02-21',
-                description: 'A purchase',
-                id: 'transaction-id-0',
-                name: 'Your favourite shop',
-                scheduled: false,
-              },
-              {
-                amount: 100,
-                attachment: '',
-                date: '2021-02-23',
-                description: 'A purchase',
-                id: 'transaction-id-1',
-                name: 'Your favourite shop',
-                scheduled: false,
-              },
-            ],
-            status: TransactionStatus.Confirmed,
-          } as unknown as Transactions,
-        },
-        query: GET_TRANSACTIONS,
-        variables: {
-          id: 'company-id',
-          status: TransactionStatus.Confirmed,
-        },
-      });
-
-      jest.spyOn(cache, 'modify');
-    });
-
-    it('should remove transaction from the transaction cache', () => {
-      const input = {
-        data: {
-          deleteTransaction: {
-            companyId: 'company-id',
-            id: 'transaction-id-0',
-            status: TransactionStatus.Confirmed,
-          },
-        },
-      };
-
-      update(cache, input, {});
-
-      const result = cache.readQuery({
-        query: GET_TRANSACTIONS,
-        variables: {
-          id: 'company-id',
-          status: TransactionStatus.Confirmed,
-        },
-      });
-
-      expect(result).toEqual({
-        getBalance: {
-          __typename: 'Balance',
-          currency: 'GBP',
-          id: 'company-id',
-        },
-        getTransactions: {
-          __typename: 'Transactions',
-          id: 'company-id',
-          items: [
-            {
-              amount: 100,
-              attachment: '',
-              date: '2021-02-23',
-              description: 'A purchase',
-              id: 'transaction-id-1',
-              name: 'Your favourite shop',
-              scheduled: false,
-            },
-          ],
-          status: 'confirmed',
-        },
-      });
-    });
-
-    it('should not modify cache if no data is passed', () => {
-      update(cache, {}, {});
-
-      expect(cache.modify).not.toHaveBeenCalled();
     });
   });
 });

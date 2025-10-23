@@ -407,6 +407,10 @@ describe('Accounts', () => {
 
   describe('failure', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        typePolicies,
+      });
+
       mocks = [
         {
           request: {
@@ -537,7 +541,7 @@ describe('Accounts', () => {
       await act(async () => {
         component = render(
           <TestProvider path="/accounts/:companyId" history={history}>
-            <MockedProvider mocks={mocks}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <Accounts />
             </MockedProvider>
           </TestProvider>,
