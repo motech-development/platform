@@ -61,7 +61,7 @@ jobs:
         id: cache
         uses: actions/cache@v4.2.2
         with:
-          path: ~/.cache/Cypress
+          path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-cache-
