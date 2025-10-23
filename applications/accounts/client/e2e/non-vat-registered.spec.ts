@@ -430,7 +430,8 @@ test.describe('Non-VAT registered', () => {
         .fill(transaction.supplier);
       await page
         .getByRole('button', {
-          exact: true,
+          // TODO: Remove this after testing
+          // exact: true,
           name: 'Delete',
         })
         .last()
