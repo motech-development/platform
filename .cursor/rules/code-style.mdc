@@ -1,0 +1,22 @@
+---
+alwaysApply: true
+---
+
+# CODE STYLES
+
+## NON-NEGOTIABLE CODING STYLES
+
+ - All code MUST pass linting and not exhibit any TypeScript errors
+ - Lint rules should not be disabled just to make your life easier
+ - Prefer functional approach to arrays instead of looping and using Array.push
+ - Infer TypeScript types
+ - Use type declarations instead of inlining types
+ - Always apply the `newline-before-return` rule
+ - Object declarations should always be done over multiple lines
+ - Use descriptive variable names
+ - Do not import `React` from `react`
+ - No not use `return;`, use proper control flow
+
+## TESTING
+
+- Write tests which test functionality, not tests that test the code
