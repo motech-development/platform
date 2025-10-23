@@ -20,3 +20,7 @@ alwaysApply: true
 ## TESTING
 
 - Write tests which test functionality, not tests that test the code
+
+## OTHER
+
+- Always use `yarn` and not `npm`
