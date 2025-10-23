@@ -1,8 +1,15 @@
 {
   "name": "@motech-development/webpack-conditional-plugin",
   "version": "0.0.0-development",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/motech-development/platform.git"
+  },
   "description": "A Webpack plugin to conditionally apply plugins",
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "bugs": {
+    "url": "https://github.com/motech-development/platform/issues"
+  },
   "license": "ISC",
   "publishConfig": {
     "access": "public"

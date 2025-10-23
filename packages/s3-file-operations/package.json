@@ -1,8 +1,15 @@
 {
   "name": "@motech-development/s3-file-operations",
   "version": "0.0.0-development",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/motech-development/platform.git"
+  },
   "description": "A wrapper utility to manage file operations on AWS S3",
   "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "bugs": {
+    "url": "https://github.com/motech-development/platform/issues"
+  },
   "license": "ISC",
   "publishConfig": {
     "access": "public"
