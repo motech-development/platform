@@ -439,9 +439,7 @@ test.describe('Non-VAT registered', () => {
       // Check that the delete modal is no longer visible
       await expect(page.getByRole('dialog')).not.toBeVisible();
 
-      // TODO: Replace expect statements
-      // await expect(page.getByText('Balance: £1922.40')).toBeVisible();
-      await expect(page.getByText('Balance: 00.00')).toBeVisible();
+      await expect(page.getByText('Balance: £1922.40')).toBeVisible();
     });
 
     test('should add a pending sale', async ({ accounts, format, page }) => {
