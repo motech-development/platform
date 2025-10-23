@@ -7,6 +7,9 @@ on:
 
   workflow_dispatch:
 
+permissions:
+  id-token: write
+
 jobs:
   release:
     name: Packages
@@ -42,4 +45,3 @@ jobs:
         run: yarn release
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
