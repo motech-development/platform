@@ -39,11 +39,6 @@ jobs:
       - name: Update npm to latest version
         run: npm install -g npm@latest
 
-      - name: Configure npm for OIDC
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" >> ~/.npmrc
-          echo "registry.npmjs.org/:_authToken=${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" >> ~/.npmrc
-
       - name: Install dependencies
         run: yarn
 
@@ -54,4 +49,3 @@ jobs:
         run: yarn release
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-          NPM_TOKEN: ${{ env.ACTIONS_ID_TOKEN_REQUEST_TOKEN }}
