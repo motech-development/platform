@@ -436,6 +436,9 @@ test.describe('Non-VAT registered', () => {
         .last()
         .click();
 
+      // Check that the delete modal is no longer visible
+      await expect(page.getByRole('dialog')).not.toBeVisible();
+
       await expect(page.getByText('Balance: £1922.40')).toBeVisible();
     });
 
@@ -543,6 +546,9 @@ test.describe('Non-VAT registered', () => {
         })
         .last()
         .click();
+
+      // Check that the delete modal is no longer visible
+      await expect(page.getByRole('dialog')).not.toBeVisible();
 
       await expect(
         page.getByTestId(`Delete ${transaction.supplier}`),
