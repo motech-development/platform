@@ -16,6 +16,7 @@ alwaysApply: true
  - Use descriptive variable names
  - Do not import `React` from `react`
  - No not use `return;`, use proper control flow
+ - Have new lines between variable declarations
 
 ## TESTING
 
