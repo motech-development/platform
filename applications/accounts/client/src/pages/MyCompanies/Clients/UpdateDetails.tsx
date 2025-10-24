@@ -1,10 +1,4 @@
-import {
-  ApolloCache,
-  MutationUpdaterFunction,
-  Reference,
-  useMutation,
-  useQuery,
-} from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import {
   Button,
   Col,
@@ -19,33 +13,7 @@ import ClientForm, { FormSchema } from '../../../components/ClientForm';
 import Connected from '../../../components/Connected';
 import DeleteItem from '../../../components/DeleteItem';
 import { gql } from '../../../graphql';
-import {
-  DeleteClientMutation,
-  MutationDeleteClientArgs,
-} from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
-
-export const update: MutationUpdaterFunction<
-  DeleteClientMutation,
-  MutationDeleteClientArgs,
-  unknown,
-  ApolloCache<unknown>
-> = (cache, { data }) => {
-  if (data?.deleteClient) {
-    const { deleteClient } = data;
-
-    cache.modify({
-      fields: {
-        items: (refs: readonly Reference[], { readField }) =>
-          refs.filter((ref) => readField('id', ref) !== deleteClient.id),
-      },
-      id: cache.identify({
-        __typename: 'Clients',
-        id: deleteClient.companyId,
-      }),
-    });
-  }
-};
 
 export const GET_CLIENT = gql(/* GraphQL */ `
   query GetClient($id: ID!) {
@@ -177,7 +145,6 @@ function UpdateDetails() {
   };
   const onDelete = () => {
     deleteMutation({
-      update,
       variables: {
         id: clientId,
       },

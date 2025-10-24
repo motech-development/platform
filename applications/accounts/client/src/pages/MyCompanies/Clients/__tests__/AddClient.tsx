@@ -1,4 +1,4 @@
-import { ApolloCache, InMemoryCache } from '@apollo/client';
+import { InMemoryCache } from '@apollo/client';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -9,16 +9,12 @@ import {
   waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  Client,
-  Clients,
-  CreateClientMutation,
-} from '../../../../graphql/graphql';
+import { typePolicies } from '../../../../components/ApolloClient';
 import TestProvider, { add } from '../../../../utils/TestProvider';
-import AddClient, { ADD_CLIENT, update } from '../AddClient';
-import { GET_CLIENTS } from '../Clients';
+import AddClient, { ADD_CLIENT } from '../AddClient';
 
 describe('AddClient', () => {
+  let cache: InMemoryCache;
   let component: RenderResult;
   let history: string[];
   let mocks: MockedResponse[];
@@ -29,6 +25,11 @@ describe('AddClient', () => {
 
   describe('when data is returned', () => {
     beforeEach(async () => {
+      cache = new InMemoryCache({
+        addTypename: true,
+        typePolicies,
+      });
+
       mocks = [
         {
           request: {
@@ -54,7 +55,9 @@ describe('AddClient', () => {
           result: {
             data: {
               createClient: {
+                __typename: 'Client',
                 address: {
+                  __typename: 'Address',
                   line1: '1 Street',
                   line2: '',
                   line3: 'Town',
@@ -63,6 +66,7 @@ describe('AddClient', () => {
                 },
                 companyId: 'company-id',
                 contact: {
+                  __typename: 'Contact',
                   email: 'info@contact.com',
                   telephone: '07712345678',
                 },
@@ -77,7 +81,7 @@ describe('AddClient', () => {
       await act(async () => {
         component = render(
           <TestProvider path="/clients/:companyId/add-client" history={history}>
-            <MockedProvider mocks={mocks}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <AddClient />
             </MockedProvider>
           </TestProvider>,
@@ -208,7 +212,7 @@ describe('AddClient', () => {
       await act(async () => {
         component = render(
           <TestProvider path="/clients/:companyId/add-client" history={history}>
-            <MockedProvider mocks={mocks}>
+            <MockedProvider cache={cache} mocks={mocks}>
               <AddClient />
             </MockedProvider>
           </TestProvider>,
@@ -299,194 +303,6 @@ describe('AddClient', () => {
       await expect(
         findByTestId('/my-companies/clients/company-id'),
       ).resolves.toBeInTheDocument();
-    });
-  });
-
-  describe('cache', () => {
-    let cache: ApolloCache<CreateClientMutation>;
-
-    beforeEach(() => {
-      cache =
-        new InMemoryCache() as unknown as ApolloCache<CreateClientMutation>;
-
-      cache.writeQuery({
-        data: {
-          getClients: {
-            __typename: 'Clients',
-            id: 'company-id',
-            items: [
-              {
-                address: {
-                  line1: '1 Street',
-                  line2: '',
-                  line3: 'Town',
-                  line4: 'County',
-                  line5: 'KT1 1NE',
-                },
-                contact: {
-                  email: 'info@contact.com',
-                  telephone: '07712345678',
-                },
-                id: 'client-1',
-                name: 'Client 1',
-              },
-            ],
-          } as unknown as Clients,
-          getCompany: {
-            id: 'company-id',
-            name: 'Test company',
-          },
-        },
-        query: GET_CLIENTS,
-        variables: {
-          id: 'company-id',
-        },
-      });
-
-      jest.spyOn(cache, 'modify');
-    });
-
-    it('should add new client to the cache', () => {
-      const input = {
-        data: {
-          createClient: {
-            __typename: 'Client',
-            address: {
-              line1: '1 Street',
-              line2: '',
-              line3: 'Town',
-              line4: 'County',
-              line5: 'KT1 1NE',
-            },
-            companyId: 'company-id',
-            contact: {
-              email: 'info@contact.com',
-              telephone: '07712345678',
-            },
-            id: 'client-2',
-            name: 'Client 2',
-          } as Client,
-        },
-      };
-
-      update(cache, input, {});
-
-      const result = cache.readQuery({
-        query: GET_CLIENTS,
-        variables: {
-          id: 'company-id',
-        },
-      });
-
-      expect(result).toEqual({
-        getClients: {
-          __typename: 'Clients',
-          id: 'company-id',
-          items: [
-            {
-              address: {
-                line1: '1 Street',
-                line2: '',
-                line3: 'Town',
-                line4: 'County',
-                line5: 'KT1 1NE',
-              },
-              contact: {
-                email: 'info@contact.com',
-                telephone: '07712345678',
-              },
-              id: 'client-1',
-              name: 'Client 1',
-            },
-            {
-              __typename: 'Client',
-              address: {
-                line1: '1 Street',
-                line2: '',
-                line3: 'Town',
-                line4: 'County',
-                line5: 'KT1 1NE',
-              },
-              contact: {
-                email: 'info@contact.com',
-                telephone: '07712345678',
-              },
-              id: 'client-2',
-              name: 'Client 2',
-            },
-          ],
-        },
-        getCompany: {
-          id: 'company-id',
-          name: 'Test company',
-        },
-      });
-    });
-
-    it('should not update cache if id already exists', () => {
-      const input = {
-        data: {
-          createClient: {
-            address: {
-              line1: '1 Street',
-              line2: '',
-              line3: 'Town',
-              line4: 'County',
-              line5: 'KT1 1NE',
-            },
-            companyId: 'company-id',
-            contact: {
-              email: 'info@contact.com',
-              telephone: '07712345678',
-            },
-            id: 'client-1',
-            name: 'Client 2',
-          },
-        },
-      };
-
-      update(cache, input, {});
-
-      const result = cache.readQuery({
-        query: GET_CLIENTS,
-        variables: {
-          id: 'company-id',
-        },
-      });
-
-      expect(result).toEqual({
-        getClients: {
-          __typename: 'Clients',
-          id: 'company-id',
-          items: [
-            {
-              address: {
-                line1: '1 Street',
-                line2: '',
-                line3: 'Town',
-                line4: 'County',
-                line5: 'KT1 1NE',
-              },
-              contact: {
-                email: 'info@contact.com',
-                telephone: '07712345678',
-              },
-              id: 'client-1',
-              name: 'Client 1',
-            },
-          ],
-        },
-        getCompany: {
-          id: 'company-id',
-          name: 'Test company',
-        },
-      });
-    });
-
-    it('should not modify cache if no data is passed', () => {
-      update(cache, {}, {});
-
-      expect(cache.modify).not.toHaveBeenCalled();
     });
   });
 });
