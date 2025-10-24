@@ -16,6 +16,7 @@ import {
   Report,
   StrictTypedTypePolicies,
 } from '../graphql/graphql';
+import { findUnique, setItems, spread } from '../utils/transactions';
 import Container from './Container';
 import ErrorCard from './ErrorCard';
 
@@ -155,6 +156,394 @@ function updateNotificationsCache(
 export const typePolicies: StrictTypedTypePolicies = {
   Mutation: {
     fields: {
+      addTransaction: {
+        merge: (
+          _existing: StoreObject | null,
+          incoming: StoreObject | null,
+          { cache, readField },
+        ) => {
+          if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
+            const transactionRef = incoming as unknown as Reference;
+            const category = readField<string>('category', transactionRef);
+            const companyId = readField<string>('companyId', transactionRef);
+            const description = readField<string>(
+              'description',
+              transactionRef,
+            );
+            const id = readField<string>('id', transactionRef);
+            const name = readField<string>('name', transactionRef);
+            const status = readField<string>('status', transactionRef);
+
+            if (
+              !category ||
+              !companyId ||
+              !description ||
+              !id ||
+              !name ||
+              !status
+            ) {
+              return incoming;
+            }
+
+            const addTransaction = {
+              __typename: 'Transaction',
+              category,
+              companyId,
+              description,
+              id,
+              name,
+              status,
+            };
+
+            // Update typeahead cache
+            cache.modify({
+              fields: {
+                purchases: (items: string[] | Reference) => {
+                  const descriptions = setItems(items);
+                  const unique = !descriptions.some(
+                    findUnique(addTransaction, 'description'),
+                  );
+
+                  if (spread(addTransaction.category !== 'Sales', unique)) {
+                    return [...descriptions, addTransaction.description].sort(
+                      (a, b) => a.localeCompare(b),
+                    );
+                  }
+
+                  return descriptions;
+                },
+                sales: (items: string[] | Reference) => {
+                  const descriptions = setItems(items);
+                  const unique = !descriptions.some(
+                    findUnique(addTransaction, 'description'),
+                  );
+
+                  if (spread(addTransaction.category === 'Sales', unique)) {
+                    return [...descriptions, addTransaction.description].sort(
+                      (a, b) => a.localeCompare(b),
+                    );
+                  }
+
+                  return descriptions;
+                },
+                suppliers: (items: string[] | Reference) => {
+                  const suppliers = setItems(items);
+                  const unique = !suppliers.some(
+                    findUnique(addTransaction, 'name'),
+                  );
+
+                  if (spread(addTransaction.category !== 'Sales', unique)) {
+                    return [...suppliers, addTransaction.name].sort((a, b) =>
+                      a.localeCompare(b),
+                    );
+                  }
+
+                  return suppliers;
+                },
+              },
+              id: cache.identify({
+                __typename: 'Typeahead',
+                id: addTransaction.companyId,
+              }),
+            });
+
+            // Add to transactions list
+            cache.modify({
+              fields: {
+                items: (refs: readonly Reference[], { readField: rf }) => {
+                  if (refs.some((ref) => rf('id', ref) === addTransaction.id)) {
+                    return [...refs];
+                  }
+
+                  const newRef = cache.writeFragment({
+                    data: addTransaction,
+                    fragment: gql(/* GraphQL */ `
+                      fragment NewTransaction on Transaction {
+                        amount
+                        attachment
+                        date
+                        description
+                        id
+                        name
+                        scheduled
+                      }
+                    `),
+                  });
+
+                  if (!newRef) {
+                    return [...refs];
+                  }
+
+                  return [...refs, newRef].sort((a, b) => {
+                    const readA = rf<string>('date', a);
+                    const readB = rf<string>('date', b);
+
+                    if (readA && readB) {
+                      return readA.localeCompare(readB);
+                    }
+
+                    return 0;
+                  });
+                },
+              },
+              id: cache.identify({
+                __typename: 'Transactions',
+                id: addTransaction.companyId,
+                status: addTransaction.status,
+              }),
+            });
+          }
+
+          return incoming;
+        },
+      },
+      createClient: {
+        merge: (
+          _existing: StoreObject | null,
+          incoming: StoreObject | null,
+          { cache, readField },
+        ) => {
+          if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
+            const clientRef = incoming as unknown as Reference;
+            const id = readField<string>('id', clientRef);
+            const name = readField<string>('name', clientRef);
+            const companyId = readField<string>('companyId', clientRef);
+            const address = readField('address', clientRef);
+            const contact = readField('contact', clientRef);
+
+            if (!id || !name || !companyId) {
+              return incoming;
+            }
+
+            const createClient = {
+              __typename: 'Client',
+              address,
+              companyId,
+              contact,
+              id,
+              name,
+            };
+
+            // Add to clients list
+            cache.modify({
+              fields: {
+                items: (refs: readonly Reference[], { readField: rf }) => {
+                  if (refs.some((ref) => rf('id', ref) === createClient.id)) {
+                    return [...refs];
+                  }
+
+                  const newRef = cache.writeFragment({
+                    data: createClient,
+                    fragment: gql(/* GraphQL */ `
+                      fragment NewClient on Client {
+                        address {
+                          line1
+                          line2
+                          line3
+                          line4
+                          line5
+                        }
+                        companyId
+                        contact {
+                          email
+                          telephone
+                        }
+                        id
+                        name
+                      }
+                    `),
+                  });
+
+                  if (!newRef) {
+                    return [...refs];
+                  }
+
+                  return [...refs, newRef].sort((a, b) => {
+                    const readA = rf<string>('name', a);
+                    const readB = rf<string>('name', b);
+
+                    if (readA && readB) {
+                      return readA.localeCompare(readB);
+                    }
+
+                    return 0;
+                  });
+                },
+              },
+              id: cache.identify({
+                __typename: 'Clients',
+                id: createClient.companyId,
+              }),
+            });
+          }
+
+          return incoming;
+        },
+      },
+      createCompany: {
+        merge: (
+          _existing: StoreObject | null,
+          incoming: StoreObject | null,
+          { cache, readField },
+        ) => {
+          if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
+            const companyRef = incoming as unknown as Reference;
+            const id = readField<string>('id', companyRef);
+            const name = readField<string>('name', companyRef);
+            const address = readField('address', companyRef);
+            const bank = readField('bank', companyRef);
+            const companyNumber = readField<string>(
+              'companyNumber',
+              companyRef,
+            );
+            const contact = readField('contact', companyRef);
+
+            if (!id || !name) {
+              return incoming;
+            }
+
+            const createCompany = {
+              __typename: 'Company',
+              address,
+              bank,
+              companyNumber,
+              contact,
+              id,
+              name,
+            };
+
+            // Add to companies list
+            cache.modify({
+              fields: {
+                items: (refs: readonly Reference[], { readField: rf }) => {
+                  if (refs.some((ref) => rf('id', ref) === createCompany.id)) {
+                    return [...refs];
+                  }
+
+                  const newRef = cache.writeFragment({
+                    data: createCompany,
+                    fragment: gql(/* GraphQL */ `
+                      fragment NewCompany on Company {
+                        address {
+                          line1
+                          line2
+                          line3
+                          line4
+                          line5
+                        }
+                        bank {
+                          accountNumber
+                          sortCode
+                        }
+                        companyNumber
+                        contact {
+                          email
+                          telephone
+                        }
+                        id
+                        name
+                      }
+                    `),
+                  });
+
+                  if (!newRef) {
+                    return [...refs];
+                  }
+
+                  return [...refs, newRef].sort((a, b) => {
+                    const readA = rf<string>('name', a);
+                    const readB = rf<string>('name', b);
+
+                    if (readA && readB) {
+                      return readA.localeCompare(readB);
+                    }
+
+                    return 0;
+                  });
+                },
+              },
+              id: cache.identify({
+                __typename: 'Companies',
+                id: createCompany.id,
+              }),
+            });
+          }
+
+          return incoming;
+        },
+      },
+      deleteClient: {
+        merge: (
+          _existing: StoreObject | null,
+          incoming: StoreObject | null,
+          { cache, readField },
+        ) => {
+          if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
+            const clientRef = incoming as unknown as Reference;
+            const id = readField<string>('id', clientRef);
+            const companyId = readField<string>('companyId', clientRef);
+
+            if (!id || !companyId) {
+              return incoming;
+            }
+
+            const deleteClient = {
+              companyId,
+              id,
+            };
+
+            // Remove from clients list
+            cache.modify({
+              fields: {
+                items: (refs: readonly Reference[], { readField: rf }) =>
+                  refs.filter((ref) => rf('id', ref) !== deleteClient.id),
+              },
+              id: cache.identify({
+                __typename: 'Clients',
+                id: deleteClient.companyId,
+              }),
+            });
+          }
+
+          return incoming;
+        },
+      },
+      deleteCompany: {
+        merge: (
+          _existing: StoreObject | null,
+          incoming: StoreObject | null,
+          { cache, readField },
+        ) => {
+          if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
+            const companyRef = incoming as unknown as Reference;
+            const id = readField<string>('id', companyRef);
+            const owner = readField<string>('owner', companyRef);
+
+            if (!id || !owner) {
+              return incoming;
+            }
+
+            const deleteCompany = {
+              id,
+              owner,
+            };
+
+            // Remove from companies list
+            cache.modify({
+              fields: {
+                items: (refs: readonly Reference[], { readField: rf }) =>
+                  refs.filter((ref) => rf('id', ref) !== deleteCompany.id),
+              },
+              id: cache.identify({
+                __typename: 'Companies',
+                id: deleteCompany.owner,
+              }),
+            });
+          }
+
+          return incoming;
+        },
+      },
       deleteTransaction: {
         // Ensure we can act on the returned entity by evicting it from the cache.
         // This centralizes deletion behavior so components don't need update functions.
@@ -205,6 +594,168 @@ export const typePolicies: StrictTypedTypePolicies = {
               }),
             });
             cache.gc();
+          }
+
+          return incoming;
+        },
+      },
+      updateTransaction: {
+        merge: (
+          _existing: StoreObject | null,
+          incoming: StoreObject | null,
+          { cache, readField },
+        ) => {
+          if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
+            const transactionRef = incoming as unknown as Reference;
+            const category = readField<string>('category', transactionRef);
+            const companyId = readField<string>('companyId', transactionRef);
+            const description = readField<string>(
+              'description',
+              transactionRef,
+            );
+            const id = readField<string>('id', transactionRef);
+            const name = readField<string>('name', transactionRef);
+            const status = readField<string>('status', transactionRef);
+
+            if (
+              !category ||
+              !companyId ||
+              !description ||
+              !id ||
+              !name ||
+              !status
+            ) {
+              return incoming;
+            }
+
+            const updateTransaction = {
+              __typename: 'Transaction',
+              category,
+              companyId,
+              description,
+              id,
+              name,
+              status,
+            };
+
+            const getStatus = (transactionStatus: string) =>
+              transactionStatus === 'confirmed' ? 'pending' : 'confirmed';
+            const otherStatus = getStatus(updateTransaction.status);
+
+            // Add to new status list
+            cache.modify({
+              fields: {
+                items: (refs: readonly Reference[], { readField: rf }) => {
+                  if (
+                    refs.some((ref) => rf('id', ref) === updateTransaction.id)
+                  ) {
+                    return [...refs];
+                  }
+
+                  const newRef = cache.writeFragment({
+                    data: updateTransaction,
+                    fragment: gql(/* GraphQL */ `
+                      fragment NewTransaction on Transaction {
+                        amount
+                        attachment
+                        date
+                        description
+                        id
+                        name
+                        scheduled
+                      }
+                    `),
+                  });
+
+                  if (!newRef) {
+                    return [...refs];
+                  }
+
+                  return [...refs, newRef].sort((a, b) => {
+                    const readA = rf<string>('date', a);
+                    const readB = rf<string>('date', b);
+
+                    if (readA && readB) {
+                      return readA.localeCompare(readB);
+                    }
+
+                    return 0;
+                  });
+                },
+              },
+              id: cache.identify({
+                __typename: 'Transactions',
+                id: updateTransaction.companyId,
+                status: updateTransaction.status,
+              }),
+            });
+
+            // Remove from old status list
+            cache.modify({
+              fields: {
+                items: (refs: readonly Reference[], { readField: rf }) =>
+                  refs.filter((ref) => rf('id', ref) !== updateTransaction.id),
+              },
+              id: cache.identify({
+                __typename: 'Transactions',
+                id: updateTransaction.companyId,
+                status: otherStatus,
+              }),
+            });
+
+            // Update typeahead cache
+            cache.modify({
+              fields: {
+                purchases: (items: string[] | Reference) => {
+                  const descriptions = setItems(items);
+                  const unique = !descriptions.some(
+                    findUnique(updateTransaction, 'description'),
+                  );
+
+                  if (spread(updateTransaction.category !== 'Sales', unique)) {
+                    return [
+                      ...descriptions,
+                      updateTransaction.description,
+                    ].sort((a, b) => a.localeCompare(b));
+                  }
+
+                  return descriptions;
+                },
+                sales: (items: string[] | Reference) => {
+                  const descriptions = setItems(items);
+                  const unique = !descriptions.some(
+                    findUnique(updateTransaction, 'description'),
+                  );
+
+                  if (spread(updateTransaction.category === 'Sales', unique)) {
+                    return [
+                      ...descriptions,
+                      updateTransaction.description,
+                    ].sort((a, b) => a.localeCompare(b));
+                  }
+
+                  return descriptions;
+                },
+                suppliers: (items: string[] | Reference) => {
+                  const suppliers = setItems(items);
+                  const unique = !suppliers.some(
+                    findUnique(updateTransaction, 'name'),
+                  );
+
+                  if (spread(updateTransaction.category !== 'Sales', unique)) {
+                    return [...suppliers, updateTransaction.name].sort((a, b) =>
+                      a.localeCompare(b),
+                    );
+                  }
+
+                  return suppliers;
+                },
+              },
+              id: cache.identify({
+                __typename: 'Typeahead',
+                id: updateTransaction.companyId,
+              }),
+            });
           }
 
           return incoming;

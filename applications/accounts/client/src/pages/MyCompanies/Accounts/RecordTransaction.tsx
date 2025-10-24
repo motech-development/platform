@@ -1,10 +1,4 @@
-import {
-  ApolloCache,
-  MutationUpdaterFunction,
-  Reference,
-  useMutation,
-  useQuery,
-} from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,119 +8,9 @@ import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
 import { gql } from '../../../graphql';
-import {
-  AddTransactionMutation,
-  MutationAddTransactionArgs,
-} from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
-import { findUnique, setItems, spread } from '../../../utils/transactions';
 import UploadAttachment from './shared/UploadAttachment';
 import ViewAttachment from './shared/ViewAttachment';
-
-export const update: MutationUpdaterFunction<
-  AddTransactionMutation,
-  MutationAddTransactionArgs,
-  unknown,
-  ApolloCache<unknown>
-> = (cache, { data }) => {
-  if (data?.addTransaction) {
-    const { addTransaction } = data;
-
-    cache.modify({
-      fields: {
-        purchases: (items: string[] | Reference) => {
-          const descriptions = setItems(items);
-          const unique = !descriptions.some(
-            findUnique(addTransaction, 'description'),
-          );
-
-          if (spread(addTransaction.category !== 'Sales', unique)) {
-            return [...descriptions, addTransaction.description].sort((a, b) =>
-              a.localeCompare(b),
-            );
-          }
-
-          return descriptions;
-        },
-        sales: (items: string[] | Reference) => {
-          const descriptions = setItems(items);
-          const unique = !descriptions.some(
-            findUnique(addTransaction, 'description'),
-          );
-
-          if (spread(addTransaction.category === 'Sales', unique)) {
-            return [...descriptions, addTransaction.description].sort((a, b) =>
-              a.localeCompare(b),
-            );
-          }
-
-          return descriptions;
-        },
-        suppliers: (items: string[] | Reference) => {
-          const suppliers = setItems(items);
-          const unique = !suppliers.some(findUnique(addTransaction, 'name'));
-
-          if (spread(addTransaction.category !== 'Sales', unique)) {
-            return [...suppliers, addTransaction.name].sort((a, b) =>
-              a.localeCompare(b),
-            );
-          }
-
-          return suppliers;
-        },
-      },
-      id: cache.identify({
-        __typename: 'Typeahead',
-        id: addTransaction.companyId,
-      }),
-    });
-
-    cache.modify({
-      fields: {
-        items: (refs: readonly Reference[], { readField }) => {
-          if (refs.some((ref) => readField('id', ref) === addTransaction.id)) {
-            return [...refs];
-          }
-
-          const newRef = cache.writeFragment({
-            data: addTransaction,
-            fragment: gql(/* GraphQL */ `
-              fragment NewTransaction on Transaction {
-                amount
-                attachment
-                date
-                description
-                id
-                name
-                scheduled
-              }
-            `),
-          });
-
-          if (!newRef) {
-            return [...refs];
-          }
-
-          return [...refs, newRef].sort((a, b) => {
-            const readA = readField<string>('date', a);
-            const readB = readField<string>('date', b);
-
-            if (readA && readB) {
-              return readA.localeCompare(readB);
-            }
-
-            return 0;
-          });
-        },
-      },
-      id: cache.identify({
-        __typename: 'Transactions',
-        id: addTransaction.companyId,
-        status: addTransaction.status,
-      }),
-    });
-  }
-};
 
 export const RECORD_TRANSACTION = gql(/* GraphQL */ `
   query RecordTransaction($id: ID!) {
@@ -223,7 +107,6 @@ function RecordTransaction() {
   );
   const save = (input: FormSchema) => {
     mutation({
-      update,
       variables: {
         input,
       },

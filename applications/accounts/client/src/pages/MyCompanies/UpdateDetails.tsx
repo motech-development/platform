@@ -1,10 +1,4 @@
-import {
-  ApolloCache,
-  MutationUpdaterFunction,
-  Reference,
-  useMutation,
-  useQuery,
-} from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import {
   Button,
   Col,
@@ -19,33 +13,7 @@ import CompanyForm, { FormSchema } from '../../components/CompanyForm';
 import Connected from '../../components/Connected';
 import DeleteItem from '../../components/DeleteItem';
 import { gql } from '../../graphql';
-import {
-  DeleteCompanyMutation,
-  MutationDeleteCompanyArgs,
-} from '../../graphql/graphql';
 import invariant from '../../utils/invariant';
-
-export const update: MutationUpdaterFunction<
-  DeleteCompanyMutation,
-  MutationDeleteCompanyArgs,
-  unknown,
-  ApolloCache<unknown>
-> = (cache, { data }) => {
-  if (data?.deleteCompany) {
-    const { deleteCompany } = data;
-
-    cache.modify({
-      fields: {
-        items: (refs: readonly Reference[], { readField }) =>
-          refs.filter((ref) => readField('id', ref) !== deleteCompany.id),
-      },
-      id: cache.identify({
-        __typename: 'Companies',
-        id: deleteCompany.owner,
-      }),
-    });
-  }
-};
 
 export const GET_COMPANY = gql(/* GraphQL */ `
   query GetCompany($id: ID!) {
@@ -184,7 +152,6 @@ function UpdateDetails() {
   };
   const onDelete = () => {
     deleteMutation({
-      update,
       variables: {
         id: companyId,
       },
