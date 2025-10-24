@@ -167,6 +167,7 @@ describe('RecordTransaction', () => {
               result: {
                 data: {
                   addTransaction: {
+                    __typename: 'Transaction',
                     amount: -999.99,
                     attachment: 'company-id/test-id.pdf',
                     category: 'Equipment',
@@ -1032,6 +1033,7 @@ describe('RecordTransaction', () => {
             result: {
               data: {
                 addTransaction: {
+                  __typename: 'Transaction',
                   amount: 999.99,
                   attachment: '',
                   category: 'Equipment',
@@ -1296,6 +1298,7 @@ describe('RecordTransaction', () => {
                   id: 'company-id',
                   items: [
                     {
+                      __typename: 'Client',
                       id: 'client-id',
                       name: 'Motech Development',
                     },
@@ -1345,6 +1348,7 @@ describe('RecordTransaction', () => {
             result: {
               data: {
                 addTransaction: {
+                  __typename: 'Transaction',
                   amount: 999.99,
                   attachment: '',
                   category: 'Sales',
@@ -1612,6 +1616,7 @@ describe('RecordTransaction', () => {
                   id: 'company-id',
                   items: [
                     {
+                      __typename: 'Client',
                       id: 'client-id',
                       name: 'Motech Development',
                     },
@@ -1661,6 +1666,7 @@ describe('RecordTransaction', () => {
             result: {
               data: {
                 addTransaction: {
+                  __typename: 'Transaction',
                   amount: -999.99,
                   attachment: '',
                   category: 'Sales',

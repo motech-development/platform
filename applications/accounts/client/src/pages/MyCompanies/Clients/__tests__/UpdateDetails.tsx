@@ -45,6 +45,7 @@ describe('UpdateDetails', () => {
             result: {
               data: {
                 deleteClient: {
+                  __typename: 'Client',
                   companyId: 'company-id',
                   id: 'client-id',
                   name: 'New client',
@@ -62,7 +63,9 @@ describe('UpdateDetails', () => {
             result: {
               data: {
                 getClient: {
+                  __typename: 'Client',
                   address: {
+                    __typename: 'Address',
                     line1: '1 Street',
                     line2: '',
                     line3: 'Town',
@@ -71,6 +74,7 @@ describe('UpdateDetails', () => {
                   },
                   companyId: 'company-id',
                   contact: {
+                    __typename: 'Contact',
                     email: 'info@contact.com',
                     telephone: '07712345678',
                   },
@@ -85,7 +89,9 @@ describe('UpdateDetails', () => {
               query: UPDATE_CLIENT,
               variables: {
                 input: {
+                  __typename: 'Client',
                   address: {
+                    __typename: 'Address',
                     line1: '1 Street',
                     line2: '',
                     line3: 'Town',
@@ -94,6 +100,7 @@ describe('UpdateDetails', () => {
                   },
                   companyId: 'company-id',
                   contact: {
+                    __typename: 'Contact',
                     email: 'info@contact.com',
                     telephone: '07712345678',
                   },
@@ -105,7 +112,9 @@ describe('UpdateDetails', () => {
             result: {
               data: {
                 updateClient: {
+                  __typename: 'Client',
                   address: {
+                    __typename: 'Address',
                     line1: '1 Street',
                     line2: '',
                     line3: 'Town',
@@ -114,6 +123,7 @@ describe('UpdateDetails', () => {
                   },
                   companyId: 'company-id',
                   contact: {
+                    __typename: 'Contact',
                     email: 'info@contact.com',
                     telephone: '07712345678',
                   },
@@ -322,7 +332,9 @@ describe('UpdateDetails', () => {
             result: {
               data: {
                 getClient: {
+                  __typename: 'Client',
                   address: {
+                    __typename: 'Address',
                     line1: '1 Street',
                     line2: '',
                     line3: 'Town',
@@ -331,6 +343,7 @@ describe('UpdateDetails', () => {
                   },
                   companyId: 'company-id',
                   contact: {
+                    __typename: 'Contact',
                     email: 'info@contact.com',
                     telephone: '07712345678',
                   },
