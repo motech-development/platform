@@ -19,11 +19,41 @@ import {
   Transaction,
   TransactionStatus,
 } from '../graphql/graphql';
-import { findUnique, setItems, spread } from '../utils/transactions';
+import { findUnique, setItems } from '../utils/transactions';
 import Container from './Container';
 import ErrorCard from './ErrorCard';
 
 // Common cache modification patterns
+function updateTypeaheadField(
+  items: string[] | Reference,
+  transaction: Pick<Transaction, 'category' | 'description' | 'name'>,
+  fieldType: 'purchases' | 'sales' | 'suppliers',
+) {
+  const itemList = setItems(items);
+  const isSales = transaction.category === 'Sales';
+  const isPurchases = transaction.category !== 'Sales';
+
+  let shouldAdd = false;
+  let valueToAdd = '';
+
+  if (fieldType === 'purchases' && isPurchases) {
+    shouldAdd = !itemList.some(findUnique(transaction, 'description'));
+    valueToAdd = transaction.description;
+  } else if (fieldType === 'sales' && isSales) {
+    shouldAdd = !itemList.some(findUnique(transaction, 'description'));
+    valueToAdd = transaction.description;
+  } else if (fieldType === 'suppliers' && isPurchases) {
+    shouldAdd = !itemList.some(findUnique(transaction, 'name'));
+    valueToAdd = transaction.name;
+  }
+
+  if (shouldAdd) {
+    return [...itemList, valueToAdd].sort((a, b) => a.localeCompare(b));
+  }
+
+  return itemList;
+}
+
 function updateTypeaheadCache(
   cache: InMemoryCache,
   transaction: Pick<
@@ -33,46 +63,12 @@ function updateTypeaheadCache(
 ) {
   cache.modify({
     fields: {
-      purchases: (items: string[] | Reference) => {
-        const descriptions = setItems(items);
-        const unique = !descriptions.some(
-          findUnique(transaction, 'description'),
-        );
-
-        if (spread(transaction.category !== 'Sales', unique)) {
-          return [...descriptions, transaction.description].sort((a, b) =>
-            a.localeCompare(b),
-          );
-        }
-
-        return descriptions;
-      },
-      sales: (items: string[] | Reference) => {
-        const descriptions = setItems(items);
-        const unique = !descriptions.some(
-          findUnique(transaction, 'description'),
-        );
-
-        if (spread(transaction.category === 'Sales', unique)) {
-          return [...descriptions, transaction.description].sort((a, b) =>
-            a.localeCompare(b),
-          );
-        }
-
-        return descriptions;
-      },
-      suppliers: (items: string[] | Reference) => {
-        const suppliers = setItems(items);
-        const unique = !suppliers.some(findUnique(transaction, 'name'));
-
-        if (spread(transaction.category !== 'Sales', unique)) {
-          return [...suppliers, transaction.name].sort((a, b) =>
-            a.localeCompare(b),
-          );
-        }
-
-        return suppliers;
-      },
+      purchases: (items: string[] | Reference) =>
+        updateTypeaheadField(items, transaction, 'purchases'),
+      sales: (items: string[] | Reference) =>
+        updateTypeaheadField(items, transaction, 'sales'),
+      suppliers: (items: string[] | Reference) =>
+        updateTypeaheadField(items, transaction, 'suppliers'),
     },
     id: cache.identify({
       __typename: 'Typeahead',
@@ -81,32 +77,84 @@ function updateTypeaheadCache(
   });
 }
 
-function addTransactionToCache(
+function createTransactionFragment() {
+  return gql(/* GraphQL */ `
+    fragment NewTransaction on Transaction {
+      amount
+      attachment
+      date
+      description
+      id
+      name
+      scheduled
+    }
+  `);
+}
+
+function createClientFragment() {
+  return gql(/* GraphQL */ `
+    fragment NewClient on Client {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      companyId
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  `);
+}
+
+function createCompanyFragment() {
+  return gql(/* GraphQL */ `
+    fragment NewCompany on Company {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      bank {
+        accountNumber
+        sortCode
+      }
+      companyNumber
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  `);
+}
+
+// Common cache modification helpers
+function addItemToCacheList(
   cache: InMemoryCache,
-  transaction: Pick<Transaction, 'companyId' | 'id' | 'status'> & {
-    __typename: string;
-  },
+  data: Record<string, unknown> & { __typename: string },
+  fragment: ReturnType<typeof gql>,
+  listId: string,
+  sortField: string,
 ) {
-  cache.modify({
+  return cache.modify({
     fields: {
       items: (refs: readonly Reference[], { readField: rf }) => {
-        if (refs.some((ref) => rf('id', ref) === transaction.id)) {
+        if (refs.some((ref) => rf('id', ref) === data.id)) {
           return [...refs];
         }
 
         const newRef = cache.writeFragment({
-          data: transaction,
-          fragment: gql(/* GraphQL */ `
-            fragment NewTransaction on Transaction {
-              amount
-              attachment
-              date
-              description
-              id
-              name
-              scheduled
-            }
-          `),
+          data,
+          fragment,
         });
 
         if (!newRef) {
@@ -114,8 +162,8 @@ function addTransactionToCache(
         }
 
         return [...refs, newRef].sort((a, b) => {
-          const readA = rf<string>('date', a);
-          const readB = rf<string>('date', b);
+          const readA = rf<string>(sortField, a);
+          const readB = rf<string>(sortField, b);
 
           if (readA && readB) {
             return readA.localeCompare(readB);
@@ -125,29 +173,67 @@ function addTransactionToCache(
         });
       },
     },
-    id: cache.identify({
-      __typename: 'Transactions',
-      id: transaction.companyId,
-      status: transaction.status,
-    }),
+    id: listId,
   });
+}
+
+function removeItemFromCacheList(
+  cache: InMemoryCache,
+  itemId: string,
+  listId: string,
+) {
+  return cache.modify({
+    fields: {
+      items: (refs: readonly Reference[], { readField: rf }) =>
+        refs.filter((ref) => rf('id', ref) !== itemId),
+    },
+    id: listId,
+  });
+}
+
+function addTransactionToCache(
+  cache: InMemoryCache,
+  transaction: {
+    __typename: string;
+    companyId: string;
+    id: string;
+    status: string;
+  },
+): void {
+  const listId = cache.identify({
+    __typename: 'Transactions',
+    id: transaction.companyId,
+    status: transaction.status,
+  });
+
+  if (listId) {
+    addItemToCacheList(
+      cache,
+      transaction,
+      createTransactionFragment(),
+      listId,
+      'date',
+    );
+  }
 }
 
 function removeTransactionFromCache(
   cache: InMemoryCache,
-  transaction: Pick<Transaction, 'companyId' | 'id' | 'status'>,
-) {
-  cache.modify({
-    fields: {
-      items: (refs: readonly Reference[], { readField: rf }) =>
-        refs.filter((ref) => rf('id', ref) !== transaction.id),
-    },
-    id: cache.identify({
-      __typename: 'Transactions',
-      id: transaction.companyId,
-      status: transaction.status,
-    }),
+  transaction: {
+    companyId: string;
+    id: string;
+    status: string;
+  },
+): void {
+  const listId = cache.identify({
+    __typename: 'Transactions',
+    id: transaction.companyId,
+    status: transaction.status,
   });
+
+  if (listId) {
+    removeItemFromCacheList(cache, transaction.id, listId);
+  }
 }
 
 export interface IApolloClientProps {
@@ -294,35 +380,23 @@ export const typePolicies: StrictTypedTypePolicies = {
         ) => {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             const transactionRef = incoming as unknown as Reference;
-            const category = readField<string>('category', transactionRef);
-            const companyId = readField<string>('companyId', transactionRef);
-            const description = readField<string>(
-              'description',
-              transactionRef,
-            );
-            const id = readField<string>('id', transactionRef);
-            const name = readField<string>('name', transactionRef);
-            const status = readField<string>('status', transactionRef);
-
-            if (
-              !category ||
-              !companyId ||
-              !description ||
-              !id ||
-              !name ||
-              !status
-            ) {
-              return incoming;
-            }
+            const fields = {
+              category: readField<string>('category', transactionRef),
+              companyId: readField<string>('companyId', transactionRef),
+              description: readField<string>('description', transactionRef),
+              id: readField<string>('id', transactionRef),
+              name: readField<string>('name', transactionRef),
+              status: readField<string>('status', transactionRef),
+            };
 
             const addTransaction = {
               __typename: 'Transaction',
-              category,
-              companyId,
-              description,
-              id,
-              name,
-              status: status as TransactionStatus,
+              category: fields.category!,
+              companyId: fields.companyId!,
+              description: fields.description!,
+              id: fields.id!,
+              name: fields.name!,
+              status: fields.status as TransactionStatus,
             };
 
             // Update typeahead cache
@@ -343,76 +417,38 @@ export const typePolicies: StrictTypedTypePolicies = {
         ) => {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             const clientRef = incoming as unknown as Reference;
-            const id = readField<string>('id', clientRef);
-            const name = readField<string>('name', clientRef);
-            const companyId = readField<string>('companyId', clientRef);
-            const address = readField('address', clientRef);
-            const contact = readField('contact', clientRef);
-
-            if (!id || !name || !companyId) {
-              return incoming;
-            }
+            const fields = {
+              address: readField('address', clientRef),
+              companyId: readField<string>('companyId', clientRef),
+              contact: readField('contact', clientRef),
+              id: readField<string>('id', clientRef),
+              name: readField<string>('name', clientRef),
+            };
 
             const createClient = {
               __typename: 'Client',
-              address,
-              companyId,
-              contact,
-              id,
-              name,
+              address: fields.address,
+              companyId: fields.companyId!,
+              contact: fields.contact,
+              id: fields.id!,
+              name: fields.name!,
             };
 
             // Add to clients list
-            cache.modify({
-              fields: {
-                items: (refs: readonly Reference[], { readField: rf }) => {
-                  if (refs.some((ref) => rf('id', ref) === createClient.id)) {
-                    return [...refs];
-                  }
-
-                  const newRef = cache.writeFragment({
-                    data: createClient,
-                    fragment: gql(/* GraphQL */ `
-                      fragment NewClient on Client {
-                        address {
-                          line1
-                          line2
-                          line3
-                          line4
-                          line5
-                        }
-                        companyId
-                        contact {
-                          email
-                          telephone
-                        }
-                        id
-                        name
-                      }
-                    `),
-                  });
-
-                  if (!newRef) {
-                    return [...refs];
-                  }
-
-                  return [...refs, newRef].sort((a, b) => {
-                    const readA = rf<string>('name', a);
-                    const readB = rf<string>('name', b);
-
-                    if (readA && readB) {
-                      return readA.localeCompare(readB);
-                    }
-
-                    return 0;
-                  });
-                },
-              },
-              id: cache.identify({
-                __typename: 'Clients',
-                id: createClient.companyId,
-              }),
+            const listId = cache.identify({
+              __typename: 'Clients',
+              id: createClient.companyId,
             });
+
+            if (listId) {
+              addItemToCacheList(
+                cache,
+                createClient,
+                createClientFragment(),
+                listId,
+                'name',
+              );
+            }
           }
 
           return incoming;
@@ -426,85 +462,40 @@ export const typePolicies: StrictTypedTypePolicies = {
         ) => {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             const companyRef = incoming as unknown as Reference;
-            const id = readField<string>('id', companyRef);
-            const name = readField<string>('name', companyRef);
-            const address = readField('address', companyRef);
-            const bank = readField('bank', companyRef);
-            const companyNumber = readField<string>(
-              'companyNumber',
-              companyRef,
-            );
-            const contact = readField('contact', companyRef);
-
-            if (!id || !name) {
-              return incoming;
-            }
+            const fields = {
+              address: readField('address', companyRef),
+              bank: readField('bank', companyRef),
+              companyNumber: readField<string>('companyNumber', companyRef),
+              contact: readField('contact', companyRef),
+              id: readField<string>('id', companyRef),
+              name: readField<string>('name', companyRef),
+            };
 
             const createCompany = {
               __typename: 'Company',
-              address,
-              bank,
-              companyNumber,
-              contact,
-              id,
-              name,
+              address: fields.address,
+              bank: fields.bank,
+              companyNumber: fields.companyNumber,
+              contact: fields.contact,
+              id: fields.id!,
+              name: fields.name!,
             };
 
             // Add to companies list
-            cache.modify({
-              fields: {
-                items: (refs: readonly Reference[], { readField: rf }) => {
-                  if (refs.some((ref) => rf('id', ref) === createCompany.id)) {
-                    return [...refs];
-                  }
-
-                  const newRef = cache.writeFragment({
-                    data: createCompany,
-                    fragment: gql(/* GraphQL */ `
-                      fragment NewCompany on Company {
-                        address {
-                          line1
-                          line2
-                          line3
-                          line4
-                          line5
-                        }
-                        bank {
-                          accountNumber
-                          sortCode
-                        }
-                        companyNumber
-                        contact {
-                          email
-                          telephone
-                        }
-                        id
-                        name
-                      }
-                    `),
-                  });
-
-                  if (!newRef) {
-                    return [...refs];
-                  }
-
-                  return [...refs, newRef].sort((a, b) => {
-                    const readA = rf<string>('name', a);
-                    const readB = rf<string>('name', b);
-
-                    if (readA && readB) {
-                      return readA.localeCompare(readB);
-                    }
-
-                    return 0;
-                  });
-                },
-              },
-              id: cache.identify({
-                __typename: 'Companies',
-                id: createCompany.id,
-              }),
+            const listId = cache.identify({
+              __typename: 'Companies',
+              id: createCompany.id,
             });
+
+            if (listId) {
+              addItemToCacheList(
+                cache,
+                createCompany,
+                createCompanyFragment(),
+                listId,
+                'name',
+              );
+            }
           }
 
           return incoming;
@@ -518,29 +509,20 @@ export const typePolicies: StrictTypedTypePolicies = {
         ) => {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             const clientRef = incoming as unknown as Reference;
-            const id = readField<string>('id', clientRef);
-            const companyId = readField<string>('companyId', clientRef);
-
-            if (!id || !companyId) {
-              return incoming;
-            }
-
-            const deleteClient = {
-              companyId,
-              id,
+            const fields = {
+              companyId: readField<string>('companyId', clientRef),
+              id: readField<string>('id', clientRef),
             };
 
             // Remove from clients list
-            cache.modify({
-              fields: {
-                items: (refs: readonly Reference[], { readField: rf }) =>
-                  refs.filter((ref) => rf('id', ref) !== deleteClient.id),
-              },
-              id: cache.identify({
-                __typename: 'Clients',
-                id: deleteClient.companyId,
-              }),
+            const listId = cache.identify({
+              __typename: 'Clients',
+              id: fields.companyId!,
             });
+
+            if (listId) {
+              removeItemFromCacheList(cache, fields.id!, listId);
+            }
           }
 
           return incoming;
@@ -554,29 +536,20 @@ export const typePolicies: StrictTypedTypePolicies = {
         ) => {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             const companyRef = incoming as unknown as Reference;
-            const id = readField<string>('id', companyRef);
-            const owner = readField<string>('owner', companyRef);
-
-            if (!id || !owner) {
-              return incoming;
-            }
-
-            const deleteCompany = {
-              id,
-              owner,
+            const fields = {
+              id: readField<string>('id', companyRef),
+              owner: readField<string>('owner', companyRef),
             };
 
             // Remove from companies list
-            cache.modify({
-              fields: {
-                items: (refs: readonly Reference[], { readField: rf }) =>
-                  refs.filter((ref) => rf('id', ref) !== deleteCompany.id),
-              },
-              id: cache.identify({
-                __typename: 'Companies',
-                id: deleteCompany.owner,
-              }),
+            const listId = cache.identify({
+              __typename: 'Companies',
+              id: fields.owner!,
             });
+
+            if (listId) {
+              removeItemFromCacheList(cache, fields.id!, listId);
+            }
           }
 
           return incoming;
@@ -593,34 +566,32 @@ export const typePolicies: StrictTypedTypePolicies = {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             // incoming is a reference, we need to read the actual data
             const transactionRef = incoming as unknown as Reference;
-            const deleteTransaction = {
+            const fields = {
               companyId: readField<string>('companyId', transactionRef),
               id: readField<string>('id', transactionRef),
               status: readField<string>('status', transactionRef),
             };
 
             // Remove from Transactions items
-            cache.modify({
-              fields: {
-                items: (refs: readonly Reference[], { readField: rf }) =>
-                  refs.filter((ref) => rf('id', ref) !== deleteTransaction.id),
-              },
-              id: cache.identify({
-                __typename: 'Transactions',
-                companyId: deleteTransaction.companyId,
-                status: deleteTransaction.status,
-              }),
+            const transactionsListId = cache.identify({
+              __typename: 'Transactions',
+              companyId: fields.companyId!,
+              status: fields.status!,
             });
+
+            if (transactionsListId) {
+              removeItemFromCacheList(cache, fields.id!, transactionsListId);
+            }
 
             // Remove from Balance transactions
             cache.modify({
               fields: {
                 transactions: (refs: readonly Reference[], { readField: rf }) =>
-                  refs.filter((ref) => rf('id', ref) !== deleteTransaction.id),
+                  refs.filter((ref) => rf('id', ref) !== fields.id),
               },
               id: cache.identify({
                 __typename: 'Balance',
-                companyId: deleteTransaction.companyId,
+                companyId: fields.companyId,
               }),
             });
 
@@ -628,7 +599,7 @@ export const typePolicies: StrictTypedTypePolicies = {
             cache.evict({
               id: cache.identify({
                 __typename: 'Transaction',
-                id: deleteTransaction.id,
+                id: fields.id,
               }),
             });
             cache.gc();
@@ -645,35 +616,23 @@ export const typePolicies: StrictTypedTypePolicies = {
         ) => {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             const transactionRef = incoming as unknown as Reference;
-            const category = readField<string>('category', transactionRef);
-            const companyId = readField<string>('companyId', transactionRef);
-            const description = readField<string>(
-              'description',
-              transactionRef,
-            );
-            const id = readField<string>('id', transactionRef);
-            const name = readField<string>('name', transactionRef);
-            const status = readField<string>('status', transactionRef);
-
-            if (
-              !category ||
-              !companyId ||
-              !description ||
-              !id ||
-              !name ||
-              !status
-            ) {
-              return incoming;
-            }
+            const fields = {
+              category: readField<string>('category', transactionRef),
+              companyId: readField<string>('companyId', transactionRef),
+              description: readField<string>('description', transactionRef),
+              id: readField<string>('id', transactionRef),
+              name: readField<string>('name', transactionRef),
+              status: readField<string>('status', transactionRef),
+            };
 
             const updateTransaction = {
               __typename: 'Transaction',
-              category,
-              companyId,
-              description,
-              id,
-              name,
-              status: status as TransactionStatus,
+              category: fields.category!,
+              companyId: fields.companyId!,
+              description: fields.description!,
+              id: fields.id!,
+              name: fields.name!,
+              status: fields.status as TransactionStatus,
             };
 
             const getStatus = (transactionStatus: TransactionStatus) =>
