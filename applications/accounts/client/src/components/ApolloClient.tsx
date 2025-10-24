@@ -54,6 +54,83 @@ function updateTypeaheadField(
   return itemList;
 }
 
+// Common field extraction helpers
+function extractTransactionFields(
+  ref: Reference,
+  readField: FieldFunctionOptions['readField'],
+) {
+  return {
+    category: readField<string>('category', ref),
+    companyId: readField<string>('companyId', ref),
+    description: readField<string>('description', ref),
+    id: readField<string>('id', ref),
+    name: readField<string>('name', ref),
+    status: readField<string>('status', ref),
+  };
+}
+
+function extractClientFields(
+  ref: Reference,
+  readField: FieldFunctionOptions['readField'],
+) {
+  return {
+    address: readField('address', ref),
+    companyId: readField<string>('companyId', ref),
+    contact: readField('contact', ref),
+    id: readField<string>('id', ref),
+    name: readField<string>('name', ref),
+  };
+}
+
+function extractCompanyFields(
+  ref: Reference,
+  readField: FieldFunctionOptions['readField'],
+) {
+  return {
+    address: readField('address', ref),
+    bank: readField('bank', ref),
+    companyNumber: readField<string>('companyNumber', ref),
+    contact: readField('contact', ref),
+    id: readField<string>('id', ref),
+    name: readField<string>('name', ref),
+  };
+}
+
+function extractDeleteFields(
+  ref: Reference,
+  readField: FieldFunctionOptions['readField'],
+) {
+  return {
+    companyId: readField<string>('companyId', ref),
+    id: readField<string>('id', ref),
+  };
+}
+
+function extractDeleteTransactionFields(
+  ref: Reference,
+  readField: FieldFunctionOptions['readField'],
+) {
+  return {
+    companyId: readField<string>('companyId', ref),
+    id: readField<string>('id', ref),
+    status: readField<string>('status', ref),
+  };
+}
+
+// Common cache identification helper
+function getCacheListId(
+  cache: InMemoryCache,
+  typename: string,
+  id: string,
+  additionalFields?: Record<string, string>,
+) {
+  return cache.identify({
+    __typename: typename,
+    id,
+    ...additionalFields,
+  });
+}
+
 function updateTypeaheadCache(
   cache: InMemoryCache,
   transaction: Pick<
@@ -200,9 +277,7 @@ function addTransactionToCache(
     status: string;
   },
 ): void {
-  const listId = cache.identify({
-    __typename: 'Transactions',
-    id: transaction.companyId,
+  const listId = getCacheListId(cache, 'Transactions', transaction.companyId, {
     status: transaction.status,
   });
 
@@ -225,9 +300,7 @@ function removeTransactionFromCache(
     status: string;
   },
 ): void {
-  const listId = cache.identify({
-    __typename: 'Transactions',
-    id: transaction.companyId,
+  const listId = getCacheListId(cache, 'Transactions', transaction.companyId, {
     status: transaction.status,
   });
 
@@ -380,14 +453,7 @@ export const typePolicies: StrictTypedTypePolicies = {
         ) => {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             const transactionRef = incoming as unknown as Reference;
-            const fields = {
-              category: readField<string>('category', transactionRef),
-              companyId: readField<string>('companyId', transactionRef),
-              description: readField<string>('description', transactionRef),
-              id: readField<string>('id', transactionRef),
-              name: readField<string>('name', transactionRef),
-              status: readField<string>('status', transactionRef),
-            };
+            const fields = extractTransactionFields(transactionRef, readField);
 
             const addTransaction = {
               __typename: 'Transaction',
@@ -417,13 +483,7 @@ export const typePolicies: StrictTypedTypePolicies = {
         ) => {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             const clientRef = incoming as unknown as Reference;
-            const fields = {
-              address: readField('address', clientRef),
-              companyId: readField<string>('companyId', clientRef),
-              contact: readField('contact', clientRef),
-              id: readField<string>('id', clientRef),
-              name: readField<string>('name', clientRef),
-            };
+            const fields = extractClientFields(clientRef, readField);
 
             const createClient = {
               __typename: 'Client',
@@ -435,10 +495,11 @@ export const typePolicies: StrictTypedTypePolicies = {
             };
 
             // Add to clients list
-            const listId = cache.identify({
-              __typename: 'Clients',
-              id: createClient.companyId,
-            });
+            const listId = getCacheListId(
+              cache,
+              'Clients',
+              createClient.companyId,
+            );
 
             if (listId) {
               addItemToCacheList(
@@ -462,14 +523,7 @@ export const typePolicies: StrictTypedTypePolicies = {
         ) => {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             const companyRef = incoming as unknown as Reference;
-            const fields = {
-              address: readField('address', companyRef),
-              bank: readField('bank', companyRef),
-              companyNumber: readField<string>('companyNumber', companyRef),
-              contact: readField('contact', companyRef),
-              id: readField<string>('id', companyRef),
-              name: readField<string>('name', companyRef),
-            };
+            const fields = extractCompanyFields(companyRef, readField);
 
             const createCompany = {
               __typename: 'Company',
@@ -482,10 +536,7 @@ export const typePolicies: StrictTypedTypePolicies = {
             };
 
             // Add to companies list
-            const listId = cache.identify({
-              __typename: 'Companies',
-              id: createCompany.id,
-            });
+            const listId = getCacheListId(cache, 'Companies', createCompany.id);
 
             if (listId) {
               addItemToCacheList(
@@ -509,16 +560,10 @@ export const typePolicies: StrictTypedTypePolicies = {
         ) => {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             const clientRef = incoming as unknown as Reference;
-            const fields = {
-              companyId: readField<string>('companyId', clientRef),
-              id: readField<string>('id', clientRef),
-            };
+            const fields = extractDeleteFields(clientRef, readField);
 
             // Remove from clients list
-            const listId = cache.identify({
-              __typename: 'Clients',
-              id: fields.companyId!,
-            });
+            const listId = getCacheListId(cache, 'Clients', fields.companyId!);
 
             if (listId) {
               removeItemFromCacheList(cache, fields.id!, listId);
@@ -542,10 +587,7 @@ export const typePolicies: StrictTypedTypePolicies = {
             };
 
             // Remove from companies list
-            const listId = cache.identify({
-              __typename: 'Companies',
-              id: fields.owner!,
-            });
+            const listId = getCacheListId(cache, 'Companies', fields.owner!);
 
             if (listId) {
               removeItemFromCacheList(cache, fields.id!, listId);
@@ -566,18 +608,18 @@ export const typePolicies: StrictTypedTypePolicies = {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             // incoming is a reference, we need to read the actual data
             const transactionRef = incoming as unknown as Reference;
-            const fields = {
-              companyId: readField<string>('companyId', transactionRef),
-              id: readField<string>('id', transactionRef),
-              status: readField<string>('status', transactionRef),
-            };
+            const fields = extractDeleteTransactionFields(
+              transactionRef,
+              readField,
+            );
 
             // Remove from Transactions items
-            const transactionsListId = cache.identify({
-              __typename: 'Transactions',
-              companyId: fields.companyId!,
-              status: fields.status!,
-            });
+            const transactionsListId = getCacheListId(
+              cache,
+              'Transactions',
+              fields.companyId!,
+              { status: fields.status! },
+            );
 
             if (transactionsListId) {
               removeItemFromCacheList(cache, fields.id!, transactionsListId);
@@ -589,18 +631,12 @@ export const typePolicies: StrictTypedTypePolicies = {
                 transactions: (refs: readonly Reference[], { readField: rf }) =>
                   refs.filter((ref) => rf('id', ref) !== fields.id),
               },
-              id: cache.identify({
-                __typename: 'Balance',
-                companyId: fields.companyId,
-              }),
+              id: getCacheListId(cache, 'Balance', fields.companyId!),
             });
 
             // Evict the transaction entity itself
             cache.evict({
-              id: cache.identify({
-                __typename: 'Transaction',
-                id: fields.id,
-              }),
+              id: getCacheListId(cache, 'Transaction', fields.id!),
             });
             cache.gc();
           }
@@ -616,14 +652,7 @@ export const typePolicies: StrictTypedTypePolicies = {
         ) => {
           if (incoming && typeof incoming === 'object' && '__ref' in incoming) {
             const transactionRef = incoming as unknown as Reference;
-            const fields = {
-              category: readField<string>('category', transactionRef),
-              companyId: readField<string>('companyId', transactionRef),
-              description: readField<string>('description', transactionRef),
-              id: readField<string>('id', transactionRef),
-              name: readField<string>('name', transactionRef),
-              status: readField<string>('status', transactionRef),
-            };
+            const fields = extractTransactionFields(transactionRef, readField);
 
             const updateTransaction = {
               __typename: 'Transaction',
