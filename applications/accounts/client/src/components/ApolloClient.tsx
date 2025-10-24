@@ -12,13 +12,143 @@ import { Loader } from '@motech-development/breeze-ui';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Notification,
   OnNotificationSubscription,
   Report,
   StrictTypedTypePolicies,
+  Transaction,
+  TransactionStatus,
 } from '../graphql/graphql';
 import { findUnique, setItems, spread } from '../utils/transactions';
 import Container from './Container';
 import ErrorCard from './ErrorCard';
+
+// Common cache modification patterns
+function updateTypeaheadCache(
+  cache: InMemoryCache,
+  transaction: Pick<
+    Transaction,
+    'category' | 'companyId' | 'description' | 'name'
+  >,
+) {
+  cache.modify({
+    fields: {
+      purchases: (items: string[] | Reference) => {
+        const descriptions = setItems(items);
+        const unique = !descriptions.some(
+          findUnique(transaction, 'description'),
+        );
+
+        if (spread(transaction.category !== 'Sales', unique)) {
+          return [...descriptions, transaction.description].sort((a, b) =>
+            a.localeCompare(b),
+          );
+        }
+
+        return descriptions;
+      },
+      sales: (items: string[] | Reference) => {
+        const descriptions = setItems(items);
+        const unique = !descriptions.some(
+          findUnique(transaction, 'description'),
+        );
+
+        if (spread(transaction.category === 'Sales', unique)) {
+          return [...descriptions, transaction.description].sort((a, b) =>
+            a.localeCompare(b),
+          );
+        }
+
+        return descriptions;
+      },
+      suppliers: (items: string[] | Reference) => {
+        const suppliers = setItems(items);
+        const unique = !suppliers.some(findUnique(transaction, 'name'));
+
+        if (spread(transaction.category !== 'Sales', unique)) {
+          return [...suppliers, transaction.name].sort((a, b) =>
+            a.localeCompare(b),
+          );
+        }
+
+        return suppliers;
+      },
+    },
+    id: cache.identify({
+      __typename: 'Typeahead',
+      id: transaction.companyId,
+    }),
+  });
+}
+
+function addTransactionToCache(
+  cache: InMemoryCache,
+  transaction: Pick<Transaction, 'companyId' | 'id' | 'status'> & {
+    __typename: string;
+  },
+) {
+  cache.modify({
+    fields: {
+      items: (refs: readonly Reference[], { readField: rf }) => {
+        if (refs.some((ref) => rf('id', ref) === transaction.id)) {
+          return [...refs];
+        }
+
+        const newRef = cache.writeFragment({
+          data: transaction,
+          fragment: gql(/* GraphQL */ `
+            fragment NewTransaction on Transaction {
+              amount
+              attachment
+              date
+              description
+              id
+              name
+              scheduled
+            }
+          `),
+        });
+
+        if (!newRef) {
+          return [...refs];
+        }
+
+        return [...refs, newRef].sort((a, b) => {
+          const readA = rf<string>('date', a);
+          const readB = rf<string>('date', b);
+
+          if (readA && readB) {
+            return readA.localeCompare(readB);
+          }
+
+          return 0;
+        });
+      },
+    },
+    id: cache.identify({
+      __typename: 'Transactions',
+      id: transaction.companyId,
+      status: transaction.status,
+    }),
+  });
+}
+
+function removeTransactionFromCache(
+  cache: InMemoryCache,
+  transaction: Pick<Transaction, 'companyId' | 'id' | 'status'>,
+) {
+  cache.modify({
+    fields: {
+      items: (refs: readonly Reference[], { readField: rf }) =>
+        refs.filter((ref) => rf('id', ref) !== transaction.id),
+    },
+    id: cache.identify({
+      __typename: 'Transactions',
+      id: transaction.companyId,
+      status: transaction.status,
+    }),
+  });
+}
 
 export interface IApolloClientProps {
   children: ReactNode;
@@ -108,7 +238,7 @@ function updateReportsCache(
 
 function updateNotificationsCache(
   cache: InMemoryCache,
-  notificationData: { id: string },
+  notificationData: Pick<Notification, 'id'>,
   existingNotifications: unknown,
   readField: FieldFunctionOptions['readField'],
 ) {
@@ -192,106 +322,14 @@ export const typePolicies: StrictTypedTypePolicies = {
               description,
               id,
               name,
-              status,
+              status: status as TransactionStatus,
             };
 
             // Update typeahead cache
-            cache.modify({
-              fields: {
-                purchases: (items: string[] | Reference) => {
-                  const descriptions = setItems(items);
-                  const unique = !descriptions.some(
-                    findUnique(addTransaction, 'description'),
-                  );
-
-                  if (spread(addTransaction.category !== 'Sales', unique)) {
-                    return [...descriptions, addTransaction.description].sort(
-                      (a, b) => a.localeCompare(b),
-                    );
-                  }
-
-                  return descriptions;
-                },
-                sales: (items: string[] | Reference) => {
-                  const descriptions = setItems(items);
-                  const unique = !descriptions.some(
-                    findUnique(addTransaction, 'description'),
-                  );
-
-                  if (spread(addTransaction.category === 'Sales', unique)) {
-                    return [...descriptions, addTransaction.description].sort(
-                      (a, b) => a.localeCompare(b),
-                    );
-                  }
-
-                  return descriptions;
-                },
-                suppliers: (items: string[] | Reference) => {
-                  const suppliers = setItems(items);
-                  const unique = !suppliers.some(
-                    findUnique(addTransaction, 'name'),
-                  );
-
-                  if (spread(addTransaction.category !== 'Sales', unique)) {
-                    return [...suppliers, addTransaction.name].sort((a, b) =>
-                      a.localeCompare(b),
-                    );
-                  }
-
-                  return suppliers;
-                },
-              },
-              id: cache.identify({
-                __typename: 'Typeahead',
-                id: addTransaction.companyId,
-              }),
-            });
+            updateTypeaheadCache(cache, addTransaction);
 
             // Add to transactions list
-            cache.modify({
-              fields: {
-                items: (refs: readonly Reference[], { readField: rf }) => {
-                  if (refs.some((ref) => rf('id', ref) === addTransaction.id)) {
-                    return [...refs];
-                  }
-
-                  const newRef = cache.writeFragment({
-                    data: addTransaction,
-                    fragment: gql(/* GraphQL */ `
-                      fragment NewTransaction on Transaction {
-                        amount
-                        attachment
-                        date
-                        description
-                        id
-                        name
-                        scheduled
-                      }
-                    `),
-                  });
-
-                  if (!newRef) {
-                    return [...refs];
-                  }
-
-                  return [...refs, newRef].sort((a, b) => {
-                    const readA = rf<string>('date', a);
-                    const readB = rf<string>('date', b);
-
-                    if (readA && readB) {
-                      return readA.localeCompare(readB);
-                    }
-
-                    return 0;
-                  });
-                },
-              },
-              id: cache.identify({
-                __typename: 'Transactions',
-                id: addTransaction.companyId,
-                status: addTransaction.status,
-              }),
-            });
+            addTransactionToCache(cache, addTransaction);
           }
 
           return incoming;
@@ -635,127 +673,27 @@ export const typePolicies: StrictTypedTypePolicies = {
               description,
               id,
               name,
-              status,
+              status: status as TransactionStatus,
             };
 
-            const getStatus = (transactionStatus: string) =>
-              transactionStatus === 'confirmed' ? 'pending' : 'confirmed';
+            const getStatus = (transactionStatus: TransactionStatus) =>
+              transactionStatus === TransactionStatus.Confirmed
+                ? TransactionStatus.Pending
+                : TransactionStatus.Confirmed;
             const otherStatus = getStatus(updateTransaction.status);
 
             // Add to new status list
-            cache.modify({
-              fields: {
-                items: (refs: readonly Reference[], { readField: rf }) => {
-                  if (
-                    refs.some((ref) => rf('id', ref) === updateTransaction.id)
-                  ) {
-                    return [...refs];
-                  }
-
-                  const newRef = cache.writeFragment({
-                    data: updateTransaction,
-                    fragment: gql(/* GraphQL */ `
-                      fragment NewTransaction on Transaction {
-                        amount
-                        attachment
-                        date
-                        description
-                        id
-                        name
-                        scheduled
-                      }
-                    `),
-                  });
-
-                  if (!newRef) {
-                    return [...refs];
-                  }
-
-                  return [...refs, newRef].sort((a, b) => {
-                    const readA = rf<string>('date', a);
-                    const readB = rf<string>('date', b);
-
-                    if (readA && readB) {
-                      return readA.localeCompare(readB);
-                    }
-
-                    return 0;
-                  });
-                },
-              },
-              id: cache.identify({
-                __typename: 'Transactions',
-                id: updateTransaction.companyId,
-                status: updateTransaction.status,
-              }),
-            });
+            addTransactionToCache(cache, updateTransaction);
 
             // Remove from old status list
-            cache.modify({
-              fields: {
-                items: (refs: readonly Reference[], { readField: rf }) =>
-                  refs.filter((ref) => rf('id', ref) !== updateTransaction.id),
-              },
-              id: cache.identify({
-                __typename: 'Transactions',
-                id: updateTransaction.companyId,
-                status: otherStatus,
-              }),
+            removeTransactionFromCache(cache, {
+              companyId: updateTransaction.companyId,
+              id: updateTransaction.id,
+              status: otherStatus,
             });
 
             // Update typeahead cache
-            cache.modify({
-              fields: {
-                purchases: (items: string[] | Reference) => {
-                  const descriptions = setItems(items);
-                  const unique = !descriptions.some(
-                    findUnique(updateTransaction, 'description'),
-                  );
-
-                  if (spread(updateTransaction.category !== 'Sales', unique)) {
-                    return [
-                      ...descriptions,
-                      updateTransaction.description,
-                    ].sort((a, b) => a.localeCompare(b));
-                  }
-
-                  return descriptions;
-                },
-                sales: (items: string[] | Reference) => {
-                  const descriptions = setItems(items);
-                  const unique = !descriptions.some(
-                    findUnique(updateTransaction, 'description'),
-                  );
-
-                  if (spread(updateTransaction.category === 'Sales', unique)) {
-                    return [
-                      ...descriptions,
-                      updateTransaction.description,
-                    ].sort((a, b) => a.localeCompare(b));
-                  }
-
-                  return descriptions;
-                },
-                suppliers: (items: string[] | Reference) => {
-                  const suppliers = setItems(items);
-                  const unique = !suppliers.some(
-                    findUnique(updateTransaction, 'name'),
-                  );
-
-                  if (spread(updateTransaction.category !== 'Sales', unique)) {
-                    return [...suppliers, updateTransaction.name].sort((a, b) =>
-                      a.localeCompare(b),
-                    );
-                  }
-
-                  return suppliers;
-                },
-              },
-              id: cache.identify({
-                __typename: 'Typeahead',
-                id: updateTransaction.companyId,
-              }),
-            });
+            updateTypeaheadCache(cache, updateTransaction);
           }
 
           return incoming;
