@@ -353,6 +353,40 @@ test.describe('VAT registered', () => {
   });
 
   test.describe('Accounts', () => {
+    test.beforeAll(async () => {
+      const { writeFile } = await import('node:fs/promises');
+      const { join } = await import('node:path');
+
+      const eicarPath = join(
+        __dirname,
+        'fixtures',
+        'upload',
+        'eicar.txt',
+      );
+      const eicarContent =
+        'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
+
+      await writeFile(eicarPath, eicarContent);
+    });
+
+    test.afterAll(async () => {
+      const { unlink } = await import('node:fs/promises');
+      const { join } = await import('node:path');
+
+      const eicarPath = join(
+        __dirname,
+        'fixtures',
+        'upload',
+        'eicar.txt',
+      );
+
+      try {
+        await unlink(eicarPath);
+      } catch {
+        // File may already be deleted by AV or not exist
+      }
+    });
+
     test.beforeEach(async ({ companies, page }) => {
       const company = companies[0];
 
