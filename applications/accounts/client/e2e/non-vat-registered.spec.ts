@@ -586,7 +586,7 @@ test.describe('Non-VAT registered', () => {
       ).toHaveCount(0);
     });
 
-    test('should have published the scheduled transaction', async ({
+    test('should have published the scheduled transaction and refund', async ({
       page,
     }) => {
       test.setTimeout(630000);
@@ -594,9 +594,9 @@ test.describe('Non-VAT registered', () => {
       await expect(async () => {
         await page.reload();
 
-        await expect(page.getByText('Balance: £3922.40')).toBeVisible();
+        await expect(page.getByText('Balance: £3942.40')).toBeVisible();
         await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
-        await expect(page.getByText('VAT paid: £12.94')).toBeVisible();
+        await expect(page.getByText('VAT paid: £9.61')).toBeVisible();
       }).toPass({
         timeout: 600000,
       });
