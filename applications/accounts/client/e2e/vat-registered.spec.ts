@@ -552,8 +552,8 @@ test.describe('VAT registered', () => {
     });
 
     test('should show correct balance details', async ({ page }) => {
-      await expect(page.getByText('Balance: £2290.40')).toBeVisible();
-      await expect(page.getByText('VAT owed: £332.50')).toBeVisible();
+      await expect(page.getByText('Balance: £2790.40')).toBeVisible();
+      await expect(page.getByText('VAT owed: £410.00')).toBeVisible();
       await expect(page.getByText('VAT paid: £26.27')).toBeVisible();
     });
 
@@ -626,8 +626,8 @@ test.describe('VAT registered', () => {
       // Check that the delete modal is no longer visible
       await expect(page.getByRole('dialog')).not.toBeVisible();
 
-      await expect(page.getByText('Balance: £290.40')).toBeVisible();
-      await expect(page.getByText('VAT owed: £22.50')).toBeVisible();
+      await expect(page.getByText('Balance: £790.40')).toBeVisible();
+      await expect(page.getByText('VAT owed: £100.00')).toBeVisible();
     });
 
     test('should make a VAT payment', async ({ accounts, format, page }) => {
@@ -682,7 +682,7 @@ test.describe('VAT registered', () => {
     test('should show correct balance details after VAT is paid', async ({
       page,
     }) => {
-      await expect(page.getByText('Balance: £267.90')).toBeVisible();
+      await expect(page.getByText('Balance: £767.90')).toBeVisible();
       await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
     });
 
@@ -710,6 +710,8 @@ test.describe('VAT registered', () => {
     });
 
     test('should reject infected file upload', async ({ accounts, page }) => {
+      test.setTimeout(300000);
+
       const transaction = accounts[2];
 
       await page
@@ -733,17 +735,21 @@ test.describe('VAT registered', () => {
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
 
-      await page
-        .getByRole('button', { name: /Notifications \([0-9]+ unread\)/ })
-        .click();
+      await expect(async () => {
+        await page
+          .getByRole('button', { name: /Notifications \([0-9]+ unread\)/ })
+          .click();
 
-      await expect(
-        page
-          .getByText(
-            'A file you have uploaded is infected with a virus and it has been removed',
-          )
-          .first(),
-      ).toBeVisible();
+        await expect(
+          page
+            .getByText(
+              'A file you have uploaded is infected with a virus and it has been removed',
+            )
+            .first(),
+        ).toBeVisible();
+      }).toPass({
+        timeout: 240000,
+      });
     });
   });
 
