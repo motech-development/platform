@@ -444,6 +444,47 @@ test.describe('VAT registered', () => {
       ).toBeVisible();
     });
 
+    test('should update a refund', async ({ accounts, format, page }) => {
+      const transaction = accounts[8];
+
+      await page.getByTestId(`View ${transaction.supplier}`).nth(2).click();
+
+      await expect(
+        page.getByRole('heading', { name: 'View transaction' }),
+      ).toBeVisible();
+
+      await expect(page.getByLabel('Sale')).toBeChecked();
+      await expect(page.getByLabel('Supplier')).toHaveValue(
+        transaction.supplier,
+      );
+      await expect(page.getByLabel('Description')).toHaveValue(
+        transaction.description,
+      );
+      await expect(page.getByLabel('Confirmed')).toBeChecked();
+      await expect(page.getByLabel('Yes')).toBeChecked();
+
+      await page.getByLabel('Description').fill('Updated refund description');
+
+      await page.getByRole('button', { name: 'Save' }).click();
+
+      await expect(
+        page.getByRole('heading', { name: 'Accounts' }).nth(1),
+      ).toBeVisible();
+    });
+
+    test('should delete a refund', async ({ accounts, page }) => {
+      const transaction = accounts[8];
+
+      await page.getByTestId(`Delete ${transaction.supplier}`).nth(2).click();
+
+      await page
+        .getByLabel(`Please type ${transaction.supplier} to confirm`)
+        .fill(transaction.supplier);
+      await page.getByRole('button', { name: 'Delete' }).last().click();
+
+      await expect(page.getByRole('dialog')).not.toBeVisible();
+    });
+
     test('should add a confirmed purchase', async ({
       accounts,
       format,
@@ -665,6 +706,43 @@ test.describe('VAT registered', () => {
         page.getByRole('alert').filter({
           hasText: 'The download has started',
         }),
+      ).toBeVisible();
+    });
+
+    test('should reject infected file upload', async ({ accounts, page }) => {
+      const transaction = accounts[2];
+
+      await page
+        .getByRole('link', { name: 'Record a new transaction' })
+        .click();
+
+      await page.getByLabel('Purchase').check();
+      await page.getByLabel('Supplier').fill(transaction.supplier);
+      await page.getByLabel('Description').fill('EICAR test upload');
+      await page.getByLabel('Confirmed').check();
+      await page.getByLabel('Category').selectOption(transaction.category);
+      await page.getByLabel('Amount').fill(transaction.amount);
+
+      const fileInput = page.getByLabel('Select file to upload');
+      await fileInput.setInputFiles('e2e/fixtures/upload/eicar.txt');
+      await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
+
+      await page.getByRole('button', { name: 'Save' }).click();
+
+      await expect(
+        page.getByRole('heading', { name: 'Accounts' }).nth(1),
+      ).toBeVisible();
+
+      await page
+        .getByRole('button', { name: /Notifications \([0-9]+ unread\)/ })
+        .click();
+
+      await expect(
+        page
+          .getByText(
+            'A file you have uploaded is infected with a virus and it has been removed',
+          )
+          .first(),
       ).toBeVisible();
     });
   });

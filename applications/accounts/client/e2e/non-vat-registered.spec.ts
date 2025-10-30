@@ -525,6 +525,37 @@ test.describe('Non-VAT registered', () => {
       ).toBeVisible();
     });
 
+    test('should schedule a refund', async ({ accounts, format, page }) => {
+      const transaction = accounts[9];
+
+      await page
+        .getByRole('link', { name: 'Record a new transaction' })
+        .click();
+
+      await page.getByLabel('Purchase').check();
+
+      await page.getByTestId('date-picker').click();
+      const day = DateTime.now().plus({ day: 1 }).day.toString();
+      await page.getByTestId(`calendar-day-${day}`).click();
+
+      await page.getByLabel('Supplier').fill('Test Refund Supplier');
+      await page.getByLabel('Description').fill('Scheduled refund');
+      await page.getByLabel('Pending').check();
+      await page.getByLabel('Yes').nth(0).check();
+      await page.getByLabel('Yes').nth(1).check();
+      await page.getByLabel('Category').selectOption(transaction.category);
+      await page.getByLabel('Amount').fill(transaction.amount);
+
+      await expect(page.getByLabel('VAT')).toHaveValue(
+        format('currency', transaction.vat),
+      );
+
+      await page.getByRole('button', { name: 'Save' }).click();
+      await expect(
+        page.getByRole('heading', { name: 'Pending transactions' }),
+      ).toBeVisible();
+    });
+
     test('should delete a pending transaction', async ({ accounts, page }) => {
       const transaction = accounts[5];
 
