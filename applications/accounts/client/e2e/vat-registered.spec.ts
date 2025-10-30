@@ -1,3 +1,5 @@
+import { writeFile, unlink } from 'node:fs/promises';
+import { join } from 'node:path';
 import { DateTime } from 'luxon';
 import { expect, test } from './fixtures';
 
@@ -354,9 +356,6 @@ test.describe('VAT registered', () => {
 
   test.describe('Accounts', () => {
     test.beforeAll(async () => {
-      const { writeFile } = await import('node:fs/promises');
-      const { join } = await import('node:path');
-
       const eicarPath = join(
         __dirname,
         'fixtures',
@@ -370,9 +369,6 @@ test.describe('VAT registered', () => {
     });
 
     test.afterAll(async () => {
-      const { unlink } = await import('node:fs/promises');
-      const { join } = await import('node:path');
-
       const eicarPath = join(
         __dirname,
         'fixtures',
