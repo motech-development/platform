@@ -356,12 +356,7 @@ test.describe('VAT registered', () => {
 
   test.describe('Accounts', () => {
     test.beforeAll(async () => {
-      const eicarPath = join(
-        __dirname,
-        'fixtures',
-        'upload',
-        'eicar.txt',
-      );
+      const eicarPath = join(__dirname, 'fixtures', 'upload', 'eicar.txt');
       const eicarContent =
         'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
 
@@ -369,12 +364,7 @@ test.describe('VAT registered', () => {
     });
 
     test.afterAll(async () => {
-      const eicarPath = join(
-        __dirname,
-        'fixtures',
-        'upload',
-        'eicar.txt',
-      );
+      const eicarPath = join(__dirname, 'fixtures', 'upload', 'eicar.txt');
 
       try {
         await unlink(eicarPath);
@@ -477,7 +467,7 @@ test.describe('VAT registered', () => {
     test('should update a refund', async ({ accounts, format, page }) => {
       const transaction = accounts[8];
 
-      await page.getByTestId(`View ${transaction.supplier}`).nth(2).click();
+      await page.getByTestId(`View ${transaction.supplier}`).nth(1).click();
 
       await expect(
         page.getByRole('heading', { name: 'View transaction' }),
@@ -505,7 +495,7 @@ test.describe('VAT registered', () => {
     test('should delete a refund', async ({ accounts, page }) => {
       const transaction = accounts[8];
 
-      await page.getByTestId(`Delete ${transaction.supplier}`).nth(2).click();
+      await page.getByTestId(`Delete ${transaction.supplier}`).nth(1).click();
 
       await page
         .getByLabel(`Please type ${transaction.supplier} to confirm`)
