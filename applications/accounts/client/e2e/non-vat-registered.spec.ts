@@ -525,6 +525,37 @@ test.describe('Non-VAT registered', () => {
       ).toBeVisible();
     });
 
+    test('should schedule a refund', async ({ accounts, format, page }) => {
+      const transaction = accounts[9];
+
+      await page
+        .getByRole('link', { name: 'Record a new transaction' })
+        .click();
+
+      await page.getByLabel('Purchase').check();
+
+      await page.getByTestId('date-picker').click();
+      const day = DateTime.now().plus({ day: 1 }).day.toString();
+      await page.getByTestId(`calendar-day-${day}`).click();
+
+      await page.getByLabel('Supplier').fill('Test Refund Supplier');
+      await page.getByLabel('Description').fill('Scheduled refund');
+      await page.getByLabel('Pending').check();
+      await page.getByLabel('Yes').nth(0).check();
+      await page.getByLabel('Yes').nth(1).check();
+      await page.getByLabel('Category').selectOption(transaction.category);
+      await page.getByLabel('Amount').fill(transaction.amount);
+
+      await expect(page.getByLabel('VAT')).toHaveValue(
+        format('currency', transaction.vat),
+      );
+
+      await page.getByRole('button', { name: 'Save' }).click();
+      await expect(
+        page.getByRole('heading', { name: 'Pending transactions' }),
+      ).toBeVisible();
+    });
+
     test('should delete a pending transaction', async ({ accounts, page }) => {
       const transaction = accounts[5];
 
@@ -555,7 +586,7 @@ test.describe('Non-VAT registered', () => {
       ).toHaveCount(0);
     });
 
-    test('should have published the scheduled transaction', async ({
+    test('should have published the scheduled transaction and refund', async ({
       page,
     }) => {
       test.setTimeout(630000);
@@ -563,9 +594,9 @@ test.describe('Non-VAT registered', () => {
       await expect(async () => {
         await page.reload();
 
-        await expect(page.getByText('Balance: £3922.40')).toBeVisible();
+        await expect(page.getByText('Balance: £3942.40')).toBeVisible();
         await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
-        await expect(page.getByText('VAT paid: £12.94')).toBeVisible();
+        await expect(page.getByText('VAT paid: £9.61')).toBeVisible();
       }).toPass({
         timeout: 600000,
       });
