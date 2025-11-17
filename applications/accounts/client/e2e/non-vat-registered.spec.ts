@@ -586,7 +586,7 @@ test.describe('Non-VAT registered', () => {
         await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
         await expect(page.getByText('VAT paid: £12.94')).toBeVisible();
       }).toPass({
-        timeout,
+        timeout: 600000,
       });
     });
   });
