@@ -1,5 +1,5 @@
 async function emailVerified(user, context, callback) {
-  const { ManagementClient } = require('auth0@3.0.1');
+  const { ManagementClient } = require('auth0@3.5.0');
 
   const managementClient = new ManagementClient({
     domain: auth0.domain,
