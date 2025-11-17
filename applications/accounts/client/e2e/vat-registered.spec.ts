@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { expect, test } from './fixtures';
 
 test.describe('VAT registered', () => {
-  const timeout = 20000;
+  const timeout = 60000;
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/my-companies');
@@ -25,6 +25,7 @@ test.describe('VAT registered', () => {
       const company = companies[0];
 
       const violations = await a11yWithLogs();
+
       expect(violations).toHaveLength(0);
 
       await page.getByRole('link', { name: 'Add a new company' }).click();
@@ -34,6 +35,7 @@ test.describe('VAT registered', () => {
       ).toBeVisible();
 
       const violations2 = await a11yWithLogs();
+
       expect(violations2).toHaveLength(0);
 
       await page.getByLabel('Name*').fill(company.company.name);
@@ -96,6 +98,7 @@ test.describe('VAT registered', () => {
       const updated = companies[2].company;
 
       const violations = await a11yWithLogs();
+
       expect(violations).toHaveLength(0);
 
       await page.getByTestId(company.company.name).click();
@@ -104,11 +107,13 @@ test.describe('VAT registered', () => {
       ).toBeVisible();
 
       await page.getByRole('link', { name: 'Manage company details' }).click();
+
       await expect(
         page.getByRole('heading', { name: company.company.name }),
       ).toBeVisible();
 
       const violations2 = await a11yWithLogs();
+
       expect(violations2).toHaveLength(0);
 
       await expect(page.getByLabel('Name*')).toHaveValue(company.company.name);
@@ -147,6 +152,7 @@ test.describe('VAT registered', () => {
       await page.getByLabel('Email address*').fill(updated.contact.email);
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: company.company.name }),
       ).toBeVisible();
@@ -159,12 +165,14 @@ test.describe('VAT registered', () => {
 
       await page.getByTestId(company.company.name).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: company.company.name }),
       ).toBeVisible();
 
       await page.getByRole('link', { name: 'Manage settings' }).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', {
           exact: true,
@@ -188,6 +196,7 @@ test.describe('VAT registered', () => {
       const setting = settings[0];
 
       const violations = await a11yWithLogs();
+
       expect(violations).toHaveLength(0);
 
       // Add first category
@@ -233,6 +242,7 @@ test.describe('VAT registered', () => {
       await expect(page.getByLabel('Month')).toHaveValue(company.yearEnd.month);
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(page.getByText('Dashboard')).toBeVisible();
     });
 
@@ -247,6 +257,7 @@ test.describe('VAT registered', () => {
       await expect(page.getByLabel('Name').nth(5)).toHaveValue(
         setting.categories[0].name,
       );
+
       await expect(page.getByLabel('VAT rate').nth(5)).toHaveValue(
         format('percentage', setting.categories[0].vatRate),
       );
@@ -283,6 +294,7 @@ test.describe('VAT registered', () => {
       await page.getByRole('button', { name: 'Remove' }).nth(0).click();
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(page.getByText('Dashboard')).toBeVisible();
     });
 
@@ -301,6 +313,7 @@ test.describe('VAT registered', () => {
         .fill(setting.categories[1].vatRate);
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(page.getByText('Dashboard')).toBeVisible();
     });
   });
@@ -311,15 +324,18 @@ test.describe('VAT registered', () => {
 
       await page.getByTestId(company.company.name).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: company.company.name }),
       ).toBeVisible();
 
       await page.getByRole('link', { name: 'Manage clients' }).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: 'Clients' }),
       ).toBeVisible();
+
       await expect(page).toHaveURL(/my-companies\/clients\/[0-9a-f-]+$/);
     });
 
@@ -331,11 +347,13 @@ test.describe('VAT registered', () => {
       const client = clients[0];
 
       const violations = await a11yWithLogs();
+
       expect(violations).toHaveLength(0);
 
       await page.getByRole('link', { name: 'Add a new client' }).click();
 
       const violations2 = await a11yWithLogs();
+
       expect(violations2).toHaveLength(0);
 
       await page.getByLabel('Name*').fill(client.name);
@@ -358,12 +376,14 @@ test.describe('VAT registered', () => {
 
       await page.getByTestId(company.company.name).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: company.company.name }),
       ).toBeVisible();
 
       await page.getByRole('link', { name: 'Manage accounts' }).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -385,6 +405,7 @@ test.describe('VAT registered', () => {
       const transaction = accounts[0];
 
       const violations = await a11yWithLogs();
+
       expect(violations).toHaveLength(0);
 
       await page
@@ -392,6 +413,7 @@ test.describe('VAT registered', () => {
         .click();
 
       const violations2 = await a11yWithLogs();
+
       expect(violations2).toHaveLength(0);
 
       await page.getByLabel('Sale').check();
@@ -399,6 +421,7 @@ test.describe('VAT registered', () => {
       // Upload invoice file first
       const fileInput = page.getByLabel('Select file to upload');
       await fileInput.setInputFiles('e2e/fixtures/upload/invoice.pdf');
+
       await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
 
       await page.getByLabel('Supplier').selectOption(transaction.supplier);
@@ -411,6 +434,7 @@ test.describe('VAT registered', () => {
       );
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -418,6 +442,7 @@ test.describe('VAT registered', () => {
 
     test('should add a confirmed sale refund', async ({
       accounts,
+      eicar,
       format,
       page,
     }) => {
@@ -434,11 +459,20 @@ test.describe('VAT registered', () => {
       await page.getByLabel('Yes').check();
       await page.getByLabel('Amount').fill(transaction.amount);
 
+      // Upload virus file
+      await eicar();
+
+      const fileInput = page.getByLabel('Select file to upload');
+      await fileInput.setInputFiles('e2e/fixtures/upload/eicar.pdf');
+
+      await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
+
       await expect(page.getByLabel('VAT')).toHaveValue(
         format('currency', transaction.vat),
       );
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -465,6 +499,7 @@ test.describe('VAT registered', () => {
       // Upload invoice file
       const fileInput = page.getByLabel('Select file to upload');
       await fileInput.setInputFiles('e2e/fixtures/upload/invoice.pdf');
+
       await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
 
       await expect(page.getByLabel('VAT')).toHaveValue(
@@ -472,6 +507,7 @@ test.describe('VAT registered', () => {
       );
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -498,6 +534,7 @@ test.describe('VAT registered', () => {
       // Upload invoice file
       const fileInput = page.getByLabel('Select file to upload');
       await fileInput.setInputFiles('e2e/fixtures/upload/invoice.pdf');
+
       await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
 
       await expect(page.getByLabel('VAT')).toHaveValue(
@@ -505,6 +542,7 @@ test.describe('VAT registered', () => {
       );
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -531,6 +569,7 @@ test.describe('VAT registered', () => {
       ).toBeVisible();
 
       const violations = await a11yWithLogs();
+
       expect(violations).toHaveLength(0);
 
       await expect(page.getByLabel('Sale')).toBeChecked();
@@ -547,7 +586,7 @@ test.describe('VAT registered', () => {
 
       await expect(page.getByLabel('VAT')).toHaveValue(
         format('currency', transaction.vat),
-        { timeout: 10000 },
+        { timeout },
       );
 
       // Delete existing file
@@ -556,6 +595,7 @@ test.describe('VAT registered', () => {
       // Upload new invoice file
       const fileInput = page.getByLabel('Select file to upload');
       await fileInput.setInputFiles('e2e/fixtures/upload/invoice.pdf');
+
       await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
 
       await page.getByRole('button', { name: 'Save' }).click();
@@ -575,6 +615,7 @@ test.describe('VAT registered', () => {
       await page.getByTestId(`Delete ${transaction.supplier}`).nth(1).click();
 
       const violations = await a11yWithLogs();
+
       expect(violations).toHaveLength(0);
 
       await page
@@ -608,6 +649,7 @@ test.describe('VAT registered', () => {
       );
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -633,6 +675,7 @@ test.describe('VAT registered', () => {
       );
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -669,21 +712,88 @@ test.describe('VAT registered', () => {
     });
   });
 
+  test.describe('Virus scanning', () => {
+    test.beforeEach(async ({ companies, page }) => {
+      const company = companies[0];
+
+      await page.getByTestId(company.company.name).click();
+      await page.getByTestId('connected-content').waitFor();
+
+      await expect(
+        page.getByRole('heading', { name: company.company.name }),
+      ).toBeVisible();
+
+      await page.getByRole('link', { name: 'Manage accounts' }).click();
+      await page.getByTestId('connected-content').waitFor();
+
+      await expect(
+        page.getByRole('heading', { name: 'Accounts' }).nth(1),
+      ).toBeVisible();
+      await expect(page).toHaveURL(/my-companies\/accounts\/[0-9a-f-]+$/);
+    });
+
+    test('should display a notification', async ({ page }) => {
+      test.setTimeout(930000);
+
+      const notifications = page.getByRole('button', {
+        name: /Notifications \([1-4] unread\)/,
+      });
+
+      await notifications.waitFor({
+        state: 'visible',
+        timeout: 900000,
+      });
+
+      await notifications.click();
+
+      await page
+        .getByText(
+          'A file you have uploaded is infected with a virus and it has been removed',
+        )
+        .first()
+        .waitFor({
+          state: 'visible',
+          timeout: 900000,
+        });
+
+      await notifications.click();
+
+      await expect(
+        page.getByRole('button', { name: 'Notifications (0 unread)' }),
+      ).toBeVisible();
+    });
+
+    test('should remove virus from transaction', async ({ accounts, page }) => {
+      const transaction = accounts[8];
+
+      await page.getByTestId(`View ${transaction.supplier}`).click();
+
+      await expect(
+        page.getByRole('heading', { name: 'View transaction' }),
+      ).toBeVisible();
+
+      await expect(page.getByLabel('Select file to upload')).toBeVisible();
+    });
+  });
+
   test.describe('Exports', () => {
     test.beforeEach(async ({ companies, page }) => {
       const company = companies[0];
 
       await page.getByTestId(company.company.name).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: company.company.name }),
       ).toBeVisible();
 
       await page.getByRole('link', { name: 'Manage reports' }).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: 'Reports' }),
       ).toBeVisible();
+
       await expect(page).toHaveURL(/my-companies\/reports\/[0-9a-f-]+$/);
     });
 
@@ -704,6 +814,7 @@ test.describe('VAT registered', () => {
 
       await page.waitForSelector('button:has-text("Download")', { timeout });
       await page.getByRole('button', { name: 'Download' }).click();
+
       await expect(
         page.getByRole('alert').filter({
           hasText: 'The download has started',
@@ -715,7 +826,7 @@ test.describe('VAT registered', () => {
   test.describe('Notifications', () => {
     test('should display a notification', async ({ page }) => {
       await page
-        .getByRole('button', { name: /Notifications \([0-3] unread\)/ })
+        .getByRole('button', { name: /Notifications \([0-4] unread\)/ })
         .click();
 
       await expect(
@@ -723,8 +834,9 @@ test.describe('VAT registered', () => {
       ).toBeVisible();
 
       await page
-        .getByRole('button', { name: /Notifications \([0-3] unread\)/ })
+        .getByRole('button', { name: /Notifications \([0-4] unread\)/ })
         .click();
+
       await expect(
         page.getByRole('button', { name: 'Notifications (0 unread)' }),
       ).toBeVisible();

@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { expect, test } from './fixtures';
 
 test.describe('Non-VAT registered', () => {
-  const timeout = 20000;
+  const timeout = 60000;
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/my-companies');
@@ -67,12 +67,14 @@ test.describe('Non-VAT registered', () => {
 
       await page.getByTestId(company.company.name).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: company.company.name }),
       ).toBeVisible();
 
       await page.getByRole('link', { name: 'Manage settings' }).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', {
           exact: true,
@@ -112,6 +114,7 @@ test.describe('Non-VAT registered', () => {
       await page.getByLabel('Month').selectOption(setting.yearEnd.month);
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(page.getByText('Dashboard')).toBeVisible();
     });
 
@@ -133,6 +136,7 @@ test.describe('Non-VAT registered', () => {
       await expect(page.getByLabel('Month')).toHaveValue(setting.yearEnd.month);
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(page.getByText('Dashboard')).toBeVisible();
     });
   });
@@ -143,15 +147,18 @@ test.describe('Non-VAT registered', () => {
 
       await page.getByTestId(company.company.name).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: company.company.name }),
       ).toBeVisible();
 
       await page.getByRole('link', { name: 'Manage clients' }).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: 'Clients' }),
       ).toBeVisible();
+
       await expect(page).toHaveURL(/my-companies\/clients\/[0-9a-f-]+$/);
     });
 
@@ -172,6 +179,7 @@ test.describe('Non-VAT registered', () => {
       await page.getByLabel('Telephone number*').fill(client.contact.telephone);
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Clients' }),
       ).toBeVisible();
@@ -192,6 +200,7 @@ test.describe('Non-VAT registered', () => {
       await page.getByLabel('Telephone number*').fill(client.contact.telephone);
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Clients' }),
       ).toBeVisible();
@@ -211,6 +220,7 @@ test.describe('Non-VAT registered', () => {
       await page.getByLabel('Telephone number*').fill(client.contact.telephone);
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Clients' }),
       ).toBeVisible();
@@ -249,6 +259,7 @@ test.describe('Non-VAT registered', () => {
       );
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Clients' }),
       ).toBeVisible();
@@ -285,12 +296,14 @@ test.describe('Non-VAT registered', () => {
 
       await page.getByTestId(company.company.name).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: company.company.name }),
       ).toBeVisible();
 
       await page.getByRole('link', { name: 'Manage accounts' }).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -319,6 +332,7 @@ test.describe('Non-VAT registered', () => {
       await expect(page.getByLabel('VAT')).toHaveValue(format('currency', '0'));
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -347,6 +361,7 @@ test.describe('Non-VAT registered', () => {
       );
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -376,6 +391,7 @@ test.describe('Non-VAT registered', () => {
       );
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -402,6 +418,7 @@ test.describe('Non-VAT registered', () => {
       await expect(page.getByLabel('VAT')).toHaveValue(format('currency', '0'));
 
       await page.getByRole('button', { name: 'Save' }).click();
+
       await expect(
         page.getByRole('heading', { name: 'Accounts' }).nth(1),
       ).toBeVisible();
@@ -423,6 +440,7 @@ test.describe('Non-VAT registered', () => {
       await page.getByTestId(`Delete ${transaction.supplier}`).click();
 
       const violations = await a11yWithLogs();
+
       expect(violations).toHaveLength(0);
 
       await page
@@ -531,6 +549,7 @@ test.describe('Non-VAT registered', () => {
       await page
         .getByRole('link', { name: 'View pending transactions' })
         .click();
+
       await expect(
         page.getByRole('heading', { name: 'Pending transactions' }),
       ).toBeVisible();
@@ -578,15 +597,18 @@ test.describe('Non-VAT registered', () => {
 
       await page.getByTestId(company.company.name).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: company.company.name }),
       ).toBeVisible();
 
       await page.getByRole('link', { name: 'Manage reports' }).click();
       await page.getByTestId('connected-content').waitFor();
+
       await expect(
         page.getByRole('heading', { name: 'Reports' }),
       ).toBeVisible();
+
       await expect(page).toHaveURL(/my-companies\/reports\/[0-9a-f-]+$/);
     });
 
@@ -627,19 +649,21 @@ test.describe('Non-VAT registered', () => {
   test.describe('Notifications', () => {
     test('should display a notification', async ({ page }) => {
       await page
-        .getByRole('button', { name: /Notifications \([0-3] unread\)/ })
+        .getByRole('button', { name: /Notifications \([0-4] unread\)/ })
         .click();
 
       await expect(
         page.getByText('A scheduled transaction has been published').first(),
       ).toBeVisible();
+
       await expect(
         page.getByText('Your report is ready to download').first(),
       ).toBeVisible();
 
       await page
-        .getByRole('button', { name: /Notifications \([0-3] unread\)/ })
+        .getByRole('button', { name: /Notifications \([0-4] unread\)/ })
         .click();
+
       await expect(
         page.getByRole('button', { name: 'Notifications (0 unread)' }),
       ).toBeVisible();

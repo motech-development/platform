@@ -210,7 +210,7 @@ tenant:
     disable_clickjack_protection_headers: false
   friendly_name: Motech Development
   picture_url: ''
-  sandbox_version: '16'
+  sandbox_version: '18'
   support_email: info@motechdevelopment.co.uk
   support_url: https://motechdevelopment.co.uk/support
   universal_login:
