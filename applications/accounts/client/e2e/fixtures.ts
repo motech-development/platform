@@ -1,3 +1,5 @@
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import AxeBuilder from '@axe-core/playwright';
 import { test as base } from '@playwright/test';
 import { Result } from 'axe-core';
@@ -5,6 +7,15 @@ import account from './fixtures/data/account.json';
 import client from './fixtures/data/client.json';
 import company from './fixtures/data/company.json';
 import setting from './fixtures/data/setting.json';
+
+async function eicar() {
+  const path = join(__dirname, 'fixtures/upload/eicar.pdf');
+
+  const content =
+    'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
+
+  await writeFile(path, content);
+}
 
 function format(type: string, value: string) {
   switch (type) {
@@ -83,6 +94,7 @@ interface IFixtures {
       month: string;
     };
   }[];
+  eicar: typeof eicar;
   format: typeof format;
   settings: {
     categories: {
@@ -141,6 +153,9 @@ export const test = base.extend<IFixtures>({
   },
   companies: async ({}, use) => {
     await use(company as unknown as IFixtures['companies']);
+  },
+  eicar: async ({}, use) => {
+    await use(eicar);
   },
   format: async ({}, use) => {
     await use(format);
