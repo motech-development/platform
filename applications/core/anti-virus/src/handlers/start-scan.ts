@@ -1,7 +1,7 @@
 import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { SQSHandler } from 'aws-lambda';
+import type { SQSHandler } from 'aws-lambda';
 
 init({
   dsn: process.env.SENTRY_DSN,

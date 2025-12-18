@@ -1,5 +1,5 @@
 import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
-import { Context, S3Event } from 'aws-lambda';
+import type { Context, S3Event } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../queue-upload';

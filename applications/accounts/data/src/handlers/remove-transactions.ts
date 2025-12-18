@@ -1,6 +1,6 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { UpdateCommandOutput } from '@aws-sdk/lib-dynamodb';
-import { DynamoDBRecord } from 'aws-lambda';
+import type { DynamoDBRecord } from 'aws-lambda';
 import { remove } from '../shared/balance';
 import { ITransaction, TransactionStatus } from '../shared/transaction';
 import { unmarshallOldRecords } from '../shared/unmarshall-records';

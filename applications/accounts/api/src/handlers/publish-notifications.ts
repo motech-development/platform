@@ -6,7 +6,7 @@ import logger from '@motech-development/node-logger';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { AWSAppSyncClient } from 'aws-appsync';
-import { DynamoDBStreamHandler } from 'aws-lambda';
+import type { DynamoDBStreamHandler } from 'aws-lambda';
 import gql from 'graphql-tag';
 import { isStreamInsertRecord } from '../shared/utils';
 

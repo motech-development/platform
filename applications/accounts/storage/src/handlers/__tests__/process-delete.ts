@@ -1,5 +1,5 @@
 import { deleteFile } from '@motech-development/s3-file-operations';
-import { Context, SQSEvent } from 'aws-lambda';
+import type { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { handler } from '../process-delete';
 

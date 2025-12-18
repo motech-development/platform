@@ -1,4 +1,4 @@
-import { DynamoDBRecord, DynamoDBStreamEvent } from 'aws-lambda';
+import type { DynamoDBRecord, DynamoDBStreamEvent } from 'aws-lambda';
 
 interface IExtractStream {
   TABLE: string;

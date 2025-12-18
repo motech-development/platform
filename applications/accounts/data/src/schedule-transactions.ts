@@ -2,7 +2,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import logger from '@motech-development/node-logger';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { DynamoDBStreamHandler } from 'aws-lambda';
+import type { DynamoDBStreamHandler } from 'aws-lambda';
 import insertScheduledTransactions from './handlers/insert-scheduled-transactions';
 import removeScheduledTransactions from './handlers/remove-scheduled-transactions';
 import updateScheduledTransactions from './handlers/update-scheduled-transactions';

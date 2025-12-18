@@ -2,7 +2,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import logger from '@motech-development/node-logger';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { SQSHandler } from 'aws-lambda';
+import type { SQSHandler } from 'aws-lambda';
 import updateAttachments from './handlers/update-attachments';
 
 init({

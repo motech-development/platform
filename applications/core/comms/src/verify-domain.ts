@@ -6,7 +6,7 @@ import {
 } from '@aws-sdk/client-ses';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { CloudFormationCustomResourceHandler } from 'aws-lambda';
+import type { CloudFormationCustomResourceHandler } from 'aws-lambda';
 import { FAILED, send, SUCCESS } from 'cfn-response-async';
 import { number, object, string } from 'yup';
 

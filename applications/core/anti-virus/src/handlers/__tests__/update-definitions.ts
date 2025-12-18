@@ -1,5 +1,5 @@
 import { createFile } from '@motech-development/s3-file-operations';
-import { Context } from 'aws-lambda';
+import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { updateDefinitions } from '../../shared/clam-av';
 import { handler } from '../update-definitions';

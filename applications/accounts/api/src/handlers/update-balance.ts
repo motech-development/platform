@@ -2,7 +2,7 @@
 import { AttributeValue } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
-import { DynamoDBStreamHandler } from 'aws-lambda';
+import type { DynamoDBStreamHandler } from 'aws-lambda';
 import updateBalance from '../shared/update-balance';
 import { isStreamModifyRecord } from '../shared/utils';
 

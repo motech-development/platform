@@ -7,7 +7,7 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
-import { Handler } from 'aws-lambda';
+import type { Handler } from 'aws-lambda';
 
 const client = new DynamoDBClient({});
 

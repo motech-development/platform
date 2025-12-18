@@ -6,7 +6,7 @@ import {
   UpdateCommandOutput,
 } from '@aws-sdk/lib-dynamodb';
 import { NativeAttributeValue } from '@aws-sdk/util-dynamodb';
-import {
+import type {
   SQSMessageAttribute,
   SQSMessageAttributes,
   SQSRecord,

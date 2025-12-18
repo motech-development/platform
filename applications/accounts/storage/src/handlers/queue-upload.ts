@@ -2,7 +2,7 @@ import { basename, extname } from 'node:path';
 import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { S3Handler } from 'aws-lambda';
+import type { S3Handler } from 'aws-lambda';
 
 init({
   dsn: process.env.SENTRY_DSN,

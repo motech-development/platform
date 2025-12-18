@@ -1,6 +1,6 @@
 import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { getFileData } from '@motech-development/s3-file-operations';
-import { Context } from 'aws-lambda';
+import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { handler, IEvent } from '../failure-notification';

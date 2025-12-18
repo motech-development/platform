@@ -1,6 +1,6 @@
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { Handler } from 'aws-lambda';
+import type { Handler } from 'aws-lambda';
 import { json2csv } from 'json-2-csv';
 import { array, object, string } from 'yup';
 

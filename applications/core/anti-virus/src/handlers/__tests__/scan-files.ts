@@ -2,7 +2,7 @@ import {
   createDirectory,
   downloadFile,
 } from '@motech-development/s3-file-operations';
-import { Context } from 'aws-lambda';
+import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { scanFile } from '../../shared/clam-av';
 import { handler, IEvent } from '../scan-file';

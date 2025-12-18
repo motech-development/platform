@@ -1,4 +1,4 @@
-import { Context } from 'aws-lambda';
+import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { json2csv } from 'json-2-csv';
 import { handler, IEvent } from '../convert-to-csv';
