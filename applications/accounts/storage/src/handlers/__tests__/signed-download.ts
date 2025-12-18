@@ -1,5 +1,5 @@
 import { createSignedUrl } from '@motech-development/s3-file-operations';
-import { APIGatewayProxyEvent, Context } from 'aws-lambda';
+import type { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { handler } from '../signed-download';
 

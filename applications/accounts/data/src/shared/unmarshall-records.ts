@@ -1,5 +1,5 @@
 import { NativeAttributeValue, unmarshall } from '@aws-sdk/util-dynamodb';
-import { DynamoDBRecord, StreamRecord } from 'aws-lambda';
+import type { DynamoDBRecord, StreamRecord } from 'aws-lambda';
 
 interface IUnmarshallAllRecords<T> {
   NewImage: T;

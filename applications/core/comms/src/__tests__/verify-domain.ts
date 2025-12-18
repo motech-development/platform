@@ -4,7 +4,7 @@ import {
   VerifyDomainDkimCommand,
   VerifyDomainIdentityCommand,
 } from '@aws-sdk/client-ses';
-import { CloudFormationCustomResourceEvent, Context } from 'aws-lambda';
+import type { CloudFormationCustomResourceEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { FAILED, send, SUCCESS } from 'cfn-response-async';

@@ -1,6 +1,6 @@
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { Handler } from 'aws-lambda';
+import type { Handler } from 'aws-lambda';
 import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import { stringify } from 'qs';

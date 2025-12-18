@@ -2,7 +2,7 @@ import { join } from 'node:path';
 import logger from '@motech-development/node-logger';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { Handler } from 'aws-lambda';
+import type { Handler } from 'aws-lambda';
 import { v4 as uuid } from 'uuid';
 import { array, object, string } from 'yup';
 import archive from '../shared/archive';

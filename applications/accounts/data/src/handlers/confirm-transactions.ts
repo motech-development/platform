@@ -1,6 +1,6 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { UpdateCommandOutput } from '@aws-sdk/lib-dynamodb';
-import { DynamoDBRecord } from 'aws-lambda';
+import type { DynamoDBRecord } from 'aws-lambda';
 import publishNotification from '../shared/publish-notification';
 import {
   confirm,

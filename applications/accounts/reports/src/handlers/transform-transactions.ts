@@ -1,7 +1,7 @@
 import { extname, join } from 'node:path';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { Handler } from 'aws-lambda';
+import type { Handler } from 'aws-lambda';
 import { DateTime } from 'luxon';
 import { array, number, object, string } from 'yup';
 import slug from '../shared/slug';

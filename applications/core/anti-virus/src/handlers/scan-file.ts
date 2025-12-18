@@ -5,7 +5,7 @@ import {
 } from '@motech-development/s3-file-operations';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { Handler } from 'aws-lambda';
+import type { Handler } from 'aws-lambda';
 import { scanFile } from '../shared/clam-av';
 import virusDefinitions from '../shared/virus-definitions';
 

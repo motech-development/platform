@@ -1,4 +1,4 @@
-import { DynamoDBRecord } from 'aws-lambda';
+import type { DynamoDBRecord } from 'aws-lambda';
 import {
   unmarshallAllRecords,
   unmarshallNewRecords,

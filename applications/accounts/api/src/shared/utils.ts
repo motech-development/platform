@@ -1,4 +1,4 @@
-import { AttributeValue, DynamoDBRecord } from 'aws-lambda';
+import type { AttributeValue, DynamoDBRecord } from 'aws-lambda';
 
 export interface IFilteredInsertRecord {
   eventName: 'INSERT';

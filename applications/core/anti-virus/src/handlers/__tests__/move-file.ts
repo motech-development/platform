@@ -1,5 +1,5 @@
 import { moveFile } from '@motech-development/s3-file-operations';
-import { Context } from 'aws-lambda';
+import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { handler, IEvent } from '../move-file';
 

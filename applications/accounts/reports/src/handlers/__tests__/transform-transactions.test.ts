@@ -1,4 +1,4 @@
-import { Context } from 'aws-lambda';
+import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import Status from '../../shared/status';
 import { IEvent as IOutput } from '../convert-to-csv';

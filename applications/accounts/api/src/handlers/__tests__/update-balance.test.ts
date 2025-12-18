@@ -1,6 +1,6 @@
 import logger from '@motech-development/node-logger';
 import { AWSAppSyncClient } from 'aws-appsync';
-import { Context, DynamoDBStreamEvent } from 'aws-lambda';
+import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { mutation } from '../../shared/update-balance';
 import { handler } from '../update-balance';

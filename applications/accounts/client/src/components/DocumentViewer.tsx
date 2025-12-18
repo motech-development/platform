@@ -6,7 +6,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Tooltip, Typography } from '@motech-development/breeze-ui';
-// eslint-disable-next-line import/extensions
+// eslint-disable-next-line import/no-extraneous-dependencies
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { ReactNode, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
