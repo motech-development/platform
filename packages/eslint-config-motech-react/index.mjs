@@ -51,6 +51,22 @@ export default [
       ],
       'react/require-default-props': 'off',
     },
+    settings: {
+      'import/parsers': {
+        '@typescript-eslint/parser': ['.ts', '.mts', '.cts', '.tsx', '.d.ts'],
+      },
+      'import/resolver': {
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        },
+        typescript: {
+          alwaysTryTypes: true,
+        },
+      },
+      react: {
+        version: 'detect',
+      },
+    },
   },
   {
     files: ['**/e2e/**/*.{mts,ts}'],
@@ -98,6 +114,11 @@ export default [
           allowExpressions: true,
         },
       ],
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
     },
   },
   {

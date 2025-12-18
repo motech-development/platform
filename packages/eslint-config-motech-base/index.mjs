@@ -55,6 +55,19 @@ export default [
         },
       ],
     },
+    settings: {
+      'import/parsers': {
+        '@typescript-eslint/parser': ['.ts', '.mts', '.cts', '.tsx', '.d.ts'],
+      },
+      'import/resolver': {
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        },
+        typescript: {
+          alwaysTryTypes: true,
+        },
+      },
+    },
   },
   {
     extends: [pluginJest.configs['flat/recommended']],
