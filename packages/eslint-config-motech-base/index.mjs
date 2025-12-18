@@ -57,11 +57,11 @@ export default [
     },
     settings: {
       'import/parsers': {
-        '@typescript-eslint/parser': ['.ts', '.mts', '.cts', '.tsx', '.d.ts'],
+        '@typescript-eslint/parser': ['.ts', '.mts', '.cts', '.d.ts'],
       },
       'import/resolver': {
         node: {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          extensions: ['.js', '.ts'],
         },
         typescript: {
           alwaysTryTypes: true,
