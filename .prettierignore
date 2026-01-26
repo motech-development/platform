@@ -1,3 +1,5 @@
 .yarn
 applications
 packages
+.claude/skills
+.cursor/skills
