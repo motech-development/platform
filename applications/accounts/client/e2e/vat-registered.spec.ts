@@ -691,11 +691,21 @@ test.describe('VAT registered', () => {
       await expect(page).toHaveURL(/my-companies\/reports\/[0-9a-f-]+$/);
     });
 
-    test('should generate and download report', async ({ page }) => {
+    test('should generate and download report', async ({ companies, page }) => {
       await page.getByRole('link', { name: 'Create new report' }).click();
       await page.getByTestId('connected-content').waitFor();
 
-      const financialYear = DateTime.now().year.toString();
+      const now = DateTime.now();
+      const { yearEnd } = companies[0];
+      const yearEndMonth = parseInt(yearEnd.month, 10) + 1;
+      const yearEndDay = parseInt(yearEnd.day, 10);
+      const isOnOrBeforeYearEnd =
+        now.month < yearEndMonth ||
+        (now.month === yearEndMonth && now.day <= yearEndDay);
+      const financialYear = (
+        isOnOrBeforeYearEnd ? now.year - 1 : now.year
+      ).toString();
+
       await page.getByLabel('Financial year').selectOption(financialYear);
       await page.getByLabel('Confirmed').check();
 
