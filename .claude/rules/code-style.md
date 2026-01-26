@@ -5,9 +5,11 @@ alwaysApply: true
 # Code Style Ruleset
 
 ## Applies to
+
 `**/*`
 
 ## Description
+
 Mandatory code style, testing, documentation, and workflow standards for this project.
 
 ---
@@ -24,6 +26,7 @@ Mandatory code style, testing, documentation, and workflow standards for this pr
 - Format **object literals across multiple lines** for readability.
 - Choose **descriptive and meaningful variable names**.
 - **Do not import `React`** unless it is strictly required.
+- **Import React types explicitly** — use `import type { ReactNode } from 'react'` instead of `React.ReactNode`.
 - Avoid bare `return;` — use **explicit control flow**.
 - Separate **variable declarations with blank lines**.
 - Do not leave behind **unused code**, dead code, or commented-out logic.
@@ -34,7 +37,7 @@ Mandatory code style, testing, documentation, and workflow standards for this pr
 - **Destructure imports** whenever possible (e.g. `import { foo } from 'bar'`).
 - Code must be **documented with JSDoc** where appropriate.
 - Run the **`deslop`** command to remove AI-generated slop before finalizing changes.
-- When new conventions, patterns, or implicit project rules are discovered,
+- When new conventions, patterns, or implicit project rules are discovered,  
   the AI must **record them in `PROJECT_RULES.md`** and **consult that file for all future work**.
 
 ---
