@@ -114,6 +114,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
 
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
@@ -151,6 +153,15 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./packages/breeze-ui/storybook-static
+
+      # Pinned to major version for stability while receiving patch updates
+      - name: Run Chromatic
+        uses: chromaui/action@v11
+        with:
+          workingDir: packages/breeze-ui
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          storybookBuildDir: storybook-static
+          autoAcceptChanges: main
 
   # deploy-auth0-tenant:
   #   runs-on: ubuntu-latest
