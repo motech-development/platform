@@ -1,6 +1,9 @@
 name: Quality assurance
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     types:
       - opened
@@ -12,6 +15,8 @@ jobs:
     name: Label PR
 
     runs-on: ubuntu-latest
+
+    if: github.event_name == 'pull_request'
 
     steps:
       - uses: actions/labeler@v5.0.0
