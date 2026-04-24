@@ -50,5 +50,10 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "serverless-esbuild@1.57.0": "patches/serverless-esbuild@1.57.0.patch"
+    }
   }
 }

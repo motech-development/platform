@@ -13,6 +13,11 @@ overrides:
   '@semantic-release/release-notes-generator': 12.0.0
   '@semantic-release/error': 4.0.0
 
+patchedDependencies:
+  serverless-esbuild@1.57.0:
+    hash: d1858c7923b494c478a9e1354cd08248319b2078cd39f571e4bf99a854bcf243
+    path: patches/serverless-esbuild@1.57.0.patch
+
 importers:
   .:
     devDependencies:
@@ -193,7 +198,7 @@ importers:
         version: 1.6.0
       serverless-esbuild:
         specifier: 1.57.0
-        version: 1.57.0(esbuild@0.27.7)
+        version: 1.57.0(patch_hash=d1858c7923b494c478a9e1354cd08248319b2078cd39f571e4bf99a854bcf243)(esbuild@0.27.7)
       serverless-prune-plugin:
         specifier: 2.1.0
         version: 2.1.0
@@ -636,7 +641,7 @@ importers:
         version: 1.6.0
       serverless-esbuild:
         specifier: 1.57.0
-        version: 1.57.0(esbuild@0.27.7)
+        version: 1.57.0(patch_hash=d1858c7923b494c478a9e1354cd08248319b2078cd39f571e4bf99a854bcf243)(esbuild@0.27.7)
       serverless-prune-plugin:
         specifier: 2.1.0
         version: 2.1.0
@@ -887,7 +892,7 @@ importers:
         version: 1.6.0
       serverless-esbuild:
         specifier: 1.57.0
-        version: 1.57.0(esbuild@0.27.7)
+        version: 1.57.0(patch_hash=d1858c7923b494c478a9e1354cd08248319b2078cd39f571e4bf99a854bcf243)(esbuild@0.27.7)
       serverless-prune-plugin:
         specifier: 2.1.0
         version: 2.1.0
@@ -1008,7 +1013,7 @@ importers:
         version: 1.6.0
       serverless-esbuild:
         specifier: 1.57.0
-        version: 1.57.0(esbuild@0.27.7)
+        version: 1.57.0(patch_hash=d1858c7923b494c478a9e1354cd08248319b2078cd39f571e4bf99a854bcf243)(esbuild@0.27.7)
       serverless-prune-plugin:
         specifier: 2.1.0
         version: 2.1.0
@@ -1165,7 +1170,7 @@ importers:
         version: 1.6.0
       serverless-esbuild:
         specifier: 1.57.0
-        version: 1.57.0(esbuild@0.27.7)
+        version: 1.57.0(patch_hash=d1858c7923b494c478a9e1354cd08248319b2078cd39f571e4bf99a854bcf243)(esbuild@0.27.7)
       serverless-prune-plugin:
         specifier: 2.1.0
         version: 2.1.0
@@ -1289,7 +1294,7 @@ importers:
         version: 1.6.0
       serverless-esbuild:
         specifier: 1.57.0
-        version: 1.57.0(esbuild@0.27.7)
+        version: 1.57.0(patch_hash=d1858c7923b494c478a9e1354cd08248319b2078cd39f571e4bf99a854bcf243)(esbuild@0.27.7)
       serverless-prune-plugin:
         specifier: 2.1.0
         version: 2.1.0
@@ -1419,7 +1424,7 @@ importers:
         version: 1.6.0
       serverless-esbuild:
         specifier: 1.57.0
-        version: 1.57.0(esbuild@0.27.7)
+        version: 1.57.0(patch_hash=d1858c7923b494c478a9e1354cd08248319b2078cd39f571e4bf99a854bcf243)(esbuild@0.27.7)
       serverless-prune-plugin:
         specifier: 2.1.0
         version: 2.1.0
@@ -1537,7 +1542,7 @@ importers:
         version: 1.6.0
       serverless-esbuild:
         specifier: 1.57.0
-        version: 1.57.0(esbuild@0.27.7)
+        version: 1.57.0(patch_hash=d1858c7923b494c478a9e1354cd08248319b2078cd39f571e4bf99a854bcf243)(esbuild@0.27.7)
       serverless-prune-plugin:
         specifier: 2.1.0
         version: 2.1.0
@@ -1652,7 +1657,7 @@ importers:
         version: 1.6.0
       serverless-esbuild:
         specifier: 1.57.0
-        version: 1.57.0(esbuild@0.27.7)
+        version: 1.57.0(patch_hash=d1858c7923b494c478a9e1354cd08248319b2078cd39f571e4bf99a854bcf243)(esbuild@0.27.7)
       serverless-prune-plugin:
         specifier: 2.1.0
         version: 2.1.0
@@ -43067,7 +43072,7 @@ snapshots:
     dependencies:
       chalk: 2.4.2
 
-  serverless-esbuild@1.57.0(esbuild@0.27.7):
+  serverless-esbuild@1.57.0(patch_hash=d1858c7923b494c478a9e1354cd08248319b2078cd39f571e4bf99a854bcf243)(esbuild@0.27.7):
     dependencies:
       '@effect/platform': 0.65.5(@effect/schema@0.73.4(effect@3.21.2))(effect@3.21.2)
       '@effect/platform-node': 0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.21.2))(effect@3.21.2))(effect@3.21.2)
