@@ -11,7 +11,8 @@ import { IEvent as IOutput } from './convert-to-csv';
 init({
   dsn: process.env.SENTRY_DSN,
   integrations: [nodeProfilingIntegration()],
-  profilesSampleRate: 1.0,
+  profileLifecycle: 'trace',
+  profileSessionSampleRate: 1.0,
   tracesSampleRate: 1.0,
 });
 

@@ -11,7 +11,8 @@ import virusDefinitions from '../shared/virus-definitions';
 init({
   dsn: process.env.SENTRY_DSN,
   integrations: [nodeProfilingIntegration()],
-  profilesSampleRate: 1.0,
+  profileLifecycle: 'trace',
+  profileSessionSampleRate: 1.0,
   tracesSampleRate: 1.0,
 });
 
