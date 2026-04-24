@@ -7,7 +7,6 @@ import { advanceTo, clear } from 'jest-date-mock';
 import { handler } from '../create-notification';
 
 describe('create-notification', () => {
-  let callback: jest.Mock;
   let context: Context;
   let ddb: AwsClientStub<DynamoDBClient>;
   let env: NodeJS.ProcessEnv;
@@ -21,8 +20,6 @@ describe('create-notification', () => {
     context = ctx();
 
     context.done();
-
-    callback = jest.fn();
 
     ddb = mockClient(DynamoDBClient);
 
@@ -48,16 +45,14 @@ describe('create-notification', () => {
   afterAll(clear);
 
   it('should return a 201 when a notification is created', async () => {
-    await handler(event, context, callback);
-
-    expect(callback).toHaveBeenCalledWith(null, {
+    await expect(handler(event, context)).resolves.toEqual({
       body: '',
       statusCode: 201,
     });
   });
 
   it('should write to the database with the correct params', async () => {
-    await handler(event, context, callback);
+    await handler(event, context);
 
     expect(ddb).toReceiveCommandWith(PutCommand, {
       Item: {
@@ -81,9 +76,7 @@ describe('create-notification', () => {
       }),
     } as APIGatewayProxyEvent;
 
-    await handler(event, context, callback);
-
-    expect(callback).toHaveBeenCalledWith(null, {
+    await expect(handler(event, context)).resolves.toEqual({
       body: JSON.stringify({
         message: 'Invalid request',
         statusCode: 400,

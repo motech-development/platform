@@ -4,7 +4,6 @@ import proxyHandler from '../api-gateway-handler';
 import ErrorResponse from '../error-response';
 
 describe('api-gateway-handler', () => {
-  let callback: jest.Mock;
   let context: Context;
   let event: APIGatewayProxyEvent;
 
@@ -13,23 +12,19 @@ describe('api-gateway-handler', () => {
 
     context.done();
 
-    callback = jest.fn();
-
     event = {
       body: '',
     } as APIGatewayProxyEvent;
   });
 
-  it('should call the callback with the correct response', async () => {
+  it('should return the correct response', async () => {
     const handler = async () =>
       Promise.resolve({
         body: '',
         statusCode: 200,
       });
 
-    await proxyHandler(handler)(event, context, callback);
-
-    expect(callback).toHaveBeenCalledWith(null, {
+    await expect(proxyHandler(handler)(event, context)).resolves.toEqual({
       body: '',
       statusCode: 200,
     });
@@ -41,9 +36,7 @@ describe('api-gateway-handler', () => {
       throw error;
     };
 
-    await proxyHandler(handler)(event, context, callback);
-
-    expect(callback).toHaveBeenCalledWith(null, {
+    await expect(proxyHandler(handler)(event, context)).resolves.toEqual({
       body: 'Something has gone wrong.',
       statusCode: 502,
     });
