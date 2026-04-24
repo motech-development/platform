@@ -4,7 +4,7 @@
   "description": "Motech Development anit-virus service",
   "scripts": {
     "clean": "./scripts/clean.sh",
-    "deploy": "yarn predeploy && serverless deploy --verbose",
+    "deploy": "run predeploy && serverless deploy --verbose",
     "lint": "eslint './src/**/*.ts'",
     "predeploy": "./scripts/build.sh",
     "teardown": "serverless remove --verbose",
