@@ -7,8 +7,8 @@ init({
   dsn: process.env.SENTRY_DSN,
   integrations: [nodeProfilingIntegration()],
   profileLifecycle: 'trace',
-  profileSessionSampleRate: 1.0,
-  tracesSampleRate: 1.0,
+  profileSessionSampleRate: 1,
+  tracesSampleRate: 1,
 });
 
 export const handler: SQSHandler = wrapHandler(async (event) => {

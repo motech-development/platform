@@ -66,7 +66,7 @@ const writeFileAsync = promisify(writeFile);
 class OutputsEnvPlugin {
   private serverless: IServerlessInstance;
 
-  private options: IServerlessOptions;
+  private readonly options: IServerlessOptions;
 
   public get hooks(): IHook {
     return {
