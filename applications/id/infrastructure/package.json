@@ -3,14 +3,14 @@
   "version": "0.0.0-development",
   "description": "Motech Development infrastructure as code",
   "scripts": {
-    "deploy": "serverless deploy --verbose",
-    "teardown": "serverless remove --verbose"
+    "deploy": "pnpm exec serverless deploy --verbose",
+    "teardown": "pnpm exec serverless remove --verbose"
   },
   "devDependencies": {
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
     "prettier": "3.2.5",
-    "serverless": "3.39.0",
+    "osls": "3.63.2",
     "serverless-deployment-bucket": "1.6.0"
   }
 }

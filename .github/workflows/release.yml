@@ -29,23 +29,26 @@ jobs:
         with:
           token: ${{ steps.generate_token.outputs.token }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
           registry-url: https://registry.npmjs.org
 
       - name: Update npm to latest version
         run: npm install -g npm@latest
 
       - name: Install dependencies
-        run: yarn
+        run: pnpm install --frozen-lockfile
 
       - name: Build packages
-        run: yarn package
+        run: pnpm package
 
       - name: Release
-        run: yarn release
+        run: pnpm release
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}

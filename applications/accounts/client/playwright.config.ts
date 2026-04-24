@@ -79,7 +79,7 @@ export default defineConfig({
   webServer: process.env.BASE_URL
     ? undefined
     : {
-        command: 'yarn workspace @accounts/client serve',
+        command: 'pnpm --filter @accounts/client run serve',
         reuseExistingServer: !process.env.CI,
         url: 'http://localhost:3000',
       },

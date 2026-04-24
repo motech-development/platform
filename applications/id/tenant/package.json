@@ -4,7 +4,7 @@
   "description": "Motech Development Auth0 tenant",
   "scripts": {
     "deploy": "a0deploy import -i ./tenant.yaml",
-    "deploy:local": "run deploy -c config.local.json",
+    "deploy:local": "pnpm run deploy -- -c config.local.json",
     "import": "a0deploy export -c config.local.json -f yaml -o ./",
     "lint": "eslint './src/**/*.js'",
     "test": "jest --watch",

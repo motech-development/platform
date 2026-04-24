@@ -22,26 +22,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        id: node-modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         id: packages
@@ -57,17 +48,16 @@ jobs:
         uses: actions/cache@v4.2.2
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-cache-v4-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-cache-
 
       - name: Install dependencies
-        if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
-        run: yarn
+        run: pnpm install --frozen-lockfile
 
       - name: Build packages
-        if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
-        run: yarn package
+        if: steps.packages.outputs.cache-hit != 'true'
+        run: pnpm package
 
   # Auth0 tenant
   # auth0-tenant:
@@ -90,7 +80,6 @@ jobs:
   #     PUBLIC_URL: https://id-develop.${{ secrets.PROD_DOMAIN }}
   #     REACT_APP_GA: ${{ secrets.GA_ID_DEV }}
   #     STAGE: develop
-  #     YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
   #   permissions:
   #     id-token: write
@@ -104,7 +93,7 @@ jobs:
   #       uses: actions/setup-node@v4.2.0
   #       with:
   #         node-version-file: .nvmrc
-  #         cache: yarn
+  #         cache: pnpm
 
   #     - name: Generate packages cache key
   #       run: ./scripts/checksum.sh ./packages.txt packages
@@ -116,7 +105,7 @@ jobs:
   #           ./node_modules
   #           ./applications/*/*/node_modules
   #           ./packages/*/node_modules
-  #         key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
+  #         key: ${{ runner.os }}-modules-v4-${{ hashFiles('pnpm-lock.yaml') }}
   #         restore-keys: |
   #           ${{ runner.os }}-modules-
 
@@ -146,19 +135,19 @@ jobs:
   #         role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
   #     - name: Deploy ID infrastructure
-  #       run: yarn workspace @id/infrastructure deploy --stage $STAGE
+  #       run: pnpm --filter @id/infrastructure run deploy -- --stage $STAGE
 
   #     - name: Build ID client
-  #       run: yarn workspace @id/client build
+  #       run: pnpm --filter @id/client run build
 
   #     - name: Build ID emails
-  #       run: yarn workspace @id/emails build
+  #       run: pnpm --filter @id/emails run build
 
   #     - name: Deploy client
-  #       run: yarn workspace @id/client deploy --stage $STAGE
+  #       run: pnpm --filter @id/client run deploy -- --stage $STAGE
 
   #     - name: Deploy to Auth0
-  #       run: yarn workspace @id/tenant deploy -c config.json
+  #       run: pnpm --filter @id/tenant run deploy -- -c config.json
 
   # Anti virus
   anti-virus:
@@ -172,7 +161,6 @@ jobs:
       AWS_DEFAULT_REGION: eu-west-1
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -182,25 +170,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -226,12 +206,17 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Deploy
         uses: nick-fields/retry@v3.0.2
+        env:
+          npm_config_frozen_lockfile: false
         with:
-          command: yarn workspace @core/anti-virus deploy --stage $STAGE
+          command: pnpm --filter @core/anti-virus run deploy -- --stage "$STAGE"
           max_attempts: 3
-          on_retry_command: yarn workspace @core/anti-virus clean
+          on_retry_command: pnpm --filter @core/anti-virus run clean
           retry_on: error
           timeout_minutes: 15
 
@@ -242,7 +227,9 @@ jobs:
 
       - name: Update definitions
         if: steps.definitions.outcome != 'success'
-        run: yarn workspace @core/anti-virus update-definitions --stage $STAGE
+        run: pnpm --filter @core/anti-virus run update-definitions -- --stage "$STAGE"
+        env:
+          npm_config_frozen_lockfile: false
 
   # Accounts (queue)
   accounts-queue:
@@ -257,7 +244,6 @@ jobs:
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -267,25 +253,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -312,7 +290,9 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/queue deploy --stage $STAGE
+        run: pnpm --filter @accounts/queue run deploy -- --stage "$STAGE"
+        env:
+          npm_config_frozen_lockfile: false
 
   # Accounts (storage)
   accounts-storage:
@@ -327,7 +307,6 @@ jobs:
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -337,25 +316,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -382,7 +353,9 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/storage deploy --stage $STAGE
+        run: pnpm --filter @accounts/storage run deploy -- --stage "$STAGE"
+        env:
+          npm_config_frozen_lockfile: false
 
   # Accounts (data)
   accounts-data:
@@ -397,7 +370,6 @@ jobs:
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -407,25 +379,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -452,7 +416,9 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/data deploy --stage $STAGE
+        run: pnpm --filter @accounts/data run deploy -- --stage "$STAGE"
+        env:
+          npm_config_frozen_lockfile: false
 
   # Accounts (warm up)
   accounts-warm-up:
@@ -467,7 +433,6 @@ jobs:
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -477,25 +442,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -522,11 +479,13 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/warm-up deploy --stage $STAGE
+        run: pnpm --filter @accounts/warm-up run deploy -- --stage "$STAGE"
+        env:
+          npm_config_frozen_lockfile: false
 
       - name: Warm up
         if: github.event.action != 'synchronize'
-        run: yarn workspace @accounts/warm-up start --stage $STAGE
+        run: pnpm --filter @accounts/warm-up run start -- --stage "$STAGE"
 
   # Accounts (notifications)
   accounts-notifications:
@@ -540,7 +499,6 @@ jobs:
 
     env:
       STAGE: ${{ github.event.pull_request.number }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -550,25 +508,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -595,7 +545,9 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/notifications deploy --stage $STAGE
+        run: pnpm --filter @accounts/notifications run deploy -- --stage "$STAGE"
+        env:
+          npm_config_frozen_lockfile: false
 
   # Accounts (reports)
   accounts-reports:
@@ -612,7 +564,6 @@ jobs:
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -622,25 +573,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -667,7 +610,9 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/reports deploy --stage $STAGE
+        run: pnpm --filter @accounts/reports run deploy -- --stage "$STAGE"
+        env:
+          npm_config_frozen_lockfile: false
 
   # Accounts (API)
   accounts-api:
@@ -687,7 +632,6 @@ jobs:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.pull_request.number }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -698,25 +642,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -751,7 +687,9 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        run: yarn workspace @accounts/api deploy --stage $STAGE
+        run: pnpm --filter @accounts/api run deploy -- --stage "$STAGE"
+        env:
+          npm_config_frozen_lockfile: false
 
       - name: Export env vars
         uses: xom9ikk/dotenv@v2.3.0
@@ -815,25 +753,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -848,7 +778,7 @@ jobs:
         uses: actions/cache@v4.2.2
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-cache-v4-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-cache-
 
@@ -870,15 +800,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-accounts-client-v4-
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Install Playwright browsers
         if: steps.cache.outputs.cache-hit != 'true'
-        run: yarn workspace @accounts/client playwright install --with-deps
+        run: pnpm --filter @accounts/client exec playwright install --with-deps
 
       - name: Build client
-        run: yarn workspace @accounts/client build
+        run: pnpm --filter @accounts/client run build
 
       - name: Smoke tests
-        run: yarn workspace @accounts/client e2e-ci --shard=${{ matrix.containers }}/2
+        run: pnpm --filter @accounts/client run e2e-ci -- --shard=${{ matrix.containers }}/2
 
   # Playwright status
   playwright-status:

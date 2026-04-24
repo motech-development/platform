@@ -21,7 +21,7 @@ describe('clam-av', () => {
       await scanFile(file, outDir);
 
       expect(childProcess.execFile).toHaveBeenCalledWith(
-        './clamscan',
+        expect.stringMatching(/bin\/clamscan$/),
         ['-v', '-a', '--stdout', '-d', '/tmp', '/tmp/downloads/file.pdf'],
         expect.any(Function),
       );
@@ -61,8 +61,11 @@ describe('clam-av', () => {
       await updateDefinitions(location);
 
       expect(childProcess.execFile).toHaveBeenCalledWith(
-        './freshclam',
-        ['--config-file=freshclam.conf', '--datadir=/tmp'],
+        expect.stringMatching(/bin\/freshclam$/),
+        [
+          expect.stringMatching(/--config-file=.*src\/freshclam\.conf$/),
+          '--datadir=/tmp',
+        ],
         expect.any(Function),
       );
     });

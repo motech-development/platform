@@ -3,7 +3,7 @@ service: accounts-reports
 provider:
   name: aws
   region: ${opt:region, 'eu-west-1'}
-  runtime: nodejs20.x
+  runtime: nodejs24.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-reports
   deploymentBucket:
@@ -15,7 +15,7 @@ package:
 plugins:
   - serverless-deployment-bucket
   - serverless-step-functions
-  - serverless-webpack
+  - serverless-esbuild
   - serverless-prune-plugin
 
 custom:
@@ -26,13 +26,15 @@ custom:
     includeLayers: true
     number: 1
 
-  webpack:
-    excludeRegex: 'node_modules/@aws-sdk'
-    includeModules:
-      nodeModulesRelativeDir: ../../../
-    packager: yarn
-    packagerOptions:
-      noFrozenLockfile: true
+  esbuild:
+    bundle: true
+    external:
+      - '@sentry/profiling-node'
+    minify: false
+    packager: pnpm
+    platform: node
+    sourcemap: true
+    target: node24
 
 functions:
   AddReport:

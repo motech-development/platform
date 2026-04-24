@@ -4,6 +4,9 @@ import { promisify } from 'node:util';
 import logger from '@motech-development/node-logger';
 
 const execFileAsync = promisify(execFile);
+const clamscanPath = join(__dirname, 'bin', 'clamscan');
+const freshclamPath = join(__dirname, 'bin', 'freshclam');
+const freshclamConfigPath = join(__dirname, '..', 'freshclam.conf');
 
 export const scanFile = async (
   file: string,
@@ -13,7 +16,7 @@ export const scanFile = async (
   const fileLocation = resolve(file);
 
   try {
-    await execFileAsync('./clamscan', [
+    await execFileAsync(clamscanPath, [
       '-v',
       '-a',
       '--stdout',
@@ -36,8 +39,8 @@ export const updateDefinitions = async (location: string): Promise<void> => {
 
   await execFileAsync('rm', ['-rf', cleanUp]);
 
-  await execFileAsync('./freshclam', [
-    '--config-file=freshclam.conf',
+  await execFileAsync(freshclamPath, [
+    `--config-file=${freshclamConfigPath}`,
     `--datadir=${dataDir}`,
   ]);
 };
