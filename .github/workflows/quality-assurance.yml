@@ -147,6 +147,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       # Pinned to major version for stability while receiving patch updates
       - name: Run Chromatic
         uses: chromaui/action@v11
