@@ -20,7 +20,7 @@ exports[`DataRestoreStack should synthesize as expected 1`] = `
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "5ff63d80087e9cf16e177c818c7d98d84d023af57b6acc66aec3978dd83c1c99.zip",
+          "S3Key": "dffe069e4938ad338b020fb6c5373342bc19b6d8d4cceb5032fa6e78cfe4eaa7.zip",
         },
         "Environment": {
           "Variables": {

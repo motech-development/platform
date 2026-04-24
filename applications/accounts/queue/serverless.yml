@@ -17,7 +17,7 @@ package:
 plugins:
   - serverless-deployment-bucket
   - serverless-step-functions
-  - serverless-esbuild
+  - serverless-webpack
   - serverless-prune-plugin
 
 custom:
@@ -28,15 +28,13 @@ custom:
     includeLayers: true
     number: 1
 
-  esbuild:
-    bundle: true
-    external:
-      - '@sentry/profiling-node'
-    minify: false
-    packager: pnpm
-    platform: node
-    sourcemap: true
-    target: node24
+  webpack:
+    excludeRegex: 'node_modules/@aws-sdk'
+    includeModules:
+      nodeModulesRelativeDir: ../../../
+    packager: yarn
+    packagerOptions:
+      noFrozenLockfile: true
 
 functions:
   DeleteBankSettings:

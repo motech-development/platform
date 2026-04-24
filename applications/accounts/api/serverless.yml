@@ -12,7 +12,7 @@ package:
 plugins:
   - serverless-deployment-bucket
   - serverless-appsync-plugin
-  - serverless-esbuild
+  - serverless-webpack
   - serverless-prune-plugin
   - '@motech-development/serverless-outputs-env'
 custom:
@@ -30,15 +30,13 @@ custom:
     env:
       AccountsApiUrl: REACT_APP_APPSYNC_URL
       AWS_REGION: REACT_APP_AWS_REGION
-  esbuild:
-    bundle: true
-    external:
-      - '@sentry/profiling-node'
-    minify: false
-    packager: pnpm
-    platform: node
-    sourcemap: true
-    target: node24
+  webpack:
+    excludeRegex: node_modules/@aws-sdk
+    includeModules:
+      nodeModulesRelativeDir: ../../../
+    packager: yarn
+    packagerOptions:
+      noFrozenLockfile: true
 appSync:
   name: ${self:custom.prefix}
   authentication:

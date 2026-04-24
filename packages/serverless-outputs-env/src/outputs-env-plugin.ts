@@ -11,14 +11,9 @@ interface IOutput {
   [name: string]: string;
 }
 
-interface IStackOutput {
-  OutputKey?: string;
-  OutputValue?: string;
-}
-
 interface IDescribeStacksResponse {
-  Stacks?: {
-    Outputs?: IStackOutput[];
+  Stacks: {
+    Outputs: IOutput[];
   }[];
 }
 
@@ -115,12 +110,12 @@ class OutputsEnvPlugin {
     return `${name}-${stage}`;
   }
 
-  private async getOutput(): Promise<IOutput | undefined> {
+  private async getOutput() {
     const { name } = this.serverless.service.provider;
     const provider = this.serverless.getProvider(name);
     const region = provider.getRegion();
     const stage = provider.getStage();
-    const response = await provider.request(
+    const { Stacks } = await provider.request(
       'CloudFormation',
       'describeStacks',
       {
@@ -131,21 +126,13 @@ class OutputsEnvPlugin {
       },
     );
 
-    const stacks = response.Stacks ?? [];
-    const stack = stacks[stacks.length - 1];
-    const outputs = stack?.Outputs ?? [];
+    const stack = Stacks.pop();
 
-    return outputs.reduce<IOutput>(
-      (obj, item) => {
-        if (!item.OutputKey || !item.OutputValue) {
-          return obj;
-        }
-
-        return {
-          ...obj,
-          [item.OutputKey]: item.OutputValue,
-        };
-      },
+    return stack?.Outputs.reduce(
+      (obj, item) => ({
+        ...obj,
+        [item.OutputKey]: item.OutputValue,
+      }),
       {
         AWS_REGION: region,
       },

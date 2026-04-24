@@ -92,7 +92,8 @@ $RECYCLE.BIN/
 logs
 *.log
 npm-debug.log*
-pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Runtime data
 pids
@@ -140,11 +141,18 @@ jspm_packages/
 # Output of 'npm pack'
 *.tgz
 
+# Yarn Integrity file
+.yarn-integrity
+
 # dotenv environment variables file
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Dependencies
+.pnp
+.pnp.js
 
 #awsmobilejs
 aws-info.json
@@ -154,8 +162,14 @@ awsmobilejs/.awsmobile/backend-build
 awsmobilejs/\#current-backend-info
 ~awsmobilejs-*/
 
-# PNPM
-.pnpm-store/
+# Yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 # Project files
 build

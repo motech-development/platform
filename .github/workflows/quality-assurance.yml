@@ -27,19 +27,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 10.33.0
-
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: pnpm
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        id: node-modules
+        uses: actions/cache@v4.2.2
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         id: packages
@@ -55,19 +62,20 @@ jobs:
         uses: actions/cache@v4.2.2
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-cache-v4-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-cache-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
+        run: yarn
 
       - name: Build packages
-        if: steps.packages.outputs.cache-hit != 'true'
-        run: pnpm package
+        if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
+        run: yarn package
 
       - name: Lint code
-        run: pnpm lint
+        run: yarn lint
 
   unit-tests:
     name: Unit tests
@@ -82,19 +90,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 10.33.0
-
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: pnpm
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v4.2.2
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -104,11 +118,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Unit test
-        run: pnpm test
+        run: yarn test
 
       - name: Fix paths for SonarCloud Scan
         run: ./scripts/sonar-scanner-path-fix.sh
@@ -131,19 +142,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 10.33.0
-
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: pnpm
+          cache: yarn
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v4.2.2
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -152,9 +169,6 @@ jobs:
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
           restore-keys: |
             ${{ runner.os }}-packages-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       # Pinned to major version for stability while receiving patch updates
       - name: Run Chromatic

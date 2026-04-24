@@ -15,8 +15,8 @@
 1. Install `@motech-development/eslint-config-motech-react` as a development dependency.
 
 ```bash
-# PNPM
-pnpm add -D @motech-development/eslint-config-motech-react
+# Yarn
+yarn add -D @motech-development/eslint-config-motech-react
 
 # NPM
 npm i -D @motech-development/eslint-config-motech-react
