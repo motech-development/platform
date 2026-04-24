@@ -10,6 +10,7 @@ provider:
     name: ${self:service}-deployment-bucket
   environment:
     BUCKET: !Ref DefinitionsBucket
+    LD_LIBRARY_PATH: /var/task:/var/lang/lib:/lib64:/usr/lib64:/opt/lib
 
 package:
   individually: true
