@@ -1,7 +1,6 @@
 import { writeFile } from 'node:fs';
 import { promisify } from 'node:util';
 import assert, { AssertionError } from 'assert';
-import Serverless from 'serverless';
 import tomlify from 'tomlify-j0.4';
 
 interface IHook {
@@ -12,6 +11,17 @@ interface IOutput {
   [name: string]: string;
 }
 
+interface IStackOutput {
+  OutputKey: string;
+  OutputValue: string;
+}
+
+interface IDescribeStacksResponse {
+  Stacks: {
+    Outputs?: IStackOutput[];
+  }[];
+}
+
 interface IConfig {
   files: string[];
   env: {
@@ -19,8 +29,32 @@ interface IConfig {
   };
 }
 
-export interface IServerlessInstance
-  extends Pick<Serverless, 'cli' | 'getProvider'> {
+export interface IServerlessCli {
+  log(message: string): void;
+}
+
+export interface IServerlessOptions {
+  noDeploy?: boolean;
+}
+
+interface IAwsProvider {
+  getRegion(): string;
+  getStage(): string;
+  request(
+    service: 'CloudFormation',
+    method: 'describeStacks',
+    params: {
+      StackName: string;
+    },
+    options: {
+      region: string;
+    },
+  ): Promise<IDescribeStacksResponse>;
+}
+
+export interface IServerlessInstance {
+  cli: IServerlessCli;
+  getProvider(name: string): IAwsProvider;
   service: {
     custom: {
       outputs: IConfig;
@@ -37,7 +71,7 @@ const writeFileAsync = promisify(writeFile);
 class OutputsEnvPlugin {
   private serverless: IServerlessInstance;
 
-  private options: Serverless.Options;
+  private options: IServerlessOptions;
 
   public get hooks(): IHook {
     return {
@@ -49,7 +83,7 @@ class OutputsEnvPlugin {
     return this.serverless.service.custom.outputs;
   }
 
-  constructor(serverless: IServerlessInstance, options: Serverless.Options) {
+  constructor(serverless: IServerlessInstance, options: IServerlessOptions) {
     this.serverless = serverless;
     this.options = options;
   }
@@ -81,11 +115,12 @@ class OutputsEnvPlugin {
     return `${name}-${stage}`;
   }
 
-  private async getOutput() {
+  private async getOutput(): Promise<IOutput | undefined> {
     const { name } = this.serverless.service.provider;
-    const region = this.serverless.getProvider(name).getRegion();
-    const stage = this.serverless.getProvider(name).getStage();
-    const { Stacks } = (await this.serverless.getProvider(name).request(
+    const provider = this.serverless.getProvider(name);
+    const region = provider.getRegion();
+    const stage = provider.getStage();
+    const response = await provider.request(
       'CloudFormation',
       'describeStacks',
       {
@@ -94,15 +129,12 @@ class OutputsEnvPlugin {
       {
         region,
       },
-    )) as {
-      Stacks: {
-        Outputs: IOutput[];
-      }[];
-    };
+    );
 
-    const stack = Stacks.pop();
+    const stack = response.Stacks[response.Stacks.length - 1];
+    const outputs = stack?.Outputs ?? [];
 
-    return stack?.Outputs.reduce(
+    return outputs.reduce<IOutput>(
       (obj, item) => ({
         ...obj,
         [item.OutputKey]: item.OutputValue,
@@ -120,7 +152,7 @@ class OutputsEnvPlugin {
 
     const output = Object.keys(data);
     const config = Object.keys(this.output.env);
-    const result = config.reduce((obj, item) => {
+    const result = config.reduce<IOutput>((obj, item) => {
       if (output.includes(item)) {
         return {
           ...obj,

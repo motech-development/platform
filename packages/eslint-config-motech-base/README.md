@@ -15,8 +15,8 @@
 1. Install `@motech-development/eslint-config-motech-base` as a development dependency.
 
 ```bash
-# Yarn
-yarn add -D @motech-development/eslint-config-motech-base
+# PNPM
+pnpm add -D @motech-development/eslint-config-motech-base
 
 # NPM
 npm i -D @motech-development/eslint-config-motech-base

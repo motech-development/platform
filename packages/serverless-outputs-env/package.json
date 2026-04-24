@@ -21,16 +21,15 @@
   "module": "lib/outputs-env-plugin.esm.js",
   "types": "lib/outputs-env-plugin.d.ts",
   "scripts": {
-    "build": "run prebuild && rollup -c",
+    "build": "pnpm run prebuild && rollup -c",
     "lint": "eslint './src/**/*.ts'",
-    "package": "run build",
+    "package": "pnpm run build",
     "prebuild": "rimraf ./lib",
     "test": "jest --watch",
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
     "assert": "2.1.0",
-    "serverless": "3.39.0",
     "tomlify-j0.4": "3.0.0"
   },
   "devDependencies": {
@@ -47,7 +46,6 @@
     "@swc/jest": "0.2.37",
     "@types/assert": "1.5.11",
     "@types/jest": "29.5.14",
-    "@types/serverless": "3.12.23",
     "eslint": "9.37.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-prettier": "10.1.8",

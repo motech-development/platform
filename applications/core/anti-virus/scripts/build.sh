@@ -83,6 +83,7 @@ mkdir ./bin
 
 echo "-- Copying the executables and required libraries --"
 find clamav/docker -maxdepth 1 -type f -exec cp {} bin/. \;
+chmod 755 ./bin/* || true
 
 echo "-- Cleaning up ClamAV folder --"
 rm -rf clamav

@@ -21,9 +21,9 @@
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "run prebuild && rollup -c",
+    "build": "pnpm run prebuild && rollup -c",
     "lint": "eslint './src/**/*.{ts,tsx}'",
-    "package": "run build",
+    "package": "pnpm run build",
     "prebuild": "rimraf ./lib",
     "test": "jest --watch",
     "test-ci": "jest --coverage --runInBand"
@@ -83,9 +83,6 @@
       "src/**/*.{ts,tsx}",
       "!src/**/*.stories.{ts,tsx}"
     ],
-    "moduleNameMapper": {
-      "^uuid$": "uuid"
-    },
     "setupFilesAfterEnv": [
       "<rootDir>/src/setupTests.ts"
     ],

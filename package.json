@@ -3,22 +3,17 @@
   "version": "0.0.0",
   "description": "Motech Development applications monorepo",
   "private": true,
-  "workspaces": [
-    "applications/*/*",
-    "packages/*"
-  ],
-  "packageManager": "yarn@4.6.0",
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "clean-deps": "find . -name node_modules -exec rm -rf {} \\;",
     "clean-git": "git branch --merged | egrep -v \"(^\\*|main|develop)\" | xargs git branch -d",
     "commit": "cz",
-    "format": "yarn workspaces foreach -Wv run prettier --ignore-unknown --write .",
-    "format-root": "prettier --ignore-unknown --write .",
-    "lint": "yarn workspaces foreach -Wp run lint",
-    "package": "yarn workspaces foreach -Wpt run package",
+    "format": "pnpm exec prettier --ignore-unknown --write .",
+    "lint": "pnpm -r --if-present run lint",
+    "package": "pnpm -r --if-present run package",
     "prepare": "is-ci || husky",
     "release": "multi-semantic-release",
-    "test": "yarn workspaces foreach -W run test-ci"
+    "test": "pnpm -r --if-present run test-ci"
   },
   "repository": {
     "type": "git",
@@ -46,15 +41,6 @@
     "prettier": "3.2.5",
     "renovate": "36.109.4",
     "typescript": "5.8.2"
-  },
-  "resolutions": {
-    "nwsapi": "2.2.9",
-    "puppeteer": "13.7.0",
-    "@semantic-release/npm": "13.1.1",
-    "@semantic-release/commit-analyzer": "11.0.0",
-    "@semantic-release/github": "10.0.0",
-    "@semantic-release/release-notes-generator": "12.0.0",
-    "@semantic-release/error": "4.0.0"
   },
   "config": {
     "commitizen": {

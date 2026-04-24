@@ -23,26 +23,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        id: node-modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         id: packages
@@ -54,12 +45,11 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Install dependencies
-        if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
-        run: yarn
+        run: pnpm install --frozen-lockfile
 
       - name: Build packages
-        if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
-        run: yarn package
+        if: steps.packages.outputs.cache-hit != 'true'
+        run: pnpm package
 
   # Anti virus
   anti-virus:
@@ -87,25 +77,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -125,8 +107,11 @@ jobs:
         continue-on-error: true
         run: aws s3 rm $DEFINITIONS_BUCKET --recursive
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Teardown
-        run: yarn workspace @core/anti-virus teardown --stage $STAGE
+        run: pnpm --filter @core/anti-virus run teardown -- --stage "$STAGE"
 
   # Accounts (queue)
   accounts-queue:
@@ -155,22 +140,14 @@ jobs:
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
+          cache: pnpm
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -186,8 +163,11 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Teardown
-        run: yarn workspace @accounts/queue teardown --stage $STAGE
+        run: pnpm --filter @accounts/queue run teardown -- --stage "$STAGE"
 
   # Accounts (storage)
   accounts-storage:
@@ -221,22 +201,14 @@ jobs:
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
+          cache: pnpm
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -258,8 +230,11 @@ jobs:
           aws s3 rm $DOWNLOAD_BUCKET --recursive
           aws s3 rm $UPLOAD_BUCKET --recursive
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Teardown
-        run: yarn workspace @accounts/storage teardown --stage $STAGE
+        run: pnpm --filter @accounts/storage run teardown -- --stage "$STAGE"
 
   # Accounts (data)
   accounts-data:
@@ -288,25 +263,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -322,8 +289,11 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Teardown
-        run: yarn workspace @accounts/data teardown --stage $STAGE
+        run: pnpm --filter @accounts/data run teardown -- --stage "$STAGE"
 
   # Accounts (warm up)
   accounts-warm-up:
@@ -348,25 +318,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -382,8 +344,11 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Teardown
-        run: yarn workspace @accounts/warm-up teardown --stage $STAGE
+        run: pnpm --filter @accounts/warm-up run teardown -- --stage "$STAGE"
 
   # Accounts (notifications)
   accounts-notifications:
@@ -408,25 +373,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -442,8 +399,11 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Teardown
-        run: yarn workspace @accounts/notifications teardown --stage $STAGE
+        run: pnpm --filter @accounts/notifications run teardown -- --stage "$STAGE"
 
   # Accounts (reports)
   accounts-reports:
@@ -469,27 +429,19 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
 
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -509,8 +461,11 @@ jobs:
         continue-on-error: true
         run: aws s3 rm $REPORTS_BUCKET --recursive
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Teardown
-        run: yarn workspace @accounts/reports teardown --stage $STAGE
+        run: pnpm --filter @accounts/reports run teardown -- --stage "$STAGE"
 
   # Accounts (API)
   accounts-api:
@@ -535,25 +490,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
         with:
           node-version-file: .nvmrc
-          cache: yarn
+          cache: pnpm
 
       - name: Generate packages cache key
         run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v4.2.2
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
 
       - name: Restore packages
         uses: actions/cache@v4.2.2
@@ -569,5 +516,8 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Teardown
-        run: yarn workspace @accounts/api teardown --stage $STAGE
+        run: pnpm --filter @accounts/api run teardown -- --stage "$STAGE"

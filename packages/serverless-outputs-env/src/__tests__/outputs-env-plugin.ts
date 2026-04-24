@@ -1,27 +1,17 @@
 import { writeFile } from 'node:fs';
-import Serverless, { Options } from 'serverless';
 import tomlify from 'tomlify-j0.4';
-import OutputsEnvPlugin, { IServerlessInstance } from '../outputs-env-plugin';
+import OutputsEnvPlugin, {
+  IServerlessInstance,
+  IServerlessOptions,
+} from '../outputs-env-plugin';
 
-interface ITestInstance extends Pick<Serverless, 'cli' | 'getProvider'> {
-  service?: {
-    custom: {
-      outputs: {
-        files: string[];
-        env: {
-          [name: string]: string;
-        };
-      };
-    };
-    provider?: {
-      name: string;
-      stackName?: string;
-    };
-  };
-}
+type ITestInstance = Partial<IServerlessInstance>;
 
 describe('OutputsEnvPlugin', () => {
-  let options: Options;
+  let options: IServerlessOptions & {
+    region: string;
+    stage: string;
+  };
   let outputsEnvPlugin: OutputsEnvPlugin;
   let serverless: ITestInstance;
 
@@ -107,7 +97,13 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should throw an error if provider is not AWS', async () => {
-      serverless.service!.provider!.name = 'Azure';
+      const provider = serverless.service?.provider;
+
+      if (!provider) {
+        throw new Error('Expected provider');
+      }
+
+      provider.name = 'Azure';
 
       outputsEnvPlugin = new OutputsEnvPlugin(
         serverless as IServerlessInstance,
@@ -165,7 +161,13 @@ describe('OutputsEnvPlugin', () => {
 
   describe('with a stack name defined', () => {
     beforeEach(() => {
-      serverless.service!.provider!.stackName = 'custom-stack-name';
+      const provider = serverless.service?.provider;
+
+      if (!provider) {
+        throw new Error('Expected provider');
+      }
+
+      provider.stackName = 'custom-stack-name';
     });
 
     it('should throw an error if service is not provided', async () => {
@@ -199,7 +201,13 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should throw an error if provider is not AWS', async () => {
-      serverless.service!.provider!.name = 'Azure';
+      const provider = serverless.service?.provider;
+
+      if (!provider) {
+        throw new Error('Expected provider');
+      }
+
+      provider.name = 'Azure';
 
       outputsEnvPlugin = new OutputsEnvPlugin(
         serverless as IServerlessInstance,

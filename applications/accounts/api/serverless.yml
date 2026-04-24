@@ -2,7 +2,7 @@ service: accounts-api
 provider:
   name: aws
   region: ${opt:region, 'eu-west-1'}
-  runtime: nodejs20.x
+  runtime: nodejs24.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-api
   deploymentBucket:
@@ -12,7 +12,7 @@ package:
 plugins:
   - serverless-deployment-bucket
   - serverless-appsync-plugin
-  - serverless-webpack
+  - serverless-esbuild
   - serverless-prune-plugin
   - '@motech-development/serverless-outputs-env'
 custom:
@@ -30,13 +30,15 @@ custom:
     env:
       AccountsApiUrl: REACT_APP_APPSYNC_URL
       AWS_REGION: REACT_APP_AWS_REGION
-  webpack:
-    excludeRegex: node_modules/@aws-sdk
-    includeModules:
-      nodeModulesRelativeDir: ../../../
-    packager: yarn
-    packagerOptions:
-      noFrozenLockfile: true
+  esbuild:
+    bundle: true
+    external:
+      - '@sentry/profiling-node'
+    minify: false
+    packager: pnpm
+    platform: node
+    sourcemap: true
+    target: node24
 appSync:
   name: ${self:custom.prefix}
   authentication:

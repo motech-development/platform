@@ -21,10 +21,10 @@
   "module": "lib/index.esm.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "run prebuild && rollup -c",
+    "build": "pnpm run prebuild && rollup -c",
     "deploy": "storybook build",
     "lint": "eslint './src/**/*.{ts,tsx}'",
-    "package": "run build",
+    "package": "pnpm run build",
     "prebuild": "rimraf ./lib",
     "start": "storybook dev -p 6006",
     "test": "jest --watch",
