@@ -1,7 +1,6 @@
 import type {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
-  Callback,
   Context,
 } from 'aws-lambda';
 import ErrorResponse from './error-response';
@@ -16,24 +15,18 @@ const apiGatewayHandler =
   async (
     event: APIGatewayProxyEvent,
     context: Context,
-    callback: Callback<APIGatewayProxyResult>,
-  ): Promise<void> => {
+  ): Promise<APIGatewayProxyResult> => {
     try {
-      const result = await handler(event, context);
-
-      callback(null, result);
+      return await handler(event, context);
     } catch (e) {
       if (e instanceof ErrorResponse) {
-        callback(null, {
+        return {
           body: e.body,
           statusCode: e.statusCode,
-        });
-      } else {
-        callback(e as Error, {
-          body: 'Unhandled exception.',
-          statusCode: 500,
-        });
+        };
       }
+
+      throw e;
     }
   };
 

@@ -12,7 +12,6 @@ jest.mock('uuid', () => ({
 }));
 
 describe('signed-upload', () => {
-  let callback: jest.Mock;
   let context: Context;
   let event: APIGatewayProxyEvent;
 
@@ -20,8 +19,6 @@ describe('signed-upload', () => {
     context = ctx();
 
     context.done();
-
-    callback = jest.fn();
 
     event = {
       body: JSON.stringify({
@@ -38,9 +35,7 @@ describe('signed-upload', () => {
   });
 
   it('should error response if no bucket is set', async () => {
-    await handler(event, context, callback);
-
-    expect(callback).toHaveBeenCalledWith(null, {
+    await expect(handler(event, context)).resolves.toEqual({
       body: JSON.stringify({
         message: 'No bucket set',
         statusCode: 400,
@@ -67,9 +62,7 @@ describe('signed-upload', () => {
     it('should return an error response if no body is set', async () => {
       event.body = null;
 
-      await handler(event, context, callback);
-
-      expect(callback).toHaveBeenCalledWith(null, {
+      await expect(handler(event, context)).resolves.toEqual({
         body: JSON.stringify({
           message: 'No body found',
           statusCode: 400,
@@ -89,9 +82,7 @@ describe('signed-upload', () => {
         owner: 'owner',
       });
 
-      await handler(event, context, callback);
-
-      expect(callback).toHaveBeenCalledWith(null, {
+      await expect(handler(event, context)).resolves.toEqual({
         body: JSON.stringify({
           message: 'Invalid request',
           statusCode: 400,
@@ -112,9 +103,7 @@ describe('signed-upload', () => {
         owner: 'owner',
       });
 
-      await handler(event, context, callback);
-
-      expect(callback).toHaveBeenCalledWith(null, {
+      await expect(handler(event, context)).resolves.toEqual({
         body: JSON.stringify({
           id: 'test-uuid',
           url: 'https://signed-url',
@@ -124,9 +113,7 @@ describe('signed-upload', () => {
     });
 
     it('should return a success response', async () => {
-      await handler(event, context, callback);
-
-      expect(callback).toHaveBeenCalledWith(null, {
+      await expect(handler(event, context)).resolves.toEqual({
         body: JSON.stringify({
           id: 'test-uuid',
           url: 'https://signed-url',
@@ -136,7 +123,7 @@ describe('signed-upload', () => {
     });
 
     it('should create a signed URL with the correct params when an ID is not sent', async () => {
-      await handler(event, context, callback);
+      await handler(event, context);
 
       expect(createSignedUrl).toHaveBeenLastCalledWith(
         'putObject',
@@ -164,7 +151,7 @@ describe('signed-upload', () => {
         owner: 'owner',
       });
 
-      await handler(event, context, callback);
+      await handler(event, context);
 
       expect(createSignedUrl).toHaveBeenLastCalledWith(
         'putObject',

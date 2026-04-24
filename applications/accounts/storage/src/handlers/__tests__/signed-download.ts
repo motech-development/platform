@@ -8,7 +8,6 @@ jest.mock('@motech-development/s3-file-operations', () => ({
 }));
 
 describe('signed-download', () => {
-  let callback: jest.Mock;
   let context: Context;
   let event: APIGatewayProxyEvent;
 
@@ -16,8 +15,6 @@ describe('signed-download', () => {
     context = ctx();
 
     context.done();
-
-    callback = jest.fn();
 
     event = {
       body: JSON.stringify({
@@ -28,9 +25,7 @@ describe('signed-download', () => {
   });
 
   it('should error response if no bucket is set', async () => {
-    await handler(event, context, callback);
-
-    expect(callback).toHaveBeenCalledWith(null, {
+    await expect(handler(event, context)).resolves.toEqual({
       body: JSON.stringify({
         message: 'No bucket set',
         statusCode: 400,
@@ -57,9 +52,7 @@ describe('signed-download', () => {
     it('should return an error response if no body is set', async () => {
       event.body = null;
 
-      await handler(event, context, callback);
-
-      expect(callback).toHaveBeenCalledWith(null, {
+      await expect(handler(event, context)).resolves.toEqual({
         body: JSON.stringify({
           message: 'No body found',
           statusCode: 400,
@@ -73,9 +66,7 @@ describe('signed-download', () => {
         path: 'path/to/download.png',
       });
 
-      await handler(event, context, callback);
-
-      expect(callback).toHaveBeenCalledWith(null, {
+      await expect(handler(event, context)).resolves.toEqual({
         body: JSON.stringify({
           message: 'Invalid request',
           statusCode: 400,
@@ -85,9 +76,7 @@ describe('signed-download', () => {
     });
 
     it('should return a success response', async () => {
-      await handler(event, context, callback);
-
-      expect(callback).toHaveBeenCalledWith(null, {
+      await expect(handler(event, context)).resolves.toEqual({
         body: JSON.stringify({
           url: 'https://signed-url',
         }),
@@ -96,7 +85,7 @@ describe('signed-download', () => {
     });
 
     it('should create a signed URL with the correct params', async () => {
-      await handler(event, context, callback);
+      await handler(event, context);
 
       expect(createSignedUrl).toHaveBeenLastCalledWith(
         'getObject',
