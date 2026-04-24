@@ -28,6 +28,7 @@ custom:
   esbuild:
     bundle: true
     minify: false
+    packager: pnpm
     platform: node
     sourcemap: true
     target: node24
