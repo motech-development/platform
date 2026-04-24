@@ -12,12 +12,12 @@ interface IOutput {
 }
 
 interface IStackOutput {
-  OutputKey: string;
-  OutputValue: string;
+  OutputKey?: string;
+  OutputValue?: string;
 }
 
 interface IDescribeStacksResponse {
-  Stacks: {
+  Stacks?: {
     Outputs?: IStackOutput[];
   }[];
 }
@@ -131,14 +131,21 @@ class OutputsEnvPlugin {
       },
     );
 
-    const stack = response.Stacks[response.Stacks.length - 1];
+    const stacks = response.Stacks ?? [];
+    const stack = stacks[stacks.length - 1];
     const outputs = stack?.Outputs ?? [];
 
     return outputs.reduce<IOutput>(
-      (obj, item) => ({
-        ...obj,
-        [item.OutputKey]: item.OutputValue,
-      }),
+      (obj, item) => {
+        if (!item.OutputKey || !item.OutputValue) {
+          return obj;
+        }
+
+        return {
+          ...obj,
+          [item.OutputKey]: item.OutputValue,
+        };
+      },
       {
         AWS_REGION: region,
       },

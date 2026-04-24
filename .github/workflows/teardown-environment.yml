@@ -25,6 +25,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
 
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
@@ -79,6 +81,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
 
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
@@ -142,6 +146,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
 
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
@@ -203,6 +209,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
 
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
@@ -265,6 +273,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
 
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
@@ -320,6 +330,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
 
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
@@ -375,6 +387,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
 
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
@@ -433,6 +447,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
 
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
@@ -492,6 +508,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+        with:
+          version: 10.33.0
 
       - name: Set Node version
         uses: actions/setup-node@v4.2.0
