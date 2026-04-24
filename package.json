@@ -3,18 +3,22 @@
   "version": "0.0.0",
   "description": "Motech Development applications monorepo",
   "private": true,
-  "packageManager": "pnpm@10.33.0",
+  "workspaces": [
+    "applications/*/*",
+    "packages/*"
+  ],
+  "packageManager": "yarn@4.6.0",
   "scripts": {
     "clean-deps": "find . -name node_modules -exec rm -rf {} \\;",
     "clean-git": "git branch --merged | egrep -v \"(^\\*|main|develop)\" | xargs git branch -d",
     "commit": "cz",
-    "format": "pnpm -r exec prettier --ignore-unknown --write .",
-    "format-root": "pnpm exec prettier --ignore-unknown --write .",
-    "lint": "pnpm -r --if-present run lint",
-    "package": "pnpm -r --if-present run package",
+    "format": "yarn workspaces foreach -Wv run prettier --ignore-unknown --write .",
+    "format-root": "prettier --ignore-unknown --write .",
+    "lint": "yarn workspaces foreach -Wp run lint",
+    "package": "yarn workspaces foreach -Wpt run package",
     "prepare": "is-ci || husky",
     "release": "multi-semantic-release",
-    "test": "pnpm -r --if-present run test-ci"
+    "test": "yarn workspaces foreach -W run test-ci"
   },
   "repository": {
     "type": "git",
@@ -43,6 +47,15 @@
     "renovate": "36.109.4",
     "typescript": "5.8.2"
   },
+  "resolutions": {
+    "nwsapi": "2.2.9",
+    "puppeteer": "13.7.0",
+    "@semantic-release/npm": "13.1.1",
+    "@semantic-release/commit-analyzer": "11.0.0",
+    "@semantic-release/github": "10.0.0",
+    "@semantic-release/release-notes-generator": "12.0.0",
+    "@semantic-release/error": "4.0.0"
+  },
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
@@ -50,10 +63,5 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "serverless-esbuild@1.57.0": "patches/serverless-esbuild@1.57.0.patch"
-    }
   }
 }

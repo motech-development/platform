@@ -21,9 +21,9 @@
   "module": "lib/index.esm.js",
   "types": "lib/ga-web-vitals.d.ts",
   "scripts": {
-    "build": "pnpm run prebuild && rollup -c",
+    "build": "run prebuild && rollup -c",
     "lint": "eslint './src/**/*.ts'",
-    "package": "pnpm run build",
+    "package": "run build",
     "prebuild": "rimraf ./lib",
     "test": "jest --watch",
     "test-ci": "jest --coverage --runInBand"

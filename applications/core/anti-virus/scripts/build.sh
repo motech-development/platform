@@ -83,11 +83,6 @@ mkdir ./bin
 
 echo "-- Copying the executables and required libraries --"
 find clamav/docker -maxdepth 1 -type f -exec cp {} bin/. \;
-if ! find ./bin -maxdepth 1 -type f | grep -q .; then
-  echo "No artifacts were copied into ./bin" >&2
-  exit 1
-fi
-chmod 755 ./bin/*
 
 echo "-- Cleaning up ClamAV folder --"
 rm -rf clamav

@@ -19,7 +19,7 @@ A diverse set of applications built by Motech Development
 
 Book keeping application to keep on top of your finances
 
-Start the application by running `pnpm --filter @accounts/client run start`
+Start the application by running `yarn start --scope=@accounts/client`
 
 ### ID
 
@@ -37,83 +37,83 @@ Reusable NPM packages used in our applications
 
 Utility to make working with API gateway lambda functions less of a pain
 
-Build the package by running `pnpm --filter @motech-development/api-gateway-handler run build`\
-Test the package by running `pnpm --filter @motech-development/api-gateway-handler run test`
+Build the package by running `yarn build --scope=@motech-development/api-gateway-handler`\
+Test the package by running `yarn test --scope=@motech-development/api-gateway-handler`
 
 ### AppSync Apollo
 
 React Apollo client configured for AppSync
 
-Build the package by running `pnpm --filter @motech-development/appsync-apollo run build`\
-Test the package by running `pnpm --filter @motech-development/appsync-apollo run test`
+Build the package by running `yarn build --scope=@motech-development/appsync-apollo`\
+Test the package by running `yarn test --scope=@motech-development/appsync-apollo`
 
 ### Auth
 
 An Auth0 helper library for React
 
-Build the package by running `pnpm --filter @motech-development/auth run build`\
-Test the package by running `pnpm --filter @motech-development/auth run test`
+Build the package by running `yarn build --scope=@motech-development/auth`\
+Test the package by running `yarn test --scope=@motech-development/auth`
 
 ### Axios hooks
 
 Axios hooks for React
 
-Build the package by running `pnpm --filter @motech-development/axios-hooks run build`\
-Test the package by running `pnpm --filter @motech-development/axios-hooks run test`
+Build the package by running `yarn build --scope=@motech-development/axios-hooks`\
+Test the package by running `yarn test --scope=@motech-development/axios-hooks`
 
 ### Breeze UI
 
 Motech Development UI component library
 
-Start storybook by running `pnpm --filter @motech-development/breeze-ui run start`\
-Build the package by running `pnpm --filter @motech-development/breeze-ui run build`\
-Test the package by running `pnpm --filter @motech-development/breeze-ui run test`
+Start storybook by running `yarn start --scope=@motech-development/breeze-ui`\
+Build the package by running `yarn build --scope=@motech-development/breeze-ui`\
+Test the package by running `yarn test --scope=@motech-development/breeze-ui`
 
 ### GA Web Vitals
 
 Google Analytics Web Vitals reporter
 
-Build the package by running `pnpm --filter @motech-development/ga-web-vitals run build`\
-Test the package by running `pnpm --filter @motech-development/ga-web-vitals run test`
+Build the package by running `yarn build --scope=@motech-development/ga-web-vitals`\
+Test the package by running `yarn test --scope=@motech-development/ga-web-vitals`
 
 ### Logger
 
 Application logger
 
-Build the package by running `pnpm --filter @motech-development/node-logger run build`\
-Test the package by running `pnpm --filter @motech-development/node-logger run test`
+Build the package by running `yarn build --scope=@motech-development/node-logger`\
+Test the package by running `yarn test --scope=@motech-development/node-logger`
 
 ### Query string hook
 
 A hook to access query strings
 
-Build the package by running `pnpm --filter @motech-development/query-string-hook run build`\
-Test the package by running `pnpm --filter @motech-development/query-string-hook run test`
+Build the package by running `yarn build --scope=@motech-development/query-string-hook`\
+Test the package by running `yarn test --scope=@motech-development/query-string-hook`
 
 ### S3 file operations
 
 A wrapper utility to manage file operations on AWS S3
 
-Build the package by running `pnpm --filter @motech-development/s3-file-operations run build`\
-Test the package by running `pnpm --filter @motech-development/s3-file-operations run test`
+Build the package by running `yarn build --scope=@motech-development/s3-file-operations`\
+Test the package by running `yarn test --scope=@motech-development/s3-file-operations`
 
 ### Serverless outputs env
 
 Serverless plugin to take AWS outputs and write them into `.env` files
 
-Build the package by running `pnpm --filter @motech-development/serverless-outputs-env run build`\
-Test the package by running `pnpm --filter @motech-development/serverless-outputs-env run test`
+Build the package by running `yarn build --scope=@motech-development/serverless-outputs-env`\
+Test the package by running `yarn test --scope=@motech-development/serverless-outputs-env`
 
 ### Webpack conditional plugin
 
 A Webpack plugin to conditionally apply plugins
 
-Build the package by running `pnpm --filter @motech-development/webpack-conditional-plugin run build`\
-Test the package by running `pnpm --filter @motech-development/webpack-conditional-plugin run test`
+Build the package by running `yarn build --scope=@motech-development/webpack-conditional-plugin`\
+Test the package by running `yarn test --scope=@motech-development/webpack-conditional-plugin`
 
 ### Webpack permissions plugin
 
 A Webpack plugin to set permissions for your output files and folders
 
-Build the package by running `pnpm --filter @motech-development/webpack-permissions-plugin run build`\
-Test the package by running `pnpm --filter @motech-development/webpack-permissions-plugin run test`
+Build the package by running `yarn build --scope=@motech-development/webpack-permissions-plugin`\
+Test the package by running `yarn test --scope=@motech-development/webpack-permissions-plugin`

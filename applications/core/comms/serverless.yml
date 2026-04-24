@@ -3,7 +3,6 @@ service: platform-comms
 provider:
   name: aws
   region: ${opt:region, 'us-east-1'}
-  # Verified for AWS Lambda with osls 3.63.2 and serverless-esbuild 1.57.0.
   runtime: nodejs24.x
   stage: ${opt:stage, 'local'}
   stackName: ${self:custom.prefix}-comms
@@ -15,7 +14,7 @@ package:
 
 plugins:
   - serverless-deployment-bucket
-  - serverless-esbuild
+  - serverless-webpack
   - serverless-prune-plugin
 
 custom:
@@ -27,15 +26,13 @@ custom:
     includeLayers: true
     number: 1
 
-  esbuild:
-    bundle: true
-    external:
-      - '@sentry/profiling-node'
-    minify: false
-    packager: pnpm
-    platform: node
-    sourcemap: true
-    target: node24
+  webpack:
+    excludeRegex: 'node_modules/@aws-sdk'
+    includeModules:
+      nodeModulesRelativeDir: ../../../
+    packager: yarn
+    packagerOptions:
+      noFrozenLockfile: true
 
 functions:
   VerifyDomain:

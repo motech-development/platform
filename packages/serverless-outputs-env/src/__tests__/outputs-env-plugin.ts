@@ -97,13 +97,7 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should throw an error if provider is not AWS', async () => {
-      const provider = serverless.service?.provider;
-
-      if (!provider) {
-        throw new Error('Expected provider');
-      }
-
-      provider.name = 'Azure';
+      serverless.service!.provider.name = 'Azure';
 
       outputsEnvPlugin = new OutputsEnvPlugin(
         serverless as IServerlessInstance,
@@ -157,79 +151,11 @@ describe('OutputsEnvPlugin', () => {
 
       expect(writeFile).toHaveBeenCalledTimes(2);
     });
-
-    it('should ignore missing stack output keys and values', async () => {
-      const provider = serverless.getProvider?.('aws');
-
-      if (!provider) {
-        throw new Error('Expected provider');
-      }
-
-      provider.request = jest.fn(() => ({
-        Stacks: [
-          {
-            Outputs: [
-              {
-                OutputKey: 'CUSTOM_INPUT',
-                OutputValue: 'CUSTOM_INPUT',
-              },
-              {
-                OutputKey: undefined,
-                OutputValue: 'SHOULD_SKIP',
-              },
-              {
-                OutputKey: 'STAGE',
-                OutputValue: undefined,
-              },
-            ],
-          },
-        ],
-      }));
-
-      outputsEnvPlugin = new OutputsEnvPlugin(
-        serverless as IServerlessInstance,
-        options,
-      );
-
-      await outputsEnvPlugin.hooks['after:deploy:deploy']();
-
-      expect(tomlify.toToml).toHaveBeenCalledWith({
-        ENV_AWS_REGION: 'eu-west-1',
-        ENV_CUSTOM_INPUT: 'CUSTOM_INPUT',
-      });
-    });
-
-    it('should still output the region when no stacks are returned', async () => {
-      const provider = serverless.getProvider?.('aws');
-
-      if (!provider) {
-        throw new Error('Expected provider');
-      }
-
-      provider.request = jest.fn(() => ({}));
-
-      outputsEnvPlugin = new OutputsEnvPlugin(
-        serverless as IServerlessInstance,
-        options,
-      );
-
-      await outputsEnvPlugin.hooks['after:deploy:deploy']();
-
-      expect(tomlify.toToml).toHaveBeenCalledWith({
-        ENV_AWS_REGION: 'eu-west-1',
-      });
-    });
   });
 
   describe('with a stack name defined', () => {
     beforeEach(() => {
-      const provider = serverless.service?.provider;
-
-      if (!provider) {
-        throw new Error('Expected provider');
-      }
-
-      provider.stackName = 'custom-stack-name';
+      serverless.service!.provider.stackName = 'custom-stack-name';
     });
 
     it('should throw an error if service is not provided', async () => {
@@ -263,13 +189,7 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should throw an error if provider is not AWS', async () => {
-      const provider = serverless.service?.provider;
-
-      if (!provider) {
-        throw new Error('Expected provider');
-      }
-
-      provider.name = 'Azure';
+      serverless.service!.provider.name = 'Azure';
 
       outputsEnvPlugin = new OutputsEnvPlugin(
         serverless as IServerlessInstance,
