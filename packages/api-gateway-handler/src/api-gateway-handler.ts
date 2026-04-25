@@ -4,6 +4,7 @@ import type {
   Context,
 } from 'aws-lambda';
 import ErrorResponse from './error-response';
+import response from './response';
 
 type Handler = (
   event: APIGatewayProxyEvent,
@@ -26,7 +27,13 @@ const apiGatewayHandler =
         };
       }
 
-      throw e;
+      return response(
+        {
+          message: 'Unhandled exception.',
+          statusCode: 500,
+        },
+        500,
+      );
     }
   };
 

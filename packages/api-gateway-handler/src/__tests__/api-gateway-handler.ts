@@ -41,4 +41,18 @@ describe('api-gateway-handler', () => {
       statusCode: 502,
     });
   });
+
+  it('should return a 500 response when a non-ErrorResponse is thrown', async () => {
+    const handler = () => {
+      throw new Error('Unexpected failure');
+    };
+
+    await expect(proxyHandler(handler)(event, context)).resolves.toEqual({
+      body: JSON.stringify({
+        message: 'Unhandled exception.',
+        statusCode: 500,
+      }),
+      statusCode: 500,
+    });
+  });
 });
