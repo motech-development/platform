@@ -10,7 +10,7 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@aws-sdk/client-ses": "3.370.0",
+    "@aws-sdk/client-ses": "3.1033.0",
     "@sentry/aws-serverless": "10.48.0",
     "@sentry/profiling-node": "10.48.0",
     "cfn-response-async": "1.0.0",
