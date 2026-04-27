@@ -19,5 +19,6 @@
   "explorer.autoReveal": false,
   "explorer.openEditors.visible": 1,
   "search.followSymlinks": false,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

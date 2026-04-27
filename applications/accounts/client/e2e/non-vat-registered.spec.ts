@@ -397,6 +397,91 @@ test.describe('Non-VAT registered', () => {
       ).toBeVisible();
     });
 
+    test('should add a confirmed purchase refund for updates', async ({
+      accounts,
+      format,
+      page,
+    }) => {
+      const transaction = accounts[11];
+
+      await page
+        .getByRole('link', { name: 'Record a new transaction' })
+        .click();
+
+      await page.getByLabel('Purchase').check();
+      await page.getByLabel('Supplier').fill(transaction.supplier);
+      await page.getByLabel('Description').fill(transaction.description);
+      await page.getByLabel('Confirmed').check();
+      await page.getByLabel('Yes').check();
+      await page.getByLabel('Category').selectOption(transaction.category);
+      await page.getByLabel('Amount').fill(transaction.amount);
+
+      await expect(page.getByLabel('VAT')).toHaveValue(
+        format('currency', transaction.vat),
+      );
+
+      await page.getByRole('button', { name: 'Save' }).click();
+
+      await expect(
+        page.getByRole('heading', { name: 'Accounts' }).nth(1),
+      ).toBeVisible();
+    });
+
+    test('should update a confirmed purchase refund', async ({
+      accounts,
+      page,
+    }) => {
+      const transaction = accounts[11];
+      const updatedDescription = `${transaction.description} updated`;
+
+      await page.getByTestId(`View ${transaction.supplier}`).click();
+
+      await expect(
+        page.getByRole('heading', { name: 'View transaction' }),
+      ).toBeVisible();
+
+      await expect(page.getByLabel('Purchase')).toBeChecked();
+      await expect(page.getByLabel('Yes')).toBeChecked();
+      await expect(page.getByLabel('Supplier')).toHaveValue(
+        transaction.supplier,
+      );
+      await expect(page.getByLabel('Description')).toHaveValue(
+        transaction.description,
+      );
+
+      await page.getByLabel('Description').fill(updatedDescription);
+      await page.getByRole('button', { name: 'Save' }).click();
+
+      await expect(
+        page.getByRole('heading', { name: 'Accounts' }).nth(1),
+      ).toBeVisible();
+      await expect(page.getByText(updatedDescription)).toBeVisible();
+    });
+
+    test('should delete a confirmed purchase refund', async ({
+      accounts,
+      page,
+    }) => {
+      const transaction = accounts[11];
+
+      await page.getByTestId(`Delete ${transaction.supplier}`).click();
+      await page
+        .getByLabel(`Please type ${transaction.supplier} to confirm`)
+        .fill(transaction.supplier);
+      await page
+        .getByRole('button', {
+          exact: true,
+          name: 'Delete',
+        })
+        .last()
+        .click();
+
+      await expect(page.getByRole('dialog')).not.toBeVisible();
+      await expect(
+        page.getByTestId(`Delete ${transaction.supplier}`),
+      ).toHaveCount(0);
+    });
+
     test('should add a confirmed zero VAT rate purchase', async ({
       accounts,
       format,
@@ -543,6 +628,38 @@ test.describe('Non-VAT registered', () => {
       ).toBeVisible();
     });
 
+    test('should schedule a purchase refund', async ({
+      accounts,
+      format,
+      page,
+    }) => {
+      const transaction = accounts[12];
+
+      await page
+        .getByRole('link', { name: 'Record a new transaction' })
+        .click();
+
+      await page.getByLabel('Purchase').check();
+      await page.getByLabel('Supplier').fill(transaction.supplier);
+      await page.getByLabel('Description').fill(transaction.description);
+      await page.getByLabel('Yes').check();
+      await page.getByLabel('Pending').check();
+      await page.getByLabel('Yes').nth(1).check();
+      await page.getByLabel('Category').selectOption(transaction.category);
+      await page.getByLabel('Amount').fill(transaction.amount);
+
+      await expect(page.getByLabel('VAT')).toHaveValue(
+        format('currency', transaction.vat),
+      );
+
+      await page.getByRole('button', { name: 'Save' }).click();
+
+      await expect(
+        page.getByRole('heading', { name: 'Pending transactions' }),
+      ).toBeVisible();
+      await expect(page.getByText(transaction.description)).toBeVisible();
+    });
+
     test('should delete a pending transaction', async ({ accounts, page }) => {
       const transaction = accounts[5];
 
@@ -579,12 +696,20 @@ test.describe('Non-VAT registered', () => {
     }) => {
       test.setTimeout(630000);
 
+      if (page.url().includes('/pending-transactions')) {
+        await page.getByRole('link', { name: 'Go back to accounts' }).click();
+
+        await expect(
+          page.getByRole('heading', { name: 'Accounts' }).nth(1),
+        ).toBeVisible();
+      }
+
       await expect(async () => {
         await page.reload();
 
-        await expect(page.getByText('Balance: £3922.40')).toBeVisible();
+        await expect(page.getByText('Balance: £3946.40')).toBeVisible();
         await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
-        await expect(page.getByText('VAT paid: £12.94')).toBeVisible();
+        await expect(page.getByText('VAT paid: £8.94')).toBeVisible();
       }).toPass({
         timeout: 600000,
       });
@@ -659,7 +784,7 @@ test.describe('Non-VAT registered', () => {
   test.describe('Notifications', () => {
     test('should display a notification', async ({ page }) => {
       await page
-        .getByRole('button', { name: /Notifications \([0-4] unread\)/ })
+        .getByRole('button', { name: /Notifications \([0-5] unread\)/ })
         .click();
 
       await expect(
@@ -671,7 +796,7 @@ test.describe('Non-VAT registered', () => {
       ).toBeVisible();
 
       await page
-        .getByRole('button', { name: /Notifications \([0-4] unread\)/ })
+        .getByRole('button', { name: /Notifications \([0-5] unread\)/ })
         .click();
 
       await expect(

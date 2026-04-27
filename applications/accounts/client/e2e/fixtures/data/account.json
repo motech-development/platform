@@ -86,5 +86,21 @@
     "category": "4",
     "amount": "77.5",
     "vat": "0"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "Stationery Express",
+    "description": "Printer paper credit",
+    "category": "5",
+    "amount": "12",
+    "vat": "2"
+  },
+  {
+    "type": "Purchase",
+    "supplier": "Hosting Refunds Ltd",
+    "description": "Monthly hosting rebate",
+    "category": "5",
+    "amount": "24",
+    "vat": "4"
   }
 ]
