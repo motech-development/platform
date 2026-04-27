@@ -1,4 +1,5 @@
-path_filters:
-  - '!.agents/**'
-  - '!.claude/**'
-  - '!.cursor/**'
+reviews:
+  path_filters:
+    - '!.agents/**'
+    - '!.claude/**'
+    - '!.cursor/**'
