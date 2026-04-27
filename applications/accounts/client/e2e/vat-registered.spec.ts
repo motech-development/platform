@@ -735,16 +735,19 @@ test.describe('VAT registered', () => {
     test('should display a notification', async ({ page }) => {
       test.setTimeout(930000);
 
-      const notifications = page.getByRole('button', {
+      const unreadNotifications = page.getByRole('button', {
         name: /Notifications \([1-4] unread\)/,
       });
+      const notifications = page.getByRole('button', {
+        name: /Notifications \([0-4] unread\)/,
+      });
 
-      await notifications.waitFor({
+      await unreadNotifications.waitFor({
         state: 'visible',
         timeout: 900000,
       });
 
-      await notifications.click();
+      await unreadNotifications.click();
 
       await page
         .getByText(
