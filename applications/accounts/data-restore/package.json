@@ -12,8 +12,8 @@
     "test-ci": "jest --coverage --runInBand"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.370.0",
-    "@aws-sdk/util-dynamodb": "3.370.0",
+    "@aws-sdk/client-dynamodb": "3.1033.0",
+    "@aws-sdk/util-dynamodb": "3.996.2",
     "@motech-development/node-logger": "workspace:*",
     "aws-cdk-lib": "2.189.1",
     "constructs": "10.4.2"

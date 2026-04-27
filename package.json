@@ -44,7 +44,7 @@
     "is-ci": "3.0.1",
     "lint-staged": "15.4.3",
     "prettier": "3.2.5",
-    "renovate": "36.109.4",
+    "renovate": "43.136.0",
     "typescript": "5.8.2"
   },
   "resolutions": {
