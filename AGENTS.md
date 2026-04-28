@@ -115,6 +115,7 @@ Follow this lifecycle:
 - Do not duplicate logic, helpers, fixtures, mocks, or utilities. Reuse or extend existing abstractions unless there is a clear reason not to.
 - Keep changes surgical and avoid unrelated modifications.
 - Do only the work the user asked for. Do not opportunistically fix nearby warnings, refactor adjacent code, or expand scope without explicit approval.
+- Do not make cosmetic or dishonest rewrites solely to evade static-analysis duplication or smell detectors. Resolve the underlying design with a real abstraction, or explicitly report why the finding should be accepted.
 - Match existing file style and project conventions when editing.
 - Respect `.editorconfig`.
 - Use ES modules rather than CommonJS.
