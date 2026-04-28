@@ -140,6 +140,7 @@ Follow this lifecycle:
 - For dependency upgrades, preserve the current major version unless the user explicitly requests or approves a major upgrade. Treat broad "latest" requests as applying only where major-version risk has been clarified.
 - Never skip git hooks.
 - Use Conventional Commits for commit messages.
+- When a commit completes a tracked GitHub issue, include a closing footer such as `Closes #1234`.
 - Confirm the package manager before running package commands.
 - Prefer available MCP/app tools over shell CLIs for PR review/comment triage, replies, and thread resolution. Use shell CLIs only when the MCP/app tooling cannot provide the needed data or action.
 - Treat disabling ESLint rules or adding new ones as a last resort that must be justified.
