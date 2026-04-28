@@ -1,4 +1,4 @@
-import { IHeaders, Method, ResponseType } from './types';
+import type { IFetchError, IHeaders, Method, ResponseType } from './types';
 
 interface IRequestOptions {
   body?: unknown;
@@ -87,7 +87,7 @@ const parseResponse = async <TData>(
   return (text || null) as TData;
 };
 
-const request = async <TData>({
+const request = async <TData, TError = TData>({
   body,
   headers,
   method,
@@ -101,22 +101,27 @@ const request = async <TData>({
   });
 
   if (!response.ok) {
-    let data = null as TData;
+    let data = null as TError;
 
     try {
-      data = await parseResponse<TData>(response, responseType);
+      data = await parseResponse<TError>(response, responseType);
     } catch {
-      data = null as TData;
+      data = null as TError;
     }
 
-    throw Object.assign(new Error(response.statusText), {
-      response: {
-        data,
+    const error: IFetchError<TError> = Object.assign(
+      new Error(response.statusText),
+      {
+        response: {
+          data,
+          status: response.status,
+          statusText: response.statusText,
+        },
         status: response.status,
-        statusText: response.statusText,
       },
-      status: response.status,
-    });
+    );
+
+    throw error;
   }
 
   const data = await parseResponse<TData>(response, responseType);

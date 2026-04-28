@@ -30,7 +30,7 @@ const executeGet = async <TData, TError>(
     setLoading(true);
 
     const { headers, responseType } = options;
-    const data = await request<TData>({
+    const data = await request<TData, TError>({
       headers: {
         ...headers,
         ...additionalHeaders,
@@ -62,7 +62,7 @@ const executeForm = async <TData, TBody, TError>(
     setLoading(true);
 
     const { headers, responseType } = options;
-    const data = await request<TData>({
+    const data = await request<TData, TError>({
       body,
       headers: {
         ...headers,
