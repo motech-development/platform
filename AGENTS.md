@@ -121,7 +121,7 @@ Follow this lifecycle:
 - Use ES modules rather than CommonJS.
 - Destructure imports when possible.
 - Add JSDoc where appropriate.
-- Record newly discovered project-specific conventions in `AGENTS.md` immediately when they are discovered. User corrections, repeated misses, or clarified expectations that reveal a durable rule must trigger an `AGENTS.md` update in the same turn unless the user explicitly says not to.
+- Record newly discovered project-specific conventions in `AGENTS.md` immediately when they are discovered unless the current task is explicitly scope-limited. User corrections, repeated misses, or clarified expectations that reveal a durable rule must trigger an `AGENTS.md` update, or a linked/tracked follow-up to update `AGENTS.md` in the same sprint/turn when unrelated PR churn should be avoided.
 
 ### Testing and Quality
 
