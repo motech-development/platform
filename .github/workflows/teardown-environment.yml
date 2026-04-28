@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       stage:
-        description: 'Stage'
+        description: 'Stage, for example pr-123'
         required: true
 
 jobs:
@@ -75,9 +75,9 @@ jobs:
 
     env:
       AWS_DEFAULT_REGION: eu-west-1
-      DEFINITIONS_BUCKET: s3://anti-virus-${{ github.event.pull_request.number || github.event.inputs.stage }}-definitions
+      DEFINITIONS_BUCKET: s3://anti-virus-${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}-definitions
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
 
     permissions:
       id-token: write
@@ -142,7 +142,7 @@ jobs:
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
 
     permissions:
       id-token: write
@@ -205,10 +205,10 @@ jobs:
 
     env:
       AWS_DEFAULT_REGION: eu-west-1
-      DOWNLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-downloads
+      DOWNLOAD_BUCKET: s3://accounts-${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}-downloads
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
-      UPLOAD_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-uploads
+      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
+      UPLOAD_BUCKET: s3://accounts-${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}-uploads
 
     permissions:
       id-token: write
@@ -278,7 +278,7 @@ jobs:
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
 
     permissions:
       id-token: write
@@ -338,7 +338,7 @@ jobs:
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
 
     permissions:
       id-token: write
@@ -398,7 +398,7 @@ jobs:
       - accounts-reports
 
     env:
-      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
 
     permissions:
       id-token: write
@@ -459,9 +459,9 @@ jobs:
 
     env:
       AWS_DEFAULT_REGION: eu-west-1
-      REPORTS_BUCKET: s3://accounts-${{ github.event.pull_request.number || github.event.inputs.stage }}-reports
+      REPORTS_BUCKET: s3://accounts-${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}-reports
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
 
     permissions:
       id-token: write
@@ -525,7 +525,7 @@ jobs:
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number || github.event.inputs.stage }}
+      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
 
     permissions:
       id-token: write

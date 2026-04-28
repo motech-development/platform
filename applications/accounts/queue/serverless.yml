@@ -9,6 +9,7 @@ provider:
   deploymentBucket:
     name: ${self:service}-deployment-bucket
   environment:
+    SENTRY_ENVIRONMENT: ${self:provider.stage}
     TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
 package:

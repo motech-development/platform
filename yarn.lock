@@ -7262,6 +7262,8 @@ __metadata:
     "@motech-development/ga-web-vitals": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
+    "@sentry/react": "npm:7.120.0"
+    "@sentry/vite-plugin": "npm:2.23.0"
     "@stylistic/eslint-plugin": "npm:2.9.0"
     "@swc/core": "npm:1.11.5"
     "@swc/jest": "npm:0.2.37"

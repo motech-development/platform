@@ -85,11 +85,13 @@ jobs:
   #     AUTH0_SES_ACCESS_KEY_ID: ${{ secrets.AUTH0_SES_ACCESS_KEY_ID }}
   #     AUTH0_SES_ACCESS_SECRET_KEY: ${{ secrets.AUTH0_SES_ACCESS_SECRET_KEY }}
   #     AUTH0_SES_REGION: ${{ secrets.AUTH0_SES_REGION }}
-  #     PREFIX: id-develop
+  #     PREFIX: id-pr-${{ github.event.pull_request.number }}
   #     PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
-  #     PUBLIC_URL: https://id-develop.${{ secrets.PROD_DOMAIN }}
+  #     PUBLIC_URL: https://id-pr-${{ github.event.pull_request.number }}.${{ secrets.PROD_DOMAIN }}
   #     REACT_APP_GA: ${{ secrets.GA_ID_DEV }}
-  #     STAGE: develop
+  #     REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ID_CLIENT }}
+  #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  #     STAGE: pr-${{ github.event.pull_request.number }}
   #     YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
   #   permissions:
@@ -171,7 +173,7 @@ jobs:
     env:
       AWS_DEFAULT_REGION: eu-west-1
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
@@ -238,7 +240,7 @@ jobs:
       - name: Check for definitions
         id: definitions
         continue-on-error: true
-        run: aws s3api head-object --bucket anti-virus-${{ github.event.pull_request.number }}-definitions --key daily.cvd
+        run: aws s3api head-object --bucket anti-virus-pr-${{ github.event.pull_request.number }}-definitions --key daily.cvd
 
       - name: Update definitions
         if: steps.definitions.outcome != 'success'
@@ -256,7 +258,7 @@ jobs:
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
@@ -326,7 +328,7 @@ jobs:
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
@@ -396,7 +398,7 @@ jobs:
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
@@ -466,7 +468,7 @@ jobs:
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
@@ -539,7 +541,7 @@ jobs:
       - accounts-data
 
     env:
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
@@ -611,7 +613,7 @@ jobs:
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
@@ -686,7 +688,7 @@ jobs:
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.pull_request.number }}
+      STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
@@ -810,6 +812,7 @@ jobs:
       REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_DEV }}
       REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_CLIENT }}
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      STAGE: pr-${{ github.event.pull_request.number }}
 
     steps:
       - name: Checkout code

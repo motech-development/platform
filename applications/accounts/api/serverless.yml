@@ -7,6 +7,8 @@ provider:
   stackName: ${self:custom.prefix}-api
   deploymentBucket:
     name: ${self:service}-deployment-bucket
+  environment:
+    SENTRY_ENVIRONMENT: ${self:provider.stage}
 package:
   individually: true
 plugins:

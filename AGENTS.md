@@ -141,6 +141,7 @@ Follow this lifecycle:
 - Confirm the package manager before running package commands.
 - Prefer available MCP/app tools over shell CLIs for PR review/comment triage, replies, and thread resolution. Use shell CLIs only when the MCP/app tooling cannot provide the needed data or action.
 - Treat disabling ESLint rules or adding new ones as a last resort that must be justified.
+- Keep Sentry environment names aligned with deployment stage names: `production`, `develop`, or `pr-xxx` for pull request stages.
 - After substantial code or dependency changes, run `coderabbit review --agent` and repeat the review/fix cycle until there are no actionable findings. Treat changes spanning more than five files, dependency updates, shared utilities, or cross-workspace behavior as substantial. Stop and report instead of looping indefinitely if the same non-actionable finding repeats, if findings conflict with explicit user instructions, or after three review cycles without convergence.
 - Treat Auth0-related dependencies and code inside `applications/id` as sensitive. Do not update Auth0 there unless the user explicitly asks for that work.
 

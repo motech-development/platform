@@ -10,6 +10,7 @@ provider:
     name: ${self:service}-deployment-bucket
   environment:
     DOWNLOAD_BUCKET: !Ref DownloadBucket
+    SENTRY_ENVIRONMENT: ${self:provider.stage}
     UPLOAD_BUCKET: !Ref UploadBucket
 
 package:

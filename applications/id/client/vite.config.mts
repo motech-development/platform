@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { defineConfig, loadEnv } from 'vite';
 import checker from 'vite-plugin-checker';
 import eslint from 'vite-plugin-eslint';
@@ -15,6 +16,7 @@ export default defineConfig(({ command, mode }) => {
     base: PUBLIC_URL,
     build: {
       outDir: 'build',
+      sourcemap: true,
     },
     define: {
       ...(isBuild
@@ -31,6 +33,11 @@ export default defineConfig(({ command, mode }) => {
       }),
       checker({
         typescript: true,
+      }),
+      sentryVitePlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: 'motech-development-206deb70e',
+        project: 'id-client',
       }),
     ],
     preview: {

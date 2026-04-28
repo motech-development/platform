@@ -34,6 +34,7 @@ const {
   REACT_APP_AUTH0_DOMAIN,
   REACT_APP_GA,
   REACT_APP_SENTRY_DSN,
+  STAGE,
 } = process.env;
 
 invariant(REACT_APP_SENTRY_DSN);
@@ -41,6 +42,7 @@ invariant(REACT_APP_SENTRY_DSN);
 init({
   dsn: REACT_APP_SENTRY_DSN,
   enabled: process.env.NODE_ENV === 'production',
+  environment: STAGE,
   integrations: [
     new BrowserTracing({
       routingInstrumentation: reactRouterV6Instrumentation(
