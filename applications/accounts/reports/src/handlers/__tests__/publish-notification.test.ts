@@ -58,6 +58,8 @@ describe('publish-notification', () => {
 
   describe('when config is set', () => {
     beforeEach(() => {
+      jest.clearAllMocks();
+
       env = {
         ...process.env,
       };

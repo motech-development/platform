@@ -4,12 +4,14 @@ export interface IHeaders {
 
 export type ResponseType = 'arrayBuffer' | 'blob' | 'json' | 'text';
 
+export interface IFetchErrorResponse<TError> {
+  data: TError;
+  status: number;
+  statusText: string;
+}
+
 export interface IFetchError<TError> extends Error {
-  response?: {
-    data: TError;
-    status: number;
-    statusText: string;
-  };
+  response?: IFetchErrorResponse<TError>;
   status?: number;
 }
 
