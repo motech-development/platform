@@ -44,6 +44,7 @@ jest.mock('@aws-sdk/s3-request-presigner', () => ({
 }));
 
 jest.mock('node:fs', () => ({
+  ...jest.requireActual<typeof import('node:fs')>('node:fs'),
   createWriteStream: jest.fn(),
   existsSync: jest.fn(),
   promises: {
@@ -52,6 +53,7 @@ jest.mock('node:fs', () => ({
 }));
 
 jest.mock('node:fs/promises', () => ({
+  ...jest.requireActual<typeof import('node:fs/promises')>('node:fs/promises'),
   mkdir: jest.fn(),
 }));
 
