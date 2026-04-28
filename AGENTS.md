@@ -135,6 +135,7 @@ Follow this lifecycle:
 
 ### Tooling and Workflow
 
+- Use exact pinned dependency versions in package manifests; do not add semver range prefixes such as `^` or `~`.
 - Use the latest stable package versions when adding dependencies.
 - For dependency upgrades, preserve the current major version unless the user explicitly requests or approves a major upgrade. Treat broad "latest" requests as applying only where major-version risk has been clarified.
 - Never skip git hooks.
