@@ -30,6 +30,11 @@ const createResponse = ({
   text: jest.fn().mockResolvedValue(typeof body === 'string' ? body : ''),
 });
 
+const createUndefinedTextResponse = () => ({
+  ...createResponse(),
+  text: jest.fn().mockResolvedValue(undefined),
+});
+
 describe('axios-hooks', () => {
   const body = {
     email: 'test@tester.com',
@@ -105,6 +110,32 @@ describe('axios-hooks', () => {
         );
 
         await waitFor(() => expect(onCompleted).toHaveBeenCalledWith(success));
+      });
+
+      it('should clear loading when the response data is undefined', async () => {
+        fetch.mockResolvedValueOnce(createUndefinedTextResponse());
+
+        const { result } = renderHook(() =>
+          useGet<undefined>('/get', {
+            responseType: 'text',
+          }),
+        );
+
+        await waitFor(() =>
+          expect(fetch).toHaveBeenCalledWith('/get', {
+            body: undefined,
+            headers: {},
+            method: 'GET',
+          }),
+        );
+
+        await waitFor(() =>
+          expect(result.current).toEqual({
+            data: undefined,
+            error: undefined,
+            loading: false,
+          }),
+        );
       });
     });
 
@@ -235,6 +266,29 @@ describe('axios-hooks', () => {
         });
 
         await waitFor(() => expect(onCompleted).toHaveBeenCalledWith(success));
+      });
+
+      it('should clear loading when the response data is undefined', async () => {
+        fetch.mockResolvedValueOnce(createUndefinedTextResponse());
+
+        const { result } = renderHook(() =>
+          usePost<undefined, typeof body>({
+            responseType: 'text',
+          }),
+        );
+        const [execute] = result.current;
+
+        await act(async () => {
+          await execute('/post', body);
+        });
+
+        const [, results] = result.current;
+
+        expect(results).toEqual({
+          data: undefined,
+          error: undefined,
+          loading: false,
+        });
       });
     });
 
