@@ -8,6 +8,8 @@ provider:
   stackName: ${self:custom.prefix}-comms
   deploymentBucket:
     name: ${self:service}-deployment-bucket
+  environment:
+    SENTRY_ENVIRONMENT: ${self:provider.stage}
 
 package:
   individually: true

@@ -179,6 +179,8 @@ jobs:
   #     PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
   #     PUBLIC_URL: https://id.${{ secrets.PROD_DOMAIN }}
   #     REACT_APP_GA: ${{ secrets.GA_ID_PROD }}
+  #     REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ID_CLIENT }}
+  #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
   #     STAGE: production
   #     YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
