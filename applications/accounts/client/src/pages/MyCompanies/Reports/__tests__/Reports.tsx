@@ -3,11 +3,33 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import axios from 'axios';
 import { saveAs } from 'file-saver';
 import { typePolicies } from '../../../../components/ApolloClient';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import Reports, { GET_REPORTS, ON_NOTIFICATION } from '../Reports';
+
+interface IMockResponseOptions {
+  body?: string | null;
+  ok?: boolean;
+  status?: number;
+  statusText?: string;
+}
+
+const createResponse = ({
+  body = '',
+  ok = true,
+  status = 200,
+  statusText = '',
+}: IMockResponseOptions = {}) => ({
+  blob: jest.fn().mockResolvedValue(body ?? ''),
+  headers: {
+    get: jest.fn(),
+  },
+  ok,
+  status,
+  statusText,
+  text: jest.fn().mockResolvedValue(body ?? ''),
+});
 
 describe('Reports', () => {
   let cache: InMemoryCache;
@@ -17,9 +39,11 @@ describe('Reports', () => {
   beforeEach(() => {
     history = ['/reports/company-id'];
 
-    axios.request = jest.fn().mockResolvedValue({
-      data: 'success',
-    });
+    global.fetch = jest.fn().mockResolvedValue(
+      createResponse({
+        body: 'success',
+      }),
+    );
   });
 
   describe('when there are reports returned', () => {
@@ -148,10 +172,13 @@ describe('Reports', () => {
     });
 
     it('should display an alert if the report cannot be downloaded', async () => {
-      (axios.request as jest.Mock).mockRejectedValueOnce({
-        data: 'fail',
-        isAxiosError: true,
-      });
+      (fetch as jest.Mock).mockResolvedValueOnce(
+        createResponse({
+          body: 'fail',
+          ok: false,
+          status: 400,
+        }),
+      );
 
       await act(async () => {
         await waitForApollo(0);

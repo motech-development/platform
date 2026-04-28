@@ -8,7 +8,6 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
-import axios from 'axios';
 import { advanceTo, clear } from 'jest-date-mock';
 import { gql } from '../../../../graphql';
 import {
@@ -43,6 +42,28 @@ jest.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => 'service-worker', {
   virtual: true,
 });
 
+interface IMockResponseOptions {
+  body?: string | null;
+  ok?: boolean;
+  status?: number;
+  statusText?: string;
+}
+
+const createResponse = ({
+  body = '',
+  ok = true,
+  status = 200,
+  statusText = '',
+}: IMockResponseOptions = {}) => ({
+  headers: {
+    get: jest.fn(),
+  },
+  ok,
+  status,
+  statusText,
+  text: jest.fn().mockResolvedValue(body ?? ''),
+});
+
 describe('RecordTransaction', () => {
   let history: string[];
   let mocks: MockedResponse[];
@@ -59,9 +80,11 @@ describe('RecordTransaction', () => {
       type: 'application/pdf',
     });
 
-    axios.request = jest.fn().mockResolvedValue({
-      data: 'success',
-    });
+    global.fetch = jest.fn().mockResolvedValue(
+      createResponse({
+        body: 'success',
+      }),
+    );
   });
 
   afterAll(() => {
@@ -475,10 +498,13 @@ describe('RecordTransaction', () => {
         });
 
         it('should display an error toast if upload is unsuccessful', async () => {
-          (axios.request as jest.Mock).mockRejectedValueOnce({
-            data: 'fail',
-            isAxiosError: true,
-          });
+          (fetch as jest.Mock).mockResolvedValueOnce(
+            createResponse({
+              body: 'fail',
+              ok: false,
+              status: 400,
+            }),
+          );
 
           const transactionType = await screen.findByLabelText(
             'transaction-form.transaction-details.transaction.options.purchase',

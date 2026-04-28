@@ -117,7 +117,6 @@ __metadata:
     "@types/styled-components": "npm:5.1.34"
     "@vitejs/plugin-react-swc": "npm:3.8.0"
     axe-core: "npm:4.10.2"
-    axios: "npm:1.7.9"
     decimal.js: "npm:10.5.0"
     eslint: "npm:9.37.0"
     eslint-config-airbnb: "npm:19.0.4"
@@ -366,8 +365,6 @@ __metadata:
     aws-lambda-mock-context: "npm:3.2.1"
     aws-sdk-client-mock: "npm:4.1.0"
     aws-sdk-client-mock-jest: "npm:4.1.0"
-    aws4-axios: "npm:3.4.0"
-    axios: "npm:1.7.9"
     eslint: "npm:9.37.0"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-config-prettier: "npm:10.1.8"
@@ -422,8 +419,7 @@ __metadata:
     aws-lambda-mock-context: "npm:3.2.1"
     aws-sdk-client-mock: "npm:4.1.0"
     aws-sdk-client-mock-jest: "npm:4.1.0"
-    aws4-axios: "npm:3.4.0"
-    axios: "npm:1.7.9"
+    aws4fetch: "npm:1.0.20"
     eslint: "npm:9.37.0"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-config-prettier: "npm:10.1.8"
@@ -2482,7 +2478,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sts@npm:^3.100.0, @aws-sdk/client-sts@npm:^3.4.1, @aws-sdk/client-sts@npm:^3.975.0":
+"@aws-sdk/client-sts@npm:^3.100.0, @aws-sdk/client-sts@npm:^3.975.0":
   version: 3.1037.0
   resolution: "@aws-sdk/client-sts@npm:3.1037.0"
   dependencies:
@@ -7279,7 +7275,6 @@ __metadata:
     "@types/styled-components": "npm:5.1.34"
     "@vitejs/plugin-react-swc": "npm:3.8.0"
     auth0-js: "npm:9.28.0"
-    axios: "npm:1.7.9"
     body-scroll-lock: "npm:3.1.5"
     eslint: "npm:9.37.0"
     eslint-config-airbnb: "npm:19.0.4"
@@ -7306,14 +7301,14 @@ __metadata:
     react-dom: "npm:18.3.1"
     react-ga: "npm:3.3.1"
     react-i18next: "npm:13.5.0"
-    react-router-dom: "npm:6.30.0"
+    react-router-dom: "npm:6.30.3"
     react-snap: "npm:1.23.0"
     serverless-deployment-bucket: "npm:1.6.0"
     serverless-finch: "npm:4.0.4"
     styled-components: "npm:5.3.11"
     typescript: "npm:5.8.2"
     typescript-eslint: "npm:8.45.0"
-    vite: "npm:4.5.13"
+    vite: "npm:4.5.14"
     vite-plugin-checker: "npm:0.9.0"
     vite-plugin-eslint: "npm:1.8.1"
     web-vitals: "npm:3.5.2"
@@ -7972,7 +7967,6 @@ __metadata:
     "@swc/jest": "npm:0.2.37"
     "@types/jest": "npm:29.5.14"
     "@types/react": "npm:18.3.18"
-    axios: "npm:1.7.9"
     eslint: "npm:9.37.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-prettier: "npm:10.1.8"
@@ -10087,13 +10081,6 @@ __metadata:
   peerDependencies:
     redux: ">=3"
   checksum: 10c0/a5b7a16304f063b263de246fe25f5e2d917afe62483cec4390d40190b8011a1d1144ec3da8284226d147e205951a476203d749c36aedf559990b0a642e56d3ed
-  languageName: node
-  linkType: hard
-
-"@remix-run/router@npm:1.23.0":
-  version: 1.23.0
-  resolution: "@remix-run/router@npm:1.23.0"
-  checksum: 10c0/eaef5cb46a1e413f7d1019a75990808307e08e53a39d4cf69c339432ddc03143d725decef3d6b9b5071b898da07f72a4a57c4e73f787005fcf10162973d8d7d7
   languageName: node
   linkType: hard
 
@@ -15419,22 +15406,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws4-axios@npm:3.4.0":
-  version: 3.4.0
-  resolution: "aws4-axios@npm:3.4.0"
-  dependencies:
-    "@aws-sdk/client-sts": "npm:^3.4.1"
-    aws4: "npm:^1.12.0"
-  peerDependencies:
-    axios: ">=1.6.0"
-  checksum: 10c0/7f9501c4622d45d6bc5c086e04b8d6786628a9fd5d07ad840856ace25c9f66001d6accafdcf8a94068ac3a4535fa9f497409d5dcb75946237b365712bcc7c781
-  languageName: node
-  linkType: hard
-
-"aws4@npm:1.13.2, aws4@npm:^1.12.0":
+"aws4@npm:1.13.2":
   version: 1.13.2
   resolution: "aws4@npm:1.13.2"
   checksum: 10c0/c993d0d186d699f685d73113733695d648ec7d4b301aba2e2a559d0cd9c1c902308cc52f4095e1396b23fddbc35113644e7f0a6a32753636306e41e3ed6f1e79
+  languageName: node
+  linkType: hard
+
+"aws4fetch@npm:1.0.20":
+  version: 1.0.20
+  resolution: "aws4fetch@npm:1.0.20"
+  checksum: 10c0/a4eac7bd0d1c3e611c17ed1ef41ac0b48c0a8e74a985ad968c071e74d94586d3572edc943b43fa5ca756c686ea73baa2f48e264d657bb8c2e95c8e0037d48a87
   languageName: node
   linkType: hard
 
@@ -15452,7 +15434,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.7.9, axios@npm:^1.6.2":
+"axios@npm:^1.6.2":
   version: 1.7.9
   resolution: "axios@npm:1.7.9"
   dependencies:
@@ -29882,19 +29864,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:6.30.0":
-  version: 6.30.0
-  resolution: "react-router-dom@npm:6.30.0"
-  dependencies:
-    "@remix-run/router": "npm:1.23.0"
-    react-router: "npm:6.30.0"
-  peerDependencies:
-    react: ">=16.8"
-    react-dom: ">=16.8"
-  checksum: 10c0/262954ba894d6a241ceda5f61098f7d6a292d0018a6ebb9c9c67425b7deb6e59b6191a9233a03d38e287e60f7ac3702e9e84c8e20b39a6487698fe088b71e27a
-  languageName: node
-  linkType: hard
-
 "react-router-dom@npm:6.30.3":
   version: 6.30.3
   resolution: "react-router-dom@npm:6.30.3"
@@ -29905,17 +29874,6 @@ __metadata:
     react: ">=16.8"
     react-dom: ">=16.8"
   checksum: 10c0/e8a1e13c662ed6ee71a785bd3418ba04b700bcd8aff6ea7b32524371e8abb1c85568cd4fe9b9e9d555b8101fd415f6f1796531f593da60be179ce75b37038657
-  languageName: node
-  linkType: hard
-
-"react-router@npm:6.30.0":
-  version: 6.30.0
-  resolution: "react-router@npm:6.30.0"
-  dependencies:
-    "@remix-run/router": "npm:1.23.0"
-  peerDependencies:
-    react: ">=16.8"
-  checksum: 10c0/e6f20cf5c47ec057a057a4cfb9a55983d0a5b4b3314d20e07f0a70e59e004f51778d4dac415aee1e4e64db69cc4cd72e5acf8fd60dcf07d909895b8863b0b023
   languageName: node
   linkType: hard
 
@@ -34606,46 +34564,6 @@ __metadata:
   peerDependencies:
     vite: ^5.0.0 || ^6.0.0
   checksum: 10c0/c5174926d66776697bfe8aa3013bfea62a48868c683784973b9b329c43b57a915685031047d397a9c0ae8dd1fd734bde37438af3939d395f9b82ada341b4fff7
-  languageName: node
-  linkType: hard
-
-"vite@npm:4.5.13":
-  version: 4.5.13
-  resolution: "vite@npm:4.5.13"
-  dependencies:
-    esbuild: "npm:^0.18.10"
-    fsevents: "npm:~2.3.2"
-    postcss: "npm:^8.4.27"
-    rollup: "npm:^3.27.1"
-  peerDependencies:
-    "@types/node": ">= 14"
-    less: "*"
-    lightningcss: ^1.21.0
-    sass: "*"
-    stylus: "*"
-    sugarss: "*"
-    terser: ^5.4.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@types/node":
-      optional: true
-    less:
-      optional: true
-    lightningcss:
-      optional: true
-    sass:
-      optional: true
-    stylus:
-      optional: true
-    sugarss:
-      optional: true
-    terser:
-      optional: true
-  bin:
-    vite: bin/vite.js
-  checksum: 10c0/2a9e0c4649a647ade588817843101a51c414cbfa8034ba27ccdd0fde632e7d5f6d14e543f408ee760793c81baf1256d73b582cc2076267be0dd6121d98b70bc3
   languageName: node
   linkType: hard
 

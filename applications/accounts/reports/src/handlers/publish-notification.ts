@@ -1,8 +1,7 @@
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
-import { aws4Interceptor } from 'aws4-axios';
-import axios from 'axios';
+import { AwsClient } from 'aws4fetch';
 import { stringify } from 'qs';
 import { number, object, string } from 'yup';
 
@@ -13,12 +12,6 @@ init({
   profileSessionSampleRate: 1,
   tracesSampleRate: 1,
 });
-
-const instance = axios.create();
-
-const interceptor = aws4Interceptor({});
-
-instance.interceptors.request.use(interceptor);
 
 const schema = object({
   owner: string().required(),
@@ -41,7 +34,14 @@ export interface IEvent {
 }
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
-  const { ENDPOINT, STAGE } = process.env;
+  const {
+    AWS_ACCESS_KEY_ID,
+    AWS_REGION,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_SESSION_TOKEN,
+    ENDPOINT,
+    STAGE,
+  } = process.env;
 
   if (!ENDPOINT) {
     throw new Error('No endpoint set');
@@ -49,6 +49,14 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
 
   if (!STAGE) {
     throw new Error('No stage set');
+  }
+
+  if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
+    throw new Error('No AWS credentials set');
+  }
+
+  if (!AWS_REGION) {
+    throw new Error('No AWS region set');
   }
 
   const { owner, payload } = await schema.validate(event, {
@@ -63,14 +71,23 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     payload: stringify(payload),
   };
 
-  await instance.request({
-    data,
+  const response = await new AwsClient({
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    region: AWS_REGION,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
+    service: 'execute-api',
+    sessionToken: AWS_SESSION_TOKEN,
+  }).fetch(url, {
+    body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json',
     },
     method: 'POST',
-    url,
   });
+
+  if (!response.ok) {
+    throw new Error('Notification request failed');
+  }
 
   return {
     complete: true,

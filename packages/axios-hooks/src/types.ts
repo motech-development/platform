@@ -1,19 +1,28 @@
-import { AxiosError, ResponseType } from 'axios';
-
 export interface IHeaders {
   [name: string]: string;
+}
+
+export type ResponseType = 'arrayBuffer' | 'blob' | 'json' | 'text';
+
+export interface IFetchError<TError> extends Error {
+  response?: {
+    data: TError;
+    status: number;
+    statusText: string;
+  };
+  status?: number;
 }
 
 export interface IOptions<TData, TError> {
   headers?: IHeaders;
   responseType?: ResponseType;
   onCompleted?: (data: TData) => void;
-  onError?: (error: AxiosError<TError>) => void;
+  onError?: (error: IFetchError<TError>) => void;
 }
 
 export interface IResults<TData, TError> {
   data?: TData;
-  error?: AxiosError<TError>;
+  error?: IFetchError<TError>;
   loading: boolean;
 }
 
@@ -31,7 +40,7 @@ export type Method = 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT';
 
 export type SetData<TData> = (data: TData) => void;
 
-export type SetError<TError> = (error: AxiosError<TError>) => void;
+export type SetError<TError> = (error: IFetchError<TError>) => void;
 
 export type SetLoading = (loading: boolean) => void;
 
