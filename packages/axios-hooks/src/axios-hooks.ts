@@ -6,7 +6,6 @@ import {
   IResults,
   ISet,
   Method,
-  SetLoading,
   UseWithInput,
   UseWithoutInput,
 } from './types';
@@ -47,6 +46,8 @@ const executeGet = async <TData, TError>(
     setError(normalizeFetchError<TError>(error));
 
     return undefined;
+  } finally {
+    setLoading(false);
   }
 };
 
@@ -80,11 +81,9 @@ const executeForm = async <TData, TBody, TError>(
     setError(normalizeFetchError<TError>(error));
 
     return undefined;
+  } finally {
+    setLoading(false);
   }
-};
-
-const complete = (setLoading: SetLoading) => {
-  setLoading(false);
 };
 
 const useCallbacks = <TData, TError>(
@@ -139,8 +138,6 @@ export const useGet = <TData = unknown, TError = unknown>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => complete(setLoading), [data, error]);
-
   useCallbacks(data, error, options);
 
   return {
@@ -167,8 +164,6 @@ export const useLazyGet = <TData = unknown, TError = unknown>(
       options,
       headers,
     );
-
-  useEffect(() => complete(setLoading), [data, error]);
 
   useCallbacks(data, error, options);
 
@@ -202,8 +197,6 @@ const useFormAction = <TData, TBody, TError>(
       options,
       headers,
     );
-
-  useEffect(() => complete(setLoading), [data, error]);
 
   useCallbacks(data, error, options);
 
