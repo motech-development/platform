@@ -33,6 +33,34 @@ export const add = jest.fn<void, IAddToast[]>(({ onDismiss }) => {
 
 export const remove = jest.fn();
 
+export interface IMockFetchResponseOptions {
+  body?: Blob | string | null;
+  contentType?: string;
+  ok?: boolean;
+  status?: number;
+  statusText?: string;
+}
+
+export const createFetchResponse = ({
+  body = '',
+  contentType,
+  ok = true,
+  status = 200,
+  statusText = '',
+}: IMockFetchResponseOptions = {}) => ({
+  arrayBuffer: jest.fn().mockResolvedValue(new ArrayBuffer(0)),
+  blob: jest.fn().mockResolvedValue(body ?? ''),
+  headers: {
+    get: jest.fn((name: string) =>
+      name.toLowerCase() === 'content-type' ? contentType : undefined,
+    ),
+  },
+  ok,
+  status,
+  statusText,
+  text: jest.fn().mockResolvedValue(typeof body === 'string' ? body : ''),
+});
+
 interface IMockAuth0 {
   isAuthenticated: boolean;
   isLoading: boolean;

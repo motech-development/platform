@@ -17,7 +17,10 @@ import {
   TransactionStatus,
   Typeahead,
 } from '../../../../graphql/graphql';
-import TestProvider, { add } from '../../../../utils/TestProvider';
+import TestProvider, {
+  add,
+  createFetchResponse,
+} from '../../../../utils/TestProvider';
 import { GET_BALANCE } from '../Accounts';
 import { GET_TRANSACTIONS } from '../PendingTransactions';
 import RecordTransaction, {
@@ -42,28 +45,6 @@ jest.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => 'service-worker', {
   virtual: true,
 });
 
-interface IMockResponseOptions {
-  body?: string | null;
-  ok?: boolean;
-  status?: number;
-  statusText?: string;
-}
-
-const createResponse = ({
-  body = '',
-  ok = true,
-  status = 200,
-  statusText = '',
-}: IMockResponseOptions = {}) => ({
-  headers: {
-    get: jest.fn(),
-  },
-  ok,
-  status,
-  statusText,
-  text: jest.fn().mockResolvedValue(body ?? ''),
-});
-
 describe('RecordTransaction', () => {
   let history: string[];
   let mocks: MockedResponse[];
@@ -81,7 +62,7 @@ describe('RecordTransaction', () => {
     });
 
     global.fetch = jest.fn().mockResolvedValue(
-      createResponse({
+      createFetchResponse({
         body: 'success',
       }),
     );
@@ -499,7 +480,7 @@ describe('RecordTransaction', () => {
 
         it('should display an error toast if upload is unsuccessful', async () => {
           (fetch as jest.Mock).mockResolvedValueOnce(
-            createResponse({
+            createFetchResponse({
               body: 'fail',
               ok: false,
               status: 400,

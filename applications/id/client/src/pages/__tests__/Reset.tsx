@@ -6,36 +6,13 @@ import {
   waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import TextProvider, { add } from '../../utils/TestProvider';
+import TextProvider, {
+  add,
+  createFetchResponse,
+} from '../../utils/TestProvider';
 import Reset from '../Reset';
 
 jest.mock('react-ga');
-
-interface IMockResponseOptions {
-  body?: string | null;
-  contentType?: string;
-  ok?: boolean;
-  status?: number;
-  statusText?: string;
-}
-
-const createResponse = ({
-  body = '',
-  contentType,
-  ok = true,
-  status = 200,
-  statusText = '',
-}: IMockResponseOptions = {}) => ({
-  headers: {
-    get: jest.fn((name: string) =>
-      name.toLowerCase() === 'content-type' ? contentType : undefined,
-    ),
-  },
-  ok,
-  status,
-  statusText,
-  text: jest.fn().mockResolvedValue(body ?? ''),
-});
 
 describe('Reset', () => {
   let component: RenderResult;
@@ -80,7 +57,7 @@ describe('Reset', () => {
     describe('when successful', () => {
       beforeEach(() => {
         global.fetch = jest.fn().mockResolvedValue(
-          createResponse({
+          createFetchResponse({
             body: 'success',
           }),
         );
@@ -148,7 +125,7 @@ describe('Reset', () => {
 
       it('should display an error toast with the supplied error message', async () => {
         (fetch as jest.Mock).mockResolvedValueOnce(
-          createResponse({
+          createFetchResponse({
             body: JSON.stringify({
               message: 'Ooops',
             }),
@@ -183,7 +160,7 @@ describe('Reset', () => {
 
       it('should display an error toast when an error message is not supplied', async () => {
         (fetch as jest.Mock).mockResolvedValueOnce(
-          createResponse({
+          createFetchResponse({
             body: null,
             ok: false,
             status: 400,
