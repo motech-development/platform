@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/labeler@v5.0.0
+      - uses: actions/labeler@v6
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -25,10 +25,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -38,7 +38,7 @@ jobs:
 
       - name: Restore Node modules
         id: node-modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -50,7 +50,7 @@ jobs:
 
       - name: Restore packages
         id: packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -59,7 +59,7 @@ jobs:
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
@@ -86,12 +86,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -100,7 +100,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -111,7 +111,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -125,7 +125,7 @@ jobs:
         run: ./scripts/sonar-scanner-path-fix.sh
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v6.0.0
+        uses: SonarSource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -138,12 +138,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -152,7 +152,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -163,7 +163,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -172,7 +172,7 @@ jobs:
 
       # Pinned to major version for stability while receiving patch updates
       - name: Run Chromatic
-        uses: chromaui/action@v11
+        uses: chromaui/action@v16
         with:
           workingDir: packages/breeze-ui
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}

@@ -14,17 +14,17 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
 
       - name: Restore Node modules
         id: node-modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -36,7 +36,7 @@ jobs:
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
@@ -66,10 +66,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -78,7 +78,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -89,7 +89,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -97,7 +97,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/accounts/warm-up/node_modules/.cache
@@ -107,7 +107,7 @@ jobs:
             ${{ runner.os }}-accounts-warm-up-v4-
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -136,16 +136,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -157,7 +157,7 @@ jobs:
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
@@ -183,13 +183,13 @@ jobs:
     steps:
       - name: Generate release token
         id: generate_token
-        uses: tibdex/github-app-token@v2.1.0
+        uses: actions/create-github-app-token@v3
         with:
-          app_id: ${{ secrets.BOT_APP_ID }}
-          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          client-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
       - name: Set commit status
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ steps.generate_token.outputs.token }}
           script: |
