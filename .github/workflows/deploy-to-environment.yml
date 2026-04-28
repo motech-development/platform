@@ -85,13 +85,13 @@ jobs:
   #     AUTH0_SES_ACCESS_KEY_ID: ${{ secrets.AUTH0_SES_ACCESS_KEY_ID }}
   #     AUTH0_SES_ACCESS_SECRET_KEY: ${{ secrets.AUTH0_SES_ACCESS_SECRET_KEY }}
   #     AUTH0_SES_REGION: ${{ secrets.AUTH0_SES_REGION }}
-  #     PREFIX: id-pr-${{ github.event.pull_request.number }}
+  #     PREFIX: id-develop
   #     PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
-  #     PUBLIC_URL: https://id-pr-${{ github.event.pull_request.number }}.${{ secrets.PROD_DOMAIN }}
+  #     PUBLIC_URL: https://id-develop.${{ secrets.PROD_DOMAIN }}
   #     REACT_APP_GA: ${{ secrets.GA_ID_DEV }}
   #     REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ID_CLIENT }}
   #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-  #     STAGE: pr-${{ github.event.pull_request.number }}
+  #     STAGE: develop
   #     YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
   #   permissions:
