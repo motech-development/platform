@@ -5,31 +5,11 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { saveAs } from 'file-saver';
 import { typePolicies } from '../../../../components/ApolloClient';
-import TestProvider, { add } from '../../../../utils/TestProvider';
+import TestProvider, {
+  add,
+  createFetchResponse,
+} from '../../../../utils/TestProvider';
 import Reports, { GET_REPORTS, ON_NOTIFICATION } from '../Reports';
-
-interface IMockResponseOptions {
-  body?: string | null;
-  ok?: boolean;
-  status?: number;
-  statusText?: string;
-}
-
-const createResponse = ({
-  body = '',
-  ok = true,
-  status = 200,
-  statusText = '',
-}: IMockResponseOptions = {}) => ({
-  blob: jest.fn().mockResolvedValue(body ?? ''),
-  headers: {
-    get: jest.fn(),
-  },
-  ok,
-  status,
-  statusText,
-  text: jest.fn().mockResolvedValue(body ?? ''),
-});
 
 describe('Reports', () => {
   let cache: InMemoryCache;
@@ -40,7 +20,7 @@ describe('Reports', () => {
     history = ['/reports/company-id'];
 
     global.fetch = jest.fn().mockResolvedValue(
-      createResponse({
+      createFetchResponse({
         body: 'success',
       }),
     );
@@ -173,7 +153,7 @@ describe('Reports', () => {
 
     it('should display an alert if the report cannot be downloaded', async () => {
       (fetch as jest.Mock).mockResolvedValueOnce(
-        createResponse({
+        createFetchResponse({
           body: 'fail',
           ok: false,
           status: 400,

@@ -112,13 +112,15 @@ Follow this lifecycle:
 - Avoid bare `return;` when explicit control flow is clearer.
 - Separate variable declarations with blank lines where it improves readability.
 - Remove unused code, dead code, and commented-out logic.
+- Do not duplicate logic, helpers, fixtures, mocks, or utilities. Reuse or extend existing abstractions unless there is a clear reason not to.
 - Keep changes surgical and avoid unrelated modifications.
+- Do only the work the user asked for. Do not opportunistically fix nearby warnings, refactor adjacent code, or expand scope without explicit approval.
 - Match existing file style and project conventions when editing.
 - Respect `.editorconfig`.
 - Use ES modules rather than CommonJS.
 - Destructure imports when possible.
 - Add JSDoc where appropriate.
-- Record newly discovered project-specific conventions in `AGENTS.md`.
+- Record newly discovered project-specific conventions in `AGENTS.md` immediately when they are discovered. User corrections, repeated misses, or clarified expectations that reveal a durable rule must trigger an `AGENTS.md` update in the same turn unless the user explicitly says not to.
 
 ### Testing and Quality
 
