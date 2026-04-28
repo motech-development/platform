@@ -5,7 +5,7 @@
     {
       "extends": ["schedule:monthly"],
       "matchPackageNames": [
-        "aws4-axios",
+        "aws4fetch",
         "renovate",
         "vite-plugin-pwa",
         "@aws-sdk{/,}**"

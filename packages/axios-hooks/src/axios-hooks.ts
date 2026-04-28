@@ -1,6 +1,6 @@
-import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 import {
+  IFetchError,
   IHeaders,
   IOptions,
   IResults,
@@ -10,7 +10,15 @@ import {
   UseWithInput,
   UseWithoutInput,
 } from './types';
-import { client, isAxiosError } from './utils';
+import request from './utils';
+
+const normalizeFetchError = <TError>(error: unknown): IFetchError<TError> => {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  return new Error(String(error));
+};
 
 const executeGet = async <TData, TError>(
   url: string,
@@ -21,27 +29,22 @@ const executeGet = async <TData, TError>(
   try {
     setLoading(true);
 
-    const { headers, onCompleted, onError, ...rest } = options;
-    const opts = {
-      ...rest,
+    const { headers, responseType } = options;
+    const data = await request<TData>({
       headers: {
         ...headers,
         ...additionalHeaders,
       },
-    };
-    const { data } = await client.request<TData>({
-      ...opts,
       method: 'GET',
+      responseType,
       url,
     });
 
     setData(data);
 
     return data;
-  } catch (e) {
-    if (isAxiosError<TError>(e)) {
-      setError(e);
-    }
+  } catch (error) {
+    setError(normalizeFetchError<TError>(error));
 
     return undefined;
   }
@@ -58,28 +61,23 @@ const executeForm = async <TData, TBody, TError>(
   try {
     setLoading(true);
 
-    const { headers, onCompleted, onError, ...rest } = options;
-    const opts = {
-      ...rest,
+    const { headers, responseType } = options;
+    const data = await request<TData>({
+      body,
       headers: {
         ...headers,
         ...additionalHeaders,
       },
-    };
-    const { data } = await client.request<TData>({
-      ...opts,
-      data: body,
       method,
+      responseType,
       url,
     });
 
     setData(data);
 
     return data;
-  } catch (e) {
-    if (isAxiosError<TError>(e)) {
-      setError(e);
-    }
+  } catch (error) {
+    setError(normalizeFetchError<TError>(error));
 
     return undefined;
   }
@@ -91,7 +89,7 @@ const complete = (setLoading: SetLoading) => {
 
 const useCallbacks = <TData, TError>(
   data?: TData,
-  error?: AxiosError<TError>,
+  error?: IFetchError<TError>,
   options?: IOptions<TData, TError>,
 ) => {
   useEffect(() => {
@@ -122,7 +120,7 @@ export const useGet = <TData = unknown, TError = unknown>(
   options?: IOptions<TData, TError>,
 ): IResults<TData, TError> => {
   const [data, setData] = useState<TData>();
-  const [error, setError] = useState<AxiosError<TError>>();
+  const [error, setError] = useState<IFetchError<TError>>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -156,7 +154,7 @@ export const useLazyGet = <TData = unknown, TError = unknown>(
   options?: IOptions<TData, TError>,
 ): UseWithoutInput<TData, TError> => {
   const [data, setData] = useState<TData>();
-  const [error, setError] = useState<AxiosError<TError>>();
+  const [error, setError] = useState<IFetchError<TError>>();
   const [loading, setLoading] = useState(false);
   const execute = async (url: string, headers?: IHeaders) =>
     executeGet(
@@ -189,7 +187,7 @@ const useFormAction = <TData, TBody, TError>(
   options?: IOptions<TData, TError>,
 ): UseWithInput<TData, TBody, TError> => {
   const [data, setData] = useState<TData>();
-  const [error, setError] = useState<AxiosError<TError>>();
+  const [error, setError] = useState<IFetchError<TError>>();
   const [loading, setLoading] = useState(false);
   const execute = async (url: string, body: TBody, headers?: IHeaders) =>
     executeForm(

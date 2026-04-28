@@ -54,9 +54,9 @@ An Auth0 helper library for React
 Build the package by running `yarn build --scope=@motech-development/auth`\
 Test the package by running `yarn test --scope=@motech-development/auth`
 
-### Axios hooks
+### Fetch-backed hooks
 
-Axios hooks for React
+Fetch-backed hooks for React
 
 Build the package by running `yarn build --scope=@motech-development/axios-hooks`\
 Test the package by running `yarn test --scope=@motech-development/axios-hooks`

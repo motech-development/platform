@@ -6,11 +6,36 @@ import {
   waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import axios from 'axios';
 import TextProvider, { add } from '../../utils/TestProvider';
 import Reset from '../Reset';
 
 jest.mock('react-ga');
+
+interface IMockResponseOptions {
+  body?: string | null;
+  contentType?: string;
+  ok?: boolean;
+  status?: number;
+  statusText?: string;
+}
+
+const createResponse = ({
+  body = '',
+  contentType,
+  ok = true,
+  status = 200,
+  statusText = '',
+}: IMockResponseOptions = {}) => ({
+  headers: {
+    get: jest.fn((name: string) =>
+      name.toLowerCase() === 'content-type' ? contentType : undefined,
+    ),
+  },
+  ok,
+  status,
+  statusText,
+  text: jest.fn().mockResolvedValue(body ?? ''),
+});
 
 describe('Reset', () => {
   let component: RenderResult;
@@ -54,9 +79,11 @@ describe('Reset', () => {
 
     describe('when successful', () => {
       beforeEach(() => {
-        axios.request = jest.fn().mockResolvedValue({
-          data: 'success',
-        });
+        global.fetch = jest.fn().mockResolvedValue(
+          createResponse({
+            body: 'success',
+          }),
+        );
       });
 
       it('should call the correct endpoint', async () => {
@@ -76,17 +103,18 @@ describe('Reset', () => {
         await userEvent.click(button);
 
         await waitFor(() =>
-          expect(axios.request).toHaveBeenCalledWith({
-            data: {
+          expect(fetch).toHaveBeenCalledWith('/lo/reset', {
+            body: JSON.stringify({
               _csrf: 'token',
               confirmNewPassword: 'Test',
               newPassword: 'Test',
               'password-policy': 'good',
               ticket: 'ticket',
+            }),
+            headers: {
+              'Content-Type': 'application/json',
             },
-            headers: {},
             method: 'POST',
-            url: '/lo/reset',
           }),
         );
       });
@@ -115,18 +143,20 @@ describe('Reset', () => {
 
     describe('when unsuccessful', () => {
       beforeEach(() => {
-        axios.request = jest.fn();
+        global.fetch = jest.fn();
       });
 
       it('should display an error toast with the supplied error message', async () => {
-        (axios.request as jest.Mock).mockRejectedValueOnce({
-          isAxiosError: true,
-          response: {
-            data: {
+        (fetch as jest.Mock).mockResolvedValueOnce(
+          createResponse({
+            body: JSON.stringify({
               message: 'Ooops',
-            },
-          },
-        });
+            }),
+            contentType: 'application/json',
+            ok: false,
+            status: 400,
+          }),
+        );
 
         const { findByLabelText, findByRole } = component;
 
@@ -152,9 +182,13 @@ describe('Reset', () => {
       });
 
       it('should display an error toast when an error message is not supplied', async () => {
-        (axios.request as jest.Mock).mockRejectedValueOnce({
-          isAxiosError: true,
-        });
+        (fetch as jest.Mock).mockResolvedValueOnce(
+          createResponse({
+            body: null,
+            ok: false,
+            status: 400,
+          }),
+        );
 
         const { findByLabelText, findByRole } = component;
 

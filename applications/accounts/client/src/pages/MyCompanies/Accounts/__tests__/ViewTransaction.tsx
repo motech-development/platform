@@ -7,7 +7,6 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
-import axios from 'axios';
 import { saveAs } from 'file-saver';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import { GET_BALANCE } from '../Accounts';
@@ -26,6 +25,29 @@ jest.mock(
   },
 );
 
+interface IMockResponseOptions {
+  body?: string | null;
+  ok?: boolean;
+  status?: number;
+  statusText?: string;
+}
+
+const createResponse = ({
+  body = '',
+  ok = true,
+  status = 200,
+  statusText = '',
+}: IMockResponseOptions = {}) => ({
+  blob: jest.fn().mockResolvedValue(body ?? ''),
+  headers: {
+    get: jest.fn(),
+  },
+  ok,
+  status,
+  statusText,
+  text: jest.fn().mockResolvedValue(body ?? ''),
+});
+
 describe('ViewTransaction', () => {
   let history: string[];
   let mocks: MockedResponse[];
@@ -35,9 +57,11 @@ describe('ViewTransaction', () => {
 
     history = ['/accounts/company-id/view-transaction/transaction-id'];
 
-    axios.request = jest.fn().mockResolvedValue({
-      data: 'success',
-    });
+    global.fetch = jest.fn().mockResolvedValue(
+      createResponse({
+        body: 'success',
+      }),
+    );
   });
 
   describe('purchase', () => {
@@ -621,10 +645,13 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast if file fails to download', async () => {
-        (axios.request as jest.Mock).mockRejectedValueOnce({
-          data: 'fail',
-          isAxiosError: true,
-        });
+        (fetch as jest.Mock).mockResolvedValueOnce(
+          createResponse({
+            body: 'fail',
+            ok: false,
+            status: 400,
+          }),
+        );
 
         const viewButton = await screen.findByText(
           'transaction-form.upload.view-file',

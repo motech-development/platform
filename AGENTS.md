@@ -127,13 +127,17 @@ Follow this lifecycle:
 - Maintain at least 80% code coverage.
 - Prefer targeted tests when they provide faster, sufficient coverage for the change.
 - Run type-checking and linting after completing changes.
+- Do not run `test-ci` locally unless explicitly requested; it is reserved for CI coverage generation. Use targeted Jest commands or non-coverage test scripts for local verification.
 
 ### Tooling and Workflow
 
 - Use the latest stable package versions when adding dependencies.
+- For dependency upgrades, preserve the current major version unless the user explicitly requests or approves a major upgrade. Treat broad "latest" requests as applying only where major-version risk has been clarified.
 - Never skip git hooks.
 - Confirm the package manager before running package commands.
 - Treat disabling ESLint rules or adding new ones as a last resort that must be justified.
+- After substantial code or dependency changes, run `coderabbit review --agent` and repeat the review/fix cycle until there are no actionable findings.
+- Treat Auth0-related dependencies and code inside `applications/id` as sensitive. Do not update Auth0 there unless the user explicitly asks for that work.
 
 ## Standard Change Request Protocol
 

@@ -23,7 +23,7 @@ function ResetPassword({ setView }: IResetPasswordProps) {
     onError: (e) => {
       add({
         colour: 'danger',
-        message: e.response?.data.message || t('error'),
+        message: e.response?.data?.message || t('error'),
       });
     },
   });
