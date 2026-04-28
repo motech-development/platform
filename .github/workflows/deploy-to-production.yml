@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -26,7 +26,7 @@ jobs:
 
       - name: Restore Node modules
         id: node-modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -38,7 +38,7 @@ jobs:
 
       - name: Restore packages
         id: packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -63,12 +63,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -77,7 +77,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -88,7 +88,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -102,7 +102,7 @@ jobs:
         run: ./scripts/sonar-scanner-path-fix.sh
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v4.2.1
+        uses: SonarSource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -113,12 +113,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -127,7 +127,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -138,7 +138,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -149,14 +149,14 @@ jobs:
         run: yarn workspace @motech-development/breeze-ui deploy
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./packages/breeze-ui/storybook-static
 
       # Pinned to major version for stability while receiving patch updates
       - name: Run Chromatic
-        uses: chromaui/action@v11
+        uses: chromaui/action@v16
         with:
           workingDir: packages/breeze-ui
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -188,10 +188,10 @@ jobs:
 
   #   steps:
   #     - name: Checkout code
-  #       uses: actions/checkout@v4.2.2
+  #       uses: actions/checkout@v6
 
   #     - name: Set Node version
-  #       uses: actions/setup-node@v4.2.0
+  #       uses: actions/setup-node@v6
   #       with:
   #         node-version-file: .nvmrc
   #         cache: yarn
@@ -200,7 +200,7 @@ jobs:
   #       run: ./scripts/checksum.sh ./packages.txt packages
 
   #     - name: Restore Node modules
-  #       uses: actions/cache@v4.2.2
+  #       uses: actions/cache@v5
   #       with:
   #         path: |
   #           ./node_modules
@@ -211,7 +211,7 @@ jobs:
   #           ${{ runner.os }}-modules-
 
   #     - name: Restore packages
-  #       uses: actions/cache@v4.2.2
+  #       uses: actions/cache@v5
   #       with:
   #         path: ./packages/*/lib
   #         key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -219,7 +219,7 @@ jobs:
   #           ${{ runner.os }}-packages-
 
   #     - name: Restore application cache
-  #       uses: actions/cache@v4.2.2
+  #       uses: actions/cache@v5
   #       with:
   #         path: |
   #           ./applications/id/client/node_modules/.cache
@@ -230,7 +230,7 @@ jobs:
   #           ${{ runner.os }}-id-v4-
 
   #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v4
+  #       uses: aws-actions/configure-aws-credentials@v5
   #       with:
   #         aws-region: eu-west-1
   #         role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -266,10 +266,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -278,7 +278,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -289,7 +289,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -297,7 +297,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/core/anti-virus/node_modules/.cache
@@ -307,13 +307,13 @@ jobs:
             ${{ runner.os }}-core-anti-virus-v4-
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Deploy
-        uses: nick-fields/retry@v3.0.2
+        uses: nick-fields/retry@v3
         with:
           command: yarn workspace @core/anti-virus deploy --stage $STAGE
           max_attempts: 3
@@ -338,10 +338,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -350,7 +350,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -361,7 +361,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -369,7 +369,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/core/comms/node_modules/.cache
@@ -380,7 +380,7 @@ jobs:
             ${{ runner.os }}-core-v4-
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -407,10 +407,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -419,7 +419,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -430,7 +430,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -438,7 +438,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/accounts/storage/node_modules/.cache
@@ -448,7 +448,7 @@ jobs:
             ${{ runner.os }}-accounts-storage-v4-
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -474,10 +474,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -486,7 +486,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -497,7 +497,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -505,7 +505,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/accounts/queue/node_modules/.cache
@@ -515,7 +515,7 @@ jobs:
             ${{ runner.os }}-accounts-queue-v4-
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -539,10 +539,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -551,7 +551,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -562,7 +562,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -570,7 +570,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/accounts/data/node_modules/.cache
@@ -580,7 +580,7 @@ jobs:
             ${{ runner.os }}-accounts-data-v4-
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -604,10 +604,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -616,7 +616,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -627,7 +627,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -635,7 +635,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/accounts/warm-up/node_modules/.cache
@@ -645,7 +645,7 @@ jobs:
             ${{ runner.os }}-accounts-warm-up-v4-
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -672,10 +672,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -684,7 +684,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -695,7 +695,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -703,7 +703,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/accounts/reports/node_modules/.cache
@@ -713,7 +713,7 @@ jobs:
             ${{ runner.os }}-accounts-reports-v4-
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -742,10 +742,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -754,7 +754,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -765,7 +765,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -773,7 +773,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore env vars
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-deploy-v4-${{ hashFiles('**/packages.txt') }}
@@ -781,7 +781,7 @@ jobs:
             ${{ runner.os }}-accounts-client-env-vars-deploy-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/accounts/api/node_modules/.cache
@@ -791,7 +791,7 @@ jobs:
             ${{ runner.os }}-accounts-api-v4-
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -815,10 +815,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -827,7 +827,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -838,7 +838,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -846,7 +846,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/accounts/infrastructure/.serverless
@@ -855,7 +855,7 @@ jobs:
             ${{ runner.os }}-accounts-infrastructure-v4-
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -878,10 +878,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -890,7 +890,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -901,7 +901,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -909,7 +909,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/accounts/notifications/node_modules/.cache
@@ -919,7 +919,7 @@ jobs:
             ${{ runner.os }}-accounts-notifications-v4-
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -955,10 +955,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
 
       - name: Set Node version
-        uses: actions/setup-node@v4.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: yarn
@@ -967,7 +967,7 @@ jobs:
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./node_modules
@@ -978,7 +978,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./packages/*/lib
           key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -986,7 +986,7 @@ jobs:
             ${{ runner.os }}-packages-
 
       - name: Restore env vars
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: ./applications/accounts/client/.env.production
           key: ${{ runner.os }}-accounts-client-env-vars-deploy-v4-${{ hashFiles('**/packages.txt') }}
@@ -994,7 +994,7 @@ jobs:
             ${{ runner.os }}-accounts-client-env-vars-deploy-
 
       - name: Restore application cache
-        uses: actions/cache@v4.2.2
+        uses: actions/cache@v5
         with:
           path: |
             ./applications/accounts/client/node_modules/.cache
@@ -1007,7 +1007,7 @@ jobs:
         run: yarn workspace @accounts/client build
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
