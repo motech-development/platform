@@ -11,7 +11,7 @@ import './i18n';
 const { REACT_APP_GA, REACT_APP_SENTRY_DSN, STAGE } = process.env;
 
 if (!REACT_APP_SENTRY_DSN) {
-  throw new Error('Reporting error');
+  throw new Error('Missing REACT_APP_SENTRY_DSN');
 }
 
 init({
