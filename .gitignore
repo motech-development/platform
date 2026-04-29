@@ -179,3 +179,5 @@ lib
 .next
 .webpack
 .serverless
+playwright-report
+test-results

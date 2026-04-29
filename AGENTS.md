@@ -131,14 +131,17 @@ Follow this lifecycle:
 - Prefer targeted tests when they provide faster, sufficient coverage for the change.
 - Run type-checking and linting after completing changes.
 - Do not run `test-ci` locally unless explicitly requested; it is reserved for CI coverage generation. Use targeted Jest commands or non-coverage test scripts for local verification.
+- Do not run focused Accounts Client Playwright e2e subsets for verification; those tests depend on prior e2e state. Use the full Accounts Client Playwright command instead.
 - When mocking Node core modules or external packages, prefer partial mocks that preserve unmocked real exports. Full module mocks can break transitive dependencies that rely on exports not used directly by the test.
 
 ### Tooling and Workflow
 
+- Use exact pinned dependency versions in package manifests; do not add semver range prefixes such as `^` or `~`.
 - Use the latest stable package versions when adding dependencies.
 - For dependency upgrades, preserve the current major version unless the user explicitly requests or approves a major upgrade. Treat broad "latest" requests as applying only where major-version risk has been clarified.
 - Never skip git hooks.
 - Use Conventional Commits for commit messages.
+- When a commit completes a tracked GitHub issue, include a closing footer such as `Closes #1234`.
 - Confirm the package manager before running package commands.
 - Prefer available MCP/app tools over shell CLIs for PR review/comment triage, replies, and thread resolution. Use shell CLIs only when the MCP/app tooling cannot provide the needed data or action.
 - Treat disabling ESLint rules or adding new ones as a last resort that must be justified.

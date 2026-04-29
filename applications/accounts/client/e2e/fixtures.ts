@@ -1,7 +1,8 @@
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import AxeBuilder from '@axe-core/playwright';
-import { test as base } from '@playwright/test';
+import { expect, test as base } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 import { Result } from 'axe-core';
 import account from './fixtures/data/account.json';
 import client from './fixtures/data/client.json';
@@ -16,6 +17,11 @@ async function eicar() {
 
   await writeFile(path, content);
 }
+
+type ConsumerVisualGuard = (
+  target: Locator,
+  screenshotName: string,
+) => Promise<void>;
 
 function format(type: string, value: string) {
   switch (type) {
@@ -94,6 +100,7 @@ interface IFixtures {
       month: string;
     };
   }[];
+  consumerVisualGuard: ConsumerVisualGuard;
   eicar: typeof eicar;
   format: typeof format;
   settings: {
@@ -145,6 +152,25 @@ export const test = base.extend<IFixtures>({
 
     await use(checkAccessibility);
   },
+  consumerVisualGuard: async ({ page }, use) => {
+    const compareScreenshot = async (
+      target: Locator,
+      screenshotName: string,
+    ) => {
+      await page.evaluate(() => document.fonts.ready);
+      await target.scrollIntoViewIfNeeded();
+      await expect(target).toBeVisible();
+
+      await expect(target).toHaveScreenshot(screenshotName, {
+        animations: 'disabled',
+        caret: 'hide',
+        maxDiffPixelRatio: 0.001,
+        scale: 'css',
+      });
+    };
+
+    await use(compareScreenshot);
+  },
   accounts: async ({}, use) => {
     await use(account as IFixtures['accounts']);
   },
@@ -165,4 +191,4 @@ export const test = base.extend<IFixtures>({
   },
 });
 
-export { expect } from '@playwright/test';
+export { expect };

@@ -65,6 +65,8 @@ export default defineConfig({
   reporter: 'html',
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
+  snapshotPathTemplate:
+    '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',
   testDir: './e2e',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

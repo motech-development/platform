@@ -18,9 +18,16 @@ export const BasicLoader = {
     <>
       <BaseStyles />
 
-      <Loader
-        colour={select('Colour', colour, 'default') as 'default' | 'secondary'}
-      />
+      <div
+        data-testid="loader-baseline"
+        style={{ height: '160px', position: 'relative', width: '160px' }}
+      >
+        <Loader
+          colour={
+            select('Colour', colour, 'default') as 'default' | 'secondary'
+          }
+        />
+      </div>
     </>
   ),
 };

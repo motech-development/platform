@@ -28,7 +28,9 @@
     "prebuild": "rimraf ./lib",
     "start": "storybook dev -p 6006",
     "test": "jest --watch",
-    "test-ci": "jest --coverage --runInBand"
+    "test-ci": "jest --coverage --runInBand",
+    "test:visual": "playwright test",
+    "test:visual:update": "playwright test --update-snapshots"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "6.7.2",
@@ -54,6 +56,7 @@
     "@motech-development/eslint-config-motech-react": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
+    "@playwright/test": "1.59.1",
     "@rollup/plugin-commonjs": "28.0.2",
     "@rollup/plugin-node-resolve": "15.3.1",
     "@storybook/addon-a11y": "8.6.18",

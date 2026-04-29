@@ -14,4 +14,15 @@ export default defineConfig([
       'react/function-component-definition': 'off',
     },
   },
+  {
+    files: ['playwright.config.ts', 'visual-tests/**/*.ts'],
+    rules: {
+      'import/no-extraneous-dependencies': [
+        'error',
+        {
+          devDependencies: true,
+        },
+      ],
+    },
+  },
 ]);
