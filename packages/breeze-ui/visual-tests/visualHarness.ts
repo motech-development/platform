@@ -57,9 +57,11 @@ export interface VisualCaptureOptions extends StorybookStoryOptions {
 export interface MasonryLayoutOptions {
   columnSelector: string;
   expectedColumns: number;
+  expectedColumnWidth?: number;
   expectedGutter?: number;
   expectedItemOrder?: string[][];
   itemSelector: string;
+  widthTolerance?: number;
 }
 
 const encodeStorybookParams = (
@@ -233,9 +235,11 @@ export const expectMasonryLayout = async (
   {
     columnSelector,
     expectedColumns,
+    expectedColumnWidth,
     expectedGutter,
     expectedItemOrder,
     itemSelector,
+    widthTolerance = 1,
   }: MasonryLayoutOptions,
 ) => {
   const columns = container.locator(columnSelector);
@@ -279,5 +283,17 @@ export const expectMasonryLayout = async (
         length: expectedColumns - 1,
       }).map(() => expectedGutter),
     );
+  }
+
+  if (expectedColumnWidth !== undefined) {
+    const columnWidths = await columns.evaluateAll((elements) =>
+      elements.map((element) => element.getBoundingClientRect().width),
+    );
+
+    columnWidths.forEach((columnWidth) => {
+      expect(Math.abs(columnWidth - expectedColumnWidth)).toBeLessThanOrEqual(
+        widthTolerance,
+      );
+    });
   }
 };
