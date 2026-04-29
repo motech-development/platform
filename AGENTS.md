@@ -131,6 +131,7 @@ Follow this lifecycle:
 - Prefer targeted tests when they provide faster, sufficient coverage for the change.
 - Run type-checking and linting after completing changes.
 - Do not run `test-ci` locally unless explicitly requested; it is reserved for CI coverage generation. Use targeted Jest commands or non-coverage test scripts for local verification.
+- Do not run focused Accounts Client Playwright e2e subsets for verification; those tests depend on prior e2e state. Use the full Accounts Client Playwright command instead.
 - When mocking Node core modules or external packages, prefer partial mocks that preserve unmocked real exports. Full module mocks can break transitive dependencies that rely on exports not used directly by the test.
 
 ### Tooling and Workflow

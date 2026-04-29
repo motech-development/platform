@@ -20,6 +20,7 @@ test.describe('VAT registered', () => {
     test('should create a company', async ({
       a11yWithLogs,
       companies,
+      consumerVisualGuard,
       page,
     }) => {
       const company = companies[0];
@@ -80,6 +81,11 @@ test.describe('VAT registered', () => {
       await expect(
         page.getByRole('heading', { name: company.company.name }),
       ).toBeVisible();
+
+      await consumerVisualGuard(
+        page.getByTestId('connected-content'),
+        'vat-company-dashboard.png',
+      );
     });
   });
 
@@ -188,6 +194,7 @@ test.describe('VAT registered', () => {
     test('should update company settings', async ({
       a11yWithLogs,
       companies,
+      consumerVisualGuard,
       format,
       page,
       settings,
@@ -198,6 +205,11 @@ test.describe('VAT registered', () => {
       const violations = await a11yWithLogs();
 
       expect(violations).toHaveLength(0);
+
+      await consumerVisualGuard(
+        page.getByTestId('connected-content'),
+        'vat-settings-form.png',
+      );
 
       // Add first category
       await page.getByRole('button', { name: 'Add a new category' }).click();
@@ -399,6 +411,7 @@ test.describe('VAT registered', () => {
     test('should add a confirmed sale', async ({
       a11yWithLogs,
       accounts,
+      consumerVisualGuard,
       format,
       page,
     }) => {
@@ -407,6 +420,11 @@ test.describe('VAT registered', () => {
       const violations = await a11yWithLogs();
 
       expect(violations).toHaveLength(0);
+
+      await consumerVisualGuard(
+        page.getByTestId('connected-content'),
+        'vat-accounts-overview.png',
+      );
 
       await page
         .getByRole('link', { name: 'Record a new transaction' })
@@ -608,6 +626,7 @@ test.describe('VAT registered', () => {
     test('should delete a confirmed transaction', async ({
       a11yWithLogs,
       accounts,
+      consumerVisualGuard,
       page,
     }) => {
       const transaction = accounts[0];
@@ -617,6 +636,11 @@ test.describe('VAT registered', () => {
       const violations = await a11yWithLogs();
 
       expect(violations).toHaveLength(0);
+
+      await consumerVisualGuard(
+        page.getByRole('dialog'),
+        'vat-delete-transaction-modal.png',
+      );
 
       await page
         .getByLabel(`Please type ${transaction.supplier} to confirm`)

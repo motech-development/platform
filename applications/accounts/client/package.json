@@ -12,6 +12,8 @@
     "deploy": "serverless client deploy --verbose --no-confirm",
     "e2e": "playwright test --ui",
     "e2e-ci": "playwright test",
+    "e2e:visual": "playwright test",
+    "e2e:visual:update": "playwright test --update-snapshots",
     "lint": "eslint './src/**/*.{ts,tsx}'",
     "serve": "vite preview",
     "start": "vite",
