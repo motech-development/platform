@@ -176,6 +176,7 @@ build
 lib
 .build
 .dynamodb
+.impeccable
 .next
 .webpack
 .serverless
