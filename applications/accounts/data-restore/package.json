@@ -47,8 +47,8 @@
     "jest-watch-typeahead": "2.2.2",
     "prettier": "3.2.5",
     "ts-node": "10.9.2",
-    "typescript": "5.8.2",
-    "typescript-eslint": "8.45.0"
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.62.0"
   },
   "jest": {
     "collectCoverageFrom": [

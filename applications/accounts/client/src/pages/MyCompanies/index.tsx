@@ -32,7 +32,7 @@ function MyCompaniesRoutes() {
         <UserBar
           name={user.name as string}
           notifications={<UserNotifications id={user.sub as string} />}
-          picture={user.picture as string}
+          picture={user.picture}
           logOut={logOut}
         />
       )}

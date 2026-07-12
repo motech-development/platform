@@ -6,16 +6,19 @@
     "inlineSources": true,
     "lib": ["es2020", "dom"],
     "module": "commonjs",
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": false,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "rootDir": ".",
     "strictPropertyInitialization": false,
     "target": "ES2020"
   },
   "extends": "../../../tsconfig.json",
   "exclude": ["node_modules", "cdk.out"],
+  "include": ["bin", "lib", "src"],
   "ts-node": {
     "swc": true
   }

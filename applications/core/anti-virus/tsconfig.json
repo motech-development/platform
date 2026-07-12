@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "downlevelIteration": true,
     "lib": ["es2017"],
     "module": "CommonJS",
-    "target": "es5"
+    "moduleResolution": "bundler",
+    "target": "ES2017"
   },
   "extends": "../../../tsconfig.json",
   "include": ["src"]

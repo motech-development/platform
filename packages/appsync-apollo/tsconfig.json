@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "downlevelIteration": true,
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
     "outDir": "lib",
+    "rootDir": "src",
     "target": "ESNext"
   },
   "exclude": ["lib"],

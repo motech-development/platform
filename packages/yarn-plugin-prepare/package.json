@@ -39,8 +39,8 @@
     "eslint-plugin-jest": "28.11.0",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "prettier": "3.2.5",
-    "typescript": "5.8.2",
-    "typescript-eslint": "8.45.0"
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.62.0"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",

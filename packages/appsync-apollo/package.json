@@ -71,11 +71,11 @@
     "prettier": "3.2.5",
     "rimraf": "6.0.1",
     "rollup": "4.60.2",
-    "rollup-plugin-dts": "6.1.1",
+    "rollup-plugin-dts": "6.4.1",
     "rollup-plugin-exclude-dependencies-from-bundle": "1.1.24",
     "rollup-plugin-swc3": "0.12.1",
-    "typescript": "5.8.2",
-    "typescript-eslint": "8.45.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.62.0",
     "unfetch": "5.0.0"
   },
   "jest": {

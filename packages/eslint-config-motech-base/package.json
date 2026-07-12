@@ -35,14 +35,14 @@
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.11.0",
     "eslint-plugin-simple-import-sort": "12.1.1",
-    "typescript-eslint": "8.45.0"
+    "typescript-eslint": "8.62.0"
   },
   "devDependencies": {
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
     "prettier": "3.2.5",
-    "typescript": "5.8.2",
-    "typescript-eslint": "8.45.0"
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.62.0"
   },
   "peerDependencies": {
     "@eslint/eslintrc": "3.3.1",
@@ -57,7 +57,7 @@
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.11.0",
     "eslint-plugin-simple-import-sort": "12.1.1",
-    "typescript-eslint": "8.45.0"
+    "typescript-eslint": "8.62.0"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
