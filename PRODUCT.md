@@ -24,6 +24,7 @@ Avoid rebrand moves such as unrelated brand colours, ornamental interface stylin
 
 - Preserve identity while modernising structure, spacing, and interaction patterns.
 - Put task clarity ahead of decorative novelty.
+- Only expose information, states, and actions supported by the existing GraphQL API or established application workflows.
 - Keep company and account context visible without duplicating it.
 - Use familiar product affordances for navigation, notifications, account controls, and actions.
 - Improve accessibility when the existing identity needs contrast or state clarity adjustments.
