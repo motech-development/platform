@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
     "allowJs": false,
-    "downlevelIteration": true,
-    "esModuleInterop": false,
     "isolatedModules": true,
     "jsx": "react-jsx",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ESNext",
+    "moduleResolution": "Bundler",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "target": "ESNext",

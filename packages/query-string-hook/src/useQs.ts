@@ -5,8 +5,6 @@ export interface IUseQs<T> {
   stringify: (value: T) => string;
 }
 
-type TKeywords = boolean | null;
-
 type TProtectedKeywords = 'false' | 'null' | 'true';
 
 const useQs = <T>(): IUseQs<T> => {
@@ -24,7 +22,7 @@ const useQs = <T>(): IUseQs<T> => {
         } as const;
 
         if (str in keywords) {
-          return keywords[str as TProtectedKeywords] as TKeywords;
+          return keywords[str as TProtectedKeywords];
         }
 
         return decodeURIComponent(str);

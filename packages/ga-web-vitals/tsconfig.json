@@ -3,7 +3,9 @@
     "declaration": true,
     "lib": ["es2017"],
     "module": "ESNext",
+    "moduleResolution": "bundler",
     "outDir": "lib",
+    "rootDir": "src",
     "target": "ESNext"
   },
   "exclude": ["lib"],

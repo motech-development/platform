@@ -346,8 +346,7 @@ function TransactionForm({
 
   return (
     <Form
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-      initialValues={formValues as any}
+      initialValues={formValues}
       loading={loading}
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
       validationSchema={validationSchema as any}
