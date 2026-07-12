@@ -1,0 +1,642 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-12T16:58:12Z",
+  "title": "Design System: Accounts Redesign",
+  "extensions": {
+    "colorMeta": {
+      "shell": {
+        "role": "neutral",
+        "displayName": "Shell Navy",
+        "canonical": "#151c2b",
+        "tonalRamp": [
+          "#090d13",
+          "#0e121c",
+          "#111723",
+          "#151c2b",
+          "#444955",
+          "#737780",
+          "#adb0b5",
+          "#dcdddf"
+        ]
+      },
+      "shell-soft": {
+        "role": "neutral",
+        "displayName": "Soft Shell Navy",
+        "canonical": "#222c40",
+        "tonalRamp": [
+          "#0f141d",
+          "#161d2a",
+          "#1c2434",
+          "#222c40",
+          "#4e5666",
+          "#7a808c",
+          "#b2b5bc",
+          "#dedfe2"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Workspace Gray",
+        "canonical": "#eef1f5",
+        "tonalRamp": [
+          "#6b6c6e",
+          "#9b9d9f",
+          "#c3c6c9",
+          "#eef1f5",
+          "#f1f4f7",
+          "#f5f7f9",
+          "#f9fafc",
+          "#fcfdfe"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "White Surface",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#737373",
+          "#a6a6a6",
+          "#d1d1d1",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff",
+          "#ffffff"
+        ]
+      },
+      "surface-subtle": {
+        "role": "neutral",
+        "displayName": "Subtle Surface",
+        "canonical": "#f5f7fa",
+        "tonalRamp": [
+          "#6e6f71",
+          "#9fa1a3",
+          "#c9cbcd",
+          "#f5f7fa",
+          "#f7f9fb",
+          "#f9fafc",
+          "#fcfcfd",
+          "#fefefe"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Divider Border",
+        "canonical": "#d8dde6",
+        "tonalRamp": [
+          "#616367",
+          "#8c9096",
+          "#b1b5bd",
+          "#d8dde6",
+          "#e0e4eb",
+          "#e8ebf0",
+          "#f1f3f6",
+          "#f9fafb"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Strong Border",
+        "canonical": "#bdc5d2",
+        "tonalRamp": [
+          "#55595e",
+          "#7b8089",
+          "#9ba2ac",
+          "#bdc5d2",
+          "#cad1db",
+          "#d7dce4",
+          "#e8ebef",
+          "#f5f6f8"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Primary Ink",
+        "canonical": "#182033",
+        "tonalRamp": [
+          "#0b0e17",
+          "#101521",
+          "#141a2a",
+          "#182033",
+          "#464d5c",
+          "#747985",
+          "#aeb1b8",
+          "#dcdee0"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#596274",
+        "tonalRamp": [
+          "#282c34",
+          "#3a404b",
+          "#49505f",
+          "#596274",
+          "#7a8190",
+          "#9ba1ac",
+          "#c5c8ce",
+          "#e6e7ea"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "#6b7485",
+        "tonalRamp": [
+          "#30343c",
+          "#464b56",
+          "#585f6d",
+          "#6b7485",
+          "#89909d",
+          "#a6acb6",
+          "#cbced4",
+          "#e9eaed"
+        ]
+      },
+      "inverse": {
+        "role": "neutral",
+        "displayName": "Inverse Ink",
+        "canonical": "#f7f8fb",
+        "tonalRamp": [
+          "#6f7071",
+          "#a1a1a3",
+          "#cbcbce",
+          "#f7f8fb",
+          "#f9f9fc",
+          "#fafbfd",
+          "#fcfdfe",
+          "#fefefe"
+        ]
+      },
+      "inverse-muted": {
+        "role": "neutral",
+        "displayName": "Muted Inverse Ink",
+        "canonical": "#cad0dc",
+        "tonalRamp": [
+          "#5b5e63",
+          "#83878f",
+          "#a6abb4",
+          "#cad0dc",
+          "#d5d9e3",
+          "#dfe3ea",
+          "#eceff3",
+          "#f7f8fa"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Action Blue",
+        "canonical": "#2258d6",
+        "tonalRamp": [
+          "#0f2860",
+          "#16398b",
+          "#1c48af",
+          "#2258d6",
+          "#4e79de",
+          "#7a9be6",
+          "#b2c5f1",
+          "#dee6f9"
+        ]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Action Blue Hover",
+        "canonical": "#1948b5",
+        "tonalRamp": [
+          "#0b2051",
+          "#102f76",
+          "#153b94",
+          "#1948b5",
+          "#476dc4",
+          "#7591d3",
+          "#afbfe5",
+          "#dde4f4"
+        ]
+      },
+      "primary-soft": {
+        "role": "primary",
+        "displayName": "Action Blue Soft",
+        "canonical": "#e8efff",
+        "tonalRamp": [
+          "#686c73",
+          "#979ba6",
+          "#bec4d1",
+          "#e8efff",
+          "#edf2ff",
+          "#f1f5ff",
+          "#f7f9ff",
+          "#fcfdff"
+        ]
+      },
+      "primary-selected": {
+        "role": "primary",
+        "displayName": "Navigation Blue",
+        "canonical": "#2d5bc5",
+        "tonalRamp": [
+          "#142959",
+          "#1d3b80",
+          "#254ba2",
+          "#2d5bc5",
+          "#577cd1",
+          "#819ddc",
+          "#b6c6eb",
+          "#e0e6f6"
+        ]
+      },
+      "brand-mark": {
+        "role": "primary",
+        "displayName": "Brand Mark Blue",
+        "canonical": "#4f82f3",
+        "tonalRamp": [
+          "#243b6d",
+          "#33559e",
+          "#416bc7",
+          "#4f82f3",
+          "#729bf5",
+          "#95b4f8",
+          "#c1d3fb",
+          "#e5ecfd"
+        ]
+      },
+      "focus": {
+        "role": "primary",
+        "displayName": "Focus Blue",
+        "canonical": "#4f86ff",
+        "tonalRamp": [
+          "#243c73",
+          "#3357a6",
+          "#416ed1",
+          "#4f86ff",
+          "#729eff",
+          "#95b6ff",
+          "#c1d5ff",
+          "#e5edff"
+        ]
+      },
+      "success": {
+        "role": "secondary",
+        "displayName": "Success Green",
+        "canonical": "#137a4a",
+        "tonalRamp": [
+          "#093721",
+          "#0c4f30",
+          "#10643d",
+          "#137a4a",
+          "#42956e",
+          "#71af92",
+          "#acd0c0",
+          "#dcebe4"
+        ]
+      },
+      "success-soft": {
+        "role": "secondary",
+        "displayName": "Success Green Soft",
+        "canonical": "#e6f4ec",
+        "tonalRamp": [
+          "#676e6a",
+          "#969f99",
+          "#bdc8c2",
+          "#e6f4ec",
+          "#ebf6f0",
+          "#f0f8f4",
+          "#f6fbf8",
+          "#fbfdfc"
+        ]
+      },
+      "danger": {
+        "role": "secondary",
+        "displayName": "Danger Red",
+        "canonical": "#ba2e39",
+        "tonalRamp": [
+          "#54151a",
+          "#791e25",
+          "#99262f",
+          "#ba2e39",
+          "#c85861",
+          "#d68288",
+          "#e7b6ba",
+          "#f5e0e1"
+        ]
+      },
+      "danger-hover": {
+        "role": "secondary",
+        "displayName": "Danger Red Hover",
+        "canonical": "#98242e",
+        "tonalRamp": [
+          "#441015",
+          "#63171e",
+          "#7d1e26",
+          "#98242e",
+          "#ad5058",
+          "#c17c82",
+          "#dbb2b6",
+          "#f0dee0"
+        ]
+      },
+      "danger-soft": {
+        "role": "secondary",
+        "displayName": "Danger Red Soft",
+        "canonical": "#fbeaec",
+        "tonalRamp": [
+          "#71696a",
+          "#a39899",
+          "#cec0c2",
+          "#fbeaec",
+          "#fceef0",
+          "#fdf2f4",
+          "#fef8f8",
+          "#fefcfc"
+        ]
+      },
+      "notification": {
+        "role": "secondary",
+        "displayName": "Notification Red",
+        "canonical": "#e5484d",
+        "tonalRamp": [
+          "#672023",
+          "#952f32",
+          "#bc3b3f",
+          "#e5484d",
+          "#ea6d71",
+          "#ef9194",
+          "#f6bfc1",
+          "#fbe4e4"
+        ]
+      },
+      "warning": {
+        "role": "secondary",
+        "displayName": "Warning Amber",
+        "canonical": "#925400",
+        "tonalRamp": [
+          "#422600",
+          "#5f3700",
+          "#784500",
+          "#925400",
+          "#a87633",
+          "#be9866",
+          "#d9c3a6",
+          "#efe5d9"
+        ]
+      },
+      "warning-soft": {
+        "role": "secondary",
+        "displayName": "Warning Amber Soft",
+        "canonical": "#fff2dc",
+        "tonalRamp": [
+          "#736d63",
+          "#a69d8f",
+          "#d1c6b4",
+          "#fff2dc",
+          "#fff5e3",
+          "#fff7ea",
+          "#fffaf3",
+          "#fffdfa"
+        ]
+      },
+      "overlay": {
+        "role": "neutral",
+        "displayName": "Shell Overlay",
+        "canonical": "#0c121fad",
+        "tonalRamp": [
+          "#05080e",
+          "#080c14",
+          "#0a0f19",
+          "#0c121f",
+          "#3d414c",
+          "#6d7179",
+          "#aaacb1",
+          "#dbdbdd"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Page Heading",
+        "purpose": "Top-level page titles only."
+      },
+      "metric": {
+        "displayName": "Metric",
+        "purpose": "Primary financial figures."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Drawer, dialog, and state titles."
+      },
+      "section": {
+        "displayName": "Section",
+        "purpose": "Panel and menu headings."
+      },
+      "body": {
+        "displayName": "Body and Data",
+        "purpose": "Descriptions, records, values, metadata, and longer copy."
+      },
+      "label": {
+        "displayName": "UI Label",
+        "purpose": "Navigation, buttons, field labels, and table headings."
+      }
+    },
+    "shadows": [
+      {
+        "name": "popover-lift",
+        "value": "0 8px 0 rgb(6 12 24 / 18%)",
+        "purpose": "Menus, date picker, and prototype state menu."
+      },
+      {
+        "name": "drawer-edge",
+        "value": "-8px 0 0 rgb(6 12 24 / 20%)",
+        "purpose": "Desktop drawers and attachment previews."
+      },
+      {
+        "name": "dialog-lift",
+        "value": "0 8px 0 rgb(6 12 24 / 22%)",
+        "purpose": "Destructive confirmation dialogs."
+      },
+      {
+        "name": "compact-floating-control",
+        "value": "0 6px 0 rgb(6 12 24 / 20%)",
+        "purpose": "Toasts and prototype-only state control."
+      }
+    ],
+    "motion": [
+      {
+        "name": "drawer",
+        "value": "180ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Desktop drawer and mobile sheet entry and exit."
+      },
+      {
+        "name": "backdrop",
+        "value": "180ms ease-out",
+        "purpose": "Drawer and nested overlay fades."
+      },
+      {
+        "name": "tooltip",
+        "value": "150ms ease-out",
+        "purpose": "Attachment and scheduled-state tooltip reveal."
+      },
+      {
+        "name": "skeleton",
+        "value": "1400ms ease-in-out alternate",
+        "purpose": "Loading-state opacity pulse."
+      }
+    ],
+    "breakpoints": [
+      { "name": "compact", "value": "680px" },
+      { "name": "mobile-shell", "value": "900px" },
+      { "name": "tablet", "value": "1180px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Canonical primary action with square geometry and a 46px target.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Save changes</button>",
+      "css": ".ds-btn-primary { min-height: 46px; padding: 0 16px; border: 0; border-radius: 0; background: #2258d6; color: #f7f8fb; font: 700 1rem/1.25 Cabin, sans-serif; } .ds-btn-primary:hover { background: #1948b5; } .ds-btn-primary:focus-visible { outline: 2px solid #4f86ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Bordered secondary action that remains visually subordinate to the primary action.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">Cancel</button>",
+      "css": ".ds-btn-secondary { min-height: 46px; padding: 0 16px; border: 1px solid #bdc5d2; border-radius: 0; background: #ffffff; color: #182033; font: 700 1rem/1.25 Cabin, sans-serif; } .ds-btn-secondary:hover { border-color: #596274; background: #f5f7fa; } .ds-btn-secondary:focus-visible { outline: 2px solid #4f86ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Explicit destructive action used only when the outcome is clear.",
+      "html": "<button class=\"ds-btn-danger\" type=\"button\">Delete transaction</button>",
+      "css": ".ds-btn-danger { min-height: 46px; padding: 0 16px; border: 0; border-radius: 0; background: #ba2e39; color: #f7f8fb; font: 700 1rem/1.25 Cabin, sans-serif; } .ds-btn-danger:hover { background: #98242e; } .ds-btn-danger:focus-visible { outline: 2px solid #4f86ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "form-control",
+      "description": "Cabin label paired with a Helvetica Neue body-value field.",
+      "html": "<label class=\"ds-field\">Company name<input value=\"Motech Development\"></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 7px; color: #182033; font: 700 1rem/1.25 Cabin, sans-serif; } .ds-field input { min-height: 46px; padding: 0 12px; border: 1px solid #bdc5d2; border-radius: 0; background: #ffffff; color: #182033; font: 400 1rem/1.4 \"Helvetica Neue\", Helvetica, Arial, sans-serif; } .ds-field input:focus-visible { outline: 2px solid #4f86ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Navigation Item",
+      "kind": "nav",
+      "refersTo": "desktop-sidebar",
+      "description": "Dark-shell navigation with a clear selected state and no decorative section label.",
+      "html": "<nav class=\"ds-nav\"><button type=\"button\">Transactions</button><button class=\"ds-nav-active\" type=\"button\">Clients</button></nav>",
+      "css": ".ds-nav { width: 264px; padding: 12px; background: #151c2b; } .ds-nav button { display: block; width: 100%; min-height: 46px; padding: 0 13px; border: 0; border-radius: 0; background: transparent; color: #cad0dc; font: 700 1rem/1.25 Cabin, sans-serif; text-align: left; } .ds-nav button:hover { background: #222c40; color: #ffffff; } .ds-nav .ds-nav-active { background: #2d5bc5; color: #ffffff; } .ds-nav button:focus-visible { outline: 2px solid #4f86ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Flat white work surface with a strong bottom rule and no resting shadow.",
+      "html": "<section class=\"ds-panel\"><h2>VAT summary</h2><p>Accounting information appears here.</p></section>",
+      "css": ".ds-panel { padding: 24px; border-bottom: 2px solid #bdc5d2; border-radius: 0; background: #ffffff; color: #182033; } .ds-panel h2 { margin: 0 0 8px; font: 700 1.25rem/1.2 Cabin, sans-serif; } .ds-panel p { margin: 0; color: #596274; font: 400 1rem/1.4 \"Helvetica Neue\", Helvetica, Arial, sans-serif; }"
+    },
+    {
+      "name": "Transaction Row",
+      "kind": "custom",
+      "description": "Data-first row with semantic direction, Helvetica values, and a right-aligned amount.",
+      "html": "<button class=\"ds-transaction\" type=\"button\"><span class=\"ds-direction\">→</span><span class=\"ds-transaction-copy\"><strong>Northstar Studio</strong><small>Website delivery, invoice 1042</small></span><strong class=\"ds-amount\">+£2,840.00</strong></button>",
+      "css": ".ds-transaction { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; gap: 16px; width: 100%; min-height: 78px; padding: 11px 24px; border: 0; border-bottom: 1px solid #d8dde6; border-radius: 0; background: #ffffff; color: #182033; text-align: left; } .ds-direction { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: #e6f4ec; color: #137a4a; font: 700 1rem/1 Cabin, sans-serif; } .ds-transaction-copy { display: flex; flex-direction: column; min-width: 0; font: 400 1rem/1.4 \"Helvetica Neue\", Helvetica, Arial, sans-serif; } .ds-transaction-copy small { color: #596274; font-size: 1rem; } .ds-amount { color: #137a4a; font: 700 1rem/1.4 \"Helvetica Neue\", Helvetica, Arial, sans-serif; font-variant-numeric: tabular-nums; } .ds-transaction:hover { background: #f8faff; } .ds-transaction:focus-visible { outline: 2px solid #4f86ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Contextual State",
+      "kind": "custom",
+      "refersTo": "state-icon",
+      "description": "Compact empty or error state with semantic icon, contextual copy, and recovery action.",
+      "html": "<section class=\"ds-state\"><span class=\"ds-state-icon\">!</span><div><h2>No transactions yet</h2><p>Record money coming in or going out of the business.</p><button type=\"button\">Record transaction</button></div></section>",
+      "css": ".ds-state { display: grid; grid-template-columns: 54px minmax(0, 620px); gap: 22px; padding: 30px 32px 32px; border-bottom: 2px solid #bdc5d2; border-radius: 0; background: #ffffff; } .ds-state-icon { display: grid; width: 54px; height: 54px; place-items: center; background: #e8efff; color: #2258d6; font: 700 1.5rem/1 Cabin, sans-serif; } .ds-state h2 { margin: 0 0 7px; color: #182033; font: 700 1.5rem/1.2 Cabin, sans-serif; } .ds-state p { margin: 0 0 20px; color: #596274; font: 400 1rem/1.4 \"Helvetica Neue\", Helvetica, Arial, sans-serif; } .ds-state button { min-height: 46px; padding: 0 16px; border: 0; border-radius: 0; background: #2258d6; color: #ffffff; font: 700 1rem/1.25 Cabin, sans-serif; } .ds-state button:hover { background: #1948b5; } .ds-state button:focus-visible { outline: 2px solid #4f86ff; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Working Ledger",
+    "overview": "Accounts is a practical financial workspace for small-business owners. It should feel modern, professional, and direct: a durable product shell that helps users understand their position, record activity, and move between account tasks without unnecessary accounting complexity.\n\nThe system uses a fixed dark desktop rail, a pale workspace, square white work surfaces, restrained blue actions, and typography that separates short UI language from body and financial data. It rejects unrelated brand colours, ornamental interface styling, invented affordances, decorative dashboards, marketing-led composition, and UI that feels clever at the expense of task clarity.",
+    "keyCharacteristics": [
+      "Fixed 264px desktop rail with persistent company and account context.",
+      "64px mobile header with navigation trigger, centred Accounts name, and profile avatar.",
+      "Maximum 1500px workspace with 48px desktop, 30px tablet, and 16px compact horizontal padding.",
+      "Structural breakpoints at 1180px, 900px, and 680px. Typography remains a fixed rem scale.",
+      "Square controls and panels, strong bottom rules, and shadows reserved for floating layers.",
+      "Desktop tables for Companies, Clients, and Reports; compact record cards on mobile.",
+      "A transaction stream grouped by day with confirmed daily totals.",
+      "Every visible value, state, and action must map to the existing GraphQL API or established client workflow."
+    ],
+    "rules": [
+      {
+        "name": "The Context-Once Rule",
+        "body": "Show company context once in the app rail. Do not repeat the selected company above page headings.",
+        "section": "overview"
+      },
+      {
+        "name": "The Temporary Authority Rule",
+        "body": "The prototype is authoritative only until production implementation replaces it. Never leave this document pointing at a deleted prototype.",
+        "section": "overview"
+      },
+      {
+        "name": "The Saturation Has Meaning Rule",
+        "body": "Blue, green, red, and amber must communicate action or state. Never use them as decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Dark Shell Rule",
+        "body": "Keep the shell dark and the workspace light. A light app rail or a dark content canvas is outside the approved direction.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two-Layer Type Rule",
+        "body": "Cabin is for headings and short non-body UI text. Helvetica Neue is for prose, form values, records, metadata, and data. A clickable row is still data and must not inherit the button font.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fixed Scale Rule",
+        "body": "Use only the documented 1rem, 1.25rem, 1.5rem, 2rem, and 2.5rem roles unless a verified component needs a distinct size.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-Until-Floating Rule",
+        "body": "If an element does not overlap another surface, it does not receive a shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Single Overlay Rule",
+        "body": "A nested interaction may add hierarchy inside its parent region, but it must never stack multiple full-page backdrops.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do treat prototypes/accounts-v2/ as the temporary source of truth until production implementation replaces it.",
+      "Do update this document to production component paths before deleting the prototype.",
+      "Do preserve the dark shell, cool gray canvas, white work surfaces, square geometry, and restrained Action Blue vocabulary.",
+      "Do use Cabin for headings and short UI language, and Helvetica Neue for body copy, values, records, and metadata.",
+      "Do keep every visible field, state, summary, and action within the existing GraphQL API or established client workflow.",
+      "Do use familiar product affordances for navigation, notifications, account controls, forms, and destructive confirmation.",
+      "Do keep company context visible once, hide company-dependent navigation when no company is selected, and close popovers on outside interaction.",
+      "Do use desktop tables and mobile record cards for Companies, Clients, and Reports.",
+      "Do use daily transaction groups, confirmed daily totals, left/right direction arrows, and accessible warning or scheduled tooltips.",
+      "Do use screen-shaped loading skeletons and contextual empty/error states.",
+      "Do enforce WCAG AA contrast, visible focus, 16px minimum text, 44px minimum targets, and reduced-motion behavior."
+    ],
+    "donts": [
+      "Don't reference Pencil, .pen assets, or the historical Breeze branch as the current source of truth.",
+      "Don't leave this document pointing at the temporary prototype after the production redesign is complete.",
+      "Don't make unrelated brand-colour changes or reintroduce the previous teal/light-workshop direction.",
+      "Don't use ornamental interface styling, invented affordances, decorative dashboards, marketing-led composition, or UI that feels clever at the expense of task clarity.",
+      "Don't expose vendor names such as Auth0, storage paths, API identifiers, or internal terms such as Workspace.",
+      "Don't repeat the selected company above page headings or add redundant company-state indicators such as a selected tick.",
+      "Don't show company-dependent navigation when no company is selected.",
+      "Don't invent overview metrics, filters, deadlines, statuses, or actions that the GraphQL API cannot support.",
+      "Don't add a transaction status column, persistent No invoice or receipt text, or redundant scheduled copy.",
+      "Don't use month grouping where the product workflow groups transactions by day.",
+      "Don't use generic card grids for transaction streams or turn whole forms into one undifferentiated card.",
+      "Don't add shadows to static panels, tables, fields, or inline forms.",
+      "Don't use Cabin for body copy, transaction data, form values, or record metadata.",
+      "Don't allow native file inputs, native date pickers, or unstyled select arrows to leak into the interface.",
+      "Don't mix full-page and drawer forms outside the documented Company details and Settings exceptions.",
+      "Don't close a parent drawer when opening a file preview or delete confirmation.",
+      "Don't stack multiple full-page overlays or let a secondary drawer animate over its parent on exit."
+    ]
+  }
+}

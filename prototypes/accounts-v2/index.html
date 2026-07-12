@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#151c2b" />
+    <meta
+      name="description"
+      content="Manage company accounts, clients, transactions, and reports."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=20260712-25" />
+    <title>Accounts</title>
+  </head>
+  <body>
+    <svg aria-hidden="true" class="svg-sprite">
+      <symbol id="i-motech-development" viewBox="0 0 345.21 398.61">
+        <polygon
+          points="172.6 199.31 57.53 132.87 57.53 332.18 0 298.96 0 99.65 172.6 0 345.21 99.65 345.21 298.96 287.67 332.18 287.67 132.87 172.6 199.31"
+        />
+        <polygon
+          points="115.07 365.39 115.07 232.53 172.6 265.74 230.14 232.53 230.14 365.39 172.6 398.61 115.07 365.39"
+        />
+      </symbol>
+      <symbol id="i-overview" viewBox="0 0 24 24">
+        <path d="M4 19V9M10 19V5M16 19v-7M22 19V3" />
+      </symbol>
+      <symbol id="i-wallet" viewBox="0 0 24 24">
+        <path
+          d="M3 6.5h15a2 2 0 0 1 2 2v10H5a2 2 0 0 1-2-2v-10Zm0 0 2-3h12l1 3m-3 6h5"
+        />
+      </symbol>
+      <symbol id="i-users" viewBox="0 0 24 24">
+        <path
+          d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m7-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm13 10v-2a4 4 0 0 0-3-3.87M16 2.13a4 4 0 0 1 0 7.75"
+        />
+      </symbol>
+      <symbol id="i-report" viewBox="0 0 24 24">
+        <path
+          d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Zm0 0v6h6M8 13h8M8 17h8"
+        />
+      </symbol>
+      <symbol id="i-building" viewBox="0 0 24 24">
+        <path d="M3 21h18M6 21V4h12v17M9 8h2m2 0h2m-6 4h2m2 0h2m-6 4h2m2 0h2" />
+      </symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3" />
+        <path
+          d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.17.37.52.72 1 .93.2.08.4.12.6.12h.09v4H21a1.7 1.7 0 0 0-1.6.95Z"
+        />
+      </symbol>
+      <symbol id="i-preview" viewBox="0 0 24 24">
+        <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+        <circle cx="12" cy="12" r="2.5" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" />
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14m-6-6 6 6-6 6" />
+      </symbol>
+      <symbol id="i-right" viewBox="0 0 24 24">
+        <path d="M4 12h16m-6-6 6 6-6 6" />
+      </symbol>
+      <symbol id="i-left" viewBox="0 0 24 24">
+        <path d="M20 12H4m6-6-6 6 6 6" />
+      </symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24">
+        <path d="M4 5h16M7 12h10m-7 7h4" />
+      </symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v6m0 4h.01" />
+      </symbol>
+      <symbol id="i-warning" viewBox="0 0 24 24">
+        <path d="M12 3 22 21H2L12 3Z" fill="currentColor" stroke="none" />
+        <path d="M12 9v5" stroke="#fff" stroke-width="2" />
+        <circle cx="12" cy="17.5" r="1" fill="#fff" stroke="none" />
+      </symbol>
+      <symbol id="i-download" viewBox="0 0 24 24">
+        <path d="M12 3v12m-5-5 5 5 5-5M5 21h14" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24">
+        <path d="m6 6 12 12M18 6 6 18" />
+      </symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24">
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24">
+        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 13h4" />
+      </symbol>
+      <symbol id="i-paperclip" viewBox="0 0 24 24">
+        <path
+          d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5L13 2a4 4 0 0 1 5.7 5.6l-9 9a2 2 0 0 1-2.8-2.8l8.3-8.3"
+        />
+      </symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24">
+        <path
+          d="M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2Zm2-2v4m10-4v4M3 9h18"
+        />
+      </symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" fill="currentColor" stroke="none" />
+        <path d="M12 6.5v5.5l3.5 2" stroke="#fff" stroke-width="2" />
+      </symbol>
+      <symbol id="i-signout" viewBox="0 0 24 24">
+        <path
+          d="M10 17l5-5-5-5m5 5H3m12-9h5a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-5"
+        />
+      </symbol>
+    </svg>
+
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <header class="brand">
+          <svg class="brand-logo" aria-hidden="true">
+            <use href="#i-motech-development" />
+          </svg>
+          <span><strong>Accounts</strong></span>
+          <button
+            class="icon-button mobile-only"
+            data-close-nav
+            aria-label="Close navigation"
+          >
+            <svg><use href="#i-close" /></svg>
+          </button>
+        </header>
+        <nav aria-label="Primary navigation">
+          <button class="active" data-view="overview">
+            <svg><use href="#i-overview" /></svg>Overview
+          </button>
+          <button data-view="transactions">
+            <svg><use href="#i-wallet" /></svg>Transactions
+          </button>
+          <button data-view="clients">
+            <svg><use href="#i-users" /></svg>Clients
+          </button>
+          <button data-view="reports">
+            <svg><use href="#i-report" /></svg>Reports
+          </button>
+          <button data-view="company">
+            <svg><use href="#i-building" /></svg>Company details
+          </button>
+          <button data-view="settings">
+            <svg><use href="#i-settings" /></svg>Settings
+          </button>
+        </nav>
+        <footer class="sidebar-footer">
+          <div class="popover-anchor">
+            <div
+              class="sidebar-popover company-popover"
+              id="company-menu"
+              hidden
+            >
+              <h2 class="popover-heading">Switch company</h2>
+              <button
+                class="selected"
+                data-action="select-company"
+                aria-pressed="true"
+              >
+                <span class="company-initial">M</span
+                ><span
+                  ><strong>Motech Development</strong
+                  ><small>08374621</small></span
+                >
+              </button>
+              <button data-action="select-company" aria-pressed="false">
+                <span class="company-initial alt">N</span
+                ><span
+                  ><strong>Northline Digital Ltd</strong
+                  ><small>10294811</small></span
+                >
+              </button>
+              <button class="popover-action" data-action="manage-companies">
+                <svg><use href="#i-building" /></svg>Manage companies
+              </button>
+            </div>
+            <button
+              class="company-trigger"
+              id="company-trigger"
+              aria-expanded="false"
+            >
+              <span class="company-initial">M</span
+              ><span
+                ><small>Current company</small
+                ><strong>Motech Development</strong></span
+              >
+            </button>
+          </div>
+          <div class="popover-anchor">
+            <div
+              class="sidebar-popover profile-popover"
+              id="profile-menu"
+              hidden
+            >
+              <div class="notification-heading">
+                <h2>Notifications</h2>
+                <span>1 new</span>
+              </div>
+              <button class="notification" data-action="view-reports">
+                <svg><use href="#i-report" /></svg
+                ><span
+                  ><strong>Your report is ready</strong
+                  ><small>Created 4 minutes ago</small></span
+                >
+              </button>
+              <button class="sign-out" data-action="sign-out">
+                <svg><use href="#i-signout" /></svg>Sign out
+              </button>
+            </div>
+            <button
+              class="profile-trigger"
+              id="profile-trigger"
+              aria-expanded="false"
+            >
+              <span class="avatar">MG<i></i></span><strong>Mo Gusbi</strong>
+            </button>
+          </div>
+        </footer>
+      </aside>
+      <button
+        class="nav-backdrop"
+        data-close-nav
+        aria-label="Close navigation"
+        hidden
+      ></button>
+      <main class="workspace">
+        <header class="mobile-header">
+          <button
+            class="icon-button"
+            id="open-nav"
+            aria-label="Open navigation"
+          >
+            <svg><use href="#i-menu" /></svg>
+          </button>
+          <strong>Accounts</strong>
+          <button
+            class="icon-button mobile-profile-trigger"
+            id="mobile-profile-trigger"
+            aria-expanded="false"
+            aria-label="Account menu, 1 unread notification"
+          >
+            <span class="avatar" aria-hidden="true">MG<i></i></span>
+          </button>
+        </header>
+        <div
+          class="mobile-profile-menu"
+          id="mobile-profile-menu"
+          aria-label="Account menu"
+          hidden
+        >
+          <div class="notification-heading">
+            <h2>Notifications</h2>
+            <span>1 new</span>
+          </div>
+          <button class="notification" data-action="view-reports">
+            <svg><use href="#i-report" /></svg
+            ><span
+              ><strong>Your report is ready</strong
+              ><small>Created 4 minutes ago</small></span
+            >
+          </button>
+          <button class="sign-out" data-action="sign-out">
+            <svg><use href="#i-signout" /></svg>Sign out
+          </button>
+        </div>
+        <div class="workspace-inner" id="content"></div>
+      </main>
+    </div>
+    <div id="drawer-root"></div>
+    <div class="prototype-state-control" id="prototype-state-control">
+      <section
+        class="prototype-state-menu"
+        id="prototype-state-menu"
+        aria-labelledby="prototype-state-heading"
+        data-state="closed"
+        hidden
+      >
+        <header>
+          <h2 id="prototype-state-heading">Preview state</h2>
+          <p>Change the state of this screen.</p>
+        </header>
+        <div
+          class="prototype-state-options"
+          role="group"
+          aria-label="Screen state"
+        >
+          <button data-preview-state="ready" aria-pressed="true" type="button">
+            Ready
+          </button>
+          <button
+            data-preview-state="loading"
+            aria-pressed="false"
+            type="button"
+          >
+            Loading
+          </button>
+          <button data-preview-state="empty" aria-pressed="false" type="button">
+            Empty
+          </button>
+          <button data-preview-state="error" aria-pressed="false" type="button">
+            Error
+          </button>
+        </div>
+      </section>
+      <button
+        class="prototype-state-trigger"
+        id="prototype-state-trigger"
+        aria-controls="prototype-state-menu"
+        aria-expanded="false"
+        type="button"
+      >
+        <svg aria-hidden="true"><use href="#i-preview" /></svg>
+        <span id="prototype-state-label" aria-live="polite"
+          >Preview: Ready</span
+        >
+      </button>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
