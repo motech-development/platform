@@ -28,7 +28,6 @@
     "@kesills/eslint-config-airbnb-typescript": "20.0.0",
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@stylistic/eslint-plugin": "2.9.0",
-    "eslint": "9.37.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-node": "0.3.9",
@@ -44,28 +43,13 @@
   "devDependencies": {
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
+    "eslint": "9.37.0",
     "prettier": "3.2.5",
-    "typescript": "6.0.3",
-    "typescript-eslint": "8.62.0"
+    "typescript": "6.0.3"
   },
   "peerDependencies": {
-    "@eslint/eslintrc": "3.3.1",
-    "@eslint/js": "9.37.0",
-    "@kesills/eslint-config-airbnb-typescript": "20.0.0",
-    "@motech-development/eslint-config-motech-base": "workspace:*",
-    "@stylistic/eslint-plugin": "2.9.0",
-    "eslint": "9.37.0",
-    "eslint-config-airbnb": "19.0.4",
-    "eslint-config-prettier": "10.1.8",
-    "eslint-import-resolver-node": "0.3.9",
-    "eslint-import-resolver-typescript": "4.4.4",
-    "eslint-plugin-import": "2.31.0",
-    "eslint-plugin-jest": "28.11.0",
-    "eslint-plugin-jsx-a11y": "6.10.2",
-    "eslint-plugin-react": "7.37.4",
-    "eslint-plugin-react-hooks": "6.1.1",
-    "eslint-plugin-simple-import-sort": "12.1.1",
-    "typescript-eslint": "8.62.0"
+    "eslint": "^9.37.0",
+    "typescript": ">=5.8.2 <6.1.0"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",

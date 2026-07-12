@@ -1,6 +1,6 @@
+import assert, { AssertionError } from 'node:assert';
 import { writeFile } from 'node:fs';
 import { promisify } from 'node:util';
-import assert, { AssertionError } from 'assert';
 import tomlify from 'tomlify-j0.4';
 
 interface IHook {
