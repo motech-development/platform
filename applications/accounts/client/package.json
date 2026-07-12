@@ -28,7 +28,7 @@
     "@motech-development/appsync-apollo": "workspace:*",
     "@motech-development/auth": "workspace:*",
     "@motech-development/axios-hooks": "workspace:*",
-    "@motech-development/breeze-ui": "workspace:*",
+    "@motech-development/breeze-ui": "2.4.0",
     "@motech-development/ga-web-vitals": "workspace:*",
     "@motech-development/query-string-hook": "workspace:*",
     "@sentry/react": "7.120.0",

@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@motech-development/axios-hooks": "workspace:*",
-    "@motech-development/breeze-ui": "workspace:*",
+    "@motech-development/breeze-ui": "2.4.0",
     "@motech-development/ga-web-vitals": "workspace:*",
     "@sentry/react": "7.120.0",
     "auth0-js": "9.28.0",
