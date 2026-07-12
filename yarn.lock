@@ -90,7 +90,7 @@ __metadata:
     "@motech-development/appsync-apollo": "workspace:*"
     "@motech-development/auth": "workspace:*"
     "@motech-development/axios-hooks": "workspace:*"
-    "@motech-development/breeze-ui": "workspace:*"
+    "@motech-development/breeze-ui": "npm:2.4.0"
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/ga-web-vitals": "workspace:*"
@@ -7256,7 +7256,7 @@ __metadata:
     "@eslint/js": "npm:9.37.0"
     "@kesills/eslint-config-airbnb-typescript": "npm:20.0.0"
     "@motech-development/axios-hooks": "workspace:*"
-    "@motech-development/breeze-ui": "workspace:*"
+    "@motech-development/breeze-ui": "npm:2.4.0"
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/ga-web-vitals": "workspace:*"
@@ -7992,7 +7992,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@motech-development/breeze-ui@workspace:*, @motech-development/breeze-ui@workspace:packages/breeze-ui":
+"@motech-development/breeze-ui@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@motech-development/breeze-ui@npm:2.4.0"
+  dependencies:
+    "@fortawesome/fontawesome-svg-core": "npm:6.7.2"
+    "@fortawesome/free-solid-svg-icons": "npm:6.7.2"
+    "@fortawesome/react-fontawesome": "npm:0.2.2"
+    "@popperjs/core": "npm:2.11.8"
+    formik: "npm:2.4.6"
+    luxon: "npm:3.5.0"
+    polished: "npm:4.3.1"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
+    react-number-format: "npm:5.4.3"
+    react-popper: "npm:2.3.0"
+    react-router-dom: "npm:6.30.0"
+    styled-components: "npm:5.3.11"
+    styled-reset: "npm:4.5.2"
+    yup: "npm:1.4.0"
+  checksum: 10c0/14b23ea71996da00e88965fd74ddba3b9cab12f201a55b40e57ed14bd14b412b858e58107f20157589dc1f0bade386304f125d805f40535562d3dedfaf225d78
+  languageName: node
+  linkType: hard
+
+"@motech-development/breeze-ui@workspace:packages/breeze-ui":
   version: 0.0.0-use.local
   resolution: "@motech-development/breeze-ui@workspace:packages/breeze-ui"
   dependencies:
