@@ -26,6 +26,9 @@
     "@motech-development/semantic-release": "workspace:*",
     "prettier": "3.2.5"
   },
+  "peerDependencies": {
+    "prettier": "^3.2.5"
+  },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write"
   }
