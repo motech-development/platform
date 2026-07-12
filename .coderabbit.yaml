@@ -1,4 +1,7 @@
 reviews:
+  request_changes_workflow: true
+  auto_review:
+    drafts: false
   path_filters:
     - '!.agents/**'
     - '!.claude/**'
