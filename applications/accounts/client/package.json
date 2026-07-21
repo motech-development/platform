@@ -71,7 +71,7 @@
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
     "@parcel/watcher": "2.5.1",
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "1.61.1",
     "@sentry/vite-plugin": "2.23.0",
     "@swc/core": "1.11.5",
     "@swc/jest": "0.2.37",
