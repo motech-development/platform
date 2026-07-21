@@ -166,7 +166,7 @@ export function Description({
 }
 
 /** Renders a validation message associated with an invalid Fieldset. */
-export function Error({
+function ErrorMessage({
   className,
   ref,
   ...props
@@ -182,6 +182,8 @@ export function Error({
   });
 }
 
+export { ErrorMessage as Error };
+
 /**
  * Groups related form controls with native fieldset and legend semantics plus
  * associated guidance and group-level validation feedback.
@@ -192,7 +194,7 @@ export const Fieldset = {
   /** Supporting guidance associated with the group. */
   Description,
   /** Validation message associated with an invalid group. */
-  Error,
+  Error: ErrorMessage,
   /** Persistent native group name. */
   Legend,
   /** Native fieldset and accessibility root. */

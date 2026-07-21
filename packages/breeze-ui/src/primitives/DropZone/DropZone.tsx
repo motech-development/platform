@@ -265,7 +265,7 @@ export function Description({
 }
 
 /** Renders an associated validation message while the root is invalid. */
-export function Error({
+function ErrorMessage({
   ref,
   ...props
 }: DropZoneErrorProps): ReactElement | null {
@@ -287,6 +287,8 @@ export function Error({
     role: 'alert',
   });
 }
+
+export { ErrorMessage as Error };
 
 /** Announces Breeze-owned type, size, and count rejection feedback. */
 export function Feedback(props: DropZoneFeedbackProps): ReactElement | null {
@@ -328,7 +330,7 @@ export const DropZone = {
   /** Supporting drop guidance. */
   Description,
   /** Invalid-state validation feedback. */
-  Error,
+  Error: ErrorMessage,
   /** Accessible Breeze-owned file rejection feedback. */
   Feedback,
   /** Persistent accessible drop-target label. */

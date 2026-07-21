@@ -146,7 +146,7 @@ export function Pagination({
       >
         <PreviousIcon />
       </IconButton>
-      {entries.map(renderEntry)}
+      {entries.map((entry, index) => renderEntry(entry, index))}
       <IconButton
         aria-label={messages.nextPage}
         disabled={disabled || currentPage >= pageCount}
