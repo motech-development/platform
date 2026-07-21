@@ -297,7 +297,7 @@ Full-page drawers and dialogs use the Overlay token. The attachment preview must
 - Transaction rows use left and right arrows for money in and out. Direction icons are 36px circles using Success or Danger soft backgrounds.
 - Pending rows are gray only when mixed into other transaction surfaces. Rows on the dedicated Pending transactions screen use the normal surface.
 - Do not show a status column or persistent status badges in transaction lists.
-- Missing attachments use a filled Danger warning triangle beside the transaction identity. “No invoice or receipt” appears only in the accessible hover/focus tooltip.
+- Missing attachments use a Danger warning triangle beside the transaction identity. “No invoice or receipt” appears only in the accessible hover/focus tooltip.
 - Scheduled transactions use a filled Action Blue clock with a “Scheduled transaction” tooltip. The pending screen shows the scheduled date without redundant “Yesterday” or “Scheduled” copy.
 - Financial values align right and use tabular numerals. Hidden action headings remain visually hidden and must not receive loading placeholders.
 - Report download buttons are content-width controls aligned consistently within the Actions column.
@@ -342,7 +342,7 @@ Full-page drawers and dialogs use the Overlay token. The attachment preview must
 - Loading skeletons must match the layout of the screen they replace: metrics, transaction groups, tables, forms, settings rows, notices, and actions.
 - Skeleton circles remain square circles. Hidden action headings do not receive visible skeletons. Mobile action skeletons match the exact full-width button stack.
 - Empty and error states are contextual, compact, and left anchored. They name the screen, explain the next step, and provide the correct recovery action.
-- Empty states use a 54px Action Blue Soft icon tile. Error states use a 54px Danger Red Soft tile with a filled warning icon.
+- Empty states use a 54px Action Blue Soft icon tile. Error states use a 54px Danger Red Soft tile with a warning icon.
 - On mobile, the state icon sits beside the heading. Supporting copy and the full-width action span the panel below.
 
 ### Motion and Accessibility

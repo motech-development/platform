@@ -128,7 +128,7 @@ For icon-only actions, prefer the action component's accessible-label API or vis
 
 `size` defaults to `1em` and accepts a CSS-pixel number or CSS length such as `'1.25rem'`. Both rendered width and height use that value. The default aligns naturally with surrounding text and responds to a parent's text size, including inside `IconTile`.
 
-Icons use `currentColor`, so they inherit the text colour of the containing Breeze component. Use semantic component variants for colour whenever possible. The standard wrappers use Lucide strokes; `WarningIcon` is a Breeze-owned filled warning triangle. `strokeWidth` defaults to `2` and adjusts stroke detail, but should normally retain the canonical value.
+Icons use `currentColor`, so they inherit the text colour of the containing Breeze component. Use semantic component variants for colour whenever possible. All icons use Lucide strokes, including the warning triangle rendered by `WarningIcon`. `strokeWidth` defaults to `2` and adjusts stroke detail, but should normally retain the canonical value.
 
 ```tsx
 import { Inline } from '@motech-development/breeze-ui';
