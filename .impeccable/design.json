@@ -607,8 +607,8 @@
       }
     ],
     "dos": [
-      "Do treat prototypes/accounts-v2/ as the temporary source of truth until production implementation replaces it.",
-      "Do update this document to production component paths before deleting the prototype.",
+      "Do treat the hosted Accounts v2 prototype at https://accounts-v2-prototype.mo-gusbi896031.chatgpt.site as the temporary source of truth until production implementation replaces it.",
+      "Do update this document to production component paths before retiring the prototype.",
       "Do preserve the dark shell, cool gray canvas, white work surfaces, square geometry, and restrained Action Blue vocabulary.",
       "Do use Cabin for headings and short UI language, and Helvetica Neue for body copy, values, records, and metadata.",
       "Do keep every visible field, state, summary, and action within the existing GraphQL API or established client workflow.",
