@@ -1,0 +1,55 @@
+{
+  "completeCreation": {
+    "input": {
+      "lifecycle": "opened",
+      "changedWorkspaces": ["@accounts/api"],
+      "existingStacks": [],
+      "stage": "pr-1493"
+    },
+    "expected": {
+      "target": "preview",
+      "units": [
+        "core-anti-virus",
+        "accounts-storage",
+        "accounts-data",
+        "accounts-warm-up",
+        "accounts-notifications",
+        "accounts-queue",
+        "accounts-reports",
+        "accounts-api"
+      ]
+    }
+  },
+  "selectiveUpdateAndStackRepair": {
+    "input": {
+      "lifecycle": "synchronize",
+      "changedWorkspaces": ["@accounts/notifications"],
+      "existingStacks": [
+        "anti-virus-pr-1493",
+        "accounts-pr-1493-storage",
+        "accounts-pr-1493-data",
+        "accounts-pr-1493-warm-up",
+        "accounts-pr-1493-notifications",
+        "accounts-pr-1493-queue",
+        "accounts-pr-1493-api"
+      ],
+      "stage": "pr-1493"
+    },
+    "expected": {
+      "target": "preview",
+      "units": ["accounts-notifications", "accounts-reports", "accounts-api"]
+    }
+  },
+  "nonRuntimeChange": {
+    "input": {
+      "lifecycle": "synchronize",
+      "changedWorkspaces": [],
+      "existingStacks": [],
+      "stage": "pr-1493"
+    },
+    "expected": {
+      "target": "preview",
+      "units": []
+    }
+  }
+}

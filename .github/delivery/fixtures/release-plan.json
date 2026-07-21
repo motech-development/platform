@@ -1,0 +1,37 @@
+{
+  "input": {
+    "target": "production",
+    "changedWorkspaces": ["@core/infrastructure"],
+    "releaseTags": {
+      "@core/infrastructure": "@core/infrastructure@2.0.0",
+      "@core/comms": "@core/comms@2.0.0",
+      "@accounts/infrastructure": "@accounts/infrastructure@2.0.0",
+      "@accounts/client": "@accounts/client@2.0.0"
+    }
+  },
+  "expected": {
+    "target": "production",
+    "units": [
+      {
+        "id": "core-infrastructure",
+        "workspace": "@core/infrastructure",
+        "tag": "@core/infrastructure@2.0.0"
+      },
+      {
+        "id": "core-communications",
+        "workspace": "@core/comms",
+        "tag": "@core/comms@2.0.0"
+      },
+      {
+        "id": "accounts-infrastructure",
+        "workspace": "@accounts/infrastructure",
+        "tag": "@accounts/infrastructure@2.0.0"
+      },
+      {
+        "id": "accounts-client",
+        "workspace": "@accounts/client",
+        "tag": "@accounts/client@2.0.0"
+      }
+    ]
+  }
+}

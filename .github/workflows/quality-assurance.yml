@@ -18,6 +18,26 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+  delivery-catalog:
+    name: Validate delivery catalog
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Test planner and generator
+        run: node --test .github/delivery/*.test.mjs
+
+      - name: Check generated workflows
+        run: node .github/delivery/generate.mjs --check
+
   setup:
     name: Setup
 

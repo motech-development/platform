@@ -1,0 +1,156 @@
+{
+  "input": {
+    "target": "production",
+    "environment": "production",
+    "stage": "production",
+    "desiredTags": {
+      "@motech-development/breeze-ui": "@motech-development/breeze-ui@3.0.0",
+      "@core/anti-virus": "@core/anti-virus@2.0.0",
+      "@core/infrastructure": "@core/infrastructure@2.0.0",
+      "@core/comms": "@core/comms@2.0.0",
+      "@accounts/infrastructure": "@accounts/infrastructure@2.0.0",
+      "@accounts/storage": "@accounts/storage@2.0.0",
+      "@accounts/data": "@accounts/data@2.0.0",
+      "@accounts/warm-up": "@accounts/warm-up@2.0.0",
+      "@accounts/notifications": "@accounts/notifications@2.0.0",
+      "@accounts/queue": "@accounts/queue@2.0.0",
+      "@accounts/reports": "@accounts/reports@2.0.0",
+      "@accounts/api": "@accounts/api@2.0.0",
+      "@accounts/client": "@accounts/client@2.0.0"
+    },
+    "deployments": [
+      {
+        "environment": "production",
+        "task": "deploy:component-library",
+        "ref": "@motech-development/breeze-ui@3.0.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:core-anti-virus",
+        "ref": "@core/anti-virus@2.0.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:core-infrastructure",
+        "ref": "@core/infrastructure@2.0.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:core-communications",
+        "ref": "@core/comms@2.0.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:accounts-infrastructure",
+        "ref": "@accounts/infrastructure@2.0.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:accounts-storage",
+        "ref": "@accounts/storage@2.0.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:accounts-data",
+        "ref": "@accounts/data@1.9.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:accounts-warm-up",
+        "ref": "@accounts/warm-up@2.0.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:accounts-notifications",
+        "ref": "@accounts/notifications@2.0.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:accounts-queue",
+        "ref": "@accounts/queue@2.0.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:accounts-reports",
+        "ref": "@accounts/reports@2.0.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:accounts-api",
+        "ref": "@accounts/api@2.0.0",
+        "status": "success"
+      },
+      {
+        "environment": "production",
+        "task": "deploy:accounts-client",
+        "ref": "@accounts/client@2.0.0",
+        "status": "success"
+      }
+    ],
+    "existingStacks": [
+      "anti-virus-production",
+      "platform-production-infrastructure",
+      "platform-production-comms",
+      "accounts-production-infrastructure",
+      "accounts-production-storage",
+      "accounts-production-data",
+      "accounts-production-warm-up",
+      "accounts-production-notifications",
+      "accounts-production-queue",
+      "accounts-production-reports",
+      "accounts-production-api"
+    ]
+  },
+  "expected": {
+    "target": "production",
+    "environment": "production",
+    "units": [
+      {
+        "id": "accounts-data",
+        "workspace": "@accounts/data",
+        "tag": "@accounts/data@2.0.0"
+      },
+      {
+        "id": "accounts-warm-up",
+        "workspace": "@accounts/warm-up",
+        "tag": "@accounts/warm-up@2.0.0"
+      },
+      {
+        "id": "accounts-notifications",
+        "workspace": "@accounts/notifications",
+        "tag": "@accounts/notifications@2.0.0"
+      },
+      {
+        "id": "accounts-queue",
+        "workspace": "@accounts/queue",
+        "tag": "@accounts/queue@2.0.0"
+      },
+      {
+        "id": "accounts-reports",
+        "workspace": "@accounts/reports",
+        "tag": "@accounts/reports@2.0.0"
+      },
+      {
+        "id": "accounts-api",
+        "workspace": "@accounts/api",
+        "tag": "@accounts/api@2.0.0"
+      },
+      {
+        "id": "accounts-client",
+        "workspace": "@accounts/client",
+        "tag": "@accounts/client@2.0.0"
+      }
+    ]
+  }
+}
