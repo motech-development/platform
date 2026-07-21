@@ -86,11 +86,11 @@ export const UncontrolledRange: Story = {
 
     await userEvent.click(
       canvas.getByRole('button', {
-        name: /^(?:Today, )?Monday, 20 July 2026$/i,
+        name: /^(?:Today, )?Monday,? 20 July 2026$/i,
       }),
     );
     await userEvent.click(
-      canvas.getByRole('button', { name: /^Wednesday, 22 July 2026$/i }),
+      canvas.getByRole('button', { name: /^Wednesday,? 22 July 2026$/i }),
     );
     await expect(args.onChange).toHaveBeenLastCalledWith({
       end: '2026-07-22',

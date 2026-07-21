@@ -427,6 +427,12 @@ export const ResponsivePlacementAndNested: Story = {
 export const ResponsivePlacementAndNestedCompact: Story = {
   ...ResponsivePlacementAndNested,
   globals: { viewport: { value: 'mobile1' } },
+  parameters: {
+    ...ResponsivePlacementAndNested.parameters,
+    chromatic: {
+      viewports: [360],
+    },
+  },
   play: async ({ canvasElement }) =>
     playResponsiveNestedDrawer(canvasElement, true),
 };
