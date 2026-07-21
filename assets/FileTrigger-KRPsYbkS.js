@@ -1,0 +1,41 @@
+import{i as e}from"./preload-helper-CT_b8DTk.js";import{r as t}from"./iframe-i3W5vvo3.js";import{b as n,c as r,n as i,r as a,s as o}from"./blocks-LnNkZCnz.js";import{t as s}from"./mdx-react-shim-CjMysPAJ.js";import{KeyboardSelection as c,n as l,t as u}from"./FileTrigger.stories-C_Gm8qM2.js";function d(e){let t={code:`code`,h1:`h1`,h2:`h2`,li:`li`,p:`p`,pre:`pre`,table:`table`,tbody:`tbody`,td:`td`,th:`th`,thead:`thead`,tr:`tr`,ul:`ul`,...n(),...e.components};return(0,p.jsxs)(p.Fragment,{children:[(0,p.jsx)(o,{of:u,summary:`Keyboard-operable native file selection with MIME, extension, count and byte-size constraints; accepted and rejected File callbacks; form attributes; and built-in rejection announcements.`}),`
+`,(0,p.jsx)(t.h1,{id:`filetrigger`,children:`FileTrigger`}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`FileTrigger`}),` opens the browser’s native file chooser, validates the selected native `,(0,p.jsx)(t.code,{children:`File`}),` objects and returns accepted files to the application.`]}),`
+`,(0,p.jsx)(t.h2,{id:`import`,children:`Import`}),`
+`,(0,p.jsx)(t.pre,{children:(0,p.jsx)(t.code,{className:`language-tsx`,children:`import { FileTrigger } from '@motech-development/breeze-ui';
+`})}),`
+`,(0,p.jsx)(t.h2,{id:`when-to-use`,children:`When to use`}),`
+`,(0,p.jsxs)(t.p,{children:[`Use `,(0,p.jsx)(t.code,{children:`FileTrigger`}),` when a button should open the native file or directory chooser. Use `,(0,p.jsx)(t.code,{children:`DropZone`}),` when drag and drop is the primary affordance, usually with `,(0,p.jsx)(t.code,{children:`FileTrigger`}),` as its keyboard and touch fallback. Use the `,(0,p.jsx)(t.code,{children:`FileUpload`}),` pattern when you need a composed upload workflow. `,(0,p.jsx)(t.code,{children:`FileTrigger`}),` selects and validates files; it does not upload, persist, preview or remove them.`]}),`
+`,(0,p.jsx)(t.h2,{id:`basic-example`,children:`Basic example`}),`
+`,(0,p.jsx)(t.pre,{children:(0,p.jsx)(t.code,{className:`language-tsx`,children:`import { FileTrigger } from '@motech-development/breeze-ui';
+
+<FileTrigger.Root
+  acceptedFileTypes={['application/pdf']}
+  maxFileSize={10 * 1024 * 1024}
+  onFiles={(files) => queueFiles(files)}
+  onReject={(rejections) => recordRejections(rejections)}
+>
+  <FileTrigger.Trigger>Choose document</FileTrigger.Trigger>
+  <FileTrigger.Feedback />
+</FileTrigger.Root>;
+`})}),`
+`,(0,p.jsx)(a,{of:c}),`
+`,(0,p.jsx)(t.h2,{id:`anatomy`,children:`Anatomy`}),`
+`,(0,p.jsxs)(t.table,{children:[(0,p.jsx)(t.thead,{children:(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.th,{children:`Part`}),(0,p.jsx)(t.th,{children:`Purpose`})]})}),(0,p.jsxs)(t.tbody,{children:[(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.td,{children:(0,p.jsx)(t.code,{children:`FileTrigger.Root`})}),(0,p.jsx)(t.td,{children:`Owns the hidden native file input, selection constraints, validation and callbacks.`})]}),(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.td,{children:(0,p.jsx)(t.code,{children:`FileTrigger.Trigger`})}),(0,p.jsx)(t.td,{children:`Keyboard-operable button that opens the native chooser.`})]}),(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.td,{children:(0,p.jsx)(t.code,{children:`FileTrigger.Feedback`})}),(0,p.jsx)(t.td,{children:`Announces Breeze-owned file count, type and size rejection messages.`})]})]})]}),`
+`,(0,p.jsxs)(t.p,{children:[`Both parts must be inside `,(0,p.jsx)(t.code,{children:`Root`}),`. `,(0,p.jsx)(t.code,{children:`Feedback`}),` renders nothing until a rejection occurs and then uses an alert region.`]}),`
+`,(0,p.jsx)(t.h2,{id:`selection-validation-and-callbacks`,children:`Selection, validation and callbacks`}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`acceptedFileTypes`}),` accepts exact MIME types (`,(0,p.jsx)(t.code,{children:`'application/pdf'`}),`), wildcard groups (`,(0,p.jsx)(t.code,{children:`'image/*'`}),`) and filename extensions (`,(0,p.jsx)(t.code,{children:`'.csv'`}),`). Matching is case-insensitive. `,(0,p.jsx)(t.code,{children:`maxFileSize`}),` is bytes. `,(0,p.jsx)(t.code,{children:`allowsMultiple`}),` defaults to `,(0,p.jsx)(t.code,{children:`false`}),`; extra files are rejected with reason `,(0,p.jsx)(t.code,{children:`'file-count'`}),`. A rejected file can contain several stable reasons: `,(0,p.jsx)(t.code,{children:`'file-count'`}),`, `,(0,p.jsx)(t.code,{children:`'file-size'`}),` and `,(0,p.jsx)(t.code,{children:`'file-type'`}),`.`]}),`
+`,(0,p.jsxs)(t.p,{children:[`For every completed selection, `,(0,p.jsx)(t.code,{children:`onFiles`}),` receives the accepted `,(0,p.jsx)(t.code,{children:`File[]`}),`, including an empty array when every file is rejected or the chooser is cleared. `,(0,p.jsx)(t.code,{children:`onReject`}),` runs only when rejections exist and receives `,(0,p.jsx)(t.code,{children:`FileRejection[]`}),`, where each record contains the native `,(0,p.jsx)(t.code,{children:`file`}),` and all `,(0,p.jsx)(t.code,{children:`reasons`}),`. Mixed selections deliver accepted files and rejected records separately. `,(0,p.jsx)(t.code,{children:`Feedback`}),` reports each rejected filename and Breeze-owned reason text; use `,(0,p.jsx)(t.code,{children:`onReject`}),` for analytics or application-specific handling.`]}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`acceptDirectory`}),` requests directory selection. `,(0,p.jsx)(t.code,{children:`defaultCamera="user"`}),` or `,(0,p.jsx)(t.code,{children:`"environment"`}),` supplies the native capture hint for compatible media inputs; browser and device behaviour varies. `,(0,p.jsx)(t.code,{children:`name`}),`, `,(0,p.jsx)(t.code,{children:`form`}),` and `,(0,p.jsx)(t.code,{children:`required`}),` apply to the hidden native input. The application still owns upload state and server errors. `,(0,p.jsx)(t.code,{children:`invalid`}),` exposes application validation but does not create an error message. There is no read-only or loading mode; use `,(0,p.jsx)(t.code,{children:`disabled`}),` while selection must not open.`]}),`
+`,(0,p.jsx)(t.h2,{id:`keyboard-and-accessibility`,children:`Keyboard and accessibility`}),`
+`,(0,p.jsxs)(t.ul,{children:[`
+`,(0,p.jsxs)(t.li,{children:[`Tab focuses `,(0,p.jsx)(t.code,{children:`Trigger`}),`; Enter or Space opens the native chooser. The browser and operating system own navigation inside that chooser and return focus afterwards.`]}),`
+`,(0,p.jsxs)(t.li,{children:[`Give `,(0,p.jsx)(t.code,{children:`Trigger`}),` a concise action label that identifies what is selected. Do not use an icon without an accessible name.`]}),`
+`,(0,p.jsxs)(t.li,{children:[`Keep `,(0,p.jsx)(t.code,{children:`Feedback`}),` present when using Breeze validation so rejected files are announced. Do not rely only on native chooser filtering: validate callbacks and server input as well.`]}),`
+`,(0,p.jsxs)(t.li,{children:[(0,p.jsx)(t.code,{children:`required`}),`, `,(0,p.jsx)(t.code,{children:`invalid`}),` and `,(0,p.jsx)(t.code,{children:`disabled`}),` are applied to the native input for assistive technology. Empty required submission returns focus and invalid state to `,(0,p.jsx)(t.code,{children:`Trigger`}),`; explain application-specific invalid state in nearby text.`]}),`
+`,(0,p.jsxs)(t.li,{children:[`Native chooser language, ordering and capture UI are browser/platform controlled. Visible labels inherit provider locale and direction, but native `,(0,p.jsx)(t.code,{children:`File`}),` values are not localised.`]}),`
+`]}),`
+`,(0,p.jsx)(t.h2,{id:`api`,children:`API`}),`
+`,(0,p.jsx)(i,{}),`
+`,(0,p.jsx)(t.h2,{id:`common-mistakes-and-related-components`,children:`Common mistakes and related components`}),`
+`,(0,p.jsxs)(t.p,{children:[`Do not expect `,(0,p.jsx)(t.code,{children:`acceptedFileTypes`}),` to be a security boundary, express `,(0,p.jsx)(t.code,{children:`maxFileSize`}),` in megabytes, start an upload from render, or treat chooser cancellation as an error. Do not add `,(0,p.jsx)(t.code,{children:`onClick`}),` to `,(0,p.jsx)(t.code,{children:`Trigger`}),`; `,(0,p.jsx)(t.code,{children:`Root`}),` owns opening behaviour. Use `,(0,p.jsx)(t.code,{children:`DropZone`}),` for drag and drop and `,(0,p.jsx)(t.code,{children:`FileUpload`}),` for a full attachment workflow.`]})]})}function f(e={}){let{wrapper:t}={...n(),...e.components};return t?(0,p.jsx)(t,{...e,children:(0,p.jsx)(d,{...e})}):d(e)}var p;e((()=>{p=t(),s(),r(),l()}))();export{f as default};

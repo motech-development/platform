@@ -1,0 +1,1 @@
+import{i as e}from"./preload-helper-CT_b8DTk.js";import{r as t,t as n}from"./I18nProvider-B35K16gz.js";function r(e){let{locale:t}=n(),r=t+(e?Object.entries(e).sort((e,t)=>e[0]<t[0]?-1:1).join():``);if(i.has(r))return i.get(r);let a=new Intl.Collator(t,e);return i.set(r,a),a}var i,a=e((()=>{t(),i=new Map}));export{a as n,r as t};

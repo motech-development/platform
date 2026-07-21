@@ -1,0 +1,1 @@
+import{i as e,s as t}from"./preload-helper-CT_b8DTk.js";import{t as n}from"./react-B7Te67-h.js";function r(e){let{getContainer:t}=e,{getContainer:n}=i();return a.createElement(o.Provider,{value:{getContainer:t===null?void 0:t??n}},e.children)}function i(){return(0,a.useContext)(o)??{}}var a,o,s=e((()=>{a=t(n(),1),o=(0,a.createContext)({})}));export{i as n,s as r,r as t};
