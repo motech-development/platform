@@ -117,7 +117,7 @@ export function Root({
   open,
   readOnly: _readOnly,
   ...props
-}: TooltipRootProps): ReactElement {
+}: Readonly<TooltipRootProps>): ReactElement {
   useBreezeContext();
   return createElement(AriaTooltipTrigger, {
     ...props,

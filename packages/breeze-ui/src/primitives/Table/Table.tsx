@@ -440,16 +440,17 @@ function syncResponsiveCellLabels(root: HTMLElement | null): void {
   root
     .querySelectorAll<HTMLElement>('[data-breeze-cell-column]')
     .forEach((cell) => {
-      const column = headings.get(cell.dataset.breezeCellColumn);
+      const { dataset } = cell;
+      const column = headings.get(dataset.breezeCellColumn);
       const label = column?.label;
 
       if (label !== undefined && label.length > 0) {
-        cell.setAttribute('data-label', label);
+        dataset.label = label;
       } else {
-        cell.removeAttribute('data-label');
+        delete dataset.label;
       }
 
-      cell.setAttribute('data-breeze-column-width', column?.width ?? 'auto');
+      dataset.breezeColumnWidth = column?.width ?? 'auto';
     });
 }
 
@@ -568,8 +569,10 @@ function renderTableColumn({
   width = 'auto',
   ...props
 }: TableColumnProps): ReactElement {
+  const inferredCompactLabel =
+    typeof children === 'string' ? children.trim() : undefined;
   const compactLabelText = compactLabel
-    ? textValue ?? (typeof children === 'string' ? children.trim() : undefined)
+    ? textValue ?? inferredCompactLabel
     : undefined;
 
   return createElement(AriaColumn, {

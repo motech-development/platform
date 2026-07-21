@@ -50,7 +50,7 @@ export function SharedDisclosureTrigger({
   headingLevel = 3,
   ref,
   ...props
-}: SharedDisclosureTriggerProps): ReactElement {
+}: Readonly<SharedDisclosureTriggerProps>): ReactElement {
   return (
     <AriaHeading level={headingLevel}>
       {createElement(

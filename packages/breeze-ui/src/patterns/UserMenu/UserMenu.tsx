@@ -56,7 +56,7 @@ export function UserMenu({
   notifications,
   src,
   userName,
-}: UserMenuProps): ReactElement {
+}: Readonly<UserMenuProps>): ReactElement {
   const { messages } = useBreezeContext();
 
   return (

@@ -49,7 +49,7 @@ export function FileUpload({
   onFiles,
   onReject,
   selectedFiles = [],
-}: FileUploadProps): ReactElement {
+}: Readonly<FileUploadProps>): ReactElement {
   return (
     <DropZone.Root
       acceptedFileTypes={acceptedFileTypes}
