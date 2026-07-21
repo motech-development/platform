@@ -150,7 +150,7 @@ components:
 
 Accounts is a practical financial workspace for small-business owners. It should feel modern, professional, and direct: a durable product shell that helps users understand their position, record activity, and move between account tasks without unnecessary accounting complexity.
 
-Until the redesign is implemented, `prototypes/accounts-v2/index.html`, `prototypes/accounts-v2/styles.css`, and `prototypes/accounts-v2/app.js` are the authoritative design and interaction reference. When the production redesign is complete, update this document to reference the production components and tokens before deleting the prototype in the same cleanup.
+Until the redesign is implemented, the [hosted Accounts v2 prototype](https://accounts-v2-prototype.mo-gusbi896031.chatgpt.site) is the authoritative design and interaction reference. It is implemented with the Breeze UI library. When the production redesign is complete, update this document to reference the production components and tokens before retiring the prototype in the same cleanup.
 
 The system uses a fixed dark desktop rail, a pale workspace, square white work surfaces, restrained blue actions, and typography that separates short UI language from body and financial data. It rejects unrelated brand colours, ornamental interface styling, invented affordances, decorative dashboards, marketing-led composition, and UI that feels clever at the expense of task clarity.
 
@@ -166,7 +166,7 @@ The system uses a fixed dark desktop rail, a pale workspace, square white work s
 
 **The Context-Once Rule.** Show company context once in the app rail. Do not repeat the selected company above page headings.
 
-**The Temporary Authority Rule.** The prototype is authoritative only until production implementation replaces it. Never leave this document pointing at a deleted prototype.
+**The Temporary Authority Rule.** The hosted prototype is authoritative only until production implementation replaces it. Never leave this document pointing at a retired prototype.
 
 ## Colors
 
@@ -357,8 +357,8 @@ Full-page drawers and dialogs use the Overlay token. The attachment preview must
 
 ### Do:
 
-- **Do** treat `prototypes/accounts-v2/` as the temporary source of truth until production implementation replaces it.
-- **Do** update this document to production component paths before deleting the prototype.
+- **Do** treat the [hosted Accounts v2 prototype](https://accounts-v2-prototype.mo-gusbi896031.chatgpt.site) as the temporary source of truth until production implementation replaces it.
+- **Do** update this document to production component paths before retiring the prototype.
 - **Do** preserve the dark shell, cool gray canvas, white work surfaces, square geometry, and restrained Action Blue vocabulary.
 - **Do** use Cabin for headings and short UI language, and Helvetica Neue for body copy, values, records, and metadata.
 - **Do** use familiar product affordances for navigation, notifications, account controls, forms, and destructive confirmation.
