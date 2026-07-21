@@ -80,7 +80,9 @@ export const SyntheticDrop: Story = {
     ]);
 
     await fireEvent.dragEnter(root, { dataTransfer });
-    await expect(root).toHaveAttribute('data-drop-target', 'true');
+    await waitFor(() =>
+      expect(root).toHaveAttribute('data-drop-target', 'true'),
+    );
     await fireEvent.drop(root, { dataTransfer });
     await waitFor(() => expect(args.onFiles).toHaveBeenCalledOnce());
     await expect(args.onFileReadError).not.toHaveBeenCalled();
