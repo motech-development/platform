@@ -47,6 +47,13 @@ export {
   createDetectorProfile,
   summarizeDetectorProfile,
 } from './profile/profiler.mjs';
+export {
+  parseFrontmatter as parseDesignFrontmatter,
+  normalizeDesignSystem,
+  loadDesignSystemForCwd,
+  checkSourceDesignSystem,
+  collectStaticDesignSystemFindings,
+} from './design-system.mjs';
 export { detectHtml } from './engines/static-html/detect-html.mjs';
 export {
   detectUrl,

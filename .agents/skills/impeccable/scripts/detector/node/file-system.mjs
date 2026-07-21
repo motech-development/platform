@@ -24,6 +24,7 @@ const SCANNABLE_EXTENSIONS = new Set([
   '.htm',
   '.css',
   '.scss',
+  '.sass',
   '.less',
   '.jsx',
   '.tsx',

@@ -20,7 +20,7 @@ import {
   readBuffer,
   removeEntries,
   truncateBuffer,
-} from './live-manual-edits-buffer.mjs';
+} from './live/manual-edits-buffer.mjs';
 
 function argVal(args, name) {
   const prefix = name + '=';
