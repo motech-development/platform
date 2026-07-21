@@ -91,7 +91,7 @@ export interface SharedModalContentProps
 export function SharedOverlayTrigger({
   appearance,
   ...props
-}: SharedOverlayTriggerProps): ReactElement {
+}: Readonly<SharedOverlayTriggerProps>): ReactElement {
   return createElement(Button, {
     ...props,
     appearance,
@@ -109,7 +109,7 @@ export function SharedOverlayClose({
   size,
   variant,
   ...props
-}: SharedOverlayCloseProps): ReactElement {
+}: Readonly<SharedOverlayCloseProps>): ReactElement {
   return createElement(
     AriaButton,
     {
@@ -130,7 +130,7 @@ export function SharedOverlayTitle({
   level = 2,
   ref,
   ...props
-}: SharedOverlayTitleProps): ReactElement {
+}: Readonly<SharedOverlayTitleProps>): ReactElement {
   return createElement(AriaHeading, {
     ...props,
     className: title({ class: className }),
@@ -145,7 +145,7 @@ export function SharedOverlayDescription({
   className,
   ref,
   ...props
-}: SharedOverlayDescriptionProps): ReactElement {
+}: Readonly<SharedOverlayDescriptionProps>): ReactElement {
   const generatedId = useContext(OverlayDescriptionContext);
 
   return createElement(AriaText, {
@@ -172,7 +172,7 @@ export function SharedModalContent({
   role = 'dialog',
   surfaceClassName,
   ...props
-}: SharedModalContentProps): ReactElement {
+}: Readonly<SharedModalContentProps>): ReactElement {
   useBreezeContext();
   const descriptionId = useId();
 

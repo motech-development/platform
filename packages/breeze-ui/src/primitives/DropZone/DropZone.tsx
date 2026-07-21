@@ -130,7 +130,7 @@ export function Root({
   ref,
   required = false,
   ...props
-}: DropZoneRootProps): ReactElement {
+}: Readonly<DropZoneRootProps>): ReactElement {
   useBreezeContext();
 
   const suppliedRef = useForwardedRef(ref);
@@ -249,7 +249,7 @@ export function Root({
 export function Description({
   ref,
   ...props
-}: DropZoneDescriptionProps): ReactElement {
+}: Readonly<DropZoneDescriptionProps>): ReactElement {
   const context = useContext(DropZoneContext);
   const forwardedRef = useForwardedRef(ref);
 
@@ -270,7 +270,7 @@ export function Description({
 function ErrorMessage({
   ref,
   ...props
-}: DropZoneErrorProps): ReactElement | null {
+}: Readonly<DropZoneErrorProps>): ReactElement | null {
   const context = useContext(DropZoneContext);
   const forwardedRef = useForwardedRef(ref);
 
@@ -293,7 +293,9 @@ function ErrorMessage({
 export { ErrorMessage as Error };
 
 /** Announces Breeze-owned type, size, and count rejection feedback. */
-export function Feedback(props: DropZoneFeedbackProps): ReactElement | null {
+export function Feedback(
+  props: Readonly<DropZoneFeedbackProps>,
+): ReactElement | null {
   const context = useContext(DropZoneContext);
 
   if (!context) {
@@ -313,7 +315,7 @@ export function Label({
   className,
   ref,
   ...props
-}: DropZoneLabelProps): ReactElement {
+}: Readonly<DropZoneLabelProps>): ReactElement {
   return createElement(AriaText, {
     ...props,
     className,

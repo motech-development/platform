@@ -75,7 +75,7 @@ export function Avatar({
   src,
   tone = 'primary',
   ...props
-}: AvatarProps) {
+}: Readonly<AvatarProps>) {
   useBreezeContext();
 
   const [failedSource, setFailedSource] = useState<string>();

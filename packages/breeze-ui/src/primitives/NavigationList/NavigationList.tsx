@@ -60,7 +60,7 @@ export function Root({
   orientation = 'vertical',
   ref,
   ...props
-}: NavigationListRootProps): ReactElement {
+}: Readonly<NavigationListRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -88,7 +88,7 @@ export function Item({
   onAction,
   ref,
   ...props
-}: NavigationListItemProps): ReactElement {
+}: Readonly<NavigationListItemProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(

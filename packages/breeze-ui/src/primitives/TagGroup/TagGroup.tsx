@@ -97,7 +97,7 @@ const normalise = (value: 'all' | Set<CollectionKey>): CollectionSelection =>
   ref,
   selection,
   ...props
-}: TagGroupRootProps): ReactElement {
+}: Readonly<TagGroupRootProps>): ReactElement {
   useBreezeContext();
   const r = useForwardedRef(ref);
   return createElement(AriaTagGroup, {
@@ -133,7 +133,7 @@ const normalise = (value: 'all' | Set<CollectionKey>): CollectionSelection =>
   items,
   ref,
   ...props
-}: TagGroupListProps<Item>): ReactElement {
+}: Readonly<TagGroupListProps<Item>>): ReactElement {
   const r = useForwardedRef(ref);
   const resolvedEmptyContent = useCollectionEmptyContent(emptyContent);
 

@@ -21,7 +21,7 @@ export default function FileFeedback({
   ref,
   rejections,
   ...props
-}: FileFeedbackProps): ReactElement | null {
+}: Readonly<FileFeedbackProps>): ReactElement | null {
   const forwardedRef = useForwardedRef(ref);
   const { messages } = useBreezeContext();
   const rejectionMessages = {

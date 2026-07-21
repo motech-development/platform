@@ -54,7 +54,7 @@ export function FormActions({
   ref,
   secondary,
   ...props
-}: FormActionsProps): ReactElement {
+}: Readonly<FormActionsProps>): ReactElement {
   useBreezeContext();
 
   const hasAccessibleName =

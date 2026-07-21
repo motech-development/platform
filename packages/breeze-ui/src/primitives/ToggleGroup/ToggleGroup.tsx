@@ -88,7 +88,7 @@ export function ToggleGroup({
   ref,
   selection,
   ...props
-}: ToggleGroupProps): ReactElement {
+}: Readonly<ToggleGroupProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);

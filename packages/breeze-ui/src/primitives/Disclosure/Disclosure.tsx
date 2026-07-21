@@ -80,7 +80,7 @@ export function Root({
   readOnly: _readOnly,
   ref,
   ...props
-}: DisclosureRootProps): ReactElement {
+}: Readonly<DisclosureRootProps>): ReactElement {
   useBreezeContext();
 
   return createElement(AriaDisclosure, {

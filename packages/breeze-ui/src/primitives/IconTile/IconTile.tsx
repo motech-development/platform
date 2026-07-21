@@ -89,7 +89,7 @@ export function IconTile({
   size = 'md',
   variant = 'primary',
   ...props
-}: IconTileProps) {
+}: Readonly<IconTileProps>) {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);

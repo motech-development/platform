@@ -31,7 +31,7 @@ export function FileAttachment({
   name,
   ref,
   ...props
-}: FileAttachmentProps): ReactElement {
+}: Readonly<FileAttachmentProps>): ReactElement {
   useBreezeContext();
 
   return createElement(

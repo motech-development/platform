@@ -66,7 +66,7 @@ export function Root({
   open,
   readOnly: _readOnly,
   ...props
-}: DialogRootProps): ReactElement {
+}: Readonly<DialogRootProps>): ReactElement {
   useBreezeContext();
   return createElement(AriaDialogTrigger, {
     ...props,

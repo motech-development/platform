@@ -66,7 +66,7 @@ export function Control({
   ref,
   size,
   ...props
-}: TextAreaControlProps): ReactElement {
+}: Readonly<TextAreaControlProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaTextArea, {

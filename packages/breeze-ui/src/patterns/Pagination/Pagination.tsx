@@ -71,7 +71,7 @@ export function Pagination({
   pageCount,
   ref,
   ...props
-}: PaginationProps): ReactElement {
+}: Readonly<PaginationProps>): ReactElement {
   const { direction, messages } = useBreezeContext();
 
   if (!Number.isInteger(pageCount) || pageCount < 1) {

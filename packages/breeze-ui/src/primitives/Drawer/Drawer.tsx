@@ -181,7 +181,7 @@ interface TriggerlessDrawerRootProps extends DrawerRootSharedProps {
   SharedOverlayCloseProps;
 
 /** Coordinates a modal panel that enters from a logical viewport edge. */
-export function Root(props: DrawerRootProps): ReactElement {
+export function Root(props: Readonly<DrawerRootProps>): ReactElement {
   useBreezeContext();
   const { children, triggerless } = props;
 
@@ -222,7 +222,7 @@ export function Content({
   scrollResetKey,
   size = 'default',
   ...props
-}: DrawerContentProps): ReactElement {
+}: Readonly<DrawerContentProps>): ReactElement {
   const { messages } = useBreezeContext();
   const modalState = useContext(DrawerModalStateContext);
   const bodyRef = useRef<HTMLDivElement>(null);

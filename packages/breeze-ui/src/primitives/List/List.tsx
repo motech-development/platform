@@ -41,7 +41,7 @@ export function Root({
   ordered = false,
   ref,
   ...props
-}: ListRootProps): ReactElement {
+}: Readonly<ListRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -58,7 +58,7 @@ export function Item({
   className,
   ref,
   ...props
-}: ListItemProps): ReactElement {
+}: Readonly<ListItemProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('li', {

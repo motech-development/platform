@@ -190,7 +190,7 @@ export function Root({
   required = false,
   selection,
   ...props
-}: RadioGroupRootProps): ReactElement {
+}: Readonly<RadioGroupRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -224,7 +224,7 @@ export function Item({
   ref,
   value,
   ...props
-}: RadioGroupItemProps): ReactElement {
+}: Readonly<RadioGroupItemProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   const fallbackInputRef = useRef<HTMLInputElement>(null);
 
@@ -247,7 +247,7 @@ export function Label({
   className,
   ref,
   ...props
-}: RadioGroupLabelProps): ReactElement {
+}: Readonly<RadioGroupLabelProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(TextField.Label, {
@@ -261,7 +261,9 @@ export function Label({
 }
 
 /** Renders supporting guidance on its own radio-group row. */
-export function Description(props: RadioGroupDescriptionProps): ReactElement {
+export function Description(
+  props: Readonly<RadioGroupDescriptionProps>,
+): ReactElement {
   return createElement(TextField.Description, {
     ...props,
     'data-breeze-radio-group-description': true,
@@ -271,7 +273,7 @@ export function Description(props: RadioGroupDescriptionProps): ReactElement {
 }
 
 /** Renders associated validation feedback on its own radio-group row. */
-function ErrorMessage(props: RadioGroupErrorProps): ReactElement {
+function ErrorMessage(props: Readonly<RadioGroupErrorProps>): ReactElement {
   return createElement(TextField.Error, {
     ...props,
     'data-breeze-radio-group-error': true,
@@ -287,7 +289,7 @@ export function Control({
   className,
   ref,
   ...props
-}: RadioGroupControlProps): ReactElement {
+}: Readonly<RadioGroupControlProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaRadioButton, {
@@ -303,7 +305,7 @@ export function Indicator({
   ref,
   size,
   ...props
-}: RadioGroupIndicatorProps): ReactElement {
+}: Readonly<RadioGroupIndicatorProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('span', {
@@ -318,7 +320,7 @@ export function Indicator({
 export function ItemLabel({
   ref,
   ...props
-}: RadioGroupItemLabelProps): ReactElement {
+}: Readonly<RadioGroupItemLabelProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('span', {

@@ -78,7 +78,7 @@ export function Alert({
   ref,
   variant = 'info',
   ...props
-}: AlertProps): ReactElement {
+}: Readonly<AlertProps>): ReactElement {
   useBreezeContext();
 
   const alertProps: ComponentPropsWithRef<'div'> & {

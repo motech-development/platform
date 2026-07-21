@@ -31,7 +31,7 @@ export function SectionHeader({
   ref,
   title,
   ...props
-}: SectionHeaderProps): ReactElement {
+}: Readonly<SectionHeaderProps>): ReactElement {
   useBreezeContext();
 
   return createElement(

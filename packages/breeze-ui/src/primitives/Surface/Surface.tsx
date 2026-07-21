@@ -60,7 +60,7 @@ export function Surface({
   ref,
   tone,
   ...props
-}: SurfaceProps) {
+}: Readonly<SurfaceProps>) {
   useBreezeContext();
 
   const Element: ElementType = as;

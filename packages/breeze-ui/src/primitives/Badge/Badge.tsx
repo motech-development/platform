@@ -140,7 +140,7 @@ export function Badge({
   ref,
   variant,
   ...props
-}: BadgeProps) {
+}: Readonly<BadgeProps>) {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);

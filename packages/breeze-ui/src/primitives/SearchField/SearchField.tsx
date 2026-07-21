@@ -166,7 +166,7 @@ export function Root({
   required = false,
   value,
   ...props
-}: SearchFieldRootProps): ReactElement {
+}: Readonly<SearchFieldRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -195,7 +195,7 @@ export function Group({
   role = 'presentation',
   size = 'md',
   ...props
-}: SearchFieldGroupProps): ReactElement {
+}: Readonly<SearchFieldGroupProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   const rootState = useContext(SearchFieldStateContext);
 
@@ -219,7 +219,7 @@ export function Input({
   className,
   size,
   ...props
-}: SearchFieldInputProps): ReactElement {
+}: Readonly<SearchFieldInputProps>): ReactElement {
   const composition = useContext(SearchFieldCompositionContext);
 
   return createElement(TextField.Input, {
@@ -240,7 +240,7 @@ export function ClearButton({
   ref,
   size,
   ...props
-}: SearchFieldClearButtonProps): ReactElement | null {
+}: Readonly<SearchFieldClearButtonProps>): ReactElement | null {
   const { messages } = useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
   const composition = useContext(SearchFieldCompositionContext);

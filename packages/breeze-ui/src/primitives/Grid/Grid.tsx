@@ -97,7 +97,7 @@ export function Grid({
   gap = 'lg',
   template,
   ...props
-}: GridProps) {
+}: Readonly<GridProps>) {
   useBreezeContext();
 
   return createElement('div', {

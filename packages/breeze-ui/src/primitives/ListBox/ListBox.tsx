@@ -180,7 +180,7 @@ export function Root<Item extends BreezeCollectionItem>({
   selection,
   virtualization,
   ...props
-}: ListBoxRootProps<Item>): ReactElement {
+}: Readonly<ListBoxRootProps<Item>>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -259,7 +259,7 @@ export function Item({
   ref,
   textValue,
   ...props
-}: ListBoxItemProps): ReactElement {
+}: Readonly<ListBoxItemProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaListBoxItem, {
@@ -281,7 +281,7 @@ export function LoadMore({
   onLoadMore,
   ref,
   ...props
-}: ListBoxLoadMoreProps): ReactElement {
+}: Readonly<ListBoxLoadMoreProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   const handleLoadMore = useLoadMoreHandler({ loading, onLoadMore });
 

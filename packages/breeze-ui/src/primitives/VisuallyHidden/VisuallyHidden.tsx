@@ -19,7 +19,7 @@ export function VisuallyHidden({
   className,
   ref,
   ...props
-}: VisuallyHiddenProps) {
+}: Readonly<VisuallyHiddenProps>) {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);

@@ -53,7 +53,7 @@ export function Root({
   className,
   ref,
   ...props
-}: DescriptionListRootProps): ReactElement {
+}: Readonly<DescriptionListRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -70,7 +70,7 @@ export function Item({
   className,
   ref,
   ...props
-}: DescriptionListItemProps): ReactElement {
+}: Readonly<DescriptionListItemProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('div', {
@@ -85,7 +85,7 @@ export function Term({
   className,
   ref,
   ...props
-}: DescriptionListTermProps): ReactElement {
+}: Readonly<DescriptionListTermProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('dt', {
@@ -100,7 +100,7 @@ export function Description({
   className,
   ref,
   ...props
-}: DescriptionListDescriptionProps): ReactElement {
+}: Readonly<DescriptionListDescriptionProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('dd', {

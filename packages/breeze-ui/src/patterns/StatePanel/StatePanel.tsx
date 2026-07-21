@@ -40,7 +40,7 @@ export function StatePanel({
   title,
   variant = 'info',
   ...props
-}: StatePanelProps): ReactElement {
+}: Readonly<StatePanelProps>): ReactElement {
   useBreezeContext();
 
   const titleId = useId();

@@ -52,7 +52,7 @@ export function Stack({
   gap = 'md',
   justify,
   ...props
-}: StackProps) {
+}: Readonly<StackProps>) {
   useBreezeContext();
 
   return createElement('div', {

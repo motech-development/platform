@@ -203,7 +203,7 @@ export function Root({
   open,
   readOnly: _readOnly,
   ...props
-}: MenuRootProps): ReactElement {
+}: Readonly<MenuRootProps>): ReactElement {
   useBreezeContext();
 
   return createElement(AriaMenuTrigger, {
@@ -220,7 +220,7 @@ export function Trigger({
   disabled = false,
   ref,
   ...props
-}: MenuTriggerProps): ReactElement {
+}: Readonly<MenuTriggerProps>): ReactElement {
   return createElement(AriaButton, {
     ...props,
     className: menuTrigger({ class: className }),
@@ -236,7 +236,7 @@ export function Popover({
   placement = 'bottom start',
   ref,
   ...props
-}: MenuPopoverProps): ReactElement {
+}: Readonly<MenuPopoverProps>): ReactElement {
   useBreezeContext();
 
   return createElement(AriaPopover, {
@@ -261,7 +261,7 @@ export function List<Item extends BreezeCollectionItem>({
   ref,
   selection,
   ...props
-}: MenuListProps<Item>): ReactElement {
+}: Readonly<MenuListProps<Item>>): ReactElement {
   const resolvedEmptyContent = useCollectionEmptyContent(emptyContent);
   const hasSelection =
     selection !== undefined || defaultSelection !== undefined;
@@ -297,7 +297,7 @@ export function Item({
   ref,
   textValue,
   ...props
-}: MenuItemProps): ReactElement {
+}: Readonly<MenuItemProps>): ReactElement {
   const { router } = useBreezeContext();
   const useRouter = router !== undefined && shouldUseRouter(href);
   const navigationProps =
@@ -326,7 +326,10 @@ export function Item({
 }
 
 /** Coordinates nested-menu focus, opening, direction, and Escape dismissal. */
-export function Submenu({ ref, ...props }: MenuSubmenuProps): ReactElement {
+export function Submenu({
+  ref,
+  ...props
+}: Readonly<MenuSubmenuProps>): ReactElement {
   return createElement(AriaSubmenuTrigger, {
     ...props,
     ref: useForwardedRef(ref),

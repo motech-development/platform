@@ -69,7 +69,7 @@ export function CalendarHeaderPart({
   className,
   ref,
   ...props
-}: CalendarHeaderPartProps): ReactElement {
+}: Readonly<CalendarHeaderPartProps>): ReactElement {
   return createElement('div', {
     ...props,
     className: headerStyle({ class: className }),
@@ -82,7 +82,7 @@ export function CalendarPreviousButtonPart({
   className,
   ref,
   ...props
-}: CalendarButtonPartProps): ReactElement {
+}: Readonly<CalendarButtonPartProps>): ReactElement {
   return createElement(
     AriaButton,
     {
@@ -106,7 +106,7 @@ export function CalendarNextButtonPart({
   className,
   ref,
   ...props
-}: CalendarButtonPartProps): ReactElement {
+}: Readonly<CalendarButtonPartProps>): ReactElement {
   return createElement(
     AriaButton,
     {
@@ -139,7 +139,7 @@ export function CalendarHeadingPart({
   className,
   ref,
   ...props
-}: CalendarHeadingPartProps): ReactElement {
+}: Readonly<CalendarHeadingPartProps>): ReactElement {
   return createElement(AriaCalendarHeading, {
     ...props,
     className: headingStyle({ class: className }),
@@ -151,7 +151,7 @@ export function CalendarGridPart({
   ref,
   weekdayStyle = 'short',
   ...props
-}: CalendarGridPartProps): ReactElement {
+}: Readonly<CalendarGridPartProps>): ReactElement {
   return createElement(
     AriaCalendarGrid,
     {

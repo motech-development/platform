@@ -32,7 +32,7 @@ export function SkipLink({
   ref,
   targetId,
   ...props
-}: SkipLinkProps): ReactElement {
+}: Readonly<SkipLinkProps>): ReactElement {
   return createElement(
     Link,
     {

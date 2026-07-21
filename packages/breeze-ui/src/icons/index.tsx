@@ -55,7 +55,7 @@ function createIcon(
     strokeWidth = 2,
     style,
     ...props
-  }: IconProps) {
+  }: Readonly<IconProps>) {
     const normalizedAriaLabel = ariaLabel?.trim() || undefined;
 
     return createElement(Icon, {
@@ -154,7 +154,7 @@ export function WarningIcon({
   strokeWidth = 2,
   style,
   ...props
-}: IconProps) {
+}: Readonly<IconProps>) {
   const normalizedAriaLabel = ariaLabel?.trim() || undefined;
 
   return createElement(

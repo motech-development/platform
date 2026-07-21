@@ -78,7 +78,7 @@ export function PickerGroupPart({
   className,
   ref,
   ...props
-}: PickerGroupPartProps): ReactElement {
+}: Readonly<PickerGroupPartProps>): ReactElement {
   return createElement(
     AriaGroup,
     {
@@ -94,7 +94,7 @@ export function PickerTriggerPart({
   className,
   ref,
   ...props
-}: PickerTriggerPartProps): ReactElement {
+}: Readonly<PickerTriggerPartProps>): ReactElement {
   return createElement(
     AriaButton,
     {
@@ -112,7 +112,7 @@ export function PickerPopoverPart({
   placement,
   ref,
   ...props
-}: PickerPopoverPartProps): ReactElement {
+}: Readonly<PickerPopoverPartProps>): ReactElement {
   const { direction } = useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
   const resolvedDirection = dir ?? direction;
@@ -149,7 +149,7 @@ export function PickerCalendarPart({
   className,
   ref,
   ...props
-}: PickerCalendarPartProps): ReactElement {
+}: Readonly<PickerCalendarPartProps>): ReactElement {
   return createElement(
     AriaCalendar,
     {
@@ -164,7 +164,7 @@ export function PickerRangeCalendarPart({
   className,
   ref,
   ...props
-}: PickerCalendarPartProps): ReactElement {
+}: Readonly<PickerCalendarPartProps>): ReactElement {
   return createElement(
     AriaRangeCalendar,
     {

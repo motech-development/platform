@@ -40,7 +40,7 @@ export function Toolbar({
   orientation,
   ref,
   ...props
-}: ToolbarProps): ReactElement {
+}: Readonly<ToolbarProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);

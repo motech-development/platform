@@ -103,7 +103,7 @@ export function Root({
   ref,
   value,
   ...props
-}: AccordionRootProps): ReactElement {
+}: Readonly<AccordionRootProps>): ReactElement {
   useBreezeContext();
 
   return createElement(AriaDisclosureGroup, {
@@ -125,7 +125,7 @@ export function Item({
   id,
   ref,
   ...props
-}: AccordionItemProps): ReactElement {
+}: Readonly<AccordionItemProps>): ReactElement {
   return createElement(AriaDisclosure, {
     ...props,
     className: accordionItem({ class: className }),

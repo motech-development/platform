@@ -158,7 +158,7 @@ export function Root({
   required = false,
   value,
   ...props
-}: TextFieldRootProps): ReactElement {
+}: Readonly<TextFieldRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -186,7 +186,7 @@ export function Label({
   className,
   ref,
   ...props
-}: TextFieldLabelProps): ReactElement {
+}: Readonly<TextFieldLabelProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaLabel, {
@@ -203,7 +203,7 @@ export function Input({
   size,
   type = 'text',
   ...props
-}: TextFieldInputProps): ReactElement {
+}: Readonly<TextFieldInputProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaInput, {
@@ -222,7 +222,7 @@ export function Description({
   className,
   ref,
   ...props
-}: TextFieldDescriptionProps): ReactElement {
+}: Readonly<TextFieldDescriptionProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaText, {
@@ -238,7 +238,7 @@ function ErrorMessage({
   className,
   ref,
   ...props
-}: TextFieldErrorProps): ReactElement {
+}: Readonly<TextFieldErrorProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaFieldError, {

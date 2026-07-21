@@ -148,7 +148,7 @@ export function Root({
   required = false,
   value,
   ...props
-}: SelectRootProps): ReactElement {
+}: Readonly<SelectRootProps>): ReactElement {
   useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
   return createElement(AriaSelect, {
@@ -175,7 +175,7 @@ export function Trigger({
   ref,
   size,
   ...props
-}: SelectTriggerProps): ReactElement {
+}: Readonly<SelectTriggerProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(
@@ -202,7 +202,7 @@ export function Value({
   className,
   ref,
   ...props
-}: SelectValueProps): ReactElement {
+}: Readonly<SelectValueProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   return createElement(AriaSelectValue, {
     ...props,
@@ -215,7 +215,7 @@ export function Popover({
   className,
   ref,
   ...props
-}: SelectPopoverProps): ReactElement {
+}: Readonly<SelectPopoverProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   return createElement(AriaPopover, {
     ...props,
@@ -231,7 +231,7 @@ export function ListBox<Item extends BreezeCollectionItem>({
   items,
   ref,
   ...props
-}: SelectListBoxProps<Item>): ReactElement {
+}: Readonly<SelectListBoxProps<Item>>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   const resolvedEmptyContent = useCollectionEmptyContent(emptyContent);
 

@@ -317,7 +317,7 @@ export function Root({
   required = false,
   selection,
   ...props
-}: ComboBoxRootProps): ReactElement {
+}: Readonly<ComboBoxRootProps>): ReactElement {
   useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
   const commit =
@@ -357,7 +357,7 @@ export function Group({
   role = 'presentation',
   size = 'md',
   ...props
-}: ComboBoxGroupProps): ReactElement {
+}: Readonly<ComboBoxGroupProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   const rootState = useContext(ComboBoxStateContext);
 
@@ -383,7 +383,7 @@ export function Group({
   ref,
   size,
   ...props
-}: ComboBoxInputProps): ReactElement {
+}: Readonly<ComboBoxInputProps>): ReactElement {
   const context = useContext(ComboBoxContext);
   const composition = useContext(ComboBoxCompositionContext);
   const r = useForwardedRef(ref);
@@ -421,7 +421,7 @@ export function Group({
   ref,
   size,
   ...props
-}: ComboBoxTriggerProps): ReactElement {
+}: Readonly<ComboBoxTriggerProps>): ReactElement {
   const composition = useContext(ComboBoxCompositionContext);
   const r = useForwardedRef(ref);
 
@@ -444,7 +444,7 @@ export function Group({
   className,
   ref,
   ...props
-}: ComboBoxPopoverProps): ReactElement {
+}: Readonly<ComboBoxPopoverProps>): ReactElement {
   const r = useForwardedRef(ref);
   return createElement(AriaPopover, {
     ...props,
@@ -461,7 +461,7 @@ export function Group({
   items,
   ref,
   ...props
-}: ComboBoxListBoxProps<Item>): ReactElement {
+}: Readonly<ComboBoxListBoxProps<Item>>): ReactElement {
   const r = useForwardedRef(ref);
   const resolvedEmptyContent = useCollectionEmptyContent(emptyContent);
 
@@ -486,7 +486,7 @@ export function Loading({
   className,
   ref,
   ...props
-}: ComboBoxLoadingProps): ReactElement {
+}: Readonly<ComboBoxLoadingProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('div', {
@@ -502,7 +502,7 @@ export function OptionsError({
   className,
   ref,
   ...props
-}: ComboBoxOptionsErrorProps): ReactElement {
+}: Readonly<ComboBoxOptionsErrorProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('div', {

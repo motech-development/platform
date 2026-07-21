@@ -35,7 +35,7 @@ export function Container({
   className,
   padding = defaultPadding,
   ...props
-}: ContainerProps) {
+}: Readonly<ContainerProps>) {
   useBreezeContext();
 
   return createElement('div', {

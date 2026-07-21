@@ -30,7 +30,7 @@ export type PickerFieldTriggerPartProps = PickerTriggerPartProps;
 export function PickerFieldGroupPart({
   className,
   ...props
-}: PickerFieldGroupPartProps): ReactElement {
+}: Readonly<PickerFieldGroupPartProps>): ReactElement {
   return createElement(PickerGroupPart, {
     ...props,
     className: pickerFieldGroupStyle({ class: className }),
@@ -40,7 +40,7 @@ export function PickerFieldGroupPart({
 export function PickerFieldInputPart({
   className,
   ...props
-}: PickerFieldInputPartProps): ReactElement {
+}: Readonly<PickerFieldInputPartProps>): ReactElement {
   return createElement(DateInputPart, {
     ...props,
     className: pickerFieldInputStyle({ class: className }),
@@ -51,7 +51,7 @@ export function PickerFieldTriggerPart({
   children,
   className,
   ...props
-}: PickerFieldTriggerPartProps): ReactElement {
+}: Readonly<PickerFieldTriggerPartProps>): ReactElement {
   return createElement(
     PickerTriggerPart,
     {

@@ -155,7 +155,7 @@ function ToastView({
   onAction,
   onDismiss,
   title,
-}: ToastViewProps): ReactElement {
+}: Readonly<ToastViewProps>): ReactElement {
   return createElement(
     AriaToastContent,
     {
@@ -224,7 +224,7 @@ export function Toast({
   title,
   variant = 'info',
   ...props
-}: ToastProps): ReactElement {
+}: Readonly<ToastProps>): ReactElement {
   const { messages } = useBreezeContext();
   const titleId = useId();
   const descriptionId = useId();
@@ -320,7 +320,7 @@ export function ToastRegion({
   label,
   ref,
   ...props
-}: ToastRegionProps): ReactElement | null {
+}: Readonly<ToastRegionProps>): ReactElement | null {
   const context = useContext(ToastContext);
   const forwardedRef = useForwardedRef(ref);
 
@@ -392,7 +392,7 @@ export function ToastProviderBoundary({
   closeLabel,
   limit,
   regionLabel,
-}: ToastProviderBoundaryProps): ReactElement {
+}: Readonly<ToastProviderBoundaryProps>): ReactElement {
   const queue = useMemo(
     () => new AriaToastQueue<ToastContentData>({ maxVisibleToasts: limit }),
     [limit],

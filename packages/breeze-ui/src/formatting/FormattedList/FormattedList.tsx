@@ -24,7 +24,7 @@ export function FormattedList({
   ref,
   values,
   ...props
-}: FormattedListProps): ReactElement {
+}: Readonly<FormattedListProps>): ReactElement {
   const { locale } = useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
 

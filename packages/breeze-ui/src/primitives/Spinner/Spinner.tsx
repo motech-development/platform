@@ -67,7 +67,7 @@ export function Spinner({
   size = 'md',
   variant = 'primary',
   ...props
-}: SpinnerProps): ReactElement {
+}: Readonly<SpinnerProps>): ReactElement {
   useBreezeContext();
 
   const labelId = useId();

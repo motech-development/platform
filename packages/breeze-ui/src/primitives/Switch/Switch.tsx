@@ -183,7 +183,7 @@ export function Root({
   selected,
   value,
   ...props
-}: SwitchRootProps): ReactElement {
+}: Readonly<SwitchRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -216,7 +216,7 @@ export function Control({
   className,
   ref,
   ...props
-}: SwitchControlProps): ReactElement {
+}: Readonly<SwitchControlProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaSwitchButton, {
@@ -232,7 +232,7 @@ export function Track({
   ref,
   size,
   ...props
-}: SwitchTrackProps): ReactElement {
+}: Readonly<SwitchTrackProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('span', {
@@ -249,7 +249,7 @@ export function Thumb({
   ref,
   size,
   ...props
-}: SwitchThumbProps): ReactElement {
+}: Readonly<SwitchThumbProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('span', {
@@ -261,7 +261,10 @@ export function Thumb({
 }
 
 /** Renders persistent visible label text within Switch.Control. */
-export function Label({ ref, ...props }: SwitchLabelProps): ReactElement {
+export function Label({
+  ref,
+  ...props
+}: Readonly<SwitchLabelProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('span', {
