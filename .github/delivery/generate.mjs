@@ -506,6 +506,41 @@ function removeJob(workflow, jobId) {
   return workflow.replace(pattern, '');
 }
 
+function removeNeedsReference(workflow, jobId) {
+  const escapedJobId = jobId.replaceAll('-', '\\-');
+  return workflow
+    .replace(new RegExp(`^      - ${escapedJobId}\\n`, 'gm'), '')
+    .replace(new RegExp(`^    needs: ${escapedJobId}\\n`, 'gm'), '')
+    .replace(/^    needs:\n(?=\n|    \S)/gm, '');
+}
+
+function validateWorkflowReferences(workflow, filename) {
+  const jobsMarker = '\njobs:\n';
+  const jobsStart = workflow.indexOf(jobsMarker);
+  if (jobsStart === -1) {
+    throw new Error(`${filename} is missing jobs`);
+  }
+  const jobs = workflow.slice(jobsStart + jobsMarker.length);
+  const jobIds = new Set(
+    [...jobs.matchAll(/^  ([a-zA-Z0-9_-]+):$/gm)].map(([, jobId]) => jobId),
+  );
+
+  for (const jobId of jobIds) {
+    const [job] = jobs.match(workflowJobPattern(jobId));
+    const scalarNeed = job.match(/^    needs: ([a-zA-Z0-9_-]+)$/m)?.[1];
+    const listNeeds = [...job.matchAll(/^      - ([a-zA-Z0-9_-]+)$/gm)].map(
+      ([, dependency]) => dependency,
+    );
+    for (const dependency of scalarNeed ? [scalarNeed] : listNeeds) {
+      if (!jobIds.has(dependency)) {
+        throw new Error(
+          `${filename} job "${jobId}" needs unknown job "${dependency}"`,
+        );
+      }
+    }
+  }
+}
+
 function rewriteJob(workflow, legacyJobId, unitId, needs) {
   const jobPattern = workflowJobPattern(legacyJobId);
   const match = workflow.match(jobPattern);
@@ -529,11 +564,16 @@ function renderWorkflow(template, definition, catalog, workspaceManifests) {
     reverse: definition.reverse,
   });
   const generatedUnitIds = new Set(graph.map(({ id }) => id));
+  const excludedJobIds = [];
 
   for (const [id, legacyJobId] of Object.entries(definition.legacyJobIds)) {
     if (!generatedUnitIds.has(id)) {
       workflow = removeJob(workflow, legacyJobId);
+      excludedJobIds.push(id, legacyJobId);
     }
+  }
+  for (const excludedJobId of new Set(excludedJobIds)) {
+    workflow = removeNeedsReference(workflow, excludedJobId);
   }
 
   for (const { id, needs: unitNeeds } of graph) {
@@ -549,6 +589,8 @@ function renderWorkflow(template, definition, catalog, workspaceManifests) {
         : [definition.baseNeed, ...unitNeeds];
     workflow = rewriteJob(workflow, legacyJobId, id, needs);
   }
+
+  validateWorkflowReferences(workflow, definition.filename);
 
   return `# GENERATED FILE — DO NOT EDIT. Run \`node .github/delivery/generate.mjs\`.\n${workflow}`;
 }

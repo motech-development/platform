@@ -395,6 +395,12 @@ test('catalog target removal removes the Deployment Unit from generated workflow
     false,
   );
   assert.equal(
+    generated['deploy-to-environment.yml'].includes(
+      '\n      - accounts-warm-up\n',
+    ),
+    false,
+  );
+  assert.equal(
     generated['teardown-environment.yml'].includes('\n  accounts-warm-up:\n'),
     false,
   );
