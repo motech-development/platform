@@ -32,6 +32,15 @@ const reconciliationFixture = JSON.parse(
     'utf8',
   ),
 );
+const planningCatalog = JSON.parse(
+  await readFile(new URL('./fixtures/catalog.json', import.meta.url), 'utf8'),
+);
+const planningManifests = JSON.parse(
+  await readFile(
+    new URL('./fixtures/workspace-manifests.json', import.meta.url),
+    'utf8',
+  ),
+);
 
 const workspaceManifests = [
   {
@@ -53,6 +62,7 @@ const validCatalog = {
     {
       id: 'core-runtime',
       workspace: '@core/runtime',
+      path: 'packages/runtime',
       targets: ['preview', 'develop', 'production'],
       dependsOn: [],
       expectedStacks: ['core-{stage}-runtime'],
@@ -60,6 +70,7 @@ const validCatalog = {
     {
       id: 'accounts-data',
       workspace: '@accounts/data',
+      path: 'applications/accounts/data',
       targets: ['preview', 'develop', 'production'],
       dependsOn: [],
       expectedStacks: ['accounts-{stage}-data'],
@@ -109,6 +120,13 @@ test('catalog validation rejects invalid identifiers, references, targets, stack
         catalog.units[0].workspace = '@core/missing';
       },
       expected: /unknown workspace "@core\/missing"/,
+    },
+    {
+      name: 'invalid workspace paths',
+      mutate(catalog) {
+        catalog.units[0].path = 'packages/missing';
+      },
+      expected: /invalid workspace path "packages\/missing"/,
     },
     {
       name: 'unsupported targets',
@@ -205,62 +223,45 @@ test('repository catalog represents the active delivery inventory only', async (
   );
 });
 
-test('recorded Preview Plan fixtures expose complete creation, selective repair, and non-runtime skips', async () => {
-  const [catalog, manifests] = await Promise.all([
-    loadCatalog(),
-    loadWorkspaceManifests(),
-  ]);
-
+test('recorded Preview Plan fixtures expose complete creation, selective repair, missing-stack repair, and non-runtime skips', () => {
   for (const { input, expected } of Object.values(previewFixtures)) {
-    assert.deepEqual(createPreviewPlan(catalog, manifests, input), expected);
+    assert.deepEqual(
+      createPreviewPlan(planningCatalog, planningManifests, input),
+      expected,
+    );
   }
 });
 
-test('recorded Release Plan expands delivery dependants and preserves exact owning-workspace tags', async () => {
-  const [catalog, manifests] = await Promise.all([
-    loadCatalog(),
-    loadWorkspaceManifests(),
-  ]);
-
+test('recorded Release Plan expands delivery dependants and preserves exact owning-workspace tags', () => {
   assert.deepEqual(
-    createReleasePlan(catalog, manifests, releaseFixture.input),
+    createReleasePlan(planningCatalog, planningManifests, releaseFixture.input),
     releaseFixture.expected,
   );
 });
 
-test('Release Plan rejects a selected application without its own Release', async () => {
-  const [catalog, manifests] = await Promise.all([
-    loadCatalog(),
-    loadWorkspaceManifests(),
-  ]);
+test('Release Plan rejects a selected application without its own Release', () => {
   const input = structuredClone(releaseFixture.input);
   delete input.releaseTags['@accounts/client'];
 
   assert.throws(
-    () => createReleasePlan(catalog, manifests, input),
+    () => createReleasePlan(planningCatalog, planningManifests, input),
     /accounts-client.*requires Release "@accounts\/client@<version>"/,
   );
 });
 
-test('recorded reconciliation selects stale units and every delivery dependant', async () => {
-  const [catalog, manifests] = await Promise.all([
-    loadCatalog(),
-    loadWorkspaceManifests(),
-  ]);
-
+test('recorded reconciliation selects stale units and every delivery dependant', () => {
   assert.deepEqual(
-    createReconciliationPlan(catalog, manifests, reconciliationFixture.input),
+    createReconciliationPlan(
+      planningCatalog,
+      planningManifests,
+      reconciliationFixture.input,
+    ),
     reconciliationFixture.expected,
   );
 });
 
-test('job graphs filter targets and reverse direct dependencies for teardown', async () => {
-  const [catalog, manifests] = await Promise.all([
-    loadCatalog(),
-    loadWorkspaceManifests(),
-  ]);
-
-  const develop = createJobGraph(catalog, manifests, 'develop');
+test('recorded job graphs filter targets and reverse direct dependencies for teardown', () => {
+  const develop = createJobGraph(planningCatalog, planningManifests, 'develop');
   assert.deepEqual(
     develop.map(({ id }) => id),
     [
@@ -280,9 +281,14 @@ test('job graphs filter targets and reverse direct dependencies for teardown', a
     'accounts-storage',
   ]);
 
-  const teardown = createJobGraph(catalog, manifests, 'preview', {
-    reverse: true,
-  });
+  const teardown = createJobGraph(
+    planningCatalog,
+    planningManifests,
+    'preview',
+    {
+      reverse: true,
+    },
+  );
   assert.deepEqual(teardown.at(0), { id: 'accounts-api', needs: [] });
   assert.deepEqual(teardown.find(({ id }) => id === 'accounts-data').needs, [
     'accounts-warm-up',
@@ -367,6 +373,34 @@ test('generator emits deterministic static workflow graphs with one job per Depl
   assert.match(
     workflowJob(first['teardown-environment.yml'], 'accounts-data'),
     /needs:\n      - setup\n      - accounts-warm-up\n      - accounts-notifications\n      - accounts-queue\n      - accounts-reports\n      - accounts-api/,
+  );
+});
+
+test('catalog target removal removes the Deployment Unit from generated workflows', async () => {
+  const [catalog, manifests] = await Promise.all([
+    loadCatalog(),
+    loadWorkspaceManifests(),
+  ]);
+  const retargetedCatalog = structuredClone(catalog);
+  retargetedCatalog.units.find(({ id }) => id === 'accounts-warm-up').targets =
+    ['production'];
+
+  const generated = await generateWorkflows({
+    write: false,
+    catalog: retargetedCatalog,
+    workspaceManifests: manifests,
+  });
+  assert.equal(
+    generated['deploy-to-environment.yml'].includes('\n  accounts-warm-up:\n'),
+    false,
+  );
+  assert.equal(
+    generated['teardown-environment.yml'].includes('\n  accounts-warm-up:\n'),
+    false,
+  );
+  assert.equal(
+    generated['deploy-to-production.yml'].includes('\n  accounts-warm-up:\n'),
+    true,
   );
 });
 

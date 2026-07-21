@@ -2,6 +2,7 @@
   "completeCreation": {
     "input": {
       "lifecycle": "opened",
+      "runtimeAffected": true,
       "changedWorkspaces": ["@accounts/api"],
       "existingStacks": [],
       "stage": "pr-1493"
@@ -23,6 +24,7 @@
   "selectiveUpdateAndStackRepair": {
     "input": {
       "lifecycle": "synchronize",
+      "runtimeAffected": true,
       "changedWorkspaces": ["@accounts/notifications"],
       "existingStacks": [
         "anti-virus-pr-1493",
@@ -40,9 +42,60 @@
       "units": ["accounts-notifications", "accounts-reports", "accounts-api"]
     }
   },
+  "missingStackOnlyRepair": {
+    "input": {
+      "lifecycle": "synchronize",
+      "runtimeAffected": true,
+      "changedWorkspaces": [],
+      "existingStacks": [
+        "anti-virus-pr-1493",
+        "accounts-pr-1493-storage",
+        "accounts-pr-1493-warm-up",
+        "accounts-pr-1493-notifications",
+        "accounts-pr-1493-queue",
+        "accounts-pr-1493-reports",
+        "accounts-pr-1493-api"
+      ],
+      "stage": "pr-1493"
+    },
+    "expected": {
+      "target": "preview",
+      "units": [
+        "accounts-data",
+        "accounts-warm-up",
+        "accounts-notifications",
+        "accounts-queue",
+        "accounts-reports",
+        "accounts-api"
+      ]
+    }
+  },
+  "workspaceDependencyExpansion": {
+    "input": {
+      "lifecycle": "synchronize",
+      "runtimeAffected": true,
+      "changedWorkspaces": ["@fixture/runtime"],
+      "existingStacks": [
+        "anti-virus-pr-1493",
+        "accounts-pr-1493-storage",
+        "accounts-pr-1493-data",
+        "accounts-pr-1493-warm-up",
+        "accounts-pr-1493-notifications",
+        "accounts-pr-1493-queue",
+        "accounts-pr-1493-reports",
+        "accounts-pr-1493-api"
+      ],
+      "stage": "pr-1493"
+    },
+    "expected": {
+      "target": "preview",
+      "units": ["accounts-api"]
+    }
+  },
   "nonRuntimeChange": {
     "input": {
       "lifecycle": "synchronize",
+      "runtimeAffected": false,
       "changedWorkspaces": [],
       "existingStacks": [],
       "stage": "pr-1493"

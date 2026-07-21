@@ -8,6 +8,7 @@ const repositoryRoot = resolve(deliveryDirectory, '../..');
 const catalogUnitFields = new Set([
   'id',
   'workspace',
+  'path',
   'targets',
   'dependsOn',
   'expectedStacks',
@@ -276,7 +277,7 @@ export function createPreviewPlan(catalog, workspaceManifests, input) {
     input.changedWorkspaces,
   );
 
-  if (affected.length === 0) {
+  if (input.runtimeAffected === false) {
     return { target, units: [] };
   }
 
@@ -489,12 +490,24 @@ function splitCoreInfrastructureJob(workflow) {
   );
 }
 
-function rewriteJob(workflow, legacyJobId, unitId, needs) {
-  const escapedJobId = legacyJobId.replaceAll('-', '\\-');
-  const jobPattern = new RegExp(
+function workflowJobPattern(jobId) {
+  const escapedJobId = jobId.replaceAll('-', '\\-');
+  return new RegExp(
     `^  ${escapedJobId}:\\n[\\s\\S]*?(?=^  [a-zA-Z0-9_-]+:|(?![\\s\\S]))`,
     'm',
   );
+}
+
+function removeJob(workflow, jobId) {
+  const pattern = workflowJobPattern(jobId);
+  if (!pattern.test(workflow)) {
+    throw new Error(`template is missing job "${jobId}"`);
+  }
+  return workflow.replace(pattern, '');
+}
+
+function rewriteJob(workflow, legacyJobId, unitId, needs) {
+  const jobPattern = workflowJobPattern(legacyJobId);
   const match = workflow.match(jobPattern);
   if (!match) {
     throw new Error(`template is missing job "${legacyJobId}"`);
@@ -515,6 +528,13 @@ function renderWorkflow(template, definition, catalog, workspaceManifests) {
   const graph = createJobGraph(catalog, workspaceManifests, definition.target, {
     reverse: definition.reverse,
   });
+  const generatedUnitIds = new Set(graph.map(({ id }) => id));
+
+  for (const [id, legacyJobId] of Object.entries(definition.legacyJobIds)) {
+    if (!generatedUnitIds.has(id)) {
+      workflow = removeJob(workflow, legacyJobId);
+    }
+  }
 
   for (const { id, needs: unitNeeds } of graph) {
     const legacyJobId = definition.legacyJobIds[id];
@@ -533,10 +553,14 @@ function renderWorkflow(template, definition, catalog, workspaceManifests) {
   return `# GENERATED FILE — DO NOT EDIT. Run \`node .github/delivery/generate.mjs\`.\n${workflow}`;
 }
 
-export async function generateWorkflows({ write = true } = {}) {
+export async function generateWorkflows({
+  write = true,
+  catalog: providedCatalog,
+  workspaceManifests: providedWorkspaceManifests,
+} = {}) {
   const [catalog, workspaceManifests] = await Promise.all([
-    loadCatalog(),
-    loadWorkspaceManifests(),
+    providedCatalog ?? loadCatalog(),
+    providedWorkspaceManifests ?? loadWorkspaceManifests(),
   ]);
   validateCatalog(catalog, workspaceManifests);
   const generated = {};
@@ -668,6 +692,11 @@ export function validateCatalog(catalog, workspaceManifests) {
     if (!manifestsByName.has(unit.workspace)) {
       throw new Error(
         `deployment unit "${unit.id}" references unknown workspace "${unit.workspace}"`,
+      );
+    }
+    if (unit.path !== manifestsByName.get(unit.workspace).relativePath) {
+      throw new Error(
+        `deployment unit "${unit.id}" has invalid workspace path "${unit.path}"`,
       );
     }
     if (!Array.isArray(unit.targets) || unit.targets.length === 0) {

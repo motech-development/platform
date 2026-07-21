@@ -1,0 +1,72 @@
+[
+  {
+    "name": "@motech-development/breeze-ui",
+    "relativePath": "packages/breeze-ui",
+    "dependencies": {}
+  },
+  {
+    "name": "@core/anti-virus",
+    "relativePath": "applications/core/anti-virus",
+    "dependencies": {}
+  },
+  {
+    "name": "@core/infrastructure",
+    "relativePath": "applications/core/infrastructure",
+    "dependencies": {}
+  },
+  {
+    "name": "@core/comms",
+    "relativePath": "applications/core/comms",
+    "dependencies": {}
+  },
+  {
+    "name": "@accounts/infrastructure",
+    "relativePath": "applications/accounts/infrastructure",
+    "dependencies": {}
+  },
+  {
+    "name": "@accounts/storage",
+    "relativePath": "applications/accounts/storage",
+    "dependencies": {}
+  },
+  {
+    "name": "@accounts/data",
+    "relativePath": "applications/accounts/data",
+    "dependencies": {}
+  },
+  {
+    "name": "@accounts/warm-up",
+    "relativePath": "applications/accounts/warm-up",
+    "dependencies": {}
+  },
+  {
+    "name": "@accounts/notifications",
+    "relativePath": "applications/accounts/notifications",
+    "dependencies": {}
+  },
+  {
+    "name": "@accounts/queue",
+    "relativePath": "applications/accounts/queue",
+    "dependencies": {}
+  },
+  {
+    "name": "@accounts/reports",
+    "relativePath": "applications/accounts/reports",
+    "dependencies": {}
+  },
+  {
+    "name": "@accounts/api",
+    "relativePath": "applications/accounts/api",
+    "dependencies": { "@fixture/runtime": "workspace:*" }
+  },
+  {
+    "name": "@accounts/client",
+    "relativePath": "applications/accounts/client",
+    "dependencies": {}
+  },
+  {
+    "name": "@fixture/runtime",
+    "relativePath": "packages/fixture-runtime",
+    "dependencies": {}
+  }
+]
