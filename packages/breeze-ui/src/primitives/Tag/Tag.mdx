@@ -1,0 +1,59 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Tag.stories';
+
+<Meta
+  of={Stories}
+  summary="One keyed focusable tag item for use in a TagGroup collection, with stable identity, text representation, disabled state, and optional semantic action."
+/>
+
+# Tag
+
+`Tag` is one keyed interactive item for a `TagGroup`; the containing group supplies selection and removal behaviour.
+
+## Import
+
+```tsx
+import { Tag, TagGroup } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `Tag` inside `TagGroup.List` for compact labels that may be focused, selected, acted on, or removed. Prefer `Badge` for passive status or metadata, `Button` for an action, and `ListBox.Item` for a conventional option collection. A standalone Tag story demonstrates the item, but production composition should provide TagGroup context and an accessible group label.
+
+## Basic example
+
+```tsx
+import { Tag, TagGroup } from '@motech-development/breeze-ui';
+
+<TagGroup.Root>
+  <TagGroup.Label>Topics</TagGroup.Label>
+  <TagGroup.List>
+    <Tag id="accessibility" textValue="Accessibility">
+      Accessibility
+    </Tag>
+    <Tag id="design" textValue="Design systems">
+      Design systems
+    </Tag>
+  </TagGroup.List>
+</TagGroup.Root>;
+```
+
+<Canvas of={Stories.Static} />
+
+## Identity and behaviour
+
+`id` is a required stable `string | number` used for focus, selection, actions, and removal. `textValue` is required plain text for typeahead and accessibility. Visible `children` may contain richer presentation, but must preserve the same meaning.
+
+`disabled` prevents focus, selection, action, and removal. `onAction` receives this tag’s key when its semantic action is invoked. Selection and removal callbacks belong to `TagGroup.Root`; Tag has no controlled, uncontrolled, read-only, loading, invalid, or error state of its own.
+
+## Keyboard and accessibility
+
+Keyboard behaviour is coordinated by `TagGroup`: arrow keys move between tags, and selection, action, or removal keys depend on enabled group behaviours. Do not put links, buttons, or other interactive descendants inside `Tag`; use the tag’s semantic action or a separate control. Keep `id` independent of translated content and provide an accurate `textValue` for every locale.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not use array indexes as IDs, omit `textValue`, nest interactive controls, or treat a Tag as a passive badge. Use `TagGroup` for collection state, `Badge` for status, `Button` for a command, and `ListBox` for a larger option collection.

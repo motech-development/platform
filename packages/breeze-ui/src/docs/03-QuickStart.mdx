@@ -1,0 +1,66 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/03 Quick start"
+  summary="Build a small accessible Breeze interface using the provider, layout, typography, fields and actions."
+/>
+
+# Quick start
+
+This example uses only the public v3 API and domain-neutral copy. The field manages its own initial value, while form submission remains application-owned.
+
+```tsx
+import {
+  BreezeProvider,
+  Button,
+  FormActions,
+  Stack,
+  Surface,
+  TextField,
+  Typography,
+} from '@motech-development/breeze-ui';
+import '@motech-development/breeze-ui/reset.css';
+import '@motech-development/breeze-ui/styles.css';
+
+export function App() {
+  return (
+    <BreezeProvider locale="en-GB" timeZone="Europe/London">
+      <Surface padding="lg">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+          }}
+        >
+          <Stack gap="md">
+            <Typography as="h1">Create an item</Typography>
+
+            <TextField.Root name="title" defaultValue="Draft item" required>
+              <TextField.Label>Title</TextField.Label>
+              <TextField.Input />
+              <TextField.Description>
+                Use a short, recognisable title.
+              </TextField.Description>
+              <TextField.Error>Enter a title.</TextField.Error>
+            </TextField.Root>
+
+            <FormActions primary={<Button type="submit">Save item</Button>} />
+          </Stack>
+        </form>
+      </Surface>
+    </BreezeProvider>
+  );
+}
+```
+
+## Why this composition
+
+- `BreezeProvider` supplies locale, direction, messages, routing and overlay infrastructure.
+- `Surface` provides a themed visual boundary; `Stack` owns vertical spacing.
+- `Typography` separates semantic heading choice from visual styling.
+- `TextField` keeps its label, control, description and error in one accessible compound field.
+- `FormActions` provides the recurring form-action layout without taking ownership of submission.
+- `Button` performs an action. Use `Link` or `LinkButton` when activation navigates.
+
+## Next steps
+
+Read [Provider and styles](?path=/docs/guides-04-provider-and-styles--docs) before integrating routing or localisation. Use the individual component pages to choose variants, understand defaults and copy deliberately authored examples.

@@ -1,0 +1,124 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Link.stories';
+
+<Meta
+  of={Stories}
+  summary="Router-neutral inline navigation that preserves native link behaviour."
+/>
+
+# Link
+
+`Link` navigates to a destination with a real `href`, using the optional Breeze router adapter for eligible local URLs and native browser behaviour everywhere else.
+
+## Import
+
+```tsx
+import { Link } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+- Use for inline navigation to another route, page, document, or location.
+- Use a local `/path` with the provider router when the application supports client-side routing.
+- Use external URLs, `download`, or `target` when native browser navigation is intended.
+
+## When not to use
+
+- Use `Button` for an action that changes state without navigating.
+- Use `LinkButton` when navigation needs button-like visual prominence.
+- Use `SkipLink` for a keyboard-visible bypass link to main content.
+- Do not use a clickable `Typography` or an anchor without an `href` as a substitute.
+
+## Basic use
+
+```tsx
+import { Link, Typography } from '@motech-development/breeze-ui';
+
+export function HelpText() {
+  return (
+    <Typography>
+      Read the <Link href="/guidance">usage guidance</Link> before continuing.
+    </Typography>
+  );
+}
+```
+
+<Canvas of={Stories.Internal} />
+
+## Routing behaviour
+
+With a `BreezeProvider` router, a local URL beginning with a single `/` uses `router.navigate(href)` for an unmodified primary activation. The link still renders a real `href`, so copying the address, opening a context menu, and browser fallbacks continue to work.
+
+The browser handles navigation when the URL is external or protocol-relative, `download` is present, `target` is not `_self`, the pointer activation is not the primary button, or Alt, Control, Meta, or Shift is held.
+
+```tsx
+import {
+  BreezeProvider,
+  Link,
+  type BreezeRouterAdapter,
+} from '@motech-development/breeze-ui';
+
+const router: BreezeRouterAdapter = {
+  navigate: (href) => window.history.pushState(null, '', href),
+};
+
+export function Navigation() {
+  return (
+    <BreezeProvider locale="en-GB" router={router}>
+      <Link href="/preferences">Preferences</Link>
+    </BreezeProvider>
+  );
+}
+```
+
+## Variants and states
+
+`primary` is the default navigation colour. Use `muted` for deliberately lower-emphasis supporting navigation, `danger` when following the link leads towards a destructive flow, and `inverse` on dark surfaces. Variant conveys visual meaning; the link text must still explain the destination.
+
+`disabled` prevents navigation and semantic activation and renders non-link content. Prefer removing unavailable navigation when that does not hide useful context. If a disabled link must remain visible, explain why it is unavailable nearby.
+
+`onAction` runs after semantic activation and receives no browser event. Put navigation in `href` or the provider adapter, not in `onAction`. Use the callback for application-side observation only and ensure repeated activation is safe.
+
+## External and download links
+
+```tsx
+import { Link } from '@motech-development/breeze-ui';
+import { ExternalLinkIcon } from '@motech-development/breeze-ui/icons';
+
+export function ExternalGuidanceLink() {
+  return (
+    <Link href="https://example.com/guidance" rel="noreferrer" target="_blank">
+      External guidance <ExternalLinkIcon />
+    </Link>
+  );
+}
+```
+
+Visible wording should make an unexpected new browsing context or download clear. An adjacent icon is decorative by default and does not replace that wording. Supply an appropriate `rel` when using `_blank` according to application security policy.
+
+## API
+
+<ArgTypes />
+
+## Accessibility and keyboard interaction
+
+Relevant native anchor attributes such as `aria-*`, `data-*`, `id`, `hreflang`, `referrerPolicy`, `rel`, and `type` are supported. `onClick`, `style`, and direct React Aria props are not part of the public interaction or styling API.
+
+Use concise text that describes the destination out of context. Avoid “click here”. The native link participates in the tab order, activates with Enter, exposes its destination, and retains browser focus indication. A disabled Link is not a link and is not keyboard focusable.
+
+Do not rely on colour alone to distinguish the link; Breeze includes an underline. When using `variant="inverse"`, provide a sufficiently dark background. The provider direction and locale apply to its text, but URLs and child content are not translated by Link.
+
+## Common mistakes and limitations
+
+- Do not call a router from `onAction`; configure `BreezeProvider.router` and keep the real destination in `href`.
+- Do not use `disabled` to represent a loading action; navigation links do not own loading state.
+- Do not omit visible context for downloads or links that open a new browsing context.
+- Links do not support controlled or uncontrolled value state, invalid state, or read-only state.
+- Application routers must update application state after `navigate`; Breeze only invokes the adapter.
+
+## Related components
+
+- Use `LinkButton` for prominent navigation styled as an action control.
+- Use `Button` for non-navigation actions.
+- Use `Breadcrumbs`, `NavigationList`, or `Tabs` for structured navigation sets.
+- Configure local navigation through `BreezeProvider`.

@@ -1,0 +1,72 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './DescriptionList.stories';
+
+<Meta
+  of={Stories}
+  summary="Responsive native description list for presenting labelled term-and-description metadata."
+/>
+
+# DescriptionList
+
+`DescriptionList` pairs terms with their descriptions using native `dl`, `dt`, and `dd` semantics.
+
+```tsx
+import { DescriptionList } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for read-only facts, attributes, or summary metadata. Use [List](?path=/docs/data-display-list--docs) for a sequence, [Table](?path=/docs/collections-table--docs) for multiple comparable records, or form components when values are editable.
+
+## Basic use
+
+```tsx
+import { DescriptionList } from '@motech-development/breeze-ui';
+
+export function RecordDetails() {
+  return (
+    <DescriptionList.Root>
+      <DescriptionList.Item>
+        <DescriptionList.Term>Status</DescriptionList.Term>
+        <DescriptionList.Description>Ready</DescriptionList.Description>
+      </DescriptionList.Item>
+      <DescriptionList.Item>
+        <DescriptionList.Term>Reference</DescriptionList.Term>
+        <DescriptionList.Description>AB-123</DescriptionList.Description>
+      </DescriptionList.Item>
+    </DescriptionList.Root>
+  );
+}
+```
+
+<Canvas of={Stories.ResponsivePairs} />
+
+## Anatomy
+
+- `DescriptionList.Root` renders the native `dl` and stacks at narrow widths.
+- `DescriptionList.Item` renders a visual grouping `div` for one or more pairs.
+- `DescriptionList.Term` renders `dt`.
+- `DescriptionList.Description` renders `dd` associated with the preceding term.
+
+Keep each term next to its description. Multiple descriptions may follow a term, and multiple terms may precede one description where that is genuinely the semantic relationship.
+
+## Behaviour and accessibility
+
+The component is read-only and non-interactive: it has no controlled state, callbacks, keyboard behaviour, loading, disabled, invalid, empty, or error state. Translate both terms and descriptions. Logical spacing and the responsive grid support both left-to-right and right-to-left layouts. Format dates and numbers before passing them as content.
+
+Every part supports the relevant native semantic-element attributes, including `className`, ARIA and data attributes, events, and a typed `ref`; inline `style` is intentionally excluded.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not reproduce the relationship with generic `div` elements.
+- Do not use terms as visual headings for unrelated sections.
+- Do not place editable controls here when a labelled form is required.
+- Do not force columns with custom layout; the built-in layout adapts at the Breeze breakpoint.
+
+## Related components
+
+[List](?path=/docs/data-display-list--docs), [Table](?path=/docs/collections-table--docs), and [Card](?path=/docs/data-display-card--docs) cover sequences, comparable records, and contained summaries.

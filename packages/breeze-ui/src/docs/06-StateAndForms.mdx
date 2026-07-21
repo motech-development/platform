@@ -1,0 +1,64 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/06 State and forms"
+  summary="Use Breeze controlled, uncontrolled, read-only, validation and native form contracts consistently."
+/>
+
+# State and forms
+
+Breeze state callbacks receive semantic values rather than DOM events. Applications own form libraries, schemas, submission, cross-field rules, server errors and business validation.
+
+## State vocabulary
+
+| Behaviour            | Controlled              | Uncontrolled       | Callback                           |
+| -------------------- | ----------------------- | ------------------ | ---------------------------------- |
+| Field value          | `value`                 | `defaultValue`     | `onChange(nextValue)`              |
+| Open state           | `open`                  | `defaultOpen`      | `onOpenChange(nextOpen)`           |
+| Collection selection | `selection`             | `defaultSelection` | `onSelectionChange(nextSelection)` |
+| Toggle state         | `selected`              | `defaultSelected`  | `onChange(nextSelected)`           |
+| Discrete activation  | Application-owned state | —                  | `onAction()`                       |
+
+Controlled and uncontrolled props are mutually exclusive TypeScript unions. A mutable controlled value requires its change callback. To display an intentionally immutable controlled value, use `readOnly` where the API supports it.
+
+```tsx
+import { TextField } from '@motech-development/breeze-ui';
+import { useState } from 'react';
+
+export function ControlledTitleField() {
+  const [title, setTitle] = useState('Draft item');
+
+  return (
+    <TextField.Root value={title} onChange={setTitle} required>
+      <TextField.Label>Title</TextField.Label>
+      <TextField.Input name="title" />
+      <TextField.Description>Use a concise title.</TextField.Description>
+      <TextField.Error>Enter a title.</TextField.Error>
+    </TextField.Root>
+  );
+}
+```
+
+```tsx
+<TextField.Root value="Archived item" readOnly>
+  <TextField.Label>Title</TextField.Label>
+  <TextField.Input name="title" />
+</TextField.Root>
+```
+
+## Validation and errors
+
+- `required` marks native and accessible required state; it does not invent application validation rules.
+- `invalid` exposes invalid state and reveals the component's error part where applicable.
+- Place persistent guidance in `Description` and validation feedback in `Error`.
+- Keep labels visible. Placeholder text is an example or hint, never the only accessible name.
+- Disabled controls do not accept interaction; explain why an unavailable action is disabled in nearby text when that reason is not evident.
+- Loading and option-loading errors are distinct from a selected value or field validation error. Use the dedicated parts provided by collection fields.
+
+## Native forms
+
+Use documented `name`, `type`, `value`, `required`, `autoComplete` and submission attributes on the relevant control part. Native attributes that Breeze deliberately omits are not supported through an escape hatch. Breeze does not provide a `Form` component, schema adapter, field registration API, mask language or domain-specific field.
+
+## Callback semantics
+
+`onAction` means the user activated a discrete action; it does not expose a mouse or press event. `onChange` reports the next public value. Selection callbacks report `CollectionSelection`, which is a list of string or number keys or the literal `'all'`. Date and time callbacks report the ISO string contracts described in the internationalisation guide.

@@ -1,0 +1,82 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './DatePicker.stories';
+
+<Meta
+  of={Stories}
+  summary="Full-width labelled date control with a locale-formatted trigger and calendar popover, stable YYYY-MM-DD values, form integration, constraints, and controlled, uncontrolled, or read-only state."
+/>
+
+# DatePicker
+
+`DatePicker` selects one calendar date from a compact full-width control and an accessible calendar popover.
+
+## Import
+
+```tsx
+import { DatePicker } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `DatePicker` when a labelled form field should open a calendar and exact keyboard entry is not the primary task.
+
+## When not to use
+
+Use `DateField` for direct segmented entry, `Calendar` for an always-visible grid, `DateRangePicker` for a period, and `DateTimePicker` for an instant with time and offset.
+
+## Basic example
+
+```tsx
+import { DatePicker } from '@motech-development/breeze-ui';
+
+<DatePicker.Root defaultValue="2026-07-20" name="reviewDate">
+  <DatePicker.Label>Review date</DatePicker.Label>
+  <DatePicker.Group>
+    <DatePicker.Input />
+    <DatePicker.Trigger />
+  </DatePicker.Group>
+  <DatePicker.Popover>
+    <DatePicker.Calendar />
+  </DatePicker.Popover>
+</DatePicker.Root>;
+```
+
+<Canvas of={Stories.CalendarSelection} />
+
+## Anatomy
+
+| Part                     | Purpose                                                                                              |
+| ------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `DatePicker.Root`        | Owns stable date state, form semantics, constraints and overlay coordination.                        |
+| `DatePicker.Label`       | Visible accessible name for the complete picker.                                                     |
+| `DatePicker.Group`       | Full-width coherent control containing input state and trigger.                                      |
+| `DatePicker.Input`       | Hidden date-state input required by the compound picker.                                             |
+| `DatePicker.Trigger`     | Displays a locale-formatted long date or the provider’s “select date” message and opens the popover. |
+| `DatePicker.Popover`     | Positioned, dismissible calendar overlay; defaults to logical `bottom end`.                          |
+| `DatePicker.Calendar`    | Complete month navigation and single-date grid.                                                      |
+| `DatePicker.Description` | Supporting guidance associated with the picker.                                                      |
+| `DatePicker.Error`       | Validation message associated with invalid state.                                                    |
+
+Keep `Input` and `Trigger` inside `Group`, and `Calendar` inside `Popover`. Every part belongs inside `Root`. The hidden `Input` is structural; do not replace it with a native input or expose it visually.
+
+## Values, state and form behaviour
+
+The value is a stable `YYYY-MM-DD` string such as `'2026-07-20'`; empty state is `null`. It represents a calendar day with no time or zone. Use `defaultValue` for uncontrolled selection, `value` with `onChange` for controlled selection, or `value` with `readOnly` for an immutable picker. `onChange` receives the selected ISO date or `null`.
+
+`minValue`, `maxValue` and `isDateUnavailable(date)` use `YYYY-MM-DD`. Returning `true` marks a day unavailable. `name` submits the stable value through the native form integration and `form` associates it with an external form. `required`, `invalid`, `disabled` and `readOnly` expose field semantics; pair `invalid` with a specific `Error`. An empty trigger uses the translated provider message. Loading is application-owned.
+
+## Keyboard, overlays and internationalisation
+
+- Tab focuses the trigger; Enter, Space or the platform activation key opens the calendar. Escape dismisses it and returns focus to the trigger.
+- In the calendar, arrow keys navigate days, Page Up and Page Down change month, and Enter or Space selects an available date and closes the popover.
+- Always render `Label`. `Description` and `Error` are associated with the complete field.
+- Trigger text, weekday names, month headings, week layout and announcements follow the provider locale. The stable value never changes format.
+- Popover placement uses logical `start` and `end`; direction and navigation icons adapt to right-to-left layouts.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not omit structural parts, make the hidden `Input` visible, pass date objects or localised strings, or use the visual trigger text as stored data. Use `DateField` when users must type dates efficiently, `DateRangePicker` for an inclusive range, and `FormattedDateTime` for read-only output.

@@ -1,0 +1,72 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Toolbar.stories';
+
+<Meta
+  of={Stories}
+  summary="A labelled collection of related controls with orientation-aware arrow-key navigation."
+/>
+
+# Toolbar
+
+`Toolbar` groups related interactive controls under toolbar semantics and coordinates arrow-key navigation.
+
+## Import
+
+```tsx
+import { Button, IconButton, Toolbar } from '@motech-development/breeze-ui';
+import { DeleteIcon } from '@motech-development/breeze-ui/icons';
+```
+
+## When to use
+
+Use `Toolbar` for a compact collection of related commands, such as editor or item actions. Use `Inline` for layout without toolbar semantics, `ToggleGroup` for related selected values, `Menu` when actions should be collapsed, or `ButtonGroup` for a small canonical action arrangement.
+
+## Basic example
+
+```tsx
+import { Button, IconButton, Toolbar } from '@motech-development/breeze-ui';
+import { DeleteIcon } from '@motech-development/breeze-ui/icons';
+
+export function ItemToolbar() {
+  return (
+    <Toolbar aria-label="Item actions">
+      <Button>Edit details</Button>
+      <IconButton aria-label="Delete item" variant="danger">
+        <DeleteIcon />
+      </IconButton>
+    </Toolbar>
+  );
+}
+```
+
+<Canvas of={Stories.Horizontal} />
+
+## Composition and orientation
+
+The `Toolbar` root owns the toolbar role, label, layout, and focus coordination. Compose it from public interactive controls such as `Button`, `IconButton`, `ToggleButton`, or links. The root has no public compound parts. Use `horizontal` for ordinary action rows and `vertical` only when the visual arrangement and expected arrow axis are genuinely vertical.
+
+Disabled state belongs to each child control; `Toolbar` has no group-wide disabled, loading, invalid, error, empty, selection, controlled, or read-only state. An empty toolbar provides no value and should not render.
+
+## API
+
+<ArgTypes />
+
+## Accessibility, keyboard, and direction
+
+Other relevant native `div` attributes such as `id`, `aria-*`, and `data-*` are supported. Children, class, and inline style are constrained by the public API.
+
+Every toolbar needs an accessible name, especially when more than one exists on a page. `Tab` enters and leaves the toolbar; the arrow keys for its orientation move focus between enabled controls. Horizontal arrow behaviour follows the interface direction, while vertical toolbars use Up and Down. `Enter` or `Space` activates the focused button according to that child’s semantics. Each icon-only child still requires its own `aria-label`.
+
+Keep related controls together, order them logically in the DOM, and translate both visible and accessible labels. Do not use toolbar semantics solely to obtain a flex row.
+
+## Common mistakes
+
+- Do not omit the toolbar’s accessible label.
+- Do not place unrelated controls in one toolbar.
+- Do not add manual arrow-key handlers or roving `tabIndex` values to children.
+- Do not use `Inline` when users need toolbar navigation, or `Toolbar` when layout alone is required.
+- Do not render an empty toolbar while actions are loading; render appropriate progress or omit the region.
+
+## Related components
+
+Use `Inline` for neutral layout, `ToggleGroup` for selection, `Menu` for collapsed actions, `ButtonGroup` for an opinionated action pattern, and `Separator` to divide meaningful command clusters where needed.

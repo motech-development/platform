@@ -1,0 +1,108 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './FileUpload.stories';
+
+<Meta
+  of={Stories}
+  summary="Opinionated browse-and-drop file-selection pattern with persistent labelling, MIME, extension, count and byte-size constraints, built-in rejection feedback and application-owned selected files and upload transport."
+/>
+
+# FileUpload
+
+`FileUpload` combines a focusable drop target and native browse button into one accessible file-selection surface.
+
+## Import
+
+```tsx
+import { FileUpload, type FileRejection } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `FileUpload` for the canonical browse-and-drop attachment entry when the application can own selected files and upload processing. Drag and drop is optional convenience; the browse button is the keyboard and touch route.
+
+## When not to use
+
+Use compound `FileTrigger` for a compact chooser, directory or camera capture, native form naming, or required state. Use `DropZone` and `FileTrigger` directly when you need custom anatomy, a visible application error, drop read-failure handling, refs or placement classes. Use `FileAttachment` to present actions for an accepted or uploaded file.
+
+## Basic example
+
+```tsx
+import { FileUpload, type FileRejection } from '@motech-development/breeze-ui';
+import { useState } from 'react';
+
+export function SupportingFiles() {
+  const [files, setFiles] = useState<File[]>([]);
+
+  const handleReject = (rejections: FileRejection[]) => {
+    reportRejectedFiles(rejections);
+  };
+
+  return (
+    <FileUpload
+      acceptedFileTypes={['application/pdf', 'image/*']}
+      allowsMultiple
+      browseLabel="Browse files"
+      guidance="PDF or image files, up to 10 MB each"
+      label="Drop files here"
+      maxFileSize={10 * 1024 * 1024}
+      onFiles={setFiles}
+      onReject={handleReject}
+      selectedFiles={files}
+    />
+  );
+}
+```
+
+<Canvas of={Stories.BrowseAndDrop} />
+
+## Anatomy
+
+FileUpload is a fixed pattern rather than a public compound namespace.
+
+| Region          | Responsibility                                                                      |
+| --------------- | ----------------------------------------------------------------------------------- |
+| Drop surface    | Focus, drag state, persistent label, optional guidance and dropped-file validation. |
+| Browse action   | Opens the browser’s native file chooser with the same constraints.                  |
+| Selection label | Shows `label` while empty, then locale-formats `selectedFiles` names as a list.     |
+| Feedback        | Announces Breeze-owned type, size and count rejections from either selection route. |
+
+The application must feed accepted files back through `selectedFiles`; FileUpload does not retain them as upload state. Replacing the prop with a new array updates the displayed names. It does not render per-file actions or progress.
+
+## File formats and callback semantics
+
+`acceptedFileTypes` accepts exact MIME types such as `'application/pdf'`, wildcard groups such as `'image/*'`, and dot-prefixed extensions such as `'.csv'`. Matching is case-insensitive. `maxFileSize` is bytes. `allowsMultiple` defaults to `false`; files after the first are rejected with `'file-count'`.
+
+`onFiles` receives the accepted native `File[]` after browse or drop validation, including an empty array when no selected file passes. `onReject` runs when constraints reject files and receives `FileRejection[]`. Each record has the native `file` and every applicable reason:
+
+| Reason         | Meaning                                                                |
+| -------------- | ---------------------------------------------------------------------- |
+| `'file-count'` | The file exceeds the single-file count when `allowsMultiple` is false. |
+| `'file-size'`  | `file.size` exceeds `maxFileSize`.                                     |
+| `'file-type'`  | MIME type or extension does not match `acceptedFileTypes`.             |
+
+Mixed selections deliver accepted files to `onFiles` and rejected records to `onReject`. Client constraints are usability guidance, not a security boundary; the application and server must validate again. Upload transport, storage, progress, retry, scanning, persistence and business rules remain application-owned.
+
+## Empty, disabled, invalid and error behaviour
+
+- `selectedFiles` defaults to `[]`; the visible `label` is the empty prompt. There is no separate empty-content slot.
+- `disabled` prevents both drop and browse interaction and visibly reduces emphasis.
+- `invalid` exposes invalid state on the drop target and hidden file input. The fixed pattern has no application error prop; render associated recovery guidance outside it or compose `DropZone.Error` directly.
+- Built-in feedback covers only Breeze count, type and size rejections. FileUpload does not expose `DropZone`’s native `onFileReadError`; use the primitives directly when dropped-item read failures must be reported.
+- There is no controlled value, read-only state or loading prop. Disable replacement only when necessary and render upload progress separately.
+
+## Keyboard, labelling and internationalisation
+
+- Tab can focus the drop surface and then the browse button. Enter or Space on Browse opens the native chooser. The operating system owns interaction inside the chooser and restores focus afterwards.
+- `label` is persistent and names the drop target; `browseLabel` names the button. Keep both visible and specific. `guidance` should state relevant type, size and count constraints.
+- Dragging must never be the only selection route. Do not rely on active border colour or file-extension filtering alone.
+- Selected filenames are joined with `FormattedList` using the `BreezeProvider` locale. Filenames and native `File` values are not translated. Visible copy inherits provider direction and must tolerate expansion.
+- Built-in rejection feedback currently uses fixed English copy. Compose the lower-level file primitives and provide application-owned `onReject` feedback when those messages must be localised.
+- FileUpload performs no routing and accepts no deep-imported file types.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not expect `selectedFiles` to upload files, express byte limits as decimal prose without deciding the actual byte value, use client validation as security, translate filenames, or hide rejection feedback. Use `FileTrigger` and `DropZone` for lower-level control, `FileAttachment` for persistent file actions, and `Alert` or `ProgressBar` for application upload status.

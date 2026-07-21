@@ -1,0 +1,100 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/11 Collections and virtualization"
+  summary="Choose a Breeze collection, supply stable keys, model selection and configure optional fixed or variable virtualization."
+/>
+
+# Collections and virtualization
+
+Breeze collection primitives share stable string-or-number keys, static compound children and typed `items` render functions. Applications own fetching, cursors, caching, sorting, filtering, grouping decisions and page merging.
+
+## Choose a collection
+
+| Need                                      | Component                   |
+| ----------------------------------------- | --------------------------- |
+| Plain semantic content without selection  | `List` or `DescriptionList` |
+| Visible selectable options                | `ListBox`                   |
+| Selectable rows that may contain controls | `GridList`                  |
+| Structured rows and columns with headings | `Table`                     |
+| Compact popup choice                      | `Select`                    |
+| Searchable or custom-value choice         | `ComboBox`                  |
+| Commands and nested actions               | `Menu`                      |
+
+Use `TagGroup` for a compact editable set of tags, not as a replacement for a general collection.
+
+## Static and data-driven content
+
+```tsx
+import { ListBox } from '@motech-development/breeze-ui';
+
+<ListBox.Root aria-label="Priority" defaultSelection={['normal']}>
+  <ListBox.Item id="low" textValue="Low">
+    Low
+  </ListBox.Item>
+  <ListBox.Item id="normal" textValue="Normal">
+    Normal
+  </ListBox.Item>
+  <ListBox.Item id="high" textValue="High">
+    High
+  </ListBox.Item>
+</ListBox.Root>;
+```
+
+```tsx
+const priorities = [
+  { id: 'low', label: 'Low' },
+  { id: 'normal', label: 'Normal' },
+  { id: 'high', label: 'High' },
+];
+
+<ListBox.Root aria-label="Priority" items={priorities}>
+  {(item) => (
+    <ListBox.Item id={item.id} textValue={item.label}>
+      {item.label}
+    </ListBox.Item>
+  )}
+</ListBox.Root>;
+```
+
+Every item needs a stable `id`. `textValue` supplies typeahead and accessible text when the rendered content is not plain text. Selection is `CollectionKey[] | 'all'`; use `selection` plus `onSelectionChange` for controlled state, `defaultSelection` for uncontrolled state, and `readOnly` for an intentionally immutable controlled selection.
+
+## Virtualization
+
+`Table`, `GridList` and `ListBox` accept a Breeze-owned `virtualization` configuration. No `Virtualizer`, `DataTable` or `VirtualizedTable` component is exported.
+
+```tsx
+<ListBox.Root
+  aria-label="Items"
+  items={items}
+  virtualization={{
+    mode: 'fixed',
+    rowHeight: 44,
+    viewportHeight: 320,
+    overscan: 88,
+  }}
+>
+  {(item) => (
+    <ListBox.Item id={item.id} textValue={item.label}>
+      {item.label}
+    </ListBox.Item>
+  )}
+</ListBox.Root>
+```
+
+| Option                   | Required               | Default                      | Meaning                                        |
+| ------------------------ | ---------------------- | ---------------------------- | ---------------------------------------------- |
+| `mode`                   | Yes                    | —                            | `'fixed'` or `'variable'`                      |
+| `viewportHeight`         | Yes                    | —                            | Fixed scroll viewport height in pixels         |
+| `rowHeight`              | Fixed mode             | —                            | Authoritative uniform row height in pixels     |
+| `estimatedRowHeight`     | No, variable mode only | `48`                         | Initial estimate replaced by live measurements |
+| `gap`                    | No                     | `0`                          | Pixel gap between measured rows                |
+| `overscan`               | No                     | `0` beyond the engine buffer | Additional retained pixels around the viewport |
+| `loadingRowHeight`       | No                     | `48`                         | Initial loading-row height                     |
+| `estimatedSectionHeight` | No                     | Component estimate           | Initial section header/footer estimate         |
+
+Grid-list virtualization additionally accepts `minimumItemWidth` (default `224`) and `maximumColumns`. Keep item height consistent with fixed mode; choose variable mode when content can wrap or expand.
+
+## Loading and empty states
+
+Use `emptyContent` for a genuine empty result and the component's `LoadMore` part for incremental loading. `onLoadMore` requests more application-owned items; `loading` suppresses duplicate requests. Do not place fetching, cursor or cache state inside a render function. Keep focusable keys stable while pages are merged so keyboard focus and selection survive window changes.

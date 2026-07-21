@@ -1,0 +1,64 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Inline.stories';
+
+<Meta
+  of={Stories}
+  summary="A horizontal layout with responsive spacing, alignment, distribution, and wrapping."
+/>
+
+# Inline
+
+`Inline` arranges related children along the inline axis and wraps them by default.
+
+## Import
+
+```tsx
+import { Inline } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `Inline` for button rows, metadata, badges, and controls that form one horizontal group. Use `Toolbar` when related controls need toolbar semantics and arrow-key navigation, `Stack` for vertical flow, or `Grid` for aligned columns.
+
+## Basic example
+
+```tsx
+import { Button, Inline } from '@motech-development/breeze-ui';
+
+export function Actions() {
+  return (
+    <Inline gap="compact" justify="end">
+      <Button appearance="outline">Cancel</Button>
+      <Button>Save changes</Button>
+    </Inline>
+  );
+}
+```
+
+<Canvas of={Stories.Wrapping} />
+
+## Layout and responsive spacing
+
+`align` controls the cross-axis and includes `baseline` for text with different sizes. `justify` distributes items along the row. Leave `wrap` enabled unless the composition is guaranteed to fit at every supported viewport and zoom level.
+
+`gap` accepts `none`, `xs`, `sm`, `control`, `compact`, `md`, `lg`, `xl`, `xxl`, or `page`, directly or as `{ base, sm?, md?, lg? }`; breakpoints start at 681 px, 901 px, and 1181 px.
+
+## API
+
+<ArgTypes />
+
+## Accessibility and direction
+
+Relevant native `div` attributes are supported, including `id`, `aria-*`, and `data-*`; inline `style` is excluded. There are no controlled, loading, disabled, invalid, empty, or error states.
+
+`Inline` adds no role, label, focus management, or keyboard behaviour. Wrapping changes visual rows without changing reading or tab order. In right-to-left direction, the browser lays out the inline axis accordingly; do not hard-code left/right spacing or reverse DOM order.
+
+## Common mistakes
+
+- Do not set `wrap={false}` for user-generated labels or action sets that may grow after translation.
+- Do not use spacing characters or per-child margins instead of `gap`.
+- Do not use `Inline` as a substitute for `Toolbar` semantics.
+
+## Related components
+
+Use `Stack` for vertical flow, `Grid` for responsive columns, `Toolbar` for keyboard-navigable actions, and `ButtonGroup` for a canonical grouped-action pattern.

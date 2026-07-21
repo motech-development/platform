@@ -1,0 +1,87 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './RadioGroup.stories';
+
+<Meta
+  of={Stories}
+  summary="Labelled exclusive selection with native radio form semantics, per-option guidance, orientation-aware keyboard navigation, and controlled, uncontrolled, read-only, disabled, required, and invalid states."
+/>
+
+# RadioGroup
+
+`RadioGroup` presents a visible set of options from which one string value may be selected.
+
+## Import
+
+```tsx
+import { RadioGroup } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it when choices are mutually exclusive, the set is short, and comparing all options helps the decision. Prefer `Select` when space is constrained or there are many options, `CheckboxGroup` when several values may be selected, and `SegmentedControl` for a small view or mode switch. Do not use radio buttons for an action that takes effect without representing a persisted choice.
+
+## Basic example
+
+```tsx
+import { RadioGroup } from '@motech-development/breeze-ui';
+
+<RadioGroup.Root name="frequency" defaultSelection="weekly">
+  <RadioGroup.Label>Report frequency</RadioGroup.Label>
+  <RadioGroup.Item value="daily">
+    <RadioGroup.Control>
+      <RadioGroup.Indicator />
+      <RadioGroup.ItemLabel>Daily</RadioGroup.ItemLabel>
+    </RadioGroup.Control>
+  </RadioGroup.Item>
+  <RadioGroup.Item value="weekly">
+    <RadioGroup.Control>
+      <RadioGroup.Indicator />
+      <RadioGroup.ItemLabel>Weekly</RadioGroup.ItemLabel>
+    </RadioGroup.Control>
+  </RadioGroup.Item>
+</RadioGroup.Root>;
+```
+
+<Canvas of={Stories.AnatomyAndHorizontalKeyboard} />
+
+## Anatomy
+
+| Part                         | Purpose                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------- |
+| `RadioGroup.Root`            | Owns exclusive selection, shared form name, orientation, and group state. |
+| `RadioGroup.Label`           | Persistent accessible name for the set.                                   |
+| `RadioGroup.Item`            | One keyed option with its stable string `value`.                          |
+| `RadioGroup.Control`         | Native label and interaction target for one option.                       |
+| `RadioGroup.Indicator`       | Decorative selected-state mark.                                           |
+| `RadioGroup.ItemLabel`       | Persistent visible name inside the control.                               |
+| `RadioGroup.ItemDescription` | Guidance associated with one option.                                      |
+| `RadioGroup.Description`     | Guidance associated with the whole set.                                   |
+| `RadioGroup.Error`           | Group validation feedback while invalid.                                  |
+
+Put `Control` and optional `ItemDescription` inside `Item`; put `Indicator` and `ItemLabel` inside `Control`. Keep group-level guidance outside items.
+
+## Selection, callbacks, and states
+
+Use `defaultSelection` for uncontrolled state, `selection` with `onSelectionChange` for controlled state, or `selection` with `readOnly` for an immutable choice. `selection` is `string | null`; `null` means no selection. `onSelectionChange` receives the newly selected string.
+
+`disabled` on `Root` disables every option; `disabled` on `Item` disables one. `readOnly` prevents changes to a controlled selection. `required` means an option must be selected. Set `invalid` and render `Error` for a group validation failure. Loading and an empty option set are application-owned; avoid rendering an empty radio group.
+
+`orientation` is `vertical` by default. Use `horizontal` only for short labels and a small set; it also sets the expected arrow-key axis.
+
+## Keyboard and accessibility
+
+- Tab enters the group at the selected option, or the first enabled option when none is selected.
+- Arrow keys move focus and selection through enabled options according to orientation; disabled items are skipped.
+- Space selects the focused option where platform behaviour requires it.
+- Provide both a group `Label` and an `ItemLabel` for every option. Do not rely on colour or the indicator alone.
+- Stable `value` strings should be domain identifiers, not translated visible labels.
+
+The component follows surrounding `dir`; horizontal arrow behaviour and layout adapt for right-to-left content.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not give options duplicate values, put `value` on `Control`, omit the group label, or use horizontal layout for content that wraps ambiguously. Use `Select` for a compact list, `CheckboxGroup` for multiple selection, and `SegmentedControl` for a compact mode choice.

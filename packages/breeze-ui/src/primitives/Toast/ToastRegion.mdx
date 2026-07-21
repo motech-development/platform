@@ -1,0 +1,63 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ToastRegion.stories';
+
+<Meta
+  of={Stories}
+  summary="Advanced additional presentation of the nearest BreezeProvider toast queue with a separately translated accessible label."
+/>
+
+# ToastRegion
+
+`ToastRegion` renders an additional labelled presentation of the nearest `BreezeProvider` toast queue. The provider already renders the primary region automatically.
+
+```tsx
+import { ToastRegion } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Most applications should not render this component. Use it only when an advanced layout deliberately needs another presentation of the same provider-owned queue and the accessibility impact has been tested. Use [`useToast`](?path=/docs/feedback-toast--docs) to add and dismiss notifications; use standalone `Toast` when the application owns an independent notification source.
+
+## Basic use
+
+```tsx
+import { ToastRegion } from '@motech-development/breeze-ui';
+
+export function SecondaryNotificationRegion() {
+  return <ToastRegion label="Secondary notifications" />;
+}
+```
+
+<Canvas of={Stories.AdditionalRegion} />
+
+## Queue and lifecycle behaviour
+
+The region reads the existing queue from the nearest provider; it does not create another controller, queue, limit, or notification lifecycle. `BreezeProvider toastLimit` still controls the maximum visible queued toasts. Rendering outside `BreezeProvider` throws an error.
+
+Because an additional region presents the same queue, careless use can duplicate visible content, announcements, focus destinations, and actions. Do not add one merely to reposition the primary stack. Prefer configuring the provider portal host and application layout where possible.
+
+## Accessibility, keyboard, and internationalization
+
+`label` names the region and must distinguish it from the provider-owned primary region; when omitted it uses the provider's translated `messages.notifications` value. Translate an explicit label. Queued toasts retain their alert-dialog semantics, F6 region navigation, Tab and Shift+Tab action navigation, Escape dismissal, timeout behaviour, and close/action labels.
+
+The region is fixed at the logical block start and inline end, so it follows the provider's left-to-right or right-to-left direction. The provider-owned portal carries `lang` and `dir`. Test focus movement and announcements with every region present.
+
+ToastRegion has no controlled/uncontrolled value, callback, loading, disabled, invalid, empty, or error state. These belong to the shared queue and application notification content.
+
+`ToastRegion` supports relevant native `div` attributes, including `className`, ARIA and data attributes, events, and a typed `ref`; `children`, `role`, and inline `style` are intentionally owned or excluded.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not render `ToastRegion` outside `BreezeProvider`.
+- Do not render an additional region without a tested layout and accessibility reason.
+- Do not give two regions the same accessible label.
+- Do not expect a region to create an independent queue or change `toastLimit`.
+- Do not use it as a replacement for `useToast`.
+
+## Related components
+
+[Toast and useToast](?path=/docs/feedback-toast--docs), [Alert](?path=/docs/feedback-alert--docs), and [BreezeProvider](?path=/docs/foundation-breezeprovider--docs).

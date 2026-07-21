@@ -1,0 +1,107 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Typography.stories';
+
+<Meta
+  of={Stories}
+  summary="Semantic non-interactive text with an independent visual level and constrained presentation options."
+/>
+
+# Typography
+
+`Typography` renders non-interactive text while keeping the document element independent from its visual level.
+
+## Import
+
+```tsx
+import { Typography } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+- Use for headings, paragraphs, labels in non-form display content, summaries, metrics, and inline text.
+- Choose `as` for semantic document structure, then use `level` only when appearance must differ.
+- Use `tabularNumbers` for changing values that should remain visually aligned.
+
+## When not to use
+
+- Use `Link` for navigation and `Button` for actions; do not add click behaviour to Typography.
+- Use the label, description, error, or legend part of a field component for form labelling so the accessible relationship is preserved.
+- Use layout primitives such as `Stack`, `Inline`, and `Container` for spacing and positioning instead of treating Typography as a layout API.
+
+## Basic use
+
+```tsx
+import { Stack, Typography } from '@motech-development/breeze-ui';
+
+export function Introduction() {
+  return (
+    <Stack gap="sm">
+      <Typography as="h2">Project summary</Typography>
+      <Typography colour="muted">
+        Review the latest activity and outstanding actions.
+      </Typography>
+    </Stack>
+  );
+}
+```
+
+<Canvas of={Stories.SemanticIndependence} />
+
+## Semantics and visual levels
+
+`as` controls the rendered HTML element. It defaults to `p`. Heading elements automatically use their matching visual level; `strong` and `dt` default to `label`; all other elements default to `body`. An explicit `level` overrides only the appearance, never the element.
+
+Maintain a logical heading hierarchy. A visually smaller heading is still expressed with the correct `h1`–`h6` element:
+
+```tsx
+import { Typography } from '@motech-development/breeze-ui';
+
+export function SubsectionHeading() {
+  return (
+    <Typography as="h3" level="h5">
+      Contact preferences
+    </Typography>
+  );
+}
+```
+
+Visual levels are `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `metric`, `summary`, `label`, and `body`. `metric` uses tabular numerals by design; `summary` is a responsive display treatment; `label` is bold display text.
+
+## Colour, weight, and alignment
+
+Colours are semantic tokens: `default`, `muted`, `primary`, `inverse`, `inverse-muted`, `success`, `danger`, `warning`, and `info`. Use inverse colours only on a sufficiently dark surface. Colour cannot be the only way information is conveyed.
+
+Weights are `regular`, `medium`, `semibold`, and `bold`; omitting `weight` preserves the selected level's canonical weight. `align="start"` and `align="end"` are direction-aware. When `align` is omitted, ordinary CSS inheritance applies.
+
+## Overflow and rhythm
+
+`truncate` limits content to one line with an ellipsis. `lineClamp` limits it to 2, 3, or 4 lines. Both require a constrained available width and hide overflow; ensure the full information is available elsewhere when the omitted text matters.
+
+`gutterBottom` adds canonical level-appropriate bottom rhythm to block content. It is ignored for `span`, `strong`, `em`, and `small`. Prefer a `Stack` when spacing between several siblings because it expresses the relationship at the layout level.
+
+## API
+
+<ArgTypes />
+
+## State, accessibility, and internationalisation
+
+Relevant native HTML attributes, including `id`, `aria-*`, `data-*`, and event-independent text attributes, are forwarded. The conflicting native `align`, `color`, and `style` attributes are intentionally not public styling contracts.
+
+Typography has no controlled, uncontrolled, disabled, loading, invalid, or read-only state. Express those states on the owning interactive component and use Typography only for associated explanatory content.
+
+It adds no keyboard behaviour. Native semantics come from `as`, so headings appear in assistive-technology navigation and `dt`/`dd` retain description-list meaning. Logical alignment follows the provider direction. Breeze does not transform, translate, or format the children; use the formatting components for locale-aware values.
+
+## Common mistakes and limitations
+
+- Do not select `as` for appearance. A `div` styled as `h2` is not a heading.
+- Do not use `level="label"` as a substitute for a form control's label part.
+- Do not use `danger` colour alone to communicate an error.
+- Do not clamp essential copy without another way to access it.
+- General margins, padding, width, positioning, and arbitrary inline styles are outside the API.
+
+## Related components
+
+- Use `Link` for inline destinations.
+- Use `FormattedDateTime`, `FormattedList`, `FormattedNumber`, or `RelativeTime` for locale-aware text values.
+- Use `Stack` or `Inline` to arrange multiple text elements.
+- Use `Badge` for compact status or classification labels, not prose.

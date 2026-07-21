@@ -1,0 +1,81 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Dialog.stories';
+
+<Meta
+  of={Stories}
+  summary="A modal task surface with required accessible title and description, contained focus, explicit close actions, and controlled or uncontrolled open state."
+/>
+
+# Dialog
+
+`Dialog` interrupts the current page with a focused modal task or decision that must be completed or dismissed.
+
+## Import
+
+```tsx
+import { Dialog } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for a short self-contained task that needs the user's immediate attention.
+
+## When not to use
+
+Use `AlertDialog` for a consequential decision, `Drawer` for a longer edge-mounted task, `Popover` for lightweight contextual controls, and inline content when interruption is unnecessary.
+
+## Basic example
+
+```tsx
+import { Dialog, TextField } from '@motech-development/breeze-ui';
+
+<Dialog.Root>
+  <Dialog.Trigger>Edit details</Dialog.Trigger>
+  <Dialog.Content>
+    <Dialog.Title>Edit details</Dialog.Title>
+    <Dialog.Description>
+      Review the information before closing.
+    </Dialog.Description>
+    <TextField.Root>
+      <TextField.Label>Name</TextField.Label>
+      <TextField.Input autoFocus />
+    </TextField.Root>
+    <Dialog.Close>Close</Dialog.Close>
+  </Dialog.Content>
+</Dialog.Root>;
+```
+
+<Canvas of={Stories.ControlledFocusAndDismissal} />
+
+## Anatomy
+
+| Part                 | Purpose                                                            |
+| -------------------- | ------------------------------------------------------------------ |
+| `Dialog.Root`        | Coordinates open state, trigger focus, dismissal, and restoration. |
+| `Dialog.Trigger`     | Semantic button that opens the dialog.                             |
+| `Dialog.Content`     | Backdrop, modal focus scope, scroll boundary, and dialog surface.  |
+| `Dialog.Title`       | Required heading used as the accessible name.                      |
+| `Dialog.Description` | Required explanatory text used as the accessible description.      |
+| `Dialog.Close`       | Semantic action that closes and restores trigger focus.            |
+
+Keep `Title` and `Description` inside `Content`. Put the most appropriate first focus target on an interactive descendant with `autoFocus`; otherwise React Aria chooses a safe target.
+
+## Open state, dismissal, and feedback
+
+Use `defaultOpen` for uncontrolled state, `open` with `onOpenChange` for controlled state, or `open` with `readOnly` for intentionally immutable state. `onOpenChange` receives the complete next Boolean for trigger activation, outside dismissal, Escape, and close actions. In read-only mode those interactions request no state change because no callback exists.
+
+`dismissible` defaults to `true` and allows outside pointer dismissal. `keyboardDismissDisabled` defaults to `false`; set it only when Escape would be unsafe and provide an obvious close action. Loading, disabled, invalid, empty, and error states belong to the controls or feedback inside the dialog. Do not disable every dismissal path during an indefinite load.
+
+## API
+
+<ArgTypes />
+
+## Native attributes and callback semantics
+
+Trigger and Close follow the public Button interaction vocabulary: use `onAction`, not `onClick`. Content accepts relevant dialog HTML and ARIA attributes. Breeze owns overlay role, focus containment, inline styling, and dismissal semantics.
+
+## Keyboard, accessibility, and internationalisation
+
+Activating Trigger opens the modal and moves focus inside. Tab and Shift+Tab remain within it. Escape dismisses unless disabled, Close dismisses explicitly, and focus returns to the trigger. Give every dialog a concise Title and meaningful Description; visible content elsewhere does not replace these parts. Long translated text and narrow viewports scroll inside the bounded surface. The provider propagates locale and direction into the portal.
+
+Do not nest unrelated dialogs, omit a dismissal action, put primary page navigation in a dialog, or use it for passive notifications. Related components: `AlertDialog`, `Drawer`, `Popover`, `ConfirmationDialog`, and `Toast`.

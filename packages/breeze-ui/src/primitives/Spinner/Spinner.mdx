@@ -1,0 +1,69 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Spinner.stories';
+
+<Meta
+  of={Stories}
+  summary="Compact indeterminate activity indicator that is either explicitly labelled or deliberately decorative."
+/>
+
+# Spinner
+
+`Spinner` indicates ongoing activity when the duration cannot be measured.
+
+```tsx
+import { Spinner } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use a spinner for compact indeterminate activity, especially inside an existing status layout. Use [ProgressBar](?path=/docs/feedback-progressbar--docs) when progress is measurable, [Skeleton](?path=/docs/feedback-skeleton--docs) to reserve a loading layout, and a disabled/loading-capable control pattern when activity belongs to one action.
+
+## Basic use
+
+```tsx
+import { Inline, Spinner, Typography } from '@motech-development/breeze-ui';
+
+export function SavingStatus() {
+  return (
+    <Inline gap="sm" wrap={false}>
+      <Spinner />
+      <Typography as="span">Saving changes</Typography>
+    </Inline>
+  );
+}
+```
+
+<Canvas of={Stories.Decorative} />
+
+## Labelling
+
+Omit `label` when adjacent visible text already communicates the activity. The spinner then has `aria-hidden="true"` and is purely decorative. Supply an application-owned translated `label` when it is the only status; Breeze renders `role="status"` and a visually hidden accessible name.
+
+Do not supply both a spinner label and duplicate live status text. The animation stops under reduced-motion preferences while the status semantics remain.
+
+## Sizes and variants
+
+`size` accepts `sm`, `md`, or `lg` and defaults to `md`. `variant` accepts `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, or `dark` and defaults to `primary`. Select `light` only on a sufficiently dark surface and `dark` only on a light surface.
+
+<Canvas of={Stories.SizesAndVariants} />
+
+## State, keyboard, and direction
+
+Spinner is indeterminate and read-only. It has no callback, keyboard interaction, disabled, invalid, empty, or error state. Render or remove it as application state changes. Its circular motion is direction-independent. Translate `label`; do not add directional copy to the decorative mark.
+
+`Spinner` supports relevant native `span` attributes, including `className`, ARIA and data attributes, events, and a typed `ref`; `children`, `role`, and inline `style` are intentionally owned or excluded.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not show an unlabelled standalone spinner with no visible status.
+- Do not announce the same status twice.
+- Do not use a spinner for measurable progress or as a permanent decoration.
+- Do not rely on animation alone to communicate loading.
+
+## Related components
+
+[ProgressBar](?path=/docs/feedback-progressbar--docs), [Skeleton](?path=/docs/feedback-skeleton--docs), and [Alert](?path=/docs/feedback-alert--docs).

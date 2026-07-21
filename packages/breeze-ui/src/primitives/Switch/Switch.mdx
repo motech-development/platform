@@ -1,0 +1,77 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Switch.stories';
+
+<Meta
+  of={Stories}
+  summary="Accessible compound on/off setting with visible label, native checkbox form participation, and controlled, uncontrolled, read-only, disabled, required, and invalid states."
+/>
+
+# Switch
+
+`Switch` represents a Boolean setting whose on or off state usually takes effect immediately.
+
+## Import
+
+```tsx
+import { Switch } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for persistent settings such as enabling notifications or a display preference. Prefer `Checkbox` for selection, acknowledgement, or a value submitted as part of a larger form. Do not use a switch to trigger a one-off action; use `Button`.
+
+## Basic example
+
+```tsx
+import { Switch } from '@motech-development/breeze-ui';
+
+<Switch.Root defaultSelected name="updates">
+  <Switch.Control>
+    <Switch.Track>
+      <Switch.Thumb />
+    </Switch.Track>
+    <Switch.Label>Email updates</Switch.Label>
+  </Switch.Control>
+  <Switch.Description>Changes take effect immediately.</Switch.Description>
+</Switch.Root>;
+```
+
+<Canvas of={Stories.AnatomyAndKeyboard} />
+
+## Anatomy
+
+| Part                 | Purpose                                                                      |
+| -------------------- | ---------------------------------------------------------------------------- |
+| `Switch.Root`        | Owns Boolean state, validation, and hidden native checkbox form integration. |
+| `Switch.Control`     | Native label and complete pointer, touch, and keyboard target.               |
+| `Switch.Track`       | Decorative on/off track.                                                     |
+| `Switch.Thumb`       | Decorative moving thumb inside the track.                                    |
+| `Switch.Label`       | Persistent visible name inside the control.                                  |
+| `Switch.Description` | Supporting guidance associated with the switch.                              |
+| `Switch.Error`       | Validation feedback associated while invalid.                                |
+
+Keep `Thumb` inside `Track`, and `Track` plus `Label` inside `Control`. Track and thumb are hidden from assistive technology; native switch state carries the meaning.
+
+## State, callbacks, and forms
+
+Use `defaultSelected` for uncontrolled state, `selected` with `onChange` for controlled state, or `selected` with `readOnly` for immutable state. `onChange` receives the complete next Boolean.
+
+When on, the hidden native checkbox submits `name=value`; `value` defaults to `'on'`. It submits nothing when off. `form` associates it with an external form. `disabled` prevents focus and changes and removes normal submission. `readOnly` preserves controlled state without changes. `required` and `invalid` are available, though switches rarely make sense as required acknowledgements—prefer `Checkbox` for consent.
+
+Loading is application-owned. If a change is saved asynchronously, keep the switch’s state truthful, communicate progress separately, and handle failure without silently reverting.
+
+## Keyboard, accessibility, and direction
+
+- Tab focuses the switch; Space toggles it. Clicking the visible label also toggles it.
+- The `Label` should describe the setting, not instruct “turn on”. State is announced separately.
+- Do not add “on/off” text that conflicts with the native announced state.
+- `Track` and `Thumb` each support `sm`, `md` (default), and `lg`; use the same size for both while retaining the control’s large hit target.
+- Logical layout and thumb movement follow surrounding direction.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not use Switch for submit-time choices, mismatch track and thumb sizes, put interactive content inside its label, or show stale optimistic state after a failed save. Use `Checkbox` for acknowledgement, `ToggleButton` for a pressed command, and `SegmentedControl` for mutually exclusive modes.

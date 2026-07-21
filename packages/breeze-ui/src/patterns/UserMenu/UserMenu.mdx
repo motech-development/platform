@@ -1,0 +1,82 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './UserMenu.stories';
+
+<Meta
+  of={Stories}
+  summary="Application-shell account menu combining represented-user identity, optional notifications, and keyed actions or destinations."
+/>
+
+# UserMenu
+
+`UserMenu` presents the represented user and a concise set of account actions in a keyboard-complete menu.
+
+## Import
+
+```tsx
+import { UserMenu } from '@motech-development/breeze-ui';
+import { SignOutIcon } from '@motech-development/breeze-ui/icons';
+```
+
+## When to use
+
+Use it in `ApplicationShell` for identity, a short notification summary, account destinations, and actions such as signing out.
+
+The application owns authentication, notification fetching and read state, confirmation, errors, analytics, and navigation. `UserMenu` only composes presentation and menu behaviour.
+
+## When not to use
+
+Do not use it as a general command menu, primary navigation, or a substantial notification centre. Prefer `Menu` for unrelated commands, `NavigationList` for persistent destinations, and a dedicated page for a complete notification history.
+
+## Basic example
+
+```tsx
+import { UserMenu } from '@motech-development/breeze-ui';
+import { SignOutIcon } from '@motech-development/breeze-ui/icons';
+
+<UserMenu
+  aria-label="User menu"
+  actions={[
+    { href: '/profile', id: 'profile', label: 'Profile' },
+    {
+      icon: <SignOutIcon />,
+      id: 'sign-out',
+      label: 'Sign out',
+      onAction: () => signOut(),
+      variant: 'danger',
+    },
+  ]}
+  hasUnread
+  notificationHeading="Notifications"
+  notificationState="1 new"
+  notifications="Your export is ready."
+  userName="Taylor Reed"
+/>;
+```
+
+<Canvas of={Stories.NotificationsAndActions} />
+
+## Actions, routing, and state
+
+`actions` is an ordered collection. Every action requires a stable string `id` and plain-string `label`; `label` is visible and drives typeahead. `onAction(id)` receives that action's id after semantic activation, not a DOM event. `href` makes an item a destination: local `/path` values use the `BreezeProvider` router adapter when available, while external URLs and native link behaviour remain native. An item may have an action, a destination, or both when activation intentionally performs both responsibilities.
+
+`disabled` prevents an action from receiving focus or activation. `variant="danger"` provides danger emphasis; `default` is the default. Use danger only for genuinely destructive or terminating actions and provide confirmation separately when needed.
+
+`hasUnread` defaults to `false`. When true, the trigger gets a visible decorative dot and its accessible name appends the provider's `unreadNotifications` message. The pattern does not mark notifications read. Notification content is rendered only when `notifications` is supplied; the heading and state are optional supporting content.
+
+## Accessibility, keyboard, and internationalisation
+
+`aria-label` must identify the trigger without relying on the visible user name. `userName` names the avatar and is also visible in the full shell presentation. Provide a meaningful image in `src` or allow `Avatar` to derive a fallback. Action icons are decorative because their labels carry meaning.
+
+The trigger opens with pointer activation, `Enter`, `Space`, or the platform menu shortcut. Arrow keys move between enabled actions, typing searches labels, `Enter` or `Space` activates, `Home` and `End` move to boundaries, and `Escape` closes and restores focus. Logical alignment and `top start` placement follow provider direction.
+
+Translate the accessible label, notification copy, user-facing state, and action labels. `Unread notifications` comes from `BreezeProvider.messages.unreadNotifications`. Keep labels concise enough for narrow shell presentation.
+
+There is no root loading, invalid, empty, disabled, controlled-open, or error state. Avoid opening an empty menu; render account-loading feedback outside it, disable individual actions during in-flight work, and show any failure in an application-owned alert or page region.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not pass domain objects as ids, use a danger style for ordinary navigation, treat `hasUnread` as application state storage, or place a long notification feed in the popover. Related components: [ApplicationShell](?path=/docs/patterns-application-shell-applicationshell--docs), [Avatar](?path=/docs/foundation-avatar--docs), [Menu](?path=/docs/navigation-menu--docs), and [ConfirmationDialog](?path=/docs/patterns-actions-confirmationdialog--docs).

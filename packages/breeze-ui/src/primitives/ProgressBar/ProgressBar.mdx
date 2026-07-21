@@ -1,0 +1,66 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ProgressBar.stories';
+
+<Meta
+  of={Stories}
+  summary="Labelled determinate or indeterminate indicator for the progress of an ongoing operation."
+/>
+
+# ProgressBar
+
+`ProgressBar` communicates how far an operation has progressed, or that its progress cannot yet be measured.
+
+```tsx
+import { ProgressBar } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for time-based operation progress such as uploading or processing. Use [Meter](?path=/docs/feedback-meter--docs) for a stable measurement such as storage used, [Spinner](?path=/docs/feedback-spinner--docs) for a compact indeterminate activity mark, and [Stepper](?path=/docs/progression-stepper--docs) for named stages.
+
+## Basic use
+
+```tsx
+import { ProgressBar } from '@motech-development/breeze-ui';
+
+export function UploadProgress({ percentage }: { percentage: number }) {
+  return (
+    <ProgressBar
+      label="Uploading files"
+      value={percentage}
+      valueText={`${percentage} percent complete`}
+    />
+  );
+}
+```
+
+<Canvas of={Stories.Determinate} />
+
+## Determinate and indeterminate state
+
+Determinate progress requires `value`; `minimum` defaults to `0`, `maximum` to `100`, and `indeterminate` is `false`. Set `indeterminate` to `true` and omit both `value` and `valueText` when no defensible measurement exists. Switch to determinate only when a meaningful value is available.
+
+`valueText` replaces the numeric value announced by assistive technology. Author and translate it when units or range meaning are not obvious. Values are interpreted within the supplied numeric range.
+
+<Canvas of={Stories.Indeterminate} />
+
+## Variants and accessibility
+
+`variant` is `primary` by default and accepts `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, or `dark`. Use semantic colour only as supporting information. The visible translated `label` is required and labels the progressbar. The component has no keyboard interaction, callback, disabled, invalid, empty, or error state; keep operation cancellation in a separate `Button`. Direction is inherited, and formatting application-specific values remains the consumer's responsibility.
+
+`ProgressBar` supports relevant native `div` attributes, including `className`, ARIA and data attributes, events, and a typed `ref`; `children`, `role`, and inline `style` are intentionally owned or excluded.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not use a progress bar for a static scalar measurement.
+- Do not invent percentages for an indeterminate operation.
+- Do not omit or visually hide the required operation label.
+- Do not announce frequent progress changes elsewhere as well.
+
+## Related components
+
+[Meter](?path=/docs/feedback-meter--docs), [Spinner](?path=/docs/feedback-spinner--docs), [Stepper](?path=/docs/progression-stepper--docs), and [Skeleton](?path=/docs/feedback-skeleton--docs).

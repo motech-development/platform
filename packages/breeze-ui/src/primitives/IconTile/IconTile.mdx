@@ -1,0 +1,107 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './IconTile.stories';
+
+<Meta
+  of={Stories}
+  summary="Non-interactive semantic presentation tile for curated icons and short visual markers."
+/>
+
+# IconTile
+
+`IconTile` places an icon or short marker in canonical geometry with constrained semantic colour emphasis.
+
+## Import
+
+```tsx
+import { IconTile } from '@motech-development/breeze-ui';
+import { CalendarIcon } from '@motech-development/breeze-ui/icons';
+```
+
+## When to use
+
+- Use as a supporting visual marker in a header, state panel, summary, or record.
+- Use `variant` to reinforce a meaning already expressed in text.
+- Use `decorative={false}` only when the marker contributes information not available in nearby text.
+
+## When not to use
+
+- Use `IconButton` when the icon activates an action; IconTile is not interactive.
+- Use `Avatar` when the content represents a named person or entity.
+- Use `Badge` for compact visible status text.
+- Use a curated icon directly when no enclosing geometry or semantic surface is needed.
+
+## Basic use
+
+```tsx
+import { IconTile, Inline, Typography } from '@motech-development/breeze-ui';
+import { CalendarIcon } from '@motech-development/breeze-ui/icons';
+
+export function ScheduleSummary() {
+  return (
+    <Inline align="center" gap="sm" wrap={false}>
+      <IconTile variant="info">
+        <CalendarIcon />
+      </IconTile>
+      <Typography>Next review date</Typography>
+    </Inline>
+  );
+}
+```
+
+<Canvas of={Stories.SemanticTiles} />
+
+## Accessibility mode
+
+`decorative` defaults to `true`, adding `aria-hidden="true"` to the whole tile. This is correct when adjacent visible text supplies the meaning. Any accessible label on a nested icon is also hidden by the tile.
+
+When the marker is the only source of information, expose it and name the meaningful child:
+
+```tsx
+import { IconTile } from '@motech-development/breeze-ui';
+import { WarningIcon } from '@motech-development/breeze-ui/icons';
+
+export function WarningMarker() {
+  return (
+    <IconTile decorative={false} variant="warning">
+      <WarningIcon aria-label="Needs attention" />
+    </IconTile>
+  );
+}
+```
+
+For visible short text such as a status code, `decorative={false}` exposes that text naturally. Do not expose both a marker and adjacent text with the same wording if that creates repetitive announcements.
+
+## Variants, geometry, and size
+
+Variants are `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, `dark`, and `neutral`. They set the border, background, and foreground together. Semantic variants reinforce, but never replace, visible status language.
+
+`square` is the default geometry; `circle` is useful for directional or compact status markers. Sizes are `sm` (36 pixels), `md` (40 pixels, the default), and `lg` (56 pixels). Child icons sized in `em` inherit the tile's text scale.
+
+`bordered={false}` removes the ordinary semantic border. Breeze may still expose a boundary in forced-colour mode so the marker remains perceivable.
+
+## API
+
+<ArgTypes />
+
+## State and behaviour
+
+Relevant native span attributes such as `id`, `aria-label` when exposed, `data-*`, and relationship attributes are forwarded. `aria-hidden` is owned by `decorative`; arbitrary inline `style` is not a public styling contract.
+
+IconTile has no keyboard behaviour and no controlled, uncontrolled, disabled, loading, invalid, error, empty, or read-only state. It must not receive action semantics or click handling. State belongs to the surrounding component; the tile only presents a marker.
+
+The geometry is direction-neutral. Directional icons retain their named glyph orientation; select the icon that describes the intended concept in the current interface. Child text follows provider direction but is not translated or formatted.
+
+## Common mistakes and limitations
+
+- Do not use colour or an icon alone to communicate critical state.
+- Do not set `decorative={false}` without accessible meaning in the child or wrapper.
+- Do not give a nested icon an `aria-label` while leaving the tile decorative.
+- Do not put long text, controls, or multiple competing icons inside the tile.
+- Use typed props rather than overriding canonical geometry or semantic colours with classes.
+
+## Related components
+
+- Use the curated `icons` subpath for the marker glyph.
+- Use `IconButton` for an icon-only action.
+- Use `Avatar` for identity and `Badge` for status text.
+- Use `StatePanel` when the marker belongs to a complete empty, loading, or error composition.

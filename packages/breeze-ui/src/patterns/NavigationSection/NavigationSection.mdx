@@ -1,0 +1,66 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './NavigationSection.stories';
+
+<Meta
+  of={Stories}
+  summary="Visible section heading and labelled navigation landmark for one related group of application destinations."
+/>
+
+# NavigationSection
+
+`NavigationSection` groups related destinations under a persistent visible heading that also names the navigation landmark.
+
+## Import
+
+```tsx
+import {
+  NavigationList,
+  NavigationSection,
+} from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it when a navigation area contains several meaningful groups, such as project and account destinations. Use `NavigationList.Root` alone for one already-labelled destination set, `Breadcrumbs` for hierarchy, `Tabs` for peer content views, or `SectionHeader` for a non-navigation content section.
+
+## Basic example
+
+```tsx
+import {
+  NavigationList,
+  NavigationSection,
+} from '@motech-development/breeze-ui';
+
+<NavigationSection title="Projects">
+  <NavigationList.Root aria-label="Project destinations">
+    <NavigationList.Item current href="/overview" id="overview">
+      Overview
+    </NavigationList.Item>
+    <NavigationList.Item href="/projects" id="projects">
+      All projects
+    </NavigationList.Item>
+  </NavigationList.Root>
+</NavigationSection>;
+```
+
+<Canvas of={Stories.Destinations} />
+
+## Structure, state, and routing
+
+The pattern renders a `nav` landmark named by its visible fixed-level `h2`, followed by `children`. It adds no selection model: the application derives each destination's `current` state from its router. `NavigationList.Item` local links use the `BreezeProvider` router adapter when configured; external destinations and native browser link behaviour remain native.
+
+The section has no orientation, density, variant, disabled, loading, invalid, empty, or error state. Configure layout and item state on the child navigation primitive. When there are no destinations, omit the entire section instead of leaving an empty landmark; when loading fails, present feedback outside the navigation.
+
+## Accessibility and internationalisation
+
+`title` must be concise, visible, and distinct from other navigation landmark names. Translate the title and destination labels. If `children` contains another navigation landmark such as `NavigationList.Root`, give it a more specific accessible label so landmarks remain distinguishable.
+
+The pattern itself adds no keyboard behaviour. Links in its children retain standard `Tab`, `Enter`, modified-click, and context-menu behaviour. Item callbacks use the semantics of the composed navigation component. Logical spacing follows provider direction; destination order remains application-owned in both left-to-right and right-to-left layouts.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not use a section heading as a substitute for marking the current route, repeat the same title for every landmark, place commands among destinations, or render unrelated groups under one title. Related components: [NavigationList](?path=/docs/navigation-navigationlist--docs), [ApplicationShell](?path=/docs/patterns-application-shell-applicationshell--docs), [Breadcrumbs](?path=/docs/navigation-breadcrumbs--docs), and [SectionHeader](?path=/docs/patterns-page-structure-sectionheader--docs).

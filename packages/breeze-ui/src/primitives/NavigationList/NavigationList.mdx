@@ -1,0 +1,67 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './NavigationList.stories';
+
+<Meta
+  of={Stories}
+  summary="A labelled persistent navigation landmark with keyed destinations, current-page state, and horizontal or vertical layout."
+/>
+
+# NavigationList
+
+`NavigationList` presents a persistent set of application destinations and identifies the current page.
+
+## Import
+
+```tsx
+import { NavigationList } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for side navigation or a compact horizontal destination list. Use `Menu` for transient actions, `Tabs` for views of the same resource, and `Breadcrumbs` for hierarchical orientation.
+
+## Basic example
+
+```tsx
+import { NavigationList } from '@motech-development/breeze-ui';
+
+<NavigationList.Root aria-label="Settings">
+  <NavigationList.Item current href="/settings" id="general">
+    General
+  </NavigationList.Item>
+  <NavigationList.Item href="/settings/security" id="security">
+    Security
+  </NavigationList.Item>
+</NavigationList.Root>;
+```
+
+<Canvas of={Stories.StatesAndOrientations} />
+
+## Anatomy, state, and routing
+
+| Part                  | Purpose                                                     |
+| --------------------- | ----------------------------------------------------------- |
+| `NavigationList.Root` | Renders a labelled navigation landmark containing the list. |
+| `NavigationList.Item` | Renders one keyed router-neutral destination.               |
+
+Set `current` on exactly one destination for `aria-current="page"`. `onAction` receives that item's complete `string | number` id after semantic activation; it receives no DOM event. A disabled item neither navigates nor calls `onAction`.
+
+Local `/path` destinations use the `BreezeProvider` router adapter when present. Without an adapter, and for external URLs, normal anchors are used. There is no selection controller: route state owns `current`. The component has no loading, invalid, read-only, empty, or error presentation; render an appropriate loading or state component instead of an empty landmark.
+
+## Orientation
+
+`vertical` is the default and suits side navigation. `horizontal` wraps at narrow widths and suits a short set. Layout follows logical direction, while destination ids and URLs do not change during localisation.
+
+## API
+
+<ArgTypes />
+
+## Native attributes and styling
+
+Relevant `nav` and list-item `aria-*` and `data-*` attributes are supported. Inline styling and native click handlers are excluded from the public interaction contract.
+
+## Accessibility and common mistakes
+
+Every root needs a distinct accessible name when a page has more than one navigation landmark. Tab visits enabled links and Enter activates them. Use visible, translated link text, allow it to wrap, and do not rely on the current background colour alone. Do not use `onAction` as a substitute for navigation, put buttons inside items, mark several pages current, or use unstable ids.
+
+Related components: `Breadcrumbs` for hierarchy, `Tabs` for peer panels, `Menu` for transient commands, and `NavigationSection` for a composed navigation pattern.

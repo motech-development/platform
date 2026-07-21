@@ -1,0 +1,113 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ListBox.stories';
+
+<Meta
+  of={Stories}
+  summary="Persistent selectable collection with static or typed items, single or multiple selection, disabled keys, actions, empty state, incremental loading, and fixed or variable virtualization."
+/>
+
+# ListBox
+
+`ListBox` presents a persistent collection of options with keyboard focus, typeahead, and optional single or multiple selection.
+
+## Import
+
+```tsx
+import { ListBox } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it when options should remain visible, when multiple selection is needed, or when a large collection benefits from virtualisation or incremental loading. Prefer `Select` for compact single selection, `ComboBox` for editable filtering, `RadioGroup` for a short visible one-of-many choice, and `List` for non-interactive content. Do not use listbox options as navigation links or a collection of unrelated buttons.
+
+## Basic example
+
+```tsx
+import { ListBox } from '@motech-development/breeze-ui';
+
+<ListBox.Root aria-label="Priority" defaultSelection={['normal']}>
+  <ListBox.Item id="low" textValue="Low">
+    Low
+  </ListBox.Item>
+  <ListBox.Item id="normal" textValue="Normal">
+    Normal
+  </ListBox.Item>
+  <ListBox.Item id="high" textValue="High">
+    High
+  </ListBox.Item>
+</ListBox.Root>;
+```
+
+<Canvas of={Stories.StaticKeyboard} />
+
+## Anatomy
+
+| Part               | Purpose                                                                                                           |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `ListBox.Root`     | Owns collection rendering, focus, typeahead, selection, empty state, orientation, and optional virtualisation.    |
+| `ListBox.Item`     | One selectable option with a stable key, plain-text representation, disabled state, and optional semantic action. |
+| `ListBox.LoadMore` | Loading row and deduplicated intersection sentinel for application-owned incremental loading.                     |
+
+`Root` must have an accessible name through `aria-label` or `aria-labelledby`. Use `onAction` for an option’s semantic action only when that action is consistent with listbox interaction; it receives the item key.
+
+## Static and dynamic collections
+
+Static collections use authored `Item` children. Dynamic collections require items with stable `id: string | number` and a renderer.
+
+```tsx
+<ListBox.Root items={people} aria-label="Assignees" multiple>
+  {(person) => (
+    <ListBox.Item id={person.id} textValue={person.name}>
+      {person.name}
+    </ListBox.Item>
+  )}
+</ListBox.Root>
+```
+
+Never mix static children with `items`. `textValue` is required for typeahead and accessibility, especially when visible content contains markup. `disabledKeys` disables matching keys without changing the data. Item-level `disabled` is useful for static collections.
+
+## Selection and state
+
+Selections use `CollectionKey[] | 'all'`, where each key is a string or number. Use `defaultSelection` for uncontrolled state, `selection` with `onSelectionChange` for controlled state, or `selection` with `readOnly` for immutable state. `onSelectionChange` receives the complete next selection. `multiple` defaults to `false`; even single selection is represented as an array.
+
+`required` adds required semantics; `invalid` adds invalid semantics and styling, but validation messages belong in surrounding form composition. `readOnly` exposes immutable semantics and prevents application state changes. An empty collection displays `emptyContent`, defaulting to `'No options'`. The component has no root loading prop; use `LoadMore` or application-owned status content.
+
+`orientation` defaults to `vertical`; horizontal listboxes should contain a small, naturally horizontal set.
+
+## Virtualisation and loading
+
+Pass `virtualization` only for collections large enough to justify windowing. Fixed mode requires an authoritative `rowHeight`; variable mode measures live rows and uses `estimatedRowHeight` only initially.
+
+```tsx
+<ListBox.Root
+  items={items}
+  aria-label="Results"
+  virtualization={{ mode: 'fixed', viewportHeight: 320, rowHeight: 48, gap: 4 }}
+>
+  {(item) => (
+    <ListBox.Item id={item.id} textValue={item.name}>
+      {item.name}
+    </ListBox.Item>
+  )}
+</ListBox.Root>
+```
+
+Common virtualisation options are `viewportHeight` (required pixels), `gap` (`0`), `overscan` (`0` beyond the engine buffer), `loadingRowHeight` (`48`), and `estimatedSectionHeight`. Variable mode’s `estimatedRowHeight` defaults to `48`.
+
+`LoadMore` calls `onLoadMore` once when its offset threshold is reached and suppresses duplicate calls while `loading` is true. `offset` defaults to `1` viewport proportion. The application owns fetching, errors, retries, end-of-list state, and stable item accumulation.
+
+## Keyboard, accessibility, and direction
+
+- Tab focuses the listbox; arrow keys move the active option along its orientation.
+- Typeahead matches `textValue`. Enter or Space selects according to selection mode; selection behaviour follows accessible listbox conventions.
+- Disabled options cannot receive focus, selection, or actions.
+- Give the root a persistent accessible name. Do not place interactive descendants inside an option.
+- Right-to-left horizontal navigation follows platform direction; keys remain stable while labels and empty/loading content may be translated.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not use array indexes as keys, omit the accessible root name, mix links or buttons into options, enable virtualisation without a fixed viewport height, or forget to set `loading` while a load-more request is pending. Use `Select`, `ComboBox`, `RadioGroup`, or non-interactive `List` when their semantics fit better.

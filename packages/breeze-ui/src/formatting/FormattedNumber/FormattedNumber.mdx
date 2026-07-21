@@ -1,0 +1,58 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './FormattedNumber.stories';
+
+<Meta
+  of={Stories}
+  summary="Locale-aware number, currency, percentage, unit or notation output for number and bigint values using Intl.NumberFormat and the BreezeProvider locale."
+/>
+
+# FormattedNumber
+
+`FormattedNumber` renders a numeric value with locale-aware grouping, decimal symbols, signs, currency, units or notation.
+
+## Import
+
+```tsx
+import { FormattedNumber } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `FormattedNumber` for display values whose formatting must follow the provider locale. Formatting does not add domain meaning: specify currency, unit or percentage semantics explicitly.
+
+## When not to use
+
+Use `NumberField` for numeric entry, `Meter` or `ProgressBar` for visualised bounded values, and plain text when the string is a stable identifier rather than a number.
+
+## Basic example
+
+```tsx
+import { FormattedNumber } from '@motech-development/breeze-ui';
+
+<FormattedNumber
+  value={1042.16}
+  options={{ style: 'currency', currency: 'GBP' }}
+/>;
+```
+
+<Canvas of={Stories.Currency} />
+
+## Precision and behaviour
+
+`value` accepts a `number` or `bigint`; the component does not validate exceptional numeric values. Native `Intl.NumberFormat` behaviour applies to `NaN`, positive infinity and negative infinity. `options` is the native formatter contract. Important choices include `style`, `currency`, `unit`, `notation`, `minimumFractionDigits`, `maximumFractionDigits`, `signDisplay` and `useGrouping`. Runtime defaults use decimal style and locale-defined precision.
+
+Percentage style formats `1` as 100%, so convert application ratios deliberately. Currency style requires an ISO 4217 `currency` code such as `'GBP'`; do not infer it from locale. Precision options affect display and rounding, not the source value.
+
+This component renders a stateless `<span>` with no input, controlled state, callbacks, loading, invalid, disabled or keyboard behaviour. Choose an application fallback for missing data instead of coercing it to zero.
+
+## Accessibility and internationalisation
+
+Assistive technology reads the localised text in its surrounding context. Include a visible label or nearby prose when the number’s meaning is unclear; do not rely on currency symbols or colour alone. Locale controls digits, grouping, signs, separators and placement. Direction is inherited.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not pass a preformatted string, infer currency from locale, treat a percentage as an already multiplied value, or use displayed rounding for calculations. Use `NumberField` for editing, `FormattedList` for joined prose and `Meter` for a bounded measurement visualisation.

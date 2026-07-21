@@ -1,0 +1,74 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './TimeField.stories';
+
+<Meta
+  of={Stories}
+  summary="Locale-aware segmented entry for one wall-clock time, using stable HH:mm or HH:mm:ss values with native form participation and controlled, uncontrolled, or read-only state."
+/>
+
+# TimeField
+
+`TimeField` edits a wall-clock time through locale-aware segments without attaching it to a date or time zone.
+
+## Import
+
+```tsx
+import { TimeField } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `TimeField` for a time of day whose date and zone are separate business concepts. Use `DateTimePicker` for a complete instant with an explicit offset, or `FormattedDateTime` to display rather than edit a date-time. Do not use it for elapsed durations, countdowns or free-form time text.
+
+## Basic example
+
+```tsx
+import { TimeField } from '@motech-development/breeze-ui';
+
+<TimeField.Root
+  defaultValue="14:30"
+  minValue="09:00"
+  maxValue="17:00"
+  name="startTime"
+>
+  <TimeField.Label>Start time</TimeField.Label>
+  <TimeField.Input />
+  <TimeField.Description>Between 09:00 and 17:00.</TimeField.Description>
+</TimeField.Root>;
+```
+
+<Canvas of={Stories.SegmentKeyboard} />
+
+## Anatomy
+
+| Part                    | Purpose                                                                     |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `TimeField.Root`        | Owns stable time state, boundaries, validation and native form integration. |
+| `TimeField.Label`       | Visible accessible name for the segmented input.                            |
+| `TimeField.Input`       | Locale-aware editable hour, minute and optional second segments.            |
+| `TimeField.Description` | Supporting guidance associated with the field.                              |
+| `TimeField.Error`       | Validation message associated with an invalid field.                        |
+
+## Values, precision and state
+
+Use 24-hour stable strings: `'14:30'` for minute precision or `'14:30:45'` for second precision. An empty value is `null`. The visual control may present a locale-appropriate 12- or 24-hour cycle, but callbacks always use the stable 24-hour format. Seconds appear when any of `value`, `defaultValue`, `minValue` or `maxValue` contains three colon-separated segments; keep precision consistent across those props.
+
+Use `defaultValue` for uncontrolled state, `value` with `onChange` for controlled state, or `value` with `readOnly` for immutable state. `onChange` receives the next complete stable time or `null`. `minValue` and `maxValue` are inclusive. `disabled` prevents focus and changes; `readOnly` preserves an inspectable controlled value; `invalid` and `required` expose validation state. Empty and loading behaviour remain application-owned.
+
+When `name` is supplied, the hidden native time input submits the stable value. Use `form` for an external form and `inputRef` only when direct access to that hidden input is necessary.
+
+## Keyboard, accessibility and internationalisation
+
+- Tab enters and leaves the segmented control. Arrow keys move between or increment segments; numeric typing edits the focused segment, and Backspace or Delete clears editable content.
+- Always render `Label`. Use `Description` for constraints and `Error` for a correction when `invalid` is true.
+- Locale controls visual segment order, hour cycle and spoken labels. Provider direction controls logical layout.
+- Do not localise the stored value or infer a time zone from the displayed hour. Daylight-saving rules do not apply because this component has no date or zone.
+- Do not communicate required, invalid or disabled state only through appearance.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not pass a JavaScript `Date`, an ISO date-time, a locale-formatted time or an offset such as `+01:00`. Do not mix minute and second precision accidentally. Use `DateField` for a separate calendar date, `DateTimePicker` for one date-time instant, and `RelativeTime` for phrases such as “in 2 hours”.

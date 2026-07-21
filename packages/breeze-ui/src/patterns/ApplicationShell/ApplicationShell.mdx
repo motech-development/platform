@@ -1,0 +1,105 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ApplicationShell.stories';
+
+<Meta
+  of={Stories}
+  summary="Responsive application frame that composes brand, navigation, context, account controls, skip navigation, and page content."
+/>
+
+# ApplicationShell
+
+`ApplicationShell` provides the shared responsive frame for a product application without owning routes, account state, or page content.
+
+## Import
+
+```tsx
+import {
+  ApplicationShell,
+  Button,
+  Logo,
+  NavigationList,
+  Typography,
+} from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it once around an authenticated application workspace that needs the canonical wide navigation rail and compact navigation drawer. Compose `NavigationList`, `ContextSwitcher`, and `UserMenu` into its slots.
+
+Do not use it as a marketing-site header, repeat it per page, or put routing and authentication logic inside the shell. Use page-level `Container`, `PageHeader`, and layout primitives inside `children`; use `Drawer` directly for a separate temporary panel.
+
+## Basic example
+
+```tsx
+import {
+  ApplicationShell,
+  Button,
+  Logo,
+  NavigationList,
+  Typography,
+} from '@motech-development/breeze-ui';
+import '@motech-development/breeze-ui/reset.css';
+import '@motech-development/breeze-ui/styles.css';
+
+export function Workspace() {
+  return (
+    <ApplicationShell
+      account={
+        <Button appearance="ghost" variant="light">
+          Account
+        </Button>
+      }
+      brand={<Logo size="lg" />}
+      compactBrand={<Typography as="strong">Workspace</Typography>}
+      navigation={
+        <NavigationList.Root aria-label="Primary navigation">
+          <NavigationList.Item current href="/overview" id="overview">
+            Overview
+          </NavigationList.Item>
+          <NavigationList.Item href="/projects" id="projects">
+            Projects
+          </NavigationList.Item>
+        </NavigationList.Root>
+      }
+      navigationLabel="Open navigation"
+      skipLinkLabel="Skip to main content"
+    >
+      <Typography as="h1">Overview</Typography>
+    </ApplicationShell>
+  );
+}
+```
+
+<Canvas of={Stories.CompleteFrame} />
+
+## Anatomy and responsive behaviour
+
+The root contains a visible-on-focus skip link, a persistent rail from the `md` breakpoint, a compact header and start-edge drawer below `md`, and the labelled main-content target. `brand`, `navigation`, optional `context`, and `account` can be rendered in more than one responsive presentation, so their components must obtain changing state from the application and must not introduce a shared singleton DOM id. `compactBrand` defaults to `brand`.
+
+The drawer uses logical `start`, so it opens from the left in left-to-right layouts and the right in right-to-left layouts. The shell supplies layout and landmarks; the application supplies destinations, the current route, translated product copy, context selection, account actions, loading/error content, and data fetching.
+
+## Accessibility, keyboard, and routing
+
+- `skipLinkLabel` must clearly describe bypassing repeated navigation. Its target is `mainId`, which defaults to `main-content`; keep that id unique on the page.
+- `navigationLabel` names the compact drawer trigger and its dialog. It is application-owned, localised text.
+- Use a labelled `NavigationList.Root` and set `current` from the active route. Local links use the `BreezeProvider` router adapter when configured; native anchors handle external URLs and native link behaviours.
+- The drawer trigger and close action use normal button keyboard activation. Focus, `Escape` dismissal, focus containment, scroll locking, and restoration are supplied by `Drawer`.
+- The main target has `tabIndex={-1}` so the skip link can move focus to it. Keep the first page heading inside `children`.
+
+`ApplicationShell` has no disabled, read-only, invalid, loading, empty, or error mode. Render page feedback inside `children`, disable the relevant slotted controls themselves, and keep navigation and account recovery available whenever possible.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and limitations
+
+- Do not put domain-specific page state in a shared shell slot.
+- Do not render another `main` landmark inside `children`.
+- Do not use physical left/right assumptions; direction is provider-controlled.
+- Do not hard-code the shell breakpoint or rail offset in application CSS.
+- Do not assume the frame performs route changes, signs users out, fetches contexts, or announces page loading.
+
+## Related components
+
+Use [ContextSwitcher](?path=/docs/patterns-application-shell-contextswitcher--docs) and [UserMenu](?path=/docs/patterns-application-shell-usermenu--docs) in the footer slots, [NavigationList](?path=/docs/navigation-navigationlist--docs) for destinations, [PageHeader](?path=/docs/patterns-page-structure-pageheader--docs) inside the page, and [SkipLink](?path=/docs/navigation-skiplink--docs) when building a different frame.

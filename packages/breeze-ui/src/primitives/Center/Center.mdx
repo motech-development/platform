@@ -1,0 +1,65 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Center.stories';
+
+<Meta
+  of={Stories}
+  summary="A neutral layout that centres one composition on both axes."
+/>
+
+# Center
+
+`Center` centres its content horizontally and vertically, optionally within at least the viewport height.
+
+## Import
+
+```tsx
+import { Center } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `Center` for a bounded empty, loading, sign-in, or status composition that should sit on both axes. Use `Container` to centre and bound page width without vertical centring, or `Stack align="center"` when only cross-axis alignment is needed.
+
+## Basic example
+
+```tsx
+import {
+  Center,
+  Spinner,
+  Stack,
+  Typography,
+} from '@motech-development/breeze-ui';
+
+export function LoadingView() {
+  return (
+    <Center minHeight="screen">
+      <Stack align="center" gap="sm">
+        <Spinner label="Loading results" />
+        <Typography>Loading results…</Typography>
+      </Stack>
+    </Center>
+  );
+}
+```
+
+<Canvas of={Stories.Content} />
+
+## API
+
+<ArgTypes />
+
+## Accessibility and responsive behaviour
+
+Relevant native `div` attributes including `id`, `aria-*`, and `data-*` are supported; inline `style` is not. `Center` has no callbacks or controlled, disabled, invalid, read-only, loading, empty, or error state of its own.
+
+The wrapper is a neutral `div` with no role, focus, label, or keyboard behaviour. Give loading and status content its own accessible semantics. `minHeight="screen"` is a minimum rather than a fixed height, so zoomed, translated, or error content can grow and remain reachable. Centring is unchanged in right-to-left direction.
+
+## Common mistakes
+
+- Do not use `Center` to hide overflowing content or force a fixed viewport height.
+- Do not centre long prose, dense forms, or whole application pages when start alignment is easier to scan.
+- Do not assume it supplies live-region semantics for loading or errors.
+
+## Related components
+
+Use `StatePanel` for a standard empty/error composition, `Spinner` for announced progress, `Stack` inside the centred region, and `Container` for normal page gutters.

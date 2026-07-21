@@ -1,0 +1,134 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './GridList.stories';
+
+<Meta
+  of={Stories}
+  summary="Selectable interactive rows with stable keys, embedded controls, sections, actions, responsive grid layout, and optional virtualization."
+/>
+
+# GridList
+
+`GridList` presents selectable or actionable rows whose content may include independently focusable controls.
+
+```tsx
+import { GridList } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `GridList` for rich rows or tiles that need collection focus, typeahead, selection, row actions, or embedded controls. Use [List](?path=/docs/data-display-list--docs) for non-interactive content, [ListBox](?path=/docs/collections-listbox--docs) for choosing simple options, [Table](?path=/docs/collections-table--docs) for aligned columns, and [Card](?path=/docs/data-display-card--docs) for independent articles.
+
+## Basic use
+
+```tsx
+import { GridList } from '@motech-development/breeze-ui';
+
+const records = [
+  { id: 'alpha', name: 'Alpha' },
+  { id: 'beta', name: 'Beta' },
+];
+
+export function RecordList() {
+  return (
+    <GridList.Root aria-label="Records" items={records}>
+      {(record) => (
+        <GridList.Item id={record.id} textValue={record.name}>
+          {record.name}
+        </GridList.Item>
+      )}
+    </GridList.Root>
+  );
+}
+```
+
+<Canvas of={Stories.EmbeddedControlsAndSelection} />
+
+## Anatomy
+
+- `GridList.Root` owns grid semantics, focus, typeahead, selection, layout, empty content, and virtualization.
+- `GridList.Item` is one keyed row or tile and may expose a row-level action.
+- `GridList.Section` groups statically authored items under a stable key.
+- `GridList.Header` is the visible heading inside a section.
+- `GridList.LoadMore` is a visible loading row and intersection-driven load-more sentinel.
+
+## Collection content and keys
+
+Author static `GridList.Item` children, or pass `items` and a renderer. Dynamic items must include a stable `id` whose value is a `string` or `number`. Every item repeats that stable key in `GridList.Item id`. `textValue` is required for typeahead and an accessible plain-text representation, especially when visible content is structured.
+
+Selection values are `Array<string | number>` or the literal `'all'`. Do not use array positions, translated labels, or transient object identities as keys.
+
+## Selection and actions
+
+Uncontrolled selection uses `defaultSelection` and may observe changes with `onSelectionChange`. Controlled selection requires both `selection` and `onSelectionChange`. Read-only selection requires `selection`, `readOnly`, and no callback. The initial uncontrolled selection is empty.
+
+`multiple` defaults to `false`. `onSelectionChange` receives the complete next selection, not only the changed key. `GridList.Item onAction` receives that item's stable key. Keep embedded buttons and links as real controls; their activation remains separate from row selection and action.
+
+```tsx
+import { useState } from 'react';
+import {
+  GridList,
+  type CollectionSelection,
+} from '@motech-development/breeze-ui';
+
+export function ControlledRecords() {
+  const [selection, setSelection] = useState<CollectionSelection>(['alpha']);
+
+  return (
+    <GridList.Root
+      aria-label="Records"
+      onSelectionChange={setSelection}
+      selection={selection}
+    >
+      <GridList.Item id="alpha" textValue="Alpha">
+        Alpha
+      </GridList.Item>
+      <GridList.Item id="beta" textValue="Beta">
+        Beta
+      </GridList.Item>
+    </GridList.Root>
+  );
+}
+```
+
+## Layout, empty, disabled, loading, and error states
+
+`layout="stack"` is the default. `layout="grid"` creates auto-fitting tiles while preserving grid-list semantics. `orientation` defaults to `vertical` and sets the primary arrow-key axis; use `horizontal` only when the visual arrangement and expected navigation agree. `disabledKeys` disables matching keys globally; `GridList.Item disabled` disables one item. Disabled rows cannot receive focus, selection, or actions.
+
+`emptyContent` defaults to `No items`; supply translated application copy. `GridList.LoadMore` calls `onLoadMore` when its sentinel approaches the viewport. Set `loading` while the returned request is pending so duplicate requests are suppressed. `offset` defaults to `1` viewport proportion. The collection has no built-in error presentation: replace or accompany it with application-owned feedback and offer a retry action.
+
+## Virtualization
+
+Pass `virtualization` only for collections large enough to justify windowing. Both modes require `viewportHeight` in pixels.
+
+| Mode                   | Required                      | Optional defaults and behaviour                                    |
+| ---------------------- | ----------------------------- | ------------------------------------------------------------------ |
+| `{ mode: 'fixed' }`    | `rowHeight`, `viewportHeight` | Uniform authoritative row height; `gap` defaults to `0`.           |
+| `{ mode: 'variable' }` | `viewportHeight`              | `estimatedRowHeight` defaults to `48`; rendered rows are measured. |
+
+Both accept `overscan` (default `0` beyond the directional buffer), `loadingRowHeight` (default `48`), and `estimatedSectionHeight`. Grid-list virtualization also accepts `minimumItemWidth` (default `224`) and `maximumColumns` (defaults to available width). Keep keys stable and provide realistic estimates; do not virtualize merely to hide expensive row rendering.
+
+<Canvas of={Stories.VariableVirtualizationAndLoading} />
+
+## Keyboard and accessibility
+
+Give every root a visible label or `aria-label`/`aria-labelledby`. Arrow keys move row focus along `orientation`; Home and End move to collection boundaries, typeahead uses `textValue`, and standard selection keys follow the current single or multiple selection mode. Enter or equivalent activation invokes an actionable row. Tab moves into and out of embedded controls without changing their semantics. Exact platform selection modifiers follow React Aria conventions.
+
+Translate labels, empty/loading copy, section headings, and `textValue`. Logical layout and focus movement account for the inherited direction; do not reverse source order for RTL.
+
+Parts support relevant native `div` attributes, `className`, ARIA and data attributes, events, and typed refs. Click, value, children, and inline-style props owned by the collection API are intentionally excluded where applicable.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not omit `textValue` or use unstable keys.
+- Do not mix `selection` with `defaultSelection`, or mark uncontrolled state read-only.
+- Do not attach click handlers to row wrappers; use `onAction` or an embedded control.
+- Do not leave `loading` false while an asynchronous load-more request is pending.
+- Do not use `GridList` for plain prose or tabular comparisons.
+
+## Related components
+
+[ListBox](?path=/docs/collections-listbox--docs), [Table](?path=/docs/collections-table--docs), [List](?path=/docs/data-display-list--docs), and [Card](?path=/docs/data-display-card--docs).

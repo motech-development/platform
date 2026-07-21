@@ -1,0 +1,72 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Alert.stories';
+
+<Meta
+  of={Stories}
+  summary="Persistent inline feedback with an explicit assertive, polite, or non-live announcement policy."
+/>
+
+# Alert
+
+`Alert` displays persistent inline feedback and makes announcement urgency an explicit choice.
+
+```tsx
+import { Alert } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use an alert for feedback that should remain in the page near the affected context. Use [Toast](?path=/docs/feedback-toast--docs) for transient, provider-queued notifications, [StatePanel](?path=/docs/patterns-feedback-statepanel--docs) for a substantial empty or error state, and field `Error` parts for validation attached to a control.
+
+Do not use an assertive alert for ordinary guidance already present at page load.
+
+## Basic use
+
+```tsx
+import { Alert } from '@motech-development/breeze-ui';
+
+export function SaveFeedback() {
+  return (
+    <Alert announcement="polite" variant="success">
+      Your changes were saved.
+    </Alert>
+  );
+}
+```
+
+<Canvas of={Stories.InformationNotice} />
+
+## Announcement behaviour
+
+- `assertive` is the default. It renders `role="alert"`, `aria-live="assertive"`, and `aria-atomic="true"` for urgent newly inserted feedback.
+- `polite` renders `role="status"`, `aria-live="polite"`, and `aria-atomic="true"` for non-urgent updates.
+- `off` omits the live-region role and sets `aria-live="off"`; use it for persistent content already present when the page loads.
+
+The DOM change must occur after the live region exists for reliable announcements. Do not duplicate the same message in another live region.
+
+## Variants
+
+`variant` accepts `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, or `dark`; the default is `info`. Choose by meaning, not decoration, and include text or an accessible icon so colour is never the only signal.
+
+<Canvas of={Stories.Variants} />
+
+## Accessibility, state, and direction
+
+Alert has no keyboard interaction or internal controlled state. It does not own dismissal, loading, disabled, invalid, empty, or error logic; conditionally render it from application state and use `danger` for error meaning when appropriate. Translate its application-owned content. Its logical layout supports both directions; decorative icons should be hidden from assistive technology and meaningful icons need a text alternative without repeating the message.
+
+`Alert` supports relevant native `div` attributes, including `className`, ARIA and data attributes, events, and a typed `ref`; `role` and inline `style` are intentionally owned or excluded.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not leave `announcement="assertive"` on static informational content.
+- Do not announce a validation error both in `Alert` and a field error.
+- Do not put the only dismiss or recovery action in non-interactive text.
+- Do not choose `success`, `warning`, or `danger` solely for visual emphasis.
+
+## Related components
+
+[Toast](?path=/docs/feedback-toast--docs), [StatePanel](?path=/docs/patterns-feedback-statepanel--docs), and compound field error parts cover transient feedback, page states, and validation.

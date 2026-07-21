@@ -1,0 +1,68 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './List.stories';
+
+<Meta
+  of={Stories}
+  summary="Native ordered or unordered content list with deliberately non-interactive semantics."
+/>
+
+# List
+
+`List` presents related text or content using native ordered or unordered list semantics.
+
+```tsx
+import { List } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `List` for prose-like groups where order either does or does not matter.
+
+## When not to use
+
+Use [DescriptionList](?path=/docs/data-display-descriptionlist--docs) for term-value metadata, [ListBox](?path=/docs/collections-listbox--docs) for option selection, or [GridList](?path=/docs/collections-gridlist--docs) for selectable rows with richer content.
+
+## Basic use
+
+```tsx
+import { List } from '@motech-development/breeze-ui';
+
+export function ReviewSteps() {
+  return (
+    <List.Root ordered>
+      <List.Item>Prepare the changes</List.Item>
+      <List.Item>Review the summary</List.Item>
+      <List.Item>Publish the release</List.Item>
+    </List.Root>
+  );
+}
+```
+
+<Canvas of={Stories.OrderedAndUnordered} />
+
+## Anatomy and semantics
+
+- `List.Root` renders `ul` by default and `ol` when `ordered` is `true`.
+- `List.Item` renders one native `li`.
+
+List owns no selection, action, focus-management, loading, disabled, invalid, empty, or error behaviour.
+
+## Accessibility and keyboard behaviour
+
+Use `List.Item` children directly inside `List.Root` so native list semantics remain intact. The component has no special keyboard interaction. Native list semantics work in both directions; translate visible content and choose `ordered` only when sequence is meaningful.
+
+Both parts support the relevant native list attributes, including `className`, ARIA and data attributes, events, and a typed `ref`; inline `style` is intentionally excluded.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not use `ordered` only to obtain number markers when order is irrelevant.
+- Do not use list items as buttons without rendering a real interactive control inside them.
+- Do not use `List` as a selectable collection; it deliberately has no collection value format or callbacks.
+
+## Related components
+
+[DescriptionList](?path=/docs/data-display-descriptionlist--docs), [GridList](?path=/docs/collections-gridlist--docs), and [NavigationList](?path=/docs/primitives-navigation-navigationlist--docs) cover metadata, interactive rows, and navigation respectively.

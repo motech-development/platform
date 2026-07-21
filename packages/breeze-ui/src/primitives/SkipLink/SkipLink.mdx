@@ -1,0 +1,55 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './SkipLink.stories';
+
+<Meta
+  of={Stories}
+  summary="A focus-revealed native fragment link that lets keyboard users bypass repeated page chrome."
+/>
+
+# SkipLink
+
+`SkipLink` is the first keyboard destination on a page and moves users directly to its main content target.
+
+## Import
+
+```tsx
+import { SkipLink } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use one near the beginning of every application shell with repeated navigation. It complements landmarks and headings; it is not a replacement for them. Use ordinary `Link` for visible navigation.
+
+## Basic example
+
+```tsx
+import { SkipLink } from '@motech-development/breeze-ui';
+
+<>
+  <SkipLink targetId="main-content">Skip to main content</SkipLink>
+  <header>{/* Repeated navigation */}</header>
+  <main id="main-content" tabIndex={-1}>
+    Page content
+  </main>
+</>;
+```
+
+<Canvas of={Stories.KeyboardFocus} />
+
+## Behaviour
+
+`targetId` is written without `#`; Breeze creates a native `#fragment` link. The matching target must exist and should be a meaningful landmark. Add `tabIndex={-1}` where the target is not naturally focusable so browsers can move focus consistently. The link is visually off-screen until focused and respects reduced-motion preferences.
+
+## API
+
+<ArgTypes />
+
+## Native attributes and states
+
+Relevant native anchor attributes such as `aria-*`, `data-*`, and `hreflang` are supported. `href`, inline style, and click handlers are owned by Breeze. SkipLink has no disabled, loading, controlled, read-only, invalid, empty, or error state.
+
+## Accessibility, internationalisation, and mistakes
+
+Place it before all repeated focusable chrome. Tab reveals and focuses it; Enter follows the fragment. Use a concise translated action such as “Skip to main content”, keep the target id stable across locales, and test that focus lands visibly at the intended heading or region in both directions.
+
+Do not use a missing or duplicated target id, put the link after navigation, suppress its focus styling, or route fragment activation through application navigation. Related components: `ApplicationShell`, `NavigationList`, `Link`, and `VisuallyHidden`.

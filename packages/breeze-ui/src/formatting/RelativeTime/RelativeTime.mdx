@@ -1,0 +1,51 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './RelativeTime.stories';
+
+<Meta
+  of={Stories}
+  summary="Locale-aware relative-duration wording from an application-owned signed numeric distance and explicit Intl.RelativeTimeFormat unit; it does not calculate or automatically update time."
+/>
+
+# RelativeTime
+
+`RelativeTime` formats an application-calculated signed distance as locale-aware wording such as “yesterday” or “in 3 days”.
+
+## Import
+
+```tsx
+import { RelativeTime } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `RelativeTime` when relative wording helps users compare an event with a clear reference time. Use `FormattedDateTime` when the exact instant matters or the phrase could become ambiguous. Do not use relative wording for legal, audit or deadline data without also making the exact instant available.
+
+## Basic example
+
+```tsx
+import { RelativeTime } from '@motech-development/breeze-ui';
+
+<RelativeTime value={-1} unit="day" options={{ numeric: 'auto' }} />;
+```
+
+<Canvas of={Stories.NaturalLanguage} />
+
+## Values, units and updating
+
+`value` is a signed distance from the application’s reference time: negative is past, positive is future and zero is current. `unit` is an `Intl.RelativeTimeFormatUnit`: `'year'`, `'quarter'`, `'month'`, `'week'`, `'day'`, `'hour'`, `'minute'` or `'second'` (singular or standard plural aliases where supported). The component does not compare dates, choose a unit, round a duration, run a timer or update itself.
+
+With `options.numeric="always"` the output remains numeric; `"auto"` permits phrases such as “yesterday”. `options.style` supports `'long'`, `'short'` and `'narrow'`. Runtime defaults are `numeric="always"` and long style. Recalculate and rerender at an interval appropriate to the selected unit; avoid minute-by-minute updates for day-level wording.
+
+This stateless `<span>` has no controlled, loading, disabled, invalid, empty, callback or keyboard behaviour.
+
+## Accessibility and internationalisation
+
+Assistive technology reads the visible localised phrase. Provide the exact instant nearby or in accessible supporting text when precision matters; a tooltip alone is not sufficient. Locale controls grammar, pluralisation, numbering and direction. Keep the signed value and unit domain-correct instead of parsing the formatted phrase.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not pass a timestamp as `value`, expect automatic updates, choose a unit from translated output, or use `numeric="auto"` when exact quantity matters. Use `FormattedDateTime` for a stable instant and `FormattedNumber` for a numeric duration that is not relative to now.

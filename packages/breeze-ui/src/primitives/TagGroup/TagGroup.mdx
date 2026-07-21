@@ -1,0 +1,89 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './TagGroup.stories';
+
+<Meta
+  of={Stories}
+  summary="Labelled static or typed tag collection with optional multiple selection, disabled keys, controlled, uncontrolled and read-only state, application-owned removal, and an explicit empty state."
+/>
+
+# TagGroup
+
+`TagGroup` coordinates a labelled collection of keyed `Tag` items with optional multiple selection and application-owned removal.
+
+## Import
+
+```tsx
+import { Tag, TagGroup } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for compact chosen filters, categories, recipients, or similar items where selection or removal is meaningful. Prefer `Badge` plus a layout primitive for passive metadata, `CheckboxGroup` for form choices with persistent checkbox affordances, and `ListBox` for a larger selectable collection. Do not use tags as a substitute for navigation links.
+
+## Basic example
+
+```tsx
+import { Tag, TagGroup } from '@motech-development/breeze-ui';
+
+<TagGroup.Root onRemove={(keys) => removeTopics(keys)}>
+  <TagGroup.Label>Topics</TagGroup.Label>
+  <TagGroup.List>
+    <Tag id="design" textValue="Design">
+      Design
+    </Tag>
+    <Tag id="research" textValue="Research">
+      Research
+    </Tag>
+  </TagGroup.List>
+  <TagGroup.Description>Delete removes the focused topic.</TagGroup.Description>
+</TagGroup.Root>;
+```
+
+<Canvas of={Stories.StaticKeyboard} />
+
+## Anatomy
+
+| Part                   | Purpose                                                                                                   |
+| ---------------------- | --------------------------------------------------------------------------------------------------------- |
+| `TagGroup.Root`        | Owns collection focus, optional multiple selection, disabled keys, read-only state, and removal callback. |
+| `TagGroup.Label`       | Persistent accessible name for the tag collection.                                                        |
+| `TagGroup.List`        | Renders static or typed generic tags and the empty state.                                                 |
+| `Tag`                  | One keyed item with plain-text representation, disabled state, and optional action.                       |
+| `TagGroup.Description` | Supporting guidance associated with the collection.                                                       |
+
+There is no group error part or invalid/required API. Validate the application concept in surrounding form composition if necessary.
+
+## Collections, selection, and removal
+
+Static lists contain authored `Tag` children. Dynamic lists accept `items`, each with stable `id: string | number`, and a child renderer.
+
+```tsx
+<TagGroup.List items={topics}>
+  {(topic) => (
+    <Tag id={topic.id} textValue={topic.name}>
+      {topic.name}
+    </Tag>
+  )}
+</TagGroup.List>
+```
+
+Selection is opt-in. Supplying `defaultSelection`, `selection`, or `onSelectionChange` enables multiple selection. Values use `CollectionKey[] | 'all'`. Use `defaultSelection` for uncontrolled state, `selection` with `onSelectionChange` for controlled state, or `selection` with `readOnly` for immutable state. The callback receives the complete next selection.
+
+`onRemove` receives all stable keys removed through keyboard interaction. It does not mutate consumer data; remove the matching items in application state. It is unavailable in read-only mode. `disabledKeys` prevents matching tags from focus, selection, action, and removal. `emptyContent` defaults to `'No tags'`. Loading and loading errors are application-owned.
+
+## Keyboard, accessibility, and direction
+
+- Tab enters and leaves the tag collection; arrow keys move between enabled tags.
+- Selection keys follow tag-group conventions when selection is enabled. Delete or Backspace requests removal when `onRemove` is supplied.
+- Disabled tags are skipped. Read-only mode prevents selection changes and removal.
+- Provide `Label`, an accurate `textValue` for every Tag, and `Description` when removal or selection is not obvious.
+- Keep keys locale-independent. Translated labels, descriptions, and empty content may change without changing selection.
+- Wrapping and arrow interpretation follow surrounding direction.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not assume `onRemove` changes the items, enable selection accidentally with an unused callback, use translated labels as keys, omit `textValue`, or put buttons inside tags. Use `Badge` for passive metadata, `CheckboxGroup` for form choices, and `ListBox` for a larger or virtualised collection.

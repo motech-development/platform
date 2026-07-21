@@ -1,0 +1,78 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/05 Composition and compound components"
+  summary="Compose Breeze primitives and use every public part of a compound component without depending on internal DOM."
+/>
+
+# Composition and compound components
+
+Simple primitives such as `Button` and `Surface` expose one component. Multi-part controls expose a Breeze-owned namespace so each semantic element can receive its own content, native attributes, ref and `className`.
+
+## Read compound anatomy from the namespace
+
+```tsx
+import { Button, Dialog } from '@motech-development/breeze-ui';
+
+<Dialog.Root>
+  <Dialog.Trigger>Open details</Dialog.Trigger>
+  <Dialog.Content>
+    <Dialog.Title>Item details</Dialog.Title>
+    <Dialog.Description>
+      Review the information before continuing.
+    </Dialog.Description>
+    <Dialog.Close>Close</Dialog.Close>
+    <Button onAction={() => saveItem()}>Save</Button>
+  </Dialog.Content>
+</Dialog.Root>;
+```
+
+The root coordinates shared state and behaviour. Triggers perform the opening action. Content owns the layered surface and focus scope. Title and description provide the accessible name and description. Close performs semantic dismissal. The exact rendered DOM is not a public composition contract.
+
+## Composition rules
+
+- Keep all parts inside their matching root unless the component page explicitly says otherwise.
+- Include every required semantic part. A visual placeholder is not a label.
+- Pass interaction state to the root; pass presentation or native attributes to the part that renders them.
+- Use children for application copy and content. Breeze patterns never hard-code product language.
+- Use `className` for layout placement and application composition, not to replace supported variants.
+- Do not use an `asChild`, universal `as`, slot-class map or internal React Aria component. Breeze exposes constrained semantic choices only where they are supported.
+
+## Primitives, patterns and domain components
+
+Use primitives for focused responsibilities and patterns for recurring, domain-neutral compositions. Build application-owned domain components from both:
+
+```tsx
+import {
+  Badge,
+  Card,
+  Inline,
+  Stack,
+  Typography,
+} from '@motech-development/breeze-ui';
+
+export function ItemSummary() {
+  return (
+    <Card.Root>
+      <Card.Header>
+        <Inline gap="sm">
+          <Card.Title>Draft item</Card.Title>
+          <Badge>Draft</Badge>
+        </Inline>
+        <Card.Description>Updated today</Card.Description>
+      </Card.Header>
+      <Card.Body>
+        <Stack gap="sm">
+          <Typography>Application-owned information.</Typography>
+        </Stack>
+      </Card.Body>
+    </Card.Root>
+  );
+}
+```
+
+`ItemSummary` is a domain component because its meaning belongs to the application. It should stay outside Breeze even though it is composed entirely from Breeze parts.
+
+## Discoverability
+
+Each compound component page documents its root and every public part in one anatomy and API reference. Story metadata lists public `subcomponents` so the component manifest carries the same structure.

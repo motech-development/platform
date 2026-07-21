@@ -1,0 +1,73 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './StatePanel.stories';
+
+<Meta
+  of={Stories}
+  summary="Complete contextual panel for an empty, error, success, warning, or informational region with guidance and optional recovery."
+/>
+
+# StatePanel
+
+`StatePanel` replaces a substantial content region with a clear state, explanation, and optional next step.
+
+## Import
+
+```tsx
+import { Button, StatePanel } from '@motech-development/breeze-ui';
+import { InfoIcon } from '@motech-development/breeze-ui/icons';
+```
+
+## When to use
+
+Use it for an empty view, failed region, completed setup, blocked state, or substantial informational state. Use `Alert` for inline feedback that should remain beside content, `Toast` for transient queued feedback, `Skeleton` or `Spinner` for pending work, and a field's `Error` part for validation.
+
+The application owns state detection, retries, permissions, analytics, and domain copy. The pattern does not infer state from data or perform recovery.
+
+## Basic example
+
+```tsx
+import { Button, StatePanel } from '@motech-development/breeze-ui';
+import { InfoIcon } from '@motech-development/breeze-ui/icons';
+
+<StatePanel
+  action={<Button onAction={() => createItem()}>Create item</Button>}
+  description="Create the first item to begin using this screen."
+  icon={<InfoIcon />}
+  title="No items yet"
+  variant="info"
+/>;
+```
+
+<Canvas of={Stories.Empty} />
+
+## Anatomy, variants, and state
+
+The root is a `section` labelled by its generated `h2`. A large decorative `IconTile` sits beside the title and description; the optional action moves below the copy and stretches on compact screens. There are no public compound parts.
+
+`variant` controls semantic marker colour and defaults to `info`:
+
+| Variant   | Typical use                                            |
+| --------- | ------------------------------------------------------ |
+| `info`    | Neutral guidance or an empty state.                    |
+| `primary` | A constructive product next step.                      |
+| `success` | A completed outcome that deserves a full-region state. |
+| `warning` | A condition requiring care before proceeding.          |
+| `danger`  | A failure or blocked condition requiring recovery.     |
+
+Colour does not set announcement behaviour or application status. Use explicit title and description copy. The pattern has no controlled, uncontrolled, read-only, disabled, loading, or invalid props. Disable or load the slotted action itself. For pending content, prefer progress feedback rather than describing loading as an error state.
+
+## Accessibility, keyboard, and internationalisation
+
+`title` supplies the region's accessible name and must identify the actual state. The icon tile is decorative by default; do not rely on its shape, icon, or colour to communicate meaning. Keep guidance actionable and put one clear recovery or next-step control in `action`.
+
+The panel is not a live region by default. For newly inserted urgent errors, choose `Alert` or deliberately add an appropriate native `role`/`aria-live` attribute only when immediate announcement is required; avoid repeated announcements during re-renders. The panel itself has no keyboard interaction, while the slotted action retains its own keyboard and callback semantics.
+
+Translate all visible copy. Logical grid placement and alignment follow provider direction. Choose direction-neutral icons where possible; application-authored directional icons must account for right-to-left presentation.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not use `danger` colour as the only error signal, place several competing actions in the slot, show an empty-state panel while data is merely pending, or assume insertion is announced. Related components: [Alert](?path=/docs/feedback-alert--docs), [Skeleton](?path=/docs/feedback-skeleton--docs), [Spinner](?path=/docs/feedback-spinner--docs), and [IconTile](?path=/docs/foundation-icontile--docs).

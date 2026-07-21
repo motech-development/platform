@@ -1,0 +1,89 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ConfirmationDialog.stories';
+
+<Meta
+  of={Stories}
+  summary="Opinionated alert-dialog pattern for a consequential decision, with safe cancel focus, protected outside dismissal, explicit confirmation and controlled, uncontrolled or read-only open state."
+/>
+
+# ConfirmationDialog
+
+`ConfirmationDialog` presents a focused, consequential decision with canonical warning anatomy and a safe initial focus target.
+
+## Import
+
+```tsx
+import { ConfirmationDialog } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `ConfirmationDialog` before a destructive, risky or materially consequential action when the standard title, consequence, cancel and confirm structure is sufficient.
+
+## When not to use
+
+Use compound `AlertDialog` when you need custom content, more than two decision actions, custom close labelling or direct styling. Use `Dialog` for routine modal tasks, `Alert` for inline feedback and `Toast` for non-blocking status. Do not ask for confirmation for harmless, easily reversible actions.
+
+## Basic example
+
+```tsx
+import { ConfirmationDialog } from '@motech-development/breeze-ui';
+
+<ConfirmationDialog
+  cancelLabel="Keep item"
+  closeLabel="Close confirmation"
+  confirmLabel="Delete item"
+  description="The item and its attached files will be permanently removed."
+  onConfirm={deleteItem}
+  title="Delete this item?"
+  trigger="Delete item"
+/>;
+```
+
+<Canvas of={Stories.Destructive} />
+
+## Anatomy
+
+ConfirmationDialog is a fixed composition rather than a public compound namespace.
+
+| Region      | Responsibility                                                            |
+| ----------- | ------------------------------------------------------------------------- |
+| Trigger     | A semantic Breeze button that opens the alert dialog.                     |
+| Header      | Variant-coloured warning icon, required title and icon-only close action. |
+| Description | Required consequence or decision context and the accessible description.  |
+| Actions     | A cancel action focused on open and a confirming action.                  |
+
+The icon is supplementary; meaning must be present in the title, description and action labels. On compact screens the actions stack in a safe visual order. The complete structure is deliberately not replaceable through slots.
+
+## Variants and action state
+
+`variant` accepts `'danger'`, `'warning'` or `'primary'` and defaults to `'danger'`. It colours the trigger, icon and confirming action. `triggerAppearance` accepts `'solid'`, `'subtle'`, `'outline'` or `'ghost'` and defaults to the trigger Button’s solid appearance.
+
+`disabled` disables only the confirming action. Cancel, the header close action and Escape remain available. The pattern has no loading prop: keep asynchronous state application-owned, prevent duplicate confirmation through `disabled` when needed, and present progress or failure outside this fixed composition or use `AlertDialog` for a richer workflow.
+
+## Open state and callbacks
+
+- **Uncontrolled:** omit `open`; use optional `defaultOpen` and `onOpenChange`.
+- **Controlled:** provide `open` and `onOpenChange`. The callback receives the complete next Boolean after trigger activation, confirmation, cancellation, the close action or Escape.
+- **Read-only:** provide `open` with `readOnly`. Requests cannot change the immutable state; this is useful for a fixed presentation, not a normal decision flow.
+
+`onConfirm` takes no event and runs once when the enabled confirming action is explicitly activated. That action also requests the dialog to close. The application owns the mutation, optimistic state, persistence, server errors and recovery. Do not combine `defaultOpen` with `open`. Providing mutable `open` without `onOpenChange` fails the TypeScript contract and throws at runtime.
+
+## Keyboard, focus and accessibility
+
+- Enter or Space activates the trigger and action buttons.
+- Opening moves focus to Cancel. Tab and Shift+Tab remain contained within the modal surface.
+- Escape requests closure. Outside pointer interaction does not dismiss the alert dialog.
+- Closing restores focus to the trigger when it remains mounted.
+- `title` must name the decision. `description` must explain the consequence rather than repeat the title. Prefer specific labels such as “Delete item” and “Keep item” over “Yes” and “No”.
+- Keep a usable non-confirming route. Never focus the destructive action initially or rely on colour to convey risk.
+
+All visible decision copy and the icon-only `closeLabel` are application-owned and should be translated together. Layout uses logical direction and permits wrapping.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not start the destructive operation from the trigger, use confirmation as an error message, hide the consequence in vague copy, disable every escape route, or treat `variant` as a severity value for business logic. Use `AlertDialog` for bespoke decisions, `Dialog` for non-consequential modal work, and `FormActions` to place the trigger in a form layout.

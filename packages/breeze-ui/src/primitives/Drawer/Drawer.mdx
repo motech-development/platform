@@ -1,0 +1,77 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Drawer.stories';
+
+<Meta
+  of={Stories}
+  summary="A responsive edge-mounted modal task surface with logical placement, canonical widths, framed or application-owned chrome, nested layering, and trigger-owned or external state."
+/>
+
+# Drawer
+
+`Drawer` presents a focused modal task from a logical viewport edge while preserving page context behind it.
+
+## Import
+
+```tsx
+import { Drawer } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for a task or detail view that benefits from more vertical space than a dialog and retains useful page context.
+
+## When not to use
+
+Use `Dialog` for compact centred tasks, `Popover` for lightweight contextual controls, and route navigation for complex or bookmarkable workflows.
+
+## Basic example
+
+```tsx
+import { Drawer } from '@motech-development/breeze-ui';
+
+<Drawer.Root>
+  <Drawer.Trigger>Edit item</Drawer.Trigger>
+  <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="medium">
+    <Drawer.Title>Edit item</Drawer.Title>
+    <Drawer.Description>Update the selected item's details.</Drawer.Description>
+    <Drawer.Close>Close</Drawer.Close>
+  </Drawer.Content>
+</Drawer.Root>;
+```
+
+<Canvas of={Stories.ResponsivePlacementAndNested} />
+
+## Anatomy
+
+| Part                 | Purpose                                                             |
+| -------------------- | ------------------------------------------------------------------- |
+| `Drawer.Root`        | Coordinates trigger-owned or externally controlled open state.      |
+| `Drawer.Trigger`     | Opens a standard compound drawer.                                   |
+| `Drawer.Content`     | Responsive modal edge surface, focus scope, frame, and scroll body. |
+| `Drawer.Title`       | Required accessible name and framed heading.                        |
+| `Drawer.Description` | Required accessible description and framed supporting text.         |
+| `Drawer.Close`       | Explicit close action for the current layer.                        |
+
+With `chrome="default"` or `"soft"`, Breeze moves Title and Description into a fixed header, adds a localised icon close action, and places remaining children in a scrolling body. `chrome="none"` leaves all children unframed for an application-owned shell; the application must compose its own visible Close while retaining Title and Description.
+
+## State, placement, and layers
+
+Standard roots support uncontrolled `defaultOpen`, controlled `open` with `onOpenChange`, or immutable `open` with `readOnly`. For an application-owned trigger outside the compound root, set `triggerless`, `open`, and `onOpenChange`; `defaultOpen` and read-only mode are unavailable. `onOpenChange` receives the complete next Boolean.
+
+`placement` accepts `'start'`, `'end'`, or `'bottom'`, or a mobile-first object such as `{ base: 'bottom', md: 'end' }`. Breakpoints are `sm` 681px, `md` 901px, and `lg` 1181px. Start and end are logical and mirror in RTL. `size` is `default` (36rem), `medium` (38rem), or `wide` (48rem); bottom drawers remain full width.
+
+`adjacent={{ inlineEndOffset: number }}` reserves desktop inline-end viewport space for an existing layer and uses the canonical adjacent width. It is for deliberately nested desktop drawers, not arbitrary layout. `scrollResetKey` resets the framed body to its start when the key changes.
+
+## API
+
+<ArgTypes />
+
+## Native attributes and styling
+
+Trigger and Close accept their public Button attributes; Content, Title, and Description accept relevant semantic attributes and refs. Breeze owns overlay positioning, role, inline styling, and focus behaviour.
+
+## Accessibility, direction, and limitations
+
+Opening contains focus; the framed header close receives initial focus. Tab stays within the current layer, Escape closes the top layer first unless disabled, and focus restores to that layer's trigger. Nested drawers must remain shallow and each needs its own Title and Description. Portals inherit provider locale and direction. Motion respects reduced-motion preferences.
+
+Drawer has no root loading, invalid, empty, or error state; express those inside the scroll body and retain a dismissal path. Avoid using `chrome="none"` without a close action, fixed pixel offsets that do not match the existing layer, start/end as physical left/right, or a drawer for a multi-page workflow. Related components: `Dialog`, `Popover`, `ApplicationShell`, and `FormActions`.

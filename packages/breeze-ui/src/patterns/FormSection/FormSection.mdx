@@ -1,0 +1,91 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './FormSection.stories';
+
+<Meta
+  of={Stories}
+  summary="Accessible titled region for related controls, with generated heading association, split or stacked responsive layout, optional section action and canonical divider rhythm."
+/>
+
+# FormSection
+
+`FormSection` groups related controls into a named section with a persistent heading, optional explanation and optional section action.
+
+## Import
+
+```tsx
+import { Button, FormSection, TextField } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `FormSection` to divide a longer page or overlay form into understandable titled regions. It supplies page-level information architecture and layout; child fields retain their own labels, validation and state.
+
+Use `Fieldset` when controls form one semantic question, especially radio buttons or checkboxes. Use `SectionHeader` for a non-form content section and `FormActions` for the form’s final action region. Do not wrap every individual field in FormSection.
+
+## Basic example
+
+```tsx
+import { Button, FormSection, TextField } from '@motech-development/breeze-ui';
+
+<FormSection
+  action={
+    <Button appearance="text" onAction={addContact}>
+      Add contact
+    </Button>
+  }
+  description="Details used for service notifications."
+  title="Contact details"
+>
+  <TextField.Root>
+    <TextField.Label>Email address</TextField.Label>
+    <TextField.Input name="email" type="email" />
+  </TextField.Root>
+</FormSection>;
+```
+
+<Canvas of={Stories.WithAction} />
+
+## Anatomy
+
+FormSection is a fixed semantic composition rather than a public compound namespace.
+
+| Region         | Responsibility                                                  |
+| -------------- | --------------------------------------------------------------- |
+| Root section   | A native `section` named by its generated heading id.           |
+| Header         | Required `title` heading and optional `description`.            |
+| Section action | Optional action related to the section, not the entire form.    |
+| Fields         | Required `children`, normally labelled Breeze field primitives. |
+
+The generated heading association makes the section discoverable as a named region. `headingLevel` changes semantic hierarchy, not visual prominence. Choose it from the surrounding page outline; levels 2 through 6 are supported and 2 is the default.
+
+## Layout and dividers
+
+| Layout    | Default arrangement                                                                   | `divided` behaviour                                                       |
+| --------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `split`   | Header above fields on compact screens; header and fields form two columns from `md`. | Adds a top divider and spacing, except on the first split section.        |
+| `stacked` | Header, action and fields form a single vertical composition suited to overlays.      | Adds an outer bottom divider; the stacked header keeps its own separator. |
+
+With an `action`, compact layout places fields before the action visually; from `md`, the action appears above the fields and aligns to the logical end. DOM order does not change, so keyboard and assistive-technology order remain stable.
+
+## Field state and application responsibilities
+
+FormSection owns no field values, validation or submission. Configure controlled, uncontrolled, read-only, required, disabled, invalid, loading, empty and error behaviour on its child controls or surrounding application state. The `action` node owns its callback and state. Do not use the section description as a substitute for each field’s accessible label or associated error.
+
+The section performs no routing. A slotted `LinkButton` or other public link component owns its destination and provider router behaviour.
+
+## Accessibility, internationalisation and styling
+
+- `title` is required and remains visible. Keep heading levels sequential; do not choose a level to obtain a visual size.
+- Use `description` for concise section-wide context. Field-specific instructions belong to each field’s Description part.
+- Every child control still needs its own label. Use `Fieldset` inside the section when several controls answer one question.
+- Translate title, description, action and field copy. Layout uses logical alignment and inherits provider direction.
+- `className` is for placement and composition. Do not style generated internal wrappers or depend on internal `data-*` attributes.
+- Do not render an empty section; omit it until its fields or meaningful state are available.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not skip heading levels, duplicate the same heading for adjacent regions, use `action` for the whole form’s submit button, put unrelated controls together, or reproduce split layout with application CSS. Use `Fieldset` for one grouped question, `FormActions` for final actions, and `SectionHeader` outside form structure.

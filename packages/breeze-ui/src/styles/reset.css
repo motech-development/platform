@@ -1,0 +1,16 @@
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/preflight.css' layer(base);
+
+@layer base {
+  html {
+    min-width: 20rem;
+    min-height: 100%;
+    background: #eef1f5;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+  }
+}

@@ -1,0 +1,61 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './SectionHeader.stories';
+
+<Meta
+  of={Stories}
+  summary="Compact content-section header with a fixed level-two heading, supporting description, and one directly related action."
+/>
+
+# SectionHeader
+
+`SectionHeader` aligns a section's `h2`, concise supporting context, and one related action.
+
+## Import
+
+```tsx
+import { Button, SectionHeader } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it at the start of a major region within a page when a visible boundary and one action clarify the section. Use `PageHeader` for the page's `h1` and page-level actions, `Card.Header` for content inside a card, or `Typography` when only a heading is needed.
+
+## Basic example
+
+```tsx
+import { Button, SectionHeader } from '@motech-development/breeze-ui';
+
+<section aria-labelledby="recent-updates-heading">
+  <SectionHeader
+    action={<Button appearance="ghost">View all updates</Button>}
+    description="Latest changes across the workspace"
+    id="recent-updates-heading"
+    title="Recent updates"
+  />
+  {/* Section content */}
+</section>;
+```
+
+<Canvas of={Stories.WithAction} />
+
+## Structure and composition
+
+The pattern renders a semantic `header`, a fixed `h2`, an optional paragraph, and an optional action wrapper. `id` is assigned to the `h2`, not to the root header, so a surrounding region can reference it with `aria-labelledby`.
+
+The action does not wrap and the title column shrinks. Prefer one concise low-emphasis control. Use `ButtonGroup` or a page-level action area when several controls are necessary, and test translated copy at compact widths.
+
+## Accessibility, state, and internationalisation
+
+Keep the document outline logical: because the title is always `h2`, use another composition when the region requires a deeper heading level. The visible title should identify the following region; provide a unique `id` when another element references it. The optional action must have its own accessible name and must make sense in relation to this section.
+
+`SectionHeader` adds no keyboard interaction. The slotted action retains its own focus, disabled, loading, and activation semantics. The pattern has no controlled, uncontrolled, read-only, invalid, empty, loading, or error state; present content states below it, or use `StatePanel` when the entire region is replaced.
+
+Translate `title`, `description`, and action copy. Logical flex alignment supports left-to-right and right-to-left direction without reversing application-owned content order.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not use it as the page `h1`, assign its `id` expecting the root header to receive it, fit a toolbar into the single-action slot, or let action text obscure the heading at narrow widths. Related components: [PageHeader](?path=/docs/patterns-page-structure-pageheader--docs), [Card](?path=/docs/data-display-card--docs), [Typography](?path=/docs/foundation-typography--docs), and [StatePanel](?path=/docs/patterns-feedback-statepanel--docs).

@@ -1,0 +1,77 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Grid.stories';
+
+<Meta
+  of={Stories}
+  summary="A bounded responsive grid with stable source order and canonical track templates."
+/>
+
+# Grid
+
+`Grid` arranges related content in equal responsive columns or the canonical field-control-action track template.
+
+## Import
+
+```tsx
+import { Grid } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `Grid` when content needs aligned rows and columns or a column count that changes at Breeze breakpoints. Use `Stack` for a single vertical flow, `Inline` for a wrapping row, and `Table` for genuinely tabular data.
+
+## Basic example
+
+```tsx
+import { Grid, Surface } from '@motech-development/breeze-ui';
+
+export function SummaryGrid() {
+  return (
+    <Grid columns={{ base: 1, md: 3 }} gap={{ base: 'md', md: 'lg' }}>
+      <Surface>First summary</Surface>
+      <Surface>Second summary</Surface>
+      <Surface>Third summary</Surface>
+    </Grid>
+  );
+}
+```
+
+<Canvas of={Stories.ResponsiveColumns} />
+
+## Columns, templates, and spacing
+
+`columns` accepts `1`, `2`, `3`, `4`, `6`, or `12`, directly or as `{ base, sm?, md?, lg? }`. Breakpoints are mobile-first at 681 px, 901 px, and 1181 px. `gap` uses the Breeze spacing values `none`, `xs`, `sm`, `control`, `compact`, `md`, `lg`, `xl`, `xxl`, and `page` in the same scalar or responsive form.
+
+Use `template="field-control-action"` only for the established three-track form row: a flexible field, an automatic-width control, and a square final action. While a template is active, `columns` is ignored.
+
+```tsx
+<Grid template="field-control-action" align="end" gap="sm">
+  <label>
+    Reference <input />
+  </label>
+  <span>Status</span>
+  <button type="button" aria-label="Remove">
+    ×
+  </button>
+</Grid>
+```
+
+## API
+
+<ArgTypes />
+
+## Accessibility and direction
+
+Native `div` attributes such as `id`, `aria-*`, and `data-*` are supported; inline `style` is excluded. `Grid` has no interactive, controlled, loading, invalid, empty, or error state.
+
+`Grid` is a CSS layout, not an ARIA grid, and supplies no role or keyboard interaction. Keep DOM order meaningful because responsive columns do not reorder content. Direction-aware CSS handles inline flow; avoid visual reordering that would diverge from reading and focus order.
+
+## Common mistakes
+
+- Do not use `Grid` for data requiring row/column headers, sorting, or selection; use `Table` or `GridList`.
+- Do not pass both a meaningful `columns` value and `template`; the template wins.
+- Do not assume every item spans one conceptual column in a 12-column layout; Breeze exposes no span API.
+
+## Related components
+
+Use `Container` around page grids, `Stack` or `Inline` for one-dimensional flow, and `Surface` or `Card` for the items.

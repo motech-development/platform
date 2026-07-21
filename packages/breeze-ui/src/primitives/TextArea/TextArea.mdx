@@ -1,0 +1,73 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './TextArea.stories';
+
+<Meta
+  of={Stories}
+  summary="Labelled multiline text entry with controlled, uncontrolled, read-only, validation, sizing, and native textarea behaviour."
+/>
+
+# TextArea
+
+`TextArea` collects free-form content that can span several lines while keeping label, guidance, and validation explicitly composed.
+
+## Import
+
+```tsx
+import { TextArea } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for notes, summaries, descriptions, and other paragraph-length content. Prefer `TextField` for a short single-line value. Do not use a textarea for structured rich text, code editing, or a choice from known values; use a purpose-built editor or selection control.
+
+## Basic example
+
+```tsx
+import { TextArea } from '@motech-development/breeze-ui';
+
+<TextArea.Root>
+  <TextArea.Label>Notes</TextArea.Label>
+  <TextArea.Control name="notes" rows={5} />
+  <TextArea.Description>Use plain text.</TextArea.Description>
+</TextArea.Root>;
+```
+
+<Canvas of={Stories.AnatomyAndUncontrolled} />
+
+## Anatomy
+
+| Part                   | Purpose                                                  |
+| ---------------------- | -------------------------------------------------------- |
+| `TextArea.Root`        | Owns string value and shared field state.                |
+| `TextArea.Label`       | Persistently names the textarea.                         |
+| `TextArea.Control`     | Renders the native multiline textarea.                   |
+| `TextArea.Description` | Associates supporting guidance with the control.         |
+| `TextArea.Error`       | Associates validation feedback when the root is invalid. |
+
+All parts belong inside `Root`. `TextArea` intentionally shares its state and guidance contract with `TextField`; the editable part is named `Control` rather than `Input`.
+
+## Value and states
+
+Use `defaultValue` for uncontrolled state, `value` with `onChange` for controlled state, or `value` with `readOnly` for an intentionally immutable value. `onChange` receives the complete next string. Empty content is `''`.
+
+`disabled` prevents focus and edits. `readOnly` preserves focus, selection, copying, and form participation without allowing edits. `invalid` associates `Error`; `required` exposes native required semantics. Loading and character limits are application concerns: use native `maxLength` where it is a genuine constraint and keep any count in `Description`.
+
+## Size and resizing
+
+`Control` supports `size="sm" | "md" | "lg"`; `md` is the default. Its minimum height changes with size and users may resize it vertically. Use `rows` to express the expected amount of content, but do not force a fixed height that prevents reviewing entered text.
+
+## Keyboard, accessibility, and direction
+
+- Tab moves focus; Enter inserts a new line. Normal platform editing, selection, clipboard, and undo commands remain available.
+- Always provide a persistent `Label`. A placeholder is a hint, not an accessible name.
+- Put pre-entry guidance in `Description`; put a specific recovery instruction in `Error` and set `invalid`.
+- Do not intercept Enter to submit the surrounding form unless the product clearly provides another way to enter line breaks.
+- Unicode text and the surrounding `dir` are respected. Use `dir="auto"` for user-authored text whose direction is unknown.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not put state props on `Control`, remove resize access without an equivalent, or use the placeholder as the only label. Use `TextField` for a line, `SearchField` for a query, and `FormSection` or `Fieldset` to organise multiple related fields.

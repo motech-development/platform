@@ -1,0 +1,83 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './DateTimePicker.stories';
+
+<Meta
+  of={Stories}
+  summary="Compound date-and-time picker for an unambiguous instant, using ISO 8601 values with an explicit offset and provider-zone display, segmented editing, a calendar-plus-time popover, form semantics, and controlled, uncontrolled, or read-only state."
+/>
+
+# DateTimePicker
+
+`DateTimePicker` edits one unambiguous instant through locale-aware date and time segments plus a calendar-and-time popover.
+
+## Import
+
+```tsx
+import { DateTimePicker } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `DateTimePicker` when the value represents a real instant whose date, time and UTC offset must travel together. Use `DatePicker` for a calendar day, `TimeField` for a zone-free wall-clock time, and `FormattedDateTime` for display only. Do not use it for durations or a local date-time that intentionally has no offset.
+
+## Basic example
+
+```tsx
+import { DateTimePicker } from '@motech-development/breeze-ui';
+
+<DateTimePicker.Root
+  defaultValue="2026-07-20T14:30:00+01:00"
+  name="appointment"
+>
+  <DateTimePicker.Label>Date and time</DateTimePicker.Label>
+  <DateTimePicker.Group>
+    <DateTimePicker.Input />
+    <DateTimePicker.Trigger />
+  </DateTimePicker.Group>
+  <DateTimePicker.Popover>
+    <DateTimePicker.Calendar />
+  </DateTimePicker.Popover>
+</DateTimePicker.Root>;
+```
+
+<Canvas of={Stories.ExplicitOffset} />
+
+## Anatomy
+
+| Part                         | Purpose                                                                                            |
+| ---------------------------- | -------------------------------------------------------------------------------------------------- |
+| `DateTimePicker.Root`        | Owns instant state, provider-zone conversion, boundaries, form semantics and overlay coordination. |
+| `DateTimePicker.Label`       | Visible accessible name for the complete field.                                                    |
+| `DateTimePicker.Group`       | Coherent segmented input and calendar-trigger control.                                             |
+| `DateTimePicker.Input`       | Editable locale-aware date and minute segments with informative zone text.                         |
+| `DateTimePicker.Trigger`     | Opens the complete calendar-and-time popover.                                                      |
+| `DateTimePicker.Popover`     | Positioned dismissible dialog; defaults to logical `bottom end`.                                   |
+| `DateTimePicker.Calendar`    | Complete single-date calendar followed by a labelled segmented time field.                         |
+| `DateTimePicker.Description` | Supporting guidance associated with the picker.                                                    |
+| `DateTimePicker.Error`       | Validation message associated with invalid state.                                                  |
+
+Keep `Input` and `Trigger` inside `Group`, and `Calendar` inside `Popover`. The time input inside `Calendar` is Breeze-owned; do not add a second `TimeField`.
+
+## Instant values and time zones
+
+Values are ISO 8601 strings with an explicit offset, for example `'2026-07-20T14:30:00+01:00'` or `'2026-07-20T13:30:00Z'`. Offset-free values are rejected. Empty state is `null`. The provider `timeZone` is an IANA zone such as `Europe/London`; it controls displayed calendar/time segments and daylight-saving behaviour. If omitted it defaults to `UTC` for this picker.
+
+The input offset identifies the instant. Editing emits a normalised value with seconds and the provider zone’s offset, such as `'2026-07-20T14:31:00+01:00'`. Persist the callback value, not visible segment text. `minValue` and `maxValue` are inclusive explicit-offset instants and can use offsets different from the current display zone.
+
+Use `defaultValue` for uncontrolled state, `value` with `onChange` for controlled state, or `value` with `readOnly` for immutable state. `onChange` receives the next explicit-offset value or `null`. `name` and `form` provide native form association. `required`, `invalid`, `disabled` and `readOnly` expose state; pair invalid state with `Error`. Loading is application-owned.
+
+## Keyboard, accessibility and direction
+
+- Tab reaches the compound input and trigger. Arrow keys move between or increment date/time segments; numeric typing edits a segment and Backspace or Delete clears it.
+- Activate `Trigger` with Enter or Space. Escape dismisses the popover and returns focus. Calendar arrow keys navigate days; Enter or Space selects. The popover time segments use the same segmented-field keys.
+- Always render `Label`. The zone suffix is informative and deliberately not another focus stop.
+- `Calendar` includes the provider’s translated “select time” label; `Popover` uses the translated “select date and time” accessible name unless `aria-label` is supplied.
+- Locale controls segment order, hour cycle, weekday names and announcements. Logical overlay placement and navigation adapt to right-to-left direction.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not pass a JavaScript `Date`, omit the offset, append the provider zone name to the value, or treat the provider zone as the stored instant. Test daylight-saving transitions in the configured IANA zone. Use `DatePicker` plus `TimeField` only when the values are intentionally independent; use `FormattedDateTime` for read-only output.

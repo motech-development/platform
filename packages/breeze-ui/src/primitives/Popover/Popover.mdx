@@ -1,0 +1,75 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Popover.stories';
+
+<Meta
+  of={Stories}
+  summary="A trigger-anchored contextual dialog with required title and description, modal or nonmodal interaction, collision-aware placement, and controlled or uncontrolled open state."
+/>
+
+# Popover
+
+`Popover` places lightweight interactive content next to the control that requested it.
+
+## Import
+
+```tsx
+import { Popover } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for contextual filters, settings, or explanations containing interactive controls. Use `Tooltip` for concise non-interactive help, `Menu` for a list of actions, `Dialog` for a focused modal task, and inline content when it should remain continuously visible.
+
+## Basic example
+
+```tsx
+import { Popover } from '@motech-development/breeze-ui';
+
+<Popover.Root>
+  <Popover.Trigger>Show details</Popover.Trigger>
+  <Popover.Content>
+    <Popover.Title>Details</Popover.Title>
+    <Popover.Description>
+      Supporting information about this item.
+    </Popover.Description>
+    <Popover.Close>Done</Popover.Close>
+  </Popover.Content>
+</Popover.Root>;
+```
+
+<Canvas of={Stories.NonmodalOutsideDismissal} />
+
+## Anatomy and interaction modes
+
+| Part                  | Purpose                                            |
+| --------------------- | -------------------------------------------------- |
+| `Popover.Root`        | Coordinates open state and trigger focus.          |
+| `Popover.Trigger`     | Opens the popover from a semantic button.          |
+| `Popover.Content`     | Positioned dialog surface and dismissal boundary.  |
+| `Popover.Title`       | Required accessible name.                          |
+| `Popover.Description` | Required accessible description.                   |
+| `Popover.Close`       | Explicit close action that restores trigger focus. |
+
+Content is nonmodal by default, so users may interact outside and outside activation dismisses it. Set `modal` when interaction must remain inside. `dismissible` defaults to `true`; `keyboardDismissDisabled` defaults to `false`. Always retain a clear close path if either dismissal route is removed.
+
+## State and placement
+
+Use uncontrolled `defaultOpen`, controlled `open` with `onOpenChange`, or immutable `open` with `readOnly`. `onOpenChange` receives the complete next Boolean.
+
+Placement defaults to `'bottom start'` and supports `top`, `bottom`, `left`, `right`, and top/bottom start/end combinations. React Aria flips or shifts the surface when space is constrained. `offset` is the trigger gap in pixels and defaults to `8`. Start/end and collision behaviour follow provider direction.
+
+Loading, disabled, invalid, empty, and error states belong to controls or feedback within Content. A disabled Trigger cannot open the popover. Do not show an empty surface.
+
+## API
+
+<ArgTypes />
+
+## Native attributes and callback semantics
+
+Content accepts relevant dialog HTML and ARIA attributes. Use `onAction` on Trigger and Close rather than native click handlers. Breeze owns portal, positioning, role, and inline style behaviour.
+
+## Keyboard, accessibility, and mistakes
+
+Trigger activation opens Content and moves focus appropriately. Tab follows modal or nonmodal focus rules, Escape closes unless disabled, and Close restores focus. Title and Description are required even when the trigger appears descriptive. Ensure the surface remains understandable when translated text wraps and test preferred placement in RTL.
+
+Do not use a Popover as a tooltip, omit its accessible anatomy, place a long workflow inside it, or assume preferred placement is guaranteed. Related components: `Tooltip`, `Menu`, `Dialog`, `Select`, and `ComboBox`.

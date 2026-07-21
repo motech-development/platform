@@ -1,0 +1,3 @@
+# Use React Aria Components behind a Breeze-owned API
+
+Breeze UI will use React Aria Components as the exclusive behavioural foundation for interactive components, avoiding alternative headless libraries and bespoke interaction engines. React Aria remains an internal implementation detail: Breeze defines and documents its own public component APIs and translates them into the underlying React Aria APIs so dependency changes do not propagate directly to consuming applications. Breeze will not re-export React Aria components or types, derive public props from React Aria components, or provide a generic React Aria prop pass-through; required behaviour must enter through an intentional Breeze API while relevant native platform attributes and refs remain available.

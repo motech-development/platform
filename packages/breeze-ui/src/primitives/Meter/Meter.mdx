@@ -1,0 +1,67 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Meter.stories';
+
+<Meta
+  of={Stories}
+  summary="Labelled scalar measurement within a known finite range, with clamped visual and accessible output."
+/>
+
+# Meter
+
+`Meter` displays one scalar measurement within a known range.
+
+```tsx
+import { Meter } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use a meter for a stable quantity such as storage use, signal quality, or capacity. Use [ProgressBar](?path=/docs/feedback-progressbar--docs) for operation completion, [MetricCard](?path=/docs/patterns-data-metriccard--docs) for a prominent standalone metric, and [Slider](?path=/docs/selection-slider--docs) when the user changes the value.
+
+## Basic use
+
+```tsx
+import { Meter } from '@motech-development/breeze-ui';
+
+export function StorageUsage() {
+  return (
+    <Meter
+      label="Storage used"
+      value={72}
+      valueText="72 gigabytes used"
+      variant="warning"
+    />
+  );
+}
+```
+
+<Canvas of={Stories.Usage} />
+
+## Range and value behaviour
+
+`minimum` defaults to `0` and `maximum` to `100`. Both bounds must be finite and `maximum` must be greater than or equal to `minimum`; invalid bounds throw `RangeError`. Finite values outside the range are clamped consistently for visual width, visible copy, and accessible value. Use `valueText` to provide translated units or qualitative meaning.
+
+Meter is always determinate and read-only. It has no callback, keyboard interaction, loading, disabled, invalid, empty, or error state.
+
+## Variants and accessibility
+
+`variant` defaults to `primary` and accepts `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, or `dark`. Choose a semantic colour only when it represents the measurement's meaning, and never depend on colour alone. The required visible `label` names the `meter`. Localise `label` and `valueText`; numeric formatting is application-owned. Logical layout follows the inherited direction.
+
+<Canvas of={Stories.CustomRange} />
+
+`Meter` supports relevant native `div` attributes, including `className`, ARIA and data attributes, events, and a typed `ref`; `children`, `role`, and inline `style` are intentionally owned or excluded.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not use `Meter` as an input or progress indicator.
+- Do not pass non-finite bounds or reverse the range.
+- Do not rely on an unlocalised raw number when units matter.
+- Do not communicate warning or danger only through `variant`.
+
+## Related components
+
+[ProgressBar](?path=/docs/feedback-progressbar--docs), [Slider](?path=/docs/selection-slider--docs), and [MetricCard](?path=/docs/patterns-data-metriccard--docs).

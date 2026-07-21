@@ -1,0 +1,80 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './CheckboxGroup.stories';
+
+<Meta
+  of={Stories}
+  summary="Labelled multiple selection over composed Checkbox items with string-array values, native form naming, orientation, and controlled, uncontrolled, read-only, disabled, required, and invalid states."
+/>
+
+# CheckboxGroup
+
+`CheckboxGroup` coordinates a labelled set of `Checkbox` items where zero, one, or several string values may be selected.
+
+## Import
+
+```tsx
+import { Checkbox, CheckboxGroup } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for related multiple-choice options that should all remain visible. Use a standalone `Checkbox` for one independent choice, `RadioGroup` for exactly one value, or `TagGroup` for a compact interactive collection. Do not use it for a long or virtualised collection; consider `ListBox` with multiple selection.
+
+## Basic example
+
+```tsx
+import { Checkbox, CheckboxGroup } from '@motech-development/breeze-ui';
+
+<CheckboxGroup.Root name="channels" defaultSelection={['email']}>
+  <CheckboxGroup.Label>Notification channels</CheckboxGroup.Label>
+  <Checkbox.Root value="email">
+    <Checkbox.Control>
+      <Checkbox.Indicator />
+      <Checkbox.Label>Email</Checkbox.Label>
+    </Checkbox.Control>
+  </Checkbox.Root>
+  <Checkbox.Root value="sms">
+    <Checkbox.Control>
+      <Checkbox.Indicator />
+      <Checkbox.Label>Text message</Checkbox.Label>
+    </Checkbox.Control>
+  </Checkbox.Root>
+</CheckboxGroup.Root>;
+```
+
+<Canvas of={Stories.AnatomyAndUncontrolled} />
+
+## Anatomy and composition
+
+| Part                        | Purpose                                                                     |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `CheckboxGroup.Root`        | Owns group selection, validation, orientation, and shared native form name. |
+| `CheckboxGroup.Label`       | Persistent accessible name for the entire set.                              |
+| `Checkbox.Root`             | One option; its `value` becomes the group’s string selection value.         |
+| `CheckboxGroup.Description` | Group-level supporting guidance.                                            |
+| `CheckboxGroup.Error`       | Group-level validation feedback while invalid.                              |
+
+The group does not provide an item part: compose public `Checkbox` parts directly. Put selection state and `name` on `CheckboxGroup.Root`, and give each child `Checkbox.Root` a unique string `value`.
+
+## Selection and state
+
+Use `defaultSelection: string[]` for uncontrolled state, `selection` with `onSelectionChange` for controlled state, or `selection` with `readOnly` for immutable state. `onSelectionChange` receives the complete next `string[]`, not a delta or DOM event. The default is an empty array.
+
+`disabled` prevents all option interaction; an individual `Checkbox.Root disabled` disables only that option. `readOnly` preserves focusable values but prevents changes. `required` means at least one option is required. Set `invalid` and render `Error` after validation. Empty option sets and loading are application concerns; do not render an unlabelled empty group.
+
+`orientation` is `vertical` by default and may be `horizontal`. Horizontal layout wraps and keeps group label, description, and error on their own rows. Prefer vertical layout for long labels or more than a few choices.
+
+## Keyboard, accessibility, and direction
+
+- Tab visits each enabled checkbox; Space toggles the focused option. Checkboxes do not use arrow-key roving focus.
+- `CheckboxGroup.Label` names the set; every `Checkbox.Label` must still name its option.
+- Keep option values stable and distinct from their translated visible labels.
+- In right-to-left contexts, layout and wrapping follow the surrounding `dir`; selection values remain the authored strings.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not control each checkbox separately while also controlling the group, use translated labels as persistent values, omit the group label, or expect arrow keys to move between checkboxes. Use `RadioGroup` for one value, `ListBox multiple` for a large selectable collection, and `Fieldset` for several different controls that form a native group.

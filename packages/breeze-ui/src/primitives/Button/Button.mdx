@@ -1,0 +1,74 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Button.stories';
+
+<Meta
+  of={Stories}
+  summary="A semantic application action with canonical emphasis, sizing, and accessible progress states."
+/>
+
+# Button
+
+`Button` performs an application action through pointer or keyboard activation.
+
+## Import
+
+```tsx
+import { Button } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `Button` to submit a form or change application state. Use `Link` for ordinary navigation, `LinkButton` when a destination needs button emphasis, `IconButton` for a compact icon-only action, and `ToggleButton` for a persistent on/off choice.
+
+## Basic example
+
+```tsx
+import { Button } from '@motech-development/breeze-ui';
+
+export function SaveButton() {
+  return <Button onAction={() => saveChanges()}>Save changes</Button>;
+}
+```
+
+<Canvas of={Stories.Activation} />
+
+## Emphasis and size
+
+Choose `appearance` for emphasis and `variant` for meaning. `solid` is the default primary action; `subtle`, `outline`, and `ghost` progressively reduce emphasis. `text` is the lowest-emphasis button treatment and remains an action, never navigation. Semantic variants are `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark`. Avoid relying on colour alone; use clear action text.
+
+Sizes are `sm`, `md`, and `lg`. Prefer `md`; use `sm` only in space-constrained contexts that retain an adequate target, and `lg` for deliberately prominent actions.
+
+```tsx
+<Button appearance="outline" variant="danger" onAction={removeItem}>
+  Remove item
+</Button>
+```
+
+## Activation, forms, and state
+
+`onAction` runs once for a semantic activation, independent of whether the user clicked, touched, or used the keyboard. Use it instead of `onClick`. `type` is deliberately limited to `button` and `submit`, and defaults to the safe non-submitting `button`.
+
+`disabled` prevents interaction. `loading` prevents activation while preserving focusability, sets `aria-busy`, and adds an announced in-progress state while retaining the visible label. Keep the label stable, such as “Save changes”, or use a short progressive label such as “Saving”. Errors and validation remain owned by the surrounding form or feedback component; `Button` has no invalid, error, read-only, controlled, or empty state.
+
+<Canvas of={Stories.States} />
+
+## API
+
+<ArgTypes />
+
+## Accessibility and keyboard behaviour
+
+Relevant native button attributes such as `name`, `value`, `form`, `autoFocus`, `aria-*`, and `data-*` are supported. Breeze owns `onClick`, `disabled`, `type`, `aria-busy`, `className`, and inline styling through the API above.
+
+Use a concise visible label; when an icon accompanies text, keep the icon decorative. `Enter` and `Space` activate the button when enabled, with browser and React Aria press semantics preventing duplicate callbacks. Focus remains visibly indicated. Do not remove focus styles or encode meaning using variant alone. Labels may expand after translation, so allow action layouts to wrap rather than truncating essential text.
+
+## Common mistakes
+
+- Do not use `Button` to navigate or pass an anchor destination; use `Link` or `LinkButton`.
+- Do not attach both `onAction` and a native click handler.
+- Do not put more than one primary solid action in the same decision group without a clear hierarchy.
+- Do not replace a useful label with only an icon; use `IconButton` with `aria-label`.
+
+## Related components
+
+Use `LinkButton` for destinations, `IconButton` for icon-only actions, `ToggleButton` for persistent two-state actions, `ButtonGroup` for grouped actions, and `FormActions` for canonical form placement.

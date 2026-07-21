@@ -1,0 +1,105 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Avatar.stories';
+
+<Meta
+  of={Stories}
+  summary="Accessible person or entity representation with a named image and deterministic initials fallback."
+/>
+
+# Avatar
+
+`Avatar` represents a named person or entity with an optional image and a deterministic initials fallback.
+
+## Import
+
+```tsx
+import { Avatar } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+- Use a circular avatar for a person in account, participant, or authorship context.
+- Use a square avatar for a compact non-person entity marker.
+- Supply `src` only when an image is available; the same component handles loading failure by falling back to initials.
+
+## When not to use
+
+- Use `Logo` for the canonical Motech Development brand mark.
+- Use `IconTile` for a semantic icon or short status marker that does not represent identity.
+- Use ordinary content and `Typography` when the full name is the primary information; an Avatar should not replace necessary visible identity text.
+
+## Basic use
+
+```tsx
+import { Avatar, Inline, Typography } from '@motech-development/breeze-ui';
+
+export function PersonSummary() {
+  return (
+    <Inline align="center" gap="sm" wrap={false}>
+      <Avatar name="Alex Morgan" />
+      <Typography as="span">Alex Morgan</Typography>
+    </Inline>
+  );
+}
+```
+
+<Canvas of={Stories.Initials} />
+
+## Image and fallback behaviour
+
+When `src` is present, Avatar renders a cover-cropped image. The nested image has empty alternative text because the wrapper already exposes `name` once as a named image. If the resource fails to load, Avatar displays initials without changing its accessible name.
+
+Without an `initials` override, Breeze trims `name`, takes the first character of the first two whitespace-separated words, uppercases them, and joins them. For example, “Alex Morgan” becomes “AM”. An explicit `initials` value is useful for an established short form or compact entity marker.
+
+```tsx
+import { Avatar } from '@motech-development/breeze-ui';
+
+export function EntityMarker() {
+  return (
+    <Avatar
+      initials="EX"
+      name="Example organisation"
+      shape="square"
+      tone="accent"
+    />
+  );
+}
+```
+
+## Shape, size, and tone
+
+- `circle` is the default and is preferred for people.
+- `square` has square corners and is preferred for non-person entity markers.
+- `sm` and `md` both occupy a 36-pixel square; `sm` uses smaller initials. `lg` occupies a 56-pixel square.
+- `primary` is the default semantic treatment. `accent` provides a distinct alternate entity-marker treatment.
+
+Tone applies to the initials fallback. A successfully loaded image fills the available geometry.
+
+## API
+
+<ArgTypes />
+
+## Accessibility, state, and internationalisation
+
+Relevant native span attributes such as `id`, `aria-describedby`, and `data-*` are forwarded. `children` and arbitrary `style` are excluded so the image/fallback anatomy and canonical appearance remain stable.
+
+Avatar exposes `role="img"` with `name` as its accessible name. Always provide the complete human-readable name even when visible initials are overridden. Place visible text beside the Avatar when users need to identify or distinguish similar people and entities; the accessible name alone is not visible context.
+
+Avatar has no keyboard interaction and is not an action. Wrap the overall composition in an appropriate `Link` or `Button` only when it genuinely navigates or acts, and ensure that control has an unambiguous name.
+
+Image availability is internal fallback state, not an application-controlled value. There are no loading, disabled, invalid, error-callback, or read-only props. Breeze does not localise names. Initial derivation uppercases with JavaScript's standard Unicode behaviour and does not implement locale-specific name parsing.
+
+## Common mistakes and limitations
+
+- Do not omit `name`, even when `src` is supplied.
+- Do not place a separate `alt` on the internal image; it is not public anatomy.
+- Do not use a tone to communicate status; use `Badge`, `Alert`, or visible text.
+- Keep explicit initials brief. Avatar does not truncate an arbitrary `initials` string.
+- Avatar does not fetch profiles, upload images, indicate presence, or own account menus.
+
+## Related components
+
+- Use `Logo` for the Motech Development brand.
+- Use `IconTile` for non-identity visual markers.
+- Use `Badge` beside identity content for a compact classification or status.
+- Use `UserMenu` for the account-action pattern that may compose an Avatar.

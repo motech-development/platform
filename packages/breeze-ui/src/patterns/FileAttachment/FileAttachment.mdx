@@ -1,0 +1,88 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './FileAttachment.stories';
+
+<Meta
+  of={Stories}
+  summary="Responsive selected-file row that keeps a visible file name beside application-owned view, download, replace or removal actions without owning file or upload state."
+/>
+
+# FileAttachment
+
+`FileAttachment` presents one selected file name with persistent application-owned actions.
+
+## Import
+
+```tsx
+import {
+  Button,
+  FileAttachment,
+  LinkButton,
+} from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `FileAttachment` after selection or upload when a file must remain visible beside actions such as view, download, replace or remove. It is a presentation pattern for a native `File` or application record that your application already owns.
+
+## When not to use
+
+Use `FileUpload` to select files, `FileTrigger` for a compact native chooser, and `DropZone` when drag and drop is the primary affordance. Use a collection component when many files need selection, sorting or bulk actions. FileAttachment does not upload, preview, validate or remove anything.
+
+## Basic example
+
+```tsx
+import {
+  Button,
+  FileAttachment,
+  LinkButton,
+} from '@motech-development/breeze-ui';
+
+<FileAttachment
+  name="project-brief.pdf"
+  actions={
+    <>
+      <LinkButton appearance="outline" href="/files/project-brief.pdf">
+        View file
+      </LinkButton>
+      <Button variant="danger" onAction={removeFile}>
+        Remove file
+      </Button>
+    </>
+  }
+/>;
+```
+
+<Canvas of={Stories.WithActions} />
+
+## Anatomy and responsive behaviour
+
+| Region        | Responsibility                                                    |
+| ------------- | ----------------------------------------------------------------- |
+| File identity | A decorative paperclip and persistent, visually truncated `name`. |
+| Actions       | One or more application-owned controls in logical source order.   |
+
+On compact layouts the row stacks and each direct action stretches to the available width. From the `sm` breakpoint the file name and wrapping actions share a row. The name region can shrink without forcing page overflow; the full string remains in the DOM for assistive technology.
+
+The root has no role by default. If the row needs its own accessible grouping semantics, pass `role="group"` with `aria-label` or `aria-labelledby`. Give every action a specific accessible name, especially icon-only controls. The paperclip is decorative and must not supply meaning.
+
+## State, callbacks and routing
+
+FileAttachment is stateless. `name` is display content rather than a path, URL or native `File`; `actions` is rendered without inspection. Configure `onAction`, `href`, downloads, loading, disabled state, confirmation and routing on the child controls.
+
+There is no empty, invalid, read-only, loading, error or progress mode. Omit the row when no file exists. Pair it with `Alert`, `ProgressBar` or other feedback when the application needs upload progress or failure recovery. Applications own file records, object URL lifecycle, authorisation, storage and deletion.
+
+## Accessibility, internationalisation and styling
+
+- Use the recognisable file name or another concise visible identifier. Do not provide an unlabeled icon as `name`.
+- Translate action labels and allow them to wrap. Filenames are user or system data and should not be translated.
+- Layout uses logical ordering and inherits provider direction. Keep actions in the intended keyboard order rather than reversing arrays for right-to-left presentation.
+- `className` is for placement and width composition. Do not depend on internal `data-*` attributes or override the row’s responsive geometry.
+- A `LinkButton` child uses the provider router adapter for eligible local navigation and preserves native external, download and modified-click behaviour. FileAttachment itself performs no routing.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not pass a `File` object directly as `name`, assume the pattern starts or retries uploads, hide destructive action meaning behind an icon, or render an empty actions region. Use `FileUpload`, `FileTrigger` or `DropZone` for selection, and require `ConfirmationDialog` when removal has a material consequence.

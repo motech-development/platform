@@ -1,0 +1,290 @@
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import './fonts.css';
+@import './tokens.css';
+@import './base.css';
+
+@source '../**/*.{ts,tsx}';
+
+@keyframes breeze-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes breeze-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes breeze-drawer-in {
+  from {
+    opacity: var(--breeze-drawer-enter-opacity);
+    transform: translate3d(var(--breeze-drawer-x), var(--breeze-drawer-y), 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes breeze-drawer-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: var(--breeze-drawer-exit-opacity);
+    transform: translate3d(var(--breeze-drawer-x), var(--breeze-drawer-y), 0);
+  }
+}
+
+@keyframes breeze-drawer-lifecycle {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@layer components {
+  .breeze-drawer-offset-bottom {
+    --breeze-drawer-enter-opacity: 1;
+    --breeze-drawer-exit-opacity: 1;
+    --breeze-drawer-x: 0%;
+    --breeze-drawer-y: 100%;
+  }
+
+  .breeze-drawer-offset-end {
+    --breeze-drawer-enter-opacity: 0.7;
+    --breeze-drawer-exit-opacity: 0;
+    --breeze-drawer-x: 100%;
+    --breeze-drawer-y: 0%;
+  }
+
+  .breeze-drawer-offset-start {
+    --breeze-drawer-enter-opacity: 0.7;
+    --breeze-drawer-exit-opacity: 0;
+    --breeze-drawer-x: -100%;
+    --breeze-drawer-y: 0%;
+  }
+
+  @media (min-width: 42.5625rem) {
+    .breeze-drawer-offset-sm-bottom {
+      --breeze-drawer-enter-opacity: 1;
+      --breeze-drawer-exit-opacity: 1;
+      --breeze-drawer-x: 0%;
+      --breeze-drawer-y: 100%;
+    }
+
+    .breeze-drawer-offset-sm-end {
+      --breeze-drawer-enter-opacity: 0.7;
+      --breeze-drawer-exit-opacity: 0;
+      --breeze-drawer-x: 100%;
+      --breeze-drawer-y: 0%;
+    }
+
+    .breeze-drawer-offset-sm-start {
+      --breeze-drawer-enter-opacity: 0.7;
+      --breeze-drawer-exit-opacity: 0;
+      --breeze-drawer-x: -100%;
+      --breeze-drawer-y: 0%;
+    }
+  }
+
+  @media (min-width: 56.3125rem) {
+    .breeze-drawer-offset-md-bottom {
+      --breeze-drawer-enter-opacity: 1;
+      --breeze-drawer-exit-opacity: 1;
+      --breeze-drawer-x: 0%;
+      --breeze-drawer-y: 100%;
+    }
+
+    .breeze-drawer-offset-md-end {
+      --breeze-drawer-enter-opacity: 0.7;
+      --breeze-drawer-exit-opacity: 0;
+      --breeze-drawer-x: 100%;
+      --breeze-drawer-y: 0%;
+    }
+
+    .breeze-drawer-offset-md-start {
+      --breeze-drawer-enter-opacity: 0.7;
+      --breeze-drawer-exit-opacity: 0;
+      --breeze-drawer-x: -100%;
+      --breeze-drawer-y: 0%;
+    }
+  }
+
+  @media (min-width: 73.8125rem) {
+    .breeze-drawer-offset-lg-bottom {
+      --breeze-drawer-enter-opacity: 1;
+      --breeze-drawer-exit-opacity: 1;
+      --breeze-drawer-x: 0%;
+      --breeze-drawer-y: 100%;
+    }
+
+    .breeze-drawer-offset-lg-end {
+      --breeze-drawer-enter-opacity: 0.7;
+      --breeze-drawer-exit-opacity: 0;
+      --breeze-drawer-x: 100%;
+      --breeze-drawer-y: 0%;
+    }
+
+    .breeze-drawer-offset-lg-start {
+      --breeze-drawer-enter-opacity: 0.7;
+      --breeze-drawer-exit-opacity: 0;
+      --breeze-drawer-x: -100%;
+      --breeze-drawer-y: 0%;
+    }
+  }
+
+  .breeze-modal-overlay[data-entering] {
+    animation: breeze-overlay-in var(--breeze-duration-regular) ease-out;
+  }
+
+  .breeze-modal-overlay[data-exiting] {
+    animation: breeze-overlay-out var(--breeze-duration-regular) ease-out;
+  }
+
+  .breeze-drawer-motion[data-entering],
+  .breeze-drawer-motion[data-exiting] {
+    animation: breeze-drawer-lifecycle var(--breeze-duration-regular) linear;
+  }
+
+  .breeze-drawer-motion[data-entering] > .breeze-drawer-surface {
+    animation: breeze-drawer-in var(--breeze-duration-regular)
+      var(--breeze-easing-standard);
+  }
+
+  .breeze-drawer-motion[data-exiting] > .breeze-drawer-surface {
+    animation: breeze-drawer-out var(--breeze-duration-regular)
+      var(--breeze-easing-standard);
+  }
+}
+
+@layer utilities {
+  @media (min-width: 73.8125rem) {
+    .breeze-drawer-adjacent-overlay {
+      background: transparent;
+    }
+
+    .breeze-drawer-adjacent-overlay::after {
+      position: fixed;
+      inset-block: 0;
+      inset-inline-end: 0;
+      width: var(--breeze-drawer-adjacent-inline-end);
+      background: var(--breeze-overlay);
+      content: '';
+    }
+
+    .breeze-drawer-adjacent-motion {
+      position: fixed;
+      inset-block: 0;
+      inset-inline-start: 0;
+      inset-inline-end: var(--breeze-drawer-adjacent-inline-end);
+      max-width: none;
+      max-height: none;
+      overflow: hidden;
+    }
+
+    .breeze-drawer-adjacent-motion > .breeze-drawer-adjacent-surface {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: 0;
+      --breeze-drawer-x: 28px;
+      --breeze-drawer-y: 0%;
+    }
+  }
+}
+
+.breeze-action {
+  outline-color: var(--breeze-focus) !important;
+}
+
+.breeze-action:focus-visible,
+.breeze-action[data-focus-visible] {
+  outline-offset: 2px !important;
+  outline-style: solid !important;
+  outline-width: 2px !important;
+}
+
+.breeze-input-group:has([data-focus-visible]) {
+  outline: 2px solid var(--breeze-focus);
+  outline-offset: -2px;
+}
+
+.breeze-number-field-group:has([data-focus-visible]) {
+  outline: 2px solid var(--breeze-focus);
+  outline-offset: -2px;
+}
+
+.breeze-number-field-group:has(input[readonly]) {
+  background: var(--breeze-surface-subtle);
+}
+
+/* React Aria's table virtualizer renders positioned div wrappers rather than
+   native table boxes. Keep the semantic Breeze cells sized to those tracks. */
+@media (min-width: 42.5625rem) {
+  [data-breeze-table][data-virtualized='true'] [role='rowgroup'],
+  [data-breeze-table][data-virtualized='true'] [role='row'] {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  [data-breeze-table][data-virtualized='true'] [data-breeze-column],
+  [data-breeze-table][data-virtualized='true'] [data-breeze-cell-column] {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@media (max-width: 42.562499rem) {
+  [data-breeze-table][data-virtualized='true'] [data-presentation] {
+    position: relative;
+    display: flex;
+    width: 100%;
+    min-height: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--breeze-space-sm);
+    padding: var(--breeze-space-md);
+  }
+
+  [data-breeze-table][data-virtualized='true']
+    [data-presentation]
+    > [role='presentation'] {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    contain: none !important;
+  }
+
+  [data-breeze-table][data-virtualized='true'] [data-breeze-cell-column] {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    border: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breeze-modal-overlay,
+  .breeze-drawer-motion,
+  .breeze-drawer-surface {
+    animation-duration: 0.01ms !important;
+  }
+}
