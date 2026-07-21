@@ -469,7 +469,7 @@ function splitCoreInfrastructureJob(workflow) {
     .replace('            ./applications/core/comms/.serverless\n', '')
     .replace(
       /\n      - name: Deploy comms infrastructure\n        run: yarn workspace @core\/comms deploy --stage \$STAGE\n/,
-      '\n',
+      '',
     );
   const communications = original
     .replace(
@@ -480,10 +480,13 @@ function splitCoreInfrastructureJob(workflow) {
     .replaceAll('core-v4-', 'core-comms-v4-')
     .replace(
       /\n      - name: Deploy core infrastructure\n        run: yarn workspace @core\/infrastructure deploy --stage \$STAGE\n/,
-      '\n',
+      '',
     );
 
-  return workflow.replace(jobPattern, `${infrastructure}\n${communications}`);
+  return workflow.replace(
+    jobPattern,
+    `${infrastructure.trimEnd()}\n\n${communications.trimEnd()}\n\n`,
+  );
 }
 
 function rewriteJob(workflow, legacyJobId, unitId, needs) {

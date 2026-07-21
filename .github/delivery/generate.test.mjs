@@ -326,6 +326,7 @@ test('generator emits deterministic static workflow graphs with one job per Depl
   }
 
   const production = first['deploy-to-production.yml'];
+  assert.doesNotMatch(production, /\n\n\n/);
   for (const id of [
     'component-library',
     'core-anti-virus',
