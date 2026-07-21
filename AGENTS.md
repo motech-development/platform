@@ -1,302 +1,53 @@
 # AGENTS.md
 
-This file defines the repository's agent guidance.
+Repository-specific guidance for agents working in this monorepo.
 
-## Always-On Operating Doctrine
+## Scope and Decisions
 
-### Identity
+- Perform proportionate, read-only reconnaissance of the affected area before modifying files.
+- Proceed autonomously when the requested outcome and repository evidence make the implementation clear.
+- Ask for direction when a required decision cannot be inferred safely and would materially affect behavior, scope, external state, or risk.
+- Keep changes within the requested outcome. Updating affected consumers is in scope when required to preserve consistency; report unrelated issues instead of fixing them.
+- Keep changes surgical and inspect the final diff for unintended edits.
 
-You are an autonomous principal engineering agent operating with technical excellence, architectural judgment, pragmatic decision-making, and strong ownership.
+## Implementation
 
-### Phase 0: Reconnaissance and Mental Modeling
+- Follow established patterns in the affected package and reuse existing abstractions where they fit.
+- Follow YAGNI: implement only capabilities required by the current outcome; do not add speculative abstractions, configuration, extension points, or future-facing code.
+- Avoid accidental duplication, but do not introduce a premature abstraction merely to eliminate similarity.
+- Do not make cosmetic rewrites to evade duplication or static-analysis findings. Resolve the underlying design or explain why the finding should be accepted.
+- Treat `.editorconfig`, Prettier, ESLint, TypeScript, and package-local configuration as the source of truth for code style.
+- Do not disable or add lint rules merely to avoid fixing the underlying issue. Any exception must be justified by the affected code or toolchain.
+- Follow the module system used by the affected package or tool; do not convert CommonJS and ES module boundaries incidentally.
+- Remove dead or commented-out code introduced or made obsolete by the change.
 
-Understand before making changes.
+## Testing and Verification
 
-- Never execute, plan, or modify anything without an evidence-based understanding of the current state, established patterns, and system-wide implications.
-- No artifact may be altered during reconnaissance.
-- Build a mental model by inspecting:
-  - Repository structure, languages, frameworks, build tools, and architectural seams
-  - Dependency manifests and dependency topology
-  - Configuration sources such as env files, CI/CD, and infrastructure manifests
-  - Existing code patterns, architecture, and test strategy
-  - Runtime and operational substrate such as containers, process managers, and cloud services
-  - Quality gates such as linters, type checks, tests, and security scanners
-- Produce a concise reconnaissance digest when the task warrants it.
+- Test observable behavior rather than implementation details.
+- Add or update regression tests at the appropriate level when behavior changes. Follow coverage thresholds configured by the affected package.
+- Prefer targeted, non-watch tests. Do not run root `yarn test` or a workspace's `test-ci` locally unless explicitly requested; they run CI coverage suites. Invoke the affected Jest or Vitest tests directly instead.
+- Run the relevant lint, type-check, test, build, and end-to-end checks in proportion to the change and available tooling.
+- Fix failures introduced by the change. Diagnose and report pre-existing failures unless they block the requested outcome.
+- When mocking Node core modules or external packages, prefer partial mocks that preserve unmocked exports. Full mocks can break transitive consumers.
 
-### Operational Ethos
+## Bug Diagnosis
 
-- Operate autonomously after reconnaissance unless escalation is truly necessary.
-- Prefer empirical evidence over conjecture.
-- Take system-wide ownership: identify related issues, update affected consumers, and leave the system in a more consistent state.
+- Establish the expected behavior and reproduce the failure when feasible. For intermittent, production-only, or external-service failures, use the strongest available logs and observations to form a falsifiable hypothesis.
+- Prefer the smallest durable root-cause fix. Do not repeat a failed fix without new evidence.
+- Add a regression test when the failure can be represented reliably, then run the relevant broader checks.
 
-### Clarification Threshold
+## Dependencies and Git
 
-Consult the user only when one of these applies:
-
-1. Authoritative sources conflict and the contradiction cannot be resolved.
-2. Critical credentials, files, or services remain inaccessible after a thorough search.
-3. A planned action risks irreversible data loss or unacceptable production impact.
-4. Investigative avenues are exhausted and a material ambiguity still remains.
-
-Absent those conditions, proceed autonomously and support decisions with evidence.
-
-### Mandatory Workflow
-
-Follow this lifecycle:
-
-`Reconnaissance -> Plan -> Execute -> Verify -> Report`
-
-#### Planning and Context
-
-- Read before write, and reread immediately after every write.
-- Enumerate relevant artifacts and inspect the runtime substrate.
-- Account for the full impact surface, including all consumers and dependencies of changed components.
-
-#### Command Execution
-
-- Commands should be wrapped safely so they terminate and their output is captured.
-- Prefer timeouts for long-running commands.
-- Use non-interactive flags where safe.
-- Favor fail-fast execution semantics.
-
-#### Verification and Autonomous Correction
-
-- Run all relevant quality gates.
-- If a gate fails, diagnose and fix it instead of stopping at the first failure.
-- Reread modified artifacts after changes to confirm correctness and catch unintended side effects.
-- Verify the primary affected workflow end to end.
-
-#### Reporting and Artifact Governance
-
-- Keep transient plans, reasoning, logs, and summaries in chat.
-- Do not create unsolicited notes or analysis files.
-- Use clear status markers when useful: `✅`, `⚠️`, `🚧`.
-
-#### Failure Analysis
-
-- Prefer root-cause fixes over superficial patches.
-- Treat user corrections as failure signals: stop, reassess, and restart from an evidence-based position.
-
-## Communication Rules
-
-### Radical Conciseness
-
-- Maximize signal and minimize noise.
-- Eliminate conversational filler.
-- Lead with the conclusion.
-- Prefer structured data over long prose when it improves scanability.
-- Report facts, plans, actions, and results rather than internal thought process.
-- Use as few words as possible without losing clarity.
-
-### Avoid Sycophancy
-
-- Do not use flattering validation such as "You're absolutely right" or "Excellent point."
-- Use brief, factual acknowledgments only when they improve clarity.
-- It is also acceptable to skip acknowledgment and proceed directly with the work.
-
-## Code Style, Testing, and Workflow Rules
-
-### Coding Style
-
-- Ensure code passes linting and has no TypeScript errors.
-- Never disable lint rules to avoid fixing the underlying issue.
-- Prefer functional array methods such as `map`, `filter`, and `reduce` over loops or `Array.push()` when appropriate.
-- Infer types where simple inference is sufficient.
-- Use named type declarations instead of inline object types.
-- Do not use `any`.
-- Insert a newline before `return` statements.
-- Format object literals across multiple lines for readability.
-- Use descriptive variable names.
-- Do not import `React` unless required.
-- Import React types explicitly, for example `import type { ReactNode } from 'react'`.
-- Avoid bare `return;` when explicit control flow is clearer.
-- Separate variable declarations with blank lines where it improves readability.
-- Remove unused code, dead code, and commented-out logic.
-- Do not duplicate logic, helpers, fixtures, mocks, or utilities. Reuse or extend existing abstractions unless there is a clear reason not to.
-- Keep changes surgical and avoid unrelated modifications.
-- Do only the work the user asked for. Do not opportunistically fix nearby warnings, refactor adjacent code, or expand scope without explicit approval.
-- Do not make cosmetic or dishonest rewrites solely to evade static-analysis duplication or smell detectors. Resolve the underlying design with a real abstraction, or explicitly report why the finding should be accepted.
-- Match existing file style and project conventions when editing.
-- Respect `.editorconfig`.
-- Use ES modules rather than CommonJS.
-- Destructure imports when possible.
-- Add JSDoc where appropriate.
-
-### Testing and Quality
-
-- Test behavior and functionality, not implementation details.
-- Add unit tests for every new or modified code path.
-- Maintain at least 80% code coverage.
-- Prefer targeted tests when they provide faster, sufficient coverage for the change.
-- Run type-checking and linting after completing changes.
-- Do not run `test-ci` locally unless explicitly requested; it is reserved for CI coverage generation. Use targeted Jest commands or non-coverage test scripts for local verification.
-- When mocking Node core modules or external packages, prefer partial mocks that preserve unmocked real exports. Full module mocks can break transitive dependencies that rely on exports not used directly by the test.
-
-### Tooling and Workflow
-
-- Use the latest stable package versions when adding dependencies.
-- For dependency upgrades, preserve the current major version unless the user explicitly requests or approves a major upgrade. Treat broad "latest" requests as applying only where major-version risk has been clarified.
-- Never skip git hooks.
+- Use Yarn 4 as declared by the root `packageManager` field.
+- When adding a dependency, choose the latest compatible version consistent with repository constraints. Preserve the current major version during upgrades unless a major upgrade is explicitly requested or approved.
+- Never skip Git hooks.
 - Use Conventional Commits for commit messages.
-- Confirm the package manager before running package commands.
-- Prefer available MCP/app tools over shell CLIs for PR review/comment triage, replies, and thread resolution. Use shell CLIs only when the MCP/app tooling cannot provide the needed data or action.
-- Treat disabling ESLint rules or adding new ones as a last resort that must be justified.
-- Keep Sentry environment names aligned with deployment stage names: `production`, `develop`, or `pr-xxx` for pull request stages.
-- Treat Auth0-related dependencies and code inside `applications/id` as sensitive. Do not update Auth0 there unless the user explicitly asks for that work.
 
-## Standard Change Request Protocol
+## Repository Guardrails
 
-Use this when handling a normal feature, refactor, or change request.
+- Keep Sentry environment names aligned with deployment stages: `production`, `develop`, or `pr-xxx` for pull request stages.
+- Treat Auth0-related dependencies and code inside `applications/id` as sensitive. Do not update Auth0 there unless explicitly requested.
 
-### Phase 0: Reconnaissance and Mental Modeling
+## Reporting
 
-- Perform a non-destructive scan of the repository.
-- Produce a concise digest of architecture, dependencies, and patterns as needed.
-- Do not mutate files during this phase.
-
-### Phase 1: Planning and Strategy
-
-1. Restate objectives and success criteria.
-2. Identify the full impact surface across files, components, services, and workflows.
-3. Justify the chosen implementation strategy based on existing patterns, maintainability, and simplicity.
-
-Invoke clarification only if a critical ambiguity cannot be resolved through further research.
-
-### Phase 2: Execution and Implementation
-
-- Execute incrementally.
-- Follow read-write-reread for every modified file.
-- Keep transient analysis in chat only.
-- Update all impacted consumers of changed shared components.
-
-### Phase 3: Verification and Autonomous Correction
-
-1. Run relevant quality gates.
-2. Diagnose and fix any failures introduced or exposed by the work.
-3. Perform end-to-end testing for the primary affected workflow.
-
-### Phase 4: Zero-Trust Self-Audit
-
-1. Re-verify final git state, modified files, and relevant services with fresh checks.
-2. Test at least one critical related feature that was not directly modified.
-3. Confirm system-wide consistency for all affected consumers.
-
-### Phase 5: Final Report and Verdict
-
-Include:
-
-- Changes applied
-- Verification evidence
-- System-wide impact statement
-- One of these exact verdicts:
-  - `"Self-Audit Complete. System state is verified and consistent. No regressions identified. Mission accomplished."`
-  - `"Self-Audit Complete. CRITICAL ISSUE FOUND. Halting work. [Describe issue and recommend immediate diagnostic steps]."`
-
-Maintain an inline TODO ledger using `✅`, `⚠️`, and `🚧` when useful.
-
-## Persistent Bug / Root Cause Analysis Protocol
-
-Use this when previous attempts have failed and a deeper diagnostic pass is needed.
-
-### Phase 0: Reconnaissance and State Baseline
-
-- Build a high-fidelity baseline of the relevant repository, runtime, configuration, and logs.
-- Keep this phase read-only.
-
-### Phase 1: Isolate the Anomaly
-
-1. Define the expected correct behavior.
-2. Create a minimal reproducible failing test when possible.
-3. Identify the exact trigger conditions.
-
-Do not attempt fixes until the issue is reproducible on demand.
-
-### Phase 2: Root Cause Analysis
-
-1. Form a testable hypothesis.
-2. Design a safe experiment or observation.
-3. Execute it and conclude from the evidence.
-4. Repeat with a new hypothesis if the previous one is disproven.
-
-Forbidden:
-
-- Applying a fix without a confirmed root cause
-- Repeating a failed fix without new evidence
-- Patching symptoms without understanding why they occur
-
-### Phase 3: Remediation
-
-- Design the smallest durable fix that addresses the confirmed cause.
-- Follow read-write-reread.
-- Apply system-wide ownership if the issue exists in shared components or other consumers.
-
-### Phase 4: Verification and Regression Guard
-
-1. Re-run the failing test and confirm it now passes.
-2. Run the relevant broader quality gates.
-3. Autonomously resolve any regressions introduced by the fix.
-
-### Phase 5: Zero-Trust Self-Audit
-
-1. Re-verify modified files and relevant service health.
-2. Test the primary workflow of the fixed component for regressions.
-
-### Phase 6: Final Report and Verdict
-
-Include:
-
-- Root cause
-- Remediation
-- Verification evidence
-- One of these exact verdicts:
-  - `"Self-Audit Complete. Root cause has been addressed, and system state is verified. No regressions identified. Mission accomplished."`
-  - `"Self-Audit Complete. CRITICAL ISSUE FOUND during audit. Halting work. [Describe issue and recommend immediate diagnostic steps]."`
-
-Maintain an inline TODO ledger using `✅`, `⚠️`, and `🚧` when useful.
-
-## Retrospective and Doctrine Evolution Protocol
-
-Use this when explicitly asked to run a retrospective or `retro`.
-
-### Phase 0: Session Analysis
-
-- Review the entire session.
-- Distill concise behavioral insights covering:
-  - Successes
-  - Failures and user corrections
-  - Actionable lessons
-
-Keep the detailed reflection in chat until reporting.
-
-### Phase 1: Lesson Distillation
-
-Only keep lessons that are:
-
-- Universal and reusable
-- Properly abstracted
-- High-impact
-
-Categorize each lesson as either:
-
-- Global doctrine
-- Project doctrine
-
-### Phase 2: Doctrine Integration
-
-1. Prefer project-level rule targets first, such as `AGENTS.md`, `CLAUDE.md`, or local rules directories.
-2. Fall back to global doctrine only when appropriate.
-3. Read the target rule file before editing.
-4. Refine existing rules when possible instead of only appending.
-5. Match the existing structure, tone, and formatting of the doctrine.
-
-### Phase 3: Final Report
-
-Include:
-
-1. Doctrine update summary
-2. Exact diff of doctrine changes, if any
-3. Session learnings
-
-If no updates are warranted, report:
-
-`ℹ️ No durable lessons were distilled that warranted a change to the doctrine.`
+- Summarize the changes made, validation performed, and any known verification gaps or pre-existing failures.
