@@ -1,6 +1,6 @@
 # Deployment Catalog
 
-`catalog.json` is the source of truth for delivery topology. It records only stable Deployment Unit identifiers, owning workspaces, supported targets, direct delivery dependencies that cannot be inferred from workspace manifests, expected CloudFormation stacks, and justified exceptions. Identity/Auth0 and accounts data restore are deliberately outside this catalog.
+`catalog.json` is the source of truth for delivery topology. It records only stable Deployment Unit identifiers, owning workspaces and their paths, supported targets, direct delivery dependencies that cannot be inferred from workspace manifests, expected CloudFormation stacks, and justified exceptions. Identity/Auth0 and accounts data restore are deliberately outside this catalog.
 
 The generator reads every workspace manifest to infer ordinary `workspace:` relationships. Do not copy those relationships into `dependsOn`; validation rejects that duplication. Use `dependsOn` only for runtime infrastructure relationships established by imports, exports, or existing delivery ordering.
 
