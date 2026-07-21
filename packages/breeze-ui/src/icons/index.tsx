@@ -26,6 +26,7 @@ import {
   Search,
   Settings,
   Trash2,
+  TriangleAlert,
   Upload,
   User,
   Users,
@@ -147,48 +148,4 @@ export const UsersIcon = createIcon(Users, 'UsersIcon');
 /** Wallet icon for money and transaction interfaces. */
 export const WalletIcon = createIcon(Wallet, 'WalletIcon');
 /** Warning icon for cautionary notices. */
-export function WarningIcon({
-  'aria-label': ariaLabel,
-  className,
-  size = '1em',
-  strokeWidth = 2,
-  style,
-  ...props
-}: Readonly<IconProps>) {
-  const normalizedAriaLabel = ariaLabel?.trim() || undefined;
-
-  return createElement(
-    'svg',
-    {
-      ...props,
-      'aria-hidden': normalizedAriaLabel === undefined ? true : undefined,
-      'aria-label': normalizedAriaLabel,
-      className: `inline-block shrink-0 align-[-0.125em] ${className ?? ''}`,
-      focusable: 'false',
-      role: normalizedAriaLabel === undefined ? undefined : 'img',
-      style: {
-        ...style,
-        height: size,
-        width: size,
-      },
-      viewBox: '0 0 24 24',
-    },
-    createElement('path', {
-      d: 'M12 3 22 21H2L12 3Z',
-      fill: 'currentColor',
-      stroke: 'none',
-    }),
-    createElement('path', {
-      d: 'M12 9v5',
-      stroke: '#fff',
-      strokeWidth,
-    }),
-    createElement('circle', {
-      cx: 12,
-      cy: 17.5,
-      fill: '#fff',
-      r: 1,
-      stroke: 'none',
-    }),
-  );
-}
+export const WarningIcon = createIcon(TriangleAlert, 'WarningIcon');

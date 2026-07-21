@@ -36,9 +36,7 @@ describe('curated icons', () => {
       width: '24px',
     });
     expect(screen.getByRole('img', { name: 'Warning' })).toBeInTheDocument();
-    expect(
-      screen.getByRole('img', { name: 'Warning' }).querySelector('path'),
-    ).toHaveAttribute('d', 'M12 3 22 21H2L12 3Z');
+    expect(container.querySelector('.lucide-triangle-alert')).toBeVisible();
     expect(container.querySelector('.lucide-log-out')).toBeVisible();
     expect(container.querySelector('.lucide-building-2')).toBeVisible();
     expect(
