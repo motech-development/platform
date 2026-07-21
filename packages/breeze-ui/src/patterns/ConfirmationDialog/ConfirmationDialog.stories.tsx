@@ -98,7 +98,7 @@ export const DestructiveOpen: Story = {
     const actions = body.getByRole('group');
     const cancel = body.getByRole('button', { name: 'Cancel' });
     const close = body.getByRole('button', { name: 'Close confirmation' });
-    const warningPath = icon?.querySelector('path');
+    const warningIcon = icon?.querySelector('.lucide-triangle-alert');
     const view = canvasElement.ownerDocument.defaultView;
     const cancelStyle = view?.getComputedStyle(cancel);
     const dialogStyle = view?.getComputedStyle(dialog);
@@ -123,7 +123,7 @@ export const DestructiveOpen: Story = {
     await expect(
       view?.getComputedStyle(icon as HTMLElement).borderTopWidth,
     ).toBe('0px');
-    await expect(warningPath).toHaveAttribute('d', 'M12 3 22 21H2L12 3Z');
+    await expect(warningIcon).toBeInTheDocument();
     await expect(titleStyle?.fontFamily).toContain('Cabin');
     await expect(titleStyle?.fontSize).toBe('24px');
     await expect(Number.parseFloat(titleStyle?.lineHeight ?? '0')).toBeCloseTo(
