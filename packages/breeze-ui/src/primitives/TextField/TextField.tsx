@@ -234,7 +234,7 @@ export function Description({
 }
 
 /** Renders an associated validation message while a TextField is invalid. */
-export function Error({
+function ErrorMessage({
   className,
   ref,
   ...props
@@ -248,6 +248,8 @@ export function Error({
   });
 }
 
+export { ErrorMessage as Error };
+
 /**
  * Accessible compound single-line text-entry primitive.
  *
@@ -257,7 +259,7 @@ export const TextField = {
   /** Supporting guidance associated with the input. */
   Description,
   /** Validation message associated with an invalid input. */
-  Error,
+  Error: ErrorMessage,
   /** Editable native input. */
   Input,
   /** Persistent accessible label. */

@@ -159,7 +159,7 @@ export function Description(
 }
 
 /** Renders associated validation feedback on its own checkbox-group row. */
-export function Error(props: CheckboxGroupErrorProps): ReactElement {
+function ErrorMessage(props: CheckboxGroupErrorProps): ReactElement {
   return createElement(TextField.Error, {
     ...props,
     'data-breeze-checkbox-group-error': true,
@@ -167,6 +167,8 @@ export function Error(props: CheckboxGroupErrorProps): ReactElement {
     'data-breeze-checkbox-group-error': true;
   });
 }
+
+export { ErrorMessage as Error };
 
 /**
  * Coordinates labelled multiple selection with native checkbox semantics.
@@ -177,7 +179,7 @@ export const CheckboxGroup = {
   /** Supporting guidance associated with the group. */
   Description,
   /** Validation message associated with an invalid group. */
-  Error,
+  Error: ErrorMessage,
   /** Persistent accessible group label. */
   Label,
   /** Selection, validation, layout, and native form root. */

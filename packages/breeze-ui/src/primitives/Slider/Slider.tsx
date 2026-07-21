@@ -392,7 +392,7 @@ export function Description({
 }
 
 /** Renders a validation message associated with an invalid Slider thumb. */
-export function Error({
+function ErrorMessage({
   className,
   id,
   ref,
@@ -410,6 +410,8 @@ export function Error({
   });
 }
 
+export { ErrorMessage as Error };
+
 /**
  * Coordinates a labelled, locale-aware single-value range with explicit
  * track, fill, thumb, output, description, and validation parts.
@@ -420,7 +422,7 @@ export const Slider = {
   /** Supporting guidance associated with the thumb. */
   Description,
   /** Validation message associated with an invalid thumb. */
-  Error,
+  Error: ErrorMessage,
   /** Selected portion of the track. */
   Fill,
   /** Persistent accessible label. */

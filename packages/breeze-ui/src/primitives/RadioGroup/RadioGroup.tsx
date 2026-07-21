@@ -271,7 +271,7 @@ export function Description(props: RadioGroupDescriptionProps): ReactElement {
 }
 
 /** Renders associated validation feedback on its own radio-group row. */
-export function Error(props: RadioGroupErrorProps): ReactElement {
+function ErrorMessage(props: RadioGroupErrorProps): ReactElement {
   return createElement(TextField.Error, {
     ...props,
     'data-breeze-radio-group-error': true,
@@ -279,6 +279,8 @@ export function Error(props: RadioGroupErrorProps): ReactElement {
     'data-breeze-radio-group-error': true;
   });
 }
+
+export { ErrorMessage as Error };
 
 /** Renders the pointer, touch, and keyboard target for one radio option. */
 export function Control({
@@ -336,7 +338,7 @@ export const RadioGroup = {
   /** Supporting guidance associated with the group. */
   Description,
   /** Validation message associated with an invalid group. */
-  Error,
+  Error: ErrorMessage,
   /** Visual selected-state indicator. */
   Indicator,
   /** One radio option field. */
