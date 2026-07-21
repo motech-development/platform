@@ -51,3 +51,13 @@ Repository-specific guidance for agents working in this monorepo.
 ## Reporting
 
 - Summarize the changes made, validation performed, and any known verification gaps or pre-existing failures.
+
+## Agent skills
+
+### Issue tracker
+
+Issues and PRDs are tracked in GitHub Issues for `motech-development/platform`. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Domain documentation uses a multi-context layout indexed by `CONTEXT-MAP.md`. See `docs/agents/domain.md`.
