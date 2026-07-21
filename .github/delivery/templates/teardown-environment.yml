@@ -1,4 +1,3 @@
-# GENERATED FILE — DO NOT EDIT. Run `node .github/delivery/generate.mjs`.
 name: Teardown environment
 
 on:
@@ -63,7 +62,7 @@ jobs:
         run: yarn package
 
   # Anti virus
-  core-anti-virus:
+  anti-virus:
     name: Teardown anti virus
 
     if: github.actor != 'dependabot[bot]' && always()
@@ -73,7 +72,6 @@ jobs:
     needs:
       - setup
       - accounts-storage
-      - accounts-data
 
     env:
       AWS_DEFAULT_REGION: eu-west-1
@@ -201,9 +199,9 @@ jobs:
 
     needs:
       - setup
+      - accounts-api
       - accounts-data
       - accounts-reports
-      - accounts-api
 
     env:
       AWS_DEFAULT_REGION: eu-west-1
@@ -273,11 +271,10 @@ jobs:
 
     needs:
       - setup
-      - accounts-warm-up
-      - accounts-notifications
-      - accounts-queue
-      - accounts-reports
       - accounts-api
+      - accounts-notifications
+      - accounts-reports
+      - accounts-warm-up
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
@@ -523,8 +520,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    needs:
-      - setup
+    needs: setup
 
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}

@@ -1,4 +1,3 @@
-# GENERATED FILE — DO NOT EDIT. Run `node .github/delivery/generate.mjs`.
 name: Deploy to environment
 
 on:
@@ -164,13 +163,12 @@ jobs:
   #       run: yarn workspace @id/tenant deploy -c config.json
 
   # Anti virus
-  core-anti-virus:
+  anti-virus:
     name: Deploy anti virus
 
     runs-on: ubuntu-latest
 
-    needs:
-      - setup
+    needs: setup
 
     env:
       AWS_DEFAULT_REGION: eu-west-1
@@ -326,7 +324,7 @@ jobs:
 
     needs:
       - setup
-      - core-anti-virus
+      - anti-virus
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
@@ -397,7 +395,6 @@ jobs:
     needs:
       - setup
       - accounts-storage
-      - core-anti-virus
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
@@ -686,6 +683,7 @@ jobs:
       - accounts-queue
       - accounts-reports
       - accounts-storage
+      # - auth0-tenant
 
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}

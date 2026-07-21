@@ -1,0 +1,106 @@
+{
+  "units": [
+    {
+      "id": "component-library",
+      "workspace": "@motech-development/breeze-ui",
+      "targets": ["production"],
+      "dependsOn": [],
+      "expectedStacks": [],
+      "exception": "Publishes the Storybook site to GitHub Pages rather than CloudFormation."
+    },
+    {
+      "id": "core-anti-virus",
+      "workspace": "@core/anti-virus",
+      "targets": ["preview", "develop", "production"],
+      "dependsOn": [],
+      "expectedStacks": ["anti-virus-{stage}"]
+    },
+    {
+      "id": "core-infrastructure",
+      "workspace": "@core/infrastructure",
+      "targets": ["production"],
+      "dependsOn": [],
+      "expectedStacks": ["platform-{stage}-infrastructure"]
+    },
+    {
+      "id": "core-communications",
+      "workspace": "@core/comms",
+      "targets": ["production"],
+      "dependsOn": ["core-infrastructure"],
+      "expectedStacks": ["platform-{stage}-comms"]
+    },
+    {
+      "id": "accounts-infrastructure",
+      "workspace": "@accounts/infrastructure",
+      "targets": ["production"],
+      "dependsOn": ["core-infrastructure"],
+      "expectedStacks": ["accounts-{stage}-infrastructure"]
+    },
+    {
+      "id": "accounts-storage",
+      "workspace": "@accounts/storage",
+      "targets": ["preview", "develop", "production"],
+      "dependsOn": ["core-anti-virus"],
+      "expectedStacks": ["accounts-{stage}-storage"]
+    },
+    {
+      "id": "accounts-data",
+      "workspace": "@accounts/data",
+      "targets": ["preview", "develop", "production"],
+      "dependsOn": ["accounts-storage", "core-anti-virus"],
+      "expectedStacks": ["accounts-{stage}-data"]
+    },
+    {
+      "id": "accounts-warm-up",
+      "workspace": "@accounts/warm-up",
+      "targets": ["preview", "production"],
+      "dependsOn": ["accounts-data"],
+      "expectedStacks": ["accounts-{stage}-warm-up"]
+    },
+    {
+      "id": "accounts-notifications",
+      "workspace": "@accounts/notifications",
+      "targets": ["preview", "develop", "production"],
+      "dependsOn": ["accounts-data"],
+      "expectedStacks": ["accounts-{stage}-notifications"]
+    },
+    {
+      "id": "accounts-queue",
+      "workspace": "@accounts/queue",
+      "targets": ["preview", "develop", "production"],
+      "dependsOn": ["accounts-data"],
+      "expectedStacks": ["accounts-{stage}-queue"]
+    },
+    {
+      "id": "accounts-reports",
+      "workspace": "@accounts/reports",
+      "targets": ["preview", "develop", "production"],
+      "dependsOn": [
+        "accounts-data",
+        "accounts-notifications",
+        "accounts-storage"
+      ],
+      "expectedStacks": ["accounts-{stage}-reports"]
+    },
+    {
+      "id": "accounts-api",
+      "workspace": "@accounts/api",
+      "targets": ["preview", "develop", "production"],
+      "dependsOn": [
+        "accounts-data",
+        "accounts-queue",
+        "accounts-reports",
+        "accounts-storage"
+      ],
+      "expectedStacks": ["accounts-{stage}-api"]
+    },
+    {
+      "id": "accounts-client",
+      "workspace": "@accounts/client",
+      "targets": ["production"],
+      "dependsOn": ["accounts-api", "accounts-infrastructure"],
+      "expectedStacks": [],
+      "exception": "Publishes static assets into the accounts infrastructure without owning a CloudFormation stack."
+    }
+  ]
+}

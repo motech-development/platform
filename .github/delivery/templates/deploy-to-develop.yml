@@ -1,16 +1,11 @@
-# GENERATED FILE — DO NOT EDIT. Run `node .github/delivery/generate.mjs`.
-name: Teardown environment
+name: Deploy to develop
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
+    branches:
+      - main
 
-  workflow_dispatch:
-    inputs:
-      stage:
-        description: 'Stage, for example pr-123'
-        required: true
+concurrency: development_environment
 
 jobs:
   setup:
@@ -54,6 +49,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
+
       - name: Install dependencies
         if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
         run: yarn
@@ -62,226 +66,332 @@ jobs:
         if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
         run: yarn package
 
-  # Anti virus
-  core-anti-virus:
-    name: Teardown anti virus
+      - name: Lint code
+        run: yarn lint
 
-    if: github.actor != 'dependabot[bot]' && always()
+  # Auth0 tenant
+  # auth0-tenant:
+  #   name: Deploy Auth0 tenant
+
+  #   runs-on: ubuntu-latest
+
+  #   needs: setup
+
+  #   env:
+  #     AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID_DEV }}
+  #     AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET_DEV }}
+  #     AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+  #     AUTH0_SES_ACCESS_KEY_ID: ${{ secrets.AUTH0_SES_ACCESS_KEY_ID }}
+  #     AUTH0_SES_ACCESS_SECRET_KEY: ${{ secrets.AUTH0_SES_ACCESS_SECRET_KEY }}
+  #     AUTH0_SES_REGION: ${{ secrets.AUTH0_SES_REGION }}
+  #     PREFIX: id-develop
+  #     PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+  #     PUBLIC_URL: https://id-develop.${{ secrets.PROD_DOMAIN }}
+  #     REACT_APP_GA: ${{ secrets.GA_ID_DEV }}
+  #     REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ID_CLIENT }}
+  #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  #     STAGE: develop
+  #     YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v6
+
+  #     - name: Set Node version
+  #       uses: actions/setup-node@v6
+  #       with:
+  #         node-version-file: .nvmrc
+  #         cache: yarn
+
+  #     - name: Generate packages cache key
+  #       run: ./scripts/checksum.sh ./packages.txt packages
+
+  #     - name: Restore Node modules
+  #       uses: actions/cache@v5
+  #       with:
+  #         path: |
+  #           ./node_modules
+  #           ./applications/*/*/node_modules
+  #           ./packages/*/node_modules
+  #         key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-modules-
+
+  #     - name: Restore packages
+  #       uses: actions/cache@v5
+  #       with:
+  #         path: ./packages/*/lib
+  #         key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-packages-
+
+  #     - name: Restore application cache
+  #       uses: actions/cache@v5
+  #       with:
+  #         path: |
+  #           ./applications/id/client/node_modules/.cache
+  #           ./applications/id/client/.serverless
+  #           ./applications/id/infrastructure/.serverless
+  #         key: ${{ runner.os }}-id-v4-${{ github.sha }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-id-v4-
+
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v5
+  #       with:
+  #         aws-region: eu-west-1
+  #         role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
+  #     - name: Deploy ID infrastructure
+  #       run: yarn workspace @id/infrastructure deploy --stage $STAGE
+
+  #     - name: Build ID client
+  #       run: yarn workspace @id/client build
+
+  #     - name: Build ID emails
+  #       run: yarn workspace @id/emails build
+
+  #     - name: Deploy client
+  #       run: yarn workspace @id/client deploy --stage $STAGE
+
+  #     - name: Deploy to Auth0
+  #       run: yarn workspace @id/tenant deploy -c config.json
+
+  # Anti virus
+  anti-virus:
+    name: Deploy anti virus
+
+    runs-on: ubuntu-latest
+
+    needs: setup
+
+    env:
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
+      STAGE: develop
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./applications/core/anti-virus/node_modules/.cache
+            ./applications/core/anti-virus/.serverless
+          key: ${{ runner.os }}-core-anti-virus-v4-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-core-anti-virus-v4-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
+      - name: Deploy
+        uses: nick-fields/retry@v3
+        with:
+          command: yarn workspace @core/anti-virus deploy --stage $STAGE
+          max_attempts: 3
+          on_retry_command: yarn workspace @core/anti-virus clean
+          retry_on: error
+          timeout_minutes: 15
+
+      - name: Update definitions
+        run: yarn workspace @core/anti-virus update-definitions --stage $STAGE
+
+  # Accounts (queue)
+  accounts-queue:
+    name: Deploy accounts queue
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - setup
+      - accounts-data
+
+    env:
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
+      STAGE: develop
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./applications/accounts/queue/node_modules/.cache
+            ./applications/accounts/queue/.serverless
+          key: ${{ runner.os }}-accounts-queue-v4-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-queue-v4-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
+      - name: Deploy
+        run: yarn workspace @accounts/queue deploy --stage $STAGE
+
+  # Accounts (storage)
+  accounts-storage:
+    name: Deploy accounts storage
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - setup
+      - anti-virus
+
+    env:
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
+      STAGE: develop
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./applications/accounts/storage/node_modules/.cache
+            ./applications/accounts/storage/.serverless
+          key: ${{ runner.os }}-accounts-storage-v4-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-storage-v4-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
+      - name: Deploy
+        run: yarn workspace @accounts/storage deploy --stage $STAGE
+
+  # Accounts (data)
+  accounts-data:
+    name: Deploy accounts data
 
     runs-on: ubuntu-latest
 
     needs:
       - setup
       - accounts-storage
-      - accounts-data
-
-    env:
-      AWS_DEFAULT_REGION: eu-west-1
-      DEFINITIONS_BUCKET: s3://anti-virus-${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}-definitions
-      SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
-      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
-
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
-        with:
-          aws-region: eu-west-1
-          role-to-assume: arn:aws:iam::633331859210:role/github-actions
-
-      - name: Clear bucket
-        continue-on-error: true
-        run: aws s3 rm $DEFINITIONS_BUCKET --recursive
-
-      - name: Teardown
-        run: yarn workspace @core/anti-virus teardown --stage $STAGE
-
-  # Accounts (queue)
-  accounts-queue:
-    name: Teardown accounts queue
-
-    if: github.actor != 'dependabot[bot]' && always()
-
-    runs-on: ubuntu-latest
-
-    needs:
-      - setup
-      - accounts-api
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
-
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
-        with:
-          aws-region: eu-west-1
-          role-to-assume: arn:aws:iam::633331859210:role/github-actions
-
-      - name: Teardown
-        run: yarn workspace @accounts/queue teardown --stage $STAGE
-
-  # Accounts (storage)
-  accounts-storage:
-    name: Teardown accounts storage
-
-    if: github.actor != 'dependabot[bot]' && always()
-
-    runs-on: ubuntu-latest
-
-    needs:
-      - setup
-      - accounts-data
-      - accounts-reports
-      - accounts-api
-
-    env:
-      AWS_DEFAULT_REGION: eu-west-1
-      DOWNLOAD_BUCKET: s3://accounts-${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}-downloads
-      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
-      UPLOAD_BUCKET: s3://accounts-${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}-uploads
-
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
-        with:
-          aws-region: eu-west-1
-          role-to-assume: arn:aws:iam::633331859210:role/github-actions
-
-      - name: Clear bucket
-        continue-on-error: true
-        run: |
-          aws s3 rm $DOWNLOAD_BUCKET --recursive
-          aws s3 rm $UPLOAD_BUCKET --recursive
-
-      - name: Teardown
-        run: yarn workspace @accounts/storage teardown --stage $STAGE
-
-  # Accounts (data)
-  accounts-data:
-    name: Teardown accounts data
-
-    if: github.actor != 'dependabot[bot]' && always()
-
-    runs-on: ubuntu-latest
-
-    needs:
-      - setup
-      - accounts-warm-up
-      - accounts-notifications
-      - accounts-queue
-      - accounts-reports
-      - accounts-api
-
-    env:
-      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
+      STAGE: develop
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -319,65 +429,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
-        with:
-          aws-region: eu-west-1
-          role-to-assume: arn:aws:iam::633331859210:role/github-actions
-
-      - name: Teardown
-        run: yarn workspace @accounts/data teardown --stage $STAGE
-
-  # Accounts (warm up)
-  accounts-warm-up:
-    name: Teardown accounts warm up
-
-    if: github.actor != 'dependabot[bot]' && always()
-
-    runs-on: ubuntu-latest
-
-    needs:
-      - setup
-
-    env:
-      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
-
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
+      - name: Restore application cache
         uses: actions/cache@v5
         with:
           path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
+            ./applications/accounts/data/node_modules/.cache
+            ./applications/accounts/data/.serverless
+          key: ${{ runner.os }}-accounts-data-v4-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
+            ${{ runner.os }}-accounts-data-v4-
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -385,23 +445,22 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
-      - name: Teardown
-        run: yarn workspace @accounts/warm-up teardown --stage $STAGE
+      - name: Deploy
+        run: yarn workspace @accounts/data deploy --stage $STAGE
 
   # Accounts (notifications)
   accounts-notifications:
-    name: Teardown accounts notifications
-
-    if: github.actor != 'dependabot[bot]' && always()
+    name: Deploy accounts notifications
 
     runs-on: ubuntu-latest
 
     needs:
       - setup
-      - accounts-reports
+      - accounts-data
 
     env:
-      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
+      STAGE: develop
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -439,32 +498,41 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore application cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./applications/accounts/notifications/node_modules/.cache
+            ./applications/accounts/notifications/.serverless
+          key: ${{ runner.os }}-accounts-notifications-v4-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-notifications-v4-
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
-      - name: Teardown
-        run: yarn workspace @accounts/notifications teardown --stage $STAGE
+      - name: Deploy
+        run: yarn workspace @accounts/notifications deploy --stage $STAGE
 
   # Accounts (reports)
   accounts-reports:
-    name: Teardown accounts reports
-
-    if: github.actor != 'dependabot[bot]' && always()
+    name: Deploy accounts reports
 
     runs-on: ubuntu-latest
 
     needs:
       - setup
-      - accounts-api
+      - accounts-data
+      - accounts-notifications
+      - accounts-storage
 
     env:
-      AWS_DEFAULT_REGION: eu-west-1
-      REPORTS_BUCKET: s3://accounts-${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}-reports
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
+      STAGE: develop
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -502,34 +570,45 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore application cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./applications/accounts/reports/node_modules/.cache
+            ./applications/accounts/reports/.serverless
+          key: ${{ runner.os }}-accounts-reports-v4-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-reports-v4-
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
-      - name: Clear bucket
-        continue-on-error: true
-        run: aws s3 rm $REPORTS_BUCKET --recursive
-
-      - name: Teardown
-        run: yarn workspace @accounts/reports teardown --stage $STAGE
+      - name: Deploy
+        run: yarn workspace @accounts/reports deploy --stage $STAGE
 
   # Accounts (API)
   accounts-api:
-    name: Teardown accounts API
-
-    if: github.actor != 'dependabot[bot]' && always()
+    name: Deploy accounts API
 
     runs-on: ubuntu-latest
 
     needs:
       - setup
+      - accounts-data
+      - accounts-queue
+      - accounts-reports
+      - accounts-storage
+      # - auth0-tenant
 
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
+      STAGE: develop
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
       id-token: write
@@ -567,11 +646,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore env vars
+        uses: actions/cache@v5
+        with:
+          path: ./applications/accounts/client/.env.production
+          key: ${{ runner.os }}-accounts-client-env-vars-checks-v4-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-client-env-vars-checks-
+
+      - name: Restore application cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./applications/accounts/api/node_modules/.cache
+            ./applications/accounts/api/.serverless
+          key: ${{ runner.os }}-accounts-api-v4-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-accounts-api-v4-
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
-      - name: Teardown
-        run: yarn workspace @accounts/api teardown --stage $STAGE
+      - name: Deploy
+        run: yarn workspace @accounts/api deploy --stage $STAGE

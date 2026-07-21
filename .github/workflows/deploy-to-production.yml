@@ -1,3 +1,4 @@
+# GENERATED FILE — DO NOT EDIT. Run `node .github/delivery/generate.mjs`.
 name: Deploy to production
 
 on:
@@ -118,10 +119,14 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  deploy-storybook:
+  component-library:
     runs-on: ubuntu-latest
 
-    needs: unit-test
+    needs:
+      - unit-test
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -264,10 +269,11 @@ jobs:
   #     - name: Deploy to Auth0
   #       run: yarn workspace @id/tenant deploy -c config.json
 
-  deploy-anti-virus:
+  core-anti-virus:
     runs-on: ubuntu-latest
 
-    needs: unit-test
+    needs:
+      - unit-test
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
@@ -335,10 +341,81 @@ jobs:
           retry_on: error
           timeout_minutes: 15
 
-  deploy-infrastructure:
+  core-infrastructure:
+    name: Deploy core infrastructure
+
     runs-on: ubuntu-latest
 
-    needs: unit-test
+    needs:
+      - unit-test
+
+    env:
+      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
+      STAGE: production
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - name: Generate packages cache key
+        run: ./scripts/checksum.sh ./packages.txt packages
+
+      - name: Restore Node modules
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Restore packages
+        uses: actions/cache@v5
+        with:
+          path: ./packages/*/lib
+          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-
+
+      - name: Restore application cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./applications/core/infrastructure/.serverless
+          key: ${{ runner.os }}-core-v4-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-core-v4-
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
+      - name: Deploy core infrastructure
+        run: yarn workspace @core/infrastructure deploy --stage $STAGE
+
+  core-communications:
+    name: Deploy core communications
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - core-infrastructure
 
     env:
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
@@ -388,10 +465,9 @@ jobs:
           path: |
             ./applications/core/comms/node_modules/.cache
             ./applications/core/comms/.serverless
-            ./applications/core/infrastructure/.serverless
-          key: ${{ runner.os }}-core-v4-${{ github.sha }}
+          key: ${{ runner.os }}-core-comms-v4-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-core-v4-
+            ${{ runner.os }}-core-comms-v4-
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -399,16 +475,14 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
-      - name: Deploy core infrastructure
-        run: yarn workspace @core/infrastructure deploy --stage $STAGE
-
       - name: Deploy comms infrastructure
         run: yarn workspace @core/comms deploy --stage $STAGE
 
-  deploy-accounts-storage:
+  accounts-storage:
     runs-on: ubuntu-latest
 
-    needs: deploy-anti-virus
+    needs:
+      - core-anti-virus
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
@@ -470,12 +544,11 @@ jobs:
       - name: Deploy
         run: yarn workspace @accounts/storage deploy --stage $STAGE
 
-  deploy-accounts-queue:
+  accounts-queue:
     runs-on: ubuntu-latest
 
     needs:
-      - setup
-      - deploy-accounts-data
+      - accounts-data
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
@@ -537,10 +610,12 @@ jobs:
       - name: Deploy
         run: yarn workspace @accounts/queue deploy --stage $STAGE
 
-  deploy-accounts-data:
+  accounts-data:
     runs-on: ubuntu-latest
 
-    needs: deploy-accounts-storage
+    needs:
+      - accounts-storage
+      - core-anti-virus
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
@@ -602,10 +677,11 @@ jobs:
       - name: Deploy
         run: yarn workspace @accounts/data deploy --stage $STAGE
 
-  deploy-accounts-warm-up:
+  accounts-warm-up:
     runs-on: ubuntu-latest
 
-    needs: deploy-accounts-data
+    needs:
+      - accounts-data
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
@@ -667,13 +743,13 @@ jobs:
       - name: Deploy
         run: yarn workspace @accounts/warm-up deploy --stage $STAGE
 
-  deploy-accounts-reports:
+  accounts-reports:
     runs-on: ubuntu-latest
 
     needs:
-      - deploy-accounts-data
-      - deploy-accounts-notifications
-      - deploy-accounts-storage
+      - accounts-data
+      - accounts-notifications
+      - accounts-storage
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
@@ -735,14 +811,14 @@ jobs:
       - name: Deploy
         run: yarn workspace @accounts/reports deploy --stage $STAGE
 
-  deploy-accounts-api:
+  accounts-api:
     runs-on: ubuntu-latest
 
     needs:
-      - deploy-accounts-data
-      - deploy-accounts-queue
-      - deploy-accounts-reports
-      - deploy-accounts-storage
+      - accounts-data
+      - accounts-queue
+      - accounts-reports
+      - accounts-storage
 
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
@@ -813,10 +889,11 @@ jobs:
       - name: Deploy
         run: yarn workspace @accounts/api deploy --stage $STAGE
 
-  deploy-accounts-infrastructure:
+  accounts-infrastructure:
     runs-on: ubuntu-latest
 
-    needs: deploy-infrastructure
+    needs:
+      - core-infrastructure
 
     env:
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
@@ -877,10 +954,11 @@ jobs:
       - name: Deploy
         run: yarn workspace @accounts/infrastructure deploy --stage $STAGE
 
-  deploy-accounts-notifications:
+  accounts-notifications:
     runs-on: ubuntu-latest
 
-    needs: deploy-accounts-data
+    needs:
+      - accounts-data
 
     env:
       STAGE: production
@@ -941,12 +1019,12 @@ jobs:
       - name: Deploy
         run: yarn workspace @accounts/notifications deploy --stage $STAGE
 
-  build-accounts-client:
+  accounts-client:
     runs-on: ubuntu-latest
 
     needs:
-      - deploy-accounts-api
-      - deploy-accounts-infrastructure
+      - accounts-api
+      - accounts-infrastructure
 
     env:
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
