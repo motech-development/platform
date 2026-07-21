@@ -1,0 +1,97 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Select.stories';
+
+<Meta
+  of={Stories}
+  summary="Compact single selection from static or typed keyed options with a trigger, popover listbox, controlled, uncontrolled, read-only, validation, empty, and native form states."
+/>
+
+# Select
+
+`Select` provides compact single selection from a known collection of keyed options.
+
+## Import
+
+```tsx
+import { Select } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it when users must choose one known value and keeping every option visible would consume too much space. Prefer `RadioGroup` for a short comparison-sensitive set, `ComboBox` when users need filtering or free-form entry, and `ListBox` for persistent or multiple selection. Do not use Select for navigation; use links, menus, or a navigation component.
+
+## Basic example
+
+```tsx
+import { Select } from '@motech-development/breeze-ui';
+
+<Select.Root name="region" placeholder="Choose a region">
+  <Select.Label>Region</Select.Label>
+  <Select.Trigger>
+    <Select.Value />
+  </Select.Trigger>
+  <Select.Popover>
+    <Select.ListBox>
+      <Select.Item id="north" textValue="North">
+        North
+      </Select.Item>
+      <Select.Item id="south" textValue="South">
+        South
+      </Select.Item>
+    </Select.ListBox>
+  </Select.Popover>
+</Select.Root>;
+```
+
+<Canvas of={Stories.StaticKeyboard} />
+
+## Anatomy
+
+| Part                 | Purpose                                                            |
+| -------------------- | ------------------------------------------------------------------ |
+| `Select.Root`        | Owns selected key, validation, placeholder, and native form value. |
+| `Select.Label`       | Persistently names the select.                                     |
+| `Select.Trigger`     | Opens and closes the popup and contains the displayed value.       |
+| `Select.Value`       | Displays the selected option text or root placeholder.             |
+| `Select.Popover`     | Positions option content relative to the trigger.                  |
+| `Select.ListBox`     | Renders static or typed generic options and the empty state.       |
+| `Select.Item`        | One option with a stable string or number key and `textValue`.     |
+| `Select.Description` | Supporting guidance associated with the select.                    |
+| `Select.Error`       | Validation feedback while invalid.                                 |
+
+Keep `Value` inside `Trigger`, and `ListBox` inside `Popover`. A `ListBox` item’s `id` is its public value; visible content can be localised independently.
+
+## Collections and selection
+
+Static collections contain authored `Select.Item` children. Dynamic collections pass `items`, where each item has a stable `id: string | number`, and a child renderer.
+
+```tsx
+<Select.ListBox items={regions}>
+  {(region) => (
+    <Select.Item id={region.id} textValue={region.name}>
+      {region.name}
+    </Select.Item>
+  )}
+</Select.ListBox>
+```
+
+Use `defaultValue` for uncontrolled selection, `value` with `onChange` for controlled selection, or `value` with `readOnly` for immutable selection. The value is `string | number | null`; `null` means no option. `onChange` receives the next key or `null`.
+
+`disabled` prevents focus and selection. `readOnly` is implemented as non-interactive while retaining the controlled value. `required` and `invalid` expose validation semantics. `emptyContent` defaults to `'No options'`. Loading options is application-owned; do not replace the collection without preserving stable keys and a clear status.
+
+## Keyboard, accessibility, and internationalisation
+
+- Tab focuses the trigger. Enter, Space, or Arrow Down opens the listbox; Escape closes it.
+- Arrow keys move the active option, typeahead matches each item’s `textValue`, and Enter or Space selects according to platform behaviour.
+- The popup returns focus to the trigger when dismissed.
+- Always provide `Label`; provide accurate `textValue` when option content is not plain text.
+- `Trigger` supports `sm`, `md` (default), and `lg`.
+- Layout follows surrounding `dir`; keys remain stable while labels and empty content may be translated.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not use array indexes as keys, omit `textValue` for visual option content, place links or buttons inside options, or use a Select to navigate. Use `ComboBox` for filtering, `RadioGroup` for visible comparison, and `ListBox` for persistent or multiple selection.

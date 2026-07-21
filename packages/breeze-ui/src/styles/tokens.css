@@ -1,0 +1,69 @@
+@theme {
+  --breakpoint-sm: 42.5625rem;
+  --breakpoint-md: 56.3125rem;
+  --breakpoint-lg: 73.8125rem;
+}
+
+@layer theme {
+  :where([data-breeze-root]) {
+    --breeze-font-display: 'Cabin Variable', sans-serif;
+    --breeze-font-body: 'Helvetica Neue', helvetica, arial, sans-serif;
+
+    --breeze-shell: #151c2b;
+    --breeze-shell-border: #0e1524;
+    --breeze-shell-soft: #222c40;
+    --breeze-canvas: #eef1f5;
+    --breeze-surface: #fff;
+    --breeze-surface-subtle: #f5f7fa;
+    --breeze-table-row-hover: #f8faff;
+    --breeze-table-row-muted: #f1f3f6;
+    --breeze-table-row-muted-hover: #e9edf2;
+    --breeze-table-section: #dfe4ec;
+    --breeze-skeleton: #dfe4eb;
+    --breeze-skeleton-danger: #f3dadd;
+    --breeze-skeleton-inverse: #566174;
+    --breeze-border: #d8dde6;
+    --breeze-border-strong: #bdc5d2;
+    --breeze-ink: #182033;
+    --breeze-ink-soft: #596274;
+    --breeze-ink-muted: #636c7d;
+    --breeze-ink-inverse: #f7f8fb;
+    --breeze-ink-inverse-muted: #cad0dc;
+    --breeze-primary: #2258d6;
+    --breeze-primary-hover: #1948b5;
+    --breeze-primary-soft: #e8efff;
+    --breeze-primary-selected: #2d5bc5;
+    --breeze-brand-mark: #4f82f3;
+    --breeze-accent: #6e36a7;
+    --breeze-accent-soft: #f2e9ff;
+    --breeze-focus: #4f86ff;
+    --breeze-success: #137a4a;
+    --breeze-success-soft: #e6f4ec;
+    --breeze-danger: #ba2e39;
+    --breeze-danger-hover: #98242e;
+    --breeze-danger-soft: #fbeaec;
+    --breeze-warning: #925400;
+    --breeze-warning-soft: #fff2dc;
+    --breeze-info: #006b99;
+    --breeze-info-border: #4d91b0;
+    --breeze-info-ink: #004966;
+    --breeze-info-soft: #e3f3fa;
+    --breeze-neutral: #596273;
+    --breeze-neutral-soft: #dfe3e9;
+    --breeze-overlay: rgb(12 18 31 / 68%);
+
+    --breeze-space-xs: 0.25rem;
+    --breeze-space-sm: 0.5rem;
+    --breeze-space-control: 0.625rem;
+    --breeze-space-compact: 0.75rem;
+    --breeze-space-md: 1rem;
+    --breeze-space-lg: 1.25rem;
+    --breeze-space-xl: 1.5rem;
+    --breeze-space-xxl: 2rem;
+    --breeze-space-page: 3rem;
+
+    --breeze-duration-fast: 120ms;
+    --breeze-duration-regular: 180ms;
+    --breeze-easing-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}

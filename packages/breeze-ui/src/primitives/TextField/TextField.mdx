@@ -1,0 +1,104 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './TextField.stories';
+
+<Meta
+  of={Stories}
+  summary="Labelled single-line text entry with controlled, uncontrolled, read-only, validation, and native form behaviour."
+/>
+
+# TextField
+
+`TextField` is the standard compound control for collecting one line of text with a persistent label and associated guidance.
+
+## Import
+
+```tsx
+import { TextField } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `TextField` for names, references, email addresses, telephone numbers, URLs, passwords, and other short free-form values. Use `TextArea` for paragraphs, `NumberField` for quantities that need numeric stepping or locale-aware formatting, and `SearchField` for a query that can be submitted or cleared.
+
+Do not use a text field when the valid values form a known set. Prefer `Select` for compact selection, `RadioGroup` when all choices should remain visible, or `ComboBox` when users need to filter a large set.
+
+## Basic example
+
+```tsx
+import { TextField } from '@motech-development/breeze-ui';
+
+export function ContactField() {
+  return (
+    <TextField.Root>
+      <TextField.Label>Email address</TextField.Label>
+      <TextField.Input name="email" type="email" autoComplete="email" />
+      <TextField.Description>Used for service updates.</TextField.Description>
+    </TextField.Root>
+  );
+}
+```
+
+<Canvas of={Stories.AnatomyAndUncontrolled} />
+
+## Anatomy
+
+| Part                    | Purpose                                                                                      |
+| ----------------------- | -------------------------------------------------------------------------------------------- |
+| `TextField.Root`        | Owns value, disabled, read-only, required, and invalid state and associates the field parts. |
+| `TextField.Label`       | Persistently names the input. It renders a native label.                                     |
+| `TextField.Input`       | Renders the native single-line input.                                                        |
+| `TextField.Description` | Provides supporting guidance associated with the input.                                      |
+| `TextField.Error`       | Provides the accessible validation message when `Root` is invalid.                           |
+
+Keep all parts inside `Root`. A visible `Label` is the preferred accessible name; use `aria-label` or `aria-labelledby` on `Input` only when a visible label is genuinely unsuitable.
+
+## Value and state
+
+Uncontrolled fields use `defaultValue`; controlled fields pair `value` with `onChange`; immutable controlled fields pair `value` with `readOnly` and deliberately omit `onChange`.
+
+```tsx
+import { useState } from 'react';
+import { TextField } from '@motech-development/breeze-ui';
+
+export function ControlledReferenceField() {
+  const [reference, setReference] = useState('BRZ-3');
+
+  return (
+    <TextField.Root value={reference} onChange={setReference}>
+      <TextField.Label>Reference</TextField.Label>
+      <TextField.Input name="reference" />
+    </TextField.Root>
+  );
+}
+```
+
+`onChange` receives the complete next string, not a DOM change event. `disabled` prevents focus and editing. `readOnly` keeps the value focusable and available to forms but prevents edits. `required` exposes required semantics; application validation remains responsible for setting `invalid` and rendering a helpful `Error`. An empty value is the empty string. Loading is application-owned; disable the field only when interaction must stop.
+
+## Input types, size, and native attributes
+
+`Input` supports `type="text"`, `"email"`, `"password"`, `"tel"`, and `"url"`, and sizes `sm`, `md` (default), and `lg`. It accepts relevant native input attributes such as `name`, `placeholder`, `autoComplete`, `inputMode`, `pattern`, `minLength`, `maxLength`, and `aria-*`. Put value and state props on `Root`, not `Input`.
+
+## Keyboard and accessibility
+
+- Tab moves focus to and from the native input; normal platform text-editing, selection, clipboard, and undo commands are preserved.
+- The label must describe the expected value, not merely repeat the placeholder. Placeholders disappear and are not labels.
+- Use `Description` for format guidance before an error occurs. Use `Error` for a specific recovery instruction and set `invalid` on `Root`.
+- Keep `required` consistent with the application’s validation rules. Do not encode requiredness through an asterisk alone.
+- Use an appropriate `autoComplete` token and `type`; browsers and assistive technology can then offer better input behaviour.
+
+Text values are Unicode strings and support left-to-right and right-to-left content. The component follows the surrounding `dir`; use `dir="auto"` on the input when user-authored content may have an unknown direction.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not pass `value`, `defaultValue`, `disabled`, `readOnly`, `required`, or `onChange` to `Input`; these belong to `Root`.
+- Do not switch between controlled and uncontrolled state during the component’s lifetime.
+- Do not hide a persistent label to save space; concise labels improve scanning and speech-input use.
+- Do not use `invalid` merely to style a warning. It communicates a real validation failure.
+
+## Related components
+
+Use `TextArea` for multiline content, `SearchField` for submitted queries, `NumberField` for numeric values, `PasswordField` for a revealable password pattern, and `InputGroup` to visually combine an input with a unit or related action.

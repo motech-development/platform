@@ -1,0 +1,67 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './InputGroup.stories';
+
+<Meta
+  of={Stories}
+  summary="Visual single-surface composition for a Breeze field control with non-interactive prefixes, suffixes, units, or a closely related action."
+/>
+
+# InputGroup
+
+`InputGroup` visually joins a field control with non-interactive addons or a directly related action without taking ownership of field state.
+
+## Import
+
+```tsx
+import { InputGroup, TextField } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for a protocol prefix, unit suffix, currency marker, or a compact action that operates on the adjacent field. Prefer a field’s own group part (`SearchField.Group`, `NumberField.Group`, or `ComboBox.Group`) when that component supplies one. Do not use it merely to lay out unrelated controls; use `Inline`, `Stack`, or `FormActions` instead.
+
+## Basic example
+
+```tsx
+import { InputGroup, TextField } from '@motech-development/breeze-ui';
+
+<TextField.Root>
+  <TextField.Label>Budget</TextField.Label>
+  <InputGroup.Root>
+    <InputGroup.Addon aria-hidden="true">£</InputGroup.Addon>
+    <TextField.Input name="budget" inputMode="decimal" />
+    <InputGroup.Addon>GBP</InputGroup.Addon>
+  </InputGroup.Root>
+</TextField.Root>;
+```
+
+<Canvas of={Stories.PrefixAndSuffix} />
+
+## Anatomy
+
+| Part               | Purpose                                                                |
+| ------------------ | ---------------------------------------------------------------------- |
+| `InputGroup.Root`  | Creates one visual perimeter around ordered controls and addons.       |
+| `InputGroup.Addon` | Renders a non-interactive prefix or suffix such as a unit or protocol. |
+
+`InputGroup` is visual composition, not field semantics. Keep it inside the owning field root so the field label, disabled state, and invalid state continue to reach the actual control. Author children in logical reading order; the component adapts its borders and spacing for right-to-left layouts.
+
+## Semantics and state
+
+`Root` defaults to `role="presentation"`. Use `role="group"` or `role="region"` only when the composition itself needs an accessible boundary, and then provide `aria-label` or `aria-labelledby`. A visual currency symbol that repeats information available in the label or description should be `aria-hidden`; essential units should remain available to assistive technology.
+
+State comes from child controls and their owning field root. `InputGroup` has no value, callback, disabled, read-only, invalid, loading, empty, or error API. Breeze reflects descendant focus, disabled, and invalid data states on the shared perimeter where supported. Do not implement application state on the group.
+
+Match `Addon` size to the adjacent control: `sm`, `md` (default), or `lg`. Mixed sizes create broken alignment and misleading hit areas.
+
+## Keyboard and accessibility
+
+`InputGroup` adds no keyboard behaviour. Focus follows its interactive descendants in DOM order. `Addon` is not interactive and must not contain buttons or links; place a real Breeze button directly in `Root` for a related action. Ensure the field’s visible label names the editable control, and ensure an adjacent icon-only action has its own accessible name.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not add a second accessible label to a presentational group, put interactive content inside `Addon`, mix control sizes, or use CSS to rearrange the authored reading order. Use `SearchField.Group`, `NumberField.Group`, or `ComboBox.Group` for their native compound anatomy; use layout primitives for unrelated controls.

@@ -1,0 +1,88 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ToggleGroup.stories';
+
+<Meta
+  of={Stories}
+  summary="A labelled group that coordinates single or multiple toggle selection and arrow navigation."
+/>
+
+# ToggleGroup
+
+`ToggleGroup` coordinates related valued `ToggleButton` children with single or multiple selection and orientation-aware keyboard navigation.
+
+## Import
+
+```tsx
+import { ToggleButton, ToggleGroup } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `ToggleGroup` for a compact set of closely related view or formatting choices. Use `SegmentedControl` for the opinionated pattern when its API fits, `RadioGroup` for a form question with one required answer, `CheckboxGroup` for a labelled form collection, or `Toolbar` for unrelated commands with no shared selection.
+
+## Anatomy
+
+`ToggleGroup` is the root selection and keyboard coordinator. Its direct interactive children are public `ToggleButton` components, each with a unique string `value`. There are no separate group label or item parts: label the root with `aria-label` or `aria-labelledby`, and put visible text or icons in each toggle.
+
+```tsx
+import { ToggleButton, ToggleGroup } from '@motech-development/breeze-ui';
+
+export function ViewChoice() {
+  return (
+    <ToggleGroup aria-label="View mode" defaultSelection={['grid']}>
+      <ToggleButton value="grid">Grid</ToggleButton>
+      <ToggleButton value="list">List</ToggleButton>
+    </ToggleGroup>
+  );
+}
+```
+
+<Canvas of={Stories.SingleSelection} />
+
+## Selection and callback semantics
+
+Single selection is the default and reports zero or one selected value in a string array. Set `multiple` for independent values. `defaultSelection` sets uncontrolled initial state. For controlled mutable state, provide `selection` and `onSelectionChange`; the callback receives the complete next `string[]`, not only the changed item. For immutable focusable state, provide `selection` with `readOnly`.
+
+```tsx
+import { ToggleButton, ToggleGroup } from '@motech-development/breeze-ui';
+import { useState } from 'react';
+
+export function ControlledViewChoice() {
+  const [selection, setSelection] = useState(['grid']);
+
+  return (
+    <ToggleGroup
+      aria-label="View mode"
+      selection={selection}
+      onSelectionChange={setSelection}
+    >
+      <ToggleButton value="grid">Grid</ToggleButton>
+      <ToggleButton value="list">List</ToggleButton>
+    </ToggleGroup>
+  );
+}
+```
+
+`disabled` prevents all contained toggles from changing. Empty selection is valid unless the application enforces another rule; the component has no `required`, invalid, loading, or error presentation.
+
+## API
+
+<ArgTypes />
+
+## Accessibility, keyboard, and direction
+
+Relevant native `div` attributes, notably `aria-label`, `aria-labelledby`, `id`, and `data-*`, are supported. Breeze owns selection changes, children, class, and inline style.
+
+Always give the group an accessible label. Single-selection toggles expose radio-style checked state; multiple-selection toggles remain pressed buttons. `Tab` enters or leaves the group, `Enter` or `Space` selects the focused toggle, and arrow keys move focus on the configured axis. Horizontal navigation follows text direction; vertical navigation uses Up and Down. Keep DOM order logical and values locale-independent while translating visible labels.
+
+## Common mistakes
+
+- Do not omit the group label or child values.
+- Do not reuse a value or derive values from translated labels.
+- Do not mix controlled root selection with controlled child state.
+- Do not use `multiple` when the choices are mutually exclusive.
+- Do not use the group for unrelated commands; use `Toolbar`.
+
+## Related components
+
+Use `ToggleButton` alone for one state, `SegmentedControl` for the canonical pattern, `RadioGroup` or `CheckboxGroup` for form values, and `Toolbar` for command collections.

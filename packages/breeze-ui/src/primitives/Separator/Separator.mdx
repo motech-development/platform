@@ -1,0 +1,63 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Separator.stories';
+
+<Meta
+  of={Stories}
+  summary="A semantic or decorative divider with horizontal and vertical orientations."
+/>
+
+# Separator
+
+`Separator` draws a horizontal or vertical division and exposes separator semantics unless explicitly decorative.
+
+## Import
+
+```tsx
+import { Separator } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use a semantic separator when the division helps users understand neighbouring regions. Use `decorative` when the same relationship is already clear from structure and the line is visual only. Prefer `gap` on `Stack` or `Inline` when you only need spacing, and use headings or separate landmarks for stronger structural boundaries.
+
+## Basic example
+
+```tsx
+import { Separator, Stack, Typography } from '@motech-development/breeze-ui';
+
+export function Sections() {
+  return (
+    <Stack>
+      <Typography>Current details</Typography>
+      <Separator />
+      <Typography>Previous details</Typography>
+    </Stack>
+  );
+}
+```
+
+<Canvas of={Stories.Horizontal} />
+
+## Orientation and semantics
+
+Horizontal separators render an `hr`; vertical separators render a `div` with `role="separator"` and `aria-orientation="vertical"`. A vertical separator must be placed in a parent with a meaningful height. `decorative` changes the role to `presentation` and adds `aria-hidden="true"`.
+
+## API
+
+<ArgTypes />
+
+## Accessibility and keyboard behaviour
+
+Relevant native attributes such as `id`, `aria-*`, and `data-*` are accepted. `children`, `role`, `aria-orientation`, and inline `style` are intentionally component-owned or unavailable. There are no callback, controlled, loading, disabled, invalid, empty, or error states.
+
+Meaningful separators are discoverable but not focusable and have no keyboard interaction. Do not add an accessible name unless it disambiguates a genuinely meaningful divider. Direction does not change the declared horizontal or vertical axis.
+
+## Common mistakes
+
+- Do not expose repetitive visual rules as semantic separators.
+- Do not mark a meaningful structural division `decorative`.
+- Do not use a vertical separator without height-bearing surrounding layout.
+
+## Related components
+
+Use `Stack` and `Inline` to place separators, `Surface` for a bounded region, and `Accordion` or `Disclosure` when the boundary also controls visibility.

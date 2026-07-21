@@ -1,0 +1,57 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './FormattedDateTime.stories';
+
+<Meta
+  of={Stories}
+  summary="Semantic locale-aware date-time output for an ISO 8601 instant with an explicit offset, using BreezeProvider locale and optional display time zone while preserving the original machine-readable value."
+/>
+
+# FormattedDateTime
+
+`FormattedDateTime` renders a locale-aware human-readable instant in a semantic HTML `<time>` element.
+
+## Import
+
+```tsx
+import { FormattedDateTime } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `FormattedDateTime` to display an instant consistently with `BreezeProvider` locale and time zone. Use `DateTimePicker` to edit an instant, `DatePicker` for a date without time, and `RelativeTime` for a deliberately relative phrase. Do not use it to parse user input or display a zone-free wall-clock value.
+
+## Basic example
+
+```tsx
+import { FormattedDateTime } from '@motech-development/breeze-ui';
+
+<FormattedDateTime
+  value="2026-07-20T14:30:00+01:00"
+  options={{ dateStyle: 'medium', timeStyle: 'short' }}
+/>;
+```
+
+<Canvas of={Stories.DateAndTime} />
+
+## Values, time zones and behaviour
+
+`value` must be a valid ISO 8601 date-time with an explicit offset, such as `'2026-07-20T14:30:00+01:00'` or a `Z` suffix. The original string is preserved in the `<time dateTime>` attribute. Human-readable text is produced with `Intl.DateTimeFormat` and the provider’s BCP 47 locale.
+
+When `BreezeProvider timeZone` is set, that IANA zone is used for display and overrides `options.timeZone`. Without a provider zone, standard `Intl.DateTimeFormatOptions`, including `timeZone`, apply. The display zone never changes the underlying instant. Invalid or offset-free strings can produce incorrect or failing output; validate data before render.
+
+This is a stateless formatter: it has no controlled, loading, disabled, invalid, empty or callback behaviour. Choose an explicit application fallback rather than passing an empty string. It renders no interactive keyboard behaviour.
+
+## Accessibility and internationalisation
+
+- The semantic `<time>` preserves a machine-readable value while assistive technology reads the visible localised text.
+- Supply surrounding prose when the date’s meaning is not obvious. Do not rely on numeric order alone.
+- Locale controls ordering, names, punctuation and numbering. Provider direction is inherited from the surrounding document.
+- Use `options` to make precision intentional; avoid showing seconds or zone names unless they help the task.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not pass a calendar-only date, offset-free local date-time, JavaScript `Date`, preformatted prose or children. Do not assume changing the display zone changes the instant. Use `FormattedNumber` for numbers, `RelativeTime` for application-calculated relative wording, and `DateTimePicker` for editing.

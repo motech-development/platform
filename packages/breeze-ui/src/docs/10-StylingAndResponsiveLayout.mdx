@@ -1,0 +1,55 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/10 Styling and responsive layout"
+  summary="Use compiled Breeze styles, semantic variants, bounded spacing and mobile-first responsive layout values."
+/>
+
+# Styling and responsive layout
+
+Breeze publishes one visual theme. Components expose typed visual choices and layout primitives expose bounded responsive values; applications should not depend on internal Tailwind classes or DOM structure.
+
+## Choose a layout primitive
+
+| Need                                                   | Component   |
+| ------------------------------------------------------ | ----------- |
+| Constrain page width and horizontal gutters            | `Container` |
+| Vertical flow                                          | `Stack`     |
+| Horizontal flow that may wrap                          | `Inline`    |
+| Bounded columns or a documented unequal-track form row | `Grid`      |
+| Centre one child                                       | `Center`    |
+| Themed background, border and inset                    | `Surface`   |
+| Semantic visual division                               | `Separator` |
+
+Keep authored DOM order meaningful. Responsive layout changes visual arrangement without rewriting reading or focus order.
+
+## Responsive values
+
+Responsive layout props accept either a scalar or a mobile-first object with a required `base` value. Breakpoints are `sm` at 681px, `md` at 901px and `lg` at 1181px.
+
+```tsx
+import { Grid, Stack, Surface } from '@motech-development/breeze-ui';
+
+<Surface padding={{ base: 'md', md: 'lg', lg: 'xl' }}>
+  <Grid columns={{ base: 1, sm: 2, lg: 4 }} gap="lg">
+    <Stack gap="sm">First</Stack>
+    <Stack gap="sm">Second</Stack>
+    <Stack gap="sm">Third</Stack>
+    <Stack gap="sm">Fourth</Stack>
+  </Grid>
+</Surface>;
+```
+
+Omitted breakpoint keys inherit the preceding value. Supported spacing names are `none`, `xs`, `sm`, `control`, `compact`, `md`, `lg`, `xl`, `xxl` and `page`. Use `control` and `compact` only where their named role matches the composition.
+
+## Visual vocabulary
+
+Components expose only the values that apply to them. Shared vocabulary includes `variant` for semantic colour, `appearance` for emphasis, `size` for control scale, `density` for information spacing and `orientation` for interaction/layout axis. Always check the component's API table rather than assuming every shared value is accepted.
+
+## `className`
+
+Use `className` for placement and application composition—for example, assigning a grid area or constraining a component in an application layout. Prefer public component props for colour, padding, size, tone and state. Do not target descendant selectors, generated data attributes, utility-class order or private CSS variables as stable API.
+
+## CSS loading
+
+Import `@motech-development/breeze-ui/styles.css` once. Greenfield applications may import `@motech-development/breeze-ui/reset.css` first. Consumers do not need Tailwind, do not scan Breeze source and should not reproduce Breeze recipes in application CSS.

@@ -1,0 +1,72 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Stack.stories';
+
+<Meta
+  of={Stories}
+  summary="A vertical layout with responsive, token-based spacing and bounded alignment."
+/>
+
+# Stack
+
+`Stack` arranges related children vertically while preserving their authored reading order.
+
+## Import
+
+```tsx
+import { Stack } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `Stack` for forms, page sections, cards, and other vertical flows whose spacing should use Breeze tokens. Use `Inline` for a horizontal flow, `Grid` for columns, or ordinary semantic HTML when no layout abstraction is needed.
+
+## Basic example
+
+```tsx
+import { Button, Stack, Typography } from '@motech-development/breeze-ui';
+
+export function EmptyMessage() {
+  return (
+    <Stack align="start" gap="md">
+      <Typography as="h2" level="heading-md">
+        No saved views
+      </Typography>
+      <Typography>Create a view to reuse these filters.</Typography>
+      <Button>Create view</Button>
+    </Stack>
+  );
+}
+```
+
+<Canvas of={Stories.Default} />
+
+## Layout and responsive spacing
+
+`align` controls the horizontal cross-axis; `justify` controls distribution on the vertical main axis. `gap` accepts `none`, `xs`, `sm`, `control`, `compact`, `md`, `lg`, `xl`, `xxl`, or `page`, either directly or as `{ base, sm?, md?, lg? }`. Breakpoints start at 681 px, 901 px, and 1181 px.
+
+```tsx
+<Stack gap={{ base: 'sm', md: 'xl' }}>
+  <section>First</section>
+  <section>Second</section>
+</Stack>
+```
+
+## API
+
+<ArgTypes />
+
+## Accessibility, direction, and content
+
+Relevant native `div` attributes such as `id`, `aria-*`, and `data-*` are supported; inline `style` is not. `Stack` has no selection, callback, loading, invalid, disabled, controlled, or read-only state.
+
+`Stack` is a neutral `div` and adds no role, label, focus, or keyboard interaction. Use semantic children and preserve a logical DOM order. It remains vertical in both left-to-right and right-to-left layouts. Empty stacks render but usually indicate that conditional rendering belongs to the parent.
+
+## Common mistakes
+
+- Do not use `justify="between"` unless the stack has a meaningful available height.
+- Do not use `align="center"` for long-form content that should remain easy to scan.
+- Do not add margins to every child; set `gap` on the stack.
+
+## Related components
+
+Choose `Inline` for rows, `Grid` for two-dimensional layouts, `Center` for one centred composition, and `Separator` when a visible or semantic division is required.

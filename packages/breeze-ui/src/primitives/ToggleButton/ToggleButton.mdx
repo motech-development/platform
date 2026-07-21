@@ -1,0 +1,79 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ToggleButton.stories';
+
+<Meta
+  of={Stories}
+  summary="A controlled, uncontrolled, or read-only two-state action."
+/>
+
+# ToggleButton
+
+`ToggleButton` lets a user select or deselect one persistent two-state action.
+
+## Import
+
+```tsx
+import { ToggleButton } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `ToggleButton` for an action that remains on or off, such as showing a preview. Use `Button` for a momentary command, `Switch` for an immediately applied setting with a persistent label, `Checkbox` for form selection, or `ToggleGroup` for related valued toggles.
+
+## Basic example
+
+```tsx
+import { ToggleButton } from '@motech-development/breeze-ui';
+
+export function PreviewToggle() {
+  return <ToggleButton defaultSelected>Show preview</ToggleButton>;
+}
+```
+
+<Canvas of={Stories.Uncontrolled} />
+
+## State ownership
+
+Use `defaultSelected` for uncontrolled initial state. For controlled mutable state, provide both `selected` and `onChange`; the callback receives the next boolean selected state. For intentionally immutable but focusable state, provide `selected` with `readOnly`. Do not mix `defaultSelected` with `selected`.
+
+```tsx
+import { useState } from 'react';
+import { ToggleButton } from '@motech-development/breeze-ui';
+
+export function PreviewToggle() {
+  const [selected, setSelected] = useState(false);
+
+  return (
+    <ToggleButton selected={selected} onChange={setSelected}>
+      Show preview
+    </ToggleButton>
+  );
+}
+```
+
+`disabled` prevents focus and changes. `readOnly` preserves focus and activation semantics but keeps the controlled selection unchanged. The selected treatment is always solid; the configured `appearance` controls the unselected treatment. ToggleButton has no loading, invalid, error, or empty state.
+
+## Composition with ToggleGroup
+
+Inside `ToggleGroup`, give every `ToggleButton` a unique, stable string `value`. The group owns selection and keyboard coordination; do not also control each child’s `selected` state. Standalone toggles expose pressed-button semantics, while grouped toggles use selection semantics appropriate to the group mode.
+
+## API
+
+<ArgTypes />
+
+## Accessibility and keyboard behaviour
+
+Relevant native button attributes such as `aria-*` and `data-*` are supported. Native `value`, `onChange`, pressed state, disabled state, class, and inline style are owned by the Breeze contract.
+
+Use a stable label that describes the active state or feature rather than changing between contradictory verbs. Standalone `ToggleButton` exposes `aria-pressed`; `Enter` and `Space` request the next state. In a group, arrow-key behaviour comes from `ToggleGroup`. Icons accompanying text should be decorative. Labels must be translated and allowed to grow.
+
+## Common mistakes
+
+- Do not use a toggle for a one-off command.
+- Do not provide `selected` without `onChange` unless `readOnly` is explicitly true.
+- Do not change a controlled value in response to unrelated events without keeping the visible state consistent.
+- Do not omit `value` inside `ToggleGroup`.
+
+## Related components
+
+Use `ToggleGroup` for related choices, `Switch` for a setting, `Checkbox` for form selection, and `Button` for momentary actions.

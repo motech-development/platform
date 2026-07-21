@@ -1,0 +1,49 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/01 Overview"
+  summary="What Breeze UI v3 provides, how its primitives and patterns fit together, and where to begin."
+/>
+
+# Breeze UI
+
+Breeze UI is Motech's accessible, domain-neutral React interface system. Version 3 is a clean break from the legacy library: use only the components documented in this Storybook and import them from the public package entry points.
+
+## Choose the right layer
+
+| Layer            | Responsibility                                                            | Examples                                                                      |
+| ---------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Primitive        | One focused, reusable interface responsibility                            | `Button`, `TextField`, `Stack`, `Dialog`                                      |
+| Pattern          | A Breeze-owned composition for a recurring, domain-neutral interface need | `PageHeader`, `Pagination`, `FileUpload`                                      |
+| Domain component | An application-owned composition that represents a business concept       | A project summary or account record built from Breeze primitives and patterns |
+
+Applications own domain components, business copy, data fetching, persistence, routing decisions and business validation. Breeze owns its visual language, accessible interaction behaviour and documented public contracts.
+
+## Public entry points
+
+```tsx
+import {
+  BreezeProvider,
+  Button,
+  Stack,
+  Typography,
+} from '@motech-development/breeze-ui';
+import { AddIcon } from '@motech-development/breeze-ui/icons';
+import '@motech-development/breeze-ui/reset.css';
+import '@motech-development/breeze-ui/styles.css';
+```
+
+Do not use internal deep imports. React Aria, Lucide and internal styling helpers are implementation details rather than public API.
+
+## Core conventions
+
+- Wrap every Breeze subtree in `BreezeProvider` and provide a BCP 47 `locale`.
+- Import `styles.css` once. Greenfield applications can import `reset.css` first.
+- Use `onAction` for discrete activation, `onChange` for semantic values, and `onOpenChange` for overlay state.
+- Use `value` with `onChange` for controlled state and `defaultValue` for uncontrolled state.
+- Multi-part controls expose one compound namespace, such as `Dialog.Root`, `Dialog.Trigger` and `Dialog.Content`.
+- Use typed variants and `className` for placement and composition; internal class names are not a stable contract.
+
+## Start here
+
+Read [Installation](?path=/docs/guides-02-installation--docs), then [Quick start](?path=/docs/guides-03-quick-start--docs). The remaining guides explain provider setup, composition, state, accessibility, internationalisation, routing, styling, collections and icons. Each component page contains a public import, deliberately authored examples, anatomy, API tables and selection guidance.

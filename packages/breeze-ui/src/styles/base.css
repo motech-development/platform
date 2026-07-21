@@ -1,0 +1,60 @@
+@layer base {
+  :where([data-breeze-root]),
+  :where([data-breeze-root]) *,
+  :where([data-breeze-root]) *::before,
+  :where([data-breeze-root]) *::after {
+    box-sizing: border-box;
+  }
+
+  :where([data-breeze-root]) {
+    min-width: 0;
+    color: var(--breeze-ink);
+    font-family: var(--breeze-font-body);
+    font-size: 1rem;
+    font-synthesis: none;
+    line-height: 1.4;
+  }
+
+  :where([data-breeze-root]) :is(button, input, select, textarea) {
+    color: inherit;
+    font: inherit;
+  }
+
+  :where([data-breeze-root])
+    :is(button, [href], input, select, textarea):focus-visible {
+    outline: 2px solid var(--breeze-focus);
+    outline-offset: 2px;
+  }
+
+  :where([data-breeze-root]) svg {
+    display: block;
+    flex: none;
+    width: 1em;
+    height: 1em;
+  }
+
+  :where([data-breeze-root]) [hidden] {
+    display: none !important;
+  }
+
+  :where([data-breeze-portal-root]:empty) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where([data-breeze-root]) *,
+  :where([data-breeze-root]) *::before,
+  :where([data-breeze-root]) *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :where([data-breeze-root]) :focus-visible {
+    outline-color: Highlight;
+  }
+}

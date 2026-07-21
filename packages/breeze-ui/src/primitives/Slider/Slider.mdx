@@ -1,0 +1,80 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Slider.stories';
+
+<Meta
+  of={Stories}
+  summary="Accessible single-value range input with explicit label, formatted output, track, fill, thumb, guidance, validation, horizontal or vertical orientation, and controlled, uncontrolled, and read-only state."
+/>
+
+# Slider
+
+`Slider` selects one numeric value in a bounded range through pointer, touch, or keyboard interaction.
+
+## Import
+
+```tsx
+import { Slider } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it when relative position and quick adjustment matter more than typing an exact value, such as volume or intensity. Prefer `NumberField` for exact numeric entry, unbounded values, or values where comparing digits is essential. Do not use a slider when the range or current value cannot be explained clearly.
+
+## Basic example
+
+```tsx
+import { Slider } from '@motech-development/breeze-ui';
+
+<Slider.Root defaultValue={40} min={0} max={100} step={5}>
+  <Slider.Label>Volume</Slider.Label>
+  <Slider.Output />
+  <Slider.Track>
+    <Slider.Fill />
+    <Slider.Thumb name="volume" />
+  </Slider.Track>
+  <Slider.Description>Adjust from 0 to 100.</Slider.Description>
+</Slider.Root>;
+```
+
+<Canvas of={Stories.Horizontal} />
+
+## Anatomy
+
+| Part                 | Purpose                                                            |
+| -------------------- | ------------------------------------------------------------------ |
+| `Slider.Root`        | Owns value, range, step, orientation, formatting, and field state. |
+| `Slider.Label`       | Persistently names the slider.                                     |
+| `Slider.Output`      | Displays the locale-formatted current value or custom content.     |
+| `Slider.Track`       | Pointer and touch interaction surface.                             |
+| `Slider.Fill`        | Decorative selected portion of the track.                          |
+| `Slider.Thumb`       | Draggable focus target and hidden native range input.              |
+| `Slider.Description` | Guidance associated with the thumb.                                |
+| `Slider.Error`       | Validation feedback associated with the thumb while invalid.       |
+
+Keep `Fill` and `Thumb` inside `Track`; keep all parts inside `Root`. This API is single-value only: render another component if the domain needs a range with two thumbs.
+
+## Value and callbacks
+
+Use `defaultValue` for uncontrolled state, `value` with `onChange` for controlled state, or `value` with `readOnly` for immutable state. `onChange` receives each next number during interaction. `onChangeEnd` receives the final number after a drag or keyboard sequence, which is useful for an expensive commit while `onChange` keeps the interface responsive.
+
+`min` defaults to `0`, `max` to `100`, and `step` to `1`. `formatOptions` accepts `Intl.NumberFormatOptions`; `Output` uses it and may be replaced with custom children when the same value meaning remains accessible. `disabled` prevents focus and changes. `readOnly` disables the thumb while preserving the controlled value. `invalid` and `required` are applied to the hidden range input; render `Error` for recovery guidance. Loading is application-owned.
+
+## Orientation, size, and formatting
+
+`orientation` defaults to `horizontal`; vertical layout provides a 256-pixel track. `Thumb` sizes are `sm`, `md` (default), and `lg`. Choose a step that divides the meaningful domain and avoid excessive precision. Use locale formatting for percentages, units, or currency rather than manually concatenating symbols.
+
+## Keyboard and accessibility
+
+- Tab focuses the thumb. Arrow keys change by `step`; Page Up and Page Down make larger changes; Home and End move to minimum and maximum.
+- Pointer or touch on the track moves the value; dragging the thumb updates continuously.
+- Provide `Label`. `aria-label` on `Thumb` is available when the root label cannot sufficiently name the thumb, but is usually unnecessary for a single-value slider.
+- Communicate the range and unit in `Description` when they are not obvious. Do not rely only on position or colour.
+- Layout, track direction, keyboard interpretation, and number formatting follow locale and surrounding `dir`.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not use Slider for exact entry, omit a visible or accessible value, choose meaningless fractional steps, or perform expensive persistence on every `onChange` when `onChangeEnd` suffices. Use `NumberField` for exact numbers, `ProgressBar` for read-only progress, and `Meter` for a read-only measurement.

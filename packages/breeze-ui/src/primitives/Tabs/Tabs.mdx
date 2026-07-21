@@ -1,0 +1,72 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Tabs.stories';
+
+<Meta
+  of={Stories}
+  summary="Accessible keyed tab labels and associated panels with controlled, uncontrolled, read-only, disabled, and orientation-aware behaviour."
+/>
+
+# Tabs
+
+`Tabs` switches between peer panels within the same page without changing the user's task context.
+
+## Import
+
+```tsx
+import { Tabs } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use tabs for a small, stable set of related views whose labels fit comfortably. Use `NavigationList` when each destination is a route, `Accordion` when users benefit from reading several sections together, and `ToggleGroup` for compact display-mode choices.
+
+## Basic example
+
+```tsx
+import { Tabs } from '@motech-development/breeze-ui';
+
+<Tabs.Root defaultValue="summary">
+  <Tabs.List aria-label="Record details">
+    <Tabs.Tab id="summary">Summary</Tabs.Tab>
+    <Tabs.Tab id="history">History</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panels>
+    <Tabs.Panel id="summary">Summary content</Tabs.Panel>
+    <Tabs.Panel id="history">History content</Tabs.Panel>
+  </Tabs.Panels>
+</Tabs.Root>;
+```
+
+<Canvas of={Stories.ControlledKeyboardAndDisabled} />
+
+## Anatomy
+
+| Part          | Purpose                                                |
+| ------------- | ------------------------------------------------------ |
+| `Tabs.Root`   | Owns keyed selection, disabled state, and orientation. |
+| `Tabs.List`   | Accessible list of tab labels.                         |
+| `Tabs.Tab`    | One keyed selectable label.                            |
+| `Tabs.Panels` | Optional wrapper coordinating panel transitions.       |
+| `Tabs.Panel`  | Content whose `id` matches one `Tab`.                  |
+
+Every tab and panel pair must use the same stable `string | number` id. `Panels` is optional, but useful when panels are grouped; do not place unrelated content between a tab and its associated panel structure.
+
+## Selection, states, and orientation
+
+Use `defaultValue` for uncontrolled selection, `value` with `onChange` for controlled selection, or `value` with `readOnly` for immutable selection. `onChange` receives the complete next key, not an event. `disabled` on `Root` disables all tabs; `Tab.disabled` disables one and removes it from selection navigation. `forceMount` keeps an inactive panel mounted while React Aria preserves inactive semantics; use it only when local state or expensive setup must survive.
+
+Horizontal orientation is the default and uses Left/Right keys. Vertical orientation uses Up/Down keys and places labels alongside panels. Tabs have no built-in loading, invalid, empty, or error state; keep a stable labelled tab set and put relevant feedback inside its panel.
+
+## API
+
+<ArgTypes />
+
+## Native attributes and styling
+
+All parts accept `className`, relevant `aria-*` and `data-*` attributes, and a ref to their rendered `div`. Inline styles and native click/change handlers are excluded where Breeze owns behaviour.
+
+## Accessibility, direction, and mistakes
+
+Label `Tabs.List`. Tab moves into the active tab; arrow keys move and activate selection, Home and End reach the first and last enabled tab, and Tab then moves into panel content. React Aria mirrors horizontal arrow behaviour for RTL. Translate visible labels without changing ids and allow labels to wrap only when the resulting layout remains understandable.
+
+Do not use tabs as route links, mismatch ids, hide critical errors in an inactive panel without an announcement, or create so many tabs that labels become an overflow menu. Related components: `NavigationList`, `Accordion`, `Disclosure`, and `ToggleGroup`.

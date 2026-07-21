@@ -1,0 +1,88 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './NumberField.stories';
+
+<Meta
+  of={Stories}
+  summary="Locale-aware numeric entry with optional increment and decrement controls, explicit constraints, and controlled, uncontrolled, read-only, and validation states."
+/>
+
+# NumberField
+
+`NumberField` collects a numeric value with locale-aware display, keyboard stepping, and optional increment and decrement buttons.
+
+## Import
+
+```tsx
+import { NumberField } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for quantities, percentages, rates, and other values that are mathematically numeric.
+
+## When not to use
+
+Prefer `TextField` with an appropriate `inputMode` for digit-shaped identifiers such as account numbers, telephone numbers, and postcodes. Prefer `Slider` when approximate adjustment within a bounded range is more important than exact entry.
+
+## Basic example
+
+```tsx
+import { NumberField } from '@motech-development/breeze-ui';
+
+<NumberField.Root defaultValue={2} min={1} max={20} step={1}>
+  <NumberField.Label>Quantity</NumberField.Label>
+  <NumberField.Group>
+    <NumberField.DecrementButton aria-label="Decrease quantity">
+      −
+    </NumberField.DecrementButton>
+    <NumberField.Input name="quantity" />
+    <NumberField.IncrementButton aria-label="Increase quantity">
+      +
+    </NumberField.IncrementButton>
+  </NumberField.Group>
+  <NumberField.Description>Choose from 1 to 20.</NumberField.Description>
+</NumberField.Root>;
+```
+
+<Canvas of={Stories.AnatomyAndKeyboard} />
+
+## Anatomy
+
+| Part                          | Purpose                                                       |
+| ----------------------------- | ------------------------------------------------------------- |
+| `NumberField.Root`            | Owns numeric value, range, step, formatting, and field state. |
+| `NumberField.Label`           | Persistently names the spinbutton.                            |
+| `NumberField.Group`           | Visually joins input and optional step controls.              |
+| `NumberField.Input`           | Editable locale-aware spinbutton.                             |
+| `NumberField.DecrementButton` | Subtracts one configured step.                                |
+| `NumberField.IncrementButton` | Adds one configured step.                                     |
+| `NumberField.Description`     | Associates range or format guidance.                          |
+| `NumberField.Error`           | Associates validation feedback while invalid.                 |
+
+Stepper buttons are optional. When present, give each a literal accessible `aria-label` and match its `size` to the input.
+
+## Numeric value and callbacks
+
+The public value is `number | null`; `null` represents an empty input. Use `defaultValue` for uncontrolled state, `value` with `onChange` for controlled state, or `value` with `readOnly` for immutable state. `onChange` receives the parsed next number or `null`, never a DOM event and never `NaN`.
+
+`min`, `max`, and `step` constrain stepping and validity; `step` defaults to `1`. `formatOptions` accepts `Intl.NumberFormatOptions`, for example `{ style: 'percent' }` or `{ style: 'currency', currency: 'GBP' }`. Store the numeric value, not the formatted display string.
+
+`disabled` prevents focus, editing, and stepping. `readOnly` keeps a controlled value immutable. Set `invalid` and render `Error` for application validation. Empty input is supported through `null`. The application owns loading and asynchronous validation.
+
+## Keyboard, accessibility, and internationalisation
+
+- Tab focuses the spinbutton. Up Arrow increments and Down Arrow decrements by `step`.
+- Page Up and Page Down perform larger steps where supported; Home and End move to finite bounds where supported.
+- Typing, deletion, and locale-appropriate decimal and grouping characters use platform and locale behaviour.
+- Always provide `Label`. Describe range, unit, or special formatting in `Description`; do not put essential unit information only in a visual addon.
+- Use `formatOptions` for localisation rather than manually adding currency symbols to the stored value.
+
+Formatting follows the `BreezeProvider` locale and the surrounding direction. Right-to-left layout reverses visual ordering appropriately while the number remains locale formatted.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not store the formatted text, use a number field for an identifier, pass numeric state to `Input`, or omit step-button names. Be careful with binary floating-point for money; convert to an appropriate minor-unit or decimal representation at the domain boundary. Use `Slider` for bounded direct manipulation, `TextField` for numeric-looking strings, and `InputGroup` for a purely visual unit when locale formatting is not appropriate.

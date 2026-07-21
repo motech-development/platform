@@ -1,0 +1,54 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/04 Provider and styles"
+  summary="Configure the required BreezeProvider boundary, published styles, portals, messages and toast capacity."
+/>
+
+# Provider and styles
+
+`BreezeProvider` is mandatory. It establishes one environment for locale-sensitive behaviour, reading direction, generic messages, router adaptation, overlays, portals and toasts.
+
+```tsx
+import { BreezeProvider } from '@motech-development/breeze-ui';
+import '@motech-development/breeze-ui/styles.css';
+
+<BreezeProvider locale="en-GB" timeZone="Europe/London" toastLimit={3}>
+  <App />
+</BreezeProvider>;
+```
+
+## Provider API
+
+| Prop              | Type                      | Default                    | Required | Purpose                                                    |
+| ----------------- | ------------------------- | -------------------------- | -------- | ---------------------------------------------------------- |
+| `children`        | `ReactNode`               | —                          | Yes      | Breeze components and application content                  |
+| `locale`          | `string`                  | —                          | Yes      | BCP 47 locale for formatting and interaction               |
+| `direction`       | `'ltr' \| 'rtl'`          | Inferred from `locale`     | No       | Explicit reading-direction override                        |
+| `messages`        | `Partial<BreezeMessages>` | Built-in `en-GB` catalogue | No       | Generic Breeze labels and announcements                    |
+| `timeZone`        | `string`                  | Browser/runtime context    | No       | IANA time-zone name for formatting                         |
+| `router`          | `BreezeRouterAdapter`     | Native navigation          | No       | Client-side navigation for eligible local URLs             |
+| `portalContainer` | `HTMLElement \| null`     | Provider-owned body portal | No       | Host for dialogs, popovers, menus, tooltips and toasts     |
+| `toastLimit`      | `number`                  | `3`                        | No       | Positive integer maximum of visible provider-scoped toasts |
+
+An invalid `toastLimit` throws a `RangeError`. A supplied portal container receives Breeze scope, language and direction attributes while mounted. Keep nested providers intentional: each provider owns its own environment and toast queue.
+
+## Message catalogue
+
+The replaceable generic keys are `clear`, `close`, `loading`, `noResults`, `notifications`, `nextPage`, `page`, `previousPage`, `selectDate`, `selectDateTime`, `selectTime`, `hidePassword`, `showPassword` and `unreadNotifications`. Domain and product copy still belongs in component props or children.
+
+```tsx
+<BreezeProvider
+  locale="en-GB"
+  messages={{
+    clear: 'Clear value',
+    notifications: 'Updates',
+  }}
+>
+  <App />
+</BreezeProvider>
+```
+
+## CSS contract
+
+Use `styles.css` in every application. Import `reset.css` first only when the application opts into the global baseline. Supported visual differences come from typed component props. `className` is for placement and composition; do not target internal selectors, depend on generated utility classes or replace semantic tokens as a component API.

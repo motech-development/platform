@@ -1,0 +1,41 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/07 Accessibility"
+  summary="Meet Breeze consumer responsibilities for names, descriptions, keyboard use, focus, status and WCAG 2.2 AA content."
+/>
+
+# Accessibility
+
+Breeze targets WCAG 2.2 AA and the relevant WAI-ARIA Authoring Practices. Components supply semantics, focus behaviour and keyboard interaction; applications must supply meaningful names, content, relationships and workflow decisions.
+
+## Consumer checklist
+
+- Give every interactive component an accessible name through its documented label, visible text, `aria-label` or `aria-labelledby` contract.
+- Use visible `Label`, `Legend`, `Title` and `Description` parts where the compound API provides them.
+- Keep heading levels and landmarks in a logical application hierarchy.
+- Use `IconButton` with a specific accessible label. Hide decorative icons from assistive technology.
+- Do not communicate status, validation or selection through colour alone.
+- Preserve the visible Breeze focus indicator and sufficient contrast when composing with `className`.
+- Use `VisuallyHidden` for essential text that should remain available to assistive technology, not to conceal interactive controls.
+- Put `SkipLink` first in the focus order and point it at a stable main-content ID.
+
+## Keyboard behaviour
+
+Native buttons activate with <kbd>Enter</kbd> and <kbd>Space</kbd>; links activate with <kbd>Enter</kbd>. Compound widgets implement the established pattern for their role, including arrow-key movement, <kbd>Home</kbd>/<kbd>End</kbd> where applicable, and <kbd>Escape</kbd> dismissal for overlays. Read the component page for its exact orientation and selection behaviour.
+
+Do not add competing keyboard handlers to internal parts. Application shortcuts must not prevent text entry, expected browser commands or the documented widget interaction.
+
+## Overlays and focus
+
+Dialogs and alert dialogs move focus into their content, contain focus while modal, close through their documented controls and restore focus appropriately. Popovers, menus and tooltips have different modality and dismissal rules; do not substitute one merely because the visual treatment looks similar.
+
+Every dialog-like surface needs a meaningful title. Descriptions should explain consequence or context rather than repeat the title. Destructive confirmation belongs in `AlertDialog` or `ConfirmationDialog`, not a generic `Dialog`.
+
+## Dynamic content
+
+Use `Alert` for important inline status, `Toast` for transient notifications, and progress components for ongoing work. Supply visible text for indeterminate progress and errors. Avoid repeatedly announcing decorative loading placeholders; `Skeleton` is visual and must be paired with an appropriately labelled busy region when the loading state matters.
+
+## Testing the application composition
+
+Test through roles, names, labels, text, keyboard interaction and public state. Do not assert internal React Aria structure, generated classes or private data attributes. Automated checks complement, but do not replace, keyboard and screen-reader review of complete workflows.

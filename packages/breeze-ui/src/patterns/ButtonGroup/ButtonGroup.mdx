@@ -1,0 +1,76 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ButtonGroup.stories';
+
+<Meta
+  of={Stories}
+  summary="Responsive semantic grouping for related application actions, with logical alignment and a mobile-first visual flow that never changes DOM or keyboard order."
+/>
+
+# ButtonGroup
+
+`ButtonGroup` arranges a small set of related actions with consistent spacing, alignment and responsive flow.
+
+## Import
+
+```tsx
+import { Button, ButtonGroup } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `ButtonGroup` when two or more `Button`, `LinkButton` or `IconButton` controls belong to the same local task. It provides visual layout and a semantic group without owning the actions.
+
+Do not use it for form submission ordering; use `FormActions`. Use `Toolbar` when arrow-key navigation should coordinate a collection of commands. Use `ToggleGroup` or `SegmentedControl` when the controls share selection state.
+
+## Basic example
+
+```tsx
+import { Button, ButtonGroup } from '@motech-development/breeze-ui';
+
+<ButtonGroup
+  aria-label="Item actions"
+  orientation={{ base: 'verticalReverse', sm: 'horizontal' }}
+>
+  <Button appearance="outline" variant="secondary" onAction={cancelChanges}>
+    Cancel
+  </Button>
+  <Button onAction={saveChanges}>Save changes</Button>
+</ButtonGroup>;
+```
+
+<Canvas of={Stories.Responsive} />
+
+## Anatomy and responsive behaviour
+
+`ButtonGroup` is a single `div` with `role="group"`. Its children remain ordinary Breeze actions and retain their own button, link, loading, disabled and callback semantics.
+
+`orientation` accepts a scalar value or a mobile-first responsive object. A responsive object requires `base` and may override it at `sm` (681px), `md` (901px) and `lg` (1181px).
+
+| Orientation       | Behaviour                                                                                                |
+| ----------------- | -------------------------------------------------------------------------------------------------------- |
+| `horizontal`      | Actions flow in DOM order and wrap when space is constrained.                                            |
+| `vertical`        | Actions stack in DOM order and stretch across the available width.                                       |
+| `verticalReverse` | Actions stack in reverse **visual** order and stretch; DOM, focus and screen-reader order do not change. |
+
+The canonical compact form arrangement places a secondary action first in JSX, then uses `{ base: 'verticalReverse', sm: 'horizontal' }` so the primary action is visually first on compact screens and trailing on wider screens. Keep the source order meaningful because Tab navigation always follows the DOM.
+
+## Alignment, state and callbacks
+
+`align` is scalar and defaults to `start`. Choose `start`, `center`, `end` or `spaceBetween`; start and end are logical directions and therefore adapt to right-to-left layouts.
+
+ButtonGroup has no controlled or uncontrolled value, read-only state, loading state, validation, error or empty presentation. Configure `disabled`, `loading`, `onAction`, `href` and routing behaviour on each child. Avoid rendering an empty group.
+
+## Accessibility, keyboard and internationalisation
+
+- Supply `aria-label` or `aria-labelledby` when the relationship between the actions is not already clear from nearby content. The default group role does not create an accessible name by itself.
+- ButtonGroup adds no arrow-key model. Tab and Shift+Tab move through children in DOM order; each child keeps its own Enter, Space or link behaviour.
+- Keep labels concise, translated and able to wrap. Provider direction controls logical alignment; do not reverse the child array for right-to-left content.
+- Icon-only children still require their own accessible names. Do not communicate the primary action through visual position alone.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not reorder JSX at each breakpoint, assume visual order changes keyboard order, place unrelated commands together, or use `spaceBetween` to create page layout. `FormActions` owns canonical form-action priority, `Toolbar` owns command navigation, and `ToggleGroup` owns shared selection.

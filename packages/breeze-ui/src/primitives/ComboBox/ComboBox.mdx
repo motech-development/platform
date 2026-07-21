@@ -1,0 +1,113 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ComboBox.stories';
+
+<Meta
+  of={Stories}
+  summary="Editable keyed option selection with explicit selection-only or free-form modes, separately controllable input and selection state, asynchronous status parts, and accessible popup behaviour."
+/>
+
+# ComboBox
+
+`ComboBox` combines editable text with a popup option collection for filtering a known set or explicitly accepting free-form text.
+
+## Import
+
+```tsx
+import { ComboBox } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Selection-only mode is the default: the committed value must match an option. Set `allowsCustomValue` only when arbitrary text is a valid domain value.
+
+## When not to use
+
+Prefer `Select` when filtering is unnecessary, `SearchField` when text submits a query rather than selecting a value, and `TextField` when no suggestion collection exists.
+
+## Basic selection-only example
+
+```tsx
+import { ComboBox } from '@motech-development/breeze-ui';
+
+<ComboBox.Root name="location">
+  <ComboBox.Label>Location</ComboBox.Label>
+  <ComboBox.Group>
+    <ComboBox.Input placeholder="Choose a location" />
+    <ComboBox.Trigger />
+  </ComboBox.Group>
+  <ComboBox.Popover>
+    <ComboBox.ListBox>
+      <ComboBox.Item id="north" textValue="North">
+        North
+      </ComboBox.Item>
+      <ComboBox.Item id="south" textValue="South">
+        South
+      </ComboBox.Item>
+    </ComboBox.ListBox>
+  </ComboBox.Popover>
+</ComboBox.Root>;
+```
+
+<Canvas of={Stories.SelectionOnly} />
+
+## Anatomy
+
+| Part                    | Purpose                                                                |
+| ----------------------- | ---------------------------------------------------------------------- |
+| `ComboBox.Root`         | Owns input text, selected key, mode, validation, and form integration. |
+| `ComboBox.Label`        | Persistently names the editable input.                                 |
+| `ComboBox.Group`        | Visually joins input and trigger and synchronises size.                |
+| `ComboBox.Input`        | Displays editable filter or free-form text.                            |
+| `ComboBox.Trigger`      | Opens and closes the option popup; defaults to a chevron.              |
+| `ComboBox.Popover`      | Positions popup content relative to the control.                       |
+| `ComboBox.ListBox`      | Renders static or typed generic options and empty content.             |
+| `ComboBox.Item`         | One option with a stable string or number key and `textValue`.         |
+| `ComboBox.Loading`      | Polite status for application-owned asynchronous option loading.       |
+| `ComboBox.OptionsError` | Assertive alert for application-owned option loading failure.          |
+| `ComboBox.Description`  | Supporting input guidance.                                             |
+| `ComboBox.Error`        | Field validation feedback while invalid.                               |
+
+Keep `Input` and `Trigger` inside `Group`, and `ListBox` inside `Popover`. `Loading` and `OptionsError` describe option retrieval; `Error` describes invalid field value.
+
+## Selection, input, and free-form commits
+
+Selection and displayed text are separate state channels. `selection` is a `string | number | null`; `inputValue` is a string. Each may be uncontrolled with `defaultSelection` or `defaultInputValue`, or controlled with its matching callback.
+
+```tsx
+<ComboBox.Root
+  allowsCustomValue
+  inputValue={query}
+  onInputChange={setQuery}
+  selection={selectedKey}
+  onSelectionChange={setSelectedKey}
+  onCommit={(value) => saveFreeFormValue(value)}
+>
+  {/* compound parts */}
+</ComboBox.Root>
+```
+
+In free-form mode, `onCommit` receives the current input string when Enter is pressed without a highlighted option. Selecting an option still calls `onSelectionChange`. Do not infer the selected record from `inputValue`; use the stable selection key. Read-only state requires controlled input text and selection as appropriate and forbids change callbacks.
+
+Static and dynamic collections follow the Breeze collection contract: dynamic items require stable `id` keys and a child renderer. `emptyContent` defaults to `'No options'`; set it to `null` only when another explicit status part communicates the state. The component does not fetch, debounce, cancel, or cache data.
+
+## States and size
+
+`disabled` prevents input, focus, and selection. `readOnly` preserves immutable controlled text/selection. `invalid`, `required`, `Description`, and `Error` provide field validation. Use `Loading` while options are pending and `OptionsError` when loading fails; keep stale options only if product behaviour makes that explicit.
+
+`Group` applies `sm`, `md` (default), or `lg` to the input and trigger. Standalone `Input` and `Trigger` also accept size, but the containing group takes precedence.
+
+## Keyboard, accessibility, and direction
+
+- Tab focuses the input, then the trigger. Arrow Down opens the popup and moves through options; Escape closes it.
+- Enter selects the highlighted option. In free-form mode only, Enter with no active option invokes `onCommit`.
+- Typeahead/filtering uses option `textValue`; provide literal plain text for visual or complex option content.
+- Always provide `Label`. Loading is announced politely; loading failure is announced assertively. Avoid duplicating those messages in another live region.
+- The popup follows surrounding direction. Keep keys locale-independent; translate visible text, empty content, and status messages.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not enable custom values merely to permit temporary filter text, conflate `inputValue` with the selected key, use unstable item IDs, fetch data inside render, or show `OptionsError` for ordinary field validation. Use `Select` for compact known options, `SearchField` for search results, and `ListBox` for persistent collection selection.

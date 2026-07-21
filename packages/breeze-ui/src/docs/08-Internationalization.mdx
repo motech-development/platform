@@ -1,0 +1,61 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/08 Internationalization, dates, time zones, and direction"
+  summary="Configure locale, translations, ISO date and time values, IANA time zones and right-to-left direction."
+/>
+
+# Internationalization, dates, time zones, and direction
+
+Set a BCP 47 locale on `BreezeProvider`. Breeze uses it for `Intl` formatting, date and collection behaviour, accessible announcements and inferred reading direction.
+
+```tsx
+import { BreezeProvider } from '@motech-development/breeze-ui';
+
+<BreezeProvider
+  locale="en-GB"
+  timeZone="Europe/London"
+  messages={{
+    clear: 'Clear value',
+    noResults: 'No matching options',
+  }}
+>
+  <App />
+</BreezeProvider>;
+```
+
+## Public temporal values
+
+| Value       | Public format                                         | Example                                      |
+| ----------- | ----------------------------------------------------- | -------------------------------------------- |
+| Date        | `YYYY-MM-DD`                                          | `'2026-07-20'`                               |
+| Time        | `HH:mm` or `HH:mm:ss`                                 | `'14:30'` or `'14:30:45'`                    |
+| Date range  | `{ start: string; end: string }` with inclusive dates | `{ start: '2026-07-20', end: '2026-07-24' }` |
+| Date-time   | ISO 8601 with an explicit offset                      | `'2026-07-20T14:30:00+01:00'`                |
+| Empty field | `null`                                                | `null`                                       |
+
+Use these strings at the application boundary. Do not import or pass `@internationalized/date` objects or React Aria value types; those are internal.
+
+## Time zones
+
+`timeZone` is an IANA name such as `Europe/London` or `America/New_York`. It supplies shared display context, but a date-time value still carries an explicit offset so it is unambiguous. A plain date has no instant or time zone. A plain time has no date or zone. Choose the component that matches the meaning of the value rather than converting everything to a timestamp.
+
+## Messages and product copy
+
+The provider's partial `messages` catalogue replaces Breeze-owned generic labels and announcements. Map the application's translation system into this object. Visible domain or product copy belongs in component children and props; Breeze does not translate it automatically.
+
+## Direction
+
+Breeze infers `ltr` or `rtl` from the locale and applies `dir` and `lang` to both the component root and portal root. Use the explicit `direction` prop only for a real override or focused testing.
+
+```tsx
+<BreezeProvider locale="en-GB" direction="rtl">
+  <App />
+</BreezeProvider>
+```
+
+Layout primitives and directional controls use logical direction. Do not reverse child arrays, hard-code left/right margins or replace locale-specific arrow-key behaviour in application code. Test translated copy at realistic lengths and verify both main content and portalled overlays.
+
+## Formatting components
+
+Use `FormattedDateTime`, `FormattedNumber`, `FormattedList` and `RelativeTime` for locale-sensitive display. Use date/time fields, pickers and calendars for interaction. Formatting components display values; they do not edit, parse business input or own persistence.

@@ -1,0 +1,96 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './VisuallyHidden.stories';
+
+<Meta
+  of={Stories}
+  summary="Visually concealed span whose content remains available to assistive technology."
+/>
+
+# VisuallyHidden
+
+`VisuallyHidden` removes supporting content from visual layout while keeping it available to assistive technology.
+
+## Import
+
+```tsx
+import { VisuallyHidden } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+- Add a concise accessible name when visible context and a decorative icon are sufficient for sighted users.
+- Add non-visual clarification to otherwise ambiguous visible text.
+- Supply an accessible table or collection label where a visible heading would be redundant in context.
+
+## When not to use
+
+- Prefer a visible label whenever space and design allow; visible instructions benefit more users.
+- Use `Tooltip` for supplementary information that sighted pointer and keyboard users also need.
+- Use `SkipLink` for a focusable bypass link; VisuallyHidden does not reveal content on focus.
+- Do not use it to hide decorative content from assistive technology. Use `aria-hidden="true"` or the icon's decorative default instead.
+
+## Basic use
+
+```tsx
+import { Button, VisuallyHidden } from '@motech-development/breeze-ui';
+import { MenuIcon } from '@motech-development/breeze-ui/icons';
+
+export function NavigationButton() {
+  return (
+    <Button>
+      <MenuIcon />
+      <VisuallyHidden>Open navigation</VisuallyHidden>
+    </Button>
+  );
+}
+```
+
+<Canvas of={Stories.AccessibleIconAction} />
+
+## Anatomy and behaviour
+
+VisuallyHidden renders one `span`. Its one-pixel clipped box remains in the accessibility tree but does not occupy ordinary visual layout. The component adds no roles, labels, relationships, live-region behaviour, or keyboard interaction of its own; those come from the parent semantic element and the hidden content.
+
+The text becomes part of the accessible name when composed inside controls that derive their name from children. Test the final control by role and accessible name rather than assuming the relationship.
+
+```tsx
+import { Link, VisuallyHidden } from '@motech-development/breeze-ui';
+
+export function ReportLink() {
+  return (
+    <Link href="/reports/quarterly">
+      Quarterly report
+      <VisuallyHidden> (PDF, opens in the current tab)</VisuallyHidden>
+    </Link>
+  );
+}
+```
+
+## API
+
+<ArgTypes />
+
+## Accessibility and internationalisation
+
+Relevant native span attributes such as `id`, `lang`, `dir`, `aria-*`, and `data-*` are forwarded. Arbitrary inline `style` is intentionally excluded.
+
+Write hidden text in the same plain language and locale as the control it describes. It follows the provider's direction and language unless a native `lang` or `dir` override is supplied for genuinely mixed-language content.
+
+Do not place focusable controls inside VisuallyHidden. Keyboard users could focus an element they cannot see, and the component has no focus-reveal treatment. Do not hide essential instructions solely from sighted users or duplicate visible text word-for-word unless the duplicate is required for a specific semantic relationship.
+
+VisuallyHidden has no controlled, uncontrolled, disabled, loading, invalid, error, empty, or read-only state. Empty hidden content has no effect and should be omitted.
+
+## Common mistakes and limitations
+
+- Do not use it as a general-purpose CSS hiding utility.
+- Do not conceal validation errors or instructions that all users need.
+- Do not put `Button`, `Link`, inputs, or other focusable descendants inside it.
+- Do not override clipping, positioning, dimensions, or overflow through `className`.
+- Hidden text may affect speech output and voice-control names even though it is not visible; keep it concise and consistent with visible wording.
+
+## Related components
+
+- Use `SkipLink` for a keyboard-visible bypass control.
+- Use `Tooltip` for supplementary information available visually on hover and focus.
+- Use icon `aria-label` when a meaningful standalone icon is the semantic image, rather than merely naming a parent control.
+- Use visible field label and description parts for form guidance.

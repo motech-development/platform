@@ -1,0 +1,79 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Stepper.stories';
+
+<Meta
+  of={Stories}
+  summary="Accessible ordered progression showing complete, current, and upcoming application-owned stages."
+/>
+
+# Stepper
+
+`Stepper` describes named stages in a process as an ordered list with one current-step marker.
+
+```tsx
+import { Stepper } from '@motech-development/breeze-ui';
+import { CheckIcon } from '@motech-development/breeze-ui/icons';
+```
+
+## When to use
+
+Use a stepper when people benefit from knowing their position in a small, stable multi-stage process.
+
+## When not to use
+
+Use [ProgressBar](?path=/docs/feedback-progressbar--docs) for continuous task completion, [Tabs](?path=/docs/primitives-navigation-tabs--docs) for switching peer views, and [Breadcrumbs](?path=/docs/primitives-navigation-breadcrumbs--docs) for location in a hierarchy.
+
+Stepper is descriptive, not navigation: it does not change pages, validate data, or persist completion.
+
+## Basic use
+
+```tsx
+import { Stepper } from '@motech-development/breeze-ui';
+import { CheckIcon } from '@motech-development/breeze-ui/icons';
+
+export function SetupProgress() {
+  return (
+    <Stepper.Root aria-label="Account setup">
+      <Stepper.Item
+        indicator={<CheckIcon />}
+        status="complete"
+        title="Details"
+      />
+      <Stepper.Item indicator="2" status="current" title="Settings" />
+      <Stepper.Item indicator="3" status="upcoming" title="Review" />
+    </Stepper.Root>
+  );
+}
+```
+
+<Canvas of={Stories.Horizontal} />
+
+## Anatomy
+
+- `Stepper.Root` renders the ordered-list container and controls visual orientation.
+- `Stepper.Item` renders one list item, its decorative indicator, visible title, and optional description.
+
+## Status and orientation
+
+Every item requires `status`: `complete`, `current`, or `upcoming`. `current` adds `aria-current="step"`. Keep exactly one current item during an active flow; the indicator is intentionally hidden from assistive technology, so the visible translated `title` and status semantics must carry meaning. `orientation` is `horizontal` by default and may be `vertical`; it changes layout, not reading order or keyboard behaviour.
+
+<Canvas of={Stories.VerticalWithDescriptions} />
+
+## Accessibility, state, and direction
+
+Give the root an accessible name with `aria-label` or `aria-labelledby` when surrounding context does not name it. Use meaningful text titles, not icon-only titles. Stepper has no focus management, keyboard interaction, callbacks, controlled/uncontrolled value, loading, disabled, invalid, empty, or error state; the application derives statuses from its own state. Translate titles, descriptions, and the root name. Source order remains progression order in both directions.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not make list items clickable without real links or buttons.
+- Do not mark multiple items current.
+- Do not communicate completion only with indicator colour or an icon.
+- Do not reorder items visually without changing their semantic source order.
+
+## Related components
+
+[ProgressBar](?path=/docs/feedback-progressbar--docs), [Tabs](?path=/docs/primitives-navigation-tabs--docs), and [Breadcrumbs](?path=/docs/primitives-navigation-breadcrumbs--docs).

@@ -1,0 +1,70 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './LinkButton.stories';
+
+<Meta
+  of={Stories}
+  summary="Router-neutral navigation presented with canonical button emphasis."
+/>
+
+# LinkButton
+
+`LinkButton` navigates to a destination while using the visual hierarchy of a button.
+
+## Import
+
+```tsx
+import { LinkButton } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `LinkButton` when navigation is the outcome but the destination must be prominent, such as “Continue” or “Create item”. Use `Button` for application actions and form submission, and `Link` for inline or lower-emphasis navigation.
+
+## Basic example
+
+```tsx
+import { LinkButton } from '@motech-development/breeze-ui';
+
+export function ContinueLink() {
+  return <LinkButton href="/next-step">Continue</LinkButton>;
+}
+```
+
+<Canvas of={Stories.Internal} />
+
+## Routing and native navigation
+
+Every `LinkButton` requires a real `href`, preserving native link semantics and fallback navigation. When `BreezeProvider` has a router adapter, an unmodified primary click on a root-relative URL such as `/items` calls `router.navigate(href)`. Protocol-relative URLs, external URLs, downloads, non-`_self` targets, and clicks with modifier keys retain native browser behaviour.
+
+```tsx
+<LinkButton href="/reports/latest" download>
+  Download report
+</LinkButton>
+```
+
+## Emphasis and state
+
+Appearances are `solid`, `subtle`, `outline`, and `ghost`; semantic variants are `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark`; sizes are `sm`, `md`, and `lg`. Choose a danger variant only when the destination itself represents a destructive or high-risk path, not for an action that should be a `Button`.
+
+`disabled` prevents navigation, removes the `href`, and exposes `aria-disabled` while retaining the link’s accessible identity. Prefer removing unavailable navigation or explaining why it is unavailable. `LinkButton` has no loading, callback, controlled, read-only, invalid, error, or empty state.
+
+## API
+
+<ArgTypes />
+
+## Accessibility, keyboard, and internationalisation
+
+Relevant native anchor attributes such as `rel`, `hreflang`, `referrerPolicy`, `aria-*`, and `data-*` are supported. Breeze owns click interception, `href`, `download`, `className`, and inline styling.
+
+Use destination-oriented text that makes sense out of context. `Enter` follows an enabled link; `Space` does not emulate a button. For a new browsing context, communicate that behaviour and use an appropriate `rel`. Decorative icons must not replace the visible link purpose. Allow translated labels to grow and ensure direction-sensitive icons are chosen or mirrored by the icon implementation where appropriate.
+
+## Common mistakes
+
+- Do not use `LinkButton` for mutations, modal triggers, or submit behaviour.
+- Do not omit `href` and simulate navigation in an action callback.
+- Do not intercept external, download, target, or modified-click behaviour in application code.
+- Do not use `disabled` as a long-term substitute for clear navigation rules.
+
+## Related components
+
+Use `Link` for ordinary navigation, `Button` for actions, `IconButton` for icon-only actions, and configure routing through `BreezeProvider`.

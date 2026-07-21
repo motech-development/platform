@@ -1,0 +1,74 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Container.stories';
+
+<Meta
+  of={Stories}
+  summary="A bounded application workspace with responsive page gutters."
+/>
+
+# Container
+
+`Container` centres application content in a full-width workspace, limits it to the Breeze maximum width, and applies mobile-first page gutters.
+
+## Import
+
+```tsx
+import { Container } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use one `Container` around page-level content that should share the standard maximum width and gutters. Use `Stack`, `Inline`, or `Grid` inside it to arrange content.
+
+Do not use `Container` for a visually bounded panel; use `Surface` or `Card` instead. Do not nest containers merely to add spacing, because their maximum width and automatic inline margins are page-level behaviour.
+
+## Basic example
+
+```tsx
+import { Container, Stack, Typography } from '@motech-development/breeze-ui';
+
+export function AccountPage() {
+  return (
+    <Container>
+      <Stack gap="xl">
+        <Typography as="h1" level="heading-xl">
+          Account
+        </Typography>
+        <Typography>Manage your account details.</Typography>
+      </Stack>
+    </Container>
+  );
+}
+```
+
+<Canvas of={Stories.ResponsiveWorkspace} />
+
+## Responsive gutters
+
+`padding` accepts one spacing value or an object with a required `base` value and optional `sm`, `md`, and `lg` overrides. Breakpoints are mobile-first: `sm` starts at 681 px, `md` at 901 px, and `lg` at 1181 px. The default is `{ base: 'md', sm: 'xl', md: 'xxl', lg: 'page' }`.
+
+```tsx
+<Container padding={{ base: 'sm', md: 'page' }}>Page content</Container>
+```
+
+Spacing values are `none`, `xs`, `sm`, `control`, `compact`, `md`, `lg`, `xl`, `xxl`, and `page`. Prefer the default gutters unless a documented page composition needs another token.
+
+## API
+
+<ArgTypes />
+
+## Accessibility and behaviour
+
+`Container` also accepts relevant native `div` attributes, including `id`, `aria-*`, and `data-*`; inline `style` is intentionally unavailable. It has no loading, disabled, invalid, empty, controlled, or read-only state.
+
+`Container` is a neutral `div`: it adds no landmark, label, focus, or keyboard behaviour. Put semantic elements such as `main`, `nav`, and headings inside it. If the container itself is labelled, ensure the label communicates a real relationship rather than presentation. Content order remains the authored DOM order at every breakpoint and direction.
+
+## Common mistakes
+
+- Do not use `className` to recreate arbitrary page gutters when `padding` covers the requirement.
+- Do not assume `Container` supplies a `main` landmark.
+- Do not reorder children visually at breakpoints.
+
+## Related components
+
+Use `Stack` for vertical flow, `Grid` for responsive columns, `Center` for two-axis centring, and `Surface` for a coloured or bordered inset region.

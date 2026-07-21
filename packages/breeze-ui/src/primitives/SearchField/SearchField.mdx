@@ -1,0 +1,77 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './SearchField.stories';
+
+<Meta
+  of={Stories}
+  summary="Labelled search query entry with explicit submission, conditional clearing, controlled and uncontrolled values, and accessible field states."
+/>
+
+# SearchField
+
+`SearchField` is a compound query input with search semantics, submission, and an optional clear action.
+
+## Import
+
+```tsx
+import { SearchField } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it when entered text filters or searches content and users benefit from clearing the whole query. Prefer `TextField` for ordinary data entry and `ComboBox` when the input suggests or selects options from a collection. Do not use `SearchField` as a generic input merely to obtain its clear button.
+
+## Basic example
+
+```tsx
+import { SearchField } from '@motech-development/breeze-ui';
+
+<SearchField.Root onSubmit={(query) => runSearch(query)}>
+  <SearchField.Label>Search records</SearchField.Label>
+  <SearchField.Group>
+    <SearchField.Input name="query" placeholder="Name or reference" />
+    <SearchField.ClearButton />
+  </SearchField.Group>
+  <SearchField.Description>Enter one or more keywords.</SearchField.Description>
+</SearchField.Root>;
+```
+
+<Canvas of={Stories.AnatomyAndKeyboard} />
+
+## Anatomy
+
+| Part                      | Purpose                                                                             |
+| ------------------------- | ----------------------------------------------------------------------------------- |
+| `SearchField.Root`        | Owns query value, search submission, clearing, and field state.                     |
+| `SearchField.Label`       | Persistently names the query input.                                                 |
+| `SearchField.Group`       | Presents the input and clear action as one control and synchronises their size.     |
+| `SearchField.Input`       | Renders a native `type="search"` input.                                             |
+| `SearchField.ClearButton` | Clears a non-empty mutable query; it is omitted when empty, disabled, or read-only. |
+| `SearchField.Description` | Associates query guidance.                                                          |
+| `SearchField.Error`       | Associates validation feedback while invalid.                                       |
+
+`Input` can be used without `Group`, but the canonical composition places `Input` and `ClearButton` inside `Group`.
+
+## Value, callbacks, and states
+
+Use `defaultValue` for uncontrolled state, `value` with `onChange` for controlled state, or `value` with `readOnly` for immutable state. `onChange` receives the next query string. `onSubmit` receives the current query when the user submits. `onClear` runs after the value is cleared by the clear button or Escape.
+
+`disabled` removes interaction. `readOnly` keeps the query immutable and hides the clear action. `invalid`, `required`, `Description`, and `Error` follow the `TextField` contract. An empty query is `''`; `ClearButton` does not render for it. The application owns loading, results, empty-result messages, errors, and request cancellation.
+
+## Keyboard and accessibility
+
+- Tab focuses the search input and then any rendered clear button.
+- Enter invokes `onSubmit` with the current query.
+- Escape clears a non-empty mutable query and invokes `onClear`; native browser behaviour may require a second Escape to move focus or close an ancestor overlay.
+- The clear button uses the provider’s localised `clear` message by default. Supply `aria-label` when product wording needs to be more specific.
+- Provide a persistent `Label`. Announce result counts and asynchronous states in the result region, not by repeatedly changing the field label.
+- Search results should have a clear heading or live-region strategy and sensible focus behaviour; `SearchField` does not render results.
+
+`Group` supports `sm`, `md` (default), and `lg`, applying the size to its input and clear action. It follows surrounding writing direction and uses logical layout. Search strings are ordinary Unicode strings.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not manage clearing with a second button outside `Root`, assume `onSubmit` starts a request automatically, or display a clear button for read-only content. Use `TextField` for ordinary text, `ComboBox` for suggestions and option selection, and `ListBox` for a persistent result collection.

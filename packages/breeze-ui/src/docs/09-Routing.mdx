@@ -1,0 +1,57 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/09 Routing"
+  summary="Connect a router-neutral navigation adapter while preserving anchors, external URLs, downloads and modified clicks."
+/>
+
+# Routing
+
+Breeze has no dependency on React Router, Next.js or another routing framework. Applications may supply one `BreezeRouterAdapter` with a `navigate(href)` function.
+
+```tsx
+import {
+  BreezeProvider,
+  type BreezeRouterAdapter,
+} from '@motech-development/breeze-ui';
+
+const router: BreezeRouterAdapter = {
+  navigate(href) {
+    applicationRouter.navigate(href);
+  },
+};
+
+<BreezeProvider locale="en-GB" router={router}>
+  <App />
+</BreezeProvider>;
+```
+
+## Navigation components
+
+Use `Link` for inline navigation and `LinkButton` when navigation needs button emphasis. Use `Button` for an operation that does not change location.
+
+```tsx
+import { Link, LinkButton } from '@motech-development/breeze-ui';
+
+<Link href="/items">View items</Link>
+<LinkButton href="/items/new">Create an item</LinkButton>
+```
+
+Eligible root-relative URLs use the provider adapter on an ordinary unmodified primary activation. Native anchors remain authoritative for:
+
+- external and protocol URLs;
+- protocol-relative URLs;
+- downloads;
+- alternate targets such as `target="_blank"`;
+- modified clicks that open a new tab or window;
+- use without a router adapter.
+
+This preserves browser affordances including link copying, open-in-new-tab and native history behaviour. Do not render a `Button` and call the router from `onAction` for normal navigation.
+
+## Link-capable compounds
+
+Navigation lists, breadcrumbs, pagination and application-shell patterns may render links through their own documented parts. Supply public `href` values and keep route definitions application-owned. Breeze does not choose routes, load data, determine authorisation or expose framework-specific link components.
+
+## Accessible route changes
+
+Use clear link text that describes the destination. Mark current navigation with the public current-state prop or supported native attribute documented by the component. After client-side navigation, the application owns page-title updates, main-heading changes, focus placement and any route announcement needed by the complete workflow.

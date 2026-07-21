@@ -1,0 +1,174 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './index.stories';
+
+<Meta
+  of={Stories}
+  summary="Curated catalogue of all 32 Breeze icon exports, with sizing and accessibility guidance."
+/>
+
+# Icons
+
+Breeze exports a curated set of 32 interface icons through its dedicated `/icons` subpath. Each wrapper has a stable Breeze name, inherits the surrounding text colour, and is decorative by default.
+
+## Import
+
+```tsx
+import {
+  AddIcon,
+  CheckIcon,
+  SearchIcon,
+  type IconProps,
+} from '@motech-development/breeze-ui/icons';
+```
+
+Do not import icon implementations from `lucide-react`, Breeze source paths, or the package root. Import only the named icons a module uses.
+
+## When to use
+
+- Choose the icon whose documented meaning most closely matches the interface concept.
+- Compose decorative icons beside visible labels in Breeze actions, links, fields, and markers.
+- Add `aria-label` only when the standalone glyph itself provides information not expressed in nearby text.
+
+## When not to use
+
+- Use `Logo` for the Motech Development brand mark.
+- Use `Avatar` for a person or entity identity.
+- Use text instead when no curated icon clearly communicates the concept.
+- Do not use icons as decoration without functional or information value, or rely on a glyph as the only cue for a complex or unfamiliar concept.
+
+## Basic use
+
+```tsx
+import { Button } from '@motech-development/breeze-ui';
+import { AddIcon } from '@motech-development/breeze-ui/icons';
+
+export function AddItemButton() {
+  return (
+    <Button>
+      <AddIcon />
+      Add item
+    </Button>
+  );
+}
+```
+
+<Canvas of={Stories.Catalogue} />
+
+## Catalogue
+
+| Export             | Intended meaning                                                 |
+| ------------------ | ---------------------------------------------------------------- |
+| `AddIcon`          | Create or add an item.                                           |
+| `ArrowLeftIcon`    | Leftward movement or navigation.                                 |
+| `ArrowRightIcon`   | Rightward movement or navigation.                                |
+| `BuildingIcon`     | Organisation, workplace, or company details.                     |
+| `CalendarIcon`     | Date, schedule, or calendar surface.                             |
+| `ChartIcon`        | Summary, dashboard, trend, or analytics.                         |
+| `CheckIcon`        | Completed, confirmed, or selected state.                         |
+| `ChevronDownIcon`  | Downward disclosure or movement.                                 |
+| `ChevronLeftIcon`  | Leftward disclosure or compact navigation.                       |
+| `ChevronRightIcon` | Rightward disclosure or compact navigation.                      |
+| `ChevronUpIcon`    | Upward disclosure or movement.                                   |
+| `CloseIcon`        | Close, dismiss, or clear.                                        |
+| `DeleteIcon`       | Destructive removal.                                             |
+| `DownloadIcon`     | Download or obtain a resource.                                   |
+| `EditIcon`         | Edit or modify content.                                          |
+| `ExternalLinkIcon` | Destination outside the current application or browsing context. |
+| `EyeIcon`          | Show, reveal, or visible state.                                  |
+| `EyeOffIcon`       | Hide, conceal, or hidden state.                                  |
+| `FileTextIcon`     | Document, report, or written record.                             |
+| `HelpIcon`         | Contextual help or guidance.                                     |
+| `InfoIcon`         | Neutral information.                                             |
+| `MenuIcon`         | Open compact navigation or a menu surface.                       |
+| `MoreIcon`         | Additional actions or options.                                   |
+| `PaperclipIcon`    | File attachment.                                                 |
+| `SearchIcon`       | Search or query.                                                 |
+| `SettingsIcon`     | Settings or configuration.                                       |
+| `SignOutIcon`      | End an authenticated session.                                    |
+| `UploadIcon`       | Upload or supply a resource.                                     |
+| `UserIcon`         | Person, account, or individual identity.                         |
+| `UsersIcon`        | Group, team, or collection of people.                            |
+| `WalletIcon`       | Money, wallet, or transaction context.                           |
+| `WarningIcon`      | Caution, risk, or warning state.                                 |
+
+Names express the stable public contract; the underlying artwork may evolve. Directional meanings are literal. In a right-to-left interface, choose the arrow or chevron matching the intended physical or navigation direction rather than assuming automatic mirroring.
+
+## Decorative and meaningful icons
+
+Without an `aria-label`, every icon renders with `aria-hidden="true"` and `focusable="false"`. This is correct beside visible text:
+
+```tsx
+import { Link } from '@motech-development/breeze-ui';
+import { ExternalLinkIcon } from '@motech-development/breeze-ui/icons';
+
+export function ExternalLink() {
+  return (
+    <Link href="https://example.com" rel="noreferrer" target="_blank">
+      External guidance <ExternalLinkIcon />
+    </Link>
+  );
+}
+```
+
+When the icon itself is meaningful, `aria-label` removes `aria-hidden` and adds `role="img"`. The label must name the information conveyed, not describe the artwork:
+
+```tsx
+import { InfoIcon } from '@motech-development/breeze-ui/icons';
+
+export function InformationStatus() {
+  return <InfoIcon aria-label="Information" size={24} />;
+}
+```
+
+<Canvas of={Stories.MeaningfulIcon} />
+
+For icon-only actions, prefer the action component's accessible-label API or visually hidden action text so the control is named as a verb. “Delete item” is a useful button name; “trash icon” is not. Icons never enter the tab order themselves.
+
+## Sizing and colour
+
+`size` defaults to `1em` and accepts a CSS-pixel number or CSS length such as `'1.25rem'`. Both rendered width and height use that value. The default aligns naturally with surrounding text and responds to a parent's text size, including inside `IconTile`.
+
+Icons use `currentColor`, so they inherit the text colour of the containing Breeze component. Use semantic component variants for colour whenever possible. The standard wrappers use Lucide strokes; `WarningIcon` is a Breeze-owned filled warning triangle. `strokeWidth` defaults to `2` and adjusts stroke detail, but should normally retain the canonical value.
+
+```tsx
+import { Inline } from '@motech-development/breeze-ui';
+import { CheckIcon } from '@motech-development/breeze-ui/icons';
+
+export function IconSizes() {
+  return (
+    <Inline align="center" gap="md" wrap={false}>
+      <CheckIcon />
+      <CheckIcon size={20} />
+      <CheckIcon size="1.5rem" />
+    </Inline>
+  );
+}
+```
+
+## API
+
+| Prop          | Type               | Default        | Description                                                                    |
+| ------------- | ------------------ | -------------- | ------------------------------------------------------------------------------ |
+| `size`        | `number \| string` | `'1em'`        | CSS-pixel number or CSS length used for both width and height.                 |
+| `strokeWidth` | `number`           | `2`            | Stroke thickness for line artwork and warning detail.                          |
+| `aria-label`  | `string`           | —              | Makes the icon a named semantic image; omission makes it decorative.           |
+| `className`   | `string`           | —              | Placement and composition classes.                                             |
+| `color`       | `string`           | `currentColor` | Relevant native SVG colour attribute; inheriting from the parent is preferred. |
+| `ref`         | not exposed        | —              | Curated icons do not currently expose a ref prop.                              |
+
+Other relevant native SVG attributes, including `aria-describedby`, `data-*`, `id`, and presentation attributes, are accepted. `children`, `height`, and `width` are excluded. A supplied `style` may provide relevant SVG presentation properties, but `size` remains the supported width and height API and semantic component variants remain the supported colour route.
+
+## State, internationalisation, and limitations
+
+Icons have no controlled, uncontrolled, disabled, loading, invalid, empty, error, or read-only state. The owning component exposes and communicates those states. Icons do not announce changes; use visible text and the appropriate alert, toast, progress, or field semantics.
+
+Accessible labels are application copy and must be translated. The artwork itself is not localised. Test directional icons in both `ltr` and `rtl` compositions because icons are not automatically mirrored.
+
+Do not infer availability of any Lucide glyph that is not listed in the catalogue. New icons require a Breeze public API decision. Do not inspect or target generated SVG paths, classes, or underlying library names.
+
+## Related components
+
+- Use `IconTile` for a canonical semantic marker surface.
+- Use `IconButton` for an icon-only action with an explicit accessible label.
+- Use `Logo` for the brand mark and `Avatar` for identity.
+- Use `Badge`, `Alert`, or `Typography` to state meaning in words.

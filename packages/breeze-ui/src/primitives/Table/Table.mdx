@@ -1,0 +1,170 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Table.stories';
+
+<Meta
+  of={Stories}
+  summary="Responsive compound data table with ordered columns, keyed rows, selection, consumer-owned sorting, actions, grouped sections, loading, and optional virtualization."
+/>
+
+# Table
+
+`Table` presents comparable records in ordered columns while coordinating responsive labels, row focus, selection, sorting, actions, and large collections.
+
+```tsx
+import { Table } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use a table when people need to scan or compare the same attributes across records. Use [DescriptionList](?path=/docs/data-display-descriptionlist--docs) for the attributes of one record, [GridList](?path=/docs/collections-gridlist--docs) for rich selectable rows without aligned columns, and [List](?path=/docs/data-display-list--docs) for non-interactive sequences.
+
+Avoid a table when each row has a different information structure or when a small-screen record cannot be understood from compact labels.
+
+## Basic use
+
+```tsx
+import { Table } from '@motech-development/breeze-ui';
+
+export function RecordsTable() {
+  return (
+    <Table.Root aria-label="Records">
+      <Table.Header>
+        <Table.Column id="name" rowHeader>
+          Name
+        </Table.Column>
+        <Table.Column id="state">State</Table.Column>
+      </Table.Header>
+      <Table.Body>
+        <Table.Row id="alpha" textValue="Alpha Ready">
+          <Table.Cell column="name">Alpha</Table.Cell>
+          <Table.Cell column="state">Ready</Table.Cell>
+        </Table.Row>
+        <Table.Row id="beta" textValue="Beta In review">
+          <Table.Cell column="name">Beta</Table.Cell>
+          <Table.Cell column="state">In review</Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    </Table.Root>
+  );
+}
+```
+
+<Canvas of={Stories.ControlledSortingAndSelection} />
+
+## Anatomy
+
+- `Table.Root` owns table semantics, layout, responsive labels, row state, sorting, and virtualization.
+- `Table.Header` renders the ordered column-heading section from static children or generic `items`.
+- `Table.Column` renders one keyed heading and configures row-header, sorting, compact label, alignment, and width behaviour.
+- `Table.Body` renders one ordered row section and its empty content.
+- `Table.Row` renders one keyed data or section row, with optional action and tone.
+- `Table.Cell` associates one cell with a stable column key.
+- `Table.Disclosure` renders the canonical bare arrow cell for an actionable row.
+- `Table.Footer` renders an optional ordered footer row section.
+- `Table.LoadMore` renders a visible loading row and intersection-driven request sentinel.
+
+Keep `Header`, each `Body`, and optional `Footer` in meaningful source order. Every data row must contain exactly one cell for every visible column, in the same order, even after conditional column changes.
+
+## Keys and collection content
+
+Column, row, and section identifiers are stable `string | number` keys. Do not use array positions or translated labels. Each `Table.Cell column` must exactly match its `Table.Column id`. `Table.Row textValue` is required for typeahead and a plain-text accessible representation. Provide `Table.Column textValue` and `Table.Cell textValue` when visible content is not plain text; Breeze does not derive accessible or compact labels from arbitrary React nodes.
+
+`Table.Header`, `Table.Body`, and `Table.Footer` accept either authored children or generic `items` plus a renderer. Dynamic items must contain a stable `id`. `id` on each section is optional but recommended for stable measurement when sections can reorder or virtualization is enabled.
+
+## Responsive layouts and columns
+
+`layout="responsive"` is the default. It presents compact labelled records below the Breeze small breakpoint and native table columns at wider sizes. `responsiveGrid` keeps the same compact treatment but uses explicit equal grid tracks at wider sizes. `grid` keeps CSS grid structure at all sizes. Use `responsiveGrid` or `grid` only when equal tracks and aligned custom geometry fit the content.
+
+`Table.Column compactLabel` defaults to `true`; a literal string heading becomes the compact label. When the heading contains formatting, icons, or other React nodes, provide explicit `textValue`. Set `compactLabel` to `false` for a disclosure or control column that should not label compact cells. `align` is `start`, `center`, or `end` and defaults to `start`. `width` is `auto`, `control`, or `icon` and defaults to `auto`. `boundary="strong"` adds a stronger lower edge; `none` is the default.
+
+<Canvas of={Stories.ResponsiveGroupedSections} />
+
+## Selection, sorting, and actions
+
+Selection is disabled until you supply selection state, a selection callback, or `multiple`. Uncontrolled selection uses `defaultSelection`; controlled selection requires `selection` and `onSelectionChange`; immutable selection requires `selection`, `readOnly`, and no selection callback. Values are `Array<string | number>` or `'all'`. `multiple` defaults to `false`, and `onSelectionChange` receives the complete next selection.
+
+Sorting never sorts consumer data. Mark a column `sortable`, then either use `defaultSort` for retained uncontrolled sort metadata or pass controlled `sort` with `onSortChange`. A `TableSort` is `{ column: string | number, direction: 'ascending' | 'descending' }`. Reorder the supplied rows in response. `onSortChange` receives the next complete descriptor. Read-only mode suppresses sort changes as well as selection changes.
+
+`Table.Row onAction` receives that row's stable key. Add `Table.Disclosure column="actions"` to an actionable row when a visual arrow is useful, and define a matching column with `compactLabel={false}` and `width="icon"`. `position="overlay"` is the disclosure default for compact records; `flow` keeps it in an explicit track. Buttons and links inside cells remain independent controls.
+
+```tsx
+import { useState } from 'react';
+import {
+  Table,
+  type CollectionSelection,
+  type TableSort,
+} from '@motech-development/breeze-ui';
+
+export function ControlledTable() {
+  const [selection, setSelection] = useState<CollectionSelection>([]);
+  const [sort, setSort] = useState<TableSort>({
+    column: 'name',
+    direction: 'ascending',
+  });
+
+  return (
+    <Table.Root
+      aria-label="Records"
+      onSelectionChange={setSelection}
+      onSortChange={setSort}
+      selection={selection}
+      sort={sort}
+    >
+      <Table.Header>
+        <Table.Column id="name" rowHeader sortable>
+          Name
+        </Table.Column>
+      </Table.Header>
+      <Table.Body emptyContent="No records">
+        <Table.Row id="alpha" textValue="Alpha">
+          <Table.Cell column="name">Alpha</Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    </Table.Root>
+  );
+}
+```
+
+## Row presentation and states
+
+`Table.Row presentation="data"` and `tone="default"` are defaults. Use `tone="muted"` for domain-neutral de-emphasis, not disabled state. `presentation="section"` creates a grouped section row; it is structure inside an ordered body, not a substitute for column headings. `disabled` or `disabledKeys` prevent row focus, selection, and actions.
+
+`Table.Body emptyContent` defaults to `No rows`; supply translated copy. `Table.LoadMore onLoadMore` requests more consumer-owned rows. Set `loading` for the duration of the request to show loading content and suppress duplicates; `offset` defaults to `1` viewport proportion. Table has no built-in error row: render application feedback and a real retry action without breaking the header/body structure.
+
+## Virtualization
+
+Pass `virtualization` only for a large collection. Both modes require `viewportHeight` in pixels.
+
+| Mode                   | Required                      | Optional defaults and behaviour                                           |
+| ---------------------- | ----------------------------- | ------------------------------------------------------------------------- |
+| `{ mode: 'fixed' }`    | `rowHeight`, `viewportHeight` | One authoritative row height; `gap` defaults to `0`.                      |
+| `{ mode: 'variable' }` | `viewportHeight`              | `estimatedRowHeight` defaults to `48`; live row measurements override it. |
+
+Both modes accept `overscan` (default `0` beyond the engine buffer), `loadingRowHeight` (default `48`), and `estimatedSectionHeight`. Keep section and row keys stable. Test responsive content at the configured height; clipping a variable-height row by using fixed mode is a data-loss bug.
+
+<Canvas of={Stories.VariableVirtualizationAndLoading} />
+
+## Keyboard, accessibility, and internationalization
+
+Every table needs an accessible name through visible context, `aria-label`, or `aria-labelledby`. Mark the primary identifying column `rowHeader` so assistive technology can announce records while navigating cells. Arrow keys move through the table, Home and End move within row/collection boundaries, and typeahead uses row `textValue`. Standard selection keys follow the current mode; Enter or equivalent activation invokes actionable rows. Sortable headings are keyboard activatable. Embedded controls remain in the Tab sequence.
+
+Translate the table name, headings, empty/loading/error copy, and text values. Format dates and numbers before rendering cells. `start`/`end`, logical disclosure positioning, and inherited direction adapt to RTL; keep semantic column and row source order stable rather than manually reversing it.
+
+Parts support relevant native table attributes, `className`, ARIA and data attributes, events, and typed refs. Click, value, children, alignment, role, and inline-style props owned by the compound API are intentionally excluded where applicable.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not mismatch cell `column` keys, heading order, or conditional visible columns.
+- Do not assume `onSortChange` sorts rows for you.
+- Do not use unstable row keys or omit `textValue`.
+- Do not attach generic click handlers to rows; use `onAction` or cell controls.
+- Do not use fixed virtualization for wrapping rows.
+- Do not hide meaningful headings with `compactLabel={false}`.
+
+## Related components
+
+[GridList](?path=/docs/collections-gridlist--docs), [DescriptionList](?path=/docs/data-display-descriptionlist--docs), [List](?path=/docs/data-display-list--docs), and [Pagination](?path=/docs/patterns-navigation-pagination--docs).

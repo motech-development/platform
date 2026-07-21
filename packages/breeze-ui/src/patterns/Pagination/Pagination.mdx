@@ -1,0 +1,71 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Pagination.stories';
+
+<Meta
+  of={Stories}
+  summary="Controlled, one-based pagination across a known page count with localised controls, boundaries, and compact ellipses."
+/>
+
+# Pagination
+
+`Pagination` requests movement through a known, one-based page range while the application owns data and route state.
+
+## Import
+
+```tsx
+import { Pagination } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it when a result set has a stable, known `pageCount` and direct page access is useful.
+
+## When not to use
+
+Do not use it for an unknown total, continuous scrolling, or collections where retaining nearby items is more useful than moving between discrete pages. Prefer an application-owned “Load more” action when the total is unknown, or the virtualisation support in `Table`, `GridList`, and `ListBox` for large scrolling collections.
+
+## Basic example
+
+```tsx
+import { Pagination } from '@motech-development/breeze-ui';
+
+<Pagination
+  aria-label="Search result pages"
+  currentPage={4}
+  onChange={(page) => {
+    setPage(page);
+    loadResults({ page });
+  }}
+  pageCount={12}
+/>;
+```
+
+<Canvas of={Stories.ManyPages} />
+
+## State, values, and callbacks
+
+Pagination is controlled. `currentPage` and every value passed to `onChange(page)` are one-based positive integers. The callback reports the requested page and receives no DOM event; update route and data state, then pass the resulting `currentPage` back. There is no uncontrolled `defaultCurrentPage` or read-only state.
+
+`pageCount` must be a positive integer. `currentPage` must be an integer from `1` through `pageCount`, inclusive. Invalid values throw `RangeError` during rendering instead of being clamped. Long ranges always keep first, last, current, and adjacent pages available, with non-interactive ellipses for gaps. The current page is a non-interactive element with `aria-current="page"`, so selecting it cannot trigger a redundant request.
+
+`disabled` defaults to `false` and prevents all page-change controls. Previous and next are also disabled at their respective boundaries. Disabling does not change or hide the current page.
+
+## Data, errors, and routing
+
+The application owns fetching, cancellation, caching, URLs, scroll restoration, focus after navigation, loading, empty results, and errors. Keep the previous page visible while a request is pending and set `disabled`, or replace the results with suitable progress feedback. Do not change `currentPage` to an invalid value when a result count shrinks; resolve the valid page in application state first.
+
+Pagination renders buttons, not links, and does not call the router adapter. When every page needs a crawlable or open-in-new-tab URL, compose an application-specific navigation solution from public link primitives.
+
+## Accessibility, keyboard, and internationalisation
+
+The required `aria-label` distinguishes this `nav` landmark from primary navigation. The current page receives the provider's localised `page` label; directional buttons use `previousPage` and `nextPage`. Override those messages through `BreezeProvider` when localising the application.
+
+Controls follow normal button keyboard behaviour: `Tab` visits enabled buttons and `Enter` or `Space` activates them. There is no roving focus or arrow-key page selection. Ellipses are hidden from assistive technology. In right-to-left direction, previous and next arrow icons reverse while callback values remain numerically unchanged.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not pass zero-based indexes, set `pageCount` to zero for empty results, treat the callback as a DOM event, use pagination for an unknown total, or announce every pending request by replacing the landmark. Related components: [Table](?path=/docs/data-display-table--docs), [GridList](?path=/docs/collections-gridlist--docs), [ProgressBar](?path=/docs/feedback-progressbar--docs), and [StatePanel](?path=/docs/patterns-feedback-statepanel--docs).

@@ -1,0 +1,56 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/12 Icons"
+  summary="Choose, import, size and label Breeze's curated icon exports without coupling applications to Lucide."
+/>
+
+# Icons
+
+Breeze exposes a curated icon set through `@motech-development/breeze-ui/icons`. Import named icons from that entry point; do not import Lucide through Breeze or use internal icon paths.
+
+```tsx
+import {
+  AddIcon,
+  ExternalLinkIcon,
+  WarningIcon,
+} from '@motech-development/breeze-ui/icons';
+```
+
+## Sizing and colour
+
+Every icon accepts `size?: number | string` and `strokeWidth?: number`. `size` defaults to `1em`, so an icon follows the surrounding text scale. A number is interpreted as CSS pixels; a string may be any valid CSS length. Icons use `currentColor`, allowing the containing Breeze component or text colour to remain authoritative.
+
+```tsx
+<AddIcon />
+<AddIcon size={20} />
+<AddIcon size="1.5rem" strokeWidth={1.75} />
+```
+
+Use component `size` props and the default `1em` behaviour before assigning isolated icon dimensions. Do not use an icon's geometry as a spacing system.
+
+## Decorative and meaningful icons
+
+Icons without `aria-label` are decorative: Breeze applies `aria-hidden="true"` and `focusable="false"`. This is correct when visible text or the containing control already provides the accessible name.
+
+```tsx
+import { Button } from '@motech-development/breeze-ui';
+import { AddIcon } from '@motech-development/breeze-ui/icons';
+
+<Button>
+  <AddIcon />
+  Add item
+</Button>;
+```
+
+When a standalone icon conveys information that is not present in adjacent text, provide a concise `aria-label`; Breeze then exposes it as an image. For icon-only actions, prefer `IconButton` and label the button rather than the icon.
+
+```tsx
+<WarningIcon aria-label="Warning" />
+```
+
+Do not use an icon as the only indication of status, error or selection. Pair meaning with text or an accessible control state.
+
+## Catalogue and selection
+
+The attached [Icons catalogue](?path=/docs/foundation-icons--docs) literally documents all 32 exports and the intended meaning of each. Reuse the closest curated semantic icon. If no icon fits, first reconsider whether text is clearer; expanding the public icon catalogue is a library decision rather than an application deep-import workaround.

@@ -1,0 +1,83 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Logo.stories';
+
+<Meta
+  of={Stories}
+  summary="Canonical accessible Motech Development brand mark in three supported sizes."
+/>
+
+# Logo
+
+`Logo` renders the canonical Motech Development mark with a fixed accessible name and Breeze-owned brand colour.
+
+## Import
+
+```tsx
+import { Logo } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+- Use when the Motech Development brand mark is required in application chrome or an identity treatment.
+- Pair it with application-owned product text when a product name must appear beside the mark.
+- Choose the nearest canonical size and let the containing layout provide spacing.
+
+## When not to use
+
+- Use `Avatar` for a person or entity identity; Logo is not a generic image placeholder.
+- Use a curated icon for an action, status, or navigation affordance.
+- Do not use Logo to represent an application, organisation, or partner that has a different identity.
+
+## Basic use
+
+```tsx
+import { Inline, Logo, Typography } from '@motech-development/breeze-ui';
+
+export function ProductIdentity() {
+  return (
+    <Inline align="center" gap="sm" wrap={false}>
+      <Logo />
+      <Typography as="span" level="label">
+        Workspace
+      </Typography>
+    </Inline>
+  );
+}
+```
+
+<Canvas of={Stories.Sizes} />
+
+## Anatomy and sizing
+
+Logo is one non-interactive `span` with `role="img"` and the accessible name “Motech Development”. Its inline SVG is hidden from assistive technology so the mark is announced once.
+
+The `sm`, `md`, and `lg` sizes set canonical surrounding text scales of 1rem, 1.25rem, and 1.5rem. The mark itself is sized in `em`, so it remains aligned with adjacent text. `md` is the default.
+
+The mark uses the Breeze `--breeze-brand-mark` token. On an inverse Breeze surface that token supplies the approved contrasting treatment; applications should not recolour the internal SVG.
+
+## API
+
+<ArgTypes />
+
+## Accessibility and behaviour
+
+Relevant native span attributes such as `id`, `data-*`, and relationship attributes are forwarded. `children`, `aria-label`, `style`, and colour overrides are intentionally excluded: the geometry, accessible brand name, and colour treatment are canonical.
+
+Logo has no keyboard interaction and no controlled, uncontrolled, disabled, loading, invalid, or read-only state. When Logo is the only content of a link, its fixed accessible name becomes the link name; ensure “Motech Development” accurately describes that destination. If a product-home link needs a different name, include visible or visually hidden product text in the link.
+
+The mark is direction-neutral and its accessible name is not translated by `BreezeProvider`. Product text beside it follows the provider locale and direction normally.
+
+## Common mistakes and limitations
+
+- Do not copy the internal SVG or depend on its paths, view box, or classes.
+- Do not pass children or replace the accessible name.
+- Do not stretch the mark with arbitrary width and height styles.
+- Do not use Logo as a clickable element; wrap it in `Link` when it is genuinely a destination.
+- The component provides only the Motech Development mark, not product lock-ups or application-owned wording.
+
+## Related components
+
+- Use `Avatar` for people and entity markers.
+- Use `IconTile` to place an icon or short marker in semantic geometry.
+- Use `Link` when the brand mark leads to a destination.
+- Use `ApplicationShell` for the surrounding application identity and navigation structure.

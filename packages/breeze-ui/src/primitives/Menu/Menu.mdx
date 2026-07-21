@@ -1,0 +1,98 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Menu.stories';
+
+<Meta
+  of={Stories}
+  summary="A transient keyboard-navigable menu for keyed actions, optional selection, destinations, and nested submenus."
+/>
+
+# Menu
+
+`Menu` reveals a compact collection of actions or destinations from a trigger.
+
+## Import
+
+```tsx
+import { Menu } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it for secondary actions that need not remain visible.
+
+## When not to use
+
+Use `Select` for choosing a form value, `NavigationList` for persistent routes, `Popover` for interactive form content, and visible buttons when an action is primary or time-critical.
+
+## Basic example
+
+```tsx
+import { Menu } from '@motech-development/breeze-ui';
+
+<Menu.Root>
+  <Menu.Trigger>Actions</Menu.Trigger>
+  <Menu.Popover>
+    <Menu.List aria-label="Actions">
+      <Menu.Item id="rename" textValue="Rename" onAction={rename}>
+        Rename
+      </Menu.Item>
+      <Menu.Item id="archive" textValue="Archive" onAction={archive}>
+        Archive
+      </Menu.Item>
+    </Menu.List>
+  </Menu.Popover>
+</Menu.Root>;
+```
+
+<Canvas of={Stories.StaticNestedKeyboardAndTouch} />
+
+## Anatomy
+
+| Part           | Purpose                                               |
+| -------------- | ----------------------------------------------------- |
+| `Menu.Root`    | Coordinates open state, trigger focus, and dismissal. |
+| `Menu.Trigger` | Button that opens the root menu.                      |
+| `Menu.Popover` | Positions and portals a root or nested menu.          |
+| `Menu.List`    | Keyboard-navigable static or generic item collection. |
+| `Menu.Item`    | One keyed action, selectable item, or destination.    |
+| `Menu.Submenu` | Pairs a trigger `Item` with a nested `Popover`.       |
+
+`Submenu` requires exactly two children in order: its trigger `Menu.Item`, then a `Menu.Popover` containing another labelled `Menu.List`.
+
+## Collections, selection, and callbacks
+
+Author `Item` children directly or pass `items`, where every item has `id: string | number`, and render an item from the child function. `textValue` is required for typeahead and accessible representation.
+
+```tsx
+<Menu.List items={actions} aria-label="Actions">
+  {(action) => (
+    <Menu.Item id={action.id} textValue={action.label} onAction={action.run}>
+      {action.label}
+    </Menu.Item>
+  )}
+</Menu.List>
+```
+
+Selection is off unless `selection` or `defaultSelection` is supplied. Use `defaultSelection` for uncontrolled state, `selection` with `onSelectionChange` for controlled state, or `selection` with `readOnly` for immutable state. Values are `(string | number)[] | 'all'`; `onSelectionChange` receives the complete next value. Set `multiple` for multiple selection. `onAction` receives the activated item's id even when it is also selectable.
+
+Root open state follows the same pattern with `defaultOpen`, or `open` plus `onOpenChange`; `open` plus `readOnly` is immutable. `onOpenChange` receives the complete next Boolean. `disabledKeys` disables matching ids and `Item.disabled` disables one item. Empty content defaults to `No actions`. Loading and load errors are application-owned and should be expressed as deliberate non-action content or adjacent feedback.
+
+## Routing and presentation
+
+An item without `href` is an action. A local `/path` item uses the provider router; other URLs keep native navigation. Do not combine a destination with an unrelated action. `Popover.placement` is `'bottom start'` by default and also accepts `'bottom end'`, `'top start'`, or `'top end'`; `nonModal` defaults to `false`.
+
+## API
+
+<ArgTypes />
+
+## Native attributes and styling
+
+Relevant button, menu, and item `aria-*` and `data-*` attributes are supported. Breeze intentionally owns click, selection, disabled, and inline style behaviour.
+
+## Keyboard, accessibility, and internationalisation
+
+Enter, Space, or Arrow Down opens the menu. Arrow Up and Arrow Down move focus; Home and End reach boundaries; character keys use `textValue`; Enter or Space activates; Escape closes and restores focus. Arrow Right enters a submenu and Arrow Left returns in left-to-right contexts; React Aria mirrors directional behaviour for RTL. Disabled items are skipped.
+
+Label every `List`, including nested lists. Keep items concise and non-interactive inside; do not place controls in an item. Translate labels, `textValue`, and `emptyContent` together while keeping stable ids. Common mistakes are using Menu as a select field, omitting `textValue`, mixing controlled and uncontrolled props, and nesting a submenu without its own label.
+
+Related components: `Popover`, `Select`, `NavigationList`, `Toolbar`, and `UserMenu`.

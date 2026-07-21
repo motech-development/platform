@@ -1,0 +1,72 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Surface.stories';
+
+<Meta
+  of={Stories}
+  summary="A canonical background, border, and responsive inset for grouped content."
+/>
+
+# Surface
+
+`Surface` gives grouped content a canonical Breeze background, border treatment, and responsive inset.
+
+## Import
+
+```tsx
+import { Surface } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `Surface` as a low-level visual region when you need deliberate background, boundary, and padding choices.
+
+## When not to use
+
+Use `Card` when content has card anatomy and actions, or `Container` for page width and gutters. Avoid surfaces around every group: hierarchy should remain meaningful.
+
+## Basic example
+
+```tsx
+import { Stack, Surface, Typography } from '@motech-development/breeze-ui';
+
+export function Summary() {
+  return (
+    <Surface as="section" aria-labelledby="summary-title" tone="subtle">
+      <Stack gap="sm">
+        <Typography id="summary-title" as="h2" level="heading-md">
+          Summary
+        </Typography>
+        <Typography>Three items are ready.</Typography>
+      </Stack>
+    </Surface>
+  );
+}
+```
+
+<Canvas of={Stories.TonesAndBorders} />
+
+## Tone, border, and inset
+
+`default` is the normal raised content surface, `subtle` creates quiet grouping, `canvas` matches the application canvas, and `inverse` is for content on the shell colour. Choose tone for hierarchy and contrast, not decoration. `border="strong"` increases boundary emphasis; `none` is appropriate only when surrounding contrast already defines the region.
+
+`padding` accepts `none`, `xs`, `sm`, `control`, `compact`, `md`, `lg`, `xl`, `xxl`, or `page`, directly or as `{ base, sm?, md?, lg? }` at 681 px, 901 px, and 1181 px.
+
+## API
+
+<ArgTypes />
+
+## Accessibility and semantics
+
+Relevant native HTML attributes such as `id`, `aria-*`, and `data-*` are supported; inline `style` is excluded. There is no controlled, loading, disabled, invalid, empty, or error state.
+
+Colour and borders add no accessible semantics. Choose `section` only for a labelled document section and `article` only for independently distributable content; otherwise retain `div`. Ensure custom content meets contrast requirements, particularly on `inverse`. `Surface` adds no keyboard or focus behaviour and works in both text directions.
+
+## Common mistakes
+
+- Do not select `section` or `article` solely for styling.
+- Do not rely on tone alone to convey success, warning, or error state; use `Alert` where status semantics matter.
+- Do not apply arbitrary background and padding classes when a public tone or spacing token expresses the design.
+
+## Related components
+
+Use `Card` for structured content, `Alert` for semantic feedback, `Container` for page bounds, and `Stack` or `Grid` for internal layout.

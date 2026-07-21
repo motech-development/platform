@@ -1,0 +1,72 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './IconButton.stories';
+
+<Meta
+  of={Stories}
+  summary="A compact icon-only action with a mandatory accessible label."
+/>
+
+# IconButton
+
+`IconButton` performs an application action in a square icon-only control whose required `aria-label` supplies its accessible name.
+
+## Import
+
+```tsx
+import { IconButton } from '@motech-development/breeze-ui';
+import { SettingsIcon } from '@motech-development/breeze-ui/icons';
+```
+
+## When to use
+
+Use `IconButton` for a familiar, repeated action where space is constrained and a text label would add noise. Use `Button` when visible text improves recognition, `Link` for navigation, or `Tooltip` to provide supplementary explanation without replacing the accessible name.
+
+## Basic example
+
+```tsx
+import { IconButton } from '@motech-development/breeze-ui';
+import { SettingsIcon } from '@motech-development/breeze-ui/icons';
+
+export function SettingsButton() {
+  return (
+    <IconButton aria-label="Open settings" onAction={() => openSettings()}>
+      <SettingsIcon />
+    </IconButton>
+  );
+}
+```
+
+<Canvas of={Stories.Activation} />
+
+## Label, icon, and emphasis
+
+`aria-label` is required and should name the action, not describe the glyph: use “Delete item”, not “Bin icon”. The child icon is always hidden from assistive technology because the button owns the name. Keep one clear icon as the child.
+
+Appearances are `solid`, `subtle`, `outline`, and `ghost`; variants are `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark`; square sizes are `sm`, `md`, and `lg`. The defaults deliberately produce a medium, secondary ghost action.
+
+## Activation, forms, and state
+
+`onAction` fires once for pointer, touch, or keyboard activation. `type` is limited to `button` and `submit` and defaults to `button`. `disabled` prevents interaction. `loading` prevents activation while preserving focusability, sets `aria-busy`, retains the accessible label, and temporarily displays a decorative spinner. Error reporting belongs to the surrounding workflow; there is no invalid, read-only, controlled, or empty state.
+
+<Canvas of={Stories.States} />
+
+## API
+
+<ArgTypes />
+
+## Accessibility and keyboard behaviour
+
+Relevant native button attributes such as `name`, `value`, `form`, `autoFocus`, `aria-*`, and `data-*` are supported. Breeze owns native click, disabled, pressed, busy, type, class, and style behaviour.
+
+`Enter` and `Space` activate enabled icon buttons, and keyboard focus has a visible indicator. Do not depend on a tooltip as the only name, and do not repeat the icon name in the label. Translate `aria-label` with the rest of the interface. Verify that the chosen icon remains understandable in both directions; directional icon mirroring is icon-specific.
+
+## Common mistakes
+
+- Do not omit `aria-label` or use a vague label such as “Click here”.
+- Do not place visible text inside an `IconButton`; use `Button`.
+- Do not use an icon-only control for an unfamiliar or high-consequence action without sufficient nearby context.
+- Do not add `aria-label` to the child icon; it is deliberately decorative here.
+
+## Related components
+
+Use `Button` for visible labels, `ToggleButton` for persistent on/off state, `Tooltip` for supplementary help, and the curated Breeze icon catalogue for supported icons.

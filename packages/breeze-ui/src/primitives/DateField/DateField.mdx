@@ -1,0 +1,77 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './DateField.stories';
+
+<Meta
+  of={Stories}
+  summary="Locale-aware segmented entry for one calendar date, with stable YYYY-MM-DD values, native form participation, validation, constraints, and controlled, uncontrolled, or read-only state."
+/>
+
+# DateField
+
+`DateField` edits one calendar date through locale-ordered day, month and year segments while keeping the application value a stable `YYYY-MM-DD` string.
+
+## Import
+
+```tsx
+import { DateField } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `DateField` when users should type or precisely adjust a known date. Use `DatePicker` when a calendar is the primary way to choose one date, `Calendar` for an always-visible calendar, `DateRangePicker` for an inclusive period, and `DateTimePicker` for an instant that includes a time and offset. Do not use a date field for free-form date text or timestamps.
+
+## Basic example
+
+```tsx
+import { DateField } from '@motech-development/breeze-ui';
+
+<DateField.Root
+  defaultValue="2026-07-20"
+  minValue="2026-07-20"
+  name="reviewDate"
+>
+  <DateField.Label>Review date</DateField.Label>
+  <DateField.Input />
+  <DateField.Description>
+    Enter a date on or after 20 July.
+  </DateField.Description>
+</DateField.Root>;
+```
+
+<Canvas of={Stories.SegmentKeyboard} />
+
+## Anatomy
+
+| Part                    | Purpose                                                                    |
+| ----------------------- | -------------------------------------------------------------------------- |
+| `DateField.Root`        | Owns date state, constraints, validation and the hidden native date input. |
+| `DateField.Label`       | Visible accessible name for the segmented input.                           |
+| `DateField.Input`       | Locale-aware editable day, month and year segments.                        |
+| `DateField.Description` | Supporting guidance associated with the field.                             |
+| `DateField.Error`       | Validation message associated with an invalid field.                       |
+
+Keep every part inside `Root`. Provide a visible `Label`; use `Description` for format-independent guidance and `Error` for a specific correction.
+
+## Values, state and callbacks
+
+Dates are literal Gregorian ISO calendar strings such as `'2026-07-20'`; an empty value is `null`. A date contains no time or time zone. Use `defaultValue` for uncontrolled state, `value` with `onChange` for controlled state, or `value` with `readOnly` for immutable state. `onChange` receives the next complete `YYYY-MM-DD` string or `null` when the editable value is cleared.
+
+`minValue`, `maxValue` and the date passed to `isDateUnavailable` use the same format. The callback returning `true` prevents that date from being selected. Constraints do not replace application validation: set `invalid` and render `Error` when submitted data is unacceptable.
+
+With `name`, the hidden native date input participates in form submission; `form` associates it with an external form. `required` supplies required semantics. `disabled` prevents focus and editing. `readOnly` preserves an inspectable controlled value without allowing changes. There is no loading state; disable an enclosing workflow or show adjacent progress without replacing the label.
+
+## Keyboard, accessibility and internationalisation
+
+- Tab enters and leaves the segmented control. Arrow keys move between or increment the locale-ordered segments; numeric typing edits the focused segment, and Backspace or Delete clears editable content.
+- Do not put a literal format such as “DD/MM/YYYY” in the label: segment order and spoken instructions follow the `BreezeProvider` BCP 47 locale.
+- The visible label is required for understandable segment names. Description and error text are associated automatically.
+- `invalid`, `required`, `disabled` and `readOnly` are exposed to assistive technology; do not communicate them only through colour.
+- The input follows provider direction, including right-to-left layouts. Keep the public value in `YYYY-MM-DD` order regardless of visual order.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not pass JavaScript `Date`, `CalendarDate`, locale-formatted strings or offset date-times. Do not combine `defaultValue` with `value`, omit `onChange` from a mutable controlled field, or make an uncontrolled field read-only. Use `TimeField` beside this component only when the values are intentionally independent; use `DateTimePicker` when they represent one instant.

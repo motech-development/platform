@@ -1,0 +1,73 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './FileTrigger.stories';
+
+<Meta
+  of={Stories}
+  summary="Keyboard-operable native file selection with MIME, extension, count and byte-size constraints; accepted and rejected File callbacks; form attributes; and built-in rejection announcements."
+/>
+
+# FileTrigger
+
+`FileTrigger` opens the browser’s native file chooser, validates the selected native `File` objects and returns accepted files to the application.
+
+## Import
+
+```tsx
+import { FileTrigger } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `FileTrigger` when a button should open the native file or directory chooser. Use `DropZone` when drag and drop is the primary affordance, usually with `FileTrigger` as its keyboard and touch fallback. Use the `FileUpload` pattern when you need a composed upload workflow. `FileTrigger` selects and validates files; it does not upload, persist, preview or remove them.
+
+## Basic example
+
+```tsx
+import { FileTrigger } from '@motech-development/breeze-ui';
+
+<FileTrigger.Root
+  acceptedFileTypes={['application/pdf']}
+  maxFileSize={10 * 1024 * 1024}
+  onFiles={(files) => queueFiles(files)}
+  onReject={(rejections) => recordRejections(rejections)}
+>
+  <FileTrigger.Trigger>Choose document</FileTrigger.Trigger>
+  <FileTrigger.Feedback />
+</FileTrigger.Root>;
+```
+
+<Canvas of={Stories.KeyboardSelection} />
+
+## Anatomy
+
+| Part                   | Purpose                                                                             |
+| ---------------------- | ----------------------------------------------------------------------------------- |
+| `FileTrigger.Root`     | Owns the hidden native file input, selection constraints, validation and callbacks. |
+| `FileTrigger.Trigger`  | Keyboard-operable button that opens the native chooser.                             |
+| `FileTrigger.Feedback` | Announces Breeze-owned file count, type and size rejection messages.                |
+
+Both parts must be inside `Root`. `Feedback` renders nothing until a rejection occurs and then uses an alert region.
+
+## Selection, validation and callbacks
+
+`acceptedFileTypes` accepts exact MIME types (`'application/pdf'`), wildcard groups (`'image/*'`) and filename extensions (`'.csv'`). Matching is case-insensitive. `maxFileSize` is bytes. `allowsMultiple` defaults to `false`; extra files are rejected with reason `'file-count'`. A rejected file can contain several stable reasons: `'file-count'`, `'file-size'` and `'file-type'`.
+
+For every completed selection, `onFiles` receives the accepted `File[]`, including an empty array when every file is rejected or the chooser is cleared. `onReject` runs only when rejections exist and receives `FileRejection[]`, where each record contains the native `file` and all `reasons`. Mixed selections deliver accepted files and rejected records separately. `Feedback` reports each rejected filename and Breeze-owned reason text; use `onReject` for analytics or application-specific handling.
+
+`acceptDirectory` requests directory selection. `defaultCamera="user"` or `"environment"` supplies the native capture hint for compatible media inputs; browser and device behaviour varies. `name`, `form` and `required` apply to the hidden native input. The application still owns upload state and server errors. `invalid` exposes application validation but does not create an error message. There is no read-only or loading mode; use `disabled` while selection must not open.
+
+## Keyboard and accessibility
+
+- Tab focuses `Trigger`; Enter or Space opens the native chooser. The browser and operating system own navigation inside that chooser and return focus afterwards.
+- Give `Trigger` a concise action label that identifies what is selected. Do not use an icon without an accessible name.
+- Keep `Feedback` present when using Breeze validation so rejected files are announced. Do not rely only on native chooser filtering: validate callbacks and server input as well.
+- `required`, `invalid` and `disabled` are applied to the native input for assistive technology. Empty required submission returns focus and invalid state to `Trigger`; explain application-specific invalid state in nearby text.
+- Native chooser language, ordering and capture UI are browser/platform controlled. Visible labels inherit provider locale and direction, but native `File` values are not localised.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not expect `acceptedFileTypes` to be a security boundary, express `maxFileSize` in megabytes, start an upload from render, or treat chooser cancellation as an error. Do not add `onClick` to `Trigger`; `Root` owns opening behaviour. Use `DropZone` for drag and drop and `FileUpload` for a full attachment workflow.

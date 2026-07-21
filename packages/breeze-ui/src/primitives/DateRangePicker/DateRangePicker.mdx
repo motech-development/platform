@@ -1,0 +1,92 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './DateRangePicker.stories';
+
+<Meta
+  of={Stories}
+  summary="Compound labelled form control for selecting an inclusive date range as stable YYYY-MM-DD start and end strings, with segmented inputs, a range-calendar popover, paired native form values, constraints, and controlled, uncontrolled, or read-only state."
+/>
+
+# DateRangePicker
+
+`DateRangePicker` combines start and end date segments with a calendar popover for selecting one inclusive date range.
+
+## Import
+
+```tsx
+import { DateRangePicker } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `DateRangePicker` for a compact labelled period field where users benefit from both exact segment editing and calendar comparison.
+
+## When not to use
+
+Use `RangeCalendar` when the grid should remain visible, `DatePicker` for one day, and separate `DateField` controls when the two dates are not one range.
+
+## Basic example
+
+```tsx
+import { DateRangePicker } from '@motech-development/breeze-ui';
+
+<DateRangePicker.Root
+  defaultValue={{ start: '2026-07-20', end: '2026-07-24' }}
+  startName="periodStart"
+  endName="periodEnd"
+>
+  <DateRangePicker.Label>Dates</DateRangePicker.Label>
+  <DateRangePicker.Group>
+    <DateRangePicker.StartInput />
+    <DateRangePicker.Separator />
+    <DateRangePicker.EndInput />
+    <DateRangePicker.Trigger />
+  </DateRangePicker.Group>
+  <DateRangePicker.Popover>
+    <DateRangePicker.Calendar />
+  </DateRangePicker.Popover>
+</DateRangePicker.Root>;
+```
+
+<Canvas of={Stories.UncontrolledRange} />
+
+## Anatomy
+
+| Part                          | Purpose                                                                                    |
+| ----------------------------- | ------------------------------------------------------------------------------------------ |
+| `DateRangePicker.Root`        | Owns inclusive range state, constraints, validation, form values and overlay coordination. |
+| `DateRangePicker.Label`       | Visible accessible name for the complete range field.                                      |
+| `DateRangePicker.Group`       | Coherent start input, separator, end input and trigger control.                            |
+| `DateRangePicker.StartInput`  | Locale-aware segmented inclusive start date.                                               |
+| `DateRangePicker.Separator`   | Decorative logical-direction arrow between endpoints.                                      |
+| `DateRangePicker.EndInput`    | Locale-aware segmented inclusive end date.                                                 |
+| `DateRangePicker.Trigger`     | Opens the range-calendar popover.                                                          |
+| `DateRangePicker.Popover`     | Positioned dismissible range-calendar overlay.                                             |
+| `DateRangePicker.Calendar`    | Complete range calendar with navigation and date cells.                                    |
+| `DateRangePicker.Description` | Supporting guidance associated with the range.                                             |
+| `DateRangePicker.Error`       | Validation message associated with invalid state.                                          |
+
+Preserve the part order shown above. The separator is hidden from assistive technology because start and end inputs already express endpoint meaning. Keep every part inside `Root`.
+
+## Range, callbacks and forms
+
+The value is `{ start: 'YYYY-MM-DD', end: 'YYYY-MM-DD' }`, with inclusive endpoints, or `null` when empty. Use `defaultValue` for uncontrolled state, `value` with `onChange` for controlled state, or `value` with `readOnly` for immutable state. `onChange` receives the next complete stable range or `null`.
+
+`startName` and `endName` must be provided together. Breeze submits two hidden native values and resets uncontrolled state with its form. `form` can associate both with an external form. There is no single `name` because the endpoints are distinct values.
+
+`minValue` and `maxValue` are inclusive `YYYY-MM-DD` boundaries. `isDateUnavailable(date, anchorDate)` receives the candidate date and current selection anchor. By default an unavailable date blocks a range crossing it; set `allowsNonContiguousRanges` only when the domain explicitly permits that meaning. `required`, `invalid`, `disabled` and `readOnly` expose state; render `Error` for invalid data. Loading is application-owned.
+
+## Keyboard, accessibility and direction
+
+- Tab moves through the compound field and trigger. Arrow keys move between or increment start/end segments; numeric typing edits focused segments.
+- Enter or Space opens the popover from `Trigger`; Escape closes it and restores focus. Calendar arrow keys navigate and Enter or Space chooses range endpoints.
+- Always render `Label`. Start and end segments receive distinct accessible endpoint names; `Description` and `Error` apply to the complete field.
+- Locale controls segment order, weekday names, week layout and announcements while stored values stay ISO ordered.
+- `Separator` mirrors in right-to-left direction without swapping semantic `start` and `end`. Popover placement uses logical direction.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not reverse start and end for right-to-left layouts, use exclusive-end semantics, provide only one form name, pass date objects or localised strings, or treat non-contiguous ranges as a validation shortcut. Use `RangeCalendar` for a persistent surface and `DateTimePicker` when selecting one instant rather than two calendar days.

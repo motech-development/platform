@@ -1,0 +1,74 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Checkbox.stories';
+
+<Meta
+  of={Stories}
+  summary="Accessible Boolean or indeterminate selection with a visible label, native checkbox form participation, and controlled, uncontrolled, read-only, disabled, required, and invalid states."
+/>
+
+# Checkbox
+
+`Checkbox` lets a user independently select or clear a Boolean choice and can present an application-owned indeterminate state.
+
+## Import
+
+```tsx
+import { Checkbox } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use a checkbox for an independent option or acknowledgement. Use `CheckboxGroup` for several related values, `Switch` for a setting that takes effect immediately, and `RadioGroup` when exactly one option may be selected. Do not use a checkbox as a button or as a substitute for expanding content.
+
+## Basic example
+
+```tsx
+import { Checkbox } from '@motech-development/breeze-ui';
+
+<Checkbox.Root name="updates" value="email">
+  <Checkbox.Control>
+    <Checkbox.Indicator />
+    <Checkbox.Label>Email updates</Checkbox.Label>
+  </Checkbox.Control>
+  <Checkbox.Description>You can change this later.</Checkbox.Description>
+</Checkbox.Root>;
+```
+
+<Canvas of={Stories.AnatomyAndUncontrolled} />
+
+## Anatomy
+
+| Part                   | Purpose                                                                       |
+| ---------------------- | ----------------------------------------------------------------------------- |
+| `Checkbox.Root`        | Owns Boolean state, validation, and the hidden native checkbox used by forms. |
+| `Checkbox.Control`     | Native label and pointer, touch, and keyboard target.                         |
+| `Checkbox.Indicator`   | Decorative selected or indeterminate mark.                                    |
+| `Checkbox.Label`       | Persistent visible checkbox name inside `Control`.                            |
+| `Checkbox.Description` | Supporting guidance associated with the checkbox.                             |
+| `Checkbox.Error`       | Validation message associated while invalid.                                  |
+
+Keep `Indicator` and `Label` inside `Control`; keep all parts inside `Root`. The indicator is automatically hidden from assistive technology because native checkbox state provides the meaning.
+
+## Selection and form behaviour
+
+Use `defaultSelected` for uncontrolled state, `selected` with `onChange` for controlled state, or `selected` with `readOnly` for immutable state. `onChange` receives the next `boolean`. `indeterminate` is a visual and semantic mixed state controlled by the application; it does not add a third submitted value and user activation resolves it to a Boolean selection.
+
+When selected, the hidden native checkbox submits `name=value`; `value` defaults to `'on'`. It submits nothing when unselected. `form` can associate it with an external form. `disabled` prevents focus and selection and excludes native submission. `readOnly` prevents changes while preserving the controlled value. `required` and `invalid` expose validation semantics; render a specific `Error`. Loading is application-owned.
+
+## Keyboard and accessibility
+
+- Tab focuses the checkbox; Space toggles it. Clicking the label toggles it.
+- Use a short, affirmative `Label` that makes selected and unselected states understandable.
+- Do not communicate state only through the indicator colour or shape.
+- Use `Description` for consequences or additional context. For consent, avoid preselecting the checkbox.
+- `sm`, `md` (default), and `lg` apply to `Indicator`; preserve a sufficiently large `Control` target.
+
+The label and guidance accept Unicode and inherit surrounding direction. The visual indicator stays before the label in logical reading order.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not put the indicator outside `Control`, attach click handlers to the decorative indicator, treat indeterminate as stored selection, or use `disabled` to represent read-only information. Use `CheckboxGroup` for a named set, `Switch` for an immediate setting, and `RadioGroup` for exclusive selection.

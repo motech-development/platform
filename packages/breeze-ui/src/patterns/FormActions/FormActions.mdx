@@ -1,0 +1,87 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './FormActions.stories';
+
+<Meta
+  of={Stories}
+  summary="Canonical responsive form-action region that keeps primary, back, cancel, secondary and destructive responsibilities in a consistent compact and wide visual order."
+/>
+
+# FormActions
+
+`FormActions` places primary and supporting form actions in a consistent responsive priority order.
+
+## Import
+
+```tsx
+import { Button, FormActions } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `FormActions` at the end of a form or form-like task when primary, cancel, back, secondary or destructive actions need the canonical compact and wide arrangement.
+
+## When not to use
+
+Use `ButtonGroup` for a general related action set whose order you control directly. Use `Toolbar` for a command collection with arrow-key navigation. FormActions does not submit, reset, navigate, confirm destructive work or manage form state; the supplied actions own those behaviours.
+
+## Basic example
+
+```tsx
+import { Button, FormActions } from '@motech-development/breeze-ui';
+
+<form onSubmit={saveItem}>
+  {/* Labelled form fields */}
+  <FormActions
+    aria-label="Form actions"
+    cancel={
+      <Button appearance="outline" onAction={cancelEditing}>
+        Cancel
+      </Button>
+    }
+    danger={
+      <Button variant="danger" onAction={requestRemoval}>
+        Delete item
+      </Button>
+    }
+    primary={<Button type="submit">Save changes</Button>}
+  />
+</form>;
+```
+
+<Canvas of={Stories.CompleteSet} />
+
+## Anatomy and ordering
+
+FormActions exposes named action slots rather than public compound parts.
+
+| Slot        | Purpose                                | Compact visual position | Wide position                        |
+| ----------- | -------------------------------------- | ----------------------- | ------------------------------------ |
+| `primary`   | Required submit or continuation action | First                   | Trailing edge                        |
+| `back`      | Move to the preceding step             | After primary           | Leading edge                         |
+| `cancel`    | Abandon or leave the task              | After back              | Start of trailing group              |
+| `secondary` | Additional non-primary action          | After cancel            | Before primary in the trailing group |
+| `danger`    | Destructive action                     | Last                    | Leading edge                         |
+
+Source order remains danger, back, cancel, secondary, primary; compact CSS changes only the visual order. Tab navigation and assistive technology follow source order, so labels and task context must make priority clear without relying on position alone. Omit unused slots rather than rendering empty wrappers.
+
+## Layout, state and callbacks
+
+`divided` defaults to `false`. Set it to add the canonical top separator and larger spacing when the action region needs a clear boundary from the preceding fields. The root uses an automatic block-start margin, so it can anchor to the bottom of a parent column that has available height.
+
+Action slots accept `ReactNode`, normally public `Button` or `LinkButton` components. Configure `type="submit"`, `onAction`, `href`, `disabled`, `loading`, confirmation and accessible names on those controls. FormActions has no controlled, uncontrolled, read-only, loading, invalid, empty or error state of its own. Form submission, pending state, validation, server errors and navigation remain application-owned.
+
+## Accessibility, keyboard, internationalisation and routing
+
+- Passing `aria-label` or `aria-labelledby` gives the root `role="group"`. Without an accessible name the root remains a layout `div` with no group role.
+- Use one clear primary action. Give destructive actions precise labels and route consequential operations through `ConfirmationDialog` when confirmation is warranted.
+- FormActions adds no keyboard model. Tab follows DOM order; Enter and Space behaviour belongs to each button. Native form submission belongs to a child `Button type="submit"`.
+- Labels are application-owned, translated copy. The wide layout uses logical leading and trailing edges and inherits provider direction.
+- Link actions own their `href` and provider router behaviour. FormActions neither selects a route nor intercepts navigation.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not manually rearrange slots at breakpoints, make two actions look primary, assume visual and Tab order match, attach submission to the root, or pass plain click handlers when a child supports semantic `onAction`. Use `ButtonGroup` for freer layout, `FormSection` for titled field regions, and `ConfirmationDialog` for consequential action confirmation.

@@ -1,0 +1,76 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './PageHeader.stories';
+
+<Meta
+  of={Stories}
+  summary="Responsive page-level header combining the unique page heading, concise context, optional back destination, and application actions."
+/>
+
+# PageHeader
+
+`PageHeader` establishes page hierarchy with one `h1`, optional supporting context, back navigation, and responsive page actions.
+
+## Import
+
+```tsx
+import {
+  Button,
+  ButtonGroup,
+  Link,
+  PageHeader,
+} from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it once near the start of a page's main content. Use `SectionHeader` for an `h2` within the page, `Typography` for an ordinary heading without page-header composition, and `Breadcrumbs` instead of a single back destination when the full hierarchy matters.
+
+## Basic example
+
+```tsx
+import {
+  Button,
+  ButtonGroup,
+  Link,
+  PageHeader,
+} from '@motech-development/breeze-ui';
+
+<PageHeader
+  actions={
+    <ButtonGroup
+      aria-label="Project actions"
+      orientation={{ base: 'verticalReverse', sm: 'horizontal' }}
+    >
+      <Button appearance="outline">View archived</Button>
+      <Button>Create project</Button>
+    </ButtonGroup>
+  }
+  back={<Link href="/projects">Back to projects</Link>}
+  description="Review and manage active projects."
+  title="Projects"
+/>;
+```
+
+<Canvas of={Stories.ActionsAndBack} />
+
+## Anatomy and responsive behaviour
+
+The semantic `header` contains a title column and an optional actions region. `back` appears before the title and remains content-sized. `title` is always the page's `h1`; `description` sits directly beneath it. Actions stack below the title area until the wide `lg` two-column layout, stretch on compact screens, become content-sized from `sm`, and align to the end at `lg`.
+
+The slot does not reorder action DOM nodes. Use `ButtonGroup` responsive orientation when primary action priority should change visually while DOM and keyboard order remain stable. Keep actions short and directly related to the page.
+
+## Accessibility, state, and routing
+
+Use one `PageHeader` per page and avoid another `h1` unless the surrounding document genuinely requires it. The generated `aria-labelledby` names the header from its visible title. Supply a real `Link` in `back`; local URLs use the provider router adapter, while external and native link behaviours stay native. Do not make a back control call `history.back()` when a stable parent destination is available.
+
+The pattern itself is non-interactive and adds no keyboard behaviour. Back links and action controls retain their documented focus and activation behaviour. It has no controlled, uncontrolled, read-only, disabled, loading, invalid, empty, or error state: express those states in the slotted actions or page content. A loading action should use `Button loading`; a page-level failure usually belongs in `StatePanel` or `Alert`, not in `description` alone.
+
+Translate all slot content. Layout uses logical alignment and works in both directions; application-authored arrows should either use direction-aware copy/icons or be omitted in favour of a meaningful link label.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not use it for every card or section, place unrelated global controls in `actions`, put a button where `back` should be a destination, or rely on a long description for essential error feedback. Related components: [SectionHeader](?path=/docs/patterns-page-structure-sectionheader--docs), [ButtonGroup](?path=/docs/patterns-actions-buttongroup--docs), [Breadcrumbs](?path=/docs/navigation-breadcrumbs--docs), and [ApplicationShell](?path=/docs/patterns-application-shell-applicationshell--docs).

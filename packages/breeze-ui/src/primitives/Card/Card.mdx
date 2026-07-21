@@ -1,0 +1,87 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Card.stories';
+
+<Meta
+  of={Stories}
+  summary="Semantic compound card for grouping one related content summary with optional heading, body, and footer regions."
+/>
+
+# Card
+
+`Card` groups one self-contained content summary in a semantic article.
+
+```tsx
+import { Button, Card } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use a card when a heading, supporting details, and related actions should read as one article.
+
+## When not to use
+
+Use [Surface](?path=/docs/layout-surface--docs) for visual containment without article semantics, [List](?path=/docs/data-display-list--docs) for a sequence, or [GridList](?path=/docs/collections-gridlist--docs) when items are selectable or actionable.
+
+Do not turn an entire card into an improvised clickable container. Put a `Link`, `LinkButton`, or `Button` in the appropriate region, and preserve independent semantics for every action.
+
+## Basic use
+
+```tsx
+import { Button, Card, LinkButton } from '@motech-development/breeze-ui';
+
+interface SummaryCardProps {
+  onDismiss: () => void;
+}
+
+export function SummaryCard({ onDismiss }: SummaryCardProps) {
+  return (
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Release summary</Card.Title>
+        <Card.Description>Updated a few moments ago</Card.Description>
+      </Card.Header>
+      <Card.Body>Three changes are ready for review.</Card.Body>
+      <Card.Footer>
+        <LinkButton href="/releases/current">Open details</LinkButton>
+        <Button variant="secondary" onAction={onDismiss}>
+          Dismiss
+        </Button>
+      </Card.Footer>
+    </Card.Root>
+  );
+}
+```
+
+<Canvas of={Stories.Complete} />
+
+## Anatomy
+
+- `Card.Root` renders the required semantic `article` container.
+- `Card.Header` renders a `header` for the title and optional description or controls.
+- `Card.Title` renders the canonical `h3` heading.
+- `Card.Description` renders supporting title context as a paragraph.
+- `Card.Body` renders the primary content `div`.
+- `Card.Footer` renders a `footer` for actions or supporting metadata.
+
+`Header`, `Description`, `Body`, and `Footer` are optional. Keep the remaining parts in the order above. A body-only card is valid.
+
+## Accessibility and behaviour
+
+Cards add no keyboard interaction, selection, loading, disabled, invalid, or error state. Interactive descendants retain their own keyboard behaviour. Ensure heading levels remain logical in the surrounding page: `Card.Title` is always `h3`, so use a different semantic composition when that level is wrong. Translate all application-owned text; logical spacing supports left-to-right and right-to-left direction.
+
+Every part supports the relevant native element attributes, including `className`, ARIA and data attributes, events, and a typed `ref`; inline `style` is intentionally excluded.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not omit a useful visible title merely to simplify the surface.
+- Do not nest unrelated subjects in one card.
+- Do not put footer actions outside `Card.Footer` when they belong to the article.
+- Do not rely on colour or the border alone to communicate state.
+
+## Related components
+
+[Surface](?path=/docs/layout-surface--docs) provides non-semantic containment. [MetricCard](?path=/docs/patterns-data-metriccard--docs) presents a named measurement. [Alert](?path=/docs/feedback-alert--docs) communicates persistent feedback.

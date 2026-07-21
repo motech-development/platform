@@ -1,0 +1,66 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Skeleton.stories';
+
+<Meta
+  of={Stories}
+  summary="Non-announcing visual placeholder that reserves loading layout with text, circle, or rectangle geometry."
+/>
+
+# Skeleton
+
+`Skeleton` reserves the shape of content while that content is loading without adding placeholder noise to the accessibility tree.
+
+```tsx
+import { Skeleton } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use skeletons when the eventual layout is predictable and preventing layout shift helps orientation. Use [Spinner](?path=/docs/feedback-spinner--docs) for a compact activity mark, [ProgressBar](?path=/docs/feedback-progressbar--docs) for measurable work, or [StatePanel](?path=/docs/patterns-feedback-statepanel--docs) when the whole region has a meaningful loading or empty message.
+
+## Basic use
+
+```tsx
+import { Skeleton, Stack } from '@motech-development/breeze-ui';
+
+export function LoadingSummary() {
+  return (
+    <section aria-busy="true" aria-label="Loading summary">
+      <Stack gap="sm">
+        <Skeleton className="w-2/3" />
+        <Skeleton />
+        <Skeleton className="min-h-32" shape="rectangle" />
+      </Stack>
+    </section>
+  );
+}
+```
+
+<Canvas of={Stories.Shapes} />
+
+## Shapes, element, and tone
+
+`shape` is `text` by default; `circle` provides a canonical avatar-sized placeholder and `rectangle` provides a minimum block height. Adjust width or height with `className` to mirror the real content. `as` defaults to `div`; use `as="span"` only when inline placement requires valid markup.
+
+`tone` accepts `default`, `inverse`, or `danger` and defaults to `default`. Match tone to the host surface rather than using it as a data status. Motion is suppressed for reduced-motion preferences.
+
+## Accessibility and state
+
+Every skeleton has `aria-hidden="true"`, has no role, and accepts no children. Put `aria-busy="true"` and a translated accessible label or status on the owning content region where users need loading context. Skeleton has no callback, keyboard interaction, controlled value, disabled, invalid, empty, or error behaviour. Remove placeholders when real content or an error appears. Geometry and logical placement work in both directions.
+
+`Skeleton` supports relevant attributes for its selected `div` or `span`, including `className`, ARIA and data attributes, events, and a typed `ref`; `children`, `role`, and inline `style` are intentionally owned or excluded.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not expose fake placeholder text to assistive technology.
+- Do not use arbitrary shapes unrelated to the eventual layout.
+- Do not leave a loading region permanently busy after an error.
+- Do not use a skeleton as a disabled control or content-redaction treatment.
+
+## Related components
+
+[Spinner](?path=/docs/feedback-spinner--docs), [ProgressBar](?path=/docs/feedback-progressbar--docs), and [StatePanel](?path=/docs/patterns-feedback-statepanel--docs).

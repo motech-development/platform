@@ -1,0 +1,73 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './RangeCalendar.stories';
+
+<Meta
+  of={Stories}
+  summary="Always-visible locale-aware calendar for selecting an inclusive start and end date as stable YYYY-MM-DD strings, with compound navigation, constraints, and controlled, uncontrolled, or read-only state."
+/>
+
+# RangeCalendar
+
+`RangeCalendar` presents one or more month grids for selecting an inclusive start and end date.
+
+## Import
+
+```tsx
+import { RangeCalendar } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `RangeCalendar` when comparing dates visually is central and the calendar should remain visible. Use `DateRangePicker` for a compact labelled form control, `Calendar` for one date, and two independent `DateField` instances only when the dates are not one coherent range.
+
+## Basic example
+
+```tsx
+import { RangeCalendar } from '@motech-development/breeze-ui';
+
+<RangeCalendar.Root defaultValue={{ start: '2026-07-20', end: '2026-07-24' }}>
+  <RangeCalendar.Header>
+    <RangeCalendar.PreviousButton />
+    <RangeCalendar.Heading />
+    <RangeCalendar.NextButton />
+  </RangeCalendar.Header>
+  <RangeCalendar.Grid />
+</RangeCalendar.Root>;
+```
+
+<Canvas of={Stories.UncontrolledRange} />
+
+## Anatomy
+
+| Part                           | Purpose                                                    |
+| ------------------------------ | ---------------------------------------------------------- |
+| `RangeCalendar.Root`           | Owns range selection, visible months and date constraints. |
+| `RangeCalendar.Header`         | Lays out navigation and the visible-period heading.        |
+| `RangeCalendar.PreviousButton` | Moves to the previous calendar page.                       |
+| `RangeCalendar.Heading`        | Labels the current visible period.                         |
+| `RangeCalendar.NextButton`     | Moves to the next calendar page.                           |
+| `RangeCalendar.Grid`           | Renders weekdays, days and range-selection semantics.      |
+
+## Range behaviour and state
+
+A complete value is `{ start: 'YYYY-MM-DD', end: 'YYYY-MM-DD' }`; both endpoints are inclusive and `start` must not follow `end`. Empty state is `null`. Use `defaultValue` for uncontrolled state, `value` with `onChange` for controlled state, or `value` with `readOnly` for immutable state. `onChange` receives a complete stable range after selection.
+
+By default, an unavailable date blocks a range that crosses it. Set `allowsNonContiguousRanges` only when the domain explicitly permits a range containing unavailable days. `isDateUnavailable(date, anchorDate)` receives the candidate ISO date and the current range-selection anchor, or `null` before selection begins. `minValue` and `maxValue` are inclusive boundaries.
+
+`disabled` prevents focus and selection. `invalid` exposes an unacceptable selection but does not supply prose; render application-owned error text nearby. Read-only preserves navigation and inspection while preventing changes. Loading and persistence are application-owned.
+
+## Keyboard, accessibility and internationalisation
+
+- Arrow keys move focus by day or week; Home and End move within a week; Page Up and Page Down change the visible month. Enter or Space sets the range start and then its inclusive end.
+- Keep `Heading` and navigation controls in the root so the grid has a clear visible period and operable paging.
+- Week layout, weekday names, announcements and date formatting follow the provider locale. Directional navigation and icons follow provider direction.
+- Range meaning must not rely only on background colour. Breeze exposes selected range states to assistive technology.
+- Use `weekdayStyle="short"` by default; `long` needs more width and `narrow` can be ambiguous.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not use two unrelated scalar strings, exclusive-end semantics, date objects or locale-formatted values. Do not enable non-contiguous ranges merely to bypass an unavailable-date rule. Use `DateRangePicker` in forms, `Calendar` for one date, and `DateTimePicker` when each selection represents an instant rather than a calendar day.

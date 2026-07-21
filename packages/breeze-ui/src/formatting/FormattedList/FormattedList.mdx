@@ -1,0 +1,50 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './FormattedList.stories';
+
+<Meta
+  of={Stories}
+  summary="Locale-aware inline joining of ordered text values with Intl.ListFormat conjunction, disjunction, style and punctuation rules from BreezeProvider locale."
+/>
+
+# FormattedList
+
+`FormattedList` joins an ordered set of text values using locale-appropriate punctuation and conjunction or disjunction wording.
+
+## Import
+
+```tsx
+import { FormattedList } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use `FormattedList` for a short inline phrase such as “PDF, JPG and PNG”. Use semantic `List` for a structural list that users should navigate item by item, or collection components for selection and interaction. Do not use commas or a hard-coded English “and” to join translated values.
+
+## Basic example
+
+```tsx
+import { FormattedList } from '@motech-development/breeze-ui';
+
+<FormattedList
+  values={['Email', 'telephone', 'post']}
+  options={{ type: 'disjunction' }}
+/>;
+```
+
+<Canvas of={Stories.Disjunction} />
+
+## Behaviour, accessibility, and internationalisation
+
+`values` is an ordered array of already translated strings. `Intl.ListFormat` supplies separators and the final conjunction from the provider BCP 47 locale. `options.type` is `'conjunction'` or `'disjunction'`; `options.style` is `'long'`, `'short'` or `'narrow'`. Runtime defaults are conjunction and long style.
+
+An empty array renders an empty `<span>` and one item renders that item without a separator. Decide an application fallback for empty data. This formatter is stateless: it has no controlled, loading, disabled, invalid, callback or keyboard behaviour.
+
+The `<span>` is inline prose, not an HTML list. Assistive technology reads its localised text in context. Keep items concise, preserve meaningful source order, and use a semantic list when item boundaries matter. Direction is inherited and punctuation follows locale.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes and related components
+
+Do not pass React elements, translate the final joined string, split values on commas, or use this as a navigable list. Use `List` for semantic rows, `FormattedNumber` for locale-aware numeric values, and `Typography` to control surrounding prose hierarchy.

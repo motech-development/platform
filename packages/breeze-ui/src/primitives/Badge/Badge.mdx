@@ -1,0 +1,101 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Badge.stories';
+
+<Meta
+  of={Stories}
+  summary="Compact non-interactive status or classification label with semantic colour and emphasis."
+/>
+
+# Badge
+
+`Badge` renders a compact, non-interactive status or classification label.
+
+## Import
+
+```tsx
+import { Badge } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+- Use for a short status, category, count label, or classification adjacent to primary content.
+- Choose `variant` for meaning and `appearance` for the amount of visual emphasis.
+- Keep the label concise enough to scan as metadata.
+
+## When not to use
+
+- Use `Button`, `ToggleButton`, or `Tag` when the element is interactive.
+- Use `Alert` for a message that needs explanatory content or announcement semantics.
+- Use `Typography` for sentences and supporting prose.
+- Use `Meter` or `ProgressBar` for a measurable value rather than encoding progress as badge colour.
+
+## Basic use
+
+```tsx
+import { Badge, Inline, Typography } from '@motech-development/breeze-ui';
+
+export function ItemStatus() {
+  return (
+    <Inline align="center" gap="sm" wrap={false}>
+      <Typography as="span">Quarterly report</Typography>
+      <Badge variant="success">Complete</Badge>
+    </Inline>
+  );
+}
+```
+
+<Canvas of={Stories.VariantsAndAppearances} />
+
+## Variants
+
+| Variant     | Intended use                                                          |
+| ----------- | --------------------------------------------------------------------- |
+| `primary`   | Current or product-primary classification.                            |
+| `secondary` | Neutral metadata; the default.                                        |
+| `success`   | Successful or complete state.                                         |
+| `danger`    | Failed, destructive, or high-severity state.                          |
+| `warning`   | State needing attention or caution.                                   |
+| `info`      | Informational state.                                                  |
+| `light`     | Low-emphasis label on an ordinary or dark-enough contrasting context. |
+| `dark`      | Dark high-contrast label on a light context.                          |
+
+The visible text must state the meaning; never rely on colour alone. Use one variant consistently for the same state within a product flow.
+
+## Appearances
+
+`subtle` is the default and works for most metadata. `solid` has the highest filled emphasis. `outline` uses a transparent background with a semantic border. `ghost` removes the visible border and background for the lightest treatment. Appearance does not change semantics or announce content.
+
+## API
+
+<ArgTypes />
+
+## State, accessibility, and behaviour
+
+Badge forwards relevant native span attributes such as `id`, `aria-*`, `data-*`, and event-independent text attributes. Arbitrary inline `style` is not a public styling contract.
+
+Badge is a plain non-interactive span. It has no keyboard behaviour and no controlled, uncontrolled, disabled, invalid, loading, empty, error, or read-only state. Empty badges provide no useful information and should not be rendered.
+
+Dynamic Badge text is not automatically announced. If a change requires immediate assistive-technology attention, use the appropriate `Alert`, `Toast`, or application-owned live-region pattern rather than adding live semantics indiscriminately.
+
+Keep wording understandable when colours are unavailable or forced-colour mode changes presentation. Badge content follows provider direction but is not translated or formatted by the component.
+
+## Styling and composition
+
+Badge has a canonical compact height, rounded geometry, display font, and content padding. Use `className` for placement in a parent layout, not to invent new variants, sizes, or shapes. Long content wraps, but a label that becomes a sentence belongs in Typography or Alert.
+
+Icons may accompany text when they reinforce meaning, but keep them decorative and retain a visible label. An icon-only Badge is generally ambiguous.
+
+## Common mistakes and limitations
+
+- Do not attach click handlers or present Badge as a control.
+- Do not use `danger`, `warning`, or `success` without explicit wording.
+- Do not put lengthy explanations inside the compact label.
+- Do not use appearance as a state model; it controls emphasis only.
+- Badge does not own counts, status transitions, or announcements.
+
+## Related components
+
+- Use `Tag` for an individual interactive or removable item.
+- Use `Alert` for explanatory feedback.
+- Use `IconTile` for a larger visual marker.
+- Use `Typography` for ordinary metadata and prose.

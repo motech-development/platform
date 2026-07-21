@@ -1,0 +1,114 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Toast.stories';
+
+<Meta
+  of={Stories}
+  summary="Provider-scoped notification queue controlled by useToast, plus an explicitly controlled standalone Toast for specialised semantic ownership."
+/>
+
+# Toast
+
+`Toast` provides transient, interactive notifications. Prefer the `useToast` controller for the queue owned by the nearest `BreezeProvider`; use standalone `Toast` only when the application must own placement and lifecycle itself.
+
+```tsx
+import { Toast, useToast } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use a toast for a brief update that does not need to remain in the page, such as confirmation after an action. Use [Alert](?path=/docs/feedback-alert--docs) for persistent inline feedback, field `Error` parts for validation, [AlertDialog](?path=/docs/primitives-overlays-alertdialog--docs) for a decision that blocks progress, and [StatePanel](?path=/docs/patterns-feedback-statepanel--docs) for a substantial page state.
+
+Do not put critical instructions, long-form content, or the only recovery path in an auto-dismissing toast.
+
+## Queued notifications
+
+Call `useToast` beneath `BreezeProvider`. `show(options)` adds a provider-scoped notification and returns its string queue identifier; `dismiss(id)` closes that notification. The provider renders the primary labelled `ToastRegion` automatically and shows at most `toastLimit` notifications, which defaults to `3`.
+
+```tsx
+import { Button, useToast } from '@motech-development/breeze-ui';
+
+export function SaveButton() {
+  const toast = useToast();
+
+  return (
+    <Button
+      onAction={() => {
+        toast.show({
+          description: 'The revised record is now available.',
+          lifetime: 5000,
+          title: 'Changes saved',
+          variant: 'success',
+        });
+      }}
+    >
+      Save changes
+    </Button>
+  );
+}
+```
+
+<Canvas of={Stories.ProviderQueueAndAction} />
+
+## Content, actions, and lifecycle
+
+`title` is required and supplies the notification's primary accessible name. `description` is optional supporting content. Both are application-owned `ReactNode` and must be translated.
+
+`action` is `{ label: ReactNode, onAction: () => void }`. Activating it calls `onAction` once and dismisses the toast. Use one concise action; it must be safe after the initiating context changes. Every toast also has a Breeze-labelled close button.
+
+`lifetime` is milliseconds: the default is `5000`, `null` persists until dismissal, and `0` dismisses immediately. Other values must be finite and non-negative or `show` throws `RangeError`. `onDismiss` runs once when a queued toast is dismissed, including action, close, timeout, immediate close, or controller dismissal, but not during provider teardown. Do not use it as the only persistence mechanism.
+
+The queue identifier belongs to the current provider and should be treated as opaque. Controllers and identifiers must not be reused across provider boundaries.
+
+## Standalone Toast
+
+Standalone `Toast` is an explicitly controlled `role="alertdialog"` with polite, atomic announcement semantics. Supply `onDismiss` and remove it from application state when called. Its action calls `action.onAction` and then `onDismiss`. `closeLabel` defaults to the provider's translated close message.
+
+```tsx
+import { Toast } from '@motech-development/breeze-ui';
+
+export function ControlledNotification({ dismiss }: { dismiss: () => void }) {
+  return (
+    <Toast
+      description="One live owner avoids duplicate announcements."
+      onDismiss={dismiss}
+      title="Controlled notification"
+      variant="info"
+    />
+  );
+}
+```
+
+<Canvas of={Stories.StandaloneSemanticOwner} />
+
+## Variants and state
+
+`variant` accepts `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, or `dark` and defaults to `info`. Choose by message meaning, not decoration; colour is supplemental to the title and description.
+
+Toast has no loading, disabled, invalid, empty, or error prop. Express those situations in translated content and choose a semantic variant. Do not disable dismissal while work is pending. Repeated updates should normally update application state or use a persistent status rather than flooding the queue.
+
+<Canvas of={Stories.Variants} />
+
+## Keyboard, accessibility, and direction
+
+Queued toasts are placed in a labelled landmark region and exposed as interactive alert dialogs. React Aria's toast-region keyboard model lets keyboard users move to the region with F6, then use Tab and Shift+Tab among toast actions and close buttons; Escape dismisses the focused toast. Standalone `Toast` is focusable and its action and close controls use normal button keyboard activation. Never remove visible focus treatment or duplicate the same message in another live region.
+
+Translate titles, descriptions, action labels, and any standalone `closeLabel`. Override the provider `messages.close` and `messages.notifications` for Breeze-owned queue labels. Logical inline placement follows the provider direction, and the provider-owned portal carries its locale and direction.
+
+Standalone `Toast` supports relevant native `div` attributes, including `className`, ARIA and data attributes, events, and a typed `ref`; `children`, `role`, inline `style`, and the native `title` attribute are intentionally owned or excluded.
+
+## API
+
+<ArgTypes />
+
+## Common mistakes
+
+- Do not call `useToast` outside `BreezeProvider`.
+- Do not render another primary `ToastRegion`; the provider already owns one.
+- Do not set `lifetime={null}` for routine confirmations that should clear themselves.
+- Do not place multiple competing actions or long interactive workflows in a toast.
+- Do not retain a standalone toast after `onDismiss` fires.
+- Do not duplicate one notification through both the queue and standalone `Toast`.
+
+## Related components
+
+[ToastRegion](?path=/docs/feedback-toastregion--docs), [Alert](?path=/docs/feedback-alert--docs), [AlertDialog](?path=/docs/primitives-overlays-alertdialog--docs), and [BreezeProvider](?path=/docs/foundation-breezeprovider--docs).

@@ -1,0 +1,81 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './AlertDialog.stories';
+
+<Meta
+  of={Stories}
+  summary="A modal alert requiring an explicit, clearly labelled decision with protected outside dismissal, contained focus, and responsive action placement."
+/>
+
+# AlertDialog
+
+`AlertDialog` interrupts the user with a consequential decision that requires an explicit response.
+
+## Import
+
+```tsx
+import { AlertDialog } from '@motech-development/breeze-ui';
+```
+
+## When to use
+
+Use it before an irreversible or materially risky action, or when an interruption cannot be ignored. Use `Dialog` for ordinary modal tasks, `ConfirmationDialog` for the standard composed confirmation pattern, `Alert` for inline feedback, and `Toast` for non-blocking status.
+
+## Basic example
+
+```tsx
+import { AlertDialog } from '@motech-development/breeze-ui';
+
+<AlertDialog.Root>
+  <AlertDialog.Trigger variant="danger">Delete item</AlertDialog.Trigger>
+  <AlertDialog.Content>
+    <AlertDialog.Title>Delete this item?</AlertDialog.Title>
+    <AlertDialog.Description>
+      This action cannot be undone.
+    </AlertDialog.Description>
+    <AlertDialog.Actions>
+      <AlertDialog.Close appearance="outline" autoFocus>
+        Cancel
+      </AlertDialog.Close>
+      <AlertDialog.Close variant="danger" onAction={deleteItem}>
+        Delete permanently
+      </AlertDialog.Close>
+    </AlertDialog.Actions>
+  </AlertDialog.Content>
+</AlertDialog.Root>;
+```
+
+<Canvas of={Stories.ExplicitDecision} />
+
+## Anatomy
+
+| Part                      | Purpose                                                        |
+| ------------------------- | -------------------------------------------------------------- |
+| `AlertDialog.Root`        | Coordinates open state and trigger focus.                      |
+| `AlertDialog.Trigger`     | Opens the alert dialog.                                        |
+| `AlertDialog.Content`     | Non-outside-dismissible `alertdialog` surface and focus scope. |
+| `AlertDialog.Title`       | Required concise decision heading and accessible name.         |
+| `AlertDialog.Description` | Required consequence explanation and accessible description.   |
+| `AlertDialog.Actions`     | Responsive group for explicit choices.                         |
+| `AlertDialog.Close`       | Runs an optional action and closes the alert dialog.           |
+
+Put every decision in `Actions`. On compact layouts actions fill the width and visual order places the destructive choice above cancel while DOM and keyboard order remain logical. Put the safest initial focus on Cancel with `autoFocus`; do not automatically focus a destructive action.
+
+## State and dismissal
+
+Use `defaultOpen`, controlled `open` with `onOpenChange`, or immutable `open` with `readOnly`. `onOpenChange` receives the complete next Boolean. Outside pointer interaction never dismisses AlertDialog. Escape dismisses by default; `keyboardDismissDisabled` removes that path, so an enabled explicit action is mandatory.
+
+Loading, disabled, invalid, empty, and error behaviour belongs to the decision actions or content. A loading destructive action should remain clearly labelled and must not leave the dialog with no usable cancellation path.
+
+## API
+
+<ArgTypes />
+
+## Native attributes and callback semantics
+
+Use `onAction`, not a DOM click callback. `Actions` supports relevant `div` attributes; title, description, and button parts support their relevant native attributes. Breeze owns the alert-dialog role, focus scope, and inline styling.
+
+## Keyboard, accessibility, and mistakes
+
+Trigger activation opens the alert and focus stays contained with Tab and Shift+Tab. Escape closes unless explicitly disabled; an explicit Close restores trigger focus. State the action and consequence in plain language, use specific action labels rather than “Yes” and “No”, and never rely on danger colour alone. Translate all decision copy together and allow wrapping.
+
+Do not use AlertDialog for success messages, routine acknowledgements, or long forms; do not make outside click the only cancellation path; do not omit Title or Description. Related components: `Dialog`, `ConfirmationDialog`, `Alert`, and `Toast`.

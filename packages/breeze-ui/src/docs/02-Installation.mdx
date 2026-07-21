@@ -1,0 +1,56 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/02 Installation"
+  summary="Install Breeze UI v3, load its published CSS, and satisfy its React peer dependencies."
+/>
+
+# Installation
+
+Install the package with your application's package manager. Breeze UI v3 requires React 19 and React DOM 19 as peer dependencies.
+
+```shell
+yarn add @motech-development/breeze-ui react react-dom
+```
+
+## Load the styles
+
+Every application must load the compiled component stylesheet once:
+
+```tsx
+import '@motech-development/breeze-ui/styles.css';
+```
+
+Greenfield applications may opt into the Breeze global baseline by importing the reset before the component stylesheet:
+
+```tsx
+import '@motech-development/breeze-ui/reset.css';
+import '@motech-development/breeze-ui/styles.css';
+```
+
+`styles.css` contains fonts, semantic tokens, component-scoped normalisation and component styles. `reset.css` contains the optional global document baseline. Existing applications should assess the global reset before enabling it.
+
+## Add the provider
+
+All Breeze components require `BreezeProvider`:
+
+```tsx
+import { BreezeProvider } from '@motech-development/breeze-ui';
+
+export function App() {
+  return <BreezeProvider locale="en-GB">Your application</BreezeProvider>;
+}
+```
+
+Use a valid BCP 47 locale. Add `timeZone`, `router`, `messages`, `direction` or a custom `portalContainer` only when the application needs those environment behaviours.
+
+## Package boundaries
+
+| Import                                     | Purpose                                        |
+| ------------------------------------------ | ---------------------------------------------- |
+| `@motech-development/breeze-ui`            | Components, patterns and public types          |
+| `@motech-development/breeze-ui/icons`      | The 32 curated icon components and `IconProps` |
+| `@motech-development/breeze-ui/styles.css` | Required compiled styles                       |
+| `@motech-development/breeze-ui/reset.css`  | Optional global reset                          |
+
+Do not configure Tailwind to scan Breeze source, import unpublished CSS files or depend on `react-aria-components` through Breeze. The package's public entry points are the supported boundary.
