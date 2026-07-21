@@ -139,15 +139,16 @@ export function Trigger({
   const state = useContext(DatePickerStateContext);
   const { locale, messages, timeZone } = useBreezeContext();
   const resolvedTimeZone = timeZone ?? 'UTC';
+  const dateValue = state?.value ?? null;
   const displayValue =
-    state === null || state.value === null
+    dateValue === null
       ? null
       : new Intl.DateTimeFormat(locale, {
           day: 'numeric',
           month: 'long',
           timeZone: resolvedTimeZone,
           year: 'numeric',
-        }).format(state.value.toDate(resolvedTimeZone));
+        }).format(dateValue.toDate(resolvedTimeZone));
   const defaultChildren = [
     createElement(
       'span',

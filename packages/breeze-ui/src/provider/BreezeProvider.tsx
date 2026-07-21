@@ -26,6 +26,8 @@ const rtlLanguages = new Set([
   'yi',
 ]);
 
+type BreezeDatasetKey = 'breezePortalRoot' | 'breezeRoot';
+
 /** Props for the required environment boundary shared by Breeze components. */
 export interface BreezeProviderProps {
   /** Breeze components and application content rendered inside the boundary. */
@@ -50,6 +52,22 @@ function inferDirection(locale: string): BreezeDirection {
   const { language } = new Intl.Locale(locale);
 
   return rtlLanguages.has(language) ? 'rtl' : 'ltr';
+}
+
+function restoreDatasetValue(
+  element: HTMLElement,
+  key: BreezeDatasetKey,
+  value: string | undefined,
+): void {
+  const { dataset } = element;
+
+  if (value === undefined) {
+    delete dataset[key];
+
+    return;
+  }
+
+  dataset[key] = value;
 }
 
 function restoreAttribute(
@@ -81,7 +99,7 @@ export function BreezeProvider({
   router,
   timeZone,
   toastLimit = 3,
-}: BreezeProviderProps) {
+}: Readonly<BreezeProviderProps>) {
   if (!Number.isInteger(toastLimit) || toastLimit < 1) {
     throw new RangeError(
       'BreezeProvider toastLimit must be a positive integer.',
@@ -123,28 +141,26 @@ export function BreezeProvider({
       return undefined;
     }
 
-    const previousPortalScope = suppliedPortalContainer.getAttribute(
-      'data-breeze-portal-root',
-    );
-    const previousRootScope =
-      suppliedPortalContainer.getAttribute('data-breeze-root');
+    const { dataset: portalDataset } = suppliedPortalContainer;
+    const previousPortalScope = portalDataset.breezePortalRoot;
+    const previousRootScope = portalDataset.breezeRoot;
     const previousDirection = suppliedPortalContainer.getAttribute('dir');
     const previousLocale = suppliedPortalContainer.getAttribute('lang');
 
-    suppliedPortalContainer.setAttribute('data-breeze-portal-root', '');
-    suppliedPortalContainer.setAttribute('data-breeze-root', '');
+    portalDataset.breezePortalRoot = '';
+    portalDataset.breezeRoot = '';
     suppliedPortalContainer.setAttribute('dir', resolvedDirection);
     suppliedPortalContainer.setAttribute('lang', locale);
 
     return () => {
-      restoreAttribute(
+      restoreDatasetValue(
         suppliedPortalContainer,
-        'data-breeze-portal-root',
+        'breezePortalRoot',
         previousPortalScope,
       );
-      restoreAttribute(
+      restoreDatasetValue(
         suppliedPortalContainer,
-        'data-breeze-root',
+        'breezeRoot',
         previousRootScope,
       );
       restoreAttribute(suppliedPortalContainer, 'dir', previousDirection);

@@ -52,7 +52,7 @@ export function ContextSwitcher({
   onChange,
   onManage,
   triggerLabel,
-}: ContextSwitcherProps): ReactElement {
+}: Readonly<ContextSwitcherProps>): ReactElement {
   const current = items.find((item) => item.id === currentId);
   const itemIds = new Set(items.map((item) => item.id));
   let manageItemId = '__breeze-manage-contexts';

@@ -151,6 +151,8 @@ export function Root({
         return;
       }
 
+      const { dataset } = element;
+
       element.setAttribute('aria-describedby', describedBy);
       if (invalid) {
         element.setAttribute('aria-invalid', 'true');
@@ -158,9 +160,9 @@ export function Root({
         element.removeAttribute('aria-invalid');
       }
       if (required) {
-        element.setAttribute('data-required', 'true');
+        dataset.required = 'true';
       } else {
-        element.removeAttribute('data-required');
+        delete dataset.required;
       }
     },
     [describedBy, invalid, required, suppliedRef],
