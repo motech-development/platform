@@ -95,6 +95,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
+
+      - name: Install Playwright browsers
+        run: yarn workspace @motech-development/breeze-ui playwright install --with-deps chromium
+
       - name: Unit test
         run: yarn test
 

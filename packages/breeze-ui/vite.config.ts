@@ -10,14 +10,23 @@ const require = createRequire(import.meta.url);
 const cabinPackageDirectory = dirname(
   require.resolve('@fontsource-variable/cabin/package.json'),
 );
+const distributionDirectory = resolve(import.meta.dirname, 'dist');
 
 function cabinAssetsPlugin(): Plugin {
   return {
     name: 'breeze-cabin-assets',
-    writeBundle() {
+    writeBundle(outputOptions) {
+      if (
+        !outputOptions.dir ||
+        resolve(import.meta.dirname, outputOptions.dir) !==
+          distributionDirectory
+      ) {
+        return;
+      }
+
       copyFileSync(
         resolve(cabinPackageDirectory, 'LICENSE'),
-        resolve(import.meta.dirname, 'dist/Cabin-LICENSE.txt'),
+        resolve(distributionDirectory, 'Cabin-LICENSE.txt'),
       );
     },
   };
