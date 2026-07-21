@@ -30,7 +30,7 @@ export function RelativeTime({
   unit,
   value,
   ...props
-}: RelativeTimeProps): ReactElement {
+}: Readonly<RelativeTimeProps>): ReactElement {
   const { locale } = useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
 

@@ -111,7 +111,7 @@ export type DatePickerErrorProps = TextFieldErrorProps;
 export function Group({
   className,
   ...props
-}: DatePickerGroupProps): ReactElement {
+}: Readonly<DatePickerGroupProps>): ReactElement {
   return createElement(PickerGroupPart, {
     ...props,
     className: groupStyle({ class: className }),
@@ -121,7 +121,7 @@ export function Group({
 export function Input({
   className,
   ...props
-}: DatePickerInputProps): ReactElement {
+}: Readonly<DatePickerInputProps>): ReactElement {
   return createElement(DateInputPart, {
     ...props,
     'aria-hidden': true,
@@ -135,7 +135,7 @@ export function Trigger({
   children,
   className,
   ...props
-}: DatePickerTriggerProps): ReactElement {
+}: Readonly<DatePickerTriggerProps>): ReactElement {
   const state = useContext(DatePickerStateContext);
   const { locale, messages, timeZone } = useBreezeContext();
   const resolvedTimeZone = timeZone ?? 'UTC';
@@ -177,7 +177,7 @@ export function Trigger({
 export function Popover({
   placement = 'bottom end',
   ...props
-}: DatePickerPopoverProps): ReactElement {
+}: Readonly<DatePickerPopoverProps>): ReactElement {
   return createElement(PickerPopoverPart, {
     ...props,
     placement,
@@ -202,7 +202,7 @@ export function Root({
   required = false,
   value,
   ...props
-}: DatePickerRootProps): ReactElement {
+}: Readonly<DatePickerRootProps>): ReactElement {
   useBreezeContext();
   return createElement(AriaDatePicker, {
     ...props,

@@ -31,7 +31,7 @@ export function PageHeader({
   ref,
   title,
   ...props
-}: PageHeaderProps): ReactElement {
+}: Readonly<PageHeaderProps>): ReactElement {
   useBreezeContext();
 
   const titleId = useId();

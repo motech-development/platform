@@ -81,7 +81,7 @@ export function Link({
   target,
   variant,
   ...props
-}: LinkProps): ReactElement {
+}: Readonly<LinkProps>): ReactElement {
   const { router } = useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
   const useRouter =

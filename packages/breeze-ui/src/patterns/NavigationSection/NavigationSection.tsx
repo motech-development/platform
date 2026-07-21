@@ -25,7 +25,7 @@ export function NavigationSection({
   ref,
   title,
   ...props
-}: NavigationSectionProps): ReactElement {
+}: Readonly<NavigationSectionProps>): ReactElement {
   useBreezeContext();
 
   const titleId = useId();

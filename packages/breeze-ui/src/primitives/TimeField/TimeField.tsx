@@ -96,7 +96,7 @@ export function Root({
   required = false,
   value,
   ...props
-}: TimeFieldRootProps): ReactElement {
+}: Readonly<TimeFieldRootProps>): ReactElement {
   useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
   const forwardedInputRef = useForwardedRef(inputRef);

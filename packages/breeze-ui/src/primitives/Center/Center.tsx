@@ -27,7 +27,11 @@ export interface CenterProps extends LayoutElementProps {
  *
  * @summary two-axis layout centring with optional viewport height
  */
-export function Center({ className, minHeight, ...props }: CenterProps) {
+export function Center({
+  className,
+  minHeight,
+  ...props
+}: Readonly<CenterProps>) {
   useBreezeContext();
 
   return createElement('div', {

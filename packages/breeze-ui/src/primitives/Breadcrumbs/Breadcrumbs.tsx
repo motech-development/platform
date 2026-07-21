@@ -49,7 +49,7 @@ export function Root({
   disabled = false,
   ref,
   ...props
-}: BreadcrumbsRootProps): ReactElement {
+}: Readonly<BreadcrumbsRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -71,7 +71,7 @@ export function Item({
   id,
   ref,
   ...props
-}: BreadcrumbsItemProps): ReactElement {
+}: Readonly<BreadcrumbsItemProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(

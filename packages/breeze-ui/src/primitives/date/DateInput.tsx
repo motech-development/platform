@@ -55,7 +55,7 @@ export function DateInputPart({
   className,
   ref,
   ...props
-}: DateInputPartProps): ReactElement {
+}: Readonly<DateInputPartProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(

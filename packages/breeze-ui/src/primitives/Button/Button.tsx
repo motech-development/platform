@@ -58,7 +58,7 @@ export function Button({
   type = 'button',
   variant,
   ...props
-}: ButtonProps): ReactElement {
+}: Readonly<ButtonProps>): ReactElement {
   useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
 

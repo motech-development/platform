@@ -186,7 +186,7 @@ export function Typography({
   truncate = false,
   weight,
   ...props
-}: TypographyProps) {
+}: Readonly<TypographyProps>) {
   useBreezeContext();
 
   const resolvedLevel = level ?? headingLevels[as] ?? 'body';

@@ -98,7 +98,7 @@ export function PasswordField({
   required = false,
   size = 'md',
   value,
-}: PasswordFieldProps): ReactElement {
+}: Readonly<PasswordFieldProps>): ReactElement {
   const { messages } = useBreezeContext();
   const [visible, setVisible] = useState(false);
 

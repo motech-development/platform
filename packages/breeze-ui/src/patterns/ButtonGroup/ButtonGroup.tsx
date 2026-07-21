@@ -66,7 +66,7 @@ export function ButtonGroup({
   orientation = 'horizontal',
   ref,
   ...props
-}: ButtonGroupProps): ReactElement {
+}: Readonly<ButtonGroupProps>): ReactElement {
   useBreezeContext();
 
   return createElement('div', {

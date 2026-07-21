@@ -85,7 +85,7 @@ export function ToggleButton({
   value,
   variant,
   ...props
-}: ToggleButtonProps): ReactElement {
+}: Readonly<ToggleButtonProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);

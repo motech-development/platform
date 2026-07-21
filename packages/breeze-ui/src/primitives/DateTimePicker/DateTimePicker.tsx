@@ -151,7 +151,7 @@ export function Calendar({
   className,
   ref,
   ...props
-}: DateTimePickerCalendarProps): ReactElement {
+}: Readonly<DateTimePickerCalendarProps>): ReactElement {
   const state = useContext(DatePickerStateContext);
   const { disabled, readOnly } = useDateTimePickerConfiguration();
   const { messages } = useBreezeContext();
@@ -201,7 +201,7 @@ export function Popover({
   'aria-label': ariaLabel,
   placement = 'bottom end',
   ...props
-}: DateTimePickerPopoverProps): ReactElement {
+}: Readonly<DateTimePickerPopoverProps>): ReactElement {
   const { messages } = useBreezeContext();
 
   return createElement(PickerPopoverPart, {
@@ -228,7 +228,7 @@ export function Root({
   required = false,
   value,
   ...props
-}: DateTimePickerRootProps): ReactElement {
+}: Readonly<DateTimePickerRootProps>): ReactElement {
   const { timeZone = 'UTC' } = useBreezeContext();
   const configuration = { disabled, readOnly };
 

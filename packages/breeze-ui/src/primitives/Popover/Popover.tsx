@@ -91,7 +91,7 @@ export function Root({
   open,
   readOnly: _readOnly,
   ...props
-}: PopoverRootProps): ReactElement {
+}: Readonly<PopoverRootProps>): ReactElement {
   useBreezeContext();
   return createElement(AriaDialogTrigger, {
     ...props,
@@ -110,7 +110,7 @@ export function Content({
   placement = 'bottom start',
   ref,
   ...props
-}: PopoverContentProps): ReactElement {
+}: Readonly<PopoverContentProps>): ReactElement {
   useBreezeContext();
   const descriptionId = useId();
 

@@ -72,7 +72,7 @@ export function Root({
   orientation = 'horizontal',
   ref,
   ...props
-}: StepperRootProps): ReactElement {
+}: Readonly<StepperRootProps>): ReactElement {
   useBreezeContext();
 
   return createElement('ol', {
@@ -92,7 +92,7 @@ export function Item({
   status,
   title,
   ...props
-}: StepperItemProps): ReactElement {
+}: Readonly<StepperItemProps>): ReactElement {
   return createElement(
     'li',
     {

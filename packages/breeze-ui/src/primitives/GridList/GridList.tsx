@@ -214,7 +214,7 @@ export function Root<Item extends BreezeCollectionItem>({
   selection,
   virtualization,
   ...props
-}: GridListRootProps<Item>): ReactElement {
+}: Readonly<GridListRootProps<Item>>): ReactElement {
   const { direction } = useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -269,7 +269,7 @@ export function Item({
   ref,
   textValue,
   ...props
-}: GridListItemProps): ReactElement {
+}: Readonly<GridListItemProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaGridListItem, {
@@ -288,7 +288,7 @@ export function Section({
   className,
   ref,
   ...props
-}: GridListSectionProps): ReactElement {
+}: Readonly<GridListSectionProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaGridListSection, {
@@ -303,7 +303,7 @@ export function Header({
   className,
   ref,
   ...props
-}: GridListHeaderProps): ReactElement {
+}: Readonly<GridListHeaderProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaGridListHeader, {
@@ -321,7 +321,7 @@ export function LoadMore({
   onLoadMore,
   ref,
   ...props
-}: GridListLoadMoreProps): ReactElement {
+}: Readonly<GridListLoadMoreProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   const handleLoadMore = useLoadMoreHandler({ loading, onLoadMore });
 

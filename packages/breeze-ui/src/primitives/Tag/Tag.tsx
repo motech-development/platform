@@ -38,7 +38,7 @@ export function Tag({
   onAction,
   ref,
   ...props
-}: TagProps): ReactElement {
+}: Readonly<TagProps>): ReactElement {
   const r = useForwardedRef(ref);
   return createElement(AriaTag, {
     ...props,

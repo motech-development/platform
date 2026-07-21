@@ -76,7 +76,7 @@ export function Meter({
   valueText,
   variant = 'primary',
   ...props
-}: MeterProps): ReactElement {
+}: Readonly<MeterProps>): ReactElement {
   useBreezeContext();
 
   if (

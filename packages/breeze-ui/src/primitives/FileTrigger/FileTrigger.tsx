@@ -119,7 +119,7 @@ export function Root({
   ref,
   required = false,
   ...props
-}: FileTriggerRootProps): ReactElement {
+}: Readonly<FileTriggerRootProps>): ReactElement {
   const { messages } = useBreezeContext();
 
   const suppliedRef = useForwardedRef(ref);
@@ -227,7 +227,9 @@ export function Root({
 }
 
 /** Announces Breeze-owned type, size, and count rejection feedback. */
-export function Feedback(props: FileTriggerFeedbackProps): ReactElement | null {
+export function Feedback(
+  props: Readonly<FileTriggerFeedbackProps>,
+): ReactElement | null {
   const context = useContext(FileTriggerContext);
 
   if (!context) {
@@ -246,7 +248,7 @@ export function Trigger({
   className,
   ref,
   ...props
-}: FileTriggerButtonProps): ReactElement {
+}: Readonly<FileTriggerButtonProps>): ReactElement {
   const context = useContext(FileTriggerContext);
 
   if (!context) {

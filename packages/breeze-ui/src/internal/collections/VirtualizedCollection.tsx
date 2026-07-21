@@ -189,7 +189,7 @@ export default function VirtualizedCollection({
   maximumColumns,
   minimumItemWidth = 224,
   orientation = 'vertical',
-}: VirtualizedCollectionProps): ReactElement {
+}: Readonly<VirtualizedCollectionProps>): ReactElement {
   const {
     estimatedSectionHeight,
     gap = 0,

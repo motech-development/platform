@@ -24,7 +24,7 @@ export function FormattedNumber({
   ref,
   value,
   ...props
-}: FormattedNumberProps): ReactElement {
+}: Readonly<FormattedNumberProps>): ReactElement {
   const { locale } = useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
 

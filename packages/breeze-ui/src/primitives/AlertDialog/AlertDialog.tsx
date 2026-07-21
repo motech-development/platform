@@ -77,7 +77,7 @@ export function Root({
   open,
   readOnly: _readOnly,
   ...props
-}: AlertDialogRootProps): ReactElement {
+}: Readonly<AlertDialogRootProps>): ReactElement {
   useBreezeContext();
   return createElement(AriaDialogTrigger, {
     ...props,
@@ -86,7 +86,9 @@ export function Root({
     onOpenChange,
   });
 }
-export function Content(props: AlertDialogContentProps): ReactElement {
+export function Content(
+  props: Readonly<AlertDialogContentProps>,
+): ReactElement {
   return createElement(SharedModalContent, {
     ...props,
     dismissible: false,
@@ -98,7 +100,7 @@ export function Actions({
   className,
   ref,
   ...props
-}: AlertDialogActionsProps): ReactElement {
+}: Readonly<AlertDialogActionsProps>): ReactElement {
   useBreezeContext();
 
   return createElement('div', {

@@ -147,14 +147,16 @@ export type DateRangePickerDescriptionProps = TextFieldDescriptionProps;
 /** Props for validation feedback. */
 export type DateRangePickerErrorProps = TextFieldErrorProps;
 
-export function Group({ ...props }: DateRangePickerGroupProps): ReactElement {
+export function Group({
+  ...props
+}: Readonly<DateRangePickerGroupProps>): ReactElement {
   return createElement(PickerFieldGroupPart, props);
 }
 
 export function StartInput({
   className,
   ...props
-}: DateRangePickerInputProps): ReactElement {
+}: Readonly<DateRangePickerInputProps>): ReactElement {
   return createElement(PickerFieldInputPart, {
     ...props,
     className,
@@ -165,7 +167,7 @@ export function StartInput({
 export function EndInput({
   className,
   ...props
-}: DateRangePickerInputProps): ReactElement {
+}: Readonly<DateRangePickerInputProps>): ReactElement {
   return createElement(PickerFieldInputPart, {
     ...props,
     className,
@@ -177,7 +179,7 @@ export function Separator({
   className,
   ref,
   ...props
-}: DateRangePickerSeparatorProps): ReactElement {
+}: Readonly<DateRangePickerSeparatorProps>): ReactElement {
   return createElement(
     'span',
     {
@@ -195,7 +197,7 @@ export function Separator({
 
 export function Trigger({
   ...props
-}: DateRangePickerTriggerProps): ReactElement {
+}: Readonly<DateRangePickerTriggerProps>): ReactElement {
   return createElement(PickerFieldTriggerPart, props);
 }
 
@@ -219,7 +221,7 @@ export function Root({
   startName,
   value,
   ...props
-}: DateRangePickerRootProps): ReactElement {
+}: Readonly<DateRangePickerRootProps>): ReactElement {
   useBreezeContext();
 
   const controlled = value !== undefined;

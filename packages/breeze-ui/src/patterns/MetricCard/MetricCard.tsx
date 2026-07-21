@@ -83,7 +83,7 @@ export function MetricCard({
   tone = 'default',
   value,
   ...props
-}: MetricCardProps): ReactElement {
+}: Readonly<MetricCardProps>): ReactElement {
   useBreezeContext();
 
   const labelId = useId();

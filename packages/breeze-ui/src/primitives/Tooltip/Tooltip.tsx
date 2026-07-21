@@ -135,7 +135,7 @@ export function IconTrigger({
   ref,
   variant = 'secondary',
   ...props
-}: TooltipIconTriggerProps): ReactElement {
+}: Readonly<TooltipIconTriggerProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   const trigger = createElement(
@@ -158,7 +158,7 @@ export function Content({
   ref,
   variant = 'secondary',
   ...props
-}: TooltipContentProps): ReactElement {
+}: Readonly<TooltipContentProps>): ReactElement {
   useBreezeContext();
   return createElement(AriaTooltip, {
     ...props,

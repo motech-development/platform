@@ -247,7 +247,7 @@ export function Root({
   step,
   value,
   ...props
-}: SliderRootProps): ReactElement {
+}: Readonly<SliderRootProps>): ReactElement {
   useBreezeContext();
 
   const generatedId = useId();
@@ -289,7 +289,7 @@ export function Output({
   className,
   ref,
   ...props
-}: SliderOutputProps): ReactElement {
+}: Readonly<SliderOutputProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaSliderOutput, {
@@ -305,7 +305,7 @@ export function Track({
   className,
   ref,
   ...props
-}: SliderTrackProps): ReactElement {
+}: Readonly<SliderTrackProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaSliderTrack, {
@@ -317,7 +317,7 @@ export function Track({
 }
 
 /** Renders the persistent accessible label owned by the Slider. */
-export function Label(props: SliderLabelProps): ReactElement {
+export function Label(props: Readonly<SliderLabelProps>): ReactElement {
   return createElement(TextField.Label, {
     ...props,
     'data-breeze-slider-label': true,
@@ -329,7 +329,7 @@ export function Fill({
   className,
   ref,
   ...props
-}: SliderFillProps): ReactElement {
+}: Readonly<SliderFillProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaSliderFill, {
@@ -347,7 +347,7 @@ export function Thumb({
   ref,
   size,
   ...props
-}: SliderThumbProps): ReactElement {
+}: Readonly<SliderThumbProps>): ReactElement {
   const { descriptionId, errorId, invalid, readOnly, required } =
     useSliderContext();
   const forwardedRef = useForwardedRef(ref);
@@ -378,7 +378,7 @@ export function Description({
   id,
   ref,
   ...props
-}: SliderDescriptionProps): ReactElement {
+}: Readonly<SliderDescriptionProps>): ReactElement {
   const { descriptionId } = useSliderContext();
   const forwardedRef = useForwardedRef(ref);
 
@@ -397,7 +397,7 @@ function ErrorMessage({
   id,
   ref,
   ...props
-}: SliderErrorProps): ReactElement {
+}: Readonly<SliderErrorProps>): ReactElement {
   const { errorId } = useSliderContext();
   const forwardedRef = useForwardedRef(ref);
 

@@ -189,7 +189,7 @@ export function Root({
   step,
   value,
   ...props
-}: NumberFieldRootProps): ReactElement {
+}: Readonly<NumberFieldRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -223,7 +223,7 @@ export function Group({
   className,
   ref,
   ...props
-}: NumberFieldGroupProps): ReactElement {
+}: Readonly<NumberFieldGroupProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaGroup, {
@@ -240,7 +240,7 @@ export function Input({
   ref,
   size,
   ...props
-}: NumberFieldInputProps): ReactElement {
+}: Readonly<NumberFieldInputProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaInput, {
@@ -265,7 +265,7 @@ function NumberFieldStepButton({
   size,
   slot,
   ...props
-}: NumberFieldStepButtonInternalProps): ReactElement {
+}: Readonly<NumberFieldStepButtonInternalProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaButton, {
@@ -284,7 +284,7 @@ export function DecrementButton({
   ref,
   size,
   ...props
-}: NumberFieldStepButtonProps): ReactElement {
+}: Readonly<NumberFieldStepButtonProps>): ReactElement {
   return createElement(
     NumberFieldStepButton,
     {
@@ -305,7 +305,7 @@ export function IncrementButton({
   ref,
   size,
   ...props
-}: NumberFieldStepButtonProps): ReactElement {
+}: Readonly<NumberFieldStepButtonProps>): ReactElement {
   return createElement(
     NumberFieldStepButton,
     {

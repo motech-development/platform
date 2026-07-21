@@ -73,7 +73,7 @@ export function Root({
   className,
   ref,
   ...props
-}: CardRootProps): ReactElement {
+}: Readonly<CardRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -90,7 +90,7 @@ export function Header({
   className,
   ref,
   ...props
-}: CardHeaderProps): ReactElement {
+}: Readonly<CardHeaderProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('header', {
@@ -105,7 +105,7 @@ export function Title({
   className,
   ref,
   ...props
-}: CardTitleProps): ReactElement {
+}: Readonly<CardTitleProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('h3', {
@@ -120,7 +120,7 @@ export function Description({
   className,
   ref,
   ...props
-}: CardDescriptionProps): ReactElement {
+}: Readonly<CardDescriptionProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('p', {
@@ -135,7 +135,7 @@ export function Body({
   className,
   ref,
   ...props
-}: CardBodyProps): ReactElement {
+}: Readonly<CardBodyProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('div', {
@@ -150,7 +150,7 @@ export function Footer({
   className,
   ref,
   ...props
-}: CardFooterProps): ReactElement {
+}: Readonly<CardFooterProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('footer', {

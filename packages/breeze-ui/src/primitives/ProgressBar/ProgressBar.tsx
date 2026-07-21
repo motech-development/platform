@@ -95,7 +95,7 @@ export function ProgressBar({
   valueText,
   variant = 'primary',
   ...props
-}: ProgressBarProps): ReactElement {
+}: Readonly<ProgressBarProps>): ReactElement {
   useBreezeContext();
 
   const labelId = useId();

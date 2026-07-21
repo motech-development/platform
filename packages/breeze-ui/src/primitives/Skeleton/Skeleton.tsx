@@ -61,7 +61,7 @@ export function Skeleton<Element extends SkeletonElement = 'div'>({
   shape = 'text',
   tone = 'default',
   ...props
-}: SkeletonProps<Element>): ReactElement {
+}: Readonly<SkeletonProps<Element>>): ReactElement {
   useBreezeContext();
 
   const skeletonProps = {

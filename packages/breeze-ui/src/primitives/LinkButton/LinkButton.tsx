@@ -70,7 +70,7 @@ export function LinkButton({
   target,
   variant,
   ...props
-}: LinkButtonProps): ReactElement {
+}: Readonly<LinkButtonProps>): ReactElement {
   const { router } = useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
   const useRouter =

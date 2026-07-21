@@ -82,7 +82,7 @@ export function ConfirmationDialog({
   trigger,
   triggerAppearance,
   variant = 'danger',
-}: ConfirmationDialogProps): ReactElement {
+}: Readonly<ConfirmationDialogProps>): ReactElement {
   const content = (
     <>
       <AlertDialog.Trigger appearance={triggerAppearance} variant={variant}>

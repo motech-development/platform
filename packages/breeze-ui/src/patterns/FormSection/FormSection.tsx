@@ -92,7 +92,7 @@ export function FormSection({
   ref,
   title,
   ...props
-}: FormSectionProps): ReactElement {
+}: Readonly<FormSectionProps>): ReactElement {
   useBreezeContext();
 
   const titleId = useId();

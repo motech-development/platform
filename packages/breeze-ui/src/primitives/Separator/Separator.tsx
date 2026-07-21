@@ -52,7 +52,7 @@ export function Separator({
   ref,
   tone,
   ...props
-}: SeparatorProps) {
+}: Readonly<SeparatorProps>) {
   useBreezeContext();
 
   const Element: ElementType = orientation === 'horizontal' ? 'hr' : 'div';

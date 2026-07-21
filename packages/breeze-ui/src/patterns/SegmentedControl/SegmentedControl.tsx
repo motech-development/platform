@@ -75,7 +75,7 @@ export function SegmentedControl({
   orientation = 'horizontal',
   readOnly = false,
   value,
-}: SegmentedControlProps): ReactElement {
+}: Readonly<SegmentedControlProps>): ReactElement {
   const selection = value === undefined ? undefined : [value];
   const defaultSelection =
     defaultValue === undefined ? undefined : [defaultValue];

@@ -64,7 +64,7 @@ export function IconButton({
   type = 'button',
   variant = 'secondary',
   ...props
-}: IconButtonProps): ReactElement {
+}: Readonly<IconButtonProps>): ReactElement {
   useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
 

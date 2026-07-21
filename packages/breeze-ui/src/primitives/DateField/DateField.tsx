@@ -117,7 +117,7 @@ export function Root({
   required = false,
   value,
   ...props
-}: DateFieldRootProps): ReactElement {
+}: Readonly<DateFieldRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);

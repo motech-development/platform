@@ -72,7 +72,7 @@ export function SharedDisclosurePanel({
   className,
   ref,
   ...props
-}: SharedDisclosurePanelProps): ReactElement {
+}: Readonly<SharedDisclosurePanelProps>): ReactElement {
   return createElement(AriaDisclosurePanel, {
     ...props,
     className: disclosurePanel({ class: className }),

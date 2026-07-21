@@ -58,7 +58,7 @@ export function Root({
   ref,
   role = 'presentation',
   ...props
-}: InputGroupRootProps): ReactElement {
+}: Readonly<InputGroupRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -78,7 +78,7 @@ export function Addon({
   ref,
   size,
   ...props
-}: InputGroupAddonProps): ReactElement {
+}: Readonly<InputGroupAddonProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('span', {

@@ -100,7 +100,7 @@ export function Root({
   value,
   visibleMonths = 1,
   ...props
-}: CalendarRootProps): ReactElement {
+}: Readonly<CalendarRootProps>): ReactElement {
   useBreezeContext();
   return createElement(AriaCalendar, {
     ...props,

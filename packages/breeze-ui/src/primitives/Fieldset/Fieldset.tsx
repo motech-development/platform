@@ -97,7 +97,7 @@ export function Root({
   invalid = false,
   ref,
   ...props
-}: FieldsetRootProps): ReactElement {
+}: Readonly<FieldsetRootProps>): ReactElement {
   useBreezeContext();
 
   const generatedId = useId();
@@ -138,7 +138,7 @@ export function Legend({
   className,
   ref,
   ...props
-}: FieldsetLegendProps): ReactElement {
+}: Readonly<FieldsetLegendProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('legend', {
@@ -153,7 +153,7 @@ export function Description({
   className,
   ref,
   ...props
-}: FieldsetDescriptionProps): ReactElement {
+}: Readonly<FieldsetDescriptionProps>): ReactElement {
   const { descriptionId } = useFieldsetContext();
   const forwardedRef = useForwardedRef(ref);
 
@@ -170,7 +170,7 @@ function ErrorMessage({
   className,
   ref,
   ...props
-}: FieldsetErrorProps): ReactElement {
+}: Readonly<FieldsetErrorProps>): ReactElement {
   const { errorId } = useFieldsetContext();
   const forwardedRef = useForwardedRef(ref);
 

@@ -162,7 +162,7 @@ export function Root({
   selected,
   value,
   ...props
-}: CheckboxRootProps): ReactElement {
+}: Readonly<CheckboxRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -196,7 +196,7 @@ export function Control({
   className,
   ref,
   ...props
-}: CheckboxControlProps): ReactElement {
+}: Readonly<CheckboxControlProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaCheckboxButton, {
@@ -212,7 +212,7 @@ export function Indicator({
   ref,
   size,
   ...props
-}: CheckboxIndicatorProps): ReactElement {
+}: Readonly<CheckboxIndicatorProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(
@@ -228,7 +228,10 @@ export function Indicator({
 }
 
 /** Renders persistent visible label text within Checkbox.Control. */
-export function Label({ ref, ...props }: CheckboxLabelProps): ReactElement {
+export function Label({
+  ref,
+  ...props
+}: Readonly<CheckboxLabelProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement('span', {

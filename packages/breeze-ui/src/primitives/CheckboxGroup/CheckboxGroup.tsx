@@ -112,7 +112,7 @@ export function Root({
   required = false,
   selection,
   ...props
-}: CheckboxGroupRootProps): ReactElement {
+}: Readonly<CheckboxGroupRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -137,7 +137,7 @@ export function Root({
 }
 
 /** Renders the persistent accessible label owned by the checkbox group. */
-export function Label(props: CheckboxGroupLabelProps): ReactElement {
+export function Label(props: Readonly<CheckboxGroupLabelProps>): ReactElement {
   return createElement(TextField.Label, {
     ...props,
     'data-breeze-checkbox-group-label': true,
@@ -148,7 +148,7 @@ export function Label(props: CheckboxGroupLabelProps): ReactElement {
 
 /** Renders supporting guidance on its own checkbox-group row. */
 export function Description(
-  props: CheckboxGroupDescriptionProps,
+  props: Readonly<CheckboxGroupDescriptionProps>,
 ): ReactElement {
   return createElement(TextField.Description, {
     ...props,
@@ -159,7 +159,7 @@ export function Description(
 }
 
 /** Renders associated validation feedback on its own checkbox-group row. */
-function ErrorMessage(props: CheckboxGroupErrorProps): ReactElement {
+function ErrorMessage(props: Readonly<CheckboxGroupErrorProps>): ReactElement {
   return createElement(TextField.Error, {
     ...props,
     'data-breeze-checkbox-group-error': true,

@@ -27,7 +27,7 @@ export function FormattedDateTime({
   ref,
   value,
   ...props
-}: FormattedDateTimeProps): ReactElement {
+}: Readonly<FormattedDateTimeProps>): ReactElement {
   const { locale, timeZone } = useBreezeContext();
   const forwardedRef = useForwardedRef(ref);
   const resolvedOptions =

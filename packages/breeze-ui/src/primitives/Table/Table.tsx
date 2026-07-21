@@ -472,7 +472,7 @@ export function Root({
   sort,
   virtualization,
   ...props
-}: TableRootProps): ReactElement {
+}: Readonly<TableRootProps>): ReactElement {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);
@@ -592,7 +592,7 @@ function renderTableColumn({
 }
 
 /** Renders one accessible heading that can optionally request sorting. */
-export function Column(props: TableColumnProps): ReactElement {
+export function Column(props: Readonly<TableColumnProps>): ReactElement {
   return renderTableColumn(props);
 }
 
@@ -612,7 +612,7 @@ export function Header<Column extends BreezeCollectionItem>({
   items,
   ref,
   ...props
-}: TableHeaderProps<Column>): ReactElement {
+}: Readonly<TableHeaderProps<Column>>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   const renderedChildren =
     typeof children === 'function'
@@ -639,7 +639,7 @@ export function Body<Item extends BreezeCollectionItem>({
   items,
   ref,
   ...props
-}: TableBodyProps<Item>): ReactElement {
+}: Readonly<TableBodyProps<Item>>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   const resolvedEmptyContent = useCollectionEmptyContent(emptyContent);
 
@@ -663,7 +663,7 @@ export function Footer<Item extends BreezeCollectionItem>({
   items,
   ref,
   ...props
-}: TableFooterProps<Item>): ReactElement {
+}: Readonly<TableFooterProps<Item>>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
 
   return createElement(AriaTableFooter, {
@@ -689,7 +689,7 @@ export function Row({
   textValue,
   tone = 'default',
   ...props
-}: TableRowProps): ReactElement {
+}: Readonly<TableRowProps>): ReactElement {
   const suppliedRef = useForwardedRef(ref);
   const forwardedRef = useCallback(
     (element: HTMLTableRowElement | null) => {
@@ -734,7 +734,7 @@ export function Cell({
   ref,
   textValue,
   ...props
-}: TableCellProps): ReactElement {
+}: Readonly<TableCellProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   const cellRef = useCallback(
     (element: HTMLTableCellElement | null) => {
@@ -759,7 +759,7 @@ export function Cell({
 export function Disclosure({
   position = 'overlay',
   ...props
-}: TableDisclosureProps): ReactElement {
+}: Readonly<TableDisclosureProps>): ReactElement {
   const cellProps: TableCellProps = {
     ...props,
     children: <ArrowRightIcon className="!block" size={16} />,
@@ -777,7 +777,7 @@ export function LoadMore({
   onLoadMore,
   ref,
   ...props
-}: TableLoadMoreProps): ReactElement {
+}: Readonly<TableLoadMoreProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
   const handleLoadMore = useLoadMoreHandler({ loading, onLoadMore });
   const loadingRowRef = useRef<HTMLTableRowElement | HTMLDivElement | null>(

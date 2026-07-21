@@ -63,7 +63,7 @@ export function Inline({
   justify,
   wrap,
   ...props
-}: InlineProps) {
+}: Readonly<InlineProps>) {
   useBreezeContext();
 
   return createElement('div', {

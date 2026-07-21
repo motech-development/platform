@@ -50,7 +50,7 @@ export function ApplicationShell({
   ref,
   skipLinkLabel,
   ...props
-}: ApplicationShellProps): ReactElement {
+}: Readonly<ApplicationShellProps>): ReactElement {
   const { messages } = useBreezeContext();
 
   return createElement(

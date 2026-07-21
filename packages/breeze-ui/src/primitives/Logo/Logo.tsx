@@ -40,7 +40,7 @@ export interface LogoProps
  *
  * @summary canonical accessible Motech Development brand mark
  */
-export function Logo({ className, ref, size, ...props }: LogoProps) {
+export function Logo({ className, ref, size, ...props }: Readonly<LogoProps>) {
   useBreezeContext();
 
   const forwardedRef = useForwardedRef(ref);

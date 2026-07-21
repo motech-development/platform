@@ -150,7 +150,7 @@ export function Root({
   ref,
   value,
   ...props
-}: TabsRootProps): ReactElement {
+}: Readonly<TabsRootProps>): ReactElement {
   useBreezeContext();
 
   return createElement(AriaTabs, {
@@ -170,7 +170,7 @@ export function List({
   className,
   ref,
   ...props
-}: TabsListProps): ReactElement {
+}: Readonly<TabsListProps>): ReactElement {
   return createElement(AriaTabList, {
     ...props,
     className: ({ orientation }: { orientation: 'horizontal' | 'vertical' }) =>
@@ -186,7 +186,7 @@ export function Tab({
   id,
   ref,
   ...props
-}: TabsTabProps): ReactElement {
+}: Readonly<TabsTabProps>): ReactElement {
   return createElement(AriaTab, {
     ...props,
     className: tab({ class: className }),
@@ -201,7 +201,7 @@ export function Panels({
   className,
   ref,
   ...props
-}: TabsPanelsProps): ReactElement {
+}: Readonly<TabsPanelsProps>): ReactElement {
   return createElement(AriaTabPanels, {
     ...props,
     className,
@@ -216,7 +216,7 @@ export function Panel({
   id,
   ref,
   ...props
-}: TabsPanelProps): ReactElement {
+}: Readonly<TabsPanelProps>): ReactElement {
   return createElement(AriaTabPanel, {
     ...props,
     className: tabPanel({ class: className }),
