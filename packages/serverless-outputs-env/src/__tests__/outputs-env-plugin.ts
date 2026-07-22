@@ -5,7 +5,12 @@ import OutputsEnvPlugin, {
   IServerlessOptions,
 } from '../outputs-env-plugin';
 
-type ITestInstance = Partial<IServerlessInstance>;
+type ITestInstance = Omit<Partial<IServerlessInstance>, 'cli' | 'service'> & {
+  cli: IServerlessInstance['cli'];
+  service?: Omit<IServerlessInstance['service'], 'provider'> & {
+    provider?: IServerlessInstance['service']['provider'];
+  };
+};
 
 describe('OutputsEnvPlugin', () => {
   let options: IServerlessOptions & {
@@ -97,7 +102,7 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should throw an error if provider is not AWS', async () => {
-      serverless.service!.provider.name = 'Azure';
+      serverless.service!.provider!.name = 'Azure';
 
       outputsEnvPlugin = new OutputsEnvPlugin(
         serverless as IServerlessInstance,
@@ -155,7 +160,7 @@ describe('OutputsEnvPlugin', () => {
 
   describe('with a stack name defined', () => {
     beforeEach(() => {
-      serverless.service!.provider.stackName = 'custom-stack-name';
+      serverless.service!.provider!.stackName = 'custom-stack-name';
     });
 
     it('should throw an error if service is not provided', async () => {
@@ -189,7 +194,7 @@ describe('OutputsEnvPlugin', () => {
     });
 
     it('should throw an error if provider is not AWS', async () => {
-      serverless.service!.provider.name = 'Azure';
+      serverless.service!.provider!.name = 'Azure';
 
       outputsEnvPlugin = new OutputsEnvPlugin(
         serverless as IServerlessInstance,

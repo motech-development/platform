@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "Motech Development accounts infrastructure",
   "scripts": {
+    "formatting": "prettier . --check",
     "deploy": "serverless deploy --verbose",
     "teardown": "serverless remove --verbose"
   },

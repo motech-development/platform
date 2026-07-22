@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "Motech Development ID email templates",
   "scripts": {
+    "formatting": "prettier . --check",
     "build": "pug src --pretty --out build"
   },
   "devDependencies": {

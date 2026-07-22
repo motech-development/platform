@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "bin": "bin/infrastructure.js",
   "scripts": {
+    "formatting": "prettier . --check",
     "build": "tsc",
     "cdk": "cdk",
     "deploy": "cdk deploy --all",
     "lint": "eslint './**/*.{js,jsx,ts,tsx}'",
     "teardown": "cdk destroy --all",
     "test": "jest --watch",
-    "test-ci": "jest --coverage --runInBand"
+    "test-ci": "jest --coverage --runInBand",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.1033.0",

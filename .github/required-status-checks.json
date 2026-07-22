@@ -1,6 +1,7 @@
 {
   "contexts": [
     "CodeQL",
+    "Formatting",
     "Lint",
     "Playwright",
     "Preview",

@@ -896,12 +896,12 @@ jobs:
 
     steps:
       - name: Report planning failure
-        if: needs.setup.result != 'success'
+        if: contains(fromJSON('["failure", "cancelled"]'), needs.setup.result)
         run: exit 1
 
       - name: Preview deployment is not applicable
-        if: needs.setup.outputs.runtime-affected == 'false'
-        run: echo 'Preview deployment is not applicable for non-runtime changes.' >> "$GITHUB_STEP_SUMMARY"
+        if: needs.setup.result == 'skipped' || needs.setup.outputs.runtime-affected == 'false'
+        run: echo 'Preview deployment is not applicable for this pull request event.' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Verify Preview Plan
         if: needs.setup.outputs.runtime-affected == 'true'

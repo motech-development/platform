@@ -26,7 +26,7 @@ Repository-specific guidance for agents working in this monorepo.
 - Test observable behavior rather than implementation details.
 - Add or update regression tests at the appropriate level when behavior changes. Follow coverage thresholds configured by the affected package.
 - Prefer targeted, non-watch tests. Do not run root `yarn test` or a workspace's `test-ci` locally unless explicitly requested; they run CI coverage suites. Invoke the affected Jest or Vitest tests directly instead.
-- Run the relevant lint, type-check, test, build, and end-to-end checks in proportion to the change and available tooling.
+- Run the relevant formatting, lint, type-check, test, build, and end-to-end checks in proportion to the change and available tooling.
 - Fix failures introduced by the change. Diagnose and report pre-existing failures unless they block the requested outcome.
 - When mocking Node core modules or external packages, prefer partial mocks that preserve unmocked exports. Full mocks can break transitive consumers.
 

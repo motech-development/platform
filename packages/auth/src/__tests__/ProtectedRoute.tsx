@@ -29,7 +29,7 @@ describe('ProtectedRoute', () => {
       ...process.env,
     };
     getIdTokenClaims = jest.fn();
-    getIdTokenClaims = jest.fn();
+    getTokenSilently = jest.fn();
     loginWithPopup = jest.fn();
     loginWithRedirect = jest.fn();
     logout = jest.fn();

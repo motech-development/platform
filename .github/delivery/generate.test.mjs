@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 import {
@@ -618,6 +618,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   const preview = generated['deploy-to-environment.yml'];
   const setup = workflowJob(preview, 'setup');
   const deployment = workflowJob(preview, 'accounts-data');
+  const previewStatus = workflowJob(preview, 'preview-status');
   const playwright = workflowJob(preview, 'accounts-client');
   const playwrightStatus = workflowJob(preview, 'playwright-status');
 
@@ -655,8 +656,16 @@ test('generated preview workflow plans per pull request and selectively deploys 
     /name: Preview[\s\S]*Preview deployment is not applicable/,
   );
   assert.match(
-    workflowJob(preview, 'preview-status'),
+    previewStatus,
     /needs:\n      - setup\n      - core-anti-virus[\s\S]*      - accounts-api/,
+  );
+  assert.match(
+    previewStatus,
+    /name: Report planning failure\n        if: contains\(fromJSON\('\["failure", "cancelled"\]'\), needs\.setup\.result\)/,
+  );
+  assert.match(
+    previewStatus,
+    /name: Preview deployment is not applicable\n        if: needs\.setup\.result == 'skipped' \|\| needs\.setup\.outputs\.runtime-affected == 'false'/,
   );
   assert.match(
     playwright,
@@ -768,6 +777,7 @@ test('pull-request quality categories start independently with bounded workspace
   assert.doesNotMatch(qualityAssurance, /^  setup:$/m);
   for (const jobId of [
     'delivery-catalog',
+    'formatting',
     'lint',
     'type-check',
     'unit-tests',
@@ -776,10 +786,22 @@ test('pull-request quality categories start independently with bounded workspace
     assert.doesNotMatch(workflowJob(qualityAssurance, jobId), /^    needs:/m);
   }
 
+  assert.match(
+    workflowJob(qualityAssurance, 'formatting'),
+    /name: Check formatting[\s\S]*run: yarn formatting/,
+  );
   assert.match(workflowJob(qualityAssurance, 'lint'), /run: yarn lint/);
+  assert.match(
+    workflowJob(qualityAssurance, 'lint'),
+    /name: Build packages[\s\S]*run: yarn package[\s\S]*name: Lint code/,
+  );
   assert.match(
     workflowJob(qualityAssurance, 'type-check'),
     /run: yarn typecheck/,
+  );
+  assert.match(
+    workflowJob(qualityAssurance, 'type-check'),
+    /name: Build packages[\s\S]*run: yarn package[\s\S]*name: Type check/,
   );
   assert.match(
     workflowJob(qualityAssurance, 'unit-tests'),
@@ -801,6 +823,50 @@ test('pull-request quality categories start independently with bounded workspace
   for (const { name, scripts } of jestWorkspaces) {
     assert.match(scripts['test-ci'], /--runInBand/, name);
   }
+});
+
+test('every TypeScript workspace exposes the type-check quality gate', async () => {
+  const manifests = await loadWorkspaceManifests();
+  const typeScriptWorkspaces = [];
+
+  for (const manifest of manifests) {
+    try {
+      await access(
+        new URL(
+          `../../${manifest.relativePath}/tsconfig.json`,
+          import.meta.url,
+        ),
+      );
+      typeScriptWorkspaces.push(manifest);
+    } catch (error) {
+      if (error?.code !== 'ENOENT') {
+        throw error;
+      }
+    }
+  }
+
+  assert.ok(typeScriptWorkspaces.length > 0);
+  for (const { name, scripts } of typeScriptWorkspaces) {
+    assert.equal(scripts?.typecheck, 'tsc --noEmit', name);
+  }
+});
+
+test('every workspace exposes the formatting quality gate', async () => {
+  const [manifests, rootManifest] = await Promise.all([
+    loadWorkspaceManifests(),
+    readFile(new URL('../../package.json', import.meta.url), 'utf8').then(
+      JSON.parse,
+    ),
+  ]);
+
+  assert.ok(manifests.length > 0);
+  for (const { name, scripts } of manifests) {
+    assert.equal(scripts?.formatting, 'prettier . --check', name);
+  }
+  assert.equal(
+    rootManifest.scripts?.formatting,
+    'yarn workspaces foreach -Wp run formatting',
+  );
 });
 
 test('generated delivery workflows do not repeat pull-request quality gates', async () => {
@@ -949,6 +1015,7 @@ test('required status checks match the pull-request quality job names', async ()
   assert.deepEqual(requiredStatusChecks, {
     contexts: [
       'CodeQL',
+      'Formatting',
       'Lint',
       'Playwright',
       'Preview',
@@ -962,6 +1029,7 @@ test('required status checks match the pull-request quality job names', async ()
   });
   for (const [jobId, checkName] of [
     ['delivery-catalog', 'Validate delivery catalog'],
+    ['formatting', 'Formatting'],
     ['lint', 'Lint'],
     ['type-check', 'Type check'],
     ['unit-tests', 'Unit tests'],

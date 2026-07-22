@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "Motech Development accounts client application",
   "scripts": {
+    "formatting": "prettier . --check",
     "build": "vite build",
     "build-icons": "pwa-asset-generator ./assets/icon.svg ./public --icon-only --favicon --background '#161616' --type png --padding '20%' --maskable false",
     "build-splash:landscape": "pwa-asset-generator ./assets/splash.svg ./public --splash-only --background '#161616' --type png --padding 'calc(50vh - 5%) calc(50vw - 10%)' --landscape-only",
@@ -17,7 +18,8 @@
     "start": "vite",
     "teardown": "serverless client remove --verbose --no-confirm",
     "test": "jest --watch",
-    "test-ci": "jest --coverage --runInBand"
+    "test-ci": "jest --coverage --runInBand",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@apollo/client": "3.13.1",

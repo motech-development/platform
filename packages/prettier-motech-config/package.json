@@ -12,6 +12,9 @@
   },
   "homepage": "https://github.com/motech-development/platform/tree/main/packages/prettier-motech-config#readme",
   "license": "MIT",
+  "scripts": {
+    "formatting": "prettier . --check"
+  },
   "publishConfig": {
     "access": "public"
   },
