@@ -103,6 +103,9 @@ jobs:
       - name: Setup dependencies
         uses: ./.github/actions/setup-dependencies
 
+      - name: Test build optimisations
+        run: node --test .github/quality/*.test.mjs
+
       - name: Build packages
         run: yarn package
 
