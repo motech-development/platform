@@ -9,19 +9,32 @@ on:
       - reopened
       - synchronize
 
-concurrency: development_environment
+concurrency:
+  group: preview-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
 
 jobs:
   setup:
-    name: Setup
+    name: Preview plan
 
     if: github.event.pull_request.draft == false
 
     runs-on: ubuntu-latest
 
+    outputs:
+      runtime-affected: ${{ steps.plan.outputs.runtime-affected }}
+      units: ${{ steps.plan.outputs.units }}
+
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -29,10 +42,64 @@ jobs:
           node-version-file: .nvmrc
           cache: yarn
 
+      - name: Detect runtime changes
+        id: impact
+        shell: bash
+        run: |
+          git diff --name-only '${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}' > "$RUNNER_TEMP/changed-files.txt"
+          impact="$(node .github/delivery/generate.mjs --preview-impact "$RUNNER_TEMP/changed-files.txt")"
+          echo "runtime-affected=$(jq -r '.runtimeAffected' <<< "$impact")" >> "$GITHUB_OUTPUT"
+          echo "changed-workspaces=$(jq -c '.changedWorkspaces' <<< "$impact")" >> "$GITHUB_OUTPUT"
+
+      - name: Configure AWS credentials
+        if: steps.impact.outputs.runtime-affected == 'true' && github.event.action == 'synchronize'
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
+      - name: Read Preview Environment stacks
+        if: steps.impact.outputs.runtime-affected == 'true' && github.event.action == 'synchronize'
+        run: |
+          aws cloudformation describe-stacks --query 'Stacks[].StackName' --output json > "$RUNNER_TEMP/existing-stacks.json"
+
+      - name: Create Preview Plan
+        id: plan
+        env:
+          CHANGED_WORKSPACES: ${{ steps.impact.outputs.changed-workspaces }}
+          LIFECYCLE: ${{ github.event.action }}
+          RUNTIME_AFFECTED: ${{ steps.impact.outputs.runtime-affected }}
+          STAGE: pr-${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          existing_stacks='[]'
+          if [[ -f "$RUNNER_TEMP/existing-stacks.json" ]]; then
+            existing_stacks="$(cat "$RUNNER_TEMP/existing-stacks.json")"
+          fi
+
+          jq -n \
+            --arg lifecycle "$LIFECYCLE" \
+            --arg stage "$STAGE" \
+            --argjson runtimeAffected "$RUNTIME_AFFECTED" \
+            --argjson changedWorkspaces "$CHANGED_WORKSPACES" \
+            --argjson existingStacks "$existing_stacks" \
+            '{lifecycle: $lifecycle, stage: $stage, runtimeAffected: $runtimeAffected, changedWorkspaces: $changedWorkspaces, existingStacks: $existingStacks}' \
+            > "$RUNNER_TEMP/preview-plan-input.json"
+
+          plan="$(node .github/delivery/generate.mjs --preview-plan "$RUNNER_TEMP/preview-plan-input.json")"
+          echo "runtime-affected=$RUNTIME_AFFECTED" >> "$GITHUB_OUTPUT"
+          echo "units=$(jq -c '.units' <<< "$plan")" >> "$GITHUB_OUTPUT"
+          echo "### Preview Plan" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          echo "$plan" | jq . >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
       - name: Generate packages cache key
+        if: steps.plan.outputs.runtime-affected == 'true'
         run: ./scripts/checksum.sh ./packages.txt packages
 
       - name: Restore Node modules
+        if: steps.plan.outputs.runtime-affected == 'true'
         id: node-modules
         uses: actions/cache@v5
         with:
@@ -45,6 +112,7 @@ jobs:
             ${{ runner.os }}-modules-
 
       - name: Restore packages
+        if: steps.plan.outputs.runtime-affected == 'true'
         id: packages
         uses: actions/cache@v5
         with:
@@ -53,21 +121,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-packages-
 
-      - name: Restore cache
-        id: cache
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-
-
       - name: Install dependencies
-        if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
+        if: steps.plan.outputs.runtime-affected == 'true' && steps.node-modules.outputs.cache-hit != 'true'
         run: yarn
 
       - name: Build packages
-        if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
+        if: steps.plan.outputs.runtime-affected == 'true' && (steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true')
         run: yarn package
 
   # Auth0 tenant
@@ -167,6 +226,8 @@ jobs:
   core-anti-virus:
     name: Deploy anti virus
 
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-anti-virus') && needs.setup.result == 'success'
+
     runs-on: ubuntu-latest
 
     needs:
@@ -185,6 +246,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -252,6 +315,8 @@ jobs:
   accounts-queue:
     name: Deploy accounts queue
 
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-queue') && needs.setup.result == 'success' && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -270,6 +335,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -322,6 +389,8 @@ jobs:
   accounts-storage:
     name: Deploy accounts storage
 
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') && needs.setup.result == 'success' && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-anti-virus') || needs.core-anti-virus.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -340,6 +409,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -392,6 +463,8 @@ jobs:
   accounts-data:
     name: Deploy accounts data
 
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') && needs.setup.result == 'success' && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') || needs.accounts-storage.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-anti-virus') || needs.core-anti-virus.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -411,6 +484,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -463,6 +538,8 @@ jobs:
   accounts-warm-up:
     name: Deploy accounts warm up
 
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-warm-up') && needs.setup.result == 'success' && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -481,6 +558,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -537,6 +616,8 @@ jobs:
   accounts-notifications:
     name: Deploy accounts notifications
 
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-notifications') && needs.setup.result == 'success' && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -554,6 +635,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -606,6 +689,8 @@ jobs:
   accounts-reports:
     name: Deploy accounts reports
 
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-reports') && needs.setup.result == 'success' && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-notifications') || needs.accounts-notifications.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') || needs.accounts-storage.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -626,6 +711,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -678,6 +765,8 @@ jobs:
   accounts-api:
     name: Deploy accounts API
 
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-api') && needs.setup.result == 'success' && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-queue') || needs.accounts-queue.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-reports') || needs.accounts-reports.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') || needs.accounts-storage.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -701,6 +790,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -784,6 +875,45 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
 
+  # Preview status
+  preview-status:
+    name: Preview
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - setup
+      - core-anti-virus
+      - accounts-storage
+      - accounts-data
+      - accounts-warm-up
+      - accounts-notifications
+      - accounts-queue
+      - accounts-reports
+      - accounts-api
+
+    if: always()
+
+    steps:
+      - name: Report planning failure
+        if: needs.setup.result != 'success'
+        run: exit 1
+
+      - name: Preview deployment is not applicable
+        if: needs.setup.outputs.runtime-affected == 'false'
+        run: echo 'Preview deployment is not applicable for non-runtime changes.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify Preview Plan
+        if: needs.setup.outputs.runtime-affected == 'true'
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          UNITS: ${{ needs.setup.outputs.units }}
+        run: |
+          jq -n -e \
+            --argjson needs "$NEEDS" \
+            --argjson units "$UNITS" \
+            '$units | map(select($needs[.] != null)) | all(. as $unit | $needs[$unit].result == "success")'
+
   # Accounts (client)
   accounts-client:
     name: Test accounts client
@@ -794,9 +924,9 @@ jobs:
 
     needs:
       - setup
-      # - auth0-tenant
-      - accounts-api
-      - accounts-warm-up
+      - preview-status
+
+    if: always() && needs.setup.outputs.runtime-affected == 'true' && needs.preview-status.result == 'success'
 
     strategy:
       fail-fast: false
@@ -819,6 +949,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -891,7 +1023,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    needs: accounts-client
+    needs:
+      - setup
+      - accounts-client
 
     if: always()
 
@@ -908,13 +1042,17 @@ jobs:
         with:
           github-token: ${{ steps.generate_token.outputs.token }}
           script: |
-            const status = '${{ needs.accounts-client.result }}' === 'success' ? 'success' : 'failure';
-            const description = '${{ needs.accounts-client.result }}' === 'success' ? 'Playwright tests passed' : 'Playwright tests failed';
+            const runtimeAffected = '${{ needs.setup.outputs.runtime-affected }}' === 'true';
+            const testsPassed = '${{ needs.accounts-client.result }}' === 'success';
+            const status = !runtimeAffected || testsPassed ? 'success' : 'failure';
+            const description = runtimeAffected
+              ? (testsPassed ? 'Playwright tests passed' : 'Playwright tests failed')
+              : 'Playwright is not applicable';
 
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: context.sha,
+              sha: '${{ github.event.pull_request.head.sha }}',
               state: status,
               context: 'Playwright',
               description: description

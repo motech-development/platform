@@ -2,7 +2,7 @@
 
 Pull requests are the only blocking quality-gate path. The protected `main` branch requires every context in `required-status-checks.json`; a failed check, or a required context that is not reported, prevents merging.
 
-The Quality assurance workflow starts linting, type-checking, unit tests with SonarCloud, Chromatic, and delivery-catalog drift validation independently. Unit-test workspaces run with at most three concurrent processes. Individual Jest workspaces continue to use `--runInBand` in their own `test-ci` scripts.
+The Quality assurance workflow starts linting, type-checking, unit tests with SonarCloud, Chromatic, and delivery-catalog drift validation independently. Unit-test workspaces run with at most three concurrent processes. Individual Jest workspaces continue to use `--runInBand` in their own `test-ci` scripts. The Preview Environment workflow reports `Preview` for deployment and `Playwright` for the unchanged end-to-end suite; both report a successful not-applicable result for non-runtime changes.
 
 `UI Tests` and `UI Review` are Chromatic-native checks. Keep both features enabled for the linked Chromatic project. The Actions `Chromatic` job exits after upload so a runner does not wait for review; the native checks remain pending until visual differences have been accepted and the Visual Review checklist is complete. A pull-request author may accept their own snapshots and approve their own Visual Review. Assigned default reviewers, if any, must still complete their approvals.
 

@@ -12,6 +12,10 @@ on:
         description: 'Stage, for example pr-123'
         required: true
 
+concurrency:
+  group: preview-${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
+  cancel-in-progress: false
+
 jobs:
   setup:
     name: Setup
@@ -66,7 +70,7 @@ jobs:
   core-anti-virus:
     name: Teardown anti virus
 
-    if: github.actor != 'dependabot[bot]' && always()
+    if: always() && github.actor != 'dependabot[bot]' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped')
 
     runs-on: ubuntu-latest
 
@@ -123,18 +127,34 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Check for resources
+        id: resources
+        shell: bash
+        run: |
+          found=false
+          for stack in "anti-virus-${STAGE}"; do
+            if output="$(aws cloudformation describe-stacks --stack-name "$stack" 2>&1)"; then
+              found=true
+            elif [[ "$output" != *"does not exist"* ]]; then
+              echo "$output" >&2
+              exit 1
+            fi
+          done
+          echo "found=$found" >> "$GITHUB_OUTPUT"
+
       - name: Clear bucket
-        continue-on-error: true
-        run: aws s3 rm $DEFINITIONS_BUCKET --recursive
+        if: steps.resources.outputs.found == 'true'
+        run: .github/delivery/empty-s3-bucket.sh "$DEFINITIONS_BUCKET"
 
       - name: Teardown
+        if: steps.resources.outputs.found == 'true'
         run: yarn workspace @core/anti-virus teardown --stage $STAGE
 
   # Accounts (queue)
   accounts-queue:
     name: Teardown accounts queue
 
-    if: github.actor != 'dependabot[bot]' && always()
+    if: always() && github.actor != 'dependabot[bot]' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped')
 
     runs-on: ubuntu-latest
 
@@ -188,14 +208,30 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Check for resources
+        id: resources
+        shell: bash
+        run: |
+          found=false
+          for stack in "accounts-${STAGE}-queue"; do
+            if output="$(aws cloudformation describe-stacks --stack-name "$stack" 2>&1)"; then
+              found=true
+            elif [[ "$output" != *"does not exist"* ]]; then
+              echo "$output" >&2
+              exit 1
+            fi
+          done
+          echo "found=$found" >> "$GITHUB_OUTPUT"
+
       - name: Teardown
+        if: steps.resources.outputs.found == 'true'
         run: yarn workspace @accounts/queue teardown --stage $STAGE
 
   # Accounts (storage)
   accounts-storage:
     name: Teardown accounts storage
 
-    if: github.actor != 'dependabot[bot]' && always()
+    if: always() && github.actor != 'dependabot[bot]' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped')
 
     runs-on: ubuntu-latest
 
@@ -254,20 +290,36 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
-      - name: Clear bucket
-        continue-on-error: true
+      - name: Check for resources
+        id: resources
+        shell: bash
         run: |
-          aws s3 rm $DOWNLOAD_BUCKET --recursive
-          aws s3 rm $UPLOAD_BUCKET --recursive
+          found=false
+          for stack in "accounts-${STAGE}-storage"; do
+            if output="$(aws cloudformation describe-stacks --stack-name "$stack" 2>&1)"; then
+              found=true
+            elif [[ "$output" != *"does not exist"* ]]; then
+              echo "$output" >&2
+              exit 1
+            fi
+          done
+          echo "found=$found" >> "$GITHUB_OUTPUT"
+
+      - name: Clear bucket
+        if: steps.resources.outputs.found == 'true'
+        run: |
+          .github/delivery/empty-s3-bucket.sh "$DOWNLOAD_BUCKET"
+          .github/delivery/empty-s3-bucket.sh "$UPLOAD_BUCKET"
 
       - name: Teardown
+        if: steps.resources.outputs.found == 'true'
         run: yarn workspace @accounts/storage teardown --stage $STAGE
 
   # Accounts (data)
   accounts-data:
     name: Teardown accounts data
 
-    if: github.actor != 'dependabot[bot]' && always()
+    if: always() && github.actor != 'dependabot[bot]' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped')
 
     runs-on: ubuntu-latest
 
@@ -325,14 +377,30 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Check for resources
+        id: resources
+        shell: bash
+        run: |
+          found=false
+          for stack in "accounts-${STAGE}-data"; do
+            if output="$(aws cloudformation describe-stacks --stack-name "$stack" 2>&1)"; then
+              found=true
+            elif [[ "$output" != *"does not exist"* ]]; then
+              echo "$output" >&2
+              exit 1
+            fi
+          done
+          echo "found=$found" >> "$GITHUB_OUTPUT"
+
       - name: Teardown
+        if: steps.resources.outputs.found == 'true'
         run: yarn workspace @accounts/data teardown --stage $STAGE
 
   # Accounts (warm up)
   accounts-warm-up:
     name: Teardown accounts warm up
 
-    if: github.actor != 'dependabot[bot]' && always()
+    if: always() && github.actor != 'dependabot[bot]' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped')
 
     runs-on: ubuntu-latest
 
@@ -385,14 +453,30 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Check for resources
+        id: resources
+        shell: bash
+        run: |
+          found=false
+          for stack in "accounts-${STAGE}-warm-up"; do
+            if output="$(aws cloudformation describe-stacks --stack-name "$stack" 2>&1)"; then
+              found=true
+            elif [[ "$output" != *"does not exist"* ]]; then
+              echo "$output" >&2
+              exit 1
+            fi
+          done
+          echo "found=$found" >> "$GITHUB_OUTPUT"
+
       - name: Teardown
+        if: steps.resources.outputs.found == 'true'
         run: yarn workspace @accounts/warm-up teardown --stage $STAGE
 
   # Accounts (notifications)
   accounts-notifications:
     name: Teardown accounts notifications
 
-    if: github.actor != 'dependabot[bot]' && always()
+    if: always() && github.actor != 'dependabot[bot]' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped')
 
     runs-on: ubuntu-latest
 
@@ -445,14 +529,30 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Check for resources
+        id: resources
+        shell: bash
+        run: |
+          found=false
+          for stack in "accounts-${STAGE}-notifications"; do
+            if output="$(aws cloudformation describe-stacks --stack-name "$stack" 2>&1)"; then
+              found=true
+            elif [[ "$output" != *"does not exist"* ]]; then
+              echo "$output" >&2
+              exit 1
+            fi
+          done
+          echo "found=$found" >> "$GITHUB_OUTPUT"
+
       - name: Teardown
+        if: steps.resources.outputs.found == 'true'
         run: yarn workspace @accounts/notifications teardown --stage $STAGE
 
   # Accounts (reports)
   accounts-reports:
     name: Teardown accounts reports
 
-    if: github.actor != 'dependabot[bot]' && always()
+    if: always() && github.actor != 'dependabot[bot]' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped')
 
     runs-on: ubuntu-latest
 
@@ -508,18 +608,34 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Check for resources
+        id: resources
+        shell: bash
+        run: |
+          found=false
+          for stack in "accounts-${STAGE}-reports"; do
+            if output="$(aws cloudformation describe-stacks --stack-name "$stack" 2>&1)"; then
+              found=true
+            elif [[ "$output" != *"does not exist"* ]]; then
+              echo "$output" >&2
+              exit 1
+            fi
+          done
+          echo "found=$found" >> "$GITHUB_OUTPUT"
+
       - name: Clear bucket
-        continue-on-error: true
-        run: aws s3 rm $REPORTS_BUCKET --recursive
+        if: steps.resources.outputs.found == 'true'
+        run: .github/delivery/empty-s3-bucket.sh "$REPORTS_BUCKET"
 
       - name: Teardown
+        if: steps.resources.outputs.found == 'true'
         run: yarn workspace @accounts/reports teardown --stage $STAGE
 
   # Accounts (API)
   accounts-api:
     name: Teardown accounts API
 
-    if: github.actor != 'dependabot[bot]' && always()
+    if: always() && github.actor != 'dependabot[bot]' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped')
 
     runs-on: ubuntu-latest
 
@@ -573,5 +689,21 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Check for resources
+        id: resources
+        shell: bash
+        run: |
+          found=false
+          for stack in "accounts-${STAGE}-api"; do
+            if output="$(aws cloudformation describe-stacks --stack-name "$stack" 2>&1)"; then
+              found=true
+            elif [[ "$output" != *"does not exist"* ]]; then
+              echo "$output" >&2
+              exit 1
+            fi
+          done
+          echo "found=$found" >> "$GITHUB_OUTPUT"
+
       - name: Teardown
+        if: steps.resources.outputs.found == 'true'
         run: yarn workspace @accounts/api teardown --stage $STAGE

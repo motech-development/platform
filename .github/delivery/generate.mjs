@@ -201,6 +201,76 @@ function affectedUnits(catalog, workspaceManifests, target, changedWorkspaces) {
     .map((unit) => unit.id);
 }
 
+function isDocumentationFile(filename) {
+  return (
+    filename.startsWith('docs/') ||
+    filename.startsWith('.github/docs/') ||
+    filename.startsWith('.agents/') ||
+    /(?:^|\/)(?:README|CONTEXT|AGENTS)\.md$/i.test(filename) ||
+    /\.(?:md|mdx)$/i.test(filename)
+  );
+}
+
+function affectsEveryPreviewWorkspace(filename) {
+  return (
+    filename === 'package.json' ||
+    filename === 'packages.txt' ||
+    filename === 'tsconfig.json' ||
+    filename === 'yarn.lock' ||
+    filename === '.nvmrc' ||
+    filename === '.yarnrc.yml' ||
+    filename.startsWith('.github/delivery/') ||
+    filename.startsWith('.yarn/patches/') ||
+    filename.startsWith('applications/') ||
+    filename.startsWith('packages/') ||
+    filename.startsWith('scripts/')
+  );
+}
+
+export function createPreviewImpact(catalog, workspaceManifests, changedFiles) {
+  validateCatalog(catalog, workspaceManifests);
+  const nonDocumentationFiles = changedFiles.filter(
+    (filename) =>
+      typeof filename === 'string' && !isDocumentationFile(filename),
+  );
+
+  if (nonDocumentationFiles.length === 0) {
+    return { runtimeAffected: false, changedWorkspaces: [] };
+  }
+
+  const manifestsByPath = [...workspaceManifests].sort(
+    (left, right) => right.relativePath.length - left.relativePath.length,
+  );
+  const changedWorkspaces = new Set();
+  let affectsEveryWorkspace = false;
+
+  for (const filename of nonDocumentationFiles) {
+    const manifest = manifestsByPath.find(
+      ({ relativePath }) =>
+        filename === `${relativePath}/package.json` ||
+        filename.startsWith(`${relativePath}/`),
+    );
+    if (manifest) {
+      changedWorkspaces.add(manifest.name);
+    } else if (affectsEveryPreviewWorkspace(filename)) {
+      // Delivery, dependency, and newly added workspace files cannot be scoped
+      // safely from an existing manifest, so they select the full workspace graph.
+      affectsEveryWorkspace = true;
+    }
+  }
+
+  if (!affectsEveryWorkspace && changedWorkspaces.size === 0) {
+    return { runtimeAffected: false, changedWorkspaces: [] };
+  }
+
+  return {
+    runtimeAffected: true,
+    changedWorkspaces: affectsEveryWorkspace
+      ? workspaceManifests.map(({ name }) => name)
+      : [...changedWorkspaces],
+  };
+}
+
 export function expandDependants(selectedIdentifiers, graph) {
   const selected = new Set(selectedIdentifiers);
   let changed = true;
@@ -388,6 +458,7 @@ const workflowDefinitions = [
     filename: 'deploy-to-environment.yml',
     target: 'preview',
     baseNeed: 'setup',
+    selective: true,
     legacyJobIds: {
       'core-anti-virus': 'anti-virus',
       'accounts-storage': 'accounts-storage',
@@ -439,6 +510,7 @@ const workflowDefinitions = [
     target: 'preview',
     baseNeed: 'setup',
     reverse: true,
+    teardown: true,
     legacyJobIds: {
       'core-anti-virus': 'anti-virus',
       'accounts-storage': 'accounts-storage',
@@ -541,7 +613,75 @@ function validateWorkflowReferences(workflow, filename) {
   }
 }
 
-function rewriteJob(workflow, legacyJobId, unitId, needs) {
+function injectTeardownGuard(job, unit) {
+  const firstCleanupStep = job.match(
+    /^      - name: (?:Clear bucket|Teardown)$/m,
+  );
+  if (!firstCleanupStep) {
+    throw new Error(`teardown job "${unit.id}" has no cleanup step`);
+  }
+
+  const stackNames = unit.expectedStacks
+    .map((stack) => `"${stack.replaceAll('{stage}', '${STAGE}')}"`)
+    .join(' ');
+  const guard = `      - name: Check for resources
+        id: resources
+        shell: bash
+        run: |
+          found=false
+          for stack in ${stackNames}; do
+            if output="$(aws cloudformation describe-stacks --stack-name "$stack" 2>&1)"; then
+              found=true
+            elif [[ "$output" != *"does not exist"* ]]; then
+              echo "$output" >&2
+              exit 1
+            fi
+          done
+          echo "found=$found" >> "$GITHUB_OUTPUT"
+
+`;
+
+  return job
+    .replace(firstCleanupStep[0], `${guard}${firstCleanupStep[0]}`)
+    .replace(/^        continue-on-error: true\n/gm, '')
+    .replace(
+      /^(      - name: (?:Clear bucket|Teardown)\n)/gm,
+      `$1        if: steps.resources.outputs.found == 'true'\n`,
+    );
+}
+
+function decoratePreviewJob(job, unit, dependencies) {
+  const planUnits = "fromJSON(needs.setup.outputs.units || '[]')";
+  const dependencyConditions = dependencies.map(
+    (dependency) =>
+      `(!contains(${planUnits}, '${dependency}') || needs.${dependency}.result == 'success')`,
+  );
+  const condition = [
+    'always()',
+    `contains(${planUnits}, '${unit.id}')`,
+    "needs.setup.result == 'success'",
+    ...dependencyConditions,
+  ].join(' && ');
+
+  return job
+    .replace(/^(    name: [^\n]+\n)/m, `$1\n    if: ${condition}\n`)
+    .replaceAll(
+      '        uses: actions/checkout@v6\n',
+      '        uses: actions/checkout@v6\n        with:\n          ref: ${{ github.event.pull_request.head.sha }}\n',
+    );
+}
+
+function decorateTeardownJob(job, unit) {
+  return injectTeardownGuard(
+    job.replace(
+      /^    if: [^\n]+$/m,
+      `    if: always() && github.actor != 'dependabot[bot]' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && !contains(needs.*.result, 'skipped')`,
+    ),
+    unit,
+  );
+}
+
+function rewriteJob(workflow, legacyJobId, unit, needs, definition) {
   const jobPattern = workflowJobPattern(legacyJobId);
   const match = workflow.match(jobPattern);
   if (!match) {
@@ -549,9 +689,20 @@ function rewriteJob(workflow, legacyJobId, unitId, needs) {
   }
 
   const needsBlock = `    needs:\n${needs.map((need) => `      - ${need}\n`).join('')}`;
-  const rewritten = match[0]
-    .replace(`  ${legacyJobId}:\n`, `  ${unitId}:\n`)
+  let rewritten = match[0]
+    .replace(`  ${legacyJobId}:\n`, `  ${unit.id}:\n`)
     .replace(/^    needs:(?: [^\n]+)?\n(?:      (?:- |# ).*\n)*/m, needsBlock);
+
+  if (definition.selective) {
+    rewritten = decoratePreviewJob(
+      rewritten,
+      unit,
+      needs.filter((need) => need !== definition.baseNeed),
+    );
+  }
+  if (definition.teardown) {
+    rewritten = decorateTeardownJob(rewritten, unit);
+  }
 
   return workflow.replace(jobPattern, rewritten);
 }
@@ -564,6 +715,9 @@ function renderWorkflow(template, definition, catalog, workspaceManifests) {
     reverse: definition.reverse,
   });
   const generatedUnitIds = new Set(graph.map(({ id }) => id));
+  const unitsByIdentifier = new Map(
+    catalog.units.map((unit) => [unit.id, unit]),
+  );
   const excludedJobIds = [];
 
   for (const [id, legacyJobId] of Object.entries(definition.legacyJobIds)) {
@@ -587,7 +741,13 @@ function renderWorkflow(template, definition, catalog, workspaceManifests) {
       definition.target === 'production' && unitNeeds.length > 0
         ? unitNeeds
         : [definition.baseNeed, ...unitNeeds];
-    workflow = rewriteJob(workflow, legacyJobId, id, needs);
+    workflow = rewriteJob(
+      workflow,
+      legacyJobId,
+      unitsByIdentifier.get(id),
+      needs,
+      definition,
+    );
   }
 
   validateWorkflowReferences(workflow, definition.filename);
@@ -669,6 +829,34 @@ async function main(arguments_) {
       );
     }
     console.log('Generated delivery workflows are up to date.');
+    return;
+  }
+
+  if (arguments_.length === 2 && arguments_[0] === '--preview-impact') {
+    const [catalog, workspaceManifests, changedFiles] = await Promise.all([
+      loadCatalog(),
+      loadWorkspaceManifests(),
+      readFile(arguments_[1], 'utf8').then((contents) =>
+        contents.split('\n').filter(Boolean),
+      ),
+    ]);
+    console.log(
+      JSON.stringify(
+        createPreviewImpact(catalog, workspaceManifests, changedFiles),
+      ),
+    );
+    return;
+  }
+
+  if (arguments_.length === 2 && arguments_[0] === '--preview-plan') {
+    const [catalog, workspaceManifests, input] = await Promise.all([
+      loadCatalog(),
+      loadWorkspaceManifests(),
+      readFile(arguments_[1], 'utf8').then(JSON.parse),
+    ]);
+    console.log(
+      JSON.stringify(createPreviewPlan(catalog, workspaceManifests, input)),
+    );
     return;
   }
 

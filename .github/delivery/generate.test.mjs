@@ -4,6 +4,7 @@ import test from 'node:test';
 
 import {
   checkGeneratedWorkflows,
+  createPreviewImpact,
   createPreviewPlan,
   createReconciliationPlan,
   createReleasePlan,
@@ -17,6 +18,12 @@ import {
 const previewFixtures = JSON.parse(
   await readFile(
     new URL('./fixtures/preview-plans.json', import.meta.url),
+    'utf8',
+  ),
+);
+const previewImpactFixtures = JSON.parse(
+  await readFile(
+    new URL('./fixtures/preview-impact.json', import.meta.url),
     'utf8',
   ),
 );
@@ -232,6 +239,17 @@ test('recorded Preview Plan fixtures expose complete creation, selective repair,
   }
 });
 
+test('recorded preview impact fixtures distinguish runtime workspaces from non-runtime changes', () => {
+  for (const { changedFiles, expected } of Object.values(
+    previewImpactFixtures,
+  )) {
+    assert.deepEqual(
+      createPreviewImpact(planningCatalog, planningManifests, changedFiles),
+      expected,
+    );
+  }
+});
+
 test('recorded Release Plan expands delivery dependants and preserves exact owning-workspace tags', () => {
   assert.deepEqual(
     createReleasePlan(planningCatalog, planningManifests, releaseFixture.input),
@@ -376,6 +394,99 @@ test('generator emits deterministic static workflow graphs with one job per Depl
   );
 });
 
+test('generated preview workflow plans per pull request and selectively deploys without weakening Playwright', async () => {
+  const generated = await generateWorkflows({ write: false });
+  const preview = generated['deploy-to-environment.yml'];
+  const setup = workflowJob(preview, 'setup');
+  const deployment = workflowJob(preview, 'accounts-data');
+  const playwright = workflowJob(preview, 'accounts-client');
+  const playwrightStatus = workflowJob(preview, 'playwright-status');
+
+  assert.match(
+    preview,
+    /concurrency:\n  group: preview-pr-\$\{\{ github\.event\.pull_request\.number \}\}\n  cancel-in-progress: false/,
+  );
+  assert.match(setup, /name: Preview plan/);
+  assert.match(
+    setup,
+    /git diff --name-only '\$\{\{ github\.event\.pull_request\.base\.sha \}\}\.\.\.\$\{\{ github\.event\.pull_request\.head\.sha \}\}'/,
+  );
+  assert.match(setup, /aws cloudformation describe-stacks/);
+  assert.match(setup, /node \.github\/delivery\/generate\.mjs --preview-plan/);
+  assert.match(
+    setup,
+    /name: Install dependencies\n        if: steps\.plan\.outputs\.runtime-affected == 'true'[^\n]*\n        run: yarn/,
+  );
+  assert.match(setup, /^    outputs:\n      runtime-affected:/m);
+  assert.match(setup, /^      units:/m);
+  assert.match(
+    deployment,
+    /if: always\(\) && contains\(fromJSON\(needs\.setup\.outputs\.units \|\| '\[\]'\), 'accounts-data'\)/,
+  );
+  assert.match(
+    deployment,
+    /!contains\(fromJSON\(needs\.setup\.outputs\.units \|\| '\[\]'\), 'accounts-storage'\) \|\| needs\.accounts-storage\.result == 'success'/,
+  );
+  assert.match(
+    deployment,
+    /uses: actions\/checkout@v6\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
+  );
+  assert.match(
+    preview,
+    /name: Preview[\s\S]*Preview deployment is not applicable/,
+  );
+  assert.match(
+    workflowJob(preview, 'preview-status'),
+    /needs:\n      - setup\n      - core-anti-virus[\s\S]*      - accounts-api/,
+  );
+  assert.match(
+    playwright,
+    /if: always\(\) && needs\.setup\.outputs\.runtime-affected == 'true'/,
+  );
+  assert.match(
+    playwright,
+    /matrix:\n        containers:\n          - 1\n          - 2/,
+  );
+  assert.match(
+    playwright,
+    /run: yarn workspace @accounts\/client e2e-ci --shard=\$\{\{ matrix\.containers \}\}\/2/,
+  );
+  assert.match(
+    playwright,
+    /uses: actions\/checkout@v6\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
+  );
+  assert.match(playwrightStatus, /Playwright is not applicable/);
+  assert.doesNotMatch(preview, /\n  core-infrastructure:\n/);
+  assert.doesNotMatch(preview, /\n  accounts-infrastructure:\n/);
+});
+
+test('generated teardown checks for missing resources and blocks dependencies after genuine failures', async () => {
+  const generated = await generateWorkflows({ write: false });
+  const teardown = generated['teardown-environment.yml'];
+  const storage = workflowJob(teardown, 'accounts-storage');
+
+  assert.match(
+    teardown,
+    /concurrency:\n  group: preview-\$\{\{ github\.event\.inputs\.stage \|\| format\('pr-\{0\}', github\.event\.pull_request\.number\) \}\}\n  cancel-in-progress: false/,
+  );
+  assert.match(storage, /name: Check for resources/);
+  assert.match(storage, /aws cloudformation describe-stacks/);
+  assert.match(storage, /does not exist/);
+  assert.match(
+    storage,
+    /if: steps\.resources\.outputs\.found == 'true'[\s\S]*name: Teardown/,
+  );
+  assert.match(
+    storage,
+    /if: always\(\) && github\.actor != 'dependabot\[bot\]' && !contains\(needs\.\*\.result, 'failure'\) && !contains\(needs\.\*\.result, 'cancelled'\) && !contains\(needs\.\*\.result, 'skipped'\)/,
+  );
+  assert.match(
+    storage,
+    /\.github\/delivery\/empty-s3-bucket\.sh "\$DOWNLOAD_BUCKET"[\s\S]*\.github\/delivery\/empty-s3-bucket\.sh "\$UPLOAD_BUCKET"/,
+  );
+  assert.doesNotMatch(storage, /continue-on-error: true/);
+});
+
 test('catalog target removal removes the Deployment Unit from generated workflows', async () => {
   const [catalog, manifests] = await Promise.all([
     loadCatalog(),
@@ -507,6 +618,7 @@ test('required status checks match the pull-request quality job names', async ()
       'CodeQL',
       'Lint',
       'Playwright',
+      'Preview',
       'SonarCloud Code Analysis',
       'Type check',
       'UI Review',

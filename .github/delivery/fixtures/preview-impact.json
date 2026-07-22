@@ -1,0 +1,62 @@
+{
+  "directWorkspaceChange": {
+    "changedFiles": ["applications/accounts/notifications/src/handler.ts"],
+    "expected": {
+      "runtimeAffected": true,
+      "changedWorkspaces": ["@accounts/notifications"]
+    }
+  },
+  "workspaceDependencyChange": {
+    "changedFiles": ["packages/fixture-runtime/src/index.ts"],
+    "expected": {
+      "runtimeAffected": true,
+      "changedWorkspaces": ["@fixture/runtime"]
+    }
+  },
+  "rootRuntimeChange": {
+    "changedFiles": ["yarn.lock"],
+    "expected": {
+      "runtimeAffected": true,
+      "changedWorkspaces": [
+        "@motech-development/breeze-ui",
+        "@core/anti-virus",
+        "@core/infrastructure",
+        "@core/comms",
+        "@accounts/infrastructure",
+        "@accounts/storage",
+        "@accounts/data",
+        "@accounts/warm-up",
+        "@accounts/notifications",
+        "@accounts/queue",
+        "@accounts/reports",
+        "@accounts/api",
+        "@accounts/client",
+        "@fixture/runtime"
+      ]
+    }
+  },
+  "documentationOnlyChange": {
+    "changedFiles": [
+      "README.md",
+      "docs/agents/platform-delivery.md",
+      "docs/platform/topology.svg",
+      ".github/docs/adr/0003-complete-preview-plans-from-aws-state.md",
+      "applications/accounts/api/README.md"
+    ],
+    "expected": {
+      "runtimeAffected": false,
+      "changedWorkspaces": []
+    }
+  },
+  "otherNonRuntimeChange": {
+    "changedFiles": [
+      ".editorconfig",
+      ".github/required-status-checks.json",
+      ".github/workflows/quality-assurance.yml"
+    ],
+    "expected": {
+      "runtimeAffected": false,
+      "changedWorkspaces": []
+    }
+  }
+}
