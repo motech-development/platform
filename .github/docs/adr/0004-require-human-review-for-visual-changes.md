@@ -1,0 +1,3 @@
+# Require human review for visual changes
+
+Pull requests with visual differences require Chromatic's native UI Tests and UI Review checks to pass before merge, ensuring that snapshots are accepted and the resulting interface is explicitly reviewed by a person rather than allowing uploaded differences to pass automatically; the pull request author may perform that review. This can extend pull-request lead time and depends on Chromatic's review availability, but prevents accidental UI changes from reaching the main branch; the Actions upload step remains non-blocking so it does not occupy a runner while review is pending, and accepted changes are incorporated into the main-branch baseline after merge.

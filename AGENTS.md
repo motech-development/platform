@@ -61,3 +61,7 @@ Issues and PRDs are tracked in GitHub Issues for `motech-development/platform`. 
 ### Domain docs
 
 Domain documentation uses a multi-context layout indexed by `CONTEXT-MAP.md`. See `docs/agents/domain.md`.
+
+### Platform delivery
+
+Deployment workflows are generated from a catalog and reconcile exact Release tags. Before changing applications, infrastructure dependencies, releases, previews, or delivery workflows, see `docs/agents/platform-delivery.md`.
