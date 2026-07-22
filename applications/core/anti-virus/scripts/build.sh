@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-AMAZON_LINUX_IMAGE='amazonlinux@sha256:ceeab7e010ed03ea155cfbbfd7140672eba5a49e1110b8b4ed35342312c3f21a'
-BUILD_MANIFEST='bin/.build-revision'
-CLAMAV_SOURCE_SHA256='5d3a20633bd589f612a71905a4fb50c1ee857cfbe6c72644368cac0030a1eeb4'
-CLAMAV_VERSION='1.0.9'
-build_revision="$(sha256sum "$0" | awk '{print $1}')"
+SCRIPT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APPLICATION_DIRECTORY="$(dirname "$SCRIPT_DIRECTORY")"
+cd "$APPLICATION_DIRECTORY"
 
-if [[ -x bin/clamscan && -x bin/freshclam && -f "$BUILD_MANIFEST" ]]; then
-  cached_revision="$(< "$BUILD_MANIFEST")"
-  if [[ "$cached_revision" == "$build_revision" ]]; then
-    echo "-- Using validated cached ClamAV binaries --"
-    exit 0
-  fi
+source ./build-inputs.env
+
+if ./scripts/cache.sh validate; then
+  echo "-- Using validated cached ClamAV binaries --"
+  exit 0
 fi
 
 rm -rf bin
@@ -36,29 +33,7 @@ docker exec -t -w /home/docker s3-antivirus-builder /bin/sh -c "\
 docker exec -t -w /home/docker s3-antivirus-builder /bin/sh -c "\
   set -eux; \
   for i in 1 2 3 4 5; do \
-    dnf -y install \
-      gcc-11.5.0-5.amzn2023.0.5 \
-      gcc-c++-11.5.0-5.amzn2023.0.5 \
-      make-1:4.3-5.amzn2023.0.2 \
-      cmake-3.22.2-1.amzn2023.0.6 \
-      ninja-build-1.10.2-2.amzn2023.0.3 \
-      git-2.50.1-1.amzn2023.0.1 \
-      rust-1.94.0-1.amzn2023.0.2 \
-      cargo-1.94.0-1.amzn2023.0.2 \
-      pkgconf-pkg-config-1.8.0-4.amzn2023.0.2 \
-      openssl-devel-1:3.5.5-1.amzn2023.0.4 \
-      zlib-devel-1.2.11-33.amzn2023.0.6 \
-      pcre2-devel-10.40-1.amzn2023.0.3 \
-      libxml2-devel-2.10.4-1.amzn2023.0.18 \
-      bzip2-devel-1.0.8-6.amzn2023.0.2 \
-      libcurl-devel-8.17.0-1.amzn2023.0.2 \
-      json-c-devel-0.14-8.amzn2023.0.2 \
-      ncurses-devel-6.6-1.amzn2023.0.1 \
-      tar-2:1.34-1.amzn2023.0.4 \
-      xz-5.2.5-9.amzn2023.0.2 \
-      wget-1.21.3-1.amzn2023.0.4 \
-      ca-certificates-2025.2.76-1.0.amzn2023.0.2 \
-      findutils-1:4.8.0-2.amzn2023.0.2 \
+    dnf -y install $CLAMAV_BUILD_PACKAGES \
       && break || (echo 'dnf install failed, retrying...'; dnf clean all; sleep 5); \
   done\
 "
@@ -76,7 +51,7 @@ docker exec -t -w /home/docker s3-antivirus-builder /bin/sh -c "\
   tar -xzf \${CLAMAV_TAG}.tar.gz; \
   cd \${CLAMAV_TAG}; \
   echo 'Configuring (CMake)...'; \
-  cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DENABLE_CLAMONACC=OFF -DENABLE_TESTS=OFF -DENABLE_MILTER=OFF -DENABLE_CLAMAV_MILTER=OFF -DENABLE_RAR=OFF; \
+  cmake -S . -B build -G Ninja $CLAMAV_CMAKE_OPTIONS; \
   echo 'Building...'; \
   cmake --build build -j; \
   echo 'Installing...'; \
@@ -103,4 +78,4 @@ find clamav/docker -maxdepth 1 -type f -exec cp {} bin/. \;
 echo "-- Cleaning up ClamAV folder --"
 rm -rf clamav
 
-printf '%s\n' "$build_revision" > "$BUILD_MANIFEST"
+./scripts/cache.sh write

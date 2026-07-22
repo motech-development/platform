@@ -7,6 +7,19 @@ const { join, resolve } = require('node:path');
 const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
 
+const binaryDirectory =
+  process.env.ANTI_VIRUS_BINARY_DIRECTORY || resolve('./bin');
+const packageInspectionDirectory =
+  process.env.ANTI_VIRUS_PACKAGE_INSPECTION_DIRECTORY;
+const packageInspectionAliases = packageInspectionDirectory
+  ? Object.fromEntries(
+      Object.values(slsw.lib.entries).map((request, index) => [
+        `${request}$`,
+        join(packageInspectionDirectory, `handler-${index}.js`),
+      ]),
+    )
+  : {};
+
 const condition = (compiler) => {
   const name = compiler.options.output.path.split('/').pop();
   const result = ['ScanFile', 'UpdateDefinitions'].includes(name);
@@ -57,7 +70,15 @@ module.exports = {
     new ConditionalPlugin(
       condition,
       new CopyPlugin({
-        patterns: [resolve('./src/freshclam.conf'), resolve('./bin')],
+        patterns: [
+          resolve('./src/freshclam.conf'),
+          {
+            from: binaryDirectory,
+            globOptions: {
+              ignore: ['**/.build-manifest', '**/.build-revision'],
+            },
+          },
+        ],
       }),
     ),
     new ConditionalPlugin(
@@ -84,6 +105,7 @@ module.exports = {
     ),
   ],
   resolve: {
+    alias: packageInspectionAliases,
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
   },
   target: 'node',
