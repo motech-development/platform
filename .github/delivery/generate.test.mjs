@@ -98,6 +98,54 @@ const validCatalog = {
   ],
 };
 
+function recordedPreviewState({
+  head = 'preview-head-2',
+  missingUnits = [],
+  unitRefs = {},
+  unitStatuses = {},
+  validationRef = head,
+  validationStatuses = [{ state: 'success' }],
+  history = {},
+} = {}) {
+  const environment = 'pr-1495';
+  const previewUnits = planningCatalog.units.filter(({ targets }) =>
+    targets.includes('preview'),
+  );
+  const deployments = previewUnits
+    .filter(({ id }) => !missingUnits.includes(id))
+    .map(({ id }) => ({
+      environment,
+      task: `deploy:${id}`,
+      ref: unitRefs[id] ?? head,
+      statuses: unitStatuses[id] ?? [
+        { state: 'success' },
+        { state: 'in_progress' },
+      ],
+    }));
+  deployments.push({
+    environment,
+    task: 'validate:playwright',
+    ref: validationRef,
+    statuses: validationStatuses,
+  });
+
+  return {
+    lifecycle: 'synchronize',
+    head,
+    runtimeAffected: false,
+    changedWorkspaces: [],
+    deployments,
+    history,
+    existingStacks: previewUnits.flatMap((unit) =>
+      unit.expectedStacks.map((stack) =>
+        stack.replaceAll('{stage}', environment),
+      ),
+    ),
+    environment,
+    stage: environment,
+  };
+}
+
 test('catalog validation rejects unknown fields', () => {
   const catalog = {
     units: [
@@ -245,11 +293,222 @@ test('repository catalog represents the active delivery inventory only', async (
 
 test('recorded Preview Plan fixtures expose complete creation, selective repair, missing-stack repair, and non-runtime skips', () => {
   for (const { input, expected } of Object.values(previewFixtures)) {
+    const { recordedState, ...eventInput } = input;
     assert.deepEqual(
-      createPreviewPlan(planningCatalog, planningManifests, input),
+      createPreviewPlan(
+        planningCatalog,
+        planningManifests,
+        recordedState
+          ? { ...recordedPreviewState(recordedState), ...eventInput }
+          : eventInput,
+      ),
       expected,
     );
   }
+});
+
+test('Preview Plan leaves current units unchanged after a documentation-only follow-up', () => {
+  const environment = 'pr-1495';
+  const previousHead = 'preview-head-1';
+  const deployments = planningCatalog.units
+    .filter(({ targets }) => targets.includes('preview'))
+    .map(({ id }) => ({
+      environment,
+      task: `deploy:${id}`,
+      ref: previousHead,
+      statuses: [{ state: 'success' }, { state: 'in_progress' }],
+    }));
+  deployments.push({
+    environment,
+    task: 'validate:playwright',
+    ref: previousHead,
+    statuses: [{ state: 'success' }],
+  });
+
+  assert.deepEqual(
+    createPreviewPlan(planningCatalog, planningManifests, {
+      lifecycle: 'synchronize',
+      head: 'preview-head-2',
+      runtimeAffected: false,
+      changedWorkspaces: [],
+      deployments,
+      history: {
+        [previousHead]: {
+          related: true,
+          runtimeAffected: false,
+          changedWorkspaces: [],
+        },
+      },
+      existingStacks: planningCatalog.units
+        .filter(({ targets }) => targets.includes('preview'))
+        .flatMap((unit) =>
+          unit.expectedStacks.map((stack) =>
+            stack.replaceAll('{stage}', environment),
+          ),
+        ),
+      environment,
+      stage: environment,
+    }),
+    { target: 'preview', units: [], validationRequired: false },
+  );
+});
+
+test('documentation-only pull requests remain not applicable without Preview State', () => {
+  const environment = 'pr-1495';
+  assert.deepEqual(
+    createPreviewPlan(planningCatalog, planningManifests, {
+      lifecycle: 'synchronize',
+      head: 'preview-head-2',
+      runtimeAffected: false,
+      changedWorkspaces: [],
+      deployments: [
+        {
+          environment,
+          task: 'validate:playwright',
+          ref: 'preview-head-1',
+          statuses: [{ state: 'success' }],
+        },
+      ],
+      history: {
+        'preview-head-1': {
+          related: true,
+          runtimeAffected: false,
+          changedWorkspaces: [],
+        },
+      },
+      existingStacks: [],
+      environment,
+      stage: environment,
+    }),
+    { target: 'preview', units: [], validationRequired: false },
+  );
+});
+
+test('Preview Plan reconciles an independently stale unit and its delivery dependants', () => {
+  assert.deepEqual(
+    createPreviewPlan(
+      planningCatalog,
+      planningManifests,
+      recordedPreviewState({
+        unitRefs: { 'accounts-notifications': 'preview-head-1' },
+        history: {
+          'preview-head-1': {
+            related: true,
+            runtimeAffected: true,
+            changedWorkspaces: ['@accounts/notifications'],
+          },
+        },
+      }),
+    ),
+    {
+      target: 'preview',
+      units: ['accounts-notifications', 'accounts-reports', 'accounts-api'],
+      validationRequired: true,
+    },
+  );
+});
+
+test('Preview Validation State can require Playwright with zero deployments selected', () => {
+  assert.deepEqual(
+    createPreviewPlan(
+      planningCatalog,
+      planningManifests,
+      recordedPreviewState({
+        validationRef: 'preview-head-1',
+        history: {
+          'preview-head-1': {
+            related: true,
+            runtimeAffected: true,
+            changedWorkspaces: ['@accounts/client'],
+          },
+        },
+      }),
+    ),
+    { target: 'preview', units: [], validationRequired: true },
+  );
+});
+
+test('missing, malformed, and failed Preview State selects safe repair', () => {
+  const plan = createPreviewPlan(
+    planningCatalog,
+    planningManifests,
+    recordedPreviewState({
+      missingUnits: ['accounts-warm-up'],
+      unitRefs: { 'accounts-queue': '' },
+      unitStatuses: {
+        'accounts-notifications': [{ state: 'failure' }],
+      },
+    }),
+  );
+
+  assert.deepEqual(plan, {
+    target: 'preview',
+    units: [
+      'accounts-warm-up',
+      'accounts-notifications',
+      'accounts-queue',
+      'accounts-reports',
+      'accounts-api',
+    ],
+    validationRequired: true,
+  });
+});
+
+test('unrelated Preview State history selects the complete topology', () => {
+  const plan = createPreviewPlan(
+    planningCatalog,
+    planningManifests,
+    recordedPreviewState({
+      unitRefs: { 'accounts-api': 'unrelated-head' },
+      validationRef: 'unrelated-head',
+      history: {
+        'unrelated-head': {
+          related: false,
+          runtimeAffected: true,
+          changedWorkspaces: [],
+        },
+      },
+    }),
+  );
+
+  assert.deepEqual(plan, {
+    target: 'preview',
+    units: previewFixtures.completeCreation.expected.units,
+    validationRequired: true,
+  });
+});
+
+test('failed or cancelled Preview Validation State retries Playwright without redeploying current units', () => {
+  for (const state of ['failure', 'cancelled']) {
+    const plan = createPreviewPlan(
+      planningCatalog,
+      planningManifests,
+      recordedPreviewState({
+        validationRef: 'preview-head-1',
+        validationStatuses: [{ state }],
+      }),
+    );
+
+    assert.deepEqual(plan, {
+      target: 'preview',
+      units: [],
+      validationRequired: true,
+    });
+  }
+});
+
+test('Preview planning fails when successful state has no readable Git history', () => {
+  assert.throws(
+    () =>
+      createPreviewPlan(
+        planningCatalog,
+        planningManifests,
+        recordedPreviewState({
+          unitRefs: { 'accounts-api': 'missing-history' },
+        }),
+      ),
+    /Git history from Preview State "missing-history" is unavailable/,
+  );
 });
 
 test('recorded preview impact fixtures distinguish runtime workspaces from non-runtime changes', () => {
@@ -727,45 +986,32 @@ test('client delivery receives public API configuration through explicit job out
     assert.match(client, /^      - accounts-api$/m, filename);
     assert.match(
       client,
-      /REACT_APP_APPSYNC_URL: \$\{\{ needs\.accounts-api\.outputs\.appsync-url \}\}[\s\S]*REACT_APP_AWS_REGION: \$\{\{ needs\.accounts-api\.outputs\.aws-region \}\}[\s\S]*\.env\.production/,
+      /REACT_APP_APPSYNC_URL: \$\{\{ needs\.accounts-api\.outputs\.appsync-url(?: \|\| needs\.setup\.outputs\.api-appsync-url)? \}\}[\s\S]*REACT_APP_AWS_REGION: \$\{\{ needs\.accounts-api\.outputs\.aws-region(?: \|\| needs\.setup\.outputs\.api-aws-region)? \}\}[\s\S]*\.env\.production/,
       filename,
     );
   }
 });
 
-test('client-only plans include the API configuration producer', () => {
-  const preview = createPreviewPlan(planningCatalog, planningManifests, {
-    lifecycle: 'synchronize',
-    runtimeAffected: true,
-    changedWorkspaces: ['@accounts/client'],
-    existingStacks: [
-      'anti-virus-pr-1498',
-      'accounts-pr-1498-storage',
-      'accounts-pr-1498-data',
-      'accounts-pr-1498-warm-up',
-      'accounts-pr-1498-notifications',
-      'accounts-pr-1498-queue',
-      'accounts-pr-1498-reports',
-      'accounts-pr-1498-api',
-    ],
-    stage: 'pr-1498',
+test('client-only Preview validation reuses API state while delivery plans include the producer', () => {
+  const preview = createPreviewPlan(
+    planningCatalog,
+    planningManifests,
+    recordedPreviewState({
+      validationRef: 'preview-head-1',
+      history: {
+        'preview-head-1': {
+          related: true,
+          runtimeAffected: true,
+          changedWorkspaces: ['@accounts/client'],
+        },
+      },
+    }),
+  );
+  assert.deepEqual(preview, {
+    target: 'preview',
+    units: [],
+    validationRequired: true,
   });
-  assert.deepEqual(preview.units, ['accounts-api']);
-
-  const runtimeOnly = createPreviewPlan(planningCatalog, planningManifests, {
-    lifecycle: 'synchronize',
-    runtimeAffected: true,
-    changedWorkspaces: [],
-    existingStacks: planningCatalog.units
-      .filter(({ targets }) => targets.includes('preview'))
-      .flatMap((unit) =>
-        unit.expectedStacks.map((stack) =>
-          stack.replaceAll('{stage}', 'pr-1498'),
-        ),
-      ),
-    stage: 'pr-1498',
-  });
-  assert.deepEqual(runtimeOnly.units, ['accounts-api']);
 
   const releaseInput = structuredClone(releaseFixture.selectiveIndirect.input);
   releaseInput.changedWorkspaces = ['@accounts/client'];
@@ -1138,10 +1384,40 @@ test('generated preview workflow plans per pull request and selectively deploys 
     /git diff --name-only '\$\{\{ github\.event\.pull_request\.base\.sha \}\}\.\.\.\$\{\{ github\.event\.pull_request\.head\.sha \}\}'/,
   );
   assert.match(setup, /aws cloudformation describe-stacks/);
+  assert.match(setup, /^      deployments: read$/m);
+  assert.match(
+    setup,
+    /Read GitHub Deployments as Preview State[\s\S]*deployments\/\$deployment_id\/statuses/,
+  );
+  assert.match(setup, /printf 'deploy:%s\\n'/);
+  assert.match(setup, /validate:playwright/);
+  assert.match(
+    setup,
+    /Read changes from recorded Preview State[\s\S]*git merge-base --is-ancestor[\s\S]*--preview-impact/,
+  );
   assert.match(setup, /node \.github\/delivery\/generate\.mjs --preview-plan/);
   assert.doesNotMatch(setup, /name: Install dependencies/);
-  assert.match(setup, /^    outputs:\n      runtime-affected:/m);
+  assert.match(setup, /^      runtime-affected:/m);
+  assert.match(setup, /^      validation-required:/m);
   assert.match(setup, /^      units:/m);
+  assert.match(setup, /^      api-appsync-url:/m);
+  assert.match(setup, /^      api-aws-region:/m);
+  assert.match(
+    setup,
+    /Read current Accounts API configuration[\s\S]*steps\.plan\.outputs\.validation-required == 'true'[\s\S]*!contains\(fromJSON\(steps\.plan\.outputs\.units\), 'accounts-api'\)[\s\S]*AccountsApiUrl/,
+  );
+  assert.match(
+    setup,
+    /aws_region="\$\(jq -r '\.StackId \| split\(":"\)\[3\]' <<< "\$stack"\)"[\s\S]*echo "aws-region=\$aws_region"/,
+  );
+  assert.doesNotMatch(
+    setup,
+    /Read current Accounts API configuration[\s\S]*echo "aws-region=eu-west-1"/,
+  );
+  assert.match(
+    setup,
+    /git fetch --no-tags origin "\$ref"[\s\S]*git merge-base --is-ancestor "\$ref" "\$HEAD_SHA"/,
+  );
   assert.match(
     deployment,
     /if: always\(\) && contains\(fromJSON\(needs\.setup\.outputs\.units \|\| '\[\]'\), 'accounts-data'\)/,
@@ -1154,25 +1430,41 @@ test('generated preview workflow plans per pull request and selectively deploys 
     deployment,
     /uses: actions\/checkout@v6\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
   );
+  assert.match(deployment, /^      deployments: write$/m);
   assert.match(
-    preview,
-    /name: Preview[\s\S]*Preview deployment is not applicable/,
+    deployment,
+    /DEPLOYMENT_ENVIRONMENT: pr-\$\{\{ github\.event\.pull_request\.number \}\}[\s\S]*DEPLOYMENT_REF: \$\{\{ github\.event\.pull_request\.head\.sha \}\}[\s\S]*DEPLOYMENT_TASK: deploy:accounts-data/,
   );
+  assert.match(
+    deployment,
+    /Create GitHub Deployment[\s\S]*Create in-progress Deployment status[\s\S]*name: Deploy[\s\S]*Record successful Deployment[\s\S]*Record failed Deployment/,
+  );
+  const apiDeployment = workflowJob(preview, 'accounts-api');
+  assert.match(
+    apiDeployment,
+    /name: Deploy\n[\s\S]*yarn workspace @accounts\/api deploy --stage \$STAGE[\s\S]*name: Record successful Deployment[\s\S]*name: Export client configuration/,
+  );
+  assert.match(
+    apiDeployment,
+    /name: Record failed Deployment\n        if: failure\(\) && steps\.deployment\.outputs\.id != '' && steps\.deployment-success\.outputs\.recorded != 'true'/,
+  );
+  assert.match(preview, /name: Preview[\s\S]*No Preview deployment required/);
   assert.match(
     previewStatus,
     /needs:\n      - setup\n      - core-anti-virus[\s\S]*      - accounts-api/,
   );
   assert.match(
     previewStatus,
-    /name: Report planning failure\n        if: contains\(fromJSON\('\["failure", "cancelled"\]'\), needs\.setup\.result\)/,
+    /name: Report planning failure\n        if: needs\.setup\.result != 'success'/,
   );
   assert.match(
     previewStatus,
-    /name: Preview deployment is not applicable\n        if: needs\.setup\.result == 'skipped' \|\| needs\.setup\.outputs\.runtime-affected == 'false'/,
+    /name: No Preview deployment required\n        if: needs\.setup\.result == 'success' && needs\.setup\.outputs\.units == '\[\]'/,
   );
+  assert.doesNotMatch(previewStatus, /needs\.setup\.result == 'skipped'/);
   assert.match(
     playwright,
-    /if: always\(\) && needs\.setup\.outputs\.runtime-affected == 'true'/,
+    /if: always\(\) && needs\.setup\.outputs\.validation-required == 'true'/,
   );
   assert.match(
     playwright,
@@ -1186,7 +1478,24 @@ test('generated preview workflow plans per pull request and selectively deploys 
     playwright,
     /uses: actions\/checkout@v6\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
   );
+  assert.match(
+    playwright,
+    /needs\.accounts-api\.outputs\.appsync-url \|\| needs\.setup\.outputs\.api-appsync-url[\s\S]*needs\.accounts-api\.outputs\.aws-region \|\| needs\.setup\.outputs\.api-aws-region/,
+  );
   assert.match(playwrightStatus, /Playwright is not applicable/);
+  assert.match(playwrightStatus, /^      deployments: write$/m);
+  assert.match(
+    playwrightStatus,
+    /Create Preview Validation Deployment[\s\S]*task: "validate:playwright"[\s\S]*ref: \$ref/,
+  );
+  assert.match(
+    playwrightStatus,
+    /Record Preview Validation result[\s\S]*VALIDATION_STATE:[\s\S]*deployments\/\$\{\{ steps\.validation-deployment\.outputs\.id \}\}\/statuses/,
+  );
+  assert.match(
+    playwrightStatus,
+    /const planningSucceeded = '\$\{\{ needs\.setup\.result \}\}' === 'success';[\s\S]*planningSucceeded && \(!validationRequired \|\| testsPassed\)/,
+  );
   assert.doesNotMatch(preview, /\n  core-infrastructure:\n/);
   assert.doesNotMatch(preview, /\n  accounts-infrastructure:\n/);
 });
@@ -1505,7 +1814,7 @@ test('generated long-lived delivery reconciles Environment State after acquiring
       );
       assert.match(
         job,
-        /Create in-progress Deployment status[\s\S]*--arg state in_progress[\s\S]*Record Deployment result[\s\S]*auto_inactive: false/,
+        /Create in-progress Deployment status[\s\S]*--arg state in_progress[\s\S]*Record successful Deployment[\s\S]*Record failed Deployment[\s\S]*auto_inactive: false/,
       );
     }
   }
