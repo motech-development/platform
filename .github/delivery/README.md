@@ -24,6 +24,16 @@ New, reopened, and newly ready runtime pull requests deploy the complete preview
 
 Teardown checks each catalogued stack before cleanup, skips units whose resources are already absent, and preserves AWS errors that are not a missing-resource response. S3 cleanup likewise tolerates a missing bucket while reporting permission and deletion failures.
 
+## Release planning
+
+The Release workflow checks out complete Git history and runs the unfiltered monorepo `yarn release` command. Publication therefore remains owned by multi-semantic-release: it analyses every workspace and publishes only applications and packages that require a new Release.
+
+After publication succeeds, the planner resolves published, non-prerelease GitHub Releases through their Git tags. A selective Release Plan requires every directly or workspace-dependency-affected Deployment Unit to own a successful Release at the accepted main commit boundary. Delivery-only dependants may use their latest owning-workspace Release reachable from that boundary. A package tag is never considered for an application workspace.
+
+The resulting plan contains the accepted boundary, ordered Deployment Units, and an exact workspace-to-tag map. Develop and production receive that same immutable plan, select only applicable units, and check out each unit's owning-workspace tag before building.
+
+For a manual full delivery, dispatch the `Release` workflow with a successfully released main commit SHA. The workflow derives the complete reachable tag map; it does not accept application version inputs. Planning fails if the boundary is not on main, was not successfully released, or any applicable Deployment Unit lacks its own reachable GitHub Release.
+
 ## Deployment Unit lifecycle
 
 - To add a unit, confirm its workspace deploy/teardown commands and Release tag prefix, inspect CloudFormation imports and exports, add the smallest catalog entry, record a planning fixture, regenerate, and verify every supported target has one separately visible job.

@@ -6,13 +6,23 @@ on:
       - main
 
   workflow_dispatch:
+    inputs:
+      boundary:
+        description: Successfully released main commit SHA
+        required: true
+        type: string
 
 permissions:
+  actions: read
+  contents: write
   id-token: write
 
 jobs:
   release:
     name: Packages
+
+    outputs:
+      release-plan: ${{ steps.plan.outputs.release-plan }}
 
     runs-on: ubuntu-latest
 
@@ -27,9 +37,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.boundary || github.sha }}
           token: ${{ steps.generate_token.outputs.token }}
 
       - name: Set Node version
+        if: github.event_name == 'push'
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
@@ -37,15 +50,61 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Update npm to latest version
+        if: github.event_name == 'push'
         run: npm install -g npm@latest
 
       - name: Install dependencies
+        if: github.event_name == 'push'
         run: yarn
 
       - name: Build packages
+        if: github.event_name == 'push'
         run: yarn package
 
       - name: Release
+        if: github.event_name == 'push'
         run: yarn release
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+
+      - name: Resolve published Releases
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          git fetch --force --tags origin
+          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
+            --jq 'add | map({tag: .tag_name, draft: .draft, prerelease: .prerelease, publishedAt: .published_at})' \
+            > "$RUNNER_TEMP/releases.json"
+
+      - name: Create Release Plan
+        id: plan
+        env:
+          BASE_BOUNDARY: ${{ github.event.before }}
+          RELEASE_BOUNDARY: ${{ github.event_name == 'workflow_dispatch' && inputs.boundary || github.sha }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            plan="$(node .github/delivery/generate.mjs --release-plan "$RELEASE_BOUNDARY" full "$RUNNER_TEMP/releases.json")"
+          else
+            plan="$(node .github/delivery/generate.mjs --release-plan "$RELEASE_BOUNDARY" selective "$RUNNER_TEMP/releases.json" "$BASE_BOUNDARY")"
+          fi
+          echo "release-plan=$plan" >> "$GITHUB_OUTPUT"
+
+  deploy-develop:
+    name: Develop
+
+    needs: release
+
+    uses: ./.github/workflows/deploy-to-develop.yml
+    with:
+      release-plan: ${{ needs.release.outputs.release-plan }}
+    secrets: inherit
+
+  deploy-production:
+    name: Production
+
+    needs: release
+
+    uses: ./.github/workflows/deploy-to-production.yml
+    with:
+      release-plan: ${{ needs.release.outputs.release-plan }}
+    secrets: inherit

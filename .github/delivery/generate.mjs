@@ -1,9 +1,12 @@
+import { execFile } from 'node:child_process';
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { promisify } from 'node:util';
 
 const deliveryDirectory = dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = resolve(deliveryDirectory, '../..');
+const execFileAsync = promisify(execFile);
 
 const catalogUnitFields = new Set([
   'id',
@@ -392,7 +395,57 @@ function plannedUnits(catalog, orderedIdentifiers, releaseTags) {
   });
 }
 
+function successfulRelease(releases, workspace, boundary) {
+  const prefix = `${workspace}@`;
+
+  return releases.find(
+    (release) =>
+      release?.published === true &&
+      release.reachable === true &&
+      typeof release.tag === 'string' &&
+      release.tag.startsWith(prefix) &&
+      release.tag.length > prefix.length &&
+      (boundary === undefined || release.commit === boundary),
+  );
+}
+
+function releasePlannedUnits(
+  catalog,
+  orderedIdentifiers,
+  releases,
+  boundary,
+  requiredAtBoundary,
+) {
+  const unitsByIdentifier = new Map(
+    catalog.units.map((unit) => [unit.id, unit]),
+  );
+
+  return orderedIdentifiers.map((id) => {
+    const unit = unitsByIdentifier.get(id);
+    const release = successfulRelease(
+      releases,
+      unit.workspace,
+      requiredAtBoundary.has(id) ? boundary : undefined,
+    );
+    if (!release) {
+      const boundaryRequirement = requiredAtBoundary.has(id)
+        ? ` at boundary "${boundary}"`
+        : ` reachable from boundary "${boundary}"`;
+      throw new Error(
+        `deployment unit "${id}" requires successful Release "${unit.workspace}@<version>"${boundaryRequirement}`,
+      );
+    }
+    return { id, workspace: unit.workspace, tag: release.tag };
+  });
+}
+
 export function createReleasePlan(catalog, workspaceManifests, input) {
+  if (input.boundaryAccepted !== true) {
+    throw new Error(
+      `main commit boundary "${input.boundary}" has not completed Release successfully`,
+    );
+  }
+
   const graph = dependencyGraph(catalog, workspaceManifests, input.target);
   const initiallySelected = input.full
     ? [...graph.keys()]
@@ -404,11 +457,160 @@ export function createReleasePlan(catalog, workspaceManifests, input) {
       );
   const selected = expandDependants(initiallySelected, graph);
   const ordered = dependencyOrder(graph, selected);
+  const requiredAtBoundary = input.full
+    ? new Set()
+    : new Set(initiallySelected);
+  const units = releasePlannedUnits(
+    catalog,
+    ordered,
+    input.releases,
+    input.boundary,
+    requiredAtBoundary,
+  );
 
   return {
+    boundary: input.boundary,
     target: input.target,
-    units: plannedUnits(catalog, ordered, input.releaseTags),
+    tags: Object.fromEntries(
+      units.map(({ workspace, tag }) => [workspace, tag]),
+    ),
+    units,
   };
+}
+
+async function git(arguments_) {
+  const { stdout } = await execFileAsync('git', arguments_, {
+    cwd: repositoryRoot,
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  return stdout.trim();
+}
+
+async function isAncestor(ancestor, descendant) {
+  try {
+    await git(['merge-base', '--is-ancestor', ancestor, descendant]);
+    return true;
+  } catch (error) {
+    if (error.code === 1) {
+      return false;
+    }
+    throw error;
+  }
+}
+
+function workspaceForReleaseTag(tag, workspaceManifests) {
+  return workspaceManifests
+    .map(({ name }) => name)
+    .sort((left, right) => right.length - left.length)
+    .find(
+      (workspace) =>
+        tag.startsWith(`${workspace}@`) && tag.length > `${workspace}@`.length,
+    );
+}
+
+async function repositoryReleases(
+  releaseMetadata,
+  workspaceManifests,
+  boundary,
+) {
+  const releases = [];
+
+  for (const metadata of releaseMetadata) {
+    if (
+      metadata?.draft === true ||
+      metadata?.prerelease === true ||
+      typeof metadata?.publishedAt !== 'string' ||
+      typeof metadata?.tag !== 'string'
+    ) {
+      continue;
+    }
+    const workspace = workspaceForReleaseTag(metadata.tag, workspaceManifests);
+    if (!workspace) {
+      continue;
+    }
+
+    let commit;
+    try {
+      commit = await git(['rev-list', '-n', '1', `${metadata.tag}^{}`]);
+    } catch {
+      continue;
+    }
+    releases.push({
+      tag: metadata.tag,
+      commit,
+      published: true,
+      reachable: await isAncestor(commit, boundary),
+      workspace,
+    });
+  }
+
+  return releases;
+}
+
+export async function createRepositoryReleasePlan({
+  boundary,
+  base,
+  full,
+  releaseMetadataPath,
+}) {
+  const [catalog, workspaceManifests, releaseMetadata] = await Promise.all([
+    loadCatalog(),
+    loadWorkspaceManifests(),
+    readFile(releaseMetadataPath, 'utf8').then(JSON.parse),
+  ]);
+  const resolvedBoundary = await git([
+    'rev-parse',
+    '--verify',
+    `${boundary}^{commit}`,
+  ]);
+  if (!(await isAncestor(resolvedBoundary, 'origin/main'))) {
+    throw new Error(
+      `Release boundary "${boundary}" is not reachable from origin/main`,
+    );
+  }
+
+  const releases = await repositoryReleases(
+    releaseMetadata,
+    workspaceManifests,
+    resolvedBoundary,
+  );
+  const boundaryReleaseWorkspaces = releases
+    .filter(({ commit }) => commit === resolvedBoundary)
+    .map(({ workspace }) => workspace);
+  let changedWorkspaces = [];
+  if (!full) {
+    const resolvedBase = await git([
+      'rev-parse',
+      '--verify',
+      `${base}^{commit}`,
+    ]);
+    const changedFiles = (
+      await git([
+        'diff',
+        '--name-only',
+        `${resolvedBase}...${resolvedBoundary}`,
+      ])
+    )
+      .split('\n')
+      .filter(Boolean);
+    const impact = createPreviewImpact(
+      catalog,
+      workspaceManifests,
+      changedFiles,
+    );
+    changedWorkspaces = [
+      ...new Set([...impact.changedWorkspaces, ...boundaryReleaseWorkspaces]),
+    ];
+  }
+
+  return createReleasePlan(catalog, workspaceManifests, {
+    boundary: resolvedBoundary,
+    boundaryAccepted: !full || boundaryReleaseWorkspaces.length > 0,
+    target: 'production',
+    full,
+    changedWorkspaces,
+    releases,
+  });
 }
 
 function successfulDeploymentRef(deployments, environment, unitId) {
@@ -671,6 +873,34 @@ function decoratePreviewJob(job, unit, dependencies) {
     );
 }
 
+function decorateReleaseJob(job, unit, dependencies) {
+  const planUnitIds = 'fromJSON(inputs.release-plan).units.*.id';
+  const dependencyConditions = dependencies.map(
+    (dependency) =>
+      `(!contains(${planUnitIds}, '${dependency}') || needs.${dependency}.result == 'success')`,
+  );
+  const condition = [
+    'always()',
+    `contains(${planUnitIds}, '${unit.id}')`,
+    ...dependencyConditions,
+  ].join(' && ');
+  const releaseRef = `\${{ fromJSON(inputs.release-plan).tags['${unit.workspace}'] }}`;
+
+  return job
+    .replace(
+      new RegExp(`^(  ${unit.id}:\\n(?:    name: [^\\n]+\\n)?)`, 'm'),
+      (header) =>
+        `${header}${header.includes('\n    name:') ? '\n' : ''}    if: ${condition}\n`,
+    )
+    .replace(
+      /^        uses: actions\/checkout@v6\n(        with:\n)?/gm,
+      (match, withBlock) =>
+        withBlock
+          ? `${match}          ref: ${releaseRef}\n`
+          : `${match}        with:\n          ref: ${releaseRef}\n`,
+    );
+}
+
 function decorateTeardownJob(job, unit) {
   return injectTeardownGuard(
     job.replace(
@@ -695,6 +925,13 @@ function rewriteJob(workflow, legacyJobId, unit, needs, definition) {
 
   if (definition.selective) {
     rewritten = decoratePreviewJob(
+      rewritten,
+      unit,
+      needs.filter((need) => need !== definition.baseNeed),
+    );
+  }
+  if (definition.target === 'develop' || definition.target === 'production') {
+    rewritten = decorateReleaseJob(
       rewritten,
       unit,
       needs.filter((need) => need !== definition.baseNeed),
@@ -856,6 +1093,32 @@ async function main(arguments_) {
     ]);
     console.log(
       JSON.stringify(createPreviewPlan(catalog, workspaceManifests, input)),
+    );
+    return;
+  }
+
+  if (
+    arguments_[0] === '--release-plan' &&
+    (arguments_.length === 4 || arguments_.length === 5)
+  ) {
+    const [, boundary, mode, releaseMetadataPath, base] = arguments_;
+    if (
+      !['full', 'selective'].includes(mode) ||
+      (mode === 'selective' && !base)
+    ) {
+      throw new Error(
+        'usage: --release-plan <boundary> <full|selective> <releases.json> [base]',
+      );
+    }
+    console.log(
+      JSON.stringify(
+        await createRepositoryReleasePlan({
+          boundary,
+          base,
+          full: mode === 'full',
+          releaseMetadataPath,
+        }),
+      ),
     );
     return;
   }

@@ -169,6 +169,8 @@ Never infer authorization to destroy retained production resources from deletion
 
 ## Release and Environment State checks
 
+- Run selective delivery from the `Release` workflow only after the unfiltered monorepo release command succeeds.
+- For manual full delivery, dispatch `Release` with one successfully released main commit SHA; never add caller-supplied application version inputs.
 - Resolve desired state from the latest owning-workspace Release tag reachable from the successfully released main boundary.
 - Query GitHub Deployments by `environment` and `task=deploy:<unit-id>`.
 - Use only a deployment whose latest status is `success`.
