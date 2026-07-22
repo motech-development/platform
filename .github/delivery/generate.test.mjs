@@ -260,22 +260,16 @@ test('recorded selective Release Plan covers indirect changes and exact owning-w
 });
 
 test('Release Plan rejects an indirectly affected application without its own successful boundary Release', () => {
-  const input = structuredClone(releaseFixture.selectiveIndirect.input);
-  input.releases = input.releases.filter(
-    ({ tag }) => !tag.startsWith('@accounts/api@'),
-  );
+  const { input, expectedError } = releaseFixture.missingApplicationRelease;
 
   assert.throws(
     () => createReleasePlan(planningCatalog, planningManifests, input),
-    /accounts-api.*requires successful Release "@accounts\/api@<version>" at boundary "main-commit-2"/,
+    { message: expectedError },
   );
 });
 
 test('Release Plan rejects a package Release substituted for an affected application Release', () => {
-  const input = structuredClone(releaseFixture.selectiveIndirect.input);
-  input.releases = input.releases.filter(
-    ({ tag }) => !tag.startsWith('@accounts/api@'),
-  );
+  const input = structuredClone(releaseFixture.missingApplicationRelease.input);
   input.releases.push({
     tag: '@fixture/runtime@2.0.1',
     commit: 'main-commit-2',
@@ -286,6 +280,37 @@ test('Release Plan rejects a package Release substituted for an affected applica
   assert.throws(
     () => createReleasePlan(planningCatalog, planningManifests, input),
     /accounts-api.*requires successful Release "@accounts\/api@<version>"/,
+  );
+});
+
+test('Release Plan selects the latest reachable owner tag by Git history rather than publication order', () => {
+  const { input, expected } = structuredClone(releaseFixture.selectiveIndirect);
+  input.releases = input.releases.filter(
+    ({ tag }) => !tag.startsWith('@accounts/client@'),
+  );
+  input.releases.push(
+    {
+      tag: '@accounts/client@0.9.0',
+      commit: 'main-commit-0',
+      historyPosition: 20,
+      published: true,
+      reachable: true,
+    },
+    {
+      tag: '@accounts/client@1.1.0',
+      commit: 'main-commit-1',
+      historyPosition: 3,
+      published: true,
+      reachable: true,
+    },
+  );
+  expected.tags['@accounts/client'] = '@accounts/client@1.1.0';
+  expected.units.find(({ id }) => id === 'accounts-client').tag =
+    '@accounts/client@1.1.0';
+
+  assert.deepEqual(
+    createReleasePlan(planningCatalog, planningManifests, input),
+    expected,
   );
 });
 
@@ -665,6 +690,10 @@ test('Release publishes selectively from full history and constructs one exact-t
   assert.match(
     releaseJob,
     /node \.github\/delivery\/generate\.mjs --release-plan/,
+  );
+  assert.match(
+    releaseJob,
+    /actions\/workflows\/release\.yml\/runs[\s\S]*actions\/runs\/\$run_id\/jobs[\s\S]*\.name == "Packages" and \.conclusion == "success"/,
   );
   assert.match(releaseJob, /^    outputs:\n      release-plan:/m);
   assert.match(

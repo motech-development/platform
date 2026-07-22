@@ -41,6 +41,23 @@ jobs:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.boundary || github.sha }}
           token: ${{ steps.generate_token.outputs.token }}
 
+      - name: Validate manual Release boundary
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_BOUNDARY: ${{ inputs.boundary }}
+        run: |
+          boundary="$(git rev-parse --verify "$RELEASE_BOUNDARY^{commit}")"
+          run_ids="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/workflows/release.yml/runs?event=push&status=completed&head_sha=$boundary&per_page=100" --jq '.workflow_runs[].id')"
+          for run_id in $run_ids; do
+            successful_jobs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/$run_id/jobs" --jq '[.jobs[] | select(.name == "Packages" and .conclusion == "success")] | length')"
+            if [[ "$successful_jobs" -gt 0 ]]; then
+              exit 0
+            fi
+          done
+          echo "Main commit boundary $boundary has no successful Release job." >&2
+          exit 1
+
       - name: Set Node version
         if: github.event_name == 'push'
         uses: actions/setup-node@v6

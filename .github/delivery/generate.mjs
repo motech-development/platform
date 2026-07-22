@@ -398,15 +398,21 @@ function plannedUnits(catalog, orderedIdentifiers, releaseTags) {
 function successfulRelease(releases, workspace, boundary) {
   const prefix = `${workspace}@`;
 
-  return releases.find(
-    (release) =>
-      release?.published === true &&
-      release.reachable === true &&
-      typeof release.tag === 'string' &&
-      release.tag.startsWith(prefix) &&
-      release.tag.length > prefix.length &&
-      (boundary === undefined || release.commit === boundary),
-  );
+  return releases
+    .filter(
+      (release) =>
+        release?.published === true &&
+        release.reachable === true &&
+        typeof release.tag === 'string' &&
+        release.tag.startsWith(prefix) &&
+        release.tag.length > prefix.length &&
+        (boundary === undefined || release.commit === boundary),
+    )
+    .sort(
+      (left, right) =>
+        (left.historyPosition ?? Number.MAX_SAFE_INTEGER) -
+        (right.historyPosition ?? Number.MAX_SAFE_INTEGER),
+    )[0];
 }
 
 function releasePlannedUnits(
@@ -513,6 +519,12 @@ async function repositoryReleases(
   workspaceManifests,
   boundary,
 ) {
+  const historyPositions = new Map(
+    (await git(['rev-list', boundary]))
+      .split('\n')
+      .filter(Boolean)
+      .map((commit, index) => [commit, index]),
+  );
   const releases = [];
 
   for (const metadata of releaseMetadata) {
@@ -538,8 +550,9 @@ async function repositoryReleases(
     releases.push({
       tag: metadata.tag,
       commit,
+      historyPosition: historyPositions.get(commit),
       published: true,
-      reachable: await isAncestor(commit, boundary),
+      reachable: historyPositions.has(commit),
       workspace,
     });
   }
@@ -605,7 +618,7 @@ export async function createRepositoryReleasePlan({
 
   return createReleasePlan(catalog, workspaceManifests, {
     boundary: resolvedBoundary,
-    boundaryAccepted: !full || boundaryReleaseWorkspaces.length > 0,
+    boundaryAccepted: true,
     target: 'production',
     full,
     changedWorkspaces,
@@ -852,18 +865,30 @@ function injectTeardownGuard(job, unit) {
     );
 }
 
-function decoratePreviewJob(job, unit, dependencies) {
-  const planUnits = "fromJSON(needs.setup.outputs.units || '[]')";
+function planSelectionCondition(
+  planUnitIds,
+  unitId,
+  dependencies,
+  requiredConditions = [],
+) {
   const dependencyConditions = dependencies.map(
     (dependency) =>
-      `(!contains(${planUnits}, '${dependency}') || needs.${dependency}.result == 'success')`,
+      `(!contains(${planUnitIds}, '${dependency}') || needs.${dependency}.result == 'success')`,
   );
-  const condition = [
+
+  return [
     'always()',
-    `contains(${planUnits}, '${unit.id}')`,
-    "needs.setup.result == 'success'",
+    `contains(${planUnitIds}, '${unitId}')`,
+    ...requiredConditions,
     ...dependencyConditions,
   ].join(' && ');
+}
+
+function decoratePreviewJob(job, unit, dependencies) {
+  const planUnits = "fromJSON(needs.setup.outputs.units || '[]')";
+  const condition = planSelectionCondition(planUnits, unit.id, dependencies, [
+    "needs.setup.result == 'success'",
+  ]);
 
   return job
     .replace(/^(    name: [^\n]+\n)/m, `$1\n    if: ${condition}\n`)
@@ -875,15 +900,7 @@ function decoratePreviewJob(job, unit, dependencies) {
 
 function decorateReleaseJob(job, unit, dependencies) {
   const planUnitIds = 'fromJSON(inputs.release-plan).units.*.id';
-  const dependencyConditions = dependencies.map(
-    (dependency) =>
-      `(!contains(${planUnitIds}, '${dependency}') || needs.${dependency}.result == 'success')`,
-  );
-  const condition = [
-    'always()',
-    `contains(${planUnitIds}, '${unit.id}')`,
-    ...dependencyConditions,
-  ].join(' && ');
+  const condition = planSelectionCondition(planUnitIds, unit.id, dependencies);
   const releaseRef = `\${{ fromJSON(inputs.release-plan).tags['${unit.workspace}'] }}`;
 
   return job

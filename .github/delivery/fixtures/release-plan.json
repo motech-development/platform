@@ -47,6 +47,29 @@
       ]
     }
   },
+  "missingApplicationRelease": {
+    "input": {
+      "boundary": "main-commit-2",
+      "boundaryAccepted": true,
+      "target": "production",
+      "changedWorkspaces": ["@fixture/runtime"],
+      "releases": [
+        {
+          "tag": "@fixture/runtime@2.0.0",
+          "commit": "main-commit-2",
+          "published": true,
+          "reachable": true
+        },
+        {
+          "tag": "@accounts/client@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
+        }
+      ]
+    },
+    "expectedError": "deployment unit \"accounts-api\" requires successful Release \"@accounts/api@<version>\" at boundary \"main-commit-2\""
+  },
   "manualFull": {
     "input": {
       "boundary": "main-commit-2",
