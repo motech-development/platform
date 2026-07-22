@@ -522,6 +522,18 @@ test('recorded preview impact fixtures distinguish runtime workspaces from non-r
   }
 });
 
+test('tracked Yarn runtime changes affect every Preview workspace', () => {
+  assert.deepEqual(
+    createPreviewImpact(planningCatalog, planningManifests, [
+      '.yarn/releases/yarn-4.14.1.cjs',
+    ]),
+    {
+      runtimeAffected: true,
+      changedWorkspaces: planningManifests.map(({ name }) => name),
+    },
+  );
+});
+
 test('recorded selective Release Plan covers indirect changes and exact owning-workspace tags', () => {
   const { input, expected } = releaseFixture.selectiveIndirect;
 
@@ -952,6 +964,11 @@ test('generated delivery jobs use exact dependencies and build only required tra
       );
     }
   }
+
+  assert.doesNotMatch(
+    workflowJob(generated['deploy-to-develop.yml'], 'setup'),
+    /\.cache\/ms-playwright/,
+  );
 });
 
 test('client delivery receives public API configuration through explicit job outputs', async () => {
