@@ -8,17 +8,113 @@ on:
         required: true
         type: string
 
-concurrency: production_environment
+concurrency:
+  group: production-environment
+  cancel-in-progress: false
 
 jobs:
   setup:
     runs-on: ubuntu-latest
+
+    outputs:
+      units: ${{ steps.plan.outputs.units }}
+
+    permissions:
+      contents: read
+      deployments: read
+      id-token: write
+
+    env:
+      ENVIRONMENT: production
+      STAGE: production
+      TARGET: production
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
           ref: ${{ fromJSON(inputs.release-plan).boundary }}
+
+      - name: Configure AWS credentials for reconciliation
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
+      - name: Read expected cloud stacks
+        shell: bash
+        run: |
+          aws cloudformation describe-stacks \
+            --query 'Stacks[].StackName' \
+            --output json \
+            > "$RUNNER_TEMP/existing-stacks.json"
+
+      - name: Read GitHub Deployments as Environment State
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          : > "$RUNNER_TEMP/deployments.jsonl"
+          while IFS= read -r unit_id; do
+            task="deploy:$unit_id"
+            while IFS= read -r encoded_deployment; do
+              deployment="$(printf '%s' "$encoded_deployment" | base64 --decode)"
+              deployment_id="$(jq -r .id <<< "$deployment")"
+              statuses="$(
+                gh api \
+                  "repos/${GITHUB_REPOSITORY}/deployments/$deployment_id/statuses?per_page=100" \
+                  --jq '[.[] | {state}]'
+              )"
+              jq -c \
+                --argjson statuses "$statuses" \
+                '. + {statuses: $statuses} | {environment, task, ref, statuses}' \
+                <<< "$deployment" \
+                >> "$RUNNER_TEMP/deployments.jsonl"
+
+            done < <(
+              gh api -X GET "repos/${GITHUB_REPOSITORY}/deployments" \
+                -f environment="$ENVIRONMENT" \
+                -f task="$task" \
+                -f per_page=1 \
+                --jq '.[] | {id, environment, task, ref} | @base64'
+            )
+          done < <(
+            jq -r \
+              --arg target "$TARGET" \
+              '.units[] | select(.targets | index($target)) | .id' \
+              .github/delivery/catalog.json
+          )
+          jq -s '.' "$RUNNER_TEMP/deployments.jsonl" \
+            > "$RUNNER_TEMP/deployments.json"
+
+      - name: Create Reconciliation Plan
+        id: plan
+        env:
+          DESIRED_TAGS: ${{ toJSON(fromJSON(inputs.release-plan).desiredTags) }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg target "$TARGET" \
+            --arg environment "$ENVIRONMENT" \
+            --arg stage "$STAGE" \
+            --argjson desiredTags "$DESIRED_TAGS" \
+            --slurpfile deployments "$RUNNER_TEMP/deployments.json" \
+            --slurpfile existingStacks "$RUNNER_TEMP/existing-stacks.json" \
+            '{
+              target: $target,
+              environment: $environment,
+              stage: $stage,
+              desiredTags: $desiredTags,
+              deployments: $deployments[0],
+              existingStacks: $existingStacks[0]
+            }' \
+            > "$RUNNER_TEMP/reconciliation-input.json"
+          plan="$(
+            node .github/delivery/generate.mjs \
+              --reconciliation-plan "$RUNNER_TEMP/reconciliation-input.json"
+          )"
+          echo "units=$(jq -c '.units | map(.id)' <<< "$plan")" \
+            >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -59,20 +155,26 @@ jobs:
         run: yarn package
 
   component-library:
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'component-library')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'component-library')
     runs-on: ubuntu-latest
 
     needs:
       - setup
 
+    env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@motech-development/breeze-ui'] }}
+      DEPLOYMENT_TASK: deploy:component-library
+
     permissions:
+      deployments: write
       contents: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@motech-development/breeze-ui'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@motech-development/breeze-ui'] }}
           fetch-depth: 0
 
       - name: Set Node version
@@ -106,11 +208,61 @@ jobs:
       - name: Build
         run: yarn workspace @motech-development/breeze-ui deploy
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./packages/breeze-ui/storybook-static
+
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
 
   # deploy-auth0-tenant:
   #   runs-on: ubuntu-latest
@@ -202,18 +354,22 @@ jobs:
   #       run: yarn workspace @id/tenant deploy -c config.json
 
   core-anti-virus:
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'core-anti-virus')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-anti-virus')
     runs-on: ubuntu-latest
 
     needs:
       - setup
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@core/anti-virus'] }}
+      DEPLOYMENT_TASK: deploy:core-anti-virus
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -221,7 +377,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@core/anti-virus'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@core/anti-virus'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -256,7 +412,6 @@ jobs:
         with:
           path: |
             ./applications/core/anti-virus/node_modules/.cache
-            ./applications/core/anti-virus/.serverless
           key: ${{ runner.os }}-core-anti-virus-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-core-anti-virus-v4-
@@ -267,6 +422,41 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         uses: nick-fields/retry@v3
         with:
@@ -276,10 +466,25 @@ jobs:
           retry_on: error
           timeout_minutes: 15
 
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
   core-infrastructure:
     name: Deploy core infrastructure
 
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'core-infrastructure')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-infrastructure')
 
     runs-on: ubuntu-latest
 
@@ -287,12 +492,16 @@ jobs:
       - setup
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@core/infrastructure'] }}
+      DEPLOYMENT_TASK: deploy:core-infrastructure
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -300,7 +509,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@core/infrastructure'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@core/infrastructure'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -334,7 +543,6 @@ jobs:
         uses: actions/cache@v5
         with:
           path: |
-            ./applications/core/infrastructure/.serverless
           key: ${{ runner.os }}-core-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-core-v4-
@@ -345,26 +553,81 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy core infrastructure
         run: yarn workspace @core/infrastructure deploy --stage $STAGE
+
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
 
   core-communications:
     name: Deploy core communications
 
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'core-communications') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'core-infrastructure') || needs.core-infrastructure.result == 'success')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-communications') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-infrastructure') || needs.core-infrastructure.result == 'success')
 
     runs-on: ubuntu-latest
 
     needs:
+      - setup
       - core-infrastructure
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@core/comms'] }}
+      DEPLOYMENT_TASK: deploy:core-communications
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -372,7 +635,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@core/comms'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@core/comms'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -407,7 +670,6 @@ jobs:
         with:
           path: |
             ./applications/core/comms/node_modules/.cache
-            ./applications/core/comms/.serverless
           key: ${{ runner.os }}-core-comms-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-core-comms-v4-
@@ -418,22 +680,77 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy comms infrastructure
         run: yarn workspace @core/comms deploy --stage $STAGE
 
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
   accounts-storage:
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'core-anti-virus') || needs.core-anti-virus.result == 'success')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-anti-virus') || needs.core-anti-virus.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
+      - setup
       - core-anti-virus
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/storage'] }}
+      DEPLOYMENT_TASK: deploy:accounts-storage
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -441,7 +758,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/storage'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/storage'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -476,7 +793,6 @@ jobs:
         with:
           path: |
             ./applications/accounts/storage/node_modules/.cache
-            ./applications/accounts/storage/.serverless
           key: ${{ runner.os }}-accounts-storage-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-storage-v4-
@@ -487,22 +803,77 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/storage deploy --stage $STAGE
 
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
   accounts-queue:
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-queue') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-queue') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
+      - setup
       - accounts-data
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/queue'] }}
+      DEPLOYMENT_TASK: deploy:accounts-queue
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -510,7 +881,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/queue'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/queue'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -545,7 +916,6 @@ jobs:
         with:
           path: |
             ./applications/accounts/queue/node_modules/.cache
-            ./applications/accounts/queue/.serverless
           key: ${{ runner.os }}-accounts-queue-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-queue-v4-
@@ -556,23 +926,78 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/queue deploy --stage $STAGE
 
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
   accounts-data:
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') || needs.accounts-storage.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'core-anti-virus') || needs.core-anti-virus.result == 'success')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') || needs.accounts-storage.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-anti-virus') || needs.core-anti-virus.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
+      - setup
       - accounts-storage
       - core-anti-virus
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/data'] }}
+      DEPLOYMENT_TASK: deploy:accounts-data
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -580,7 +1005,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/data'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/data'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -615,7 +1040,6 @@ jobs:
         with:
           path: |
             ./applications/accounts/data/node_modules/.cache
-            ./applications/accounts/data/.serverless
           key: ${{ runner.os }}-accounts-data-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-data-v4-
@@ -626,22 +1050,77 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/data deploy --stage $STAGE
 
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
   accounts-warm-up:
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-warm-up') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-warm-up') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
+      - setup
       - accounts-data
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/warm-up'] }}
+      DEPLOYMENT_TASK: deploy:accounts-warm-up
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -649,7 +1128,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/warm-up'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/warm-up'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -684,7 +1163,6 @@ jobs:
         with:
           path: |
             ./applications/accounts/warm-up/node_modules/.cache
-            ./applications/accounts/warm-up/.serverless
           key: ${{ runner.os }}-accounts-warm-up-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-warm-up-v4-
@@ -695,24 +1173,79 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/warm-up deploy --stage $STAGE
 
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
   accounts-reports:
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-reports') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-notifications') || needs.accounts-notifications.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') || needs.accounts-storage.result == 'success')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-reports') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-notifications') || needs.accounts-notifications.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') || needs.accounts-storage.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
+      - setup
       - accounts-data
       - accounts-notifications
       - accounts-storage
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/reports'] }}
+      DEPLOYMENT_TASK: deploy:accounts-reports
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -720,7 +1253,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/reports'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/reports'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -755,7 +1288,6 @@ jobs:
         with:
           path: |
             ./applications/accounts/reports/node_modules/.cache
-            ./applications/accounts/reports/.serverless
           key: ${{ runner.os }}-accounts-reports-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-reports-v4-
@@ -766,26 +1298,81 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/reports deploy --stage $STAGE
 
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
   accounts-api:
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-api') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-queue') || needs.accounts-queue.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-reports') || needs.accounts-reports.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') || needs.accounts-storage.result == 'success')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-api') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-queue') || needs.accounts-queue.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-reports') || needs.accounts-reports.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') || needs.accounts-storage.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
+      - setup
       - accounts-data
       - accounts-queue
       - accounts-reports
       - accounts-storage
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/api'] }}
+      DEPLOYMENT_TASK: deploy:accounts-api
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -793,7 +1380,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/api'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/api'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -836,7 +1423,6 @@ jobs:
         with:
           path: |
             ./applications/accounts/api/node_modules/.cache
-            ./applications/accounts/api/.serverless
           key: ${{ runner.os }}-accounts-api-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-api-v4-
@@ -847,22 +1433,77 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/api deploy --stage $STAGE
 
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
   accounts-infrastructure:
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-infrastructure') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'core-infrastructure') || needs.core-infrastructure.result == 'success')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-infrastructure') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-infrastructure') || needs.core-infrastructure.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
+      - setup
       - core-infrastructure
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/infrastructure'] }}
+      DEPLOYMENT_TASK: deploy:accounts-infrastructure
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -870,7 +1511,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/infrastructure'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/infrastructure'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -904,7 +1545,6 @@ jobs:
         uses: actions/cache@v5
         with:
           path: |
-            ./applications/accounts/infrastructure/.serverless
           key: ${{ runner.os }}-accounts-infrastructure-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-infrastructure-v4-
@@ -915,21 +1555,76 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/infrastructure deploy --stage $STAGE
 
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
   accounts-notifications:
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-notifications') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-notifications') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
+      - setup
       - accounts-data
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/notifications'] }}
+      DEPLOYMENT_TASK: deploy:accounts-notifications
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -937,7 +1632,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/notifications'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/notifications'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -972,7 +1667,6 @@ jobs:
         with:
           path: |
             ./applications/accounts/notifications/node_modules/.cache
-            ./applications/accounts/notifications/.serverless
           key: ${{ runner.os }}-accounts-notifications-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-notifications-v4-
@@ -983,18 +1677,72 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/notifications deploy --stage $STAGE
 
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
   accounts-client:
-    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-client') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-api') || needs.accounts-api.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-infrastructure') || needs.accounts-infrastructure.result == 'success')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-client') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-api') || needs.accounts-api.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-infrastructure') || needs.accounts-infrastructure.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
+      - setup
       - accounts-api
       - accounts-infrastructure
 
     env:
+      DEPLOYMENT_ENVIRONMENT: production
+      DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/client'] }}
+      DEPLOYMENT_TASK: deploy:accounts-client
       PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
       REACT_APP_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_PROD }}
@@ -1010,6 +1758,7 @@ jobs:
       url: https://accounts.motechdevelopment.co.uk # TODO: Find a way to do this using env var or output
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -1017,7 +1766,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/client'] }}
+          ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/client'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -1060,7 +1809,6 @@ jobs:
         with:
           path: |
             ./applications/accounts/client/node_modules/.cache
-            ./applications/accounts/client/.serverless
           key: ${{ runner.os }}-accounts-client-v4-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-accounts-client-v4-
@@ -1074,5 +1822,55 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/client deploy --stage $STAGE
+
+      - name: Record Deployment result
+        if: always() && steps.deployment.outputs.id != ''
+        env:
+          DEPLOYMENT_STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$DEPLOYMENT_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -

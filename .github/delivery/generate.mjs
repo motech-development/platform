@@ -473,10 +473,20 @@ export function createReleasePlan(catalog, workspaceManifests, input) {
     input.boundary,
     requiredAtBoundary,
   );
+  const desiredUnits = releasePlannedUnits(
+    catalog,
+    dependencyOrder(graph),
+    input.releases,
+    input.boundary,
+    requiredAtBoundary,
+  );
 
   return {
     boundary: input.boundary,
     target: input.target,
+    desiredTags: Object.fromEntries(
+      desiredUnits.map(({ workspace, tag }) => [workspace, tag]),
+    ),
     tags: Object.fromEntries(
       units.map(({ workspace, tag }) => [workspace, tag]),
     ),
@@ -627,14 +637,22 @@ export async function createRepositoryReleasePlan({
 }
 
 function successfulDeploymentRef(deployments, environment, unitId) {
-  return deployments.find(
+  const deployment = deployments.find(
     (deployment) =>
       deployment &&
       deployment.environment === environment &&
-      deployment.task === `deploy:${unitId}` &&
-      deployment.status === 'success' &&
-      typeof deployment.ref === 'string',
-  )?.ref;
+      deployment.task === `deploy:${unitId}`,
+  );
+  if (
+    !Array.isArray(deployment?.statuses) ||
+    deployment.statuses[0]?.state !== 'success' ||
+    !deployment.statuses.some((status) => status?.state === 'in_progress') ||
+    typeof deployment.ref !== 'string'
+  ) {
+    return undefined;
+  }
+
+  return deployment.ref;
 }
 
 export function createReconciliationPlan(catalog, workspaceManifests, input) {
@@ -865,6 +883,118 @@ function injectTeardownGuard(job, unit) {
     );
 }
 
+function environmentReconciliationSteps() {
+  return `      - name: Configure AWS credentials for reconciliation
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
+      - name: Read expected cloud stacks
+        shell: bash
+        run: |
+          aws cloudformation describe-stacks \\
+            --query 'Stacks[].StackName' \\
+            --output json \\
+            > "$RUNNER_TEMP/existing-stacks.json"
+
+      - name: Read GitHub Deployments as Environment State
+        env:
+          GH_TOKEN: \${{ github.token }}
+        shell: bash
+        run: |
+          : > "$RUNNER_TEMP/deployments.jsonl"
+          while IFS= read -r unit_id; do
+            task="deploy:$unit_id"
+            while IFS= read -r encoded_deployment; do
+              deployment="$(printf '%s' "$encoded_deployment" | base64 --decode)"
+              deployment_id="$(jq -r .id <<< "$deployment")"
+              statuses="$(
+                gh api \\
+                  "repos/\${GITHUB_REPOSITORY}/deployments/$deployment_id/statuses?per_page=100" \\
+                  --jq '[.[] | {state}]'
+              )"
+              jq -c \\
+                --argjson statuses "$statuses" \\
+                '. + {statuses: $statuses} | {environment, task, ref, statuses}' \\
+                <<< "$deployment" \\
+                >> "$RUNNER_TEMP/deployments.jsonl"
+
+            done < <(
+              gh api -X GET "repos/\${GITHUB_REPOSITORY}/deployments" \\
+                -f environment="$ENVIRONMENT" \\
+                -f task="$task" \\
+                -f per_page=1 \\
+                --jq '.[] | {id, environment, task, ref} | @base64'
+            )
+          done < <(
+            jq -r \\
+              --arg target "$TARGET" \\
+              '.units[] | select(.targets | index($target)) | .id' \\
+              .github/delivery/catalog.json
+          )
+          jq -s '.' "$RUNNER_TEMP/deployments.jsonl" \\
+            > "$RUNNER_TEMP/deployments.json"
+
+      - name: Create Reconciliation Plan
+        id: plan
+        env:
+          DESIRED_TAGS: \${{ toJSON(fromJSON(inputs.release-plan).desiredTags) }}
+        shell: bash
+        run: |
+          jq -n \\
+            --arg target "$TARGET" \\
+            --arg environment "$ENVIRONMENT" \\
+            --arg stage "$STAGE" \\
+            --argjson desiredTags "$DESIRED_TAGS" \\
+            --slurpfile deployments "$RUNNER_TEMP/deployments.json" \\
+            --slurpfile existingStacks "$RUNNER_TEMP/existing-stacks.json" \\
+            '{
+              target: $target,
+              environment: $environment,
+              stage: $stage,
+              desiredTags: $desiredTags,
+              deployments: $deployments[0],
+              existingStacks: $existingStacks[0]
+            }' \\
+            > "$RUNNER_TEMP/reconciliation-input.json"
+          plan="$(
+            node .github/delivery/generate.mjs \\
+              --reconciliation-plan "$RUNNER_TEMP/reconciliation-input.json"
+          )"
+          echo "units=$(jq -c '.units | map(.id)' <<< "$plan")" \\
+            >> "$GITHUB_OUTPUT"
+
+`;
+}
+
+function decorateLongLivedWorkflow(workflow, target) {
+  const setupPattern = workflowJobPattern('setup');
+  const match = workflow.match(setupPattern);
+  if (!match) {
+    throw new Error(`${target} template is missing setup`);
+  }
+
+  const setup = match[0]
+    .replace(/^    if: github\.actor != 'dependabot\[bot\]'\n\n/m, '')
+    .replace(
+      /^    runs-on: ubuntu-latest\n/m,
+      `    runs-on: ubuntu-latest\n\n    outputs:\n      units: \${{ steps.plan.outputs.units }}\n\n    permissions:\n      contents: read\n      deployments: read\n      id-token: write\n\n    env:\n      ENVIRONMENT: ${target}\n      STAGE: ${target}\n      TARGET: ${target}\n`,
+    )
+    .replace(
+      /^      - name: Set Node version\n/m,
+      `${environmentReconciliationSteps()}      - name: Set Node version\n`,
+    );
+
+  return workflow
+    .replace(
+      /^concurrency:.*$/m,
+      `concurrency:\n  group: ${target}-environment\n  cancel-in-progress: false`,
+    )
+    .replace(setupPattern, setup)
+    .replace(/^            \.\/applications\/.*\/\.serverless\n/gm, '');
+}
+
 function planSelectionCondition(
   planUnitIds,
   unitId,
@@ -898,12 +1028,86 @@ function decoratePreviewJob(job, unit, dependencies) {
     );
 }
 
-function decorateReleaseJob(job, unit, dependencies) {
-  const planUnitIds = 'fromJSON(inputs.release-plan).units.*.id';
-  const condition = planSelectionCondition(planUnitIds, unit.id, dependencies);
-  const releaseRef = `\${{ fromJSON(inputs.release-plan).tags['${unit.workspace}'] }}`;
+function deploymentAuditSteps() {
+  return `      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: \${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \\
+              --arg ref "$DEPLOYMENT_REF" \\
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \\
+              --arg task "$DEPLOYMENT_TASK" \\
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \\
+              | gh api --method POST "repos/\${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
 
-  return job
+${deploymentStatusStep({
+  name: 'Create in-progress Deployment status',
+  stateArgument: 'in_progress',
+})}
+`;
+}
+
+function deploymentStatusStep({
+  name,
+  stateArgument,
+  condition,
+  stateEnvironment = '',
+}) {
+  return `      - name: ${name}
+${condition ? `        if: ${condition}\n` : ''}        env:
+${stateEnvironment}          GH_TOKEN: \${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \\
+            --arg state ${stateArgument} \\
+            --arg log_url "\${GITHUB_SERVER_URL}/\${GITHUB_REPOSITORY}/actions/runs/\${GITHUB_RUN_ID}" \\
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \\
+            | gh api --method POST \\
+              "repos/\${GITHUB_REPOSITORY}/deployments/\${{ steps.deployment.outputs.id }}/statuses" \\
+              --input -
+`;
+}
+
+function deploymentResultStep() {
+  return deploymentStatusStep({
+    name: 'Record Deployment result',
+    stateArgument: '"$DEPLOYMENT_STATE"',
+    condition: "always() && steps.deployment.outputs.id != ''",
+    stateEnvironment: `          DEPLOYMENT_STATE: \${{ job.status == 'success' && 'success' || 'failure' }}\n`,
+  });
+}
+
+function appendDeploymentResult(job) {
+  const sectionIndex = job.search(/^  #/m);
+  if (sectionIndex === -1) {
+    return `${job.trimEnd()}\n\n${deploymentResultStep()}\n`;
+  }
+
+  return `${job.slice(0, sectionIndex).trimEnd()}\n\n${deploymentResultStep()}\n${job.slice(sectionIndex)}`;
+}
+
+function decorateReleaseJob(job, unit, dependencies, environment) {
+  const planUnitIds = "fromJSON(needs.setup.outputs.units || '[]')";
+  const condition = planSelectionCondition(planUnitIds, unit.id, dependencies);
+  const releaseRef = `\${{ fromJSON(inputs.release-plan).desiredTags['${unit.workspace}'] }}`;
+  const firstDeliveryStep = job.match(/^      - name: Deploy[^\n]*\n/m);
+  if (!firstDeliveryStep) {
+    throw new Error(`deployment job "${unit.id}" has no delivery step`);
+  }
+  const deploymentEnvironment = `    env:\n      DEPLOYMENT_ENVIRONMENT: ${environment}\n      DEPLOYMENT_REF: ${releaseRef}\n      DEPLOYMENT_TASK: deploy:${unit.id}\n`;
+
+  let decorated = job
     .replace(
       new RegExp(`^(  ${unit.id}:\\n(?:    name: [^\\n]+\\n)?)`, 'm'),
       (header) =>
@@ -915,7 +1119,26 @@ function decorateReleaseJob(job, unit, dependencies) {
         withBlock
           ? `${match}          ref: ${releaseRef}\n`
           : `${match}        with:\n          ref: ${releaseRef}\n`,
+    )
+    .replace(/^    env:\n/m, deploymentEnvironment);
+  if (!/^    env:$/m.test(decorated)) {
+    decorated = decorated.replace(
+      /^    permissions:\n/m,
+      `${deploymentEnvironment}\n    permissions:\n`,
     );
+  }
+
+  return appendDeploymentResult(
+    decorated
+      .replace(
+        /^    permissions:\n/m,
+        '    permissions:\n      deployments: write\n',
+      )
+      .replace(
+        firstDeliveryStep[0],
+        `${deploymentAuditSteps()}${firstDeliveryStep[0]}`,
+      ),
+  );
 }
 
 function decorateTeardownJob(job, unit) {
@@ -952,6 +1175,7 @@ function rewriteJob(workflow, legacyJobId, unit, needs, definition) {
       rewritten,
       unit,
       needs.filter((need) => need !== definition.baseNeed),
+      definition.target,
     );
   }
   if (definition.teardown) {
@@ -965,6 +1189,9 @@ function renderWorkflow(template, definition, catalog, workspaceManifests) {
   let workflow = definition.splitCoreInfrastructure
     ? splitCoreInfrastructureJob(template)
     : template;
+  if (definition.target === 'develop' || definition.target === 'production') {
+    workflow = decorateLongLivedWorkflow(workflow, definition.target);
+  }
   const graph = createJobGraph(catalog, workspaceManifests, definition.target, {
     reverse: definition.reverse,
   });
@@ -991,10 +1218,7 @@ function renderWorkflow(template, definition, catalog, workspaceManifests) {
         `${definition.filename} has no job template for deployment unit "${id}"`,
       );
     }
-    const needs =
-      definition.target === 'production' && unitNeeds.length > 0
-        ? unitNeeds
-        : [definition.baseNeed, ...unitNeeds];
+    const needs = [definition.baseNeed, ...unitNeeds];
     workflow = rewriteJob(
       workflow,
       legacyJobId,
@@ -1006,7 +1230,7 @@ function renderWorkflow(template, definition, catalog, workspaceManifests) {
 
   validateWorkflowReferences(workflow, definition.filename);
 
-  return `# GENERATED FILE — DO NOT EDIT. Run \`node .github/delivery/generate.mjs\`.\n${workflow}`;
+  return `# GENERATED FILE — DO NOT EDIT. Run \`node .github/delivery/generate.mjs\`.\n${workflow.trimEnd()}\n`;
 }
 
 export async function generateWorkflows({
@@ -1110,6 +1334,20 @@ async function main(arguments_) {
     ]);
     console.log(
       JSON.stringify(createPreviewPlan(catalog, workspaceManifests, input)),
+    );
+    return;
+  }
+
+  if (arguments_.length === 2 && arguments_[0] === '--reconciliation-plan') {
+    const [catalog, workspaceManifests, input] = await Promise.all([
+      loadCatalog(),
+      loadWorkspaceManifests(),
+      readFile(arguments_[1], 'utf8').then(JSON.parse),
+    ]);
+    console.log(
+      JSON.stringify(
+        createReconciliationPlan(catalog, workspaceManifests, input),
+      ),
     );
     return;
   }
