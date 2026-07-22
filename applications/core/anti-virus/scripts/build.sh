@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
+if [[ -x bin/clamscan && -x bin/freshclam ]]; then
+  echo "-- Using validated cached ClamAV binaries --"
+  exit 0
+fi
+
+rm -rf bin
 mkdir -p clamav
 
 echo "-- Downloading Amazon Linux 2023 container --"

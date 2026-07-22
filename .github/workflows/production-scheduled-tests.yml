@@ -16,23 +16,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Restore Node modules
-        id: node-modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
       - name: Restore cache
         id: cache
@@ -42,10 +27,6 @@ jobs:
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-cache-
-
-      - name: Install dependencies
-        if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
-        run: yarn
 
   warm-up:
     name: Warm up
@@ -68,43 +49,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Restore application cache
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./applications/accounts/warm-up/node_modules/.cache
-            ./applications/accounts/warm-up/.serverless
-          key: ${{ runner.os }}-accounts-warm-up-v4-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-accounts-warm-up-v4-
+      - name: Build required workspace packages
+        run: yarn workspaces foreach -Rpt --from '@accounts/warm-up' run package
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -138,22 +87,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
       - name: Restore cache
         id: cache

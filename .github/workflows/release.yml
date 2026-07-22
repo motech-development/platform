@@ -58,21 +58,15 @@ jobs:
           echo "Main commit boundary $boundary has no successful Release job." >&2
           exit 1
 
-      - name: Set Node version
+      - name: Setup dependencies
         if: github.event_name == 'push'
-        uses: actions/setup-node@v6
+        uses: ./.github/actions/setup-dependencies
         with:
-          node-version-file: .nvmrc
-          cache: yarn
           registry-url: https://registry.npmjs.org
 
       - name: Update npm to latest version
         if: github.event_name == 'push'
         run: npm install -g npm@latest
-
-      - name: Install dependencies
-        if: github.event_name == 'push'
-        run: yarn
 
       - name: Build packages
         if: github.event_name == 'push'

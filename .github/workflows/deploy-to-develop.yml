@@ -122,31 +122,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        id: node-modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        id: packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
 
       - name: Restore cache
         id: cache
@@ -156,14 +131,6 @@ jobs:
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-cache-
-
-      - name: Install dependencies
-        if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
-        run: yarn
-
-      - name: Build packages
-        if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
-        run: yarn package
 
   # Auth0 tenant
   # auth0-tenant:
@@ -287,42 +254,22 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@core/anti-virus'] }}
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
+      - name: Build required workspace packages
+        shell: bash
+        run: |
+          started_at="$(date +%s)"
+          yarn workspaces foreach -Rpt --from '@core/anti-virus' run package
+          elapsed_seconds=$(( $(date +%s) - started_at ))
+          echo "| Workspace package build (@core/anti-virus) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Restore Node modules
+      - name: Restore ClamAV binaries
         uses: actions/cache@v5
         with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Restore application cache
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./applications/core/anti-virus/node_modules/.cache
-          key: ${{ runner.os }}-core-anti-virus-v4-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-core-anti-virus-v4-
+          path: ./applications/core/anti-virus/bin
+          key: ${{ runner.os }}-${{ runner.arch }}-clamav-binaries-v1-${{ hashFiles('applications/core/anti-virus/scripts/build.sh') }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -423,42 +370,16 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/queue'] }}
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Restore application cache
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./applications/accounts/queue/node_modules/.cache
-          key: ${{ runner.os }}-accounts-queue-v4-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-accounts-queue-v4-
+      - name: Build required workspace packages
+        shell: bash
+        run: |
+          started_at="$(date +%s)"
+          yarn workspaces foreach -Rpt --from '@accounts/queue' run package
+          elapsed_seconds=$(( $(date +%s) - started_at ))
+          echo "| Workspace package build (@accounts/queue) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -550,42 +471,16 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/storage'] }}
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Restore application cache
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./applications/accounts/storage/node_modules/.cache
-          key: ${{ runner.os }}-accounts-storage-v4-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-accounts-storage-v4-
+      - name: Build required workspace packages
+        shell: bash
+        run: |
+          started_at="$(date +%s)"
+          yarn workspaces foreach -Rpt --from '@accounts/storage' run package
+          elapsed_seconds=$(( $(date +%s) - started_at ))
+          echo "| Workspace package build (@accounts/storage) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -678,42 +573,16 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/data'] }}
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Restore application cache
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./applications/accounts/data/node_modules/.cache
-          key: ${{ runner.os }}-accounts-data-v4-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-accounts-data-v4-
+      - name: Build required workspace packages
+        shell: bash
+        run: |
+          started_at="$(date +%s)"
+          yarn workspaces foreach -Rpt --from '@accounts/data' run package
+          elapsed_seconds=$(( $(date +%s) - started_at ))
+          echo "| Workspace package build (@accounts/data) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -804,42 +673,16 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/notifications'] }}
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Restore application cache
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./applications/accounts/notifications/node_modules/.cache
-          key: ${{ runner.os }}-accounts-notifications-v4-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-accounts-notifications-v4-
+      - name: Build required workspace packages
+        shell: bash
+        run: |
+          started_at="$(date +%s)"
+          yarn workspaces foreach -Rpt --from '@accounts/notifications' run package
+          elapsed_seconds=$(( $(date +%s) - started_at ))
+          echo "| Workspace package build (@accounts/notifications) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -933,42 +776,16 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/reports'] }}
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Restore application cache
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./applications/accounts/reports/node_modules/.cache
-          key: ${{ runner.os }}-accounts-reports-v4-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-accounts-reports-v4-
+      - name: Build required workspace packages
+        shell: bash
+        run: |
+          started_at="$(date +%s)"
+          yarn workspaces foreach -Rpt --from '@accounts/reports' run package
+          elapsed_seconds=$(( $(date +%s) - started_at ))
+          echo "| Workspace package build (@accounts/reports) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -1037,6 +854,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    outputs:
+      appsync-url: ${{ steps.client-config.outputs.appsync-url }}
+      aws-region: ${{ steps.client-config.outputs.aws-region }}
+
     needs:
       - setup
       - accounts-data
@@ -1065,50 +886,16 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/api'] }}
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
 
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Restore env vars
-        uses: actions/cache@v5
-        with:
-          path: ./applications/accounts/client/.env.production
-          key: ${{ runner.os }}-accounts-client-env-vars-checks-v4-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-accounts-client-env-vars-checks-
-
-      - name: Restore application cache
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./applications/accounts/api/node_modules/.cache
-          key: ${{ runner.os }}-accounts-api-v4-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-accounts-api-v4-
+      - name: Build required workspace packages
+        shell: bash
+        run: |
+          started_at="$(date +%s)"
+          yarn workspaces foreach -Rpt --from '@accounts/api' run package
+          elapsed_seconds=$(( $(date +%s) - started_at ))
+          echo "| Workspace package build (@accounts/api) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -1153,6 +940,27 @@ jobs:
 
       - name: Deploy
         run: yarn workspace @accounts/api deploy --stage $STAGE
+
+      - name: Export client configuration
+        id: client-config
+        shell: bash
+        run: |
+          started_at="$(date +%s)"
+          appsync_url="$(
+            aws cloudformation describe-stacks \
+              --stack-name "accounts-${STAGE}-api" \
+              --query "Stacks[0].Outputs[?OutputKey=='AccountsApiUrl'].OutputValue | [0]" \
+              --output text
+          )"
+          aws_region="${AWS_REGION:-${AWS_DEFAULT_REGION:-}}"
+          if [[ -z "$appsync_url" || "$appsync_url" == "None" || -z "$aws_region" ]]; then
+            echo "Accounts client configuration is unavailable." >&2
+            exit 1
+          fi
+          echo "appsync-url=$appsync_url" >> "$GITHUB_OUTPUT"
+          echo "aws-region=$aws_region" >> "$GITHUB_OUTPUT"
+          elapsed_seconds=$(( $(date +%s) - started_at ))
+          echo "| Client configuration transfer | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Record Deployment result
         if: always() && steps.deployment.outputs.id != ''
