@@ -14,6 +14,8 @@ concurrency:
 
 jobs:
   setup:
+    name: Setup
+
     runs-on: ubuntu-latest
 
     outputs:
@@ -122,7 +124,10 @@ jobs:
           node-version-file: .nvmrc
 
   component-library:
+    name: Deploy component library
+
     if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'component-library')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -371,7 +376,10 @@ jobs:
   #       run: yarn workspace @id/tenant deploy -c config.json
 
   core-anti-virus:
+    name: Deploy anti virus
+
     if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-anti-virus')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -943,7 +951,10 @@ jobs:
               --input -
 
   accounts-storage:
+    name: Deploy accounts storage
+
     if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-anti-virus') || needs.core-anti-virus.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -1107,7 +1118,10 @@ jobs:
               --input -
 
   accounts-queue:
+    name: Deploy accounts queue
+
     if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-queue') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -1271,7 +1285,10 @@ jobs:
               --input -
 
   accounts-data:
+    name: Deploy accounts data
+
     if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') || needs.accounts-storage.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-anti-virus') || needs.core-anti-virus.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -1436,7 +1453,10 @@ jobs:
               --input -
 
   accounts-warm-up:
+    name: Deploy accounts warm up
+
     if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-warm-up') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -1600,7 +1620,10 @@ jobs:
               --input -
 
   accounts-reports:
+    name: Deploy accounts reports
+
     if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-reports') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-notifications') || needs.accounts-notifications.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') || needs.accounts-storage.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -1766,7 +1789,10 @@ jobs:
               --input -
 
   accounts-api:
+    name: Deploy accounts API
+
     if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-api') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-queue') || needs.accounts-queue.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-reports') || needs.accounts-reports.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-storage') || needs.accounts-storage.result == 'success')
+
     runs-on: ubuntu-latest
 
     outputs:
@@ -1958,7 +1984,10 @@ jobs:
               --input -
 
   accounts-infrastructure:
+    name: Deploy accounts infrastructure
+
     if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-infrastructure') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'core-infrastructure') || needs.core-infrastructure.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -2122,7 +2151,10 @@ jobs:
               --input -
 
   accounts-notifications:
+    name: Deploy accounts notifications
+
     if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-notifications') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-data') || needs.accounts-data.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -2285,7 +2317,10 @@ jobs:
               --input -
 
   accounts-client:
+    name: Deploy accounts client
+
     if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-client') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-api') || needs.accounts-api.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-infrastructure') || needs.accounts-infrastructure.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:

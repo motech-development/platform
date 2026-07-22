@@ -1322,22 +1322,28 @@ test('generator emits deterministic static workflow graphs with one job per Depl
 
   const production = first['deploy-to-production.yml'];
   assert.doesNotMatch(production, /\n\n\n/);
-  for (const id of [
-    'component-library',
-    'core-anti-virus',
-    'core-infrastructure',
-    'core-communications',
-    'accounts-infrastructure',
-    'accounts-storage',
-    'accounts-data',
-    'accounts-warm-up',
-    'accounts-notifications',
-    'accounts-queue',
-    'accounts-reports',
-    'accounts-api',
-    'accounts-client',
-  ]) {
+  const productionJobNames = {
+    'component-library': 'Deploy component library',
+    'core-anti-virus': 'Deploy anti virus',
+    'core-infrastructure': 'Deploy core infrastructure',
+    'core-communications': 'Deploy core communications',
+    'accounts-infrastructure': 'Deploy accounts infrastructure',
+    'accounts-storage': 'Deploy accounts storage',
+    'accounts-data': 'Deploy accounts data',
+    'accounts-warm-up': 'Deploy accounts warm up',
+    'accounts-notifications': 'Deploy accounts notifications',
+    'accounts-queue': 'Deploy accounts queue',
+    'accounts-reports': 'Deploy accounts reports',
+    'accounts-api': 'Deploy accounts API',
+    'accounts-client': 'Deploy accounts client',
+  };
+  assert.match(workflowJob(production, 'setup'), /^    name: Setup$/m);
+  for (const [id, name] of Object.entries(productionJobNames)) {
     assert.ok(production.includes(`\n  ${id}:\n`));
+    assert.match(
+      workflowJob(production, id),
+      new RegExp(`^    name: ${name}$`, 'm'),
+    );
   }
   assert.match(
     workflowJob(production, 'core-communications'),
