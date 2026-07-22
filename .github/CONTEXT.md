@@ -32,8 +32,16 @@ _Avoid_: Change set, deploy list
 The last successfully delivered Release tag recorded as a successful GitHub Deployment for each Deployment Unit and long-lived environment. It is used to reconcile a newer Release Plan with work that failed or was superseded while waiting.
 _Avoid_: Deployment cache, latest release
 
+**Preview State**:
+The last successfully delivered pull-request commit for each Deployment Unit in a Preview Environment. It is used to reconcile the pull request's current state with work that failed, was skipped, or was superseded while waiting.
+_Avoid_: Preview cache, previous head
+
+**Preview Validation State**:
+The latest pull-request commit whose changes were successfully validated against its Preview Environment or established not to require runtime validation. Failed or cancelled validation does not advance this state.
+_Avoid_: Playwright cache, latest tested commit
+
 **Preview Plan**:
-The set of Deployment Units required to make one complete Preview Environment reflect the pull request's current state. Creation includes the full preview topology; later plans include Affected Deployment Units and any units missing from the environment.
+The set of Deployment Units required to reconcile a Preview Environment with the pull request's current state. Creation includes the full preview topology; later plans compare each unit with its Preview State and include affected, missing, and dependant units.
 _Avoid_: Release Plan, preview change set
 
 **Deployment Catalog**:
