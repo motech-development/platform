@@ -309,7 +309,11 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "| Measurement | Duration |"
+            echo "| --- | ---: |"
+            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
         run: |
@@ -554,7 +558,11 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "| Measurement | Duration |"
+            echo "| --- | ---: |"
+            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
         run: |
@@ -722,7 +730,11 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "| Measurement | Duration |"
+            echo "| --- | ---: |"
+            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
         run: |
@@ -891,7 +903,11 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "| Measurement | Duration |"
+            echo "| --- | ---: |"
+            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
         run: |
@@ -1058,7 +1074,11 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "| Measurement | Duration |"
+            echo "| --- | ---: |"
+            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
         run: |
@@ -1228,7 +1248,11 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "| Measurement | Duration |"
+            echo "| --- | ---: |"
+            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
         run: |
@@ -1405,7 +1429,11 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "| Measurement | Duration |"
+            echo "| --- | ---: |"
+            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
         run: |
