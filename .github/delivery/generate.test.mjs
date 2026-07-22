@@ -1266,6 +1266,14 @@ test('pull-request quality assurance validates the catalog and generated workflo
     qualityAssurance,
     /name: Validate delivery catalog[\s\S]*node --test \.github\/delivery\/\*\.test\.mjs[\s\S]*node \.github\/delivery\/generate\.mjs --check/,
   );
+  assert.doesNotMatch(
+    workflowJob(qualityAssurance, 'delivery-catalog'),
+    /setup-dependencies/,
+  );
+  assert.match(
+    workflowJob(qualityAssurance, 'unit-tests'),
+    /name: Test build optimisations[\s\S]*node --test \.github\/quality\/\*\.test\.mjs/,
+  );
 });
 
 test('pull-request quality categories start independently with bounded workspace tests', async () => {
