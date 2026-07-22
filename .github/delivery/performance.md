@@ -30,6 +30,28 @@ Capture the first post-change run for each route in this table:
 
 Do not compare queued time or unrelated deployment time. Use step timestamps for cache/build/transfer rows and job `startedAt`/`completedAt` for the overall row.
 
+## Ordinary Lambda packaging evidence
+
+Webpack baselines and esbuild candidates were packaged sequentially on macOS arm64 with Node 24.14.1, Yarn 4.14.1, and osls 3.63.2. Each command used `serverless package --stage benchmark --package <temporary-directory>` with equivalent placeholder deployment variables. Wall-clock time is `/usr/bin/time -p` real time; it includes dependency materialisation performed by the packaging plugin.
+
+| Deployment Unit        | Handler archives | Webpack baseline | Esbuild candidate | Time change | Handler archive bytes, baseline → candidate | Size change |
+| ---------------------- | ---------------: | ---------------: | ----------------: | ----------: | ------------------------------------------: | ----------: |
+| Accounts API           |                2 |           18.04s |             9.79s |      -45.7% |                     30,685,744 → 18,305,893 |      -40.3% |
+| Accounts queue         |               11 |           60.70s |            20.85s |      -65.7% |                   194,252,640 → 162,753,656 |      -16.2% |
+| Accounts notifications |                1 |            7.75s |             4.67s |      -39.7% |                       3,400,270 → 1,083,126 |      -68.1% |
+| Accounts reports       |                7 |           40.35s |            17.54s |      -56.5% |                   122,777,679 → 103,197,515 |      -15.9% |
+| Accounts warm-up       |                2 |           16.49s |            11.46s |      -30.5% |                     38,260,458 → 30,368,308 |      -20.6% |
+| Accounts storage       |                4 |           25.10s |             9.70s |      -61.4% |                     38,267,270 → 31,389,935 |      -18.0% |
+| Accounts data          |                6 |           57.49s |            15.54s |      -73.0% |                    113,029,481 → 90,756,282 |      -19.7% |
+
+All seven accepted candidates retain `package.individually: true`, one separately named archive per configured handler, and source maps. Accounts storage also retains the plugin-generated `custom-resources.zip` byte-for-byte. Normalised compiled CloudFormation templates are equivalent to the Webpack baselines after excluding time-derived API Gateway deployment identifiers and Lambda code hashes/keys. This covers the accounts API schemas and mapping templates as well as the other non-code resources.
+
+Every accepted archive exposes its configured handler when loaded from the archive. Bundled code that uses `@sentry/profiling-node` keeps that package external so its dynamic native-module selection remains intact; inspection confirmed the Node 24 Linux x64 glibc profiler binary in every affected archive. Targeted Jest suites and blocking TypeScript checks passed for every evaluated workspace. The Preview Environment and unchanged Playwright gate remain required remote validation before cutover.
+
+Core communications remains on Webpack. Its 11.66s baseline produced one 17,716,027-byte archive; repeated esbuild candidates took 9.99s and 14.31s and produced a 14,806,797-byte archive. The inconsistent timing does not establish a material packaging improvement, so the safer native-profiler-compatible Webpack path is retained. Removing only the redundant Fork TypeScript Checker reduced the retained Webpack package to 10.49s without changing its archive mapping or runtime dependencies.
+
+Core anti-virus is not an ordinary candidate: ADR 0005 and ADR 0011 retain its specialised Webpack plugins for conditional files, compiled binaries, and executable permissions.
+
 ## Anti-virus cache evidence
 
 The pre-change reference is the anti-virus job in [Preview run 29852527144](https://github.com/motech-development/platform/actions/runs/29852527144). It ran from 17:44:06 to 17:50:31 UTC (385s overall). Its combined `Deploy` step ran from 17:44:40 to 17:50:05 UTC (325s), but the old command did not distinguish the ClamAV source build, Webpack packaging, and CloudFormation deployment. It had no ClamAV binary restore or validation steps.
