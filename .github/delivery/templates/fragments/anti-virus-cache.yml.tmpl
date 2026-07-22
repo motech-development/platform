@@ -16,7 +16,7 @@
       - name: Restore ClamAV binaries
         id: clamav-binaries
         if: steps.clamav-cache.outputs.supported == 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ./applications/core/anti-virus/bin
           key: ${{ runner.os }}-${{ runner.arch }}-clamav-binaries-v2-${{ hashFiles('applications/core/anti-virus/build-inputs.env', 'applications/core/anti-virus/scripts/build.sh', 'applications/core/anti-virus/scripts/cache.sh') }}

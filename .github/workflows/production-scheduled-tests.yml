@@ -14,14 +14,14 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup dependencies
         uses: ./.github/actions/setup-dependencies
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup dependencies
         uses: ./.github/actions/setup-dependencies
@@ -56,7 +56,7 @@ jobs:
         run: yarn workspaces foreach -Rpt --from '@accounts/warm-up' run package
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -85,14 +85,14 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup dependencies
         uses: ./.github/actions/setup-dependencies
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
@@ -124,7 +124,7 @@ jobs:
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
       - name: Set commit status
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ steps.generate_token.outputs.token }}
           script: |

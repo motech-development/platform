@@ -1020,7 +1020,7 @@ function injectTeardownGuard(job, unit) {
 
 function environmentReconciliationSteps() {
   return `      - name: Configure AWS credentials for reconciliation
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -1256,7 +1256,7 @@ function decorateAuditedDeliveryJob(
         `${header}${header.includes('\n    name:') ? '\n' : ''}    if: ${condition}\n`,
     )
     .replace(
-      /^        uses: actions\/checkout@v6\n(        with:\n)?/gm,
+      /^        uses: actions\/checkout@v7\n(        with:\n)?/gm,
       (match, withBlock) =>
         withBlock
           ? `${match}          ref: ${ref}\n`
