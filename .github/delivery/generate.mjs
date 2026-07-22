@@ -359,40 +359,128 @@ function includeClientConfigurationProducer(
 export function createPreviewPlan(catalog, workspaceManifests, input) {
   const target = 'preview';
   const graph = dependencyGraph(catalog, workspaceManifests, target);
-  const affected = affectedUnits(
-    catalog,
-    workspaceManifests,
-    target,
-    input.changedWorkspaces,
-  );
-
-  if (input.runtimeAffected === false) {
-    return { target, units: [] };
-  }
-
   const creationEvents = new Set(['opened', 'ready_for_review', 'reopened']);
   if (creationEvents.has(input.lifecycle)) {
-    return { target, units: dependencyOrder(graph) };
+    return {
+      target,
+      units: input.runtimeAffected ? dependencyOrder(graph) : [],
+      validationRequired: input.runtimeAffected,
+    };
   }
 
-  const existingStacks = new Set(input.existingStacks);
-  const missingStacks = catalog.units
-    .filter((unit) => unit.targets.includes(target))
-    .filter((unit) =>
-      unit.expectedStacks.some(
+  const existingStacks = new Set(input.existingStacks ?? []);
+  const affectedByRef = new Map();
+  let unrelatedHistory = false;
+  function historyFrom(stateRef) {
+    const history = input.history?.[stateRef];
+    if (
+      history === undefined ||
+      typeof history.related !== 'boolean' ||
+      typeof history.runtimeAffected !== 'boolean' ||
+      !Array.isArray(history.changedWorkspaces)
+    ) {
+      throw new Error(
+        `Git history from Preview State "${stateRef}" is unavailable`,
+      );
+    }
+    return history;
+  }
+
+  const previewUnits = catalog.units.filter((unit) =>
+    unit.targets.includes(target),
+  );
+  const validationRef = successfulTaskRef(
+    input.deployments ?? [],
+    input.environment,
+    'validate:playwright',
+  );
+  const validationHistory =
+    validationRef !== undefined && validationRef !== input.head
+      ? historyFrom(validationRef)
+      : undefined;
+  const hasPreviewState = previewUnits.some(
+    (unit) =>
+      successfulDeploymentRef(
+        input.deployments ?? [],
+        input.environment,
+        unit.id,
+      ) !== undefined,
+  );
+  const hasPreviewStack = previewUnits.some((unit) =>
+    unit.expectedStacks.some((stack) =>
+      existingStacks.has(stack.replaceAll('{stage}', input.stage)),
+    ),
+  );
+  const validationProvesNonRuntime =
+    validationRef === input.head ||
+    (validationHistory?.related === true &&
+      validationHistory.runtimeAffected === false);
+  if (!hasPreviewState && !hasPreviewStack && validationProvesNonRuntime) {
+    return { target, units: [], validationRequired: false };
+  }
+
+  const selected = previewUnits
+    .filter((unit) => {
+      const stackMissing = unit.expectedStacks.some(
         (stack) =>
           !existingStacks.has(stack.replaceAll('{stage}', input.stage)),
-      ),
-    )
-    .map((unit) => unit.id);
-  const selected = expandDependants(
-    includeClientConfigurationProducer([...affected, ...missingStacks], {
-      clientRuns: true,
-    }),
-    graph,
-  );
+      );
+      const stateRef = successfulDeploymentRef(
+        input.deployments ?? [],
+        input.environment,
+        unit.id,
+      );
+      if (stackMissing || stateRef === undefined) {
+        return true;
+      }
+      if (stateRef === input.head) {
+        return false;
+      }
 
-  return { target, units: dependencyOrder(graph, selected) };
+      const history = historyFrom(stateRef);
+      if (!history.related) {
+        unrelatedHistory = true;
+        return true;
+      }
+      if (!affectedByRef.has(stateRef)) {
+        affectedByRef.set(
+          stateRef,
+          expandDependants(
+            affectedUnits(
+              catalog,
+              workspaceManifests,
+              target,
+              history.changedWorkspaces,
+            ),
+            graph,
+          ),
+        );
+      }
+      return affectedByRef.get(stateRef).has(unit.id);
+    })
+    .map((unit) => unit.id);
+  const expanded = expandDependants(selected, graph);
+  let validationRequired = true;
+  if (validationRef === input.head) {
+    validationRequired = false;
+  } else if (validationRef !== undefined) {
+    if (!validationHistory.related) {
+      unrelatedHistory = true;
+    } else {
+      validationRequired = validationHistory.runtimeAffected;
+    }
+  }
+  if (expanded.size > 0 || unrelatedHistory) {
+    validationRequired = true;
+  }
+
+  return {
+    target,
+    units: unrelatedHistory
+      ? dependencyOrder(graph)
+      : dependencyOrder(graph, expanded),
+    validationRequired,
+  };
 }
 
 function plannedUnits(catalog, orderedIdentifiers, releaseTags) {
@@ -660,23 +748,36 @@ export async function createRepositoryReleasePlan({
   });
 }
 
-function successfulDeploymentRef(deployments, environment, unitId) {
+function successfulTaskRef(
+  deployments,
+  environment,
+  task,
+  { requiresInProgress = false } = {},
+) {
   const deployment = deployments.find(
     (deployment) =>
       deployment &&
       deployment.environment === environment &&
-      deployment.task === `deploy:${unitId}`,
+      deployment.task === task,
   );
   if (
     !Array.isArray(deployment?.statuses) ||
     deployment.statuses[0]?.state !== 'success' ||
-    !deployment.statuses.some((status) => status?.state === 'in_progress') ||
-    typeof deployment.ref !== 'string'
+    (requiresInProgress &&
+      !deployment.statuses.some((status) => status?.state === 'in_progress')) ||
+    typeof deployment.ref !== 'string' ||
+    deployment.ref.length === 0
   ) {
     return undefined;
   }
 
   return deployment.ref;
+}
+
+function successfulDeploymentRef(deployments, environment, unitId) {
+  return successfulTaskRef(deployments, environment, `deploy:${unitId}`, {
+    requiresInProgress: true,
+  });
 }
 
 export function createReconciliationPlan(catalog, workspaceManifests, input) {
@@ -1053,13 +1154,14 @@ function decoratePreviewJob(job, unit, dependencies) {
   const condition = planSelectionCondition(planUnits, unit.id, dependencies, [
     "needs.setup.result == 'success'",
   ]);
+  const ref = '${{ github.event.pull_request.head.sha }}';
 
-  return job
-    .replace(/^(    name: [^\n]+\n)/m, `$1\n    if: ${condition}\n`)
-    .replaceAll(
-      '        uses: actions/checkout@v6\n',
-      '        uses: actions/checkout@v6\n        with:\n          ref: ${{ github.event.pull_request.head.sha }}\n',
-    );
+  return decorateAuditedDeliveryJob(job, {
+    condition,
+    environment: 'pr-${{ github.event.pull_request.number }}',
+    ref,
+    unit,
+  });
 }
 
 function deploymentAuditSteps() {
@@ -1094,12 +1196,14 @@ ${deploymentStatusStep({
 
 function deploymentStatusStep({
   name,
+  stepId,
   stateArgument,
   condition,
   stateEnvironment = '',
+  statusRecordedOutput = false,
 }) {
   return `      - name: ${name}
-${condition ? `        if: ${condition}\n` : ''}        env:
+${stepId ? `        id: ${stepId}\n` : ''}${condition ? `        if: ${condition}\n` : ''}        env:
 ${stateEnvironment}          GH_TOKEN: \${{ github.token }}
         shell: bash
         run: |
@@ -1109,38 +1213,42 @@ ${stateEnvironment}          GH_TOKEN: \${{ github.token }}
             '{state: $state, log_url: $log_url, auto_inactive: false}' \\
             | gh api --method POST \\
               "repos/\${GITHUB_REPOSITORY}/deployments/\${{ steps.deployment.outputs.id }}/statuses" \\
-              --input -
+              --input -${statusRecordedOutput ? '\n          echo "recorded=true" >> "$GITHUB_OUTPUT"' : ''}
 `;
 }
 
-function deploymentResultStep() {
+function deploymentSuccessStep() {
   return deploymentStatusStep({
-    name: 'Record Deployment result',
-    stateArgument: '"$DEPLOYMENT_STATE"',
-    condition: "always() && steps.deployment.outputs.id != ''",
-    stateEnvironment: `          DEPLOYMENT_STATE: \${{ job.status == 'success' && 'success' || 'failure' }}\n`,
+    name: 'Record successful Deployment',
+    stepId: 'deployment-success',
+    stateArgument: 'success',
+    statusRecordedOutput: true,
   });
 }
 
-function appendDeploymentResult(job) {
-  const sectionIndex = job.search(/^  #/m);
-  if (sectionIndex === -1) {
-    return `${job.trimEnd()}\n\n${deploymentResultStep()}\n`;
-  }
-
-  return `${job.slice(0, sectionIndex).trimEnd()}\n\n${deploymentResultStep()}\n${job.slice(sectionIndex)}`;
+function deploymentFailureStep() {
+  return deploymentStatusStep({
+    name: 'Record failed Deployment',
+    stateArgument: 'failure',
+    condition:
+      "failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'",
+  });
 }
 
-function decorateReleaseJob(job, unit, dependencies, environment) {
-  const planUnitIds = "fromJSON(needs.setup.outputs.units || '[]')";
-  const condition = planSelectionCondition(planUnitIds, unit.id, dependencies);
-  const releaseRef = `\${{ fromJSON(inputs.release-plan).desiredTags['${unit.workspace}'] }}`;
-  const firstDeliveryStep = job.match(/^      - name: Deploy[^\n]*\n/m);
-  if (!firstDeliveryStep) {
-    throw new Error(`deployment job "${unit.id}" has no delivery step`);
+function appendDeploymentFailure(job) {
+  const sectionIndex = job.search(/^  #/m);
+  if (sectionIndex === -1) {
+    return `${job.trimEnd()}\n\n${deploymentFailureStep()}\n`;
   }
-  const deploymentEnvironment = `    env:\n      DEPLOYMENT_ENVIRONMENT: ${environment}\n      DEPLOYMENT_REF: ${releaseRef}\n      DEPLOYMENT_TASK: deploy:${unit.id}\n`;
 
+  return `${job.slice(0, sectionIndex).trimEnd()}\n\n${deploymentFailureStep()}\n${job.slice(sectionIndex)}`;
+}
+
+function decorateAuditedDeliveryJob(
+  job,
+  { condition, environment, ref, unit },
+) {
+  const deploymentEnvironment = `    env:\n      DEPLOYMENT_ENVIRONMENT: ${environment}\n      DEPLOYMENT_REF: ${ref}\n      DEPLOYMENT_TASK: deploy:${unit.id}\n`;
   let decorated = job
     .replace(
       new RegExp(`^(  ${unit.id}:\\n(?:    name: [^\\n]+\\n)?)`, 'm'),
@@ -1151,8 +1259,8 @@ function decorateReleaseJob(job, unit, dependencies, environment) {
       /^        uses: actions\/checkout@v6\n(        with:\n)?/gm,
       (match, withBlock) =>
         withBlock
-          ? `${match}          ref: ${releaseRef}\n`
-          : `${match}        with:\n          ref: ${releaseRef}\n`,
+          ? `${match}          ref: ${ref}\n`
+          : `${match}        with:\n          ref: ${ref}\n`,
     )
     .replace(/^    env:\n/m, deploymentEnvironment);
   if (!/^    env:$/m.test(decorated)) {
@@ -1161,18 +1269,37 @@ function decorateReleaseJob(job, unit, dependencies, environment) {
       `${deploymentEnvironment}\n    permissions:\n`,
     );
   }
-
-  return appendDeploymentResult(
-    decorated
-      .replace(
-        /^    permissions:\n/m,
-        '    permissions:\n      deployments: write\n',
-      )
-      .replace(
-        firstDeliveryStep[0],
-        `${deploymentAuditSteps()}${firstDeliveryStep[0]}`,
-      ),
+  decorated = decorated.replace(
+    /^    permissions:\n/m,
+    '    permissions:\n      deployments: write\n',
   );
+
+  const deliveryStep = decorated.match(
+    /^      - name: Deploy[^\n]*\n[\s\S]*?(?=^      - name:|^      # \{\{fragment:|^  #|(?![\s\S]))/m,
+  );
+  if (!deliveryStep) {
+    throw new Error(`deployment job "${unit.id}" has no delivery step`);
+  }
+
+  return appendDeploymentFailure(
+    decorated.replace(
+      deliveryStep[0],
+      `${deploymentAuditSteps().trimEnd()}\n\n${deliveryStep[0].trimEnd()}\n\n${deploymentSuccessStep()}\n`,
+    ),
+  );
+}
+
+function decorateReleaseJob(job, unit, dependencies, environment) {
+  const planUnitIds = "fromJSON(needs.setup.outputs.units || '[]')";
+  const condition = planSelectionCondition(planUnitIds, unit.id, dependencies);
+  const releaseRef = `\${{ fromJSON(inputs.release-plan).desiredTags['${unit.workspace}'] }}`;
+
+  return decorateAuditedDeliveryJob(job, {
+    condition,
+    environment,
+    ref: releaseRef,
+    unit,
+  });
 }
 
 function decorateTeardownJob(job, unit) {
@@ -1299,6 +1426,17 @@ function renderWorkflow(
   }
 
   workflow = expandTemplateFragments(workflow, fragments);
+  if (definition.selective) {
+    workflow = workflow
+      .replace(
+        '${{ needs.accounts-api.outputs.appsync-url }}',
+        '${{ needs.accounts-api.outputs.appsync-url || needs.setup.outputs.api-appsync-url }}',
+      )
+      .replace(
+        '${{ needs.accounts-api.outputs.aws-region }}',
+        '${{ needs.accounts-api.outputs.aws-region || needs.setup.outputs.api-aws-region }}',
+      );
+  }
 
   validateWorkflowReferences(workflow, definition.filename);
 

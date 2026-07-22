@@ -14,7 +14,7 @@ node .github/delivery/generate.mjs --check
 node --test .github/delivery/*.test.mjs
 ```
 
-The files in `templates/` own operational commands, environment variables, permissions, and other non-topology workflow details. Repeated operational steps live in `templates/fragments/*.yml.tmpl`; the generator only substitutes fragment markers and topology values such as the owning workspace. The generator owns stable job identifiers, target inclusion, and `needs` edges. Never edit a generated workflow directly. After regeneration, review the ordinary workflow diff for unit visibility, permissions, target eligibility, direct dependency edges, and reverse teardown ordering.
+The files in `templates/` own deployment commands, service configuration, and other unit-specific workflow details. Repeated unit steps live in `templates/fragments/*.yml.tmpl`. The generator owns stable job identifiers, target inclusion, `needs` edges, exact refs, selection guards, and the shared GitHub Deployment audit lifecycle around each delivery command. Never edit a generated workflow directly. After regeneration, review the ordinary workflow diff for unit visibility, permissions, target eligibility, direct dependency edges, and reverse teardown ordering.
 
 ## Dependency and output transfer
 
@@ -24,9 +24,11 @@ The accounts API exposes its public URL and AWS region as job outputs. Client jo
 
 ## Preview planning
 
-The Preview Environment workflow compares the pull-request base and head commits, then passes the changed paths to `generate.mjs --preview-impact`. Documentation-only changes produce explicit not-applicable `Preview` and `Playwright` results. Runtime changes under a workspace select that workspace; runtime files that cannot be scoped safely, such as the root lockfile or a newly added workspace, select the full workspace graph.
+The Preview Environment workflow passes changed paths to `generate.mjs --preview-impact`. Runtime changes under a workspace select that workspace; runtime files that cannot be scoped safely, such as the root lockfile or a newly added workspace, select the full workspace graph. Documentation-only changes advance Preview Validation State as explicitly not applicable without creating a Preview Environment.
 
-New, reopened, and newly ready runtime pull requests deploy the complete preview-capable topology. Later synchronisations read CloudFormation stack names and use `generate.mjs --preview-plan` to combine changed workspaces, workspace and delivery dependants, and missing-stack repair. The generated deployment jobs use the plan output as their selection gate. Preview and teardown share a non-cancelling concurrency group scoped to the pull request.
+New, reopened, and newly ready runtime pull requests deploy the complete preview-capable topology. Later synchronisations read successful GitHub Deployments and expected CloudFormation stacks after acquiring the per-preview lock. `generate.mjs --preview-plan` compares each unit's own `deploy:<unit-id>` Preview State with the current head, expands workspace and delivery dependants, repairs missing stacks, and falls back to the complete topology for unrelated Git history. Each selected job records the exact successfully delivered pull-request commit as Preview State.
+
+Playwright reconciles separately from `validate:playwright` Preview Validation State. Runtime changes can therefore run the unchanged two-shard suite with no Deployment Units selected, and validation failure does not discard successful Preview State. When Accounts API is already current, setup reads its public URL and region from the existing stack. Missing or untrustworthy GitHub, AWS, or Git state fails planning before any mutation. Preview and teardown share a non-cancelling concurrency group scoped to the pull request.
 
 Teardown checks each catalogued stack before cleanup, skips units whose resources are already absent, and preserves AWS errors that are not a missing-resource response. S3 cleanup likewise tolerates a missing bucket while reporting permission and deletion failures.
 

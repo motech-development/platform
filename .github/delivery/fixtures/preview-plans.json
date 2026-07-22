@@ -18,14 +18,27 @@
         "accounts-queue",
         "accounts-reports",
         "accounts-api"
-      ]
+      ],
+      "validationRequired": true
     }
   },
   "selectiveUpdateAndStackRepair": {
     "input": {
       "lifecycle": "synchronize",
+      "head": "preview-head-2",
       "runtimeAffected": true,
       "changedWorkspaces": ["@accounts/notifications"],
+      "recordedState": {
+        "unitRefs": { "accounts-notifications": "preview-head-1" },
+        "validationRef": "preview-head-1",
+        "history": {
+          "preview-head-1": {
+            "related": true,
+            "runtimeAffected": true,
+            "changedWorkspaces": ["@accounts/notifications"]
+          }
+        }
+      },
       "existingStacks": [
         "anti-virus-pr-1493",
         "accounts-pr-1493-storage",
@@ -39,14 +52,17 @@
     },
     "expected": {
       "target": "preview",
-      "units": ["accounts-notifications", "accounts-reports", "accounts-api"]
+      "units": ["accounts-notifications", "accounts-reports", "accounts-api"],
+      "validationRequired": true
     }
   },
   "missingStackOnlyRepair": {
     "input": {
       "lifecycle": "synchronize",
+      "head": "preview-head-2",
       "runtimeAffected": true,
       "changedWorkspaces": [],
+      "recordedState": {},
       "existingStacks": [
         "anti-virus-pr-1493",
         "accounts-pr-1493-storage",
@@ -67,14 +83,27 @@
         "accounts-queue",
         "accounts-reports",
         "accounts-api"
-      ]
+      ],
+      "validationRequired": true
     }
   },
   "workspaceDependencyExpansion": {
     "input": {
       "lifecycle": "synchronize",
+      "head": "preview-head-2",
       "runtimeAffected": true,
       "changedWorkspaces": ["@fixture/runtime"],
+      "recordedState": {
+        "unitRefs": { "accounts-api": "preview-head-1" },
+        "validationRef": "preview-head-1",
+        "history": {
+          "preview-head-1": {
+            "related": true,
+            "runtimeAffected": true,
+            "changedWorkspaces": ["@fixture/runtime"]
+          }
+        }
+      },
       "existingStacks": [
         "anti-virus-pr-1493",
         "accounts-pr-1493-storage",
@@ -89,12 +118,13 @@
     },
     "expected": {
       "target": "preview",
-      "units": ["accounts-api"]
+      "units": ["accounts-api"],
+      "validationRequired": true
     }
   },
   "nonRuntimeChange": {
     "input": {
-      "lifecycle": "synchronize",
+      "lifecycle": "opened",
       "runtimeAffected": false,
       "changedWorkspaces": [],
       "existingStacks": [],
@@ -102,7 +132,8 @@
     },
     "expected": {
       "target": "preview",
-      "units": []
+      "units": [],
+      "validationRequired": false
     }
   }
 }

@@ -167,6 +167,16 @@ A catalog id is part of GitHub Deployment task history. Treat a rename as a stat
 
 Never infer authorization to destroy retained production resources from deletion of an application directory alone.
 
+## Preview State checks
+
+- Query GitHub Deployments by environment `pr-<number>` and task `deploy:<unit-id>` only after acquiring the preview concurrency lock.
+- Treat a unit deployment as Preview State only when its latest status is `success`, its history contains `in_progress`, and its `ref` is a readable pull-request commit.
+- Compare each unit's own Preview State with the current head. Include workspace dependencies, delivery dependants, and missing expected stacks.
+- Select the complete preview topology when recorded state is unrelated to the current pull-request history.
+- Record Playwright independently as task `validate:playwright`. Only a pass or explicit non-runtime result receives `success`.
+- Allow runtime validation with no selected Deployment Units. Read the current Accounts API URL and region from its existing stack when API is not selected.
+- Fail before mutation when GitHub Deployment state, AWS stack state, or required Git history cannot be read reliably.
+
 ## Release and Environment State checks
 
 - Run selective delivery from the `Release` workflow only after the unfiltered monorepo release command succeeds.

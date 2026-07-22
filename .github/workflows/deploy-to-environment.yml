@@ -22,11 +22,15 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
+      api-appsync-url: ${{ steps.current-api-config.outputs.appsync-url }}
+      api-aws-region: ${{ steps.current-api-config.outputs.aws-region }}
       runtime-affected: ${{ steps.plan.outputs.runtime-affected }}
       units: ${{ steps.plan.outputs.units }}
+      validation-required: ${{ steps.plan.outputs.validation-required }}
 
     permissions:
       contents: read
+      deployments: read
       id-token: write
 
     steps:
@@ -51,47 +55,175 @@ jobs:
           echo "changed-workspaces=$(jq -c '.changedWorkspaces' <<< "$impact")" >> "$GITHUB_OUTPUT"
 
       - name: Configure AWS credentials
-        if: steps.impact.outputs.runtime-affected == 'true' && github.event.action == 'synchronize'
+        if: github.event.action == 'synchronize'
         uses: aws-actions/configure-aws-credentials@v5
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Read Preview Environment stacks
-        if: steps.impact.outputs.runtime-affected == 'true' && github.event.action == 'synchronize'
+        if: github.event.action == 'synchronize'
         run: |
           aws cloudformation describe-stacks --query 'Stacks[].StackName' --output json > "$RUNNER_TEMP/existing-stacks.json"
+
+      - name: Read GitHub Deployments as Preview State
+        if: github.event.action == 'synchronize'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          : > "$RUNNER_TEMP/deployments.jsonl"
+          while IFS= read -r task; do
+            while IFS= read -r encoded_deployment; do
+              deployment="$(printf '%s' "$encoded_deployment" | base64 --decode)"
+              deployment_id="$(jq -r .id <<< "$deployment")"
+              statuses="$(
+                gh api \
+                  "repos/${GITHUB_REPOSITORY}/deployments/$deployment_id/statuses?per_page=100" \
+                  --jq '[.[] | {state}]'
+              )"
+              jq -c \
+                --argjson statuses "$statuses" \
+                '. + {statuses: $statuses} | {environment, task, ref, statuses}' \
+                <<< "$deployment" \
+                >> "$RUNNER_TEMP/deployments.jsonl"
+            done < <(
+              gh api -X GET "repos/${GITHUB_REPOSITORY}/deployments" \
+                -f environment="pr-${{ github.event.pull_request.number }}" \
+                -f task="$task" \
+                -f per_page=1 \
+                --jq '.[] | {id, environment, task, ref} | @base64'
+            )
+          done < <(
+            while IFS= read -r unit_id; do
+              printf 'deploy:%s\n' "$unit_id"
+            done < <(
+              jq -r \
+                '.units[] | select(.targets | index("preview")) | .id' \
+                .github/delivery/catalog.json
+            )
+            printf 'validate:playwright\n'
+          )
+          jq -s '.' "$RUNNER_TEMP/deployments.jsonl" \
+            > "$RUNNER_TEMP/deployments.json"
+
+      - name: Read changes from recorded Preview State
+        if: github.event.action == 'synchronize'
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          history='{}'
+          while IFS= read -r ref; do
+            if [[ "$ref" =~ ^[0-9a-fA-F]{40}$ ]] && ! git cat-file -e "${ref}^{commit}"; then
+              git fetch --no-tags origin "$ref"
+            fi
+            if [[ ! "$ref" =~ ^[0-9a-fA-F]{40}$ ]] || ! git cat-file -e "${ref}^{commit}"; then
+              echo "Preview State ref '$ref' is not a readable commit." >&2
+              exit 1
+            fi
+
+            set +e
+            git merge-base --is-ancestor "$ref" "$HEAD_SHA"
+            relation_status=$?
+            set -e
+            case "$relation_status" in
+              0)
+                git diff --name-only "$ref..$HEAD_SHA" \
+                  > "$RUNNER_TEMP/changed-files-from-state.txt"
+                state_impact="$(
+                  node .github/delivery/generate.mjs \
+                    --preview-impact "$RUNNER_TEMP/changed-files-from-state.txt"
+                )"
+                state_history="$(jq -c '. + {related: true}' <<< "$state_impact")"
+                ;;
+              1)
+                state_history='{"related":false,"runtimeAffected":true,"changedWorkspaces":[]}'
+                ;;
+              *)
+                echo "Unable to compare Preview State ref '$ref' with '$HEAD_SHA'." >&2
+                exit 1
+                ;;
+            esac
+            history="$(
+              jq -c \
+                --arg ref "$ref" \
+                --argjson stateHistory "$state_history" \
+                '. + {($ref): $stateHistory}' \
+                <<< "$history"
+            )"
+          done < <(
+            jq -r \
+              '.[] | select(.statuses[0].state == "success") | select(.task == "validate:playwright" or any(.statuses[]; .state == "in_progress")) | .ref | select(type == "string" and length > 0)' \
+              "$RUNNER_TEMP/deployments.json" \
+              | sort -u
+          )
+          printf '%s\n' "$history" > "$RUNNER_TEMP/preview-history.json"
 
       - name: Create Preview Plan
         id: plan
         env:
           CHANGED_WORKSPACES: ${{ steps.impact.outputs.changed-workspaces }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           LIFECYCLE: ${{ github.event.action }}
           RUNTIME_AFFECTED: ${{ steps.impact.outputs.runtime-affected }}
           STAGE: pr-${{ github.event.pull_request.number }}
         shell: bash
         run: |
+          deployments='[]'
           existing_stacks='[]'
+          history='{}'
+          if [[ -f "$RUNNER_TEMP/deployments.json" ]]; then
+            deployments="$(cat "$RUNNER_TEMP/deployments.json")"
+          fi
           if [[ -f "$RUNNER_TEMP/existing-stacks.json" ]]; then
             existing_stacks="$(cat "$RUNNER_TEMP/existing-stacks.json")"
           fi
+          if [[ -f "$RUNNER_TEMP/preview-history.json" ]]; then
+            history="$(cat "$RUNNER_TEMP/preview-history.json")"
+          fi
 
           jq -n \
+            --arg environment "$STAGE" \
+            --arg head "$HEAD_SHA" \
             --arg lifecycle "$LIFECYCLE" \
             --arg stage "$STAGE" \
             --argjson runtimeAffected "$RUNTIME_AFFECTED" \
             --argjson changedWorkspaces "$CHANGED_WORKSPACES" \
+            --argjson deployments "$deployments" \
             --argjson existingStacks "$existing_stacks" \
-            '{lifecycle: $lifecycle, stage: $stage, runtimeAffected: $runtimeAffected, changedWorkspaces: $changedWorkspaces, existingStacks: $existingStacks}' \
+            --argjson history "$history" \
+            '{environment: $environment, head: $head, lifecycle: $lifecycle, stage: $stage, runtimeAffected: $runtimeAffected, changedWorkspaces: $changedWorkspaces, deployments: $deployments, existingStacks: $existingStacks, history: $history}' \
             > "$RUNNER_TEMP/preview-plan-input.json"
 
           plan="$(node .github/delivery/generate.mjs --preview-plan "$RUNNER_TEMP/preview-plan-input.json")"
           echo "runtime-affected=$RUNTIME_AFFECTED" >> "$GITHUB_OUTPUT"
           echo "units=$(jq -c '.units' <<< "$plan")" >> "$GITHUB_OUTPUT"
+          echo "validation-required=$(jq -r '.validationRequired' <<< "$plan")" >> "$GITHUB_OUTPUT"
           echo "### Preview Plan" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           echo "$plan" | jq . >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Read current Accounts API configuration
+        id: current-api-config
+        if: steps.plan.outputs.validation-required == 'true' && !contains(fromJSON(steps.plan.outputs.units), 'accounts-api')
+        shell: bash
+        run: |
+          stack="$(
+            aws cloudformation describe-stacks \
+              --stack-name "accounts-${STAGE}-api" \
+              --query 'Stacks[0]' \
+              --output json
+          )"
+          appsync_url="$(jq -r '.Outputs[] | select(.OutputKey == "AccountsApiUrl") | .OutputValue' <<< "$stack")"
+          aws_region="$(jq -r '.StackId | split(":")[3]' <<< "$stack")"
+          if [[ -z "$appsync_url" || "$appsync_url" == "null" || -z "$aws_region" || "$aws_region" == "null" ]]; then
+            echo "Accounts client configuration is unavailable." >&2
+            exit 1
+          fi
+          echo "appsync-url=$appsync_url" >> "$GITHUB_OUTPUT"
+          echo "aws-region=$aws_region" >> "$GITHUB_OUTPUT"
 
   # Auth0 tenant
   # auth0-tenant:
@@ -198,12 +330,16 @@ jobs:
       - setup
 
     env:
+      DEPLOYMENT_ENVIRONMENT: pr-${{ github.event.pull_request.number }}
+      DEPLOYMENT_REF: ${{ github.event.pull_request.head.sha }}
+      DEPLOYMENT_TASK: deploy:core-anti-virus
       AWS_DEFAULT_REGION: eu-west-1
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -352,6 +488,41 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         uses: nick-fields/retry@v3
         with:
@@ -359,6 +530,21 @@ jobs:
           max_attempts: 3
           retry_on: error
           timeout_minutes: 15
+
+      - name: Record successful Deployment
+        id: deployment-success
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state success \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+          echo "recorded=true" >> "$GITHUB_OUTPUT"
 
       - name: Check for definitions
         id: definitions
@@ -368,6 +554,20 @@ jobs:
       - name: Update definitions
         if: steps.definitions.outcome != 'success'
         run: yarn workspace @core/anti-virus update-definitions --stage $STAGE
+
+      - name: Record failed Deployment
+        if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state failure \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
 
   # Accounts (queue)
   accounts-queue:
@@ -382,11 +582,15 @@ jobs:
       - accounts-data
 
     env:
+      DEPLOYMENT_ENVIRONMENT: pr-${{ github.event.pull_request.number }}
+      DEPLOYMENT_REF: ${{ github.event.pull_request.head.sha }}
+      DEPLOYMENT_TASK: deploy:accounts-queue
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -466,8 +670,72 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/queue deploy --stage $STAGE
+
+      - name: Record successful Deployment
+        id: deployment-success
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state success \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+          echo "recorded=true" >> "$GITHUB_OUTPUT"
+
+      - name: Record failed Deployment
+        if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state failure \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
 
   # Accounts (storage)
   accounts-storage:
@@ -482,11 +750,15 @@ jobs:
       - core-anti-virus
 
     env:
+      DEPLOYMENT_ENVIRONMENT: pr-${{ github.event.pull_request.number }}
+      DEPLOYMENT_REF: ${{ github.event.pull_request.head.sha }}
+      DEPLOYMENT_TASK: deploy:accounts-storage
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -566,8 +838,72 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/storage deploy --stage $STAGE
+
+      - name: Record successful Deployment
+        id: deployment-success
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state success \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+          echo "recorded=true" >> "$GITHUB_OUTPUT"
+
+      - name: Record failed Deployment
+        if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state failure \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
 
   # Accounts (data)
   accounts-data:
@@ -583,11 +919,15 @@ jobs:
       - core-anti-virus
 
     env:
+      DEPLOYMENT_ENVIRONMENT: pr-${{ github.event.pull_request.number }}
+      DEPLOYMENT_REF: ${{ github.event.pull_request.head.sha }}
+      DEPLOYMENT_TASK: deploy:accounts-data
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -667,8 +1007,72 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/data deploy --stage $STAGE
+
+      - name: Record successful Deployment
+        id: deployment-success
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state success \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+          echo "recorded=true" >> "$GITHUB_OUTPUT"
+
+      - name: Record failed Deployment
+        if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state failure \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
 
   # Accounts (warm up)
   accounts-warm-up:
@@ -683,11 +1087,15 @@ jobs:
       - accounts-data
 
     env:
+      DEPLOYMENT_ENVIRONMENT: pr-${{ github.event.pull_request.number }}
+      DEPLOYMENT_REF: ${{ github.event.pull_request.head.sha }}
+      DEPLOYMENT_TASK: deploy:accounts-warm-up
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -767,12 +1175,76 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/warm-up deploy --stage $STAGE
+
+      - name: Record successful Deployment
+        id: deployment-success
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state success \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+          echo "recorded=true" >> "$GITHUB_OUTPUT"
 
       - name: Warm up
         if: github.event.action != 'synchronize'
         run: yarn workspace @accounts/warm-up start --stage $STAGE
+
+      - name: Record failed Deployment
+        if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state failure \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
 
   # Accounts (notifications)
   accounts-notifications:
@@ -787,10 +1259,14 @@ jobs:
       - accounts-data
 
     env:
+      DEPLOYMENT_ENVIRONMENT: pr-${{ github.event.pull_request.number }}
+      DEPLOYMENT_REF: ${{ github.event.pull_request.head.sha }}
+      DEPLOYMENT_TASK: deploy:accounts-notifications
       STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -870,8 +1346,72 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/notifications deploy --stage $STAGE
+
+      - name: Record successful Deployment
+        id: deployment-success
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state success \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+          echo "recorded=true" >> "$GITHUB_OUTPUT"
+
+      - name: Record failed Deployment
+        if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state failure \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
 
   # Accounts (reports)
   accounts-reports:
@@ -888,11 +1428,15 @@ jobs:
       - accounts-storage
 
     env:
+      DEPLOYMENT_ENVIRONMENT: pr-${{ github.event.pull_request.number }}
+      DEPLOYMENT_REF: ${{ github.event.pull_request.head.sha }}
+      DEPLOYMENT_TASK: deploy:accounts-reports
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
 
@@ -972,8 +1516,72 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/reports deploy --stage $STAGE
+
+      - name: Record successful Deployment
+        id: deployment-success
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state success \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+          echo "recorded=true" >> "$GITHUB_OUTPUT"
+
+      - name: Record failed Deployment
+        if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state failure \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
 
   # Accounts (API)
   accounts-api:
@@ -995,12 +1603,16 @@ jobs:
       - accounts-storage
 
     env:
+      DEPLOYMENT_ENVIRONMENT: pr-${{ github.event.pull_request.number }}
+      DEPLOYMENT_REF: ${{ github.event.pull_request.head.sha }}
+      DEPLOYMENT_TASK: deploy:accounts-api
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     permissions:
+      deployments: write
       id-token: write
       contents: read
       pull-requests: write
@@ -1081,8 +1693,58 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Deploy
         run: yarn workspace @accounts/api deploy --stage $STAGE
+
+      - name: Record successful Deployment
+        id: deployment-success
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state success \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+          echo "recorded=true" >> "$GITHUB_OUTPUT"
 
       - name: Export client configuration
         id: client-config
@@ -1125,6 +1787,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
 
+      - name: Record failed Deployment
+        if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state failure \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
   # Preview status
   preview-status:
     name: Preview
@@ -1146,15 +1822,15 @@ jobs:
 
     steps:
       - name: Report planning failure
-        if: contains(fromJSON('["failure", "cancelled"]'), needs.setup.result)
+        if: needs.setup.result != 'success'
         run: exit 1
 
-      - name: Preview deployment is not applicable
-        if: needs.setup.result == 'skipped' || needs.setup.outputs.runtime-affected == 'false'
-        run: echo 'Preview deployment is not applicable for this pull request event.' >> "$GITHUB_STEP_SUMMARY"
+      - name: No Preview deployment required
+        if: needs.setup.result == 'success' && needs.setup.outputs.units == '[]'
+        run: echo 'No Preview Environment mutation is required.' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Verify Preview Plan
-        if: needs.setup.outputs.runtime-affected == 'true'
+        if: needs.setup.result == 'success'
         env:
           NEEDS: ${{ toJSON(needs) }}
           UNITS: ${{ needs.setup.outputs.units }}
@@ -1177,7 +1853,7 @@ jobs:
       - setup
       - preview-status
 
-    if: always() && needs.setup.outputs.runtime-affected == 'true' && needs.preview-status.result == 'success'
+    if: always() && needs.setup.outputs.validation-required == 'true' && needs.preview-status.result == 'success'
 
     strategy:
       fail-fast: false
@@ -1282,8 +1958,8 @@ jobs:
 
       - name: Write client configuration
         env:
-          REACT_APP_APPSYNC_URL: ${{ needs.accounts-api.outputs.appsync-url }}
-          REACT_APP_AWS_REGION: ${{ needs.accounts-api.outputs.aws-region }}
+          REACT_APP_APPSYNC_URL: ${{ needs.accounts-api.outputs.appsync-url || needs.setup.outputs.api-appsync-url }}
+          REACT_APP_AWS_REGION: ${{ needs.accounts-api.outputs.aws-region || needs.setup.outputs.api-aws-region }}
         run: |
           printf 'REACT_APP_APPSYNC_URL="%s"\n' "$REACT_APP_APPSYNC_URL" > ./applications/accounts/client/.env.production
           printf 'REACT_APP_AWS_REGION="%s"\n' "$REACT_APP_AWS_REGION" >> ./applications/accounts/client/.env.production
@@ -1306,7 +1982,51 @@ jobs:
 
     if: always()
 
+    permissions:
+      contents: read
+      deployments: write
+
     steps:
+      - name: Create Preview Validation Deployment
+        id: validation-deployment
+        if: needs.setup.result == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg environment "pr-${{ github.event.pull_request.number }}" \
+              --arg ref "${{ github.event.pull_request.head.sha }}" \
+              '{
+                environment: $environment,
+                task: "validate:playwright",
+                ref: $ref,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST \
+                "repos/${GITHUB_REPOSITORY}/deployments" \
+                --input - \
+                --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Record Preview Validation result
+        if: always() && steps.validation-deployment.outputs.id != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VALIDATION_STATE: ${{ (needs.setup.outputs.validation-required != 'true' || needs.accounts-client.result == 'success') && 'success' || 'failure' }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state "$VALIDATION_STATE" \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.validation-deployment.outputs.id }}/statuses" \
+              --input -
+
       - name: Generate release token
         id: generate_token
         uses: actions/create-github-app-token@v3
@@ -1319,12 +2039,16 @@ jobs:
         with:
           github-token: ${{ steps.generate_token.outputs.token }}
           script: |
-            const runtimeAffected = '${{ needs.setup.outputs.runtime-affected }}' === 'true';
+            const planningSucceeded = '${{ needs.setup.result }}' === 'success';
+            const validationRequired = '${{ needs.setup.outputs.validation-required }}' === 'true';
             const testsPassed = '${{ needs.accounts-client.result }}' === 'success';
-            const status = !runtimeAffected || testsPassed ? 'success' : 'failure';
-            const description = runtimeAffected
-              ? (testsPassed ? 'Playwright tests passed' : 'Playwright tests failed')
-              : 'Playwright is not applicable';
+            const validationPassed = planningSucceeded && (!validationRequired || testsPassed);
+            const status = validationPassed ? 'success' : 'failure';
+            const description = !planningSucceeded
+              ? 'Preview planning failed'
+              : validationRequired
+                ? (testsPassed ? 'Playwright tests passed' : 'Playwright tests failed')
+                : 'Playwright is not applicable';
 
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
