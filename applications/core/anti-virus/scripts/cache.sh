@@ -84,12 +84,16 @@ validate_cache() {
   validate_required_files
 
   actual_manifest="$(mktemp "${TMPDIR:-/tmp}/clamav-manifest.XXXXXX")"
-  trap 'rm -f "$actual_manifest"' RETURN
-  write_checksums > "$actual_manifest"
+  if ! write_checksums > "$actual_manifest"; then
+    rm -f "$actual_manifest"
+    return 1
+  fi
   if [[ ! -s "$actual_manifest" ]] || ! cmp -s "$BUILD_MANIFEST" "$actual_manifest"; then
+    rm -f "$actual_manifest"
     echo 'ClamAV cache contents are incomplete or corrupt' >&2
     return 1
   fi
+  rm -f "$actual_manifest"
 }
 
 write_cache() {
@@ -102,13 +106,27 @@ write_cache() {
   validate_required_files
 
   manifest_temp="$(mktemp "${TMPDIR:-/tmp}/clamav-manifest.XXXXXX")"
-  revision_temp="$(mktemp "${TMPDIR:-/tmp}/clamav-revision.XXXXXX")"
-  trap 'rm -f "$manifest_temp" "$revision_temp"' RETURN
+  if ! revision_temp="$(mktemp "${TMPDIR:-/tmp}/clamav-revision.XXXXXX")"; then
+    rm -f "$manifest_temp"
+    return 1
+  fi
   rm -f "$BUILD_MANIFEST" "$BUILD_REVISION"
-  write_checksums > "$manifest_temp"
-  printf '%s\n' "$(cache_revision)" > "$revision_temp"
-  mv "$manifest_temp" "$BUILD_MANIFEST"
-  mv "$revision_temp" "$BUILD_REVISION"
+  if ! write_checksums > "$manifest_temp"; then
+    rm -f "$manifest_temp" "$revision_temp"
+    return 1
+  fi
+  if ! cache_revision > "$revision_temp"; then
+    rm -f "$manifest_temp" "$revision_temp"
+    return 1
+  fi
+  if ! mv "$manifest_temp" "$BUILD_MANIFEST"; then
+    rm -f "$manifest_temp" "$revision_temp"
+    return 1
+  fi
+  if ! mv "$revision_temp" "$BUILD_REVISION"; then
+    rm -f "$manifest_temp" "$revision_temp"
+    return 1
+  fi
   validate_cache
 }
 
