@@ -838,7 +838,7 @@ test('dependency setup never restores stale installed dependencies and falls bac
     ),
   ]);
 
-  assert.match(action, /uses: actions\/setup-node@v6/);
+  assert.match(action, /uses: actions\/setup-node@v7/);
   assert.match(action, /path: \|\n\s+\.\/node_modules/);
   assert.match(action, /\.\/applications\/\*\/\*\/node_modules/);
   assert.match(action, /\.\/packages\/\*\/node_modules/);
@@ -1434,7 +1434,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.match(
     deployment,
-    /uses: actions\/checkout@v6\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
+    /uses: actions\/checkout@v7\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
   );
   assert.match(deployment, /^      deployments: write$/m);
   assert.match(
@@ -1482,7 +1482,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.match(
     playwright,
-    /uses: actions\/checkout@v6\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
+    /uses: actions\/checkout@v7\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
   );
   assert.match(
     playwright,
@@ -1729,7 +1729,7 @@ test('Release publishes selectively from full history and constructs one exact-t
   assert.doesNotMatch(releaseJob, /^      deployments: write$/m);
   assert.match(develop, /^      deployments: write$/m);
   assert.match(production, /^      deployments: write$/m);
-  assert.match(releaseJob, /uses: actions\/checkout@v6[\s\S]*fetch-depth: 0/);
+  assert.match(releaseJob, /uses: actions\/checkout@v7[\s\S]*fetch-depth: 0/);
   assert.match(releaseJob, /run: yarn release/);
   assert.doesNotMatch(
     releaseJob,

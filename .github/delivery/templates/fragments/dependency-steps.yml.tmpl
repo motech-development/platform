@@ -3,7 +3,7 @@
         run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -13,7 +13,7 @@
 
       - name: Restore installed dependencies
         id: installed-dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ./node_modules
@@ -25,7 +25,7 @@
       - name: Restore Yarn archives
         id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.yarn/berry/cache

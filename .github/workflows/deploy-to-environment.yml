@@ -35,13 +35,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set Node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -56,7 +56,7 @@ jobs:
 
       - name: Configure AWS credentials
         if: github.event.action == 'synchronize'
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -256,10 +256,10 @@ jobs:
 
   #   steps:
   #     - name: Checkout code
-  #       uses: actions/checkout@v6
+  #       uses: actions/checkout@v7
 
   #     - name: Set Node version
-  #       uses: actions/setup-node@v6
+  #       uses: actions/setup-node@v7
   #       with:
   #         node-version-file: .nvmrc
   #         cache: yarn
@@ -268,7 +268,7 @@ jobs:
   #       run: ./scripts/checksum.sh ./packages.txt packages
 
   #     - name: Restore Node modules
-  #       uses: actions/cache@v5
+  #       uses: actions/cache@v6
   #       with:
   #         path: |
   #           ./node_modules
@@ -279,7 +279,7 @@ jobs:
   #           ${{ runner.os }}-modules-
 
   #     - name: Restore packages
-  #       uses: actions/cache@v5
+  #       uses: actions/cache@v6
   #       with:
   #         path: ./packages/*/lib
   #         key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
@@ -287,7 +287,7 @@ jobs:
   #           ${{ runner.os }}-packages-
 
   #     - name: Restore application cache
-  #       uses: actions/cache@v5
+  #       uses: actions/cache@v6
   #       with:
   #         path: |
   #           ./applications/id/client/node_modules/.cache
@@ -298,7 +298,7 @@ jobs:
   #           ${{ runner.os }}-id-v4-
 
   #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v5
+  #       uses: aws-actions/configure-aws-credentials@v6
   #       with:
   #         aws-region: eu-west-1
   #         role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -345,7 +345,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -354,7 +354,7 @@ jobs:
         run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -364,7 +364,7 @@ jobs:
 
       - name: Restore installed dependencies
         id: installed-dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ./node_modules
@@ -376,7 +376,7 @@ jobs:
       - name: Restore Yarn archives
         id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.yarn/berry/cache
@@ -431,7 +431,7 @@ jobs:
       - name: Restore ClamAV binaries
         id: clamav-binaries
         if: steps.clamav-cache.outputs.supported == 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ./applications/core/anti-virus/bin
           key: ${{ runner.os }}-${{ runner.arch }}-clamav-binaries-v2-${{ hashFiles('applications/core/anti-virus/build-inputs.env', 'applications/core/anti-virus/scripts/build.sh', 'applications/core/anti-virus/scripts/cache.sh') }}
@@ -483,7 +483,7 @@ jobs:
           echo "| Anti-virus packaging | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -524,7 +524,7 @@ jobs:
               --input -
 
       - name: Deploy
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           command: yarn workspace @core/anti-virus exec serverless deploy --stage $STAGE --package "$RUNNER_TEMP/anti-virus-package"
           max_attempts: 3
@@ -596,7 +596,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -605,7 +605,7 @@ jobs:
         run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -615,7 +615,7 @@ jobs:
 
       - name: Restore installed dependencies
         id: installed-dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ./node_modules
@@ -627,7 +627,7 @@ jobs:
       - name: Restore Yarn archives
         id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.yarn/berry/cache
@@ -665,7 +665,7 @@ jobs:
           echo "| Workspace package build (@accounts/queue) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -764,7 +764,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -773,7 +773,7 @@ jobs:
         run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -783,7 +783,7 @@ jobs:
 
       - name: Restore installed dependencies
         id: installed-dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ./node_modules
@@ -795,7 +795,7 @@ jobs:
       - name: Restore Yarn archives
         id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.yarn/berry/cache
@@ -833,7 +833,7 @@ jobs:
           echo "| Workspace package build (@accounts/storage) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -933,7 +933,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -942,7 +942,7 @@ jobs:
         run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -952,7 +952,7 @@ jobs:
 
       - name: Restore installed dependencies
         id: installed-dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ./node_modules
@@ -964,7 +964,7 @@ jobs:
       - name: Restore Yarn archives
         id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.yarn/berry/cache
@@ -1002,7 +1002,7 @@ jobs:
           echo "| Workspace package build (@accounts/data) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -1101,7 +1101,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -1110,7 +1110,7 @@ jobs:
         run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -1120,7 +1120,7 @@ jobs:
 
       - name: Restore installed dependencies
         id: installed-dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ./node_modules
@@ -1132,7 +1132,7 @@ jobs:
       - name: Restore Yarn archives
         id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.yarn/berry/cache
@@ -1170,7 +1170,7 @@ jobs:
           echo "| Workspace package build (@accounts/warm-up) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -1272,7 +1272,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -1281,7 +1281,7 @@ jobs:
         run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -1291,7 +1291,7 @@ jobs:
 
       - name: Restore installed dependencies
         id: installed-dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ./node_modules
@@ -1303,7 +1303,7 @@ jobs:
       - name: Restore Yarn archives
         id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.yarn/berry/cache
@@ -1341,7 +1341,7 @@ jobs:
           echo "| Workspace package build (@accounts/notifications) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -1442,7 +1442,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -1451,7 +1451,7 @@ jobs:
         run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -1461,7 +1461,7 @@ jobs:
 
       - name: Restore installed dependencies
         id: installed-dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ./node_modules
@@ -1473,7 +1473,7 @@ jobs:
       - name: Restore Yarn archives
         id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.yarn/berry/cache
@@ -1511,7 +1511,7 @@ jobs:
           echo "| Workspace package build (@accounts/reports) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -1619,7 +1619,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -1628,7 +1628,7 @@ jobs:
         run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -1638,7 +1638,7 @@ jobs:
 
       - name: Restore installed dependencies
         id: installed-dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ./node_modules
@@ -1650,7 +1650,7 @@ jobs:
       - name: Restore Yarn archives
         id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.yarn/berry/cache
@@ -1688,7 +1688,7 @@ jobs:
           echo "| Workspace package build (@accounts/api) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -1875,7 +1875,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -1884,7 +1884,7 @@ jobs:
         run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -1894,7 +1894,7 @@ jobs:
 
       - name: Restore installed dependencies
         id: installed-dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ./node_modules
@@ -1906,7 +1906,7 @@ jobs:
       - name: Restore Yarn archives
         id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.yarn/berry/cache
@@ -1945,7 +1945,7 @@ jobs:
 
       - name: Restore cache
         id: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
@@ -2035,7 +2035,7 @@ jobs:
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
       - name: Set commit status
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ steps.generate_token.outputs.token }}
           script: |
