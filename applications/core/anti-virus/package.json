@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "Motech Development anit-virus service",
   "scripts": {
+    "formatting": "prettier . --check",
     "clean": "./scripts/clean.sh",
     "deploy": "run predeploy && serverless deploy --verbose",
     "lint": "eslint './src/**/*.ts'",
@@ -10,6 +11,7 @@
     "teardown": "serverless remove --verbose",
     "test": "jest --watch",
     "test-ci": "jest --coverage --runInBand",
+    "typecheck": "tsc --noEmit",
     "update-definitions": "serverless invoke -f UpdateDefinitions"
   },
   "dependencies": {

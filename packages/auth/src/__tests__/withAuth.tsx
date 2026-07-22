@@ -34,7 +34,7 @@ describe('withAuth', () => {
       ...process.env,
     };
     getIdTokenClaims = jest.fn();
-    getIdTokenClaims = jest.fn();
+    getTokenSilently = jest.fn();
     isAuthenticated = false;
     loginWithPopup = jest.fn();
     loginWithRedirect = jest.fn();

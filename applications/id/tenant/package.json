@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "Motech Development Auth0 tenant",
   "scripts": {
+    "formatting": "prettier . --check",
     "deploy": "a0deploy import -i ./tenant.yaml",
     "deploy:local": "run deploy -c config.local.json",
     "import": "a0deploy export -c config.local.json -f yaml -o ./",

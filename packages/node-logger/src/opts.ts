@@ -10,7 +10,14 @@ interface IInfo {
   [MESSAGE]: string;
 }
 
-const opts: transports.ConsoleTransportOptions = {
+type ConsoleTransportOptions = Omit<
+  transports.ConsoleTransportOptions,
+  'log'
+> & {
+  log(info: IInfo, callback?: () => void): void;
+};
+
+const opts: ConsoleTransportOptions = {
   level: process.env.LOG_LEVEL ?? 'info',
   log(info: IInfo, callback) {
     setImmediate(() => (this as Transport).emit('logged', info));

@@ -14,6 +14,7 @@
     "commit": "cz",
     "format": "yarn workspaces foreach -Wv run prettier --ignore-unknown --write .",
     "format-root": "prettier --ignore-unknown --write .",
+    "formatting": "yarn workspaces foreach -Wp run formatting",
     "lint": "yarn workspaces foreach -Wp run lint",
     "package": "yarn workspaces foreach -Wpt run package",
     "prepare": "is-ci || husky",

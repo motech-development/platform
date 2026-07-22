@@ -38,6 +38,40 @@ jobs:
       - name: Check generated workflows
         run: node .github/delivery/generate.mjs --check
 
+  formatting:
+    name: Formatting
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - name: Restore Node modules
+        id: node-modules
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
+      - name: Install dependencies
+        if: steps.node-modules.outputs.cache-hit != 'true'
+        run: yarn
+
+      - name: Check formatting
+        run: yarn formatting
+
   lint:
     name: Lint
 
@@ -68,6 +102,9 @@ jobs:
       - name: Install dependencies
         if: steps.node-modules.outputs.cache-hit != 'true'
         run: yarn
+
+      - name: Build packages
+        run: yarn package
 
       - name: Lint code
         run: yarn lint
@@ -102,6 +139,9 @@ jobs:
       - name: Install dependencies
         if: steps.node-modules.outputs.cache-hit != 'true'
         run: yarn
+
+      - name: Build packages
+        run: yarn package
 
       - name: Type check
         run: yarn typecheck

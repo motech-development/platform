@@ -1,10 +1,9 @@
-const winston =
-  jest.genMockFromModule<{
-    createLogger: jest.Mock;
-    transports: {
-      Console: jest.Mock;
-    };
-  }>('winston');
+const winston = jest.genMockFromModule<{
+  createLogger: jest.Mock;
+  transports: {
+    Console: jest.Mock;
+  };
+}>('winston');
 
 winston.createLogger = jest.fn().mockReturnValue({
   log: jest.fn(),

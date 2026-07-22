@@ -2,7 +2,7 @@
 
 Pull requests are the only blocking quality-gate path. The protected `main` branch requires every context in `required-status-checks.json`; a failed check, or a required context that is not reported, prevents merging.
 
-The Quality assurance workflow starts linting, type-checking, unit tests with SonarCloud, Chromatic, and delivery-catalog drift validation independently. Unit-test workspaces run with at most three concurrent processes. Individual Jest workspaces continue to use `--runInBand` in their own `test-ci` scripts. The Preview Environment workflow reports `Preview` for deployment and `Playwright` for the unchanged end-to-end suite; both report a successful not-applicable result for non-runtime changes.
+The Quality assurance workflow starts formatting, linting, type-checking, unit tests with SonarCloud, Chromatic, and delivery-catalog drift validation independently. Unit-test workspaces run with at most three concurrent processes. Individual Jest workspaces continue to use `--runInBand` in their own `test-ci` scripts. The Preview Environment workflow reports `Preview` for deployment and `Playwright` for the unchanged end-to-end suite; both report a successful not-applicable result for non-runtime changes.
 
 `UI Tests` and `UI Review` are Chromatic-native checks. Keep both features enabled for the linked Chromatic project. The Actions `Chromatic` job exits after upload so a runner does not wait for review; the native checks remain pending until visual differences have been accepted and the Visual Review checklist is complete. A pull-request author may accept their own snapshots and approve their own Visual Review. Assigned default reviewers, if any, must still complete their approvals.
 
@@ -34,4 +34,4 @@ Before completing the cutover, use a pull request with a genuine visible Storybo
 3. Have the pull-request author accept the snapshots and approve the Visual Review.
 4. Confirm `UI Tests` and `UI Review` pass, then confirm every context in `required-status-checks.json` is present and successful.
 
-Delivery and Storybook publication workflows must not repeat linting, type-checking, unit tests, SonarCloud analysis, or Chromatic validation. Accepted Chromatic baselines and any other retained post-merge reporting must not gate Release or environment delivery.
+Delivery and Storybook publication workflows must not repeat formatting, linting, type-checking, unit tests, SonarCloud analysis, or Chromatic validation. Accepted Chromatic baselines and any other retained post-merge reporting must not gate Release or environment delivery.

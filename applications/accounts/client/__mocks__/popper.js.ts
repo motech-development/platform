@@ -1,7 +1,6 @@
-const PopperJs =
-  jest.requireActual<{
-    placements: unknown;
-  }>('popper.js');
+const PopperJs = jest.requireActual<{
+  placements: unknown;
+}>('popper.js');
 
 const Popper = {
   destroy: () => {},

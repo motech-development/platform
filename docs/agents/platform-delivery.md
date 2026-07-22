@@ -98,7 +98,7 @@ Do not add:
 
 - ordinary `package.json` dependency relationships;
 - secret values;
-- lint, type-check, unit-test, SonarCloud, Chromatic, or Playwright commands;
+- formatting, lint, type-check, unit-test, SonarCloud, Chromatic, or Playwright commands;
 - generated YAML fragments;
 - speculative future targets or extension fields.
 
@@ -222,7 +222,7 @@ node .github/delivery/generate.mjs --check
 git diff --check
 ```
 
-Also run proportionate targeted lint, type-check, package, and workflow validation for affected files. Report:
+Also run proportionate targeted formatting, lint, type-check, package, and workflow validation for affected files. Report:
 
 - catalog and generated files changed;
 - scenarios tested;

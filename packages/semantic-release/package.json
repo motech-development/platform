@@ -23,6 +23,7 @@
   ],
   "main": "index.js",
   "scripts": {
+    "formatting": "prettier . --check",
     "lint": "eslint \"eslint.config.mjs\" \"index.js\" \"src\"",
     "test": "jest --watch",
     "test-ci": "jest --coverage --runInBand"
