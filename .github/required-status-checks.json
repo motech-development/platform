@@ -1,0 +1,13 @@
+{
+  "contexts": [
+    "CodeQL",
+    "Lint",
+    "Playwright",
+    "SonarCloud Code Analysis",
+    "Type check",
+    "UI Review",
+    "UI Tests",
+    "Unit tests",
+    "Validate delivery catalog"
+  ]
+}
