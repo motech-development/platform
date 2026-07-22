@@ -23,12 +23,93 @@
           "commit": "main-commit-1",
           "published": true,
           "reachable": true
+        },
+        {
+          "tag": "@motech-development/breeze-ui@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
+        },
+        {
+          "tag": "@core/anti-virus@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
+        },
+        {
+          "tag": "@core/infrastructure@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
+        },
+        {
+          "tag": "@core/comms@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
+        },
+        {
+          "tag": "@accounts/infrastructure@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
+        },
+        {
+          "tag": "@accounts/storage@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
+        },
+        {
+          "tag": "@accounts/data@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
+        },
+        {
+          "tag": "@accounts/warm-up@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
+        },
+        {
+          "tag": "@accounts/notifications@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
+        },
+        {
+          "tag": "@accounts/queue@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
+        },
+        {
+          "tag": "@accounts/reports@1.0.0",
+          "commit": "main-commit-1",
+          "published": true,
+          "reachable": true
         }
       ]
     },
     "expected": {
       "boundary": "main-commit-2",
       "target": "production",
+      "desiredTags": {
+        "@motech-development/breeze-ui": "@motech-development/breeze-ui@1.0.0",
+        "@core/anti-virus": "@core/anti-virus@1.0.0",
+        "@core/infrastructure": "@core/infrastructure@1.0.0",
+        "@core/comms": "@core/comms@1.0.0",
+        "@accounts/infrastructure": "@accounts/infrastructure@1.0.0",
+        "@accounts/storage": "@accounts/storage@1.0.0",
+        "@accounts/data": "@accounts/data@1.0.0",
+        "@accounts/warm-up": "@accounts/warm-up@1.0.0",
+        "@accounts/notifications": "@accounts/notifications@1.0.0",
+        "@accounts/queue": "@accounts/queue@1.0.0",
+        "@accounts/reports": "@accounts/reports@1.0.0",
+        "@accounts/api": "@accounts/api@2.0.0",
+        "@accounts/client": "@accounts/client@1.0.0"
+      },
       "tags": {
         "@accounts/api": "@accounts/api@2.0.0",
         "@accounts/client": "@accounts/client@1.0.0"
@@ -161,6 +242,21 @@
     "expected": {
       "boundary": "main-commit-2",
       "target": "production",
+      "desiredTags": {
+        "@motech-development/breeze-ui": "@motech-development/breeze-ui@1.0.0",
+        "@core/anti-virus": "@core/anti-virus@1.0.0",
+        "@core/infrastructure": "@core/infrastructure@1.0.0",
+        "@core/comms": "@core/comms@1.0.0",
+        "@accounts/infrastructure": "@accounts/infrastructure@1.0.0",
+        "@accounts/storage": "@accounts/storage@1.0.0",
+        "@accounts/data": "@accounts/data@1.0.0",
+        "@accounts/warm-up": "@accounts/warm-up@1.0.0",
+        "@accounts/notifications": "@accounts/notifications@1.0.0",
+        "@accounts/queue": "@accounts/queue@1.0.0",
+        "@accounts/reports": "@accounts/reports@1.0.0",
+        "@accounts/api": "@accounts/api@2.0.0",
+        "@accounts/client": "@accounts/client@1.0.0"
+      },
       "tags": {
         "@motech-development/breeze-ui": "@motech-development/breeze-ui@1.0.0",
         "@core/anti-virus": "@core/anti-virus@1.0.0",

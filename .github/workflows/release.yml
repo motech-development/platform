@@ -111,6 +111,11 @@ jobs:
 
     needs: release
 
+    permissions:
+      contents: read
+      deployments: write
+      id-token: write
+
     uses: ./.github/workflows/deploy-to-develop.yml
     with:
       release-plan: ${{ needs.release.outputs.release-plan }}
@@ -120,6 +125,11 @@ jobs:
     name: Production
 
     needs: release
+
+    permissions:
+      contents: write
+      deployments: write
+      id-token: write
 
     uses: ./.github/workflows/deploy-to-production.yml
     with:

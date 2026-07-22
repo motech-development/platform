@@ -304,6 +304,7 @@ test('Release Plan selects the latest reachable owner tag by Git history rather 
       reachable: true,
     },
   );
+  expected.desiredTags['@accounts/client'] = '@accounts/client@1.1.0';
   expected.tags['@accounts/client'] = '@accounts/client@1.1.0';
   expected.units.find(({ id }) => id === 'accounts-client').tag =
     '@accounts/client@1.1.0';
@@ -341,6 +342,158 @@ test('recorded reconciliation selects stale units and every delivery dependant',
       reconciliationFixture.input,
     ),
     reconciliationFixture.expected,
+  );
+});
+
+test('recorded failure and retry advance Environment State only after the real attempt succeeds', () => {
+  const input = structuredClone(reconciliationFixture.input);
+  const deployment = input.deployments.find(
+    ({ task }) => task === `deploy:${reconciliationFixture.failureRetry.unit}`,
+  );
+  deployment.ref = input.desiredTags['@accounts/data'];
+  deployment.statuses = reconciliationFixture.failureRetry.failedStatuses;
+
+  const failed = createReconciliationPlan(
+    planningCatalog,
+    planningManifests,
+    input,
+  );
+
+  deployment.statuses = reconciliationFixture.failureRetry.successfulStatuses;
+  const successful = createReconciliationPlan(
+    planningCatalog,
+    planningManifests,
+    input,
+  );
+
+  assert.deepEqual(
+    {
+      failed: failed.units.map(({ id }) => id),
+      successful: successful.units.map(({ id }) => id),
+    },
+    {
+      failed: reconciliationFixture.failureRetry.expectedFailedUnits,
+      successful: reconciliationFixture.failureRetry.expectedSuccessfulUnits,
+    },
+  );
+});
+
+test('a newer failed attempt is not hidden by an older successful Deployment', () => {
+  const input = structuredClone(reconciliationFixture.input);
+  const olderSuccess = input.deployments.find(
+    ({ task }) => task === 'deploy:accounts-data',
+  );
+  olderSuccess.ref = input.desiredTags['@accounts/data'];
+  input.deployments.unshift({
+    ...olderSuccess,
+    statuses: reconciliationFixture.failureRetry.failedStatuses,
+  });
+
+  assert.deepEqual(
+    createReconciliationPlan(
+      planningCatalog,
+      planningManifests,
+      input,
+    ).units.map(({ id }) => id),
+    reconciliationFixture.failureRetry.expectedFailedUnits,
+  );
+});
+
+test('recorded unsafe history and missing cloud stacks select the Deployment Unit and its dependants', () => {
+  const { unit, successfulStatuses, unsafeHistories, expectedFailedUnits } =
+    reconciliationFixture.failureRetry;
+  const results = [];
+
+  for (const unsafeHistory of unsafeHistories) {
+    const input = structuredClone(reconciliationFixture.input);
+    const deploymentIndex = input.deployments.findIndex(
+      ({ task }) => task === `deploy:${unit}`,
+    );
+    const deployment = input.deployments[deploymentIndex];
+    deployment.ref = input.desiredTags['@accounts/data'];
+    if (unsafeHistory.remove) {
+      input.deployments.splice(deploymentIndex, 1);
+    } else {
+      deployment.statuses = unsafeHistory.statuses;
+      if ('ref' in unsafeHistory) {
+        deployment.ref = unsafeHistory.ref;
+      }
+    }
+    results.push({
+      name: unsafeHistory.name,
+      units: createReconciliationPlan(
+        planningCatalog,
+        planningManifests,
+        input,
+      ).units.map(({ id }) => id),
+    });
+  }
+
+  const missingStackInput = structuredClone(reconciliationFixture.input);
+  const matchingDeployment = missingStackInput.deployments.find(
+    ({ task }) => task === `deploy:${unit}`,
+  );
+  matchingDeployment.ref = missingStackInput.desiredTags['@accounts/data'];
+  matchingDeployment.statuses = successfulStatuses;
+  missingStackInput.existingStacks = missingStackInput.existingStacks.filter(
+    (stack) => stack !== 'accounts-production-data',
+  );
+  results.push({
+    name: 'missing expected stack',
+    units: createReconciliationPlan(
+      planningCatalog,
+      planningManifests,
+      missingStackInput,
+    ).units.map(({ id }) => id),
+  });
+
+  assert.deepEqual(
+    results,
+    [...unsafeHistories, { name: 'missing expected stack' }].map(
+      ({ name }) => ({
+        name,
+        units: expectedFailedUnits,
+      }),
+    ),
+  );
+});
+
+test('Develop and production reconcile their Environment State independently', () => {
+  const productionInput = structuredClone(reconciliationFixture.input);
+  const productionData = productionInput.deployments.find(
+    ({ task }) => task === 'deploy:accounts-data',
+  );
+  productionData.ref = productionInput.desiredTags['@accounts/data'];
+
+  const developInput = structuredClone(reconciliationFixture.input);
+  developInput.target = 'develop';
+  developInput.environment = 'develop';
+  developInput.stage = 'develop';
+  developInput.deployments = developInput.deployments.map((deployment) => ({
+    ...deployment,
+    environment: 'develop',
+  }));
+  developInput.existingStacks = developInput.existingStacks.map((stack) =>
+    stack.replaceAll('production', 'develop'),
+  );
+
+  assert.deepEqual(
+    {
+      production: createReconciliationPlan(
+        planningCatalog,
+        planningManifests,
+        productionInput,
+      ).units.map(({ id }) => id),
+      develop: createReconciliationPlan(
+        planningCatalog,
+        planningManifests,
+        developInput,
+      ).units.map(({ id }) => id),
+    },
+    {
+      production: [],
+      develop: reconciliationFixture.failureRetry.expectedDevelopUnits,
+    },
   );
 });
 
@@ -436,7 +589,7 @@ test('generator emits deterministic static workflow graphs with one job per Depl
   }
   assert.match(
     workflowJob(production, 'core-communications'),
-    /needs:\n      - core-infrastructure[\s\S]*Deploy comms infrastructure/,
+    /needs:\n      - setup\n      - core-infrastructure[\s\S]*Deploy comms infrastructure/,
   );
   assert.doesNotMatch(
     workflowJob(production, 'core-infrastructure'),
@@ -681,6 +834,9 @@ test('Release publishes selectively from full history and constructs one exact-t
     /workflow_dispatch:\n    inputs:\n      boundary:[\s\S]*required: true/,
   );
   assert.doesNotMatch(release, /^\s+(?:application-)?version:/m);
+  assert.doesNotMatch(releaseJob, /^      deployments: write$/m);
+  assert.match(develop, /^      deployments: write$/m);
+  assert.match(production, /^      deployments: write$/m);
   assert.match(releaseJob, /uses: actions\/checkout@v6[\s\S]*fetch-depth: 0/);
   assert.match(releaseJob, /run: yarn release/);
   assert.doesNotMatch(
@@ -706,7 +862,7 @@ test('Release publishes selectively from full history and constructs one exact-t
   );
 });
 
-test('generated long-lived delivery selects Release Plan units and checks out each owning-workspace tag', async () => {
+test('generated long-lived delivery reconciles Environment State after acquiring independent non-cancelling locks', async () => {
   const [catalog, manifests, generated] = await Promise.all([
     loadCatalog(),
     loadWorkspaceManifests(),
@@ -723,21 +879,56 @@ test('generated long-lived delivery selects Release Plan units and checks out ea
       /workflow_call:\n    inputs:\n      release-plan:[\s\S]*required: true[\s\S]*type: string/,
     );
     assert.doesNotMatch(workflow, /^  push:$/m);
+    assert.match(
+      workflow,
+      new RegExp(
+        `concurrency:\\n  group: ${target}-environment\\n  cancel-in-progress: false`,
+      ),
+    );
+
+    const setup = workflowJob(workflow, 'setup');
+    assert.doesNotMatch(setup, /github\.actor/);
+    assert.match(setup, /^    outputs:\n      units: /m);
+    assert.match(setup, /aws cloudformation describe-stacks/);
+    assert.match(
+      setup,
+      /repos\/\$\{GITHUB_REPOSITORY\}\/deployments[\s\S]*environment[\s\S]*task/,
+    );
+    assert.match(setup, /deployments\/\$deployment_id\/statuses/);
+    assert.match(setup, /-f per_page=1 \\/);
+    assert.match(setup, /fromJSON\(inputs\.release-plan\)\.desiredTags/);
+    assert.match(
+      setup,
+      /node \.github\/delivery\/generate\.mjs[\s\\]*--reconciliation-plan/,
+    );
+    assert.doesNotMatch(workflow, /^(?!\s*#)\s+.*\.serverless$/m);
 
     for (const { id } of createJobGraph(catalog, manifests, target)) {
       const unit = catalog.units.find((candidate) => candidate.id === id);
       const job = workflowJob(workflow, id);
+      assert.match(job, /^    needs:\n      - setup$/m);
       assert.match(
         job,
         new RegExp(
-          `contains\\(fromJSON\\(inputs\\.release-plan\\)\\.units\\.\\*\\.id, '${id}'\\)`,
+          `contains\\(fromJSON\\(needs\\.setup\\.outputs\\.units \\|\\| '\\[\\]'\\), '${id}'\\)`,
         ),
       );
       assert.ok(
         job.includes(
-          `ref: \${{ fromJSON(inputs.release-plan).tags['${unit.workspace}'] }}`,
+          `ref: \${{ fromJSON(inputs.release-plan).desiredTags['${unit.workspace}'] }}`,
         ),
         `${filename} ${id} must check out its owning-workspace Release tag`,
+      );
+      assert.match(job, /^      deployments: write$/m);
+      assert.match(
+        job,
+        new RegExp(
+          `DEPLOYMENT_TASK: deploy:${id}[\\s\\S]*Create GitHub Deployment[\\s\\S]*auto_merge: false[\\s\\S]*required_contexts: \\[\\]`,
+        ),
+      );
+      assert.match(
+        job,
+        /Create in-progress Deployment status[\s\S]*--arg state in_progress[\s\S]*Record Deployment result[\s\S]*auto_inactive: false/,
       );
     }
   }
