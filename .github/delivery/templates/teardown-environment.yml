@@ -31,39 +31,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        id: node-modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        id: packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
-
-      - name: Install dependencies
-        if: steps.node-modules.outputs.cache-hit != 'true' || steps.cache.outputs.cache-hit != 'true'
-        run: yarn
-
-      - name: Build packages
-        if: steps.packages.outputs.cache-hit != 'true' || steps.node-modules.outputs.cache-hit != 'true'
-        run: yarn package
 
   # Anti virus
   anti-virus:
@@ -91,33 +58,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
+      # {{fragment:dependency-steps:@core/anti-virus}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -155,33 +96,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
+      # {{fragment:dependency-steps:@accounts/queue}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -221,33 +136,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
+      # {{fragment:dependency-steps:@accounts/storage}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -290,33 +179,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
+      # {{fragment:dependency-steps:@accounts/data}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -350,33 +213,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
+      # {{fragment:dependency-steps:@accounts/warm-up}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -410,33 +247,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
+      # {{fragment:dependency-steps:@accounts/notifications}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -473,33 +284,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
+      # {{fragment:dependency-steps:@accounts/reports}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -536,33 +321,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-
-      - name: Generate packages cache key
-        run: ./scripts/checksum.sh ./packages.txt packages
-
-      - name: Restore Node modules
-        uses: actions/cache@v5
-        with:
-          path: |
-            ./node_modules
-            ./applications/*/*/node_modules
-            ./packages/*/node_modules
-          key: ${{ runner.os }}-modules-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-
-
-      - name: Restore packages
-        uses: actions/cache@v5
-        with:
-          path: ./packages/*/lib
-          key: ${{ runner.os }}-packages-v4-${{ hashFiles('**/packages.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-packages-
+      # {{fragment:dependency-steps:@accounts/api}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5

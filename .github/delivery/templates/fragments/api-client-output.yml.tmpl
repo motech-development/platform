@@ -1,0 +1,19 @@
+      - name: Export client configuration
+        id: client-config
+        run: |
+          started_at="$(date +%s)"
+          appsync_url="$(
+            aws cloudformation describe-stacks \
+              --stack-name "accounts-${STAGE}-api" \
+              --query "Stacks[0].Outputs[?OutputKey=='AccountsApiUrl'].OutputValue | [0]" \
+              --output text
+          )"
+          aws_region="${AWS_REGION:-${AWS_DEFAULT_REGION:-}}"
+          if [[ -z "$appsync_url" || "$appsync_url" == "None" || -z "$aws_region" ]]; then
+            echo "Accounts client configuration is unavailable." >&2
+            exit 1
+          fi
+          echo "appsync-url=$appsync_url" >> "$GITHUB_OUTPUT"
+          echo "aws-region=$aws_region" >> "$GITHUB_OUTPUT"
+          elapsed_seconds=$(( $(date +%s) - started_at ))
+          echo "| Client configuration transfer | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"

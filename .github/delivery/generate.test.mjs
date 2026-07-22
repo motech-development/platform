@@ -1,6 +1,17 @@
 import assert from 'node:assert/strict';
-import { access, readFile } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import {
+  access,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
+import { promisify } from 'node:util';
 
 import {
   checkGeneratedWorkflows,
@@ -14,6 +25,8 @@ import {
   loadWorkspaceManifests,
   validateCatalog,
 } from './generate.mjs';
+
+const execFileAsync = promisify(execFile);
 
 const previewFixtures = JSON.parse(
   await readFile(
@@ -552,32 +565,70 @@ function workflowJob(workflow, jobId) {
 }
 
 test('dependency setup never restores stale installed dependencies and falls back to Yarn archives', async () => {
-  const action = await readFile(
-    new URL('../actions/setup-dependencies/action.yml', import.meta.url),
-    'utf8',
-  );
+  const [action, dependencyFragment] = await Promise.all([
+    readFile(
+      new URL('../actions/setup-dependencies/action.yml', import.meta.url),
+      'utf8',
+    ),
+    readFile(
+      new URL(
+        './templates/fragments/dependency-steps.yml.tmpl',
+        import.meta.url,
+      ),
+      'utf8',
+    ),
+  ]);
 
   assert.match(action, /uses: actions\/setup-node@v6/);
   assert.match(action, /path: \|\n\s+\.\/node_modules/);
   assert.match(action, /\.\/applications\/\*\/\*\/node_modules/);
   assert.match(action, /\.\/packages\/\*\/node_modules/);
-  assert.match(action, /runner\.os/);
-  assert.match(action, /runner\.arch/);
-  assert.match(action, /hashFiles\('\.nvmrc'\)/);
-  assert.match(action, /steps\.runtime\.outputs\.version/);
-  assert.match(action, /hashFiles\('yarn\.lock'/);
-  assert.match(action, /'\.yarnrc\.yml'/);
-  assert.match(action, /'\.yarn\/releases\/\*\*'/);
-  assert.match(action, /'\.yarn\/plugins\/\*\*'/);
-  assert.match(action, /'package\.json'/);
-  assert.match(action, /'applications\/\*\/\*\/package\.json'/);
-  assert.match(action, /'packages\/\*\/package\.json'/);
 
   const installedDependencies = action.match(
     /- name: Restore installed dependencies[\s\S]*?(?=\n    - name:)/,
   )?.[0];
   assert.ok(installedDependencies);
   assert.doesNotMatch(installedDependencies, /restore-keys:/);
+  const installedKey = installedDependencies.match(/key: (.+)$/m)?.[1];
+  assert.ok(installedKey);
+  for (const requiredInput of [
+    /runner\.os/,
+    /runner\.arch/,
+    /steps\.runtime\.outputs\.version/,
+    /hashFiles\('\.nvmrc'\)/,
+    /hashFiles\('yarn\.lock'/,
+    /'\.yarnrc\.yml'/,
+    /'\.yarn\/releases\/\*\*'/,
+    /'\.yarn\/plugins\/\*\*'/,
+    /'\.yarn\/patches\/\*\*'/,
+    /'package\.json'/,
+    /'applications\/\*\/\*\/package\.json'/,
+    /'packages\/\*\/package\.json'/,
+  ]) {
+    assert.match(installedKey, requiredInput);
+  }
+  const generatedInstalledKey = dependencyFragment.match(
+    /- name: Restore installed dependencies[\s\S]*?key: (.+)$/m,
+  )?.[1];
+  assert.equal(generatedInstalledKey, installedKey);
+
+  const keyInputs = installedKey.match(/\$\{\{[^}]+\}\}/g);
+  assert.deepEqual(keyInputs?.length, 5);
+  const materializeKey = (values) =>
+    keyInputs.reduce(
+      (key, expression, index) => key.replace(expression, values[index]),
+      installedKey,
+    );
+  const baseline = ['linux', 'x64', 'v24.4.1', 'nvm-a', 'install-a'];
+  for (const [index, changed] of baseline.entries()) {
+    const mutated = [...baseline];
+    mutated[index] = `${changed}-changed`;
+    assert.notEqual(
+      materializeKey(mutated),
+      materializeKey(baseline),
+      `cache input ${index} must change the exact installed key`,
+    );
+  }
 
   const archiveCache = action.match(
     /- name: Restore Yarn archives[\s\S]*?(?=\n    - name:)/,
@@ -625,8 +676,13 @@ test('generated delivery jobs use exact dependencies and build only required tra
       const job = workflowJob(workflow, unit.id);
       assert.match(
         job,
-        /uses: \.\/\.github\/actions\/setup-dependencies/,
+        /- name: Restore installed dependencies[\s\S]*?yarn install --immutable/,
         `${filename}:${unit.id}`,
+      );
+      assert.doesNotMatch(
+        job,
+        /uses: \.\/\.github\/actions\/setup-dependencies/,
+        `${filename}:${unit.id} must not depend on an action missing from an older Release tag`,
       );
       assert.match(
         job,
@@ -695,6 +751,35 @@ test('client-only plans include the API configuration producer', () => {
     stage: 'pr-1498',
   });
   assert.deepEqual(preview.units, ['accounts-api']);
+
+  const runtimeOnly = createPreviewPlan(planningCatalog, planningManifests, {
+    lifecycle: 'synchronize',
+    runtimeAffected: true,
+    changedWorkspaces: [],
+    existingStacks: planningCatalog.units
+      .filter(({ targets }) => targets.includes('preview'))
+      .flatMap((unit) =>
+        unit.expectedStacks.map((stack) =>
+          stack.replaceAll('{stage}', 'pr-1498'),
+        ),
+      ),
+    stage: 'pr-1498',
+  });
+  assert.deepEqual(runtimeOnly.units, ['accounts-api']);
+
+  const releaseInput = structuredClone(releaseFixture.selectiveIndirect.input);
+  releaseInput.changedWorkspaces = ['@accounts/client'];
+  releaseInput.releases.find(({ tag }) =>
+    tag.startsWith('@accounts/client@'),
+  ).commit = releaseInput.boundary;
+  assert.deepEqual(
+    createReleasePlan(
+      planningCatalog,
+      planningManifests,
+      releaseInput,
+    ).units.map(({ id }) => id),
+    ['accounts-api', 'accounts-client'],
+  );
 
   const productionInput = structuredClone(reconciliationFixture.input);
   productionInput.deployments = productionInput.deployments.map(
@@ -798,12 +883,76 @@ test('anti-virus deployments reuse only validated binaries from pinned build inp
       /key: \$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-clamav-binaries-v1-\$\{\{ hashFiles\('applications\/core\/anti-virus\/scripts\/build\.sh'\) \}\}/,
     );
     assert.doesNotMatch(antiVirus, /clamav-binaries[\s\S]*restore-keys:/);
+    assert.match(
+      antiVirus,
+      /- name: Check ClamAV binary cache compatibility[\s\S]*id: clamav-cache/,
+    );
+    assert.match(
+      antiVirus,
+      /- name: Restore ClamAV binaries\n        if: steps\.clamav-cache\.outputs\.supported == 'true'/,
+    );
   }
 
-  assert.match(buildScript, /\[\[ -x bin\/clamscan && -x bin\/freshclam \]\]/);
+  const previewAntiVirus = workflowJob(
+    generated['deploy-to-environment.yml'],
+    'core-anti-virus',
+  );
+  const compatibilityStep = previewAntiVirus.match(
+    /      - name: Check ClamAV binary cache compatibility[\s\S]*?(?=\n      - name:)/,
+  )?.[0];
+  assert.ok(compatibilityStep);
+  const compatibilityScript = compatibilityStep
+    .match(/^        run: \|\n([\s\S]+)$/m)?.[1]
+    ?.replace(/^ {10}/gm, '')
+    .trimEnd();
+  assert.ok(compatibilityScript);
+
+  async function cacheSupportFor(scriptContents) {
+    const temporaryDirectory = await mkdtemp(join(tmpdir(), 'clamav-cache-'));
+    const scriptDirectory = join(
+      temporaryDirectory,
+      'applications',
+      'core',
+      'anti-virus',
+      'scripts',
+    );
+    const output = join(temporaryDirectory, 'output');
+    try {
+      await mkdir(scriptDirectory, { recursive: true });
+      await writeFile(join(scriptDirectory, 'build.sh'), scriptContents);
+      await execFileAsync('bash', ['-c', compatibilityScript], {
+        cwd: temporaryDirectory,
+        env: { ...process.env, GITHUB_OUTPUT: output },
+      });
+      return await readFile(output, 'utf8');
+    } finally {
+      await rm(temporaryDirectory, { recursive: true });
+    }
+  }
+
+  assert.equal(await cacheSupportFor(buildScript), 'supported=true\n');
+  assert.equal(
+    await cacheSupportFor('#!/usr/bin/env bash\nmkdir ./bin\n'),
+    'supported=false\n',
+  );
+
+  assert.match(buildScript, /amazonlinux@sha256:[a-f0-9]{64}/);
+  assert.doesNotMatch(buildScript, /dnf -y update/);
+  assert.match(buildScript, /gcc-11\.5\.0-5\.amzn2023\.0\.5/);
+  assert.match(buildScript, /CLAMAV_VERSION='1\.0\.9'/);
   assert.match(
     buildScript,
-    /Using validated cached ClamAV binaries[\s\S]*exit 0[\s\S]*docker pull/,
+    /CLAMAV_SOURCE_SHA256='5d3a20633bd589f612a71905a4fb50c1ee857cfbe6c72644368cac0030a1eeb4'/,
+  );
+  assert.match(buildScript, /sha256sum --check/);
+  assert.match(buildScript, /bin\/\.build-revision/);
+  assert.match(
+    buildScript,
+    /\[\[ -x bin\/clamscan && -x bin\/freshclam && -f "\$BUILD_MANIFEST" \]\]/,
+  );
+  assert.match(
+    buildScript,
+    /cached_revision[\s\S]*build_revision[\s\S]*Using validated cached ClamAV binaries[\s\S]*exit 0[\s\S]*docker pull/,
   );
 });
 
@@ -817,10 +966,40 @@ test('workflow timing evidence distinguishes every dependency and transfer path'
     readFile(new URL('./performance.md', import.meta.url), 'utf8'),
   ]);
 
-  assert.match(action, /exact installed cache hit/);
-  assert.match(action, /archive fallback/);
-  assert.match(action, /cold install/);
-  assert.match(action, /Dependency setup/);
+  const timingStep = action.match(
+    /    - name: Record dependency setup timing[\s\S]*?(?=\n    - name:|(?![\s\S]))/m,
+  )?.[0];
+  assert.ok(timingStep);
+  const timingScript = timingStep
+    .match(/^      run: \|\n([\s\S]+)$/m)?.[1]
+    ?.replace(/^ {8}/gm, '')
+    .trimEnd();
+  assert.ok(timingScript);
+
+  async function recordedRoute(installedCacheHit, archiveCacheHit) {
+    const temporaryDirectory = await mkdtemp(
+      join(tmpdir(), 'dependency-route-'),
+    );
+    const summary = join(temporaryDirectory, 'summary.md');
+    try {
+      await execFileAsync('bash', ['-c', timingScript], {
+        env: {
+          ...process.env,
+          ARCHIVE_CACHE_HIT: archiveCacheHit,
+          GITHUB_STEP_SUMMARY: summary,
+          INSTALLED_CACHE_HIT: installedCacheHit,
+          STARTED_AT: `${Math.floor(Date.now() / 1000)}`,
+        },
+      });
+      return await readFile(summary, 'utf8');
+    } finally {
+      await rm(temporaryDirectory, { recursive: true });
+    }
+  }
+
+  assert.match(await recordedRoute('true', ''), /exact installed cache hit/);
+  assert.match(await recordedRoute('', 'false'), /archive fallback/);
+  assert.match(await recordedRoute('', ''), /cold install/);
 
   const preview = generated['deploy-to-environment.yml'];
   assert.match(
@@ -842,6 +1021,41 @@ test('workflow timing evidence distinguishes every dependency and transfer path'
   ]) {
     assert.match(measurements, new RegExp(label, 'i'));
   }
+});
+
+test('templates own shared operational workflow fragments', async () => {
+  const [generator, dependencyFragment, apiFragment, clientFragment] =
+    await Promise.all([
+      readFile(new URL('./generate.mjs', import.meta.url), 'utf8'),
+      readFile(
+        new URL(
+          './templates/fragments/dependency-steps.yml.tmpl',
+          import.meta.url,
+        ),
+        'utf8',
+      ),
+      readFile(
+        new URL(
+          './templates/fragments/api-client-output.yml.tmpl',
+          import.meta.url,
+        ),
+        'utf8',
+      ),
+      readFile(
+        new URL(
+          './templates/fragments/client-api-input.yml.tmpl',
+          import.meta.url,
+        ),
+        'utf8',
+      ),
+    ]);
+
+  assert.doesNotMatch(generator, /yarn workspaces foreach/);
+  assert.doesNotMatch(generator, /AccountsApiUrl/);
+  assert.doesNotMatch(generator, /clamav-binaries-v1/);
+  assert.match(dependencyFragment, /yarn workspaces foreach/);
+  assert.match(apiFragment, /AccountsApiUrl/);
+  assert.match(clientFragment, /needs\.accounts-api\.outputs\.appsync-url/);
 });
 
 test('generator emits deterministic static workflow graphs with one job per Deployment Unit', async () => {

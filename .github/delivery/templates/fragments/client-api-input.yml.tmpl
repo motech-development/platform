@@ -1,0 +1,7 @@
+      - name: Write client configuration
+        env:
+          REACT_APP_APPSYNC_URL: ${{ needs.accounts-api.outputs.appsync-url }}
+          REACT_APP_AWS_REGION: ${{ needs.accounts-api.outputs.aws-region }}
+        run: |
+          printf 'REACT_APP_APPSYNC_URL="%s"\n' "$REACT_APP_APPSYNC_URL" > ./applications/accounts/client/.env.production
+          printf 'REACT_APP_AWS_REGION="%s"\n' "$REACT_APP_AWS_REGION" >> ./applications/accounts/client/.env.production
