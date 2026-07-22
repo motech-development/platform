@@ -11,6 +11,10 @@ on:
         description: 'Stage, for example pr-123'
         required: true
 
+concurrency:
+  group: preview-${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
+  cancel-in-progress: false
+
 jobs:
   setup:
     name: Setup
@@ -122,8 +126,7 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Clear bucket
-        continue-on-error: true
-        run: aws s3 rm $DEFINITIONS_BUCKET --recursive
+        run: .github/delivery/empty-s3-bucket.sh "$DEFINITIONS_BUCKET"
 
       - name: Teardown
         run: yarn workspace @core/anti-virus teardown --stage $STAGE
@@ -253,10 +256,9 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Clear bucket
-        continue-on-error: true
         run: |
-          aws s3 rm $DOWNLOAD_BUCKET --recursive
-          aws s3 rm $UPLOAD_BUCKET --recursive
+          .github/delivery/empty-s3-bucket.sh "$DOWNLOAD_BUCKET"
+          .github/delivery/empty-s3-bucket.sh "$UPLOAD_BUCKET"
 
       - name: Teardown
         run: yarn workspace @accounts/storage teardown --stage $STAGE
@@ -506,8 +508,7 @@ jobs:
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
       - name: Clear bucket
-        continue-on-error: true
-        run: aws s3 rm $REPORTS_BUCKET --recursive
+        run: .github/delivery/empty-s3-bucket.sh "$REPORTS_BUCKET"
 
       - name: Teardown
         run: yarn workspace @accounts/reports teardown --stage $STAGE

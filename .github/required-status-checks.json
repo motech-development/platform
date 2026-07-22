@@ -3,6 +3,7 @@
     "CodeQL",
     "Lint",
     "Playwright",
+    "Preview",
     "SonarCloud Code Analysis",
     "Type check",
     "UI Review",
