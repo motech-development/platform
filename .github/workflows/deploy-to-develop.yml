@@ -256,7 +256,9 @@ jobs:
 
       - name: Start dependency setup measurement
         id: dependency-timing
-        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+        run: |
+          : > "$RUNNER_TEMP/delivery-timing.md"
+          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
         uses: actions/setup-node@v7
@@ -309,18 +311,14 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          {
-            echo "| Measurement | Duration |"
-            echo "| --- | ---: |"
-            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build required workspace packages
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@core/anti-virus' run package
           elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@core/anti-virus) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Workspace package build (@core/anti-virus) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Start ClamAV timing
         id: clamav-timing
@@ -367,8 +365,8 @@ jobs:
           fi
           validation_elapsed=$(( $(date +%s) - validation_started_at ))
           echo "valid=$valid" >> "$GITHUB_OUTPUT"
-          echo "| ClamAV cache restore | ${restore_elapsed}s ($cache_state) |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| ClamAV cache validation | ${validation_elapsed}s ($cache_state) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| ClamAV cache restore | ${restore_elapsed}s ($cache_state) |" >> "$RUNNER_TEMP/delivery-timing.md"
+          echo "| ClamAV cache validation | ${validation_elapsed}s ($cache_state) |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build ClamAV binaries
         env:
@@ -382,14 +380,14 @@ jobs:
           else
             route="source build"
           fi
-          echo "| ClamAV source build ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| ClamAV source build ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Package anti-virus
         run: |
           started_at="$(date +%s)"
           yarn workspace @core/anti-virus exec serverless package --stage $STAGE --package "$RUNNER_TEMP/anti-virus-package"
           elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Anti-virus packaging | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Anti-virus packaging | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
@@ -472,6 +470,17 @@ jobs:
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
 
+      - name: Record delivery timing summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
+            {
+              echo "| Measurement | Duration |"
+              echo "| --- | ---: |"
+              cat "$RUNNER_TEMP/delivery-timing.md"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
   # Accounts (queue)
   accounts-queue:
     name: Deploy accounts queue
@@ -505,7 +514,9 @@ jobs:
 
       - name: Start dependency setup measurement
         id: dependency-timing
-        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+        run: |
+          : > "$RUNNER_TEMP/delivery-timing.md"
+          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
         uses: actions/setup-node@v7
@@ -558,18 +569,14 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          {
-            echo "| Measurement | Duration |"
-            echo "| --- | ---: |"
-            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build required workspace packages
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/queue' run package
           elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/queue) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Workspace package build (@accounts/queue) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
@@ -644,6 +651,17 @@ jobs:
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
 
+      - name: Record delivery timing summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
+            {
+              echo "| Measurement | Duration |"
+              echo "| --- | ---: |"
+              cat "$RUNNER_TEMP/delivery-timing.md"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
   # Accounts (storage)
   accounts-storage:
     name: Deploy accounts storage
@@ -677,7 +695,9 @@ jobs:
 
       - name: Start dependency setup measurement
         id: dependency-timing
-        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+        run: |
+          : > "$RUNNER_TEMP/delivery-timing.md"
+          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
         uses: actions/setup-node@v7
@@ -730,18 +750,14 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          {
-            echo "| Measurement | Duration |"
-            echo "| --- | ---: |"
-            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build required workspace packages
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/storage' run package
           elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/storage) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Workspace package build (@accounts/storage) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
@@ -816,6 +832,17 @@ jobs:
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
 
+      - name: Record delivery timing summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
+            {
+              echo "| Measurement | Duration |"
+              echo "| --- | ---: |"
+              cat "$RUNNER_TEMP/delivery-timing.md"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
   # Accounts (data)
   accounts-data:
     name: Deploy accounts data
@@ -850,7 +877,9 @@ jobs:
 
       - name: Start dependency setup measurement
         id: dependency-timing
-        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+        run: |
+          : > "$RUNNER_TEMP/delivery-timing.md"
+          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
         uses: actions/setup-node@v7
@@ -903,18 +932,14 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          {
-            echo "| Measurement | Duration |"
-            echo "| --- | ---: |"
-            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build required workspace packages
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/data' run package
           elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/data) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Workspace package build (@accounts/data) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
@@ -989,6 +1014,17 @@ jobs:
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
 
+      - name: Record delivery timing summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
+            {
+              echo "| Measurement | Duration |"
+              echo "| --- | ---: |"
+              cat "$RUNNER_TEMP/delivery-timing.md"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
   # Accounts (notifications)
   accounts-notifications:
     name: Deploy accounts notifications
@@ -1021,7 +1057,9 @@ jobs:
 
       - name: Start dependency setup measurement
         id: dependency-timing
-        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+        run: |
+          : > "$RUNNER_TEMP/delivery-timing.md"
+          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
         uses: actions/setup-node@v7
@@ -1074,18 +1112,14 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          {
-            echo "| Measurement | Duration |"
-            echo "| --- | ---: |"
-            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build required workspace packages
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/notifications' run package
           elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/notifications) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Workspace package build (@accounts/notifications) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
@@ -1160,6 +1194,17 @@ jobs:
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
 
+      - name: Record delivery timing summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
+            {
+              echo "| Measurement | Duration |"
+              echo "| --- | ---: |"
+              cat "$RUNNER_TEMP/delivery-timing.md"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
   # Accounts (reports)
   accounts-reports:
     name: Deploy accounts reports
@@ -1195,7 +1240,9 @@ jobs:
 
       - name: Start dependency setup measurement
         id: dependency-timing
-        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+        run: |
+          : > "$RUNNER_TEMP/delivery-timing.md"
+          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
         uses: actions/setup-node@v7
@@ -1248,18 +1295,14 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          {
-            echo "| Measurement | Duration |"
-            echo "| --- | ---: |"
-            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build required workspace packages
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/reports' run package
           elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/reports) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Workspace package build (@accounts/reports) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
@@ -1334,6 +1377,17 @@ jobs:
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
 
+      - name: Record delivery timing summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
+            {
+              echo "| Measurement | Duration |"
+              echo "| --- | ---: |"
+              cat "$RUNNER_TEMP/delivery-timing.md"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
   # Accounts (API)
   accounts-api:
     name: Deploy accounts API
@@ -1376,7 +1430,9 @@ jobs:
 
       - name: Start dependency setup measurement
         id: dependency-timing
-        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+        run: |
+          : > "$RUNNER_TEMP/delivery-timing.md"
+          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
         uses: actions/setup-node@v7
@@ -1429,18 +1485,14 @@ jobs:
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          {
-            echo "| Measurement | Duration |"
-            echo "| --- | ---: |"
-            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build required workspace packages
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/api' run package
           elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/api) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Workspace package build (@accounts/api) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
@@ -1519,7 +1571,7 @@ jobs:
           echo "appsync-url=$appsync_url" >> "$GITHUB_OUTPUT"
           echo "aws-region=$aws_region" >> "$GITHUB_OUTPUT"
           elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Client configuration transfer | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Client configuration transfer | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Record failed Deployment
         if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
@@ -1534,3 +1586,15 @@ jobs:
             | gh api --method POST \
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
+
+      - name: Record delivery timing summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
+            {
+              echo "| Measurement | Duration |"
+              echo "| --- | ---: |"
+              cat "$RUNNER_TEMP/delivery-timing.md"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
