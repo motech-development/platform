@@ -416,7 +416,7 @@ const workflowDefinitions = [
   {
     filename: 'deploy-to-production.yml',
     target: 'production',
-    baseNeed: 'unit-test',
+    baseNeed: 'setup',
     splitCoreInfrastructure: true,
     legacyJobIds: {
       'component-library': 'deploy-storybook',

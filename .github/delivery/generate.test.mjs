@@ -425,3 +425,105 @@ test('pull-request quality assurance validates the catalog and generated workflo
     /name: Validate delivery catalog[\s\S]*node --test \.github\/delivery\/\*\.test\.mjs[\s\S]*node \.github\/delivery\/generate\.mjs --check/,
   );
 });
+
+test('pull-request quality categories start independently with bounded workspace tests', async () => {
+  const [qualityAssurance, manifests] = await Promise.all([
+    readFile(
+      new URL('../workflows/quality-assurance.yml', import.meta.url),
+      'utf8',
+    ),
+    loadWorkspaceManifests(),
+  ]);
+
+  assert.doesNotMatch(qualityAssurance, /^  setup:$/m);
+  for (const jobId of [
+    'delivery-catalog',
+    'lint',
+    'type-check',
+    'unit-tests',
+    'chromatic',
+  ]) {
+    assert.doesNotMatch(workflowJob(qualityAssurance, jobId), /^    needs:/m);
+  }
+
+  assert.match(workflowJob(qualityAssurance, 'lint'), /run: yarn lint/);
+  assert.match(
+    workflowJob(qualityAssurance, 'type-check'),
+    /run: yarn typecheck/,
+  );
+  assert.match(
+    workflowJob(qualityAssurance, 'unit-tests'),
+    /run: yarn workspaces foreach -Wp -j 3 run test-ci/,
+  );
+  assert.match(
+    workflowJob(qualityAssurance, 'unit-tests'),
+    /name: Build packages[\s\S]*run: yarn package[\s\S]*name: Unit test/,
+  );
+  assert.match(
+    workflowJob(qualityAssurance, 'chromatic'),
+    /exitOnceUploaded: true/,
+  );
+
+  const jestWorkspaces = manifests.filter(({ scripts }) =>
+    scripts?.['test-ci']?.includes('jest'),
+  );
+  assert.ok(jestWorkspaces.length > 0);
+  for (const { name, scripts } of jestWorkspaces) {
+    assert.match(scripts['test-ci'], /--runInBand/, name);
+  }
+});
+
+test('generated delivery workflows do not repeat pull-request quality gates', async () => {
+  const generated = await generateWorkflows({ write: false });
+
+  for (const [filename, workflow] of Object.entries(generated)) {
+    assert.doesNotMatch(workflow, /run: yarn lint/, filename);
+    assert.doesNotMatch(workflow, /run: yarn test(?:\s|$)/, filename);
+    assert.doesNotMatch(workflow, /SonarCloud Scan/, filename);
+    assert.doesNotMatch(workflow, /chromaui\/action/, filename);
+  }
+
+  const storybook = workflowJob(
+    generated['deploy-to-production.yml'],
+    'component-library',
+  );
+  assert.match(storybook, /uses: peaceiris\/actions-gh-pages@v4/);
+});
+
+test('required status checks match the pull-request quality job names', async () => {
+  const [qualityAssurance, requiredStatusChecks] = await Promise.all([
+    readFile(
+      new URL('../workflows/quality-assurance.yml', import.meta.url),
+      'utf8',
+    ),
+    readFile(
+      new URL('../required-status-checks.json', import.meta.url),
+      'utf8',
+    ).then(JSON.parse),
+  ]);
+
+  assert.deepEqual(requiredStatusChecks, {
+    contexts: [
+      'CodeQL',
+      'Lint',
+      'Playwright',
+      'SonarCloud Code Analysis',
+      'Type check',
+      'UI Review',
+      'UI Tests',
+      'Unit tests',
+      'Validate delivery catalog',
+    ],
+  });
+  for (const [jobId, checkName] of [
+    ['delivery-catalog', 'Validate delivery catalog'],
+    ['lint', 'Lint'],
+    ['type-check', 'Type check'],
+    ['unit-tests', 'Unit tests'],
+  ]) {
+    assert.match(
+      workflowJob(qualityAssurance, jobId),
+      new RegExp(`name: ${checkName}`),
+    );
+  }
+});
