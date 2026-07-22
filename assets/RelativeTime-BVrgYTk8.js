@@ -1,0 +1,24 @@
+import{i as e}from"./preload-helper-CT_b8DTk.js";import{r as t}from"./iframe-q_a4TWX4.js";import{b as n,c as r,n as i,r as a,s as o}from"./blocks-CZIpnuKF.js";import{t as s}from"./mdx-react-shim-B0kyhCPT.js";import{NaturalLanguage as c,n as l,t as u}from"./RelativeTime.stories-tLRp9sbH.js";function d(e){let t={code:`code`,h1:`h1`,h2:`h2`,p:`p`,pre:`pre`,...n(),...e.components};return(0,p.jsxs)(p.Fragment,{children:[(0,p.jsx)(o,{of:u,summary:`Locale-aware relative-duration wording from an application-owned signed numeric distance and explicit Intl.RelativeTimeFormat unit; it does not calculate or automatically update time.`}),`
+`,(0,p.jsx)(t.h1,{id:`relativetime`,children:`RelativeTime`}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`RelativeTime`}),` formats an application-calculated signed distance as locale-aware wording such as “yesterday” or “in 3 days”.`]}),`
+`,(0,p.jsx)(t.h2,{id:`import`,children:`Import`}),`
+`,(0,p.jsx)(t.pre,{children:(0,p.jsx)(t.code,{className:`language-tsx`,children:`import { RelativeTime } from '@motech-development/breeze-ui';
+`})}),`
+`,(0,p.jsx)(t.h2,{id:`when-to-use`,children:`When to use`}),`
+`,(0,p.jsxs)(t.p,{children:[`Use `,(0,p.jsx)(t.code,{children:`RelativeTime`}),` when relative wording helps users compare an event with a clear reference time. Use `,(0,p.jsx)(t.code,{children:`FormattedDateTime`}),` when the exact instant matters or the phrase could become ambiguous. Do not use relative wording for legal, audit or deadline data without also making the exact instant available.`]}),`
+`,(0,p.jsx)(t.h2,{id:`basic-example`,children:`Basic example`}),`
+`,(0,p.jsx)(t.pre,{children:(0,p.jsx)(t.code,{className:`language-tsx`,children:`import { RelativeTime } from '@motech-development/breeze-ui';
+
+<RelativeTime value={-1} unit="day" options={{ numeric: 'auto' }} />;
+`})}),`
+`,(0,p.jsx)(a,{of:c}),`
+`,(0,p.jsx)(t.h2,{id:`values-units-and-updating`,children:`Values, units and updating`}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`value`}),` is a signed distance from the application’s reference time: negative is past, positive is future and zero is current. `,(0,p.jsx)(t.code,{children:`unit`}),` is an `,(0,p.jsx)(t.code,{children:`Intl.RelativeTimeFormatUnit`}),`: `,(0,p.jsx)(t.code,{children:`'year'`}),`, `,(0,p.jsx)(t.code,{children:`'quarter'`}),`, `,(0,p.jsx)(t.code,{children:`'month'`}),`, `,(0,p.jsx)(t.code,{children:`'week'`}),`, `,(0,p.jsx)(t.code,{children:`'day'`}),`, `,(0,p.jsx)(t.code,{children:`'hour'`}),`, `,(0,p.jsx)(t.code,{children:`'minute'`}),` or `,(0,p.jsx)(t.code,{children:`'second'`}),` (singular or standard plural aliases where supported). The component does not compare dates, choose a unit, round a duration, run a timer or update itself.`]}),`
+`,(0,p.jsxs)(t.p,{children:[`With `,(0,p.jsx)(t.code,{children:`options.numeric="always"`}),` the output remains numeric; `,(0,p.jsx)(t.code,{children:`"auto"`}),` permits phrases such as “yesterday”. `,(0,p.jsx)(t.code,{children:`options.style`}),` supports `,(0,p.jsx)(t.code,{children:`'long'`}),`, `,(0,p.jsx)(t.code,{children:`'short'`}),` and `,(0,p.jsx)(t.code,{children:`'narrow'`}),`. Runtime defaults are `,(0,p.jsx)(t.code,{children:`numeric="always"`}),` and long style. Recalculate and rerender at an interval appropriate to the selected unit; avoid minute-by-minute updates for day-level wording.`]}),`
+`,(0,p.jsxs)(t.p,{children:[`This stateless `,(0,p.jsx)(t.code,{children:`<span>`}),` has no controlled, loading, disabled, invalid, empty, callback or keyboard behaviour.`]}),`
+`,(0,p.jsx)(t.h2,{id:`accessibility-and-internationalisation`,children:`Accessibility and internationalisation`}),`
+`,(0,p.jsx)(t.p,{children:`Assistive technology reads the visible localised phrase. Provide the exact instant nearby or in accessible supporting text when precision matters; a tooltip alone is not sufficient. Locale controls grammar, pluralisation, numbering and direction. Keep the signed value and unit domain-correct instead of parsing the formatted phrase.`}),`
+`,(0,p.jsx)(t.h2,{id:`api`,children:`API`}),`
+`,(0,p.jsx)(i,{}),`
+`,(0,p.jsx)(t.h2,{id:`common-mistakes-and-related-components`,children:`Common mistakes and related components`}),`
+`,(0,p.jsxs)(t.p,{children:[`Do not pass a timestamp as `,(0,p.jsx)(t.code,{children:`value`}),`, expect automatic updates, choose a unit from translated output, or use `,(0,p.jsx)(t.code,{children:`numeric="auto"`}),` when exact quantity matters. Use `,(0,p.jsx)(t.code,{children:`FormattedDateTime`}),` for a stable instant and `,(0,p.jsx)(t.code,{children:`FormattedNumber`}),` for a numeric duration that is not relative to now.`]})]})}function f(e={}){let{wrapper:t}={...n(),...e.components};return t?(0,p.jsx)(t,{...e,children:(0,p.jsx)(d,{...e})}):d(e)}var p;e((()=>{p=t(),s(),r(),l()}))();export{f as default};
