@@ -1,0 +1,3 @@
+# Create complete previews and repair them from AWS state
+
+A new or recreated Preview Environment deploys its full topology so that it represents the complete platform rather than only the pull request's directly affected units. Later Preview Plans combine dependency-aware change detection with a read-only query of the environment's AWS stacks, selecting Affected Deployment Units and every missing expected unit while leaving existing unchanged units alone; depending on live state adds an AWS planning step, but lets partially failed environments converge safely without forcing every pull-request update to redeploy the full topology.

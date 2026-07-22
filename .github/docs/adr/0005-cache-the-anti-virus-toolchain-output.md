@@ -1,0 +1,3 @@
+# Cache the anti-virus toolchain output
+
+Anti-virus deployments reuse the compiled ClamAV binaries in `applications/core/anti-virus/bin` instead of rebuilding ClamAV in Amazon Linux for every deployment. The cache key is derived from explicit, pinned toolchain and source inputs rather than the application commit, and a hit is accepted only after validating the expected executables; changing the explicit build revision forces a rebuild. The existing `predeploy` command remains the entry point and skips only the Docker-based source build on a valid hit. Serverless output is not shared across stages, and this optimization does not introduce a Lambda layer or change the deployed function topology.
