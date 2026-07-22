@@ -39,7 +39,3 @@ _Avoid_: Release Plan, preview change set
 **Deployment Catalog**:
 The authoritative inventory of Deployment Units, the environments they support, and their delivery-specific dependencies. It excludes dependencies already expressed by the workspaces themselves.
 _Avoid_: Deployment config, service registry
-
-**Visual Review**:
-Human confirmation that visual differences reported for a pull request are intentional and acceptable before the change may merge. The pull request author may provide that confirmation.
-_Avoid_: Chromatic report, snapshot update
