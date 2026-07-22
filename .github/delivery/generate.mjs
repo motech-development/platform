@@ -340,6 +340,22 @@ export function createJobGraph(
     }));
 }
 
+const clientConfigurationUnits = {
+  consumer: 'accounts-client',
+  producer: 'accounts-api',
+};
+
+function includeClientConfigurationProducer(
+  selectedIdentifiers,
+  { clientRuns = false } = {},
+) {
+  const selected = new Set(selectedIdentifiers);
+  if (clientRuns || selected.has(clientConfigurationUnits.consumer)) {
+    selected.add(clientConfigurationUnits.producer);
+  }
+  return selected;
+}
+
 export function createPreviewPlan(catalog, workspaceManifests, input) {
   const target = 'preview';
   const graph = dependencyGraph(catalog, workspaceManifests, target);
@@ -369,13 +385,10 @@ export function createPreviewPlan(catalog, workspaceManifests, input) {
       ),
     )
     .map((unit) => unit.id);
-  const clientConfigurationProducers = input.changedWorkspaces.includes(
-    '@accounts/client',
-  )
-    ? ['accounts-api']
-    : [];
   const selected = expandDependants(
-    [...affected, ...missingStacks, ...clientConfigurationProducers],
+    includeClientConfigurationProducer([...affected, ...missingStacks], {
+      clientRuns: true,
+    }),
     graph,
   );
 
@@ -469,7 +482,10 @@ export function createReleasePlan(catalog, workspaceManifests, input) {
         input.target,
         input.changedWorkspaces,
       );
-  const selected = expandDependants(initiallySelected, graph);
+  const selected = expandDependants(
+    includeClientConfigurationProducer(initiallySelected),
+    graph,
+  );
   const ordered = dependencyOrder(graph, selected);
   const requiredAtBoundary = input.full
     ? new Set()
@@ -684,13 +700,10 @@ export function createReconciliationPlan(catalog, workspaceManifests, input) {
       return deployedTag !== desiredTag || stackMissing;
     })
     .map((unit) => unit.id);
-  if (
-    selected.includes('accounts-client') &&
-    !selected.includes('accounts-api')
-  ) {
-    selected.push('accounts-api');
-  }
-  const expanded = expandDependants(selected, graph);
+  const expanded = expandDependants(
+    includeClientConfigurationProducer(selected),
+    graph,
+  );
   const ordered = dependencyOrder(graph, expanded);
 
   return {
@@ -771,6 +784,13 @@ const workflowDefinitions = [
   },
 ];
 
+const workflowFragmentNames = [
+  'dependency-steps',
+  'api-client-output',
+  'client-api-input',
+  'anti-virus-cache',
+];
+
 function splitCoreInfrastructureJob(workflow) {
   const jobPattern =
     /^  deploy-infrastructure:\n[\s\S]*?(?=^  deploy-accounts-storage:)/m;
@@ -815,180 +835,6 @@ function workflowJobPattern(jobId) {
     `^  ${escapedJobId}:\\n[\\s\\S]*?(?=^  [a-zA-Z0-9_-]+:|(?![\\s\\S]))`,
     'm',
   );
-}
-
-function workflowStepPattern(name) {
-  const escapedName = name.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(
-    `^      - name: ${escapedName}\\n[\\s\\S]*?(?=^      - |^  #|(?![\\s\\S]))`,
-    'm',
-  );
-}
-
-function removeWorkflowSteps(job, names) {
-  return names.reduce(
-    (result, name) => result.replace(workflowStepPattern(name), ''),
-    job,
-  );
-}
-
-function replaceWorkflowStep(job, name, replacement) {
-  const pattern = workflowStepPattern(name);
-  if (!pattern.test(job)) {
-    throw new Error(`workflow job is missing step "${name}"`);
-  }
-  return job.replace(pattern, replacement);
-}
-
-function useExactDependencies(job, workspace) {
-  const dependencySteps = `      - name: Setup dependencies
-        uses: ./.github/actions/setup-dependencies
-
-      - name: Build required workspace packages
-        shell: bash
-        run: |
-          started_at="$(date +%s)"
-          yarn workspaces foreach -Rpt --from '${workspace}' run package
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (${workspace}) | \${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
-
-`;
-  const withDependencySetup = replaceWorkflowStep(
-    job,
-    'Set Node version',
-    dependencySteps,
-  );
-
-  return removeWorkflowSteps(withDependencySetup, [
-    'Generate packages cache key',
-    'Restore Node modules',
-    'Restore packages',
-    'Install dependencies',
-    'Build packages',
-    'Restore application cache',
-    'Restore env vars',
-  ]);
-}
-
-function exposeClientConfiguration(job) {
-  const outputs = `    outputs:
-      appsync-url: \${{ steps.client-config.outputs.appsync-url }}
-      aws-region: \${{ steps.client-config.outputs.aws-region }}
-`;
-  const outputStep = `      - name: Export client configuration
-        id: client-config
-        shell: bash
-        run: |
-          started_at="$(date +%s)"
-          appsync_url="$(
-            aws cloudformation describe-stacks \\
-              --stack-name "accounts-\${STAGE}-api" \\
-              --query "Stacks[0].Outputs[?OutputKey=='AccountsApiUrl'].OutputValue | [0]" \\
-              --output text
-          )"
-          aws_region="\${AWS_REGION:-\${AWS_DEFAULT_REGION:-}}"
-          if [[ -z "$appsync_url" || "$appsync_url" == "None" || -z "$aws_region" ]]; then
-            echo "Accounts client configuration is unavailable." >&2
-            exit 1
-          fi
-          echo "appsync-url=$appsync_url" >> "$GITHUB_OUTPUT"
-          echo "aws-region=$aws_region" >> "$GITHUB_OUTPUT"
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Client configuration transfer | \${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
-
-`;
-  const deployPattern = workflowStepPattern('Deploy');
-  const deploy = job.match(deployPattern);
-  if (!deploy) {
-    throw new Error('accounts API job is missing Deploy step');
-  }
-
-  return removeWorkflowSteps(
-    job
-      .replace(
-        /^    runs-on: ubuntu-latest\n/m,
-        `    runs-on: ubuntu-latest\n\n${outputs}`,
-      )
-      .replace(deployPattern, `${deploy[0]}${outputStep}`)
-      .replaceAll(
-        '${{ env.REACT_APP_APPSYNC_URL }}',
-        '${{ steps.client-config.outputs.appsync-url }}',
-      )
-      .replaceAll(
-        '${{ env.REACT_APP_AWS_REGION }}',
-        '${{ steps.client-config.outputs.aws-region }}',
-      ),
-    ['Export env vars'],
-  );
-}
-
-function receiveClientConfiguration(job) {
-  const configStep = `      - name: Write client configuration
-        env:
-          REACT_APP_APPSYNC_URL: \${{ needs.accounts-api.outputs.appsync-url }}
-          REACT_APP_AWS_REGION: \${{ needs.accounts-api.outputs.aws-region }}
-        shell: bash
-        run: |
-          printf 'REACT_APP_APPSYNC_URL="%s"\\n' "$REACT_APP_APPSYNC_URL" > ./applications/accounts/client/.env.production
-          printf 'REACT_APP_AWS_REGION="%s"\\n' "$REACT_APP_AWS_REGION" >> ./applications/accounts/client/.env.production
-
-`;
-  const buildPattern = workflowStepPattern('Build client');
-  if (!buildPattern.test(job)) {
-    throw new Error('accounts client job is missing Build client step');
-  }
-
-  let configured = job;
-  if (!/^      - accounts-api$/m.test(configured)) {
-    configured = configured.replace(
-      /^    needs:\n/m,
-      '    needs:\n      - accounts-api\n',
-    );
-  }
-
-  return configured.replace(buildPattern, `${configStep}$&`);
-}
-
-function restoreAntiVirusBinaries(job) {
-  const cacheStep = `      - name: Restore ClamAV binaries
-        uses: actions/cache@v5
-        with:
-          path: ./applications/core/anti-virus/bin
-          key: \${{ runner.os }}-\${{ runner.arch }}-clamav-binaries-v1-\${{ hashFiles('applications/core/anti-virus/scripts/build.sh') }}
-
-`;
-  const credentialsPattern = workflowStepPattern('Configure AWS credentials');
-  if (!credentialsPattern.test(job)) {
-    throw new Error('anti-virus job is missing AWS credentials step');
-  }
-
-  return job.replace(credentialsPattern, `${cacheStep}$&`);
-}
-
-function removeSetupDependencyPreparation(workflow) {
-  const pattern = workflowJobPattern('setup');
-  const match = workflow.match(pattern);
-  if (!match) {
-    throw new Error('workflow is missing setup job');
-  }
-  const setupNode = `      - name: Set Node version
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
-
-`;
-  const setup = removeWorkflowSteps(
-    replaceWorkflowStep(match[0], 'Set Node version', setupNode),
-    [
-      'Generate packages cache key',
-      'Restore Node modules',
-      'Restore packages',
-      'Install dependencies',
-      'Build packages',
-    ],
-  );
-
-  return workflow.replace(pattern, setup);
 }
 
 function removeJob(workflow, jobId) {
@@ -1369,29 +1215,53 @@ function rewriteJob(workflow, legacyJobId, unit, needs, definition) {
   if (definition.teardown) {
     rewritten = decorateTeardownJob(rewritten, unit);
   }
-
-  rewritten = useExactDependencies(rewritten, unit.workspace);
-  if (unit.id === 'accounts-api' && !definition.teardown) {
-    rewritten = exposeClientConfiguration(rewritten);
-  }
-  if (unit.id === 'accounts-client') {
-    rewritten = receiveClientConfiguration(rewritten);
-  }
-  if (unit.id === 'core-anti-virus' && !definition.teardown) {
-    rewritten = restoreAntiVirusBinaries(rewritten);
-  }
+  rewritten = rewritten.replace(
+    /\{\{fragment:dependency-steps:[^}]+\}\}/,
+    `{{fragment:dependency-steps:${unit.workspace}}}`,
+  );
 
   return workflow.replace(jobPattern, rewritten);
 }
 
-function renderWorkflow(template, definition, catalog, workspaceManifests) {
+function expandTemplateFragments(workflow, fragments) {
+  let expanded = workflow.replace(
+    /^      # \{\{fragment:dependency-steps:([^}]+)\}\}$/gm,
+    (_marker, workspace) =>
+      fragments['dependency-steps']
+        .replaceAll('{{WORKSPACE}}', workspace)
+        .trimEnd(),
+  );
+
+  for (const name of workflowFragmentNames.filter(
+    (fragmentName) => fragmentName !== 'dependency-steps',
+  )) {
+    expanded = expanded.replaceAll(
+      `      # {{fragment:${name}}}`,
+      fragments[name].trimEnd(),
+    );
+  }
+
+  const unexpanded = expanded.match(/\{\{fragment:[^}]+\}\}/);
+  if (unexpanded) {
+    throw new Error(`unexpanded workflow fragment "${unexpanded[0]}"`);
+  }
+
+  return expanded;
+}
+
+function renderWorkflow(
+  template,
+  definition,
+  catalog,
+  workspaceManifests,
+  fragments,
+) {
   let workflow = definition.splitCoreInfrastructure
     ? splitCoreInfrastructureJob(template)
     : template;
   if (definition.target === 'develop' || definition.target === 'production') {
     workflow = decorateLongLivedWorkflow(workflow, definition.target);
   }
-  workflow = removeSetupDependencyPreparation(workflow);
   const graph = createJobGraph(catalog, workspaceManifests, definition.target, {
     reverse: definition.reverse,
   });
@@ -1428,19 +1298,7 @@ function renderWorkflow(template, definition, catalog, workspaceManifests) {
     );
   }
 
-  if (definition.filename === 'deploy-to-environment.yml') {
-    const playwrightPattern = workflowJobPattern('accounts-client');
-    const playwright = workflow.match(playwrightPattern);
-    if (!playwright) {
-      throw new Error('preview template is missing Playwright job');
-    }
-    workflow = workflow.replace(
-      playwrightPattern,
-      receiveClientConfiguration(
-        useExactDependencies(playwright[0], '@accounts/client'),
-      ),
-    );
-  }
+  workflow = expandTemplateFragments(workflow, fragments);
 
   validateWorkflowReferences(workflow, definition.filename);
 
@@ -1452,10 +1310,20 @@ export async function generateWorkflows({
   catalog: providedCatalog,
   workspaceManifests: providedWorkspaceManifests,
 } = {}) {
-  const [catalog, workspaceManifests] = await Promise.all([
+  const [catalog, workspaceManifests, fragmentEntries] = await Promise.all([
     providedCatalog ?? loadCatalog(),
     providedWorkspaceManifests ?? loadWorkspaceManifests(),
+    Promise.all(
+      workflowFragmentNames.map(async (name) => [
+        name,
+        await readFile(
+          join(deliveryDirectory, 'templates', 'fragments', `${name}.yml.tmpl`),
+          'utf8',
+        ),
+      ]),
+    ),
   ]);
+  const fragments = Object.fromEntries(fragmentEntries);
   validateCatalog(catalog, workspaceManifests);
   const generated = {};
 
@@ -1469,6 +1337,7 @@ export async function generateWorkflows({
       definition,
       catalog,
       workspaceManifests,
+      fragments,
     );
     generated[definition.filename] = workflow;
     if (write) {

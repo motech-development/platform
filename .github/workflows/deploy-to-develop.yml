@@ -254,18 +254,83 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@core/anti-virus'] }}
 
-      - name: Setup dependencies
-        uses: ./.github/actions/setup-dependencies
+      - name: Start dependency setup measurement
+        id: dependency-timing
+        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve Node runtime
+        id: runtime
+        run: echo "version=$(node --version)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore installed dependencies
+        id: installed-dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+            ./.yarn/install-state.gz
+          key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
+
+      - name: Restore Yarn archives
+        id: yarn-archives
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.yarn/berry/cache
+            ./.yarn/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-
+
+      - name: Install dependencies
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Record dependency setup timing
+        if: always()
+        env:
+          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
+          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
+          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
+        run: |
+          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
+            route="exact installed cache hit"
+          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
+            route="archive fallback"
+          else
+            route="cold install"
+          fi
+          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
-        shell: bash
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@core/anti-virus' run package
           elapsed_seconds=$(( $(date +%s) - started_at ))
           echo "| Workspace package build (@core/anti-virus) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Check ClamAV binary cache compatibility
+        id: clamav-cache
+        shell: bash
+        run: |
+          if grep -Fq "BUILD_MANIFEST='bin/.build-revision'" applications/core/anti-virus/scripts/build.sh; then
+            supported=true
+          else
+            supported=false
+          fi
+          echo "supported=$supported" >> "$GITHUB_OUTPUT"
+
       - name: Restore ClamAV binaries
+        if: steps.clamav-cache.outputs.supported == 'true'
         uses: actions/cache@v5
         with:
           path: ./applications/core/anti-virus/bin
@@ -370,11 +435,64 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/queue'] }}
 
-      - name: Setup dependencies
-        uses: ./.github/actions/setup-dependencies
+      - name: Start dependency setup measurement
+        id: dependency-timing
+        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve Node runtime
+        id: runtime
+        run: echo "version=$(node --version)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore installed dependencies
+        id: installed-dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+            ./.yarn/install-state.gz
+          key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
+
+      - name: Restore Yarn archives
+        id: yarn-archives
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.yarn/berry/cache
+            ./.yarn/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-
+
+      - name: Install dependencies
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Record dependency setup timing
+        if: always()
+        env:
+          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
+          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
+          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
+        run: |
+          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
+            route="exact installed cache hit"
+          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
+            route="archive fallback"
+          else
+            route="cold install"
+          fi
+          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
-        shell: bash
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/queue' run package
@@ -471,11 +589,64 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/storage'] }}
 
-      - name: Setup dependencies
-        uses: ./.github/actions/setup-dependencies
+      - name: Start dependency setup measurement
+        id: dependency-timing
+        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve Node runtime
+        id: runtime
+        run: echo "version=$(node --version)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore installed dependencies
+        id: installed-dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+            ./.yarn/install-state.gz
+          key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
+
+      - name: Restore Yarn archives
+        id: yarn-archives
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.yarn/berry/cache
+            ./.yarn/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-
+
+      - name: Install dependencies
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Record dependency setup timing
+        if: always()
+        env:
+          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
+          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
+          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
+        run: |
+          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
+            route="exact installed cache hit"
+          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
+            route="archive fallback"
+          else
+            route="cold install"
+          fi
+          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
-        shell: bash
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/storage' run package
@@ -573,11 +744,64 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/data'] }}
 
-      - name: Setup dependencies
-        uses: ./.github/actions/setup-dependencies
+      - name: Start dependency setup measurement
+        id: dependency-timing
+        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve Node runtime
+        id: runtime
+        run: echo "version=$(node --version)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore installed dependencies
+        id: installed-dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+            ./.yarn/install-state.gz
+          key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
+
+      - name: Restore Yarn archives
+        id: yarn-archives
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.yarn/berry/cache
+            ./.yarn/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-
+
+      - name: Install dependencies
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Record dependency setup timing
+        if: always()
+        env:
+          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
+          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
+          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
+        run: |
+          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
+            route="exact installed cache hit"
+          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
+            route="archive fallback"
+          else
+            route="cold install"
+          fi
+          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
-        shell: bash
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/data' run package
@@ -673,11 +897,64 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/notifications'] }}
 
-      - name: Setup dependencies
-        uses: ./.github/actions/setup-dependencies
+      - name: Start dependency setup measurement
+        id: dependency-timing
+        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve Node runtime
+        id: runtime
+        run: echo "version=$(node --version)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore installed dependencies
+        id: installed-dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+            ./.yarn/install-state.gz
+          key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
+
+      - name: Restore Yarn archives
+        id: yarn-archives
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.yarn/berry/cache
+            ./.yarn/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-
+
+      - name: Install dependencies
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Record dependency setup timing
+        if: always()
+        env:
+          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
+          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
+          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
+        run: |
+          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
+            route="exact installed cache hit"
+          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
+            route="archive fallback"
+          else
+            route="cold install"
+          fi
+          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
-        shell: bash
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/notifications' run package
@@ -776,11 +1053,64 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/reports'] }}
 
-      - name: Setup dependencies
-        uses: ./.github/actions/setup-dependencies
+      - name: Start dependency setup measurement
+        id: dependency-timing
+        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve Node runtime
+        id: runtime
+        run: echo "version=$(node --version)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore installed dependencies
+        id: installed-dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+            ./.yarn/install-state.gz
+          key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
+
+      - name: Restore Yarn archives
+        id: yarn-archives
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.yarn/berry/cache
+            ./.yarn/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-
+
+      - name: Install dependencies
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Record dependency setup timing
+        if: always()
+        env:
+          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
+          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
+          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
+        run: |
+          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
+            route="exact installed cache hit"
+          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
+            route="archive fallback"
+          else
+            route="cold install"
+          fi
+          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
-        shell: bash
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/reports' run package
@@ -886,11 +1216,64 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/api'] }}
 
-      - name: Setup dependencies
-        uses: ./.github/actions/setup-dependencies
+      - name: Start dependency setup measurement
+        id: dependency-timing
+        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Set Node version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve Node runtime
+        id: runtime
+        run: echo "version=$(node --version)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore installed dependencies
+        id: installed-dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+            ./.yarn/install-state.gz
+          key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
+
+      - name: Restore Yarn archives
+        id: yarn-archives
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.yarn/berry/cache
+            ./.yarn/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-
+
+      - name: Install dependencies
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Record dependency setup timing
+        if: always()
+        env:
+          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
+          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
+          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
+        run: |
+          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
+            route="exact installed cache hit"
+          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
+            route="archive fallback"
+          else
+            route="cold install"
+          fi
+          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build required workspace packages
-        shell: bash
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/api' run package
@@ -940,10 +1323,8 @@ jobs:
 
       - name: Deploy
         run: yarn workspace @accounts/api deploy --stage $STAGE
-
       - name: Export client configuration
         id: client-config
-        shell: bash
         run: |
           started_at="$(date +%s)"
           appsync_url="$(

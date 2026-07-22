@@ -1,0 +1,17 @@
+      - name: Check ClamAV binary cache compatibility
+        id: clamav-cache
+        shell: bash
+        run: |
+          if grep -Fq "BUILD_MANIFEST='bin/.build-revision'" applications/core/anti-virus/scripts/build.sh; then
+            supported=true
+          else
+            supported=false
+          fi
+          echo "supported=$supported" >> "$GITHUB_OUTPUT"
+
+      - name: Restore ClamAV binaries
+        if: steps.clamav-cache.outputs.supported == 'true'
+        uses: actions/cache@v5
+        with:
+          path: ./applications/core/anti-virus/bin
+          key: ${{ runner.os }}-${{ runner.arch }}-clamav-binaries-v1-${{ hashFiles('applications/core/anti-virus/scripts/build.sh') }}
