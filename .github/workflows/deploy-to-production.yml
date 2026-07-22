@@ -2,9 +2,11 @@
 name: Deploy to production
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      release-plan:
+        required: true
+        type: string
 
 concurrency: production_environment
 
@@ -15,6 +17,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).boundary }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -55,6 +59,7 @@ jobs:
         run: yarn package
 
   component-library:
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'component-library')
     runs-on: ubuntu-latest
 
     needs:
@@ -67,6 +72,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@motech-development/breeze-ui'] }}
           fetch-depth: 0
 
       - name: Set Node version
@@ -196,6 +202,7 @@ jobs:
   #       run: yarn workspace @id/tenant deploy -c config.json
 
   core-anti-virus:
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'core-anti-virus')
     runs-on: ubuntu-latest
 
     needs:
@@ -213,6 +220,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@core/anti-virus'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -270,6 +279,8 @@ jobs:
   core-infrastructure:
     name: Deploy core infrastructure
 
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'core-infrastructure')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -288,6 +299,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@core/infrastructure'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -338,6 +351,8 @@ jobs:
   core-communications:
     name: Deploy core communications
 
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'core-communications') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'core-infrastructure') || needs.core-infrastructure.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -356,6 +371,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@core/comms'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -405,6 +422,7 @@ jobs:
         run: yarn workspace @core/comms deploy --stage $STAGE
 
   accounts-storage:
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'core-anti-virus') || needs.core-anti-virus.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
@@ -422,6 +440,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/storage'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -471,6 +491,7 @@ jobs:
         run: yarn workspace @accounts/storage deploy --stage $STAGE
 
   accounts-queue:
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-queue') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
@@ -488,6 +509,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/queue'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -537,6 +560,7 @@ jobs:
         run: yarn workspace @accounts/queue deploy --stage $STAGE
 
   accounts-data:
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') || needs.accounts-storage.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'core-anti-virus') || needs.core-anti-virus.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
@@ -555,6 +579,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/data'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -604,6 +630,7 @@ jobs:
         run: yarn workspace @accounts/data deploy --stage $STAGE
 
   accounts-warm-up:
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-warm-up') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
@@ -621,6 +648,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/warm-up'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -670,6 +699,7 @@ jobs:
         run: yarn workspace @accounts/warm-up deploy --stage $STAGE
 
   accounts-reports:
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-reports') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-notifications') || needs.accounts-notifications.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') || needs.accounts-storage.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
@@ -689,6 +719,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/reports'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -738,6 +770,7 @@ jobs:
         run: yarn workspace @accounts/reports deploy --stage $STAGE
 
   accounts-api:
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-api') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-queue') || needs.accounts-queue.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-reports') || needs.accounts-reports.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') || needs.accounts-storage.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
@@ -759,6 +792,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/api'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -816,6 +851,7 @@ jobs:
         run: yarn workspace @accounts/api deploy --stage $STAGE
 
   accounts-infrastructure:
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-infrastructure') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'core-infrastructure') || needs.core-infrastructure.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
@@ -833,6 +869,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/infrastructure'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -881,6 +919,7 @@ jobs:
         run: yarn workspace @accounts/infrastructure deploy --stage $STAGE
 
   accounts-notifications:
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-notifications') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
@@ -897,6 +936,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/notifications'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -946,6 +987,7 @@ jobs:
         run: yarn workspace @accounts/notifications deploy --stage $STAGE
 
   accounts-client:
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-client') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-api') || needs.accounts-api.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-infrastructure') || needs.accounts-infrastructure.result == 'success')
     runs-on: ubuntu-latest
 
     needs:
@@ -974,6 +1016,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/client'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6

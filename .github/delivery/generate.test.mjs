@@ -250,20 +250,61 @@ test('recorded preview impact fixtures distinguish runtime workspaces from non-r
   }
 });
 
-test('recorded Release Plan expands delivery dependants and preserves exact owning-workspace tags', () => {
+test('recorded selective Release Plan covers indirect changes and exact owning-workspace tags', () => {
+  const { input, expected } = releaseFixture.selectiveIndirect;
+
   assert.deepEqual(
-    createReleasePlan(planningCatalog, planningManifests, releaseFixture.input),
-    releaseFixture.expected,
+    createReleasePlan(planningCatalog, planningManifests, input),
+    expected,
   );
 });
 
-test('Release Plan rejects a selected application without its own Release', () => {
-  const input = structuredClone(releaseFixture.input);
-  delete input.releaseTags['@accounts/client'];
+test('Release Plan rejects an indirectly affected application without its own successful boundary Release', () => {
+  const input = structuredClone(releaseFixture.selectiveIndirect.input);
+  input.releases = input.releases.filter(
+    ({ tag }) => !tag.startsWith('@accounts/api@'),
+  );
 
   assert.throws(
     () => createReleasePlan(planningCatalog, planningManifests, input),
-    /accounts-client.*requires Release "@accounts\/client@<version>"/,
+    /accounts-api.*requires successful Release "@accounts\/api@<version>" at boundary "main-commit-2"/,
+  );
+});
+
+test('Release Plan rejects a package Release substituted for an affected application Release', () => {
+  const input = structuredClone(releaseFixture.selectiveIndirect.input);
+  input.releases = input.releases.filter(
+    ({ tag }) => !tag.startsWith('@accounts/api@'),
+  );
+  input.releases.push({
+    tag: '@fixture/runtime@2.0.1',
+    commit: 'main-commit-2',
+    published: true,
+    reachable: true,
+  });
+
+  assert.throws(
+    () => createReleasePlan(planningCatalog, planningManifests, input),
+    /accounts-api.*requires successful Release "@accounts\/api@<version>"/,
+  );
+});
+
+test('recorded manual full Release Plan derives every owning-workspace tag reachable from the accepted boundary', () => {
+  const { input, expected } = releaseFixture.manualFull;
+
+  assert.deepEqual(
+    createReleasePlan(planningCatalog, planningManifests, input),
+    expected,
+  );
+});
+
+test('Release Plan does not exist before its main commit boundary is accepted', () => {
+  const input = structuredClone(releaseFixture.selectiveIndirect.input);
+  input.boundaryAccepted = false;
+
+  assert.throws(
+    () => createReleasePlan(planningCatalog, planningManifests, input),
+    /main commit boundary "main-commit-2" has not completed Release successfully/,
   );
 });
 
@@ -599,6 +640,78 @@ test('generated delivery workflows do not repeat pull-request quality gates', as
     'component-library',
   );
   assert.match(storybook, /uses: peaceiris\/actions-gh-pages@v4/);
+});
+
+test('Release publishes selectively from full history and constructs one exact-tag plan before delivery', async () => {
+  const release = await readFile(
+    new URL('../workflows/release.yml', import.meta.url),
+    'utf8',
+  );
+  const releaseJob = workflowJob(release, 'release');
+  const develop = workflowJob(release, 'deploy-develop');
+  const production = workflowJob(release, 'deploy-production');
+
+  assert.match(
+    release,
+    /workflow_dispatch:\n    inputs:\n      boundary:[\s\S]*required: true/,
+  );
+  assert.doesNotMatch(release, /^\s+(?:application-)?version:/m);
+  assert.match(releaseJob, /uses: actions\/checkout@v6[\s\S]*fetch-depth: 0/);
+  assert.match(releaseJob, /run: yarn release/);
+  assert.doesNotMatch(
+    releaseJob,
+    /yarn release[^\n]*(?:--from|--scope|workspace)/,
+  );
+  assert.match(
+    releaseJob,
+    /node \.github\/delivery\/generate\.mjs --release-plan/,
+  );
+  assert.match(releaseJob, /^    outputs:\n      release-plan:/m);
+  assert.match(
+    develop,
+    /needs: release[\s\S]*uses: \.\/\.github\/workflows\/deploy-to-develop\.yml[\s\S]*release-plan: \$\{\{ needs\.release\.outputs\.release-plan \}\}/,
+  );
+  assert.match(
+    production,
+    /needs: release[\s\S]*uses: \.\/\.github\/workflows\/deploy-to-production\.yml[\s\S]*release-plan: \$\{\{ needs\.release\.outputs\.release-plan \}\}/,
+  );
+});
+
+test('generated long-lived delivery selects Release Plan units and checks out each owning-workspace tag', async () => {
+  const [catalog, manifests, generated] = await Promise.all([
+    loadCatalog(),
+    loadWorkspaceManifests(),
+    generateWorkflows({ write: false }),
+  ]);
+
+  for (const [filename, target] of [
+    ['deploy-to-develop.yml', 'develop'],
+    ['deploy-to-production.yml', 'production'],
+  ]) {
+    const workflow = generated[filename];
+    assert.match(
+      workflow,
+      /workflow_call:\n    inputs:\n      release-plan:[\s\S]*required: true[\s\S]*type: string/,
+    );
+    assert.doesNotMatch(workflow, /^  push:$/m);
+
+    for (const { id } of createJobGraph(catalog, manifests, target)) {
+      const unit = catalog.units.find((candidate) => candidate.id === id);
+      const job = workflowJob(workflow, id);
+      assert.match(
+        job,
+        new RegExp(
+          `contains\\(fromJSON\\(inputs\\.release-plan\\)\\.units\\.\\*\\.id, '${id}'\\)`,
+        ),
+      );
+      assert.ok(
+        job.includes(
+          `ref: \${{ fromJSON(inputs.release-plan).tags['${unit.workspace}'] }}`,
+        ),
+        `${filename} ${id} must check out its owning-workspace Release tag`,
+      );
+    }
+  }
 });
 
 test('required status checks match the pull-request quality job names', async () => {

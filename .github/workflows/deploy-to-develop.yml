@@ -2,9 +2,11 @@
 name: Deploy to develop
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      release-plan:
+        required: true
+        type: string
 
 concurrency: development_environment
 
@@ -19,6 +21,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).boundary }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -163,6 +167,8 @@ jobs:
   core-anti-virus:
     name: Deploy anti virus
 
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'core-anti-virus')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -180,6 +186,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@core/anti-virus'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -241,6 +249,8 @@ jobs:
   accounts-queue:
     name: Deploy accounts queue
 
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-queue') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -259,6 +269,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/queue'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -311,6 +323,8 @@ jobs:
   accounts-storage:
     name: Deploy accounts storage
 
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'core-anti-virus') || needs.core-anti-virus.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -329,6 +343,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/storage'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -381,6 +397,8 @@ jobs:
   accounts-data:
     name: Deploy accounts data
 
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') || needs.accounts-storage.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'core-anti-virus') || needs.core-anti-virus.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -400,6 +418,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/data'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -452,6 +472,8 @@ jobs:
   accounts-notifications:
     name: Deploy accounts notifications
 
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-notifications') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -469,6 +491,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/notifications'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -521,6 +545,8 @@ jobs:
   accounts-reports:
     name: Deploy accounts reports
 
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-reports') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-notifications') || needs.accounts-notifications.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') || needs.accounts-storage.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -541,6 +567,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/reports'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
@@ -593,6 +621,8 @@ jobs:
   accounts-api:
     name: Deploy accounts API
 
+    if: always() && contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-api') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-data') || needs.accounts-data.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-queue') || needs.accounts-queue.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-reports') || needs.accounts-reports.result == 'success') && (!contains(fromJSON(inputs.release-plan).units.*.id, 'accounts-storage') || needs.accounts-storage.result == 'success')
+
     runs-on: ubuntu-latest
 
     needs:
@@ -616,6 +646,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).tags['@accounts/api'] }}
 
       - name: Set Node version
         uses: actions/setup-node@v6

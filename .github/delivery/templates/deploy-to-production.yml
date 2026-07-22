@@ -1,9 +1,11 @@
 name: Deploy to production
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      release-plan:
+        required: true
+        type: string
 
 concurrency: production_environment
 
@@ -14,6 +16,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(inputs.release-plan).boundary }}
 
       - name: Set Node version
         uses: actions/setup-node@v6
