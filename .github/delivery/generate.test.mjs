@@ -1240,17 +1240,61 @@ test('workflow timing evidence distinguishes every dependency and transfer path'
   assert.match(await recordedRoute('', ''), /cold install/);
 
   const preview = generated['deploy-to-environment.yml'];
+  const accountsData = workflowJob(preview, 'accounts-data');
   assert.match(
-    workflowJob(preview, 'accounts-data'),
+    accountsData,
     /\| Measurement \| Duration \|[\s\S]*\| --- \| ---: \|/,
   );
+  assert.match(accountsData, /: > "\$RUNNER_TEMP\/delivery-timing\.md"/);
   assert.match(
-    workflowJob(preview, 'accounts-data'),
-    /Workspace package build/,
+    accountsData,
+    /Workspace package build[^\n]+>> "\$RUNNER_TEMP\/delivery-timing\.md"/,
   );
+  assert.match(
+    accountsData,
+    /Record delivery timing summary[\s\S]*cat "\$RUNNER_TEMP\/delivery-timing\.md"/,
+  );
+  assert.equal(
+    accountsData.match(/name: Record delivery timing summary/g)?.length,
+    1,
+  );
+  const renderTimingScript = accountsData
+    .match(
+      /      - name: Record delivery timing summary[\s\S]*?^        run: \|\n([\s\S]*?)(?=^      - name:|^  #|(?![\s\S]))/m,
+    )?.[1]
+    ?.replace(/^ {10}/gm, '')
+    .trimEnd();
+  assert.ok(renderTimingScript);
+
+  const timingDirectory = await mkdtemp(join(tmpdir(), 'delivery-timing-'));
+  const timingSummary = join(timingDirectory, 'summary.md');
+  try {
+    await writeFile(
+      join(timingDirectory, 'delivery-timing.md'),
+      '| First measurement | 1s |\n| Second measurement | 2s |\n',
+    );
+    await execFileAsync('bash', ['-c', renderTimingScript], {
+      env: {
+        ...process.env,
+        GITHUB_STEP_SUMMARY: timingSummary,
+        RUNNER_TEMP: timingDirectory,
+      },
+    });
+    assert.equal(
+      await readFile(timingSummary, 'utf8'),
+      '| Measurement | Duration |\n| --- | ---: |\n| First measurement | 1s |\n| Second measurement | 2s |\n',
+    );
+  } finally {
+    await rm(timingDirectory, { recursive: true });
+  }
+
   assert.match(
     workflowJob(preview, 'accounts-api'),
     /Client configuration transfer/,
+  );
+  assert.match(
+    workflowJob(preview, 'accounts-client'),
+    /name: Record delivery timing summary/,
   );
 
   for (const label of [
@@ -1276,31 +1320,40 @@ test('workflow timing evidence distinguishes every dependency and transfer path'
 });
 
 test('templates own shared operational workflow fragments', async () => {
-  const [generator, dependencyFragment, apiFragment, clientFragment] =
-    await Promise.all([
-      readFile(new URL('./generate.mjs', import.meta.url), 'utf8'),
-      readFile(
-        new URL(
-          './templates/fragments/dependency-steps.yml.tmpl',
-          import.meta.url,
-        ),
-        'utf8',
+  const [
+    generator,
+    dependencyFragment,
+    apiFragment,
+    clientFragment,
+    timingFragment,
+  ] = await Promise.all([
+    readFile(new URL('./generate.mjs', import.meta.url), 'utf8'),
+    readFile(
+      new URL(
+        './templates/fragments/dependency-steps.yml.tmpl',
+        import.meta.url,
       ),
-      readFile(
-        new URL(
-          './templates/fragments/api-client-output.yml.tmpl',
-          import.meta.url,
-        ),
-        'utf8',
+      'utf8',
+    ),
+    readFile(
+      new URL(
+        './templates/fragments/api-client-output.yml.tmpl',
+        import.meta.url,
       ),
-      readFile(
-        new URL(
-          './templates/fragments/client-api-input.yml.tmpl',
-          import.meta.url,
-        ),
-        'utf8',
+      'utf8',
+    ),
+    readFile(
+      new URL(
+        './templates/fragments/client-api-input.yml.tmpl',
+        import.meta.url,
       ),
-    ]);
+      'utf8',
+    ),
+    readFile(
+      new URL('./templates/fragments/timing-summary.yml.tmpl', import.meta.url),
+      'utf8',
+    ),
+  ]);
 
   assert.doesNotMatch(generator, /yarn workspaces foreach/);
   assert.doesNotMatch(generator, /AccountsApiUrl/);
@@ -1308,6 +1361,7 @@ test('templates own shared operational workflow fragments', async () => {
   assert.match(dependencyFragment, /yarn workspaces foreach/);
   assert.match(apiFragment, /AccountsApiUrl/);
   assert.match(clientFragment, /needs\.accounts-api\.outputs\.appsync-url/);
+  assert.match(timingFragment, /cat "\$RUNNER_TEMP\/delivery-timing\.md"/);
 });
 
 test('generator emits deterministic static workflow graphs with one job per Deployment Unit', async () => {

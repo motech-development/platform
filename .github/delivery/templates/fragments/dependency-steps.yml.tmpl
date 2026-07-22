@@ -1,6 +1,8 @@
       - name: Start dependency setup measurement
         id: dependency-timing
-        run: echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+        run: |
+          : > "$RUNNER_TEMP/delivery-timing.md"
+          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Set Node version
         uses: actions/setup-node@v7
@@ -53,15 +55,11 @@
             route="cold install"
           fi
           elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          {
-            echo "| Measurement | Duration |"
-            echo "| --- | ---: |"
-            echo "| Dependency setup ($route) | ${elapsed_seconds}s |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build required workspace packages
         run: |
           started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '{{WORKSPACE}}' run package
           elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build ({{WORKSPACE}}) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Workspace package build ({{WORKSPACE}}) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"

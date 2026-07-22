@@ -43,8 +43,8 @@
           fi
           validation_elapsed=$(( $(date +%s) - validation_started_at ))
           echo "valid=$valid" >> "$GITHUB_OUTPUT"
-          echo "| ClamAV cache restore | ${restore_elapsed}s ($cache_state) |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| ClamAV cache validation | ${validation_elapsed}s ($cache_state) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| ClamAV cache restore | ${restore_elapsed}s ($cache_state) |" >> "$RUNNER_TEMP/delivery-timing.md"
+          echo "| ClamAV cache validation | ${validation_elapsed}s ($cache_state) |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build ClamAV binaries
         env:
@@ -58,11 +58,11 @@
           else
             route="source build"
           fi
-          echo "| ClamAV source build ($route) | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| ClamAV source build ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Package anti-virus
         run: |
           started_at="$(date +%s)"
           yarn workspace @core/anti-virus exec serverless package --stage $STAGE --package "$RUNNER_TEMP/anti-virus-package"
           elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Anti-virus packaging | ${elapsed_seconds}s |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Anti-virus packaging | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"

@@ -1,0 +1,11 @@
+      - name: Record delivery timing summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
+            {
+              echo "| Measurement | Duration |"
+              echo "| --- | ---: |"
+              cat "$RUNNER_TEMP/delivery-timing.md"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi

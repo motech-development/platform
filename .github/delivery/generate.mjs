@@ -890,6 +890,7 @@ const workflowFragmentNames = [
   'api-client-output',
   'client-api-input',
   'anti-virus-cache',
+  'timing-summary',
 ];
 
 function splitCoreInfrastructureJob(workflow) {
@@ -1235,13 +1236,17 @@ function deploymentFailureStep() {
   });
 }
 
-function appendDeploymentFailure(job) {
+function appendJobContent(job, content) {
   const sectionIndex = job.search(/^  #/m);
   if (sectionIndex === -1) {
-    return `${job.trimEnd()}\n\n${deploymentFailureStep()}\n`;
+    return `${job.trimEnd()}\n\n${content.trimEnd()}\n`;
   }
 
-  return `${job.slice(0, sectionIndex).trimEnd()}\n\n${deploymentFailureStep()}\n${job.slice(sectionIndex)}`;
+  return `${job.slice(0, sectionIndex).trimEnd()}\n\n${content.trimEnd()}\n${job.slice(sectionIndex)}`;
+}
+
+function appendDeploymentFailure(job) {
+  return appendJobContent(job, deploymentFailureStep());
 }
 
 function decorateAuditedDeliveryJob(
@@ -1345,6 +1350,10 @@ function rewriteJob(workflow, legacyJobId, unit, needs, definition) {
   rewritten = rewritten.replace(
     /\{\{fragment:dependency-steps:[^}]+\}\}/,
     `{{fragment:dependency-steps:${unit.workspace}}}`,
+  );
+  rewritten = appendJobContent(
+    rewritten,
+    '      # {{fragment:timing-summary}}',
   );
 
   return workflow.replace(jobPattern, rewritten);

@@ -743,6 +743,8 @@ jobs:
       - name: Smoke tests
         run: yarn workspace @accounts/client e2e-ci --shard=${{ matrix.containers }}/2
 
+      # {{fragment:timing-summary}}
+
   # Playwright status
   playwright-status:
     name: Set Playwright status
