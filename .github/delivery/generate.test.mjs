@@ -1232,11 +1232,18 @@ test('workflow timing evidence distinguishes every dependency and transfer path'
     }
   }
 
-  assert.match(await recordedRoute('true', ''), /exact installed cache hit/);
+  assert.match(
+    await recordedRoute('true', ''),
+    /^\| Measurement \| Duration \|\n\| --- \| ---: \|\n\| Dependency setup \(exact installed cache hit\) \| \d+s \|\n$/,
+  );
   assert.match(await recordedRoute('', 'false'), /archive fallback/);
   assert.match(await recordedRoute('', ''), /cold install/);
 
   const preview = generated['deploy-to-environment.yml'];
+  assert.match(
+    workflowJob(preview, 'accounts-data'),
+    /\| Measurement \| Duration \|[\s\S]*\| --- \| ---: \|/,
+  );
   assert.match(
     workflowJob(preview, 'accounts-data'),
     /Workspace package build/,
