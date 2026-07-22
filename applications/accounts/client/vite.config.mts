@@ -25,6 +25,7 @@ export default defineConfig(({ command, mode }) => {
     ...env
   } = loadEnv(mode, process.cwd(), '');
   const isBuild = command === 'build';
+  const isProductionBuild = isBuild && mode === 'production';
 
   return {
     base: PUBLIC_URL,
@@ -42,12 +43,16 @@ export default defineConfig(({ command, mode }) => {
     },
     plugins: [
       react(),
-      eslint({
-        include: ['src/**/*.ts', 'src/**/*.tsx'],
-      }),
-      checker({
-        typescript: true,
-      }),
+      ...(!isProductionBuild
+        ? [
+            eslint({
+              include: ['src/**/*.ts', 'src/**/*.tsx'],
+            }),
+            checker({
+              typescript: true,
+            }),
+          ]
+        : []),
       viteStaticCopy({
         targets: [
           {

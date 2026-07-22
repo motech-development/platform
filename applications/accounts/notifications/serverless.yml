@@ -14,7 +14,7 @@ package:
 
 plugins:
   - serverless-deployment-bucket
-  - serverless-webpack
+  - serverless-esbuild
   - serverless-prune-plugin
 
 custom:
@@ -25,13 +25,13 @@ custom:
     includeLayers: true
     number: 1
 
-  webpack:
-    excludeRegex: 'node_modules/@aws-sdk'
-    includeModules:
-      nodeModulesRelativeDir: ../../../
-    packager: yarn
-    packagerOptions:
-      noFrozenLockfile: true
+  esbuild:
+    bundle: true
+    external:
+      - yup
+    platform: node
+    sourcemap: true
+    target: node24
 
 functions:
   CreateNotification:

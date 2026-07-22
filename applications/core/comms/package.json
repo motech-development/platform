@@ -30,7 +30,6 @@
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
     "eslint": "9.37.0",
-    "fork-ts-checker-webpack-plugin": "9.1.0",
     "jest": "29.7.0",
     "jest-watch-typeahead": "2.2.2",
     "osls": "3.63.2",
