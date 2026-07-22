@@ -224,6 +224,7 @@ function affectsEveryPreviewWorkspace(filename) {
     filename === '.yarnrc.yml' ||
     filename.startsWith('.github/delivery/') ||
     filename.startsWith('.yarn/patches/') ||
+    filename.startsWith('.yarn/releases/') ||
     filename.startsWith('applications/') ||
     filename.startsWith('packages/') ||
     filename.startsWith('scripts/')
