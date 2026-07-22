@@ -16,6 +16,12 @@ node --test .github/delivery/*.test.mjs
 
 The files in `templates/` own operational commands, environment variables, permissions, and other non-topology workflow details. The generator owns stable job identifiers, target inclusion, and `needs` edges. Never edit a generated workflow directly. After regeneration, review the ordinary workflow diff for unit visibility, permissions, target eligibility, direct dependency edges, and reverse teardown ordering.
 
+## Dependency and output transfer
+
+Runnable jobs use `.github/actions/setup-dependencies/action.yml`. Its exact installed-dependency cache has no fallback key and includes the resolved platform, Node runtime, Yarn configuration and release, lockfile, plugins, and every workspace manifest. An exact miss restores Yarn archives before running an immutable install. Deployment Unit jobs then build only the transitive workspace packages selected from their owning manifest; generated package outputs and stage-specific Serverless directories are never cached.
+
+The accounts API exposes its public URL and AWS region as job outputs. Client jobs recreate `.env.production` from those outputs instead of using a cache as a workflow hand-off. Baseline measurements and the post-change capture protocol live in `performance.md`.
+
 ## Preview planning
 
 The Preview Environment workflow compares the pull-request base and head commits, then passes the changed paths to `generate.mjs --preview-impact`. Documentation-only changes produce explicit not-applicable `Preview` and `Playwright` results. Runtime changes under a workspace select that workspace; runtime files that cannot be scoped safely, such as the root lockfile or a newly added workspace, select the full workspace graph.

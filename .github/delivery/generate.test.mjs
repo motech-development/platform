@@ -551,6 +551,299 @@ function workflowJob(workflow, jobId) {
   return match[0];
 }
 
+test('dependency setup never restores stale installed dependencies and falls back to Yarn archives', async () => {
+  const action = await readFile(
+    new URL('../actions/setup-dependencies/action.yml', import.meta.url),
+    'utf8',
+  );
+
+  assert.match(action, /uses: actions\/setup-node@v6/);
+  assert.match(action, /path: \|\n\s+\.\/node_modules/);
+  assert.match(action, /\.\/applications\/\*\/\*\/node_modules/);
+  assert.match(action, /\.\/packages\/\*\/node_modules/);
+  assert.match(action, /runner\.os/);
+  assert.match(action, /runner\.arch/);
+  assert.match(action, /hashFiles\('\.nvmrc'\)/);
+  assert.match(action, /steps\.runtime\.outputs\.version/);
+  assert.match(action, /hashFiles\('yarn\.lock'/);
+  assert.match(action, /'\.yarnrc\.yml'/);
+  assert.match(action, /'\.yarn\/releases\/\*\*'/);
+  assert.match(action, /'\.yarn\/plugins\/\*\*'/);
+  assert.match(action, /'package\.json'/);
+  assert.match(action, /'applications\/\*\/\*\/package\.json'/);
+  assert.match(action, /'packages\/\*\/package\.json'/);
+
+  const installedDependencies = action.match(
+    /- name: Restore installed dependencies[\s\S]*?(?=\n    - name:)/,
+  )?.[0];
+  assert.ok(installedDependencies);
+  assert.doesNotMatch(installedDependencies, /restore-keys:/);
+
+  const archiveCache = action.match(
+    /- name: Restore Yarn archives[\s\S]*?(?=\n    - name:)/,
+  )?.[0];
+  assert.ok(archiveCache);
+  assert.match(
+    archiveCache,
+    /if: steps\.installed-dependencies\.outputs\.cache-hit != 'true'/,
+  );
+  assert.match(archiveCache, /restore-keys:/);
+  assert.match(
+    action,
+    /if: steps\.installed-dependencies\.outputs\.cache-hit != 'true'[\s\S]*run: yarn install --immutable/,
+  );
+});
+
+test('generated delivery jobs use exact dependencies and build only required transitive workspaces', async () => {
+  const [catalog, generated] = await Promise.all([
+    loadCatalog(),
+    generateWorkflows({ write: false }),
+  ]);
+
+  for (const [filename, target] of [
+    ['deploy-to-environment.yml', 'preview'],
+    ['deploy-to-develop.yml', 'develop'],
+    ['deploy-to-production.yml', 'production'],
+    ['teardown-environment.yml', 'preview'],
+  ]) {
+    const workflow = generated[filename];
+    assert.doesNotMatch(
+      workflow,
+      /^(?!\s*#)\s+- name: Restore packages$/m,
+      filename,
+    );
+    assert.doesNotMatch(
+      workflow,
+      /^(?!\s*#)\s+key: .*packages-v\d+/m,
+      filename,
+    );
+    assert.doesNotMatch(workflow, /^(?!\s*#)\s+.*\.serverless$/m, filename);
+
+    for (const unit of catalog.units.filter(({ targets }) =>
+      targets.includes(target),
+    )) {
+      const job = workflowJob(workflow, unit.id);
+      assert.match(
+        job,
+        /uses: \.\/\.github\/actions\/setup-dependencies/,
+        `${filename}:${unit.id}`,
+      );
+      assert.match(
+        job,
+        new RegExp(
+          `run: \\|[\\s\\S]*yarn workspaces foreach -Rpt --from '${unit.workspace.replaceAll('/', '\\/')}' run package`,
+        ),
+        `${filename}:${unit.id}`,
+      );
+    }
+  }
+});
+
+test('client delivery receives public API configuration through explicit job outputs', async () => {
+  const generated = await generateWorkflows({ write: false });
+
+  for (const filename of [
+    'deploy-to-environment.yml',
+    'deploy-to-develop.yml',
+    'deploy-to-production.yml',
+  ]) {
+    const workflow = generated[filename];
+    const api = workflowJob(workflow, 'accounts-api');
+    assert.match(api, /^    outputs:\n      appsync-url:/m, filename);
+    assert.match(api, /^      aws-region:/m, filename);
+    assert.match(
+      api,
+      /AccountsApiUrl[\s\S]*echo "appsync-url=\$appsync_url" >> "\$GITHUB_OUTPUT"[\s\S]*echo "aws-region=\$aws_region" >> "\$GITHUB_OUTPUT"/,
+      filename,
+    );
+    assert.doesNotMatch(
+      workflow,
+      /^(?!\s*#)\s+- name: Restore env vars$/m,
+      filename,
+    );
+  }
+
+  for (const filename of [
+    'deploy-to-environment.yml',
+    'deploy-to-production.yml',
+  ]) {
+    const client = workflowJob(generated[filename], 'accounts-client');
+    assert.match(client, /^      - accounts-api$/m, filename);
+    assert.match(
+      client,
+      /REACT_APP_APPSYNC_URL: \$\{\{ needs\.accounts-api\.outputs\.appsync-url \}\}[\s\S]*REACT_APP_AWS_REGION: \$\{\{ needs\.accounts-api\.outputs\.aws-region \}\}[\s\S]*\.env\.production/,
+      filename,
+    );
+  }
+});
+
+test('client-only plans include the API configuration producer', () => {
+  const preview = createPreviewPlan(planningCatalog, planningManifests, {
+    lifecycle: 'synchronize',
+    runtimeAffected: true,
+    changedWorkspaces: ['@accounts/client'],
+    existingStacks: [
+      'anti-virus-pr-1498',
+      'accounts-pr-1498-storage',
+      'accounts-pr-1498-data',
+      'accounts-pr-1498-warm-up',
+      'accounts-pr-1498-notifications',
+      'accounts-pr-1498-queue',
+      'accounts-pr-1498-reports',
+      'accounts-pr-1498-api',
+    ],
+    stage: 'pr-1498',
+  });
+  assert.deepEqual(preview.units, ['accounts-api']);
+
+  const productionInput = structuredClone(reconciliationFixture.input);
+  productionInput.deployments = productionInput.deployments.map(
+    (deployment) => {
+      const unit = planningCatalog.units.find(
+        ({ id }) => deployment.task === `deploy:${id}`,
+      );
+      return {
+        ...deployment,
+        ref: productionInput.desiredTags[unit.workspace],
+        statuses: [{ state: 'success' }, { state: 'in_progress' }],
+      };
+    },
+  );
+  productionInput.existingStacks = planningCatalog.units.flatMap((unit) =>
+    unit.expectedStacks.map((stack) =>
+      stack.replaceAll('{stage}', productionInput.stage),
+    ),
+  );
+  const client = productionInput.deployments.find(
+    ({ task }) => task === 'deploy:accounts-client',
+  );
+  client.ref = 'outdated-client-tag';
+  assert.deepEqual(
+    createReconciliationPlan(
+      planningCatalog,
+      planningManifests,
+      productionInput,
+    ).units.map(({ id }) => id),
+    ['accounts-api', 'accounts-client'],
+  );
+});
+
+test('QA and Release use the exact dependency strategy without generated package caches', async () => {
+  const [qualityAssurance, release, scheduledTests] = await Promise.all([
+    readFile(
+      new URL('../workflows/quality-assurance.yml', import.meta.url),
+      'utf8',
+    ),
+    readFile(new URL('../workflows/release.yml', import.meta.url), 'utf8'),
+    readFile(
+      new URL('../workflows/production-scheduled-tests.yml', import.meta.url),
+      'utf8',
+    ),
+  ]);
+
+  for (const jobId of [
+    'formatting',
+    'lint',
+    'type-check',
+    'unit-tests',
+    'chromatic',
+  ]) {
+    assert.match(
+      workflowJob(qualityAssurance, jobId),
+      /uses: \.\/\.github\/actions\/setup-dependencies/,
+      jobId,
+    );
+  }
+  assert.match(
+    workflowJob(release, 'release'),
+    /if: github\.event_name == 'push'\n        uses: \.\/\.github\/actions\/setup-dependencies/,
+  );
+  for (const jobId of ['setup', 'warm-up', 'accounts-tests']) {
+    assert.match(
+      workflowJob(scheduledTests, jobId),
+      /uses: \.\/\.github\/actions\/setup-dependencies/,
+      jobId,
+    );
+  }
+
+  for (const workflow of [qualityAssurance, release, scheduledTests]) {
+    assert.doesNotMatch(workflow, /^(?!\s*#)\s+- name: Restore packages$/m);
+    assert.doesNotMatch(workflow, /^(?!\s*#)\s+key: .*packages-v\d+/m);
+    assert.doesNotMatch(workflow, /^(?!\s*#)\s+key: .*modules-v\d+/m);
+    assert.doesNotMatch(workflow, /^(?!\s*#)\s+.*\.serverless$/m);
+  }
+});
+
+test('anti-virus deployments reuse only validated binaries from pinned build inputs', async () => {
+  const [generated, buildScript] = await Promise.all([
+    generateWorkflows({ write: false }),
+    readFile(
+      new URL(
+        '../../applications/core/anti-virus/scripts/build.sh',
+        import.meta.url,
+      ),
+      'utf8',
+    ),
+  ]);
+
+  for (const filename of [
+    'deploy-to-environment.yml',
+    'deploy-to-develop.yml',
+    'deploy-to-production.yml',
+  ]) {
+    const antiVirus = workflowJob(generated[filename], 'core-anti-virus');
+    assert.match(antiVirus, /path: \.\/applications\/core\/anti-virus\/bin/);
+    assert.match(
+      antiVirus,
+      /key: \$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-clamav-binaries-v1-\$\{\{ hashFiles\('applications\/core\/anti-virus\/scripts\/build\.sh'\) \}\}/,
+    );
+    assert.doesNotMatch(antiVirus, /clamav-binaries[\s\S]*restore-keys:/);
+  }
+
+  assert.match(buildScript, /\[\[ -x bin\/clamscan && -x bin\/freshclam \]\]/);
+  assert.match(
+    buildScript,
+    /Using validated cached ClamAV binaries[\s\S]*exit 0[\s\S]*docker pull/,
+  );
+});
+
+test('workflow timing evidence distinguishes every dependency and transfer path', async () => {
+  const [action, generated, measurements] = await Promise.all([
+    readFile(
+      new URL('../actions/setup-dependencies/action.yml', import.meta.url),
+      'utf8',
+    ),
+    generateWorkflows({ write: false }),
+    readFile(new URL('./performance.md', import.meta.url), 'utf8'),
+  ]);
+
+  assert.match(action, /exact installed cache hit/);
+  assert.match(action, /archive fallback/);
+  assert.match(action, /cold install/);
+  assert.match(action, /Dependency setup/);
+
+  const preview = generated['deploy-to-environment.yml'];
+  assert.match(
+    workflowJob(preview, 'accounts-data'),
+    /Workspace package build/,
+  );
+  assert.match(
+    workflowJob(preview, 'accounts-api'),
+    /Client configuration transfer/,
+  );
+
+  for (const label of [
+    'Exact installed cache hit',
+    'Archive fallback',
+    'Cold install',
+    'Workspace package build',
+    'Small-value transfer',
+    'Overall representative job',
+  ]) {
+    assert.match(measurements, new RegExp(label, 'i'));
+  }
+});
+
 test('generator emits deterministic static workflow graphs with one job per Deployment Unit', async () => {
   const [catalog, manifests] = await Promise.all([
     loadCatalog(),
@@ -633,10 +926,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.match(setup, /aws cloudformation describe-stacks/);
   assert.match(setup, /node \.github\/delivery\/generate\.mjs --preview-plan/);
-  assert.match(
-    setup,
-    /name: Install dependencies\n        if: steps\.plan\.outputs\.runtime-affected == 'true'[^\n]*\n        run: yarn/,
-  );
+  assert.doesNotMatch(setup, /name: Install dependencies/);
   assert.match(setup, /^    outputs:\n      runtime-affected:/m);
   assert.match(setup, /^      units:/m);
   assert.match(
