@@ -2,7 +2,6 @@
 const ConditionalPlugin = require('@motech-development/webpack-conditional-plugin');
 const PermissionsOutputPlugin = require('@motech-development/webpack-permissions-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { join, resolve } = require('node:path');
 const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
@@ -58,15 +57,6 @@ module.exports = {
     path: join(__dirname, '.webpack'),
   },
   plugins: [
-    new ForkTsCheckerWebpackPlugin({
-      typescript: {
-        diagnosticOptions: {
-          semantic: true,
-          syntactic: true,
-        },
-        mode: 'write-references',
-      },
-    }),
     new ConditionalPlugin(
       condition,
       new CopyPlugin({
