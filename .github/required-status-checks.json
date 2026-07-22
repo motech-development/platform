@@ -6,9 +6,8 @@
     "Playwright",
     "Preview",
     "SonarCloud Code Analysis",
+    "Storybook Publish",
     "Type check",
-    "UI Review",
-    "UI Tests",
     "Unit tests",
     "Validate delivery catalog"
   ]
