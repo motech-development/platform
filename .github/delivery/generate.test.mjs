@@ -860,11 +860,25 @@ test('QA and Release use the exact dependency strategy without generated package
 });
 
 test('anti-virus deployments reuse only validated binaries from pinned build inputs', async () => {
-  const [generated, buildScript] = await Promise.all([
+  const [generated, buildInputs, buildScript, cacheScript] = await Promise.all([
     generateWorkflows({ write: false }),
     readFile(
       new URL(
+        '../../applications/core/anti-virus/build-inputs.env',
+        import.meta.url,
+      ),
+      'utf8',
+    ),
+    readFile(
+      new URL(
         '../../applications/core/anti-virus/scripts/build.sh',
+        import.meta.url,
+      ),
+      'utf8',
+    ),
+    readFile(
+      new URL(
+        '../../applications/core/anti-virus/scripts/cache.sh',
         import.meta.url,
       ),
       'utf8',
@@ -880,7 +894,7 @@ test('anti-virus deployments reuse only validated binaries from pinned build inp
     assert.match(antiVirus, /path: \.\/applications\/core\/anti-virus\/bin/);
     assert.match(
       antiVirus,
-      /key: \$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-clamav-binaries-v1-\$\{\{ hashFiles\('applications\/core\/anti-virus\/scripts\/build\.sh'\) \}\}/,
+      /key: \$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-clamav-binaries-v2-\$\{\{ hashFiles\('applications\/core\/anti-virus\/build-inputs\.env', 'applications\/core\/anti-virus\/scripts\/build\.sh', 'applications\/core\/anti-virus\/scripts\/cache\.sh'\) \}\}/,
     );
     assert.doesNotMatch(antiVirus, /clamav-binaries[\s\S]*restore-keys:/);
     assert.match(
@@ -889,71 +903,46 @@ test('anti-virus deployments reuse only validated binaries from pinned build inp
     );
     assert.match(
       antiVirus,
-      /- name: Restore ClamAV binaries\n        if: steps\.clamav-cache\.outputs\.supported == 'true'/,
+      /- name: Restore ClamAV binaries\n        id: clamav-binaries\n        if: steps\.clamav-cache\.outputs\.supported == 'true'/,
+    );
+    assert.match(
+      antiVirus,
+      /- name: Validate restored ClamAV binaries[\s\S]*applications\/core\/anti-virus\/scripts\/cache\.sh validate/,
+    );
+    assert.match(
+      antiVirus,
+      /\| ClamAV cache restore \|[\s\S]*\| ClamAV cache validation \|/,
+    );
+    assert.match(
+      antiVirus,
+      /- name: Build ClamAV binaries[\s\S]*\| ClamAV source build \([^)]*\) \|/,
+    );
+    assert.match(
+      antiVirus,
+      /- name: Package anti-virus[\s\S]*serverless package --stage \$STAGE --package "\$RUNNER_TEMP\/anti-virus-package"[\s\S]*\| Anti-virus packaging \|/,
+    );
+    assert.match(
+      antiVirus,
+      /serverless deploy --stage \$STAGE --package "\$RUNNER_TEMP\/anti-virus-package"/,
     );
   }
 
-  const previewAntiVirus = workflowJob(
-    generated['deploy-to-environment.yml'],
-    'core-anti-virus',
-  );
-  const compatibilityStep = previewAntiVirus.match(
-    /      - name: Check ClamAV binary cache compatibility[\s\S]*?(?=\n      - name:)/,
-  )?.[0];
-  assert.ok(compatibilityStep);
-  const compatibilityScript = compatibilityStep
-    .match(/^        run: \|\n([\s\S]+)$/m)?.[1]
-    ?.replace(/^ {10}/gm, '')
-    .trimEnd();
-  assert.ok(compatibilityScript);
-
-  async function cacheSupportFor(scriptContents) {
-    const temporaryDirectory = await mkdtemp(join(tmpdir(), 'clamav-cache-'));
-    const scriptDirectory = join(
-      temporaryDirectory,
-      'applications',
-      'core',
-      'anti-virus',
-      'scripts',
-    );
-    const output = join(temporaryDirectory, 'output');
-    try {
-      await mkdir(scriptDirectory, { recursive: true });
-      await writeFile(join(scriptDirectory, 'build.sh'), scriptContents);
-      await execFileAsync('bash', ['-c', compatibilityScript], {
-        cwd: temporaryDirectory,
-        env: { ...process.env, GITHUB_OUTPUT: output },
-      });
-      return await readFile(output, 'utf8');
-    } finally {
-      await rm(temporaryDirectory, { recursive: true });
-    }
-  }
-
-  assert.equal(await cacheSupportFor(buildScript), 'supported=true\n');
-  assert.equal(
-    await cacheSupportFor('#!/usr/bin/env bash\nmkdir ./bin\n'),
-    'supported=false\n',
-  );
-
-  assert.match(buildScript, /amazonlinux@sha256:[a-f0-9]{64}/);
-  assert.doesNotMatch(buildScript, /dnf -y update/);
-  assert.match(buildScript, /gcc-11\.5\.0-5\.amzn2023\.0\.5/);
-  assert.match(buildScript, /CLAMAV_VERSION='1\.0\.9'/);
+  assert.match(buildInputs, /amazonlinux@sha256:[a-f0-9]{64}/);
+  assert.match(buildInputs, /gcc-11\.5\.0-5\.amzn2023\.0\.5/);
+  assert.match(buildInputs, /CLAMAV_VERSION='1\.0\.9'/);
   assert.match(
-    buildScript,
+    buildInputs,
     /CLAMAV_SOURCE_SHA256='5d3a20633bd589f612a71905a4fb50c1ee857cfbe6c72644368cac0030a1eeb4'/,
   );
+  assert.doesNotMatch(buildScript, /dnf -y update/);
+  assert.match(buildScript, /source \.\/build-inputs\.env/);
   assert.match(buildScript, /sha256sum --check/);
-  assert.match(buildScript, /bin\/\.build-revision/);
-  assert.match(
-    buildScript,
-    /\[\[ -x bin\/clamscan && -x bin\/freshclam && -f "\$BUILD_MANIFEST" \]\]/,
-  );
-  assert.match(
-    buildScript,
-    /cached_revision[\s\S]*build_revision[\s\S]*Using validated cached ClamAV binaries[\s\S]*exit 0[\s\S]*docker pull/,
-  );
+  assert.match(buildScript, /\.\/scripts\/cache\.sh validate/);
+  assert.match(buildScript, /\.\/scripts\/cache\.sh write/);
+  assert.match(cacheScript, /\.build-manifest/);
+  assert.match(cacheScript, /\.build-revision/);
+  assert.match(cacheScript, /validate_required_files/);
+  assert.match(cacheScript, /cmp -s "\$BUILD_MANIFEST" "\$actual_manifest"/);
 });
 
 test('workflow timing evidence distinguishes every dependency and transfer path', async () => {
@@ -1021,6 +1010,16 @@ test('workflow timing evidence distinguishes every dependency and transfer path'
   ]) {
     assert.match(measurements, new RegExp(label, 'i'));
   }
+  for (const label of [
+    'ClamAV source build',
+    'ClamAV cache restore',
+    'ClamAV cache validation',
+    'Anti-virus packaging',
+    'Anti-virus overall job',
+  ]) {
+    assert.match(measurements, new RegExp(label, 'i'));
+  }
+  assert.match(measurements, /29852527144/);
 });
 
 test('templates own shared operational workflow fragments', async () => {

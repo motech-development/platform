@@ -29,3 +29,18 @@ Capture the first post-change run for each route in this table:
 | Overall representative job | Accounts API and accounts storage job timestamps                                     | Pending CI run |
 
 Do not compare queued time or unrelated deployment time. Use step timestamps for cache/build/transfer rows and job `startedAt`/`completedAt` for the overall row.
+
+## Anti-virus cache evidence
+
+The pre-change reference is the anti-virus job in [Preview run 29852527144](https://github.com/motech-development/platform/actions/runs/29852527144). It ran from 17:44:06 to 17:50:31 UTC (385s overall). Its combined `Deploy` step ran from 17:44:40 to 17:50:05 UTC (325s), but the old command did not distinguish the ClamAV source build, Webpack packaging, and CloudFormation deployment. It had no ClamAV binary restore or validation steps.
+
+| Path                    | Pre-change evidence                | Post-change evidence source                                    |
+| ----------------------- | ---------------------------------- | -------------------------------------------------------------- |
+| ClamAV source build     | Included in the 325s combined step | `ClamAV source build (<route>)` job-summary row                |
+| ClamAV cache restore    | Not present                        | `ClamAV cache restore` job-summary row                         |
+| ClamAV cache validation | Not present                        | `ClamAV cache validation` job-summary row                      |
+| Anti-virus packaging    | Included in the 325s combined step | `Anti-virus packaging` job-summary row                         |
+| Anti-virus overall job  | 385s                               | Actions job `startedAt` and `completedAt`                      |
+| Package equivalence     | Not tested                         | Cached/uncached archive inspection: six equivalent Lambda zips |
+
+The first post-change source-build run establishes the miss baseline and saves the versioned binary cache. The next unchanged run establishes the hit baseline. Copy the four job-summary durations and the Actions overall-job timestamps into this section after those remote runs; queued time and definitions-update time are excluded from the comparison. Local package inspection is intentionally treated as correctness evidence, not a substitute for runner timing.
