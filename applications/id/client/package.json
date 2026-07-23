@@ -89,6 +89,10 @@
       "!src/{index,i18n}.{ts,tsx}",
       "!src/**/*/index.{ts,tsx}"
     ],
+    "moduleNameMapper": {
+      "^@motech-development/axios-hooks$": "<rootDir>/../../../packages/axios-hooks/lib/axios-hooks.js",
+      "^@motech-development/ga-web-vitals$": "<rootDir>/../../../packages/ga-web-vitals/lib/ga-web-vitals.js"
+    },
     "resetMocks": false,
     "setupFilesAfterEnv": [
       "<rootDir>/src/setupTests.ts"
