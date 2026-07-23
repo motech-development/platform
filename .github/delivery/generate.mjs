@@ -1373,6 +1373,25 @@ function insertStandardJob(workflow, job, definition) {
   return `${workflow.trimEnd()}\n\n${job.trimEnd()}\n`;
 }
 
+const deliveryCompletionStepNames = new Map([
+  ['accounts-warm-up', 'Warm up'],
+  ['core-anti-virus', 'Update definitions'],
+]);
+
+function extendDeliveryAttempt(decorated, deliveryStep, completionStepName) {
+  const deliveryTail = decorated.slice(deliveryStep.index);
+  const completionStep = deliveryTail.match(
+    new RegExp(
+      `^      - name: ${completionStepName}\\n[\\s\\S]*?(?=^      - name:|^      # \\{\\{fragment:|^  #|(?![\\s\\S]))`,
+      'm',
+    ),
+  );
+
+  return completionStep
+    ? deliveryTail.slice(0, completionStep.index + completionStep[0].length)
+    : deliveryStep[0];
+}
+
 function decorateAuditedDeliveryJob(
   job,
   { condition, environment, ref, unit },
@@ -1410,31 +1429,10 @@ function decorateAuditedDeliveryJob(
     throw new Error(`deployment job "${unit.id}" has no delivery step`);
   }
 
-  let deliveryAttempt = deliveryStep[0];
-  if (unit.id === 'core-anti-virus') {
-    const deliveryTail = decorated.slice(deliveryStep.index);
-    const definitionsStep = deliveryTail.match(
-      /^      - name: Update definitions\n[\s\S]*?(?=^      - name:|^      # \{\{fragment:|^  #|(?![\s\S]))/m,
-    );
-    if (definitionsStep) {
-      deliveryAttempt = deliveryTail.slice(
-        0,
-        definitionsStep.index + definitionsStep[0].length,
-      );
-    }
-  }
-  if (unit.id === 'accounts-warm-up') {
-    const deliveryTail = decorated.slice(deliveryStep.index);
-    const warmUpStep = deliveryTail.match(
-      /^      - name: Warm up\n[\s\S]*?(?=^      - name:|^      # \{\{fragment:|^  #|(?![\s\S]))/m,
-    );
-    if (warmUpStep) {
-      deliveryAttempt = deliveryTail.slice(
-        0,
-        warmUpStep.index + warmUpStep[0].length,
-      );
-    }
-  }
+  const completionStepName = deliveryCompletionStepNames.get(unit.id);
+  const deliveryAttempt = completionStepName
+    ? extendDeliveryAttempt(decorated, deliveryStep, completionStepName)
+    : deliveryStep[0];
 
   const successAfterClientConfiguration = unit.id === 'accounts-api';
   let audited = decorated.replace(

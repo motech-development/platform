@@ -1577,6 +1577,10 @@ test('generated preview workflow plans per pull request and selectively deploys 
   assert.match(setup, /name: Preview plan/);
   assert.match(
     setup,
+    /- name: Checkout code\n        uses: actions\/checkout@v7\n        with:\n          fetch-depth: 0\n          persist-credentials: false\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
+  );
+  assert.match(
+    setup,
     /git diff --name-only '\$\{\{ github\.event\.pull_request\.base\.sha \}\}\.\.\.\$\{\{ github\.event\.pull_request\.head\.sha \}\}'/,
   );
   assert.match(setup, /aws cloudformation describe-stacks/);
