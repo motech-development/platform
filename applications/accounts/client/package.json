@@ -134,6 +134,7 @@
       "^@motech-development/auth$": "<rootDir>/../../../packages/auth/lib/index.js",
       "^@motech-development/axios-hooks$": "<rootDir>/../../../packages/axios-hooks/lib/axios-hooks.js",
       "^@motech-development/ga-web-vitals$": "<rootDir>/../../../packages/ga-web-vitals/lib/ga-web-vitals.js",
+      "^@motech-development/query-string-hook$": "<rootDir>/../../../packages/query-string-hook/lib/index.js",
       "^uuid$": "uuid"
     },
     "resetMocks": true,
