@@ -72,6 +72,9 @@
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}"
     ],
+    "moduleNameMapper": {
+      "^@motech-development/query-string-hook$": "<rootDir>/../query-string-hook/lib/index.js"
+    },
     "setupFilesAfterEnv": [
       "<rootDir>/src/setupTests.ts"
     ],
