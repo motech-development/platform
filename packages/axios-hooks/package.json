@@ -1,6 +1,7 @@
 {
   "name": "@motech-development/axios-hooks",
   "version": "0.0.0-development",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/motech-development/platform.git"
@@ -17,12 +18,15 @@
   "files": [
     "lib"
   ],
-  "main": "lib/axios-hooks.cjs.js",
-  "module": "lib/axios-hooks.esm.js",
-  "types": "lib/axios-hooks.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/axios-hooks.d.ts",
+      "import": "./lib/axios-hooks.js"
+    }
+  },
   "scripts": {
     "formatting": "prettier . --check",
-    "build": "run prebuild && rollup -c",
+    "build": "run prebuild && vite build && tsc --project tsconfig.build.json --emitDeclarationOnly",
     "lint": "eslint './src/**/*.{ts,tsx}'",
     "package": "run build",
     "prebuild": "rimraf ./lib",
@@ -34,8 +38,6 @@
     "@motech-development/eslint-config-motech-react": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
-    "@rollup/plugin-commonjs": "28.0.2",
-    "@rollup/plugin-node-resolve": "15.3.1",
     "@swc/core": "1.11.5",
     "@swc/jest": "0.2.37",
     "@testing-library/react": "16.2.0",
@@ -47,11 +49,8 @@
     "prettier": "3.2.5",
     "react": "18.3.1",
     "rimraf": "6.0.1",
-    "rollup": "4.60.2",
-    "rollup-plugin-dts": "6.4.1",
-    "rollup-plugin-exclude-dependencies-from-bundle": "1.1.24",
-    "rollup-plugin-swc3": "0.12.1",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vite": "8.1.5"
   },
   "peerDependencies": {
     "react": "^18.3.1"
