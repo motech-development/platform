@@ -10,6 +10,7 @@ import { NativeAttributeValue, unmarshall } from '@aws-sdk/util-dynamodb';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { DynamoDBRecord, DynamoDBStreamHandler } from 'aws-lambda';
+import { serializePublicationCommand } from './shared/publication-command';
 import { ITransaction, TransactionStatus } from './shared/transaction';
 
 init({
@@ -61,7 +62,7 @@ const scheduleInput = (transaction: ITransaction) => {
       DeadLetterConfig: {
         Arn: schedulerDeliveryDlqArn,
       },
-      Input: JSON.stringify({
+      Input: serializePublicationCommand({
         expectedScheduledTime: transaction.date,
         transactionId: transaction.id,
       }),

@@ -543,6 +543,13 @@ jobs:
           done
           echo "found=$found" >> "$GITHUB_OUTPUT"
 
+      - name: Clear bucket
+        if: steps.resources.outputs.found == 'true'
+        run: |
+          account_id="$(aws sts get-caller-identity --query Account --output text)"
+          .github/delivery/empty-s3-bucket.sh \
+            "s3://accounts-${STAGE}-schedule-sync-failures-${account_id}"
+
       - name: Teardown
         if: steps.resources.outputs.found == 'true'
         run: yarn workspace @accounts/data teardown --stage $STAGE

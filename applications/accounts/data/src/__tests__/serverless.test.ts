@@ -45,26 +45,6 @@ describe('Scheduled Transaction infrastructure', () => {
         role: 'SchedulingAlarmLambdaFunctionRole',
       },
       ScheduleTransactions: {
-        events: [
-          {
-            stream: {
-              batchSize: 1,
-              destinations: {
-                onFailure: {
-                  arn: {
-                    'Fn::GetAtt': [
-                      'ScheduleSynchronisationDeadLetterQueue',
-                      'Arn',
-                    ],
-                  },
-                  type: 'sqs',
-                },
-              },
-              maximumRetryAttempts: 4,
-              startingPosition: 'LATEST',
-            },
-          },
-        ],
         role: 'ScheduleTransactionsLambdaFunctionRole',
       },
     });
@@ -85,6 +65,51 @@ describe('Scheduled Transaction infrastructure', () => {
       },
       ScheduleSynchronisationDeadLetterQueue: {
         Type: 'AWS::SQS::Queue',
+      },
+      ScheduleSynchronisationFailureBucket: {
+        Properties: {
+          LifecycleConfiguration: {
+            Rules: [
+              expect.objectContaining({
+                ExpirationInDays: 14,
+                Status: 'Enabled',
+              }),
+            ],
+          },
+          NotificationConfiguration: {
+            EventBridgeConfiguration: {
+              EventBridgeEnabled: true,
+            },
+          },
+        },
+        Type: 'AWS::S3::Bucket',
+      },
+      ScheduleSynchronisationFailureRule: {
+        Properties: {
+          Targets: [
+            expect.objectContaining({
+              Arn: {
+                'Fn::GetAtt': ['ScheduleSynchronisationDeadLetterQueue', 'Arn'],
+              },
+            }),
+          ],
+        },
+        Type: 'AWS::Events::Rule',
+      },
+      ScheduleTransactionsEventSourceMapping: {
+        Properties: {
+          BatchSize: 1,
+          DestinationConfig: {
+            OnFailure: {
+              Destination: {
+                'Fn::GetAtt': ['ScheduleSynchronisationFailureBucket', 'Arn'],
+              },
+            },
+          },
+          MaximumRetryAttempts: 4,
+          StartingPosition: 'LATEST',
+        },
+        Type: 'AWS::Lambda::EventSourceMapping',
       },
       SchedulerDeliveryDeadLetterQueue: {
         Type: 'AWS::SQS::Queue',

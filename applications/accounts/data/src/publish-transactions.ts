@@ -7,12 +7,11 @@ import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { SQSHandler } from 'aws-lambda';
 import { v4 as uuid } from 'uuid';
+import {
+  IPublicationCommand,
+  parsePublicationCommand,
+} from './shared/publication-command';
 import { ITransaction, TransactionStatus } from './shared/transaction';
-
-interface IPublicationCommand {
-  expectedScheduledTime: string;
-  transactionId: string;
-}
 
 init({
   dsn: process.env.SENTRY_DSN,
@@ -32,21 +31,6 @@ const requiredTable = (): string => {
   }
 
   return TABLE;
-};
-
-const parseCommand = (body: string): IPublicationCommand => {
-  const command = JSON.parse(body) as Partial<IPublicationCommand>;
-
-  if (
-    typeof command.expectedScheduledTime !== 'string' ||
-    typeof command.transactionId !== 'string' ||
-    !command.expectedScheduledTime ||
-    !command.transactionId
-  ) {
-    throw new Error('Invalid publication command');
-  }
-
-  return command as IPublicationCommand;
 };
 
 const publishTransaction = async (
@@ -145,7 +129,7 @@ export const handler: SQSHandler = wrapHandler(async (event) => {
 
   await Promise.all(
     event.Records.map(({ body }) =>
-      publishTransaction(tableName, parseCommand(body)),
+      publishTransaction(tableName, parsePublicationCommand(body)),
     ),
   );
 });

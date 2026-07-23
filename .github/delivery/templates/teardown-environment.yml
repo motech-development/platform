@@ -186,6 +186,12 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
+      - name: Clear bucket
+        run: |
+          account_id="$(aws sts get-caller-identity --query Account --output text)"
+          .github/delivery/empty-s3-bucket.sh \
+            "s3://accounts-${STAGE}-schedule-sync-failures-${account_id}"
+
       - name: Teardown
         run: yarn workspace @accounts/data teardown --stage $STAGE
 
