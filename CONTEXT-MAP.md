@@ -2,6 +2,12 @@
 
 This repository contains multiple domain contexts. Read the context document and ADRs relevant to the area being changed.
 
+## Accounts
+
+- **Scope**: Recording and managing a company's financial transactions.
+- **Context document**: [`applications/accounts/CONTEXT.md`](applications/accounts/CONTEXT.md)
+- **ADRs**: `applications/accounts/docs/adr/` (created lazily when an Accounts decision warrants one)
+
 ## Breeze UI
 
 - **Scope**: The public component, interaction, and styling contracts of `@motech-development/breeze-ui`.
