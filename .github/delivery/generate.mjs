@@ -1167,8 +1167,9 @@ function decorateLongLivedWorkflow(workflow, target) {
       `    runs-on: ubuntu-latest\n\n    outputs:\n      units: \${{ steps.plan.outputs.units }}\n\n    permissions:\n      contents: read\n      deployments: read\n      id-token: write\n\n    env:\n      ENVIRONMENT: ${target}\n      STAGE: ${target}\n      TARGET: ${target}\n`,
     )
     .replace(
-      /^      - name: Set Node version\n/m,
-      `${environmentReconciliationSteps()}      - name: Set Node version\n`,
+      /^      - name: Set Node version\n        uses: actions\/setup-node@v7\n        with:\n          node-version-file: \.nvmrc\n/m,
+      (nodeSetup) =>
+        `${nodeSetup}\n${environmentReconciliationSteps().trimEnd()}`,
     );
 
   return workflow
@@ -1423,12 +1424,31 @@ function decorateAuditedDeliveryJob(
     }
   }
 
-  return appendDeploymentFailure(
-    decorated.replace(
-      deliveryAttempt,
-      `${deploymentAuditSteps().trimEnd()}\n\n${deliveryAttempt.trimEnd()}\n\n${deploymentSuccessStep()}\n`,
-    ),
+  const successAfterClientConfiguration = unit.id === 'accounts-api';
+  let audited = decorated.replace(
+    deliveryAttempt,
+    `${deploymentAuditSteps().trimEnd()}\n\n${deliveryAttempt.trimEnd()}${
+      successAfterClientConfiguration
+        ? '\n'
+        : `\n\n${deploymentSuccessStep()}\n`
+    }`,
   );
+
+  if (successAfterClientConfiguration) {
+    const clientConfigurationFragment =
+      '      # {{fragment:api-client-output}}';
+    if (!audited.includes(clientConfigurationFragment)) {
+      throw new Error(
+        `deployment job "${unit.id}" has no client configuration output`,
+      );
+    }
+    audited = audited.replace(
+      clientConfigurationFragment,
+      `${clientConfigurationFragment}\n\n${deploymentSuccessStep().trimEnd()}`,
+    );
+  }
+
+  return appendDeploymentFailure(audited);
 }
 
 function decorateReleaseJob(job, unit, dependencies, environment) {

@@ -207,6 +207,8 @@ jobs:
       - name: Read current Accounts API configuration
         id: current-api-config
         if: steps.plan.outputs.validation-required == 'true' && !contains(fromJSON(steps.plan.outputs.units), 'accounts-api')
+        env:
+          STAGE: pr-${{ github.event.pull_request.number }}
         shell: bash
         run: |
           stack="$(

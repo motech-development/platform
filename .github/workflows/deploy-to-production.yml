@@ -37,6 +37,11 @@ jobs:
         with:
           ref: ${{ fromJSON(inputs.release-plan).boundary }}
 
+      - name: Set Node version
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
       - name: Configure AWS credentials for reconciliation
         uses: aws-actions/configure-aws-credentials@v6
         with:
@@ -117,12 +122,6 @@ jobs:
           )"
           echo "units=$(jq -c '.units | map(.id)' <<< "$plan")" \
             >> "$GITHUB_OUTPUT"
-
-      - name: Set Node version
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-
   component-library:
     name: Deploy component library
 
@@ -2052,22 +2051,6 @@ jobs:
 
       - name: Deploy
         run: yarn workspace @accounts/api deploy --stage $STAGE
-
-      - name: Record successful Deployment
-        id: deployment-success
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          jq -n \
-            --arg state success \
-            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-            '{state: $state, log_url: $log_url, auto_inactive: false}' \
-            | gh api --method POST \
-              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
-              --input -
-          echo "recorded=true" >> "$GITHUB_OUTPUT"
-
       - name: Export client configuration
         id: client-config
         run: |
@@ -2087,6 +2070,21 @@ jobs:
           echo "aws-region=$aws_region" >> "$GITHUB_OUTPUT"
           elapsed_seconds=$(( $(date +%s) - started_at ))
           echo "| Client configuration transfer | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
+
+      - name: Record successful Deployment
+        id: deployment-success
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state success \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+          echo "recorded=true" >> "$GITHUB_OUTPUT"
 
       - name: Record failed Deployment
         if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
