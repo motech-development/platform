@@ -34,15 +34,15 @@ The completed Preview jobs restored exact installed dependencies; their Yarn arc
 
 ## Representative workflow timings
 
-Workflow duration is measured from the Actions run `createdAt` and `updatedAt` timestamps. These are representative scenarios rather than identical workloads, so the comparison demonstrates observed critical-path movement rather than a universal runtime guarantee.
+Pull-request QA and Preview duration are measured from the Actions run `createdAt` and `updatedAt` timestamps because their workflow boundaries remain comparable. Release duration is the `Packages` job, and each long-lived environment is measured from the start of its setup job to its last completed delivery job. These like-for-like phase boundaries avoid counting Develop and production inside the post-change Release total while still including the duplicate quality work removed from the pre-change production path. The runs are representative scenarios rather than identical workloads, so the comparison demonstrates observed critical-path movement rather than a universal runtime guarantee.
 
 | Scenario         | Pre-change evidence                                                                                | Post-change evidence                                                                               | Observed change  |
 | ---------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------- |
 | Pull-request QA  | [Run 29852527127](https://github.com/motech-development/platform/actions/runs/29852527127): 12m30s | [Run 29936655234](https://github.com/motech-development/platform/actions/runs/29936655234): 7m31s  | -4m59s (-39.9%)  |
 | Complete Preview | [Run 29852527144](https://github.com/motech-development/platform/actions/runs/29852527144): 71m55s | [Run 29937430985](https://github.com/motech-development/platform/actions/runs/29937430985): 58m29s | -13m26s (-18.7%) |
-| Release          | [Run 29858869933](https://github.com/motech-development/platform/actions/runs/29858869933): 4m01s  | [Run 30030810456](https://github.com/motech-development/platform/actions/runs/30030810456): 2m50s  | -1m11s (-29.5%)  |
-| Develop          | [Run 29858869878](https://github.com/motech-development/platform/actions/runs/29858869878): 28m04s | [Run 30030810456](https://github.com/motech-development/platform/actions/runs/30030810456): 15m13s | -12m51s (-45.8%) |
-| Production       | [Run 29858869881](https://github.com/motech-development/platform/actions/runs/29858869881): 47m53s | [Run 30030810456](https://github.com/motech-development/platform/actions/runs/30030810456): 18m01s | -29m52s (-62.4%) |
+| Release          | [Run 29858869933](https://github.com/motech-development/platform/actions/runs/29858869933): 3m56s  | [Run 30030810456](https://github.com/motech-development/platform/actions/runs/30030810456): 2m50s  | -1m06s (-28.0%)  |
+| Develop          | [Run 29858869878](https://github.com/motech-development/platform/actions/runs/29858869878): 27m59s | [Run 30030810456](https://github.com/motech-development/platform/actions/runs/30030810456): 15m13s | -12m46s (-45.6%) |
+| Production       | [Run 29858869881](https://github.com/motech-development/platform/actions/runs/29858869881): 47m49s | [Run 30030810456](https://github.com/motech-development/platform/actions/runs/30030810456): 18m01s | -29m48s (-62.3%) |
 
 The post-change Preview created the complete preview-capable topology and passed both unchanged Playwright shards. Its longest application step was the accounts warm-up command, which ran for 27m11s and remains part of the observed Preview critical path.
 
