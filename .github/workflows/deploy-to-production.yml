@@ -500,21 +500,23 @@ jobs:
       - name: Restore ClamAV binaries
         id: clamav-binaries
         if: steps.clamav-cache.outputs.supported == 'true'
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: ./applications/core/anti-virus/bin
-          key: ${{ runner.os }}-${{ runner.arch }}-clamav-binaries-v2-${{ hashFiles('applications/core/anti-virus/build-inputs.env', 'applications/core/anti-virus/scripts/build.sh', 'applications/core/anti-virus/scripts/cache.sh') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-clamav-binaries-v3-${{ hashFiles('applications/core/anti-virus/build-inputs.env', 'applications/core/anti-virus/scripts/build.sh', 'applications/core/anti-virus/scripts/cache.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-clamav-binaries-v3-${{ hashFiles('applications/core/anti-virus/build-inputs.env', 'applications/core/anti-virus/scripts/build.sh', 'applications/core/anti-virus/scripts/cache.sh') }}-
 
       - name: Validate restored ClamAV binaries
         id: clamav-validation
         if: steps.clamav-cache.outputs.supported == 'true'
         env:
-          CACHE_HIT: ${{ steps.clamav-binaries.outputs.cache-hit }}
+          CACHE_MATCHED_KEY: ${{ steps.clamav-binaries.outputs.cache-matched-key }}
           CACHE_STARTED_AT: ${{ steps.clamav-timing.outputs.cache-started-at }}
         run: |
           validation_started_at="$(date +%s)"
           restore_elapsed=$(( validation_started_at - CACHE_STARTED_AT ))
-          if [[ "$CACHE_HIT" != "true" ]]; then
+          if [[ -z "$CACHE_MATCHED_KEY" ]]; then
             cache_state="miss"
             valid=false
           elif applications/core/anti-virus/scripts/cache.sh validate; then
@@ -543,6 +545,13 @@ jobs:
             route="source build"
           fi
           echo "| ClamAV source build ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
+
+      - name: Save rebuilt ClamAV binaries
+        if: steps.clamav-cache.outputs.supported == 'true' && steps.clamav-validation.outputs.valid != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ./applications/core/anti-virus/bin
+          key: ${{ steps.clamav-binaries.outputs.cache-primary-key }}
 
       - name: Package anti-virus
         run: |

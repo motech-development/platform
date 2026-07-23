@@ -1250,20 +1250,23 @@ test('anti-virus deployments reuse only validated binaries from pinned build inp
     assert.match(antiVirus, /path: \.\/applications\/core\/anti-virus\/bin/);
     assert.match(
       antiVirus,
-      /key: \$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-clamav-binaries-v2-\$\{\{ hashFiles\('applications\/core\/anti-virus\/build-inputs\.env', 'applications\/core\/anti-virus\/scripts\/build\.sh', 'applications\/core\/anti-virus\/scripts\/cache\.sh'\) \}\}/,
+      /key: \$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-clamav-binaries-v3-\$\{\{ hashFiles\('applications\/core\/anti-virus\/build-inputs\.env', 'applications\/core\/anti-virus\/scripts\/build\.sh', 'applications\/core\/anti-virus\/scripts\/cache\.sh'\) \}\}-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/,
     );
-    assert.doesNotMatch(antiVirus, /clamav-binaries[\s\S]*restore-keys:/);
     assert.match(
       antiVirus,
       /- name: Check ClamAV binary cache compatibility[\s\S]*id: clamav-cache/,
     );
     assert.match(
       antiVirus,
-      /- name: Restore ClamAV binaries\n        id: clamav-binaries\n        if: steps\.clamav-cache\.outputs\.supported == 'true'/,
+      /- name: Restore ClamAV binaries\n        id: clamav-binaries\n        if: steps\.clamav-cache\.outputs\.supported == 'true'\n        uses: actions\/cache\/restore@v6/,
     );
     assert.match(
       antiVirus,
-      /- name: Validate restored ClamAV binaries[\s\S]*applications\/core\/anti-virus\/scripts\/cache\.sh validate/,
+      /restore-keys: \|\n\s+\$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-clamav-binaries-v3-/,
+    );
+    assert.match(
+      antiVirus,
+      /- name: Validate restored ClamAV binaries[\s\S]*CACHE_MATCHED_KEY: \$\{\{ steps\.clamav-binaries\.outputs\.cache-matched-key \}\}[\s\S]*if \[\[ -z "\$CACHE_MATCHED_KEY" \]\][\s\S]*applications\/core\/anti-virus\/scripts\/cache\.sh validate/,
     );
     assert.match(
       antiVirus,
@@ -1272,6 +1275,10 @@ test('anti-virus deployments reuse only validated binaries from pinned build inp
     assert.match(
       antiVirus,
       /- name: Build ClamAV binaries[\s\S]*\| ClamAV source build \([^)]*\) \|/,
+    );
+    assert.match(
+      antiVirus,
+      /- name: Save rebuilt ClamAV binaries\n        if: steps\.clamav-cache\.outputs\.supported == 'true' && steps\.clamav-validation\.outputs\.valid != 'true'\n        uses: actions\/cache\/save@v6[\s\S]*key: \$\{\{ steps\.clamav-binaries\.outputs\.cache-primary-key \}\}/,
     );
     assert.match(
       antiVirus,
