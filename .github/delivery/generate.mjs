@@ -1287,10 +1287,24 @@ function decorateAuditedDeliveryJob(
     throw new Error(`deployment job "${unit.id}" has no delivery step`);
   }
 
+  let deliveryAttempt = deliveryStep[0];
+  if (unit.id === 'core-anti-virus') {
+    const deliveryTail = decorated.slice(deliveryStep.index);
+    const definitionsStep = deliveryTail.match(
+      /^      - name: Update definitions\n[\s\S]*?(?=^      - name:|^      # \{\{fragment:|^  #|(?![\s\S]))/m,
+    );
+    if (definitionsStep) {
+      deliveryAttempt = deliveryTail.slice(
+        0,
+        definitionsStep.index + definitionsStep[0].length,
+      );
+    }
+  }
+
   return appendDeploymentFailure(
     decorated.replace(
-      deliveryStep[0],
-      `${deploymentAuditSteps().trimEnd()}\n\n${deliveryStep[0].trimEnd()}\n\n${deploymentSuccessStep()}\n`,
+      deliveryAttempt,
+      `${deploymentAuditSteps().trimEnd()}\n\n${deliveryAttempt.trimEnd()}\n\n${deploymentSuccessStep()}\n`,
     ),
   );
 }
