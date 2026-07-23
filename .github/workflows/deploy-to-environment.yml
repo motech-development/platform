@@ -1269,6 +1269,10 @@ jobs:
       - name: Deploy
         run: yarn workspace @accounts/warm-up deploy --stage $STAGE
 
+      - name: Warm up
+        if: github.event.action != 'synchronize'
+        run: yarn workspace @accounts/warm-up start --stage $STAGE
+
       - name: Record successful Deployment
         id: deployment-success
         env:
@@ -1283,10 +1287,6 @@ jobs:
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
           echo "recorded=true" >> "$GITHUB_OUTPUT"
-
-      - name: Warm up
-        if: github.event.action != 'synchronize'
-        run: yarn workspace @accounts/warm-up start --stage $STAGE
 
       - name: Record failed Deployment
         if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'

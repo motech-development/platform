@@ -1423,6 +1423,18 @@ function decorateAuditedDeliveryJob(
       );
     }
   }
+  if (unit.id === 'accounts-warm-up') {
+    const deliveryTail = decorated.slice(deliveryStep.index);
+    const warmUpStep = deliveryTail.match(
+      /^      - name: Warm up\n[\s\S]*?(?=^      - name:|^      # \{\{fragment:|^  #|(?![\s\S]))/m,
+    );
+    if (warmUpStep) {
+      deliveryAttempt = deliveryTail.slice(
+        0,
+        warmUpStep.index + warmUpStep[0].length,
+      );
+    }
+  }
 
   const successAfterClientConfiguration = unit.id === 'accounts-api';
   let audited = decorated.replace(

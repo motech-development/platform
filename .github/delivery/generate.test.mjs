@@ -1041,6 +1041,19 @@ test('API delivery records success only after exporting client configuration', a
   }
 });
 
+test('Preview warm-up records success only after warming the environment', async () => {
+  const generated = await generateWorkflows({ write: false });
+  const warmUp = workflowJob(
+    generated['deploy-to-environment.yml'],
+    'accounts-warm-up',
+  );
+
+  assert.match(
+    warmUp,
+    /name: Deploy\n[\s\S]*name: Warm up\n[\s\S]*name: Record successful Deployment[\s\S]*name: Record failed Deployment/,
+  );
+});
+
 test('client-only Preview validation reuses API state while delivery plans include the producer', () => {
   const preview = createPreviewPlan(
     planningCatalog,
