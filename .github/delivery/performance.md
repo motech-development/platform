@@ -22,15 +22,17 @@ Capture the first post-change run for each route in this table:
 | Path                       | Post-change run                                                                                                                                  |               Duration |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------: |
 | Exact installed cache hit  | [Preview run 29937430985](https://github.com/motech-development/platform/actions/runs/29937430985), accounts API and storage                     |   14s API; 13s storage |
-| Archive fallback           | First run after a manifest-only installation-input change with an unchanged lockfile                                                             |         Pending CI run |
-| Cold install               | First run with a new dependency-cache and archive-cache key                                                                                      |         Pending CI run |
+| Archive fallback           | [QA run 30037693871](https://github.com/motech-development/platform/actions/runs/30037693871), five dependency-using jobs                        |    65.2s mean (61–70s) |
+| Cold install               | [QA run 30038373699](https://github.com/motech-development/platform/actions/runs/30038373699), five dependency-using jobs                        |    78.6s mean (74–82s) |
 | Workspace package build    | [Preview run 29937430985](https://github.com/motech-development/platform/actions/runs/29937430985), accounts API and storage                     |     5s API; 6s storage |
 | Small-value transfer       | [Preview run 29937430985](https://github.com/motech-development/platform/actions/runs/29937430985), accounts API `Client configuration transfer` |                     1s |
 | Overall representative job | [Preview run 29937430985](https://github.com/motech-development/platform/actions/runs/29937430985), accounts API and storage                     | 140s API; 186s storage |
 
 Do not compare queued time or unrelated deployment time. Use step timestamps for cache/build/transfer rows and job `startedAt`/`completedAt` for the overall row.
 
-The completed Preview jobs restored exact installed dependencies; their Yarn archive restore and immutable install steps were skipped. Archive-fallback and cold-install measurements therefore remain outstanding.
+Temporary validation PR [#1505](https://github.com/motech-development/platform/pull/1505) exercised the two missing routes without running a Deployment Unit. Commit [`050d0468`](https://github.com/motech-development/platform/commit/050d0468950c37c2505035c4b9455188fb0b9f0f) changed only the exact installed-dependencies namespace: all five jobs missed that cache, restored the unchanged 273 MB Yarn archive by its exact key, and completed the immutable install. Commit [`998e97c1`](https://github.com/motech-development/platform/commit/998e97c12c1f809c44ff333116690bc6490b8490) changed both cache namespaces and the archive restore prefix: both tiers missed in all five jobs, and every immutable install completed successfully. The cold route averaged 13.4s (20.6%) slower under these concurrent QA workloads.
+
+Both experiment commits were classified as non-runtime. The [archive-fallback Preview run](https://github.com/motech-development/platform/actions/runs/30037693831) and [cold-install Preview run](https://github.com/motech-development/platform/actions/runs/30038373714) selected no Deployment Units and marked Playwright not applicable. The QA runs were otherwise successful but remained red because the deliberate one-file experiment violated the generator test that requires reusable-action and generated deployment cache keys to match. Updating the generated delivery paths would have triggered runtime delivery, so the temporary PR remains unmerged.
 
 ## Representative workflow timings
 
