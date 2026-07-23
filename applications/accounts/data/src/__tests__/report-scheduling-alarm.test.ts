@@ -3,16 +3,30 @@ import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { handler } from '../report-scheduling-alarm';
 
-jest.mock('@sentry/aws-serverless', () => ({
-  captureException: jest.fn(),
-  flush: jest.fn().mockResolvedValue(true),
-  init: jest.fn(),
-  wrapHandler: (wrappedHandler: unknown) => wrappedHandler,
-}));
+jest.mock('@sentry/aws-serverless', () => {
+  const actual = jest.requireActual<typeof import('@sentry/aws-serverless')>(
+    '@sentry/aws-serverless',
+  );
 
-jest.mock('@sentry/profiling-node', () => ({
-  nodeProfilingIntegration: jest.fn(),
-}));
+  return {
+    ...actual,
+    captureException: jest.fn(),
+    flush: jest.fn().mockResolvedValue(true),
+    init: jest.fn(),
+    wrapHandler: (wrappedHandler: unknown) => wrappedHandler,
+  };
+});
+
+jest.mock('@sentry/profiling-node', () => {
+  const actual = jest.requireActual<typeof import('@sentry/profiling-node')>(
+    '@sentry/profiling-node',
+  );
+
+  return {
+    ...actual,
+    nodeProfilingIntegration: jest.fn(),
+  };
+});
 
 const alarmEvent = {
   accountId: '123456789012',

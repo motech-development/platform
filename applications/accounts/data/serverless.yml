@@ -80,17 +80,6 @@ functions:
   ScheduleTransactions:
     handler: src/schedule-transactions.handler
     role: ScheduleTransactionsLambdaFunctionRole
-    events:
-      - stream:
-          type: dynamodb
-          arn: !GetAtt ApplicationTable.StreamArn
-          batchSize: 1
-          destinations:
-            onFailure:
-              arn: !GetAtt ScheduleSynchronisationDeadLetterQueue.Arn
-              type: sqs
-          maximumRetryAttempts: 4
-          startingPosition: LATEST
     environment:
       PUBLICATION_QUEUE_ARN: !GetAtt PublicationQueue.Arn
       SCHEDULE_GROUP: !Ref ScheduledTransactionScheduleGroup
@@ -168,6 +157,80 @@ resources:
         MessageRetentionPeriod: 1209600
         QueueName: ${self:custom.prefix}-schedule-synchronisation-dlq
 
+    ScheduleTransactionsEventSourceMapping:
+      Type: AWS::Lambda::EventSourceMapping
+      Properties:
+        BatchSize: 1
+        DestinationConfig:
+          OnFailure:
+            Destination: !GetAtt ScheduleSynchronisationFailureBucket.Arn
+        EventSourceArn: !GetAtt ApplicationTable.StreamArn
+        FunctionName: !GetAtt ScheduleTransactionsLambdaFunction.Arn
+        MaximumRetryAttempts: 4
+        StartingPosition: LATEST
+
+    ScheduleSynchronisationFailureBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+        BucketName: !Join
+          - '-'
+          - - ${self:custom.prefix}
+            - schedule-sync-failures
+            - !Ref AWS::AccountId
+        LifecycleConfiguration:
+          Rules:
+            - ExpirationInDays: 14
+              Id: DeleteExpiredFailures
+              Status: Enabled
+        NotificationConfiguration:
+          EventBridgeConfiguration:
+            EventBridgeEnabled: true
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+
+    ScheduleSynchronisationFailureRule:
+      Type: AWS::Events::Rule
+      Properties:
+        EventPattern:
+          source:
+            - aws.s3
+          detail-type:
+            - Object Created
+          detail:
+            bucket:
+              name:
+                - !Ref ScheduleSynchronisationFailureBucket
+        State: ENABLED
+        Targets:
+          - Arn: !GetAtt ScheduleSynchronisationDeadLetterQueue.Arn
+            Id: ScheduleSynchronisationDeadLetterQueue
+
+    ScheduleSynchronisationDeadLetterQueuePolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Action:
+                - sqs:SendMessage
+              Condition:
+                ArnEquals:
+                  aws:SourceArn: !GetAtt ScheduleSynchronisationFailureRule.Arn
+              Effect: Allow
+              Principal:
+                Service:
+                  - events.amazonaws.com
+              Resource: !GetAtt ScheduleSynchronisationDeadLetterQueue.Arn
+        Queues:
+          - !Ref ScheduleSynchronisationDeadLetterQueue
+
     SchedulerDeliveryDeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
@@ -242,9 +305,17 @@ resources:
                       iam:PassedToService: scheduler.amazonaws.com
                 - Effect: Allow
                   Action:
-                    - sqs:SendMessage
+                    - s3:ListBucket
                   Resource:
-                    - !GetAtt ScheduleSynchronisationDeadLetterQueue.Arn
+                    - !GetAtt ScheduleSynchronisationFailureBucket.Arn
+                - Effect: Allow
+                  Action:
+                    - s3:PutObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !GetAtt ScheduleSynchronisationFailureBucket.Arn
+                        - '/*'
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup
