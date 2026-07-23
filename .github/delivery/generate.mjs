@@ -18,6 +18,12 @@ const catalogUnitFields = new Set([
   'exception',
 ]);
 const supportedTargets = new Set(['preview', 'develop', 'production']);
+const workflowControlTargetsByIdentifier = new Map([
+  ['setup', supportedTargets],
+  ['preview-status', new Set(['preview'])],
+  ['playwright-status', new Set(['preview'])],
+  ['accounts-client', new Set(['preview'])],
+]);
 const stableIdentifier = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const expectedStackName = /^[A-Za-z][A-Za-z0-9-]*\{stage\}[A-Za-z0-9-]*$/;
 
@@ -357,6 +363,14 @@ function includeClientConfigurationProducer(
   return selected;
 }
 
+function expandDeliverySelection(selectedIdentifiers, graph) {
+  const selectedWithDependants = expandDependants(selectedIdentifiers, graph);
+  return expandDependants(
+    includeClientConfigurationProducer(selectedWithDependants),
+    graph,
+  );
+}
+
 export function createPreviewPlan(catalog, workspaceManifests, input) {
   const target = 'preview';
   const graph = dependencyGraph(catalog, workspaceManifests, target);
@@ -571,10 +585,7 @@ export function createReleasePlan(catalog, workspaceManifests, input) {
         input.target,
         input.changedWorkspaces,
       );
-  const selected = expandDependants(
-    includeClientConfigurationProducer(initiallySelected),
-    graph,
-  );
+  const selected = expandDeliverySelection(initiallySelected, graph);
   const ordered = dependencyOrder(graph, selected);
   const requiredAtBoundary = input.full
     ? new Set()
@@ -802,10 +813,7 @@ export function createReconciliationPlan(catalog, workspaceManifests, input) {
       return deployedTag !== desiredTag || stackMissing;
     })
     .map((unit) => unit.id);
-  const expanded = expandDependants(
-    includeClientConfigurationProducer(selected),
-    graph,
-  );
+  const expanded = expandDeliverySelection(selected, graph);
   const ordered = dependencyOrder(graph, expanded);
 
   return {
@@ -821,7 +829,9 @@ const workflowDefinitions = [
     target: 'preview',
     baseNeed: 'setup',
     selective: true,
-    legacyJobIds: {
+    statusJobId: 'preview-status',
+    insertBefore: '  # Preview status\n',
+    templateJobIds: {
       'core-anti-virus': 'anti-virus',
       'accounts-storage': 'accounts-storage',
       'accounts-data': 'accounts-data',
@@ -836,7 +846,7 @@ const workflowDefinitions = [
     filename: 'deploy-to-develop.yml',
     target: 'develop',
     baseNeed: 'setup',
-    legacyJobIds: {
+    templateJobIds: {
       'core-anti-virus': 'anti-virus',
       'accounts-storage': 'accounts-storage',
       'accounts-data': 'accounts-data',
@@ -851,7 +861,7 @@ const workflowDefinitions = [
     target: 'production',
     baseNeed: 'setup',
     splitCoreInfrastructure: true,
-    legacyJobIds: {
+    templateJobIds: {
       'component-library': 'deploy-storybook',
       'core-anti-virus': 'deploy-anti-virus',
       'core-infrastructure': 'deploy-infrastructure',
@@ -873,7 +883,7 @@ const workflowDefinitions = [
     baseNeed: 'setup',
     reverse: true,
     teardown: true,
-    legacyJobIds: {
+    templateJobIds: {
       'core-anti-virus': 'anti-virus',
       'accounts-storage': 'accounts-storage',
       'accounts-data': 'accounts-data',
@@ -885,6 +895,26 @@ const workflowDefinitions = [
     },
   },
 ];
+
+function reservedWorkflowTargets(identifier) {
+  const targets = new Set(
+    workflowControlTargetsByIdentifier.get(identifier) ?? [],
+  );
+
+  for (const definition of workflowDefinitions) {
+    const usesIdentifierAsTemplateAlias = Object.entries(
+      definition.templateJobIds,
+    ).some(
+      ([unitId, templateJobId]) =>
+        unitId !== identifier && templateJobId === identifier,
+    );
+    if (usesIdentifierAsTemplateAlias) {
+      targets.add(definition.target);
+    }
+  }
+
+  return targets;
+}
 
 const workflowFragmentNames = [
   'dependency-steps',
@@ -938,6 +968,24 @@ function workflowJobPattern(jobId) {
     `^  ${escapedJobId}:\\n[\\s\\S]*?(?=^  [a-zA-Z0-9_-]+:|(?![\\s\\S]))`,
     'm',
   );
+}
+
+function replaceNeedsBlock(job, needs) {
+  const needsBlock = `    needs:\n${needs.map((need) => `      - ${need}\n`).join('')}`;
+  return job.replace(
+    /^    needs:(?: [^\n]+)?\n(?:      (?:- |# ).*\n)*/m,
+    needsBlock,
+  );
+}
+
+function replaceJobNeeds(workflow, jobId, needs) {
+  const jobPattern = workflowJobPattern(jobId);
+  const match = workflow.match(jobPattern);
+  if (!match) {
+    throw new Error(`template is missing job "${jobId}"`);
+  }
+  const rewritten = replaceNeedsBlock(match[0], needs);
+  return workflow.replace(jobPattern, rewritten);
 }
 
 function removeJob(workflow, jobId) {
@@ -1250,6 +1298,80 @@ function appendDeploymentFailure(job) {
   return appendJobContent(job, deploymentFailureStep());
 }
 
+function standardJobStage(definition) {
+  if (definition.teardown) {
+    return "${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}";
+  }
+  if (definition.target === 'preview') {
+    return 'pr-${{ github.event.pull_request.number }}';
+  }
+  return definition.target;
+}
+
+function standardDeploymentJob(unit, definition, workspaceManifest) {
+  const command = definition.teardown ? 'teardown' : 'deploy';
+  if (!workspaceManifest.scripts?.[command]) {
+    throw new Error(
+      `deployment unit "${unit.id}" requires workspace script "${command}" or an explicit job template`,
+    );
+  }
+  if (unit.exception) {
+    throw new Error(
+      `non-standard deployment unit "${unit.id}" requires an explicit job template`,
+    );
+  }
+
+  const operation = definition.teardown ? 'Teardown' : 'Deploy';
+  const condition = definition.teardown
+    ? "\n    if: github.actor != 'dependabot[bot]' && always()\n"
+    : '';
+  return `  ${unit.id}:
+    name: ${operation} ${unit.id.replaceAll('-', ' ')}
+${condition}
+    runs-on: ubuntu-latest
+
+    needs: ${definition.baseNeed}
+
+    env:
+      STAGE: ${standardJobStage(definition)}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      # {{fragment:dependency-steps:${unit.workspace}}}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
+      - name: ${operation}
+        run: yarn workspace ${unit.workspace} ${command} --stage $STAGE
+`;
+}
+
+function insertStandardJob(workflow, job, definition) {
+  if (definition.insertBefore) {
+    if (!workflow.includes(definition.insertBefore)) {
+      throw new Error(
+        `${definition.filename} is missing insertion marker "${definition.insertBefore.trim()}"`,
+      );
+    }
+    return workflow.replace(
+      definition.insertBefore,
+      `${job.trimEnd()}\n\n${definition.insertBefore}`,
+    );
+  }
+  return `${workflow.trimEnd()}\n\n${job.trimEnd()}\n`;
+}
+
 function decorateAuditedDeliveryJob(
   job,
   { condition, environment, ref, unit },
@@ -1332,17 +1454,17 @@ function decorateTeardownJob(job, unit) {
   );
 }
 
-function rewriteJob(workflow, legacyJobId, unit, needs, definition) {
-  const jobPattern = workflowJobPattern(legacyJobId);
+function rewriteJob(workflow, templateJobId, unit, needs, definition) {
+  const jobPattern = workflowJobPattern(templateJobId);
   const match = workflow.match(jobPattern);
   if (!match) {
-    throw new Error(`template is missing job "${legacyJobId}"`);
+    throw new Error(`template is missing job "${templateJobId}"`);
   }
 
-  const needsBlock = `    needs:\n${needs.map((need) => `      - ${need}\n`).join('')}`;
-  let rewritten = match[0]
-    .replace(`  ${legacyJobId}:\n`, `  ${unit.id}:\n`)
-    .replace(/^    needs:(?: [^\n]+)?\n(?:      (?:- |# ).*\n)*/m, needsBlock);
+  let rewritten = replaceNeedsBlock(
+    match[0].replace(`  ${templateJobId}:\n`, `  ${unit.id}:\n`),
+    needs,
+  );
 
   if (definition.selective) {
     rewritten = decoratePreviewJob(
@@ -1420,12 +1542,15 @@ function renderWorkflow(
   const unitsByIdentifier = new Map(
     catalog.units.map((unit) => [unit.id, unit]),
   );
+  const manifestsByWorkspace = new Map(
+    workspaceManifests.map((manifest) => [manifest.name, manifest]),
+  );
   const excludedJobIds = [];
 
-  for (const [id, legacyJobId] of Object.entries(definition.legacyJobIds)) {
+  for (const [id, templateJobId] of Object.entries(definition.templateJobIds)) {
     if (!generatedUnitIds.has(id)) {
-      workflow = removeJob(workflow, legacyJobId);
-      excludedJobIds.push(id, legacyJobId);
+      workflow = removeJob(workflow, templateJobId);
+      excludedJobIds.push(id, templateJobId);
     }
   }
   for (const excludedJobId of new Set(excludedJobIds)) {
@@ -1433,20 +1558,30 @@ function renderWorkflow(
   }
 
   for (const { id, needs: unitNeeds } of graph) {
-    const legacyJobId = definition.legacyJobIds[id];
-    if (!legacyJobId) {
-      throw new Error(
-        `${definition.filename} has no job template for deployment unit "${id}"`,
+    const unit = unitsByIdentifier.get(id);
+    let templateJobId =
+      definition.templateJobIds[id] ??
+      (workflowJobPattern(id).test(workflow) ? id : undefined);
+    if (!templateJobId) {
+      workflow = insertStandardJob(
+        workflow,
+        standardDeploymentJob(
+          unit,
+          definition,
+          manifestsByWorkspace.get(unit.workspace),
+        ),
+        definition,
       );
+      templateJobId = id;
     }
     const needs = [definition.baseNeed, ...unitNeeds];
-    workflow = rewriteJob(
-      workflow,
-      legacyJobId,
-      unitsByIdentifier.get(id),
-      needs,
-      definition,
-    );
+    workflow = rewriteJob(workflow, templateJobId, unit, needs, definition);
+  }
+  if (definition.statusJobId) {
+    workflow = replaceJobNeeds(workflow, definition.statusJobId, [
+      definition.baseNeed,
+      ...graph.map(({ id }) => id),
+    ]);
   }
 
   workflow = expandTemplateFragments(workflow, fragments);
@@ -1707,6 +1842,12 @@ export function validateCatalog(catalog, workspaceManifests) {
           `deployment unit "${unit.id}" has unsupported target "${target}"`,
         );
       }
+    }
+    const reservedTargets = reservedWorkflowTargets(unit.id);
+    if (unit.targets.some((target) => reservedTargets.has(target))) {
+      throw new Error(
+        `deployment unit identifier "${unit.id}" is reserved for workflow control`,
+      );
     }
     if (!Array.isArray(unit.dependsOn)) {
       throw new Error(

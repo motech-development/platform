@@ -183,6 +183,22 @@ test('catalog validation rejects invalid identifiers, references, targets, stack
       expected: /invalid deployment unit identifier "Core_Runtime"/,
     },
     {
+      name: 'reserved workflow identifiers',
+      mutate(catalog) {
+        catalog.units[0].id = 'setup';
+      },
+      expected:
+        /deployment unit identifier "setup" is reserved for workflow control/,
+    },
+    {
+      name: 'reserved workflow template aliases',
+      mutate(catalog) {
+        catalog.units[0].id = 'anti-virus';
+      },
+      expected:
+        /deployment unit identifier "anti-virus" is reserved for workflow control/,
+    },
+    {
       name: 'missing workspaces',
       mutate(catalog) {
         catalog.units[0].workspace = '@core/missing';
@@ -1076,6 +1092,54 @@ test('client-only Preview validation reuses API state while delivery plans inclu
   );
 });
 
+test('delivery dependant expansion includes the client configuration producer', () => {
+  const releaseInput = structuredClone(releaseFixture.selectiveIndirect.input);
+  releaseInput.changedWorkspaces = ['@accounts/infrastructure'];
+  releaseInput.releases.find(({ tag }) =>
+    tag.startsWith('@accounts/infrastructure@'),
+  ).commit = releaseInput.boundary;
+
+  assert.deepEqual(
+    createReleasePlan(
+      planningCatalog,
+      planningManifests,
+      releaseInput,
+    ).units.map(({ id }) => id),
+    ['accounts-infrastructure', 'accounts-api', 'accounts-client'],
+  );
+
+  const productionInput = structuredClone(reconciliationFixture.input);
+  productionInput.deployments = productionInput.deployments.map(
+    (deployment) => {
+      const unit = planningCatalog.units.find(
+        ({ id }) => deployment.task === `deploy:${id}`,
+      );
+      return {
+        ...deployment,
+        ref: productionInput.desiredTags[unit.workspace],
+        statuses: [{ state: 'success' }, { state: 'in_progress' }],
+      };
+    },
+  );
+  productionInput.existingStacks = planningCatalog.units.flatMap((unit) =>
+    unit.expectedStacks.map((stack) =>
+      stack.replaceAll('{stage}', productionInput.stage),
+    ),
+  );
+  productionInput.deployments.find(
+    ({ task }) => task === 'deploy:accounts-infrastructure',
+  ).ref = 'outdated-infrastructure-tag';
+
+  assert.deepEqual(
+    createReconciliationPlan(
+      planningCatalog,
+      planningManifests,
+      productionInput,
+    ).units.map(({ id }) => id),
+    ['accounts-infrastructure', 'accounts-api', 'accounts-client'],
+  );
+});
+
 test('QA and Release use the exact dependency strategy without generated package caches', async () => {
   const [qualityAssurance, release, scheduledTests] = await Promise.all([
     readFile(
@@ -1657,6 +1721,71 @@ test('catalog target removal removes the Deployment Unit from generated workflow
   );
 });
 
+test('ordinary catalog additions generate standard jobs without handwritten templates', async () => {
+  const [catalog, manifests] = await Promise.all([
+    loadCatalog(),
+    loadWorkspaceManifests(),
+  ]);
+  const extendedCatalog = structuredClone(catalog);
+  extendedCatalog.units.push({
+    id: 'accounts-audit',
+    workspace: '@accounts/audit',
+    path: 'applications/accounts/audit',
+    targets: ['preview', 'develop', 'production'],
+    dependsOn: ['accounts-data'],
+    expectedStacks: ['accounts-{stage}-audit'],
+  });
+  const extendedManifests = [
+    ...manifests,
+    {
+      name: '@accounts/audit',
+      relativePath: 'applications/accounts/audit',
+      dependencies: {},
+      scripts: {
+        deploy: 'serverless deploy',
+        teardown: 'serverless remove',
+      },
+    },
+  ];
+
+  const generated = await generateWorkflows({
+    write: false,
+    catalog: extendedCatalog,
+    workspaceManifests: extendedManifests,
+  });
+
+  for (const filename of [
+    'deploy-to-environment.yml',
+    'deploy-to-develop.yml',
+    'deploy-to-production.yml',
+  ]) {
+    const job = workflowJob(generated[filename], 'accounts-audit');
+    assert.match(job, /^    name: Deploy accounts audit$/m, filename);
+    assert.match(job, /^      - accounts-data$/m, filename);
+    assert.match(
+      job,
+      /yarn workspace @accounts\/audit deploy --stage \$STAGE/,
+      filename,
+    );
+    assert.match(job, /^      deployments: write$/m, filename);
+  }
+
+  assert.match(
+    workflowJob(generated['deploy-to-environment.yml'], 'preview-status'),
+    /^      - accounts-audit$/m,
+  );
+  const teardown = workflowJob(
+    generated['teardown-environment.yml'],
+    'accounts-audit',
+  );
+  assert.match(teardown, /^    name: Teardown accounts audit$/m);
+  assert.match(
+    teardown,
+    /yarn workspace @accounts\/audit teardown --stage \$STAGE/,
+  );
+  assert.match(teardown, /name: Check for resources/);
+});
+
 test('checked-in workflows do not drift from deterministic generation', async () => {
   assert.deepEqual(await checkGeneratedWorkflows(), []);
 });
@@ -1679,6 +1808,18 @@ test('pull-request quality assurance validates the catalog and generated workflo
     workflowJob(qualityAssurance, 'unit-tests'),
     /name: Test build optimisations[\s\S]*node --test \.github\/quality\/\*\.test\.mjs/,
   );
+  for (const jobId of [
+    'delivery-catalog',
+    'formatting',
+    'lint',
+    'type-check',
+  ]) {
+    assert.match(
+      workflowJob(qualityAssurance, jobId),
+      /^    permissions:\n      contents: read$/m,
+      jobId,
+    );
+  }
 });
 
 test('pull-request quality categories start independently with bounded workspace tests', async () => {
