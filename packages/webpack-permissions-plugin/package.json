@@ -22,7 +22,7 @@
   "types": "lib/webpack-permissions-plugin.d.ts",
   "scripts": {
     "formatting": "prettier . --check",
-    "build": "run prebuild && rollup -c",
+    "build": "run prebuild && vite build && tsc --project tsconfig.build.json --emitDeclarationOnly",
     "lint": "eslint './src/**/*.ts'",
     "package": "run build",
     "prebuild": "rimraf ./lib",
@@ -37,8 +37,6 @@
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
-    "@rollup/plugin-commonjs": "28.0.2",
-    "@rollup/plugin-node-resolve": "15.3.1",
     "@swc/core": "1.11.5",
     "@swc/jest": "0.2.37",
     "@types/jest": "29.5.14",
@@ -47,12 +45,9 @@
     "jest-watch-typeahead": "2.2.2",
     "prettier": "3.2.5",
     "rimraf": "6.0.1",
-    "rollup": "4.60.2",
-    "rollup-plugin-dts": "6.4.1",
-    "rollup-plugin-exclude-dependencies-from-bundle": "1.1.24",
-    "rollup-plugin-swc3": "0.12.1",
     "tapable": "2.3.3",
     "typescript": "6.0.3",
+    "vite": "8.1.5",
     "webpack": "5.96.1"
   },
   "peerDependencies": {
