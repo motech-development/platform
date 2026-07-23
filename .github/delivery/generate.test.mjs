@@ -1590,6 +1590,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
     /concurrency:\n  group: preview-pr-\$\{\{ github\.event\.pull_request\.number \}\}\n  cancel-in-progress: false/,
   );
   assert.match(setup, /name: Preview plan/);
+  assert.match(setup, /^    if: github\.event\.pull_request\.draft == false$/m);
   assert.match(
     setup,
     /- name: Checkout code\n        uses: actions\/checkout@v7\n        with:\n          fetch-depth: 0\n          persist-credentials: false\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
@@ -1674,6 +1675,10 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.match(
     previewStatus,
+    /^    if: always\(\) && github\.event\.pull_request\.draft == false$/m,
+  );
+  assert.match(
+    previewStatus,
     /name: Report planning failure\n        if: needs\.setup\.result != 'success'/,
   );
   assert.match(
@@ -1702,6 +1707,10 @@ test('generated preview workflow plans per pull request and selectively deploys 
     /needs\.accounts-api\.outputs\.appsync-url \|\| needs\.setup\.outputs\.api-appsync-url[\s\S]*needs\.accounts-api\.outputs\.aws-region \|\| needs\.setup\.outputs\.api-aws-region/,
   );
   assert.match(playwrightStatus, /Playwright is not applicable/);
+  assert.match(
+    playwrightStatus,
+    /^    if: always\(\) && github\.event\.pull_request\.draft == false$/m,
+  );
   assert.match(playwrightStatus, /^      deployments: write$/m);
   assert.match(
     playwrightStatus,
