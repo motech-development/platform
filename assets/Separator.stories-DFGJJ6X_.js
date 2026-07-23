@@ -1,0 +1,47 @@
+import{a as e,i as t,s as n}from"./preload-helper-CT_b8DTk.js";import{t as r}from"./react-B7Te67-h.js";import{c as i,d as a,f as o,l as s,p as c,r as l,u}from"./iframe-CQHtwZcQ.js";import{n as d,t as f}from"./Inline-Cq76i5T1.js";import{n as p,t as m}from"./Typography-CB5sgMJ5.js";import{n as h,t as g}from"./StoryConstraint-yY2orZcv.js";import{n as _,t as v}from"./Stack-CVdmyomW.js";function y({className:e,decorative:t=!1,orientation:n=`horizontal`,ref:r,tone:i,...o}){s();let c=n===`horizontal`?`hr`:`div`,l=a(r);return(0,b.createElement)(c,{...o,"aria-hidden":t||void 0,"aria-orientation":!t&&n===`vertical`?`vertical`:void 0,className:x({class:e,orientation:n,tone:i}),ref:l,role:t?`presentation`:`separator`})}var b,x,S=t((()=>{b=n(r(),1),o(),u(),i(),x=c({base:`m-0 shrink-0 border-0 bg-current`,defaultVariants:{orientation:`horizontal`,tone:`default`},variants:{orientation:{horizontal:`h-px w-full`,vertical:`h-full min-h-4 w-px self-stretch`},tone:{default:`text-[var(--breeze-border)]`,strong:`text-[var(--breeze-border-strong)]`}}});try{y.displayName=`Separator`,y.__docgenInfo={description:`Separates related regions and exposes separator semantics unless marked as
+decorative.`,displayName:`Separator`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/Separator/Separator.tsx`,methods:[],props:{decorative:{defaultValue:{value:`false`},declarations:[{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`}],description:"Hides the divider from assistive technology. Defaults to `false`.",name:`decorative`,parent:{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`},required:!1,tags:{},type:{name:`boolean | undefined`}},orientation:{defaultValue:{value:`horizontal`},declarations:[{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`}],description:"Divider axis. Defaults to `horizontal`.",name:`orientation`,parent:{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`},required:!1,tags:{},type:{name:`"horizontal" | "vertical" | undefined`}},ref:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`}],description:`Ref to the rendered HTML element.`,name:`ref`,parent:{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`},required:!1,tags:{},type:{name:`Ref<HTMLElement> | undefined`}},tone:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`}],description:"Visual border emphasis. Defaults to `default`.",name:`tone`,parent:{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`},required:!1,tags:{},type:{name:`"default" | "strong" | undefined`}}},tags:{summary:`semantic or decorative horizontal and vertical divider`}}}catch{}})),C=e({Decorative:()=>A,Horizontal:()=>O,Vertical:()=>k,__namedExportsOrder:()=>j,default:()=>D}),w,T,E,D,O,k,A,j,M=t((()=>{h(),d(),_(),p(),S(),w=l(),{expect:T,within:E}=__STORYBOOK_MODULE_TEST__,D={argTypes:{orientation:{control:`inline-radio`,options:[`horizontal`,`vertical`]},tone:{control:`inline-radio`,options:[`default`,`strong`]}},args:{decorative:!1,orientation:`horizontal`,tone:`default`},component:y,title:`Layout/Separator`},O={play:async({canvasElement:e})=>{await T(E(e).getByRole(`separator`)).toBeVisible()},render:e=>(0,w.jsxs)(v,{children:[(0,w.jsx)(m,{as:`span`,children:`Before`}),(0,w.jsx)(y,{decorative:e.decorative,orientation:e.orientation,tone:e.tone}),(0,w.jsx)(m,{as:`span`,children:`After`})]})},k={args:{orientation:`vertical`,tone:`strong`},render:e=>(0,w.jsx)(g,{size:`compact-height`,children:(0,w.jsxs)(f,{children:[(0,w.jsx)(m,{as:`span`,children:`Before`}),(0,w.jsx)(y,{decorative:e.decorative,orientation:e.orientation,tone:e.tone}),(0,w.jsx)(m,{as:`span`,children:`After`})]})})},A={args:{decorative:!0},render:e=>(0,w.jsxs)(v,{children:[(0,w.jsx)(m,{as:`span`,children:`Before`}),(0,w.jsx)(y,{decorative:e.decorative,orientation:e.orientation,tone:e.tone}),(0,w.jsx)(m,{as:`span`,children:`After`})]})},O.parameters={...O.parameters,docs:{...O.parameters?.docs,source:{originalSource:`{
+  play: async ({
+    canvasElement
+  }) => {
+    await expect(within(canvasElement).getByRole('separator')).toBeVisible();
+  },
+  render: args => <Stack>
+      <Typography as="span">Before</Typography>
+      <Separator decorative={args.decorative} orientation={args.orientation} tone={args.tone} />
+      <Typography as="span">After</Typography>
+    </Stack>
+}`,...O.parameters?.docs?.source},description:{story:`Places the default meaningful horizontal divider between stacked content
+and verifies it remains exposed with separator semantics.
+
+@summary meaningful horizontal divider between stacked regions`,...O.parameters?.docs?.description}}},k.parameters={...k.parameters,docs:{...k.parameters?.docs,source:{originalSource:`{
+  args: {
+    orientation: 'vertical',
+    tone: 'strong'
+  },
+  render: args => <StoryConstraint size="compact-height">
+      <Inline>
+        <Typography as="span">Before</Typography>
+        <Separator decorative={args.decorative} orientation={args.orientation} tone={args.tone} />
+        <Typography as="span">After</Typography>
+      </Inline>
+    </StoryConstraint>
+}`,...k.parameters?.docs?.source},description:{story:`Places a strong vertical divider inside a height-bearing inline layout to
+demonstrate its stretching cross-axis geometry and orientation.
+
+@summary strong vertical divider inside an inline layout`,...k.parameters?.docs?.description}}},A.parameters={...A.parameters,docs:{...A.parameters?.docs,source:{originalSource:`{
+  args: {
+    decorative: true
+  },
+  render: args => <Stack>
+      <Typography as="span">Before</Typography>
+      <Separator decorative={args.decorative} orientation={args.orientation} tone={args.tone} />
+      <Typography as="span">After</Typography>
+    </Stack>
+}`,...A.parameters?.docs?.source},description:{story:`Renders a horizontal visual divider that is explicitly removed from the
+accessibility tree because it adds no semantic relationship.
+
+@summary decorative divider hidden from assistive technology`,...A.parameters?.docs?.description}}};try{D.displayName=`Separator`,D.__docgenInfo={description:`Separates related regions and exposes separator semantics unless marked as
+decorative.`,displayName:`Separator`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/Separator/Separator.stories.tsx`,methods:[],props:{decorative:{defaultValue:{value:`false`},declarations:[{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`}],description:"Hides the divider from assistive technology. Defaults to `false`.",name:`decorative`,parent:{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`},required:!1,tags:{},type:{name:`boolean | undefined`}},orientation:{defaultValue:{value:`horizontal`},declarations:[{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`}],description:"Divider axis. Defaults to `horizontal`.",name:`orientation`,parent:{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`},required:!1,tags:{},type:{name:`"horizontal" | "vertical" | undefined`}},ref:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`}],description:`Ref to the rendered HTML element.`,name:`ref`,parent:{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`},required:!1,tags:{},type:{name:`Ref<HTMLElement> | undefined`}},tone:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`}],description:"Visual border emphasis. Defaults to `default`.",name:`tone`,parent:{fileName:`breeze-ui/src/primitives/Separator/Separator.tsx`,name:`SeparatorProps`},required:!1,tags:{},type:{name:`"default" | "strong" | undefined`}}},tags:{summary:`semantic or decorative horizontal and vertical divider`}}}catch{}try{O.displayName=`Horizontal`,O.__docgenInfo={description:`Places the default meaningful horizontal divider between stacked content
+and verifies it remains exposed with separator semantics.`,displayName:`Horizontal`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/Separator/Separator.stories.tsx`,methods:[],props:{},tags:{summary:`meaningful horizontal divider between stacked regions`}}}catch{}try{k.displayName=`Vertical`,k.__docgenInfo={description:`Places a strong vertical divider inside a height-bearing inline layout to
+demonstrate its stretching cross-axis geometry and orientation.`,displayName:`Vertical`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/Separator/Separator.stories.tsx`,methods:[],props:{},tags:{summary:`strong vertical divider inside an inline layout`}}}catch{}try{A.displayName=`Decorative`,A.__docgenInfo={description:`Renders a horizontal visual divider that is explicitly removed from the
+accessibility tree because it adds no semantic relationship.`,displayName:`Decorative`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/Separator/Separator.stories.tsx`,methods:[],props:{},tags:{summary:`decorative divider hidden from assistive technology`}}}catch{}j=[`Horizontal`,`Vertical`,`Decorative`]}));M();export{A as Decorative,O as Horizontal,k as Vertical,j as __namedExportsOrder,D as default,M as n,C as t};

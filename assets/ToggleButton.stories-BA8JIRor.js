@@ -1,0 +1,69 @@
+import{a as e,i as t,s as n}from"./preload-helper-CT_b8DTk.js";import{t as r}from"./react-B7Te67-h.js";import{r as i}from"./iframe-CQHtwZcQ.js";import{n as a,t as o}from"./Inline-Cq76i5T1.js";import{N as s,_ as c}from"./icons-Cg1FNHcV.js";import{n as l,t as u}from"./ToggleButton-BliFHw-0.js";var d=e({Controlled:()=>S,ReadOnlyControlled:()=>C,SelectedAndDisabled:()=>x,Uncontrolled:()=>b,__namedExportsOrder:()=>w,default:()=>y});function f(){let[e,t]=(0,p.useState)(!1);return(0,m.jsxs)(u,{onChange:t,selected:e,children:[`Controlled `,e?`on`:`off`]})}var p,m,h,g,_,v,y,b,x,S,C,w,T=t((()=>{p=n(r(),1),s(),a(),l(),m=i(),{expect:h,fn:g,userEvent:_,within:v}=__STORYBOOK_MODULE_TEST__,y={component:u,title:`Actions/ToggleButton`},b={args:{children:(0,m.jsxs)(m.Fragment,{children:[(0,m.jsx)(c,{}),`Preview`]}),onChange:g()},play:async({args:e,canvasElement:t})=>{let n=v(t).getByRole(`button`,{name:`Preview`});await _.click(n),await h(n).toHaveAttribute(`aria-pressed`,`true`),await h(e.onChange).toHaveBeenCalledWith(!0)}},x={args:{children:`Bold`,defaultSelected:!0},render:()=>(0,m.jsxs)(o,{align:`stretch`,gap:`compact`,wrap:!1,children:[(0,m.jsx)(u,{defaultSelected:!0,children:`Selected`}),(0,m.jsx)(u,{disabled:!0,children:`Disabled`})]})},S={args:{children:`Controlled off`,onChange:g(),selected:!1},render:()=>(0,m.jsx)(f,{})},C={args:{children:`Pinned selection`,readOnly:!0,selected:!0},play:async({canvasElement:e})=>{let t=v(e).getByRole(`button`,{name:`Pinned selection`});await _.click(t),await h(t).toHaveFocus(),await h(t).toHaveAttribute(`aria-pressed`,`true`),await h(t).not.toHaveAttribute(`aria-disabled`)}},b.parameters={...b.parameters,docs:{...b.parameters?.docs,source:{originalSource:`{
+  args: {
+    children: <>
+        <EyeIcon />
+        Preview
+      </>,
+    onChange: fn()
+  },
+  play: async ({
+    args,
+    canvasElement
+  }) => {
+    const button = within(canvasElement).getByRole('button', {
+      name: 'Preview'
+    });
+    await userEvent.click(button);
+    await expect(button).toHaveAttribute('aria-pressed', 'true');
+    await expect(args.onChange).toHaveBeenCalledWith(true);
+  }
+}`,...b.parameters?.docs?.source},description:{story:`Starts unselected, combines a decorative icon with visible text, and verifies
+activation updates aria-pressed plus the semantic change callback.
+
+@summary uncontrolled icon-and-text toggle activated by the user`,...b.parameters?.docs?.description}}},x.parameters={...x.parameters,docs:{...x.parameters?.docs,source:{originalSource:`{
+  args: {
+    children: 'Bold',
+    defaultSelected: true
+  },
+  render: () => <Inline align="stretch" gap="compact" wrap={false}>
+      <ToggleButton defaultSelected>Selected</ToggleButton>
+      <ToggleButton disabled>Disabled</ToggleButton>
+    </Inline>
+}`,...x.parameters?.docs?.source},description:{story:`Places an initially selected toggle beside a disabled toggle to compare
+persistent pressed state with a control that cannot receive interaction.
+
+@summary selected and disabled toggle-button states`,...x.parameters?.docs?.description}}},S.parameters={...S.parameters,docs:{...S.parameters?.docs,source:{originalSource:`{
+  args: {
+    children: 'Controlled off',
+    onChange: fn(),
+    selected: false
+  },
+  render: () => <ControlledToggleButtonExample />
+}`,...S.parameters?.docs?.source},description:{story:`Stores selected state in the application and updates the visible label after
+each change request, demonstrating the mutable controlled contract.
+
+@summary application-controlled toggle selection and visible state`,...S.parameters?.docs?.description}}},C.parameters={...C.parameters,docs:{...C.parameters?.docs,source:{originalSource:`{
+  args: {
+    children: 'Pinned selection',
+    readOnly: true,
+    selected: true
+  },
+  play: async ({
+    canvasElement
+  }) => {
+    const button = within(canvasElement).getByRole('button', {
+      name: 'Pinned selection'
+    });
+    await userEvent.click(button);
+    await expect(button).toHaveFocus();
+    await expect(button).toHaveAttribute('aria-pressed', 'true');
+    await expect(button).not.toHaveAttribute('aria-disabled');
+  }
+}`,...C.parameters?.docs?.source},description:{story:`Keeps a selected toggle immutable while preserving focus and ordinary button
+semantics, distinguishing read-only state from disabled interaction.
+
+@summary focusable read-only controlled toggle selection`,...C.parameters?.docs?.description}}};try{y.displayName=`ToggleButton`,y.__docgenInfo={description:`Selects or deselects a two-state action through pointer or keyboard input.`,displayName:`ToggleButton`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/ToggleButton/ToggleButton.stories.tsx`,methods:[],props:{appearance:{defaultValue:{value:`outline`},declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`}],description:"Visual emphasis treatment. Defaults to `outline`.",name:`appearance`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},required:!1,tags:{},type:{name:`VisualAppearance | undefined`}},children:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`}],description:`Toggle content.`,name:`children`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},required:!0,tags:{},type:{name:`ReactNode`}},className:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`}],description:`Placement and composition classes.`,name:`className`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},required:!1,tags:{},type:{name:`string | undefined`}},disabled:{defaultValue:{value:`false`},declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`}],description:"Prevents interaction. Defaults to `false`.",name:`disabled`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},required:!1,tags:{},type:{name:`boolean | undefined`}},ref:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`}],description:`Ref to the rendered button.`,name:`ref`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},required:!1,tags:{},type:{name:`Ref<HTMLButtonElement> | undefined`}},size:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`}],description:"Canonical control size. Defaults to `md`.",name:`size`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},required:!1,tags:{},type:{name:`ControlSize | undefined`}},value:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`}],description:`Stable value when the toggle is composed inside a ToggleGroup.`,name:`value`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},required:!1,tags:{},type:{name:`string | undefined`}},variant:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`}],description:"Semantic colour. Defaults to `primary`.",name:`variant`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ToggleButtonSharedProps`},required:!1,tags:{},type:{name:`VisualVariant | undefined`}},selected:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ControlledToggleButtonProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ReadOnlyToggleButtonProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`UncontrolledToggleButtonProps`}],description:`Current selected state.`,name:`selected`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ControlledToggleButtonProps`},required:!1,tags:{},type:{name:`boolean | undefined`}},onChange:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ControlledToggleButtonProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ReadOnlyToggleButtonProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`UncontrolledToggleButtonProps`}],description:`Called with the next selected state.`,name:`onChange`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ControlledToggleButtonProps`},required:!1,tags:{},type:{name:`((selected: boolean) => void) | ((selected: boolean) => void) | undefined`}},defaultSelected:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ControlledToggleButtonProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ReadOnlyToggleButtonProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`UncontrolledToggleButtonProps`}],description:"Initial selected state. Defaults to `false`.",name:`defaultSelected`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ControlledToggleButtonProps`},required:!1,tags:{},type:{name:`boolean | undefined`}},readOnly:{defaultValue:{value:`false`},declarations:[{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ControlledToggleButtonProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ReadOnlyToggleButtonProps`},{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`UncontrolledToggleButtonProps`}],description:`Marks controlled state as intentionally immutable while preserving focus.`,name:`readOnly`,parent:{fileName:`breeze-ui/src/primitives/ToggleButton/ToggleButton.tsx`,name:`ControlledToggleButtonProps`},required:!1,tags:{},type:{name:`boolean | undefined`}}},tags:{summary:`two-state action with controlled or uncontrolled selection`}}}catch{}try{b.displayName=`Uncontrolled`,b.__docgenInfo={description:`Starts unselected, combines a decorative icon with visible text, and verifies
+activation updates aria-pressed plus the semantic change callback.`,displayName:`Uncontrolled`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/ToggleButton/ToggleButton.stories.tsx`,methods:[],props:{},tags:{summary:`uncontrolled icon-and-text toggle activated by the user`}}}catch{}try{x.displayName=`SelectedAndDisabled`,x.__docgenInfo={description:`Places an initially selected toggle beside a disabled toggle to compare
+persistent pressed state with a control that cannot receive interaction.`,displayName:`SelectedAndDisabled`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/ToggleButton/ToggleButton.stories.tsx`,methods:[],props:{},tags:{summary:`selected and disabled toggle-button states`}}}catch{}try{S.displayName=`Controlled`,S.__docgenInfo={description:`Stores selected state in the application and updates the visible label after
+each change request, demonstrating the mutable controlled contract.`,displayName:`Controlled`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/ToggleButton/ToggleButton.stories.tsx`,methods:[],props:{},tags:{summary:`application-controlled toggle selection and visible state`}}}catch{}try{C.displayName=`ReadOnlyControlled`,C.__docgenInfo={description:`Keeps a selected toggle immutable while preserving focus and ordinary button
+semantics, distinguishing read-only state from disabled interaction.`,displayName:`ReadOnlyControlled`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/ToggleButton/ToggleButton.stories.tsx`,methods:[],props:{},tags:{summary:`focusable read-only controlled toggle selection`}}}catch{}w=[`Uncontrolled`,`SelectedAndDisabled`,`Controlled`,`ReadOnlyControlled`]}));T();export{S as Controlled,C as ReadOnlyControlled,x as SelectedAndDisabled,b as Uncontrolled,w as __namedExportsOrder,y as default,T as n,d as t};

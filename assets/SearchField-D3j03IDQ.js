@@ -1,0 +1,41 @@
+import{i as e}from"./preload-helper-CT_b8DTk.js";import{r as t}from"./iframe-CQHtwZcQ.js";import{b as n,c as r,n as i,r as a,s as o}from"./blocks-COZjwJ0c.js";import{t as s}from"./mdx-react-shim-CpkRhXci.js";import{AnatomyAndKeyboard as c,n as l,t as u}from"./SearchField.stories-CwF-S4ht.js";function d(e){let t={code:`code`,h1:`h1`,h2:`h2`,li:`li`,p:`p`,pre:`pre`,table:`table`,tbody:`tbody`,td:`td`,th:`th`,thead:`thead`,tr:`tr`,ul:`ul`,...n(),...e.components};return(0,p.jsxs)(p.Fragment,{children:[(0,p.jsx)(o,{of:u,summary:`Labelled search query entry with explicit submission, conditional clearing, controlled and uncontrolled values, and accessible field states.`}),`
+`,(0,p.jsx)(t.h1,{id:`searchfield`,children:`SearchField`}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`SearchField`}),` is a compound query input with search semantics, submission, and an optional clear action.`]}),`
+`,(0,p.jsx)(t.h2,{id:`import`,children:`Import`}),`
+`,(0,p.jsx)(t.pre,{children:(0,p.jsx)(t.code,{className:`language-tsx`,children:`import { SearchField } from '@motech-development/breeze-ui';
+`})}),`
+`,(0,p.jsx)(t.h2,{id:`when-to-use`,children:`When to use`}),`
+`,(0,p.jsxs)(t.p,{children:[`Use it when entered text filters or searches content and users benefit from clearing the whole query. Prefer `,(0,p.jsx)(t.code,{children:`TextField`}),` for ordinary data entry and `,(0,p.jsx)(t.code,{children:`ComboBox`}),` when the input suggests or selects options from a collection. Do not use `,(0,p.jsx)(t.code,{children:`SearchField`}),` as a generic input merely to obtain its clear button.`]}),`
+`,(0,p.jsx)(t.h2,{id:`basic-example`,children:`Basic example`}),`
+`,(0,p.jsx)(t.pre,{children:(0,p.jsx)(t.code,{className:`language-tsx`,children:`import { SearchField } from '@motech-development/breeze-ui';
+
+<SearchField.Root onSubmit={(query) => runSearch(query)}>
+  <SearchField.Label>Search records</SearchField.Label>
+  <SearchField.Group>
+    <SearchField.Input name="query" placeholder="Name or reference" />
+    <SearchField.ClearButton />
+  </SearchField.Group>
+  <SearchField.Description>Enter one or more keywords.</SearchField.Description>
+</SearchField.Root>;
+`})}),`
+`,(0,p.jsx)(a,{of:c}),`
+`,(0,p.jsx)(t.h2,{id:`anatomy`,children:`Anatomy`}),`
+`,(0,p.jsxs)(t.table,{children:[(0,p.jsx)(t.thead,{children:(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.th,{children:`Part`}),(0,p.jsx)(t.th,{children:`Purpose`})]})}),(0,p.jsxs)(t.tbody,{children:[(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.td,{children:(0,p.jsx)(t.code,{children:`SearchField.Root`})}),(0,p.jsx)(t.td,{children:`Owns query value, search submission, clearing, and field state.`})]}),(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.td,{children:(0,p.jsx)(t.code,{children:`SearchField.Label`})}),(0,p.jsx)(t.td,{children:`Persistently names the query input.`})]}),(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.td,{children:(0,p.jsx)(t.code,{children:`SearchField.Group`})}),(0,p.jsx)(t.td,{children:`Presents the input and clear action as one control and synchronises their size.`})]}),(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.td,{children:(0,p.jsx)(t.code,{children:`SearchField.Input`})}),(0,p.jsxs)(t.td,{children:[`Renders a native `,(0,p.jsx)(t.code,{children:`type="search"`}),` input.`]})]}),(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.td,{children:(0,p.jsx)(t.code,{children:`SearchField.ClearButton`})}),(0,p.jsx)(t.td,{children:`Clears a non-empty mutable query; it is omitted when empty, disabled, or read-only.`})]}),(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.td,{children:(0,p.jsx)(t.code,{children:`SearchField.Description`})}),(0,p.jsx)(t.td,{children:`Associates query guidance.`})]}),(0,p.jsxs)(t.tr,{children:[(0,p.jsx)(t.td,{children:(0,p.jsx)(t.code,{children:`SearchField.Error`})}),(0,p.jsx)(t.td,{children:`Associates validation feedback while invalid.`})]})]})]}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`Input`}),` can be used without `,(0,p.jsx)(t.code,{children:`Group`}),`, but the canonical composition places `,(0,p.jsx)(t.code,{children:`Input`}),` and `,(0,p.jsx)(t.code,{children:`ClearButton`}),` inside `,(0,p.jsx)(t.code,{children:`Group`}),`.`]}),`
+`,(0,p.jsx)(t.h2,{id:`value-callbacks-and-states`,children:`Value, callbacks, and states`}),`
+`,(0,p.jsxs)(t.p,{children:[`Use `,(0,p.jsx)(t.code,{children:`defaultValue`}),` for uncontrolled state, `,(0,p.jsx)(t.code,{children:`value`}),` with `,(0,p.jsx)(t.code,{children:`onChange`}),` for controlled state, or `,(0,p.jsx)(t.code,{children:`value`}),` with `,(0,p.jsx)(t.code,{children:`readOnly`}),` for immutable state. `,(0,p.jsx)(t.code,{children:`onChange`}),` receives the next query string. `,(0,p.jsx)(t.code,{children:`onSubmit`}),` receives the current query when the user submits. `,(0,p.jsx)(t.code,{children:`onClear`}),` runs after the value is cleared by the clear button or Escape.`]}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`disabled`}),` removes interaction. `,(0,p.jsx)(t.code,{children:`readOnly`}),` keeps the query immutable and hides the clear action. `,(0,p.jsx)(t.code,{children:`invalid`}),`, `,(0,p.jsx)(t.code,{children:`required`}),`, `,(0,p.jsx)(t.code,{children:`Description`}),`, and `,(0,p.jsx)(t.code,{children:`Error`}),` follow the `,(0,p.jsx)(t.code,{children:`TextField`}),` contract. An empty query is `,(0,p.jsx)(t.code,{children:`''`}),`; `,(0,p.jsx)(t.code,{children:`ClearButton`}),` does not render for it. The application owns loading, results, empty-result messages, errors, and request cancellation.`]}),`
+`,(0,p.jsx)(t.h2,{id:`keyboard-and-accessibility`,children:`Keyboard and accessibility`}),`
+`,(0,p.jsxs)(t.ul,{children:[`
+`,(0,p.jsx)(t.li,{children:`Tab focuses the search input and then any rendered clear button.`}),`
+`,(0,p.jsxs)(t.li,{children:[`Enter invokes `,(0,p.jsx)(t.code,{children:`onSubmit`}),` with the current query.`]}),`
+`,(0,p.jsxs)(t.li,{children:[`Escape clears a non-empty mutable query and invokes `,(0,p.jsx)(t.code,{children:`onClear`}),`; native browser behaviour may require a second Escape to move focus or close an ancestor overlay.`]}),`
+`,(0,p.jsxs)(t.li,{children:[`The clear button uses the provider’s localised `,(0,p.jsx)(t.code,{children:`clear`}),` message by default. Supply `,(0,p.jsx)(t.code,{children:`aria-label`}),` when product wording needs to be more specific.`]}),`
+`,(0,p.jsxs)(t.li,{children:[`Provide a persistent `,(0,p.jsx)(t.code,{children:`Label`}),`. Announce result counts and asynchronous states in the result region, not by repeatedly changing the field label.`]}),`
+`,(0,p.jsxs)(t.li,{children:[`Search results should have a clear heading or live-region strategy and sensible focus behaviour; `,(0,p.jsx)(t.code,{children:`SearchField`}),` does not render results.`]}),`
+`]}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`Group`}),` supports `,(0,p.jsx)(t.code,{children:`sm`}),`, `,(0,p.jsx)(t.code,{children:`md`}),` (default), and `,(0,p.jsx)(t.code,{children:`lg`}),`, applying the size to its input and clear action. It follows surrounding writing direction and uses logical layout. Search strings are ordinary Unicode strings.`]}),`
+`,(0,p.jsx)(t.h2,{id:`api`,children:`API`}),`
+`,(0,p.jsx)(i,{}),`
+`,(0,p.jsx)(t.h2,{id:`common-mistakes-and-related-components`,children:`Common mistakes and related components`}),`
+`,(0,p.jsxs)(t.p,{children:[`Do not manage clearing with a second button outside `,(0,p.jsx)(t.code,{children:`Root`}),`, assume `,(0,p.jsx)(t.code,{children:`onSubmit`}),` starts a request automatically, or display a clear button for read-only content. Use `,(0,p.jsx)(t.code,{children:`TextField`}),` for ordinary text, `,(0,p.jsx)(t.code,{children:`ComboBox`}),` for suggestions and option selection, and `,(0,p.jsx)(t.code,{children:`ListBox`}),` for a persistent result collection.`]})]})}function f(e={}){let{wrapper:t}={...n(),...e.components};return t?(0,p.jsx)(t,{...e,children:(0,p.jsx)(d,{...e})}):d(e)}var p;e((()=>{p=t(),s(),r(),l()}))();export{f as default};
