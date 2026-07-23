@@ -7777,8 +7777,6 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
-    "@rollup/plugin-commonjs": "npm:28.0.2"
-    "@rollup/plugin-node-resolve": "npm:15.3.1"
     "@swc/core": "npm:1.11.5"
     "@swc/jest": "npm:0.2.37"
     "@types/aws-lambda": "npm:8.10.147"
@@ -7790,11 +7788,8 @@ __metadata:
     jest-watch-typeahead: "npm:2.2.2"
     prettier: "npm:3.2.5"
     rimraf: "npm:6.0.1"
-    rollup: "npm:4.60.2"
-    rollup-plugin-dts: "npm:6.4.1"
-    rollup-plugin-exclude-dependencies-from-bundle: "npm:1.1.24"
-    rollup-plugin-swc3: "npm:0.12.1"
     typescript: "npm:6.0.3"
+    vite: "npm:8.1.5"
   languageName: unknown
   linkType: soft
 
