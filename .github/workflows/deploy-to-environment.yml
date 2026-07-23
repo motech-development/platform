@@ -1933,7 +1933,7 @@ jobs:
       - accounts-reports
       - accounts-api
 
-    if: always()
+    if: always() && github.event.pull_request.draft == false
 
     steps:
       - name: Report planning failure
@@ -2109,7 +2109,7 @@ jobs:
       - setup
       - accounts-client
 
-    if: always()
+    if: always() && github.event.pull_request.draft == false
 
     permissions:
       contents: read
