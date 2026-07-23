@@ -550,6 +550,23 @@ test('tracked Yarn runtime changes affect every Preview workspace', () => {
   );
 });
 
+test('a successful boundary without published Releases reuses reachable exact tags for reconciliation', () => {
+  const input = structuredClone(releaseFixture.selectiveIndirect.input);
+  input.releases = input.releases.map((release) =>
+    release.commit === input.boundary
+      ? { ...release, commit: 'main-commit-1' }
+      : release,
+  );
+  const plan = createReleasePlan(planningCatalog, planningManifests, input);
+
+  assert.deepEqual(plan.units, []);
+  assert.deepEqual(plan.tags, {});
+  assert.deepEqual(
+    plan.desiredTags,
+    releaseFixture.selectiveIndirect.expected.desiredTags,
+  );
+});
+
 test('recorded selective Release Plan covers indirect changes and exact owning-workspace tags', () => {
   const { input, expected } = releaseFixture.selectiveIndirect;
 
@@ -1076,7 +1093,6 @@ test('client-only Preview validation reuses API state while delivery plans inclu
   });
 
   const releaseInput = structuredClone(releaseFixture.selectiveIndirect.input);
-  releaseInput.changedWorkspaces = ['@accounts/client'];
   releaseInput.releases.find(({ tag }) =>
     tag.startsWith('@accounts/client@'),
   ).commit = releaseInput.boundary;
@@ -1123,7 +1139,6 @@ test('client-only Preview validation reuses API state while delivery plans inclu
 
 test('delivery dependant expansion includes the client configuration producer', () => {
   const releaseInput = structuredClone(releaseFixture.selectiveIndirect.input);
-  releaseInput.changedWorkspaces = ['@accounts/infrastructure'];
   releaseInput.releases.find(({ tag }) =>
     tag.startsWith('@accounts/infrastructure@'),
   ).commit = releaseInput.boundary;
@@ -2014,6 +2029,11 @@ test('Release publishes selectively from full history and constructs one exact-t
     releaseJob,
     /node \.github\/delivery\/generate\.mjs --release-plan/,
   );
+  assert.match(
+    releaseJob,
+    /--release-plan "\$RELEASE_BOUNDARY" selective "\$RUNNER_TEMP\/releases\.json"/,
+  );
+  assert.doesNotMatch(releaseJob, /BASE_BOUNDARY|github\.event\.before/);
   assert.match(
     releaseJob,
     /actions\/workflows\/release\.yml\/runs[\s\S]*actions\/runs\/\$run_id\/jobs[\s\S]*\.name == "Packages" and \.conclusion == "success"/,

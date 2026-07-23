@@ -577,13 +577,27 @@ export function createReleasePlan(catalog, workspaceManifests, input) {
   }
 
   const graph = dependencyGraph(catalog, workspaceManifests, input.target);
+  const releasedWorkspaces = [
+    ...new Set(
+      input.releases
+        .filter(
+          (release) =>
+            release?.published === true &&
+            release.reachable === true &&
+            release.commit === input.boundary &&
+            typeof release.tag === 'string',
+        )
+        .map(({ tag }) => workspaceForReleaseTag(tag, workspaceManifests))
+        .filter(Boolean),
+    ),
+  ];
   const initiallySelected = input.full
     ? [...graph.keys()]
     : affectedUnits(
         catalog,
         workspaceManifests,
         input.target,
-        input.changedWorkspaces,
+        releasedWorkspaces,
       );
   const selected = expandDeliverySelection(initiallySelected, graph);
   const ordered = dependencyOrder(graph, selected);
@@ -696,7 +710,6 @@ async function repositoryReleases(
 
 export async function createRepositoryReleasePlan({
   boundary,
-  base,
   full,
   releaseMetadataPath,
 }) {
@@ -721,41 +734,12 @@ export async function createRepositoryReleasePlan({
     workspaceManifests,
     resolvedBoundary,
   );
-  const boundaryReleaseWorkspaces = releases
-    .filter(({ commit }) => commit === resolvedBoundary)
-    .map(({ workspace }) => workspace);
-  let changedWorkspaces = [];
-  if (!full) {
-    const resolvedBase = await git([
-      'rev-parse',
-      '--verify',
-      `${base}^{commit}`,
-    ]);
-    const changedFiles = (
-      await git([
-        'diff',
-        '--name-only',
-        `${resolvedBase}...${resolvedBoundary}`,
-      ])
-    )
-      .split('\n')
-      .filter(Boolean);
-    const impact = createPreviewImpact(
-      catalog,
-      workspaceManifests,
-      changedFiles,
-    );
-    changedWorkspaces = [
-      ...new Set([...impact.changedWorkspaces, ...boundaryReleaseWorkspaces]),
-    ];
-  }
 
   return createReleasePlan(catalog, workspaceManifests, {
     boundary: resolvedBoundary,
     boundaryAccepted: true,
     target: 'production',
     full,
-    changedWorkspaces,
     releases,
   });
 }
@@ -1762,24 +1746,17 @@ async function main(arguments_) {
     return;
   }
 
-  if (
-    arguments_[0] === '--release-plan' &&
-    (arguments_.length === 4 || arguments_.length === 5)
-  ) {
-    const [, boundary, mode, releaseMetadataPath, base] = arguments_;
-    if (
-      !['full', 'selective'].includes(mode) ||
-      (mode === 'selective' && !base)
-    ) {
+  if (arguments_[0] === '--release-plan' && arguments_.length === 4) {
+    const [, boundary, mode, releaseMetadataPath] = arguments_;
+    if (!['full', 'selective'].includes(mode)) {
       throw new Error(
-        'usage: --release-plan <boundary> <full|selective> <releases.json> [base]',
+        'usage: --release-plan <boundary> <full|selective> <releases.json>',
       );
     }
     console.log(
       JSON.stringify(
         await createRepositoryReleasePlan({
           boundary,
-          base,
           full: mode === 'full',
           releaseMetadataPath,
         }),

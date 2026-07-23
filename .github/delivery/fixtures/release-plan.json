@@ -4,7 +4,6 @@
       "boundary": "main-commit-2",
       "boundaryAccepted": true,
       "target": "production",
-      "changedWorkspaces": ["@fixture/runtime"],
       "releases": [
         {
           "tag": "@fixture/runtime@2.0.0",
@@ -133,7 +132,6 @@
       "boundary": "main-commit-2",
       "boundaryAccepted": true,
       "target": "production",
-      "changedWorkspaces": ["@fixture/runtime"],
       "releases": [
         {
           "tag": "@fixture/runtime@2.0.0",
@@ -157,7 +155,6 @@
       "boundaryAccepted": true,
       "target": "production",
       "full": true,
-      "changedWorkspaces": [],
       "releases": [
         {
           "tag": "@motech-development/breeze-ui@1.0.0",

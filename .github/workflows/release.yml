@@ -91,13 +91,12 @@ jobs:
       - name: Create Release Plan
         id: plan
         env:
-          BASE_BOUNDARY: ${{ github.event.before }}
           RELEASE_BOUNDARY: ${{ github.event_name == 'workflow_dispatch' && inputs.boundary || github.sha }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             plan="$(node .github/delivery/generate.mjs --release-plan "$RELEASE_BOUNDARY" full "$RUNNER_TEMP/releases.json")"
           else
-            plan="$(node .github/delivery/generate.mjs --release-plan "$RELEASE_BOUNDARY" selective "$RUNNER_TEMP/releases.json" "$BASE_BOUNDARY")"
+            plan="$(node .github/delivery/generate.mjs --release-plan "$RELEASE_BOUNDARY" selective "$RUNNER_TEMP/releases.json")"
           fi
           echo "release-plan=$plan" >> "$GITHUB_OUTPUT"
 
