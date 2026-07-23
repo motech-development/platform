@@ -7,6 +7,7 @@ import { advanceTo, clear } from 'jest-date-mock';
 import { handler, IEvent } from '../add-report';
 
 describe('add-report', () => {
+  // Validation marker: seed the complete Preview topology for issue #1501.
   let callback: jest.Mock;
   let context: Context;
   let ddb: AwsClientStub<DynamoDBClient>;
