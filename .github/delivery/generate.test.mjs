@@ -1025,6 +1025,22 @@ test('client delivery receives public API configuration through explicit job out
   }
 });
 
+test('API delivery records success only after exporting client configuration', async () => {
+  const generated = await generateWorkflows({ write: false });
+
+  for (const filename of [
+    'deploy-to-environment.yml',
+    'deploy-to-develop.yml',
+    'deploy-to-production.yml',
+  ]) {
+    assert.match(
+      workflowJob(generated[filename], 'accounts-api'),
+      /name: Deploy\n[\s\S]*name: Export client configuration[\s\S]*name: Record successful Deployment[\s\S]*name: Record failed Deployment/,
+      filename,
+    );
+  }
+});
+
 test('client-only Preview validation reuses API state while delivery plans include the producer', () => {
   const preview = createPreviewPlan(
     planningCatalog,
@@ -1568,6 +1584,10 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.match(
     setup,
+    /Read current Accounts API configuration[\s\S]*env:\n          STAGE: pr-\$\{\{ github\.event\.pull_request\.number \}\}[\s\S]*--stack-name "accounts-\$\{STAGE\}-api"/,
+  );
+  assert.match(
+    setup,
     /aws_region="\$\(jq -r '\.StackId \| split\(":"\)\[3\]' <<< "\$stack"\)"[\s\S]*echo "aws-region=\$aws_region"/,
   );
   assert.doesNotMatch(
@@ -1602,7 +1622,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   const apiDeployment = workflowJob(preview, 'accounts-api');
   assert.match(
     apiDeployment,
-    /name: Deploy\n[\s\S]*yarn workspace @accounts\/api deploy --stage \$STAGE[\s\S]*name: Record successful Deployment[\s\S]*name: Export client configuration/,
+    /name: Deploy\n[\s\S]*yarn workspace @accounts\/api deploy --stage \$STAGE[\s\S]*name: Export client configuration[\s\S]*name: Record successful Deployment/,
   );
   assert.match(
     apiDeployment,
@@ -2023,6 +2043,10 @@ test('generated long-lived delivery reconciles Environment State after acquiring
     assert.match(
       setup,
       /node \.github\/delivery\/generate\.mjs[\s\\]*--reconciliation-plan/,
+    );
+    assert.match(
+      setup,
+      /- name: Set Node version[\s\S]*- name: Create Reconciliation Plan[\s\S]*node \.github\/delivery\/generate\.mjs[\s\\]*--reconciliation-plan/,
     );
     assert.doesNotMatch(workflow, /^(?!\s*#)\s+.*\.serverless$/m);
 
