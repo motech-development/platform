@@ -50,6 +50,26 @@ The post-change Release published and resolved exact owning-workspace tags befor
 
 This was the first complete post-cutover reconciliation, so it establishes Release, Develop, production, exact-tag, parallel-launch, and Environment State timing evidence. It does not replace the outstanding selective Release scenario.
 
+## Delivery maintenance evidence
+
+The parent specification measures the hand-maintained delivery model at the catalog-and-generator boundary; generated workflow YAML may remain verbose. At the pre-cutover commit [`958404b4`](https://github.com/motech-development/platform/commit/958404b4d4b4761eafca7f05cec508af46ebf6ff), the four environment delivery workflows contained 3,196 lines. The current catalog and generator contain 2,044 lines, a reduction of 1,152 lines (36.0%).
+
+| Maintenance source                   | Pre-cutover lines | Current lines |
+| ------------------------------------ | ----------------: | ------------: |
+| Preview delivery workflow            |               919 |             — |
+| Develop delivery workflow            |               674 |             — |
+| Production delivery workflow         |             1,030 |             — |
+| Teardown workflow                    |               573 |             — |
+| Deployment Catalog                   |                 — |           119 |
+| Dependency-free workflow generator   |                 — |         1,925 |
+| **Measured delivery model boundary** |         **3,196** |     **2,044** |
+
+Line counts use `wc -l` against the four workflows at `958404b4` and the current `.github/delivery/catalog.json` and `.github/delivery/generate.mjs`. Generated workflows are excluded from both sides.
+
+The current target-specific templates contain a further 2,075 hand-maintained lines. They preserve explicit operational overrides for credentials, cleanup, publication, validation, and other non-standard behaviour; they are not topology duplicated from the catalog. Including those templates produces 4,119 lines of current delivery source, so the 36.0% result is specifically a reduction in the measured catalog-and-generator model, not an overall repository line reduction.
+
+The maintenance contract was also checked for consistent terminology and ownership across the [Platform Delivery glossary](../CONTEXT.md), [release planning](../docs/adr/0001-release-driven-main-deployments.md), [generated job graph](../docs/adr/0002-generate-the-deployment-job-graph.md), [Preview reconciliation](../docs/adr/0003-complete-preview-plans-from-aws-state.md), [parallel long-lived environments](../docs/adr/0013-deploy-develop-and-production-in-parallel.md), [Environment State reconciliation](../docs/adr/0014-reconcile-superseded-main-deployments.md), [delivery README](./README.md), [agent guide](../../docs/agents/platform-delivery.md), and [parent specification #1492](https://github.com/motech-development/platform/issues/1492). They consistently assign topology to the Deployment Catalog, dependency and job-graph derivation to the generator, target-specific exceptions to templates, and the generated workflows to generated output rather than a second maintenance surface.
+
 ## Ordinary Lambda packaging evidence
 
 Webpack baselines and esbuild candidates were packaged sequentially on macOS arm64 with Node 24.14.1, Yarn 4.14.1, and osls 3.63.2. Each command used `serverless package --stage benchmark --package <temporary-directory>` with equivalent placeholder deployment variables. Wall-clock time is `/usr/bin/time -p` real time; it includes dependency materialisation performed by the packaging plugin.
