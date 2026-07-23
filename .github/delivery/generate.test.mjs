@@ -1190,6 +1190,18 @@ test('anti-virus deployments reuse only validated binaries from pinned build inp
     );
   }
 
+  for (const filename of [
+    'deploy-to-environment.yml',
+    'deploy-to-develop.yml',
+  ]) {
+    const antiVirus = workflowJob(generated[filename], 'core-anti-virus');
+    assert.match(
+      antiVirus,
+      /- name: Deploy[\s\S]*- name: Update definitions[\s\S]*- name: Record successful Deployment[\s\S]*- name: Record failed Deployment/,
+      filename,
+    );
+  }
+
   assert.match(buildInputs, /amazonlinux@sha256:[a-f0-9]{64}/);
   assert.match(buildInputs, /gcc-11\.5\.0-5\.amzn2023\.0\.5/);
   assert.match(buildInputs, /CLAMAV_VERSION='1\.0\.9'/);

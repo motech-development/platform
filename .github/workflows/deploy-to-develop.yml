@@ -429,6 +429,9 @@ jobs:
           retry_on: error
           timeout_minutes: 15
 
+      - name: Update definitions
+        run: yarn workspace @core/anti-virus update-definitions --stage $STAGE
+
       - name: Record successful Deployment
         id: deployment-success
         env:
@@ -443,9 +446,6 @@ jobs:
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
           echo "recorded=true" >> "$GITHUB_OUTPUT"
-
-      - name: Update definitions
-        run: yarn workspace @core/anti-virus update-definitions --stage $STAGE
 
       - name: Record failed Deployment
         if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
