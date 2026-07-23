@@ -3,7 +3,7 @@ import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
   {
-    ignores: ['coverage/**', 'dist/**', 'storybook-static/**'],
+    ignores: ['coverage/**', 'dist/**', 'lib/**', 'storybook-static/**'],
   },
   config,
 ]);

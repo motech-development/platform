@@ -8,7 +8,7 @@
     "noEmit": true,
     "types": ["node", "vitest/globals"]
   },
-  "exclude": ["dist", "storybook-static"],
+  "exclude": ["dist", "lib", "storybook-static"],
   "include": [
     ".storybook/**/*.ts",
     ".storybook/**/*.tsx",
