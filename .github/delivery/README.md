@@ -14,7 +14,7 @@ node .github/delivery/generate.mjs --check
 node --test .github/delivery/*.test.mjs
 ```
 
-The files in `templates/` own deployment commands, service configuration, and other unit-specific workflow details. Repeated unit steps live in `templates/fragments/*.yml.tmpl`. The generator owns stable job identifiers, target inclusion, `needs` edges, exact refs, selection guards, and the shared GitHub Deployment audit lifecycle around each delivery command. Never edit a generated workflow directly. After regeneration, review the ordinary workflow diff for unit visibility, permissions, target eligibility, direct dependency edges, and reverse teardown ordering.
+The generator emits a standard job for an ordinary Deployment Unit from its catalog entry and workspace `deploy` or `teardown` script. The files in `templates/` retain explicit overrides for units that need target-specific service configuration, credentials, cleanup, publication, validation, or other non-standard behaviour. A catalogued command or cleanup exception always requires an override. Repeated unit steps live in `templates/fragments/*.yml.tmpl`. The generator owns stable job identifiers, target inclusion, `needs` edges, exact refs, selection guards, and the shared GitHub Deployment audit lifecycle around each delivery command. Never edit a generated workflow directly. After regeneration, review the ordinary workflow diff for unit visibility, permissions, target eligibility, direct dependency edges, and reverse teardown ordering.
 
 ## Dependency and output transfer
 
@@ -46,7 +46,7 @@ For a manual full delivery, dispatch the `Release` workflow with a successfully 
 
 ## Deployment Unit lifecycle
 
-- To add a unit, confirm its workspace deploy/teardown commands and Release tag prefix, inspect CloudFormation imports and exports, add the smallest catalog entry, record a planning fixture, regenerate, and verify every supported target has one separately visible job.
+- To add a unit, confirm its workspace deploy/teardown commands and Release tag prefix, inspect CloudFormation imports and exports, add the smallest catalog entry, record a planning fixture, regenerate, and verify every supported target has one separately visible job. An ordinary unit needs no handwritten job block. A catalogued non-standard exception also needs an explicit template override for each affected target.
 - To rename a unit, prefer retaining its stable id because GitHub Deployment task history uses that id. A true id change requires an explicit Environment State migration.
 - To remove a unit, decide and perform any required resource teardown before deleting the catalog entry. Do not infer authorization to destroy retained resources from a source-code deletion.
 

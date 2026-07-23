@@ -123,12 +123,13 @@ Do not ask for confirmation merely because a catalog consumer must be updated to
 
 1. Confirm the workspace has an appropriate `deploy` script and, where supported, `teardown` script.
 2. Confirm its GitHub Release tag prefix is the exact workspace name.
-3. Add a stable kebab-case catalog id, workspace path, targets, delivery dependencies, and expected stacks.
+3. Add a stable kebab-case catalog id that does not collide with a workflow control or template job, plus its workspace path, targets, delivery dependencies, and expected stacks.
 4. Inspect every `ImportValue` it consumes and every export its consumers reference.
 5. Add only direct delivery dependencies; the generator computes transitive ordering.
 6. Add generator fixtures covering selection, dependency expansion, target filtering, and reverse teardown.
-7. Regenerate and verify each target contains one separately visible job.
-8. Exercise a Preview Plan if preview is supported.
+7. For an ordinary unit, rely on the standard job generated from its workspace `deploy` and `teardown` scripts. If delivery needs target-specific service configuration, credentials, cleanup, publication, validation, or a catalogued non-standard exception, add the smallest explicit template override needed for each affected target and name it with the stable catalog id.
+8. Regenerate and verify each target contains one separately visible job.
+9. Exercise a Preview Plan if preview is supported.
 
 Example shape:
 
