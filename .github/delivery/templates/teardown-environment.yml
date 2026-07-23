@@ -165,7 +165,6 @@ jobs:
       - accounts-api
       - accounts-notifications
       - accounts-reports
-      - accounts-warm-up
 
     env:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
@@ -189,40 +188,6 @@ jobs:
 
       - name: Teardown
         run: yarn workspace @accounts/data teardown --stage $STAGE
-
-  # Accounts (warm up)
-  accounts-warm-up:
-    name: Teardown accounts warm up
-
-    if: github.actor != 'dependabot[bot]' && always()
-
-    runs-on: ubuntu-latest
-
-    needs:
-      - setup
-
-    env:
-      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
-      STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
-
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      # {{fragment:dependency-steps:@accounts/warm-up}}
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          aws-region: eu-west-1
-          role-to-assume: arn:aws:iam::633331859210:role/github-actions
-
-      - name: Teardown
-        run: yarn workspace @accounts/warm-up teardown --stage $STAGE
 
   # Accounts (notifications)
   accounts-notifications:

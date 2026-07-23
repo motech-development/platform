@@ -287,7 +287,6 @@ test('repository catalog represents the active delivery inventory only', async (
       'accounts-infrastructure',
       'accounts-storage',
       'accounts-data',
-      'accounts-warm-up',
       'accounts-notifications',
       'accounts-queue',
       'accounts-reports',
@@ -449,7 +448,7 @@ test('missing, malformed, and failed Preview State selects safe repair', () => {
     planningCatalog,
     planningManifests,
     recordedPreviewState({
-      missingUnits: ['accounts-warm-up'],
+      missingUnits: ['accounts-reports'],
       unitRefs: { 'accounts-queue': '' },
       unitStatuses: {
         'accounts-notifications': [{ state: 'failure' }],
@@ -460,7 +459,6 @@ test('missing, malformed, and failed Preview State selects safe repair', () => {
   assert.deepEqual(plan, {
     target: 'preview',
     units: [
-      'accounts-warm-up',
       'accounts-notifications',
       'accounts-queue',
       'accounts-reports',
@@ -845,7 +843,6 @@ test('recorded job graphs filter targets and reverse direct dependencies for tea
   );
   assert.deepEqual(teardown.at(0), { id: 'accounts-api', needs: [] });
   assert.deepEqual(teardown.find(({ id }) => id === 'accounts-data').needs, [
-    'accounts-warm-up',
     'accounts-notifications',
     'accounts-queue',
     'accounts-reports',
@@ -1058,17 +1055,12 @@ test('API delivery records success only after exporting client configuration', a
   }
 });
 
-test('Preview warm-up records success only after warming the environment', async () => {
+test('generated workflows omit the retired warm-up Deployment Unit', async () => {
   const generated = await generateWorkflows({ write: false });
-  const warmUp = workflowJob(
-    generated['deploy-to-environment.yml'],
-    'accounts-warm-up',
-  );
 
-  assert.match(
-    warmUp,
-    /name: Deploy\n[\s\S]*name: Warm up\n[\s\S]*name: Record successful Deployment[\s\S]*name: Record failed Deployment/,
-  );
+  for (const workflow of Object.values(generated)) {
+    assert.doesNotMatch(workflow, /accounts-warm-up|@accounts\/warm-up/);
+  }
 });
 
 test('client-only Preview validation reuses API state while delivery plans include the producer', () => {
@@ -1214,13 +1206,24 @@ test('QA and Release use the exact dependency strategy without generated package
     workflowJob(release, 'release'),
     /if: github\.event_name == 'push'\n        uses: \.\/\.github\/actions\/setup-dependencies/,
   );
-  for (const jobId of ['setup', 'warm-up', 'accounts-tests']) {
+  for (const jobId of ['setup', 'accounts-tests']) {
     assert.match(
       workflowJob(scheduledTests, jobId),
       /uses: \.\/\.github\/actions\/setup-dependencies/,
       jobId,
     );
   }
+  const scheduledAccountsTests = workflowJob(scheduledTests, 'accounts-tests');
+  assert.match(scheduledAccountsTests, /^    needs: setup$/m);
+  assert.match(
+    scheduledAccountsTests,
+    /containers:\n          - 1\n          - 2/,
+  );
+  assert.match(
+    scheduledAccountsTests,
+    /yarn workspace @accounts\/client e2e-ci --shard=\$\{\{ matrix\.containers \}\}\/2/,
+  );
+  assert.doesNotMatch(scheduledTests, /warm-up|@accounts\/warm-up/i);
 
   for (const workflow of [qualityAssurance, release, scheduledTests]) {
     assert.doesNotMatch(workflow, /^(?!\s*#)\s+- name: Restore packages$/m);
@@ -1535,7 +1538,6 @@ test('generator emits deterministic static workflow graphs with one job per Depl
     'accounts-infrastructure': 'Deploy accounts infrastructure',
     'accounts-storage': 'Deploy accounts storage',
     'accounts-data': 'Deploy accounts data',
-    'accounts-warm-up': 'Deploy accounts warm up',
     'accounts-notifications': 'Deploy accounts notifications',
     'accounts-queue': 'Deploy accounts queue',
     'accounts-reports': 'Deploy accounts reports',
@@ -1572,7 +1574,7 @@ test('generator emits deterministic static workflow graphs with one job per Depl
 
   assert.match(
     workflowJob(first['teardown-environment.yml'], 'accounts-data'),
-    /needs:\n      - setup\n      - accounts-warm-up\n      - accounts-notifications\n      - accounts-queue\n      - accounts-reports\n      - accounts-api/,
+    /needs:\n      - setup\n      - accounts-notifications\n      - accounts-queue\n      - accounts-reports\n      - accounts-api/,
   );
 });
 
@@ -1753,40 +1755,6 @@ test('generated teardown checks for missing resources and blocks dependencies af
     /\.github\/delivery\/empty-s3-bucket\.sh "\$DOWNLOAD_BUCKET"[\s\S]*\.github\/delivery\/empty-s3-bucket\.sh "\$UPLOAD_BUCKET"/,
   );
   assert.doesNotMatch(storage, /continue-on-error: true/);
-});
-
-test('catalog target removal removes the Deployment Unit from generated workflows', async () => {
-  const [catalog, manifests] = await Promise.all([
-    loadCatalog(),
-    loadWorkspaceManifests(),
-  ]);
-  const retargetedCatalog = structuredClone(catalog);
-  retargetedCatalog.units.find(({ id }) => id === 'accounts-warm-up').targets =
-    ['production'];
-
-  const generated = await generateWorkflows({
-    write: false,
-    catalog: retargetedCatalog,
-    workspaceManifests: manifests,
-  });
-  assert.equal(
-    generated['deploy-to-environment.yml'].includes('\n  accounts-warm-up:\n'),
-    false,
-  );
-  assert.equal(
-    generated['deploy-to-environment.yml'].includes(
-      '\n      - accounts-warm-up\n',
-    ),
-    false,
-  );
-  assert.equal(
-    generated['teardown-environment.yml'].includes('\n  accounts-warm-up:\n'),
-    false,
-  );
-  assert.equal(
-    generated['deploy-to-production.yml'].includes('\n  accounts-warm-up:\n'),
-    true,
-  );
 });
 
 test('ordinary catalog additions generate standard jobs without handwritten templates', async () => {

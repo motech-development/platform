@@ -14,7 +14,6 @@ const lambdaServices = [
   ['@accounts/queue', 'accounts/queue'],
   ['@accounts/notifications', 'accounts/notifications'],
   ['@accounts/reports', 'accounts/reports'],
-  ['@accounts/warm-up', 'accounts/warm-up'],
   ['@accounts/storage', 'accounts/storage'],
   ['@accounts/data', 'accounts/data'],
 ];

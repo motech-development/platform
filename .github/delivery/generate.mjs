@@ -819,7 +819,6 @@ const workflowDefinitions = [
       'core-anti-virus': 'anti-virus',
       'accounts-storage': 'accounts-storage',
       'accounts-data': 'accounts-data',
-      'accounts-warm-up': 'accounts-warm-up',
       'accounts-notifications': 'accounts-notifications',
       'accounts-queue': 'accounts-queue',
       'accounts-reports': 'accounts-reports',
@@ -853,7 +852,6 @@ const workflowDefinitions = [
       'accounts-infrastructure': 'deploy-accounts-infrastructure',
       'accounts-storage': 'deploy-accounts-storage',
       'accounts-data': 'deploy-accounts-data',
-      'accounts-warm-up': 'deploy-accounts-warm-up',
       'accounts-notifications': 'deploy-accounts-notifications',
       'accounts-queue': 'deploy-accounts-queue',
       'accounts-reports': 'deploy-accounts-reports',
@@ -871,7 +869,6 @@ const workflowDefinitions = [
       'core-anti-virus': 'anti-virus',
       'accounts-storage': 'accounts-storage',
       'accounts-data': 'accounts-data',
-      'accounts-warm-up': 'accounts-warm-up',
       'accounts-notifications': 'accounts-notifications',
       'accounts-queue': 'accounts-queue',
       'accounts-reports': 'accounts-reports',
@@ -1358,7 +1355,6 @@ function insertStandardJob(workflow, job, definition) {
 }
 
 const deliveryCompletionStepNames = new Map([
-  ['accounts-warm-up', 'Warm up'],
   ['core-anti-virus', 'Update definitions'],
 ]);
 
