@@ -1,5 +1,6 @@
 coverage
 dist
+lib
 playwright-report
 storybook-static
 test-results

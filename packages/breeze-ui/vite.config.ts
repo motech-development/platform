@@ -5,12 +5,17 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
+import packageJson from './package.json' with { type: 'json' };
 
 const require = createRequire(import.meta.url);
 const cabinPackageDirectory = dirname(
   require.resolve('@fontsource-variable/cabin/package.json'),
 );
-const distributionDirectory = resolve(import.meta.dirname, 'dist');
+const distributionDirectory = resolve(import.meta.dirname, 'lib');
+const externalPackages = Object.keys({
+  ...packageJson.dependencies,
+  ...packageJson.peerDependencies,
+});
 
 function cabinAssetsPlugin(): Plugin {
   return {
@@ -44,18 +49,13 @@ export default defineConfig({
       },
       formats: ['es'],
     },
-    rollupOptions: {
-      external: [
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
-        /^@internationalized\/date(?:\/.*)?$/,
-        /^lucide-react(?:\/.*)?$/,
-        /^react-aria(?:\/.*)?$/,
-        /^react-aria-components(?:\/.*)?$/,
-        'tailwind-merge',
-        'tailwind-variants',
-      ],
+    outDir: 'lib',
+    rolldownOptions: {
+      external: (id) =>
+        externalPackages.some(
+          (packageName) =>
+            id === packageName || id.startsWith(`${packageName}/`),
+        ),
       output: {
         assetFileNames: (assetInfo) => {
           if (assetInfo.names.includes('reset.css')) {
@@ -71,6 +71,7 @@ export default defineConfig({
         entryFileNames: '[name].js',
       },
     },
+    sourcemap: true,
   },
   plugins: [tailwindcss(), react(), cabinAssetsPlugin()],
 });
