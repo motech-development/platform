@@ -34,7 +34,7 @@ runs:
           ./applications/*/*/node_modules
           ./packages/*/node_modules
           ./.yarn/install-state.gz
-        key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-issue-1501-archive-fallback-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
+        key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-issue-1501-cold-install-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
 
     - name: Restore Yarn archives
       id: yarn-archives
@@ -44,9 +44,9 @@ runs:
         path: |
           ~/.yarn/berry/cache
           ./.yarn/cache
-        key: ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock') }}
+        key: ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-issue-1501-cold-install-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock') }}
         restore-keys: |
-          ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-
+          ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-issue-1501-cold-install-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-
 
     - name: Install dependencies
       if: steps.installed-dependencies.outputs.cache-hit != 'true'
