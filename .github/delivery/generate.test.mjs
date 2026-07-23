@@ -2018,6 +2018,14 @@ test('Release publishes selectively from full history and constructs one exact-t
     releaseJob,
     /actions\/workflows\/release\.yml\/runs[\s\S]*actions\/runs\/\$run_id\/jobs[\s\S]*\.name == "Packages" and \.conclusion == "success"/,
   );
+  assert.match(
+    releaseJob,
+    /set -o pipefail[\s\S]*gh api --paginate --slurp[\s\S]*\| jq 'add \| map\(/,
+  );
+  assert.doesNotMatch(
+    releaseJob,
+    /gh api --paginate --slurp[\s\S]*?--jq[\s\S]*?releases\.json/,
+  );
   assert.match(releaseJob, /^    outputs:\n      release-plan:/m);
   assert.match(
     develop,

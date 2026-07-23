@@ -82,9 +82,10 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
+          set -o pipefail
           git fetch --force --tags origin
           gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
-            --jq 'add | map({tag: .tag_name, draft: .draft, prerelease: .prerelease, publishedAt: .published_at})' \
+            | jq 'add | map({tag: .tag_name, draft: .draft, prerelease: .prerelease, publishedAt: .published_at})' \
             > "$RUNNER_TEMP/releases.json"
 
       - name: Create Release Plan
