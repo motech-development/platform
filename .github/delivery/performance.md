@@ -40,11 +40,15 @@ Workflow duration is measured from the Actions run `createdAt` and `updatedAt` t
 | ---------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------- |
 | Pull-request QA  | [Run 29852527127](https://github.com/motech-development/platform/actions/runs/29852527127): 12m30s | [Run 29936655234](https://github.com/motech-development/platform/actions/runs/29936655234): 7m31s  | -4m59s (-39.9%)  |
 | Complete Preview | [Run 29852527144](https://github.com/motech-development/platform/actions/runs/29852527144): 71m55s | [Run 29937430985](https://github.com/motech-development/platform/actions/runs/29937430985): 58m29s | -13m26s (-18.7%) |
-| Release          | [Run 29858869933](https://github.com/motech-development/platform/actions/runs/29858869933): 4m01s  | Pending selective Release                                                                          | Pending          |
-| Develop          | [Run 29858869878](https://github.com/motech-development/platform/actions/runs/29858869878): 28m04s | Pending release-driven reconciliation                                                              | Pending          |
-| Production       | [Run 29858869881](https://github.com/motech-development/platform/actions/runs/29858869881): 47m53s | Pending release-driven reconciliation                                                              | Pending          |
+| Release          | [Run 29858869933](https://github.com/motech-development/platform/actions/runs/29858869933): 4m01s  | [Run 30030810456](https://github.com/motech-development/platform/actions/runs/30030810456): 2m50s  | -1m11s (-29.5%)  |
+| Develop          | [Run 29858869878](https://github.com/motech-development/platform/actions/runs/29858869878): 28m04s | [Run 30030810456](https://github.com/motech-development/platform/actions/runs/30030810456): 15m13s | -12m51s (-45.8%) |
+| Production       | [Run 29858869881](https://github.com/motech-development/platform/actions/runs/29858869881): 47m53s | [Run 30030810456](https://github.com/motech-development/platform/actions/runs/30030810456): 18m01s | -29m52s (-62.4%) |
 
 The post-change Preview created the complete preview-capable topology and passed both unchanged Playwright shards. Its longest application step was the accounts warm-up command, which ran for 27m11s and remains part of the observed Preview critical path.
+
+The post-change Release published and resolved exact owning-workspace tags before starting Develop and production independently from the same Release Plan. Release duration is the `Packages` job. Environment duration is measured from the start of that environment's setup job to its last completed delivery job. Develop and production setup began one second apart, and successful GitHub Deployments recorded matching shared-unit tags including `@core/anti-virus@1.7.1` and `@accounts/api@1.13.1`.
+
+This was the first complete post-cutover reconciliation, so it establishes Release, Develop, production, exact-tag, parallel-launch, and Environment State timing evidence. It does not replace the outstanding selective Release scenario.
 
 ## Ordinary Lambda packaging evidence
 
