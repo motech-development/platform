@@ -1,121 +1,233 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import logger from '@motech-development/node-logger';
-import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
+import {
+  DynamoDBClient,
+  TransactionCanceledException,
+} from '@aws-sdk/client-dynamodb';
+import { GetCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
+import type { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+import { advanceTo, clear } from 'jest-date-mock';
 import { handler } from '../publish-transactions';
+import { ITransaction, TransactionStatus } from '../shared/transaction';
 
-describe('schedule-transaction', () => {
+const transaction: ITransaction = {
+  __typename: 'Transaction',
+  amount: 100.25,
+  attachment: '',
+  category: 'Sales',
+  companyId: 'company-id',
+  date: '2020-06-07T00:00:00.000Z',
+  description: 'Description',
+  id: 'transaction-id',
+  name: 'Transaction',
+  owner: 'owner',
+  scheduled: true,
+  status: TransactionStatus.Pending,
+  vat: 20.05,
+};
+
+const publicationEvent = (
+  body: unknown = {
+    expectedScheduledTime: transaction.date,
+    transactionId: transaction.id,
+  },
+): SQSEvent =>
+  ({
+    Records: [
+      {
+        body: typeof body === 'string' ? body : JSON.stringify(body),
+      },
+    ],
+  }) as SQSEvent;
+
+describe('publish-transactions', () => {
   let callback: jest.Mock;
   let context: Context;
   let ddb: AwsClientStub<DynamoDBClient>;
-  let event: DynamoDBStreamEvent;
+  let originalEnvironment: NodeJS.ProcessEnv;
+
+  beforeAll(() => {
+    advanceTo('2020-06-06T19:45:00.000Z');
+  });
 
   beforeEach(() => {
-    context = ctx();
-
-    context.done();
-
     callback = jest.fn();
-
+    context = ctx();
+    context.done();
     ddb = mockClient(DynamoDBClient);
+    originalEnvironment = process.env;
+    process.env = {
+      ...process.env,
+      TABLE: 'accounts-test-application',
+    };
+    ddb.on(GetCommand).resolves({
+      Item: transaction,
+    });
+  });
 
-    event = {
-      Records: [
+  afterEach(() => {
+    process.env = originalEnvironment;
+  });
+
+  afterAll(() => {
+    clear();
+  });
+
+  it('atomically confirms the Transaction and creates its notification', async () => {
+    await handler(publicationEvent(), context, callback);
+
+    expect(ddb).toReceiveCommandWith(GetCommand, {
+      ConsistentRead: true,
+      Key: {
+        __typename: 'Transaction',
+        id: 'transaction-id',
+      },
+      TableName: 'accounts-test-application',
+    });
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: [
         {
-          dynamodb: {
-            OldImage: {
-              __typename: {
-                S: 'ScheduledTransaction',
-              },
-              active: {
-                BOOL: true,
-              },
-              id: {
-                S: 'transaction-1',
-              },
+          Update: {
+            ConditionExpression:
+              '#status = :pending AND #scheduled = :scheduled AND #date = :expectedScheduledTime',
+            ExpressionAttributeNames: {
+              '#data': 'data',
+              '#date': 'date',
+              '#scheduled': 'scheduled',
+              '#status': 'status',
+              '#updatedAt': 'updatedAt',
             },
+            ExpressionAttributeValues: {
+              ':confirmed': 'confirmed',
+              ':data': 'owner:company-id:confirmed:2020-06-07T00:00:00.000Z',
+              ':expectedScheduledTime': '2020-06-07T00:00:00.000Z',
+              ':notScheduled': false,
+              ':pending': 'pending',
+              ':scheduled': true,
+              ':updatedAt': '2020-06-06T19:45:00.000Z',
+            },
+            Key: {
+              __typename: 'Transaction',
+              id: 'transaction-id',
+            },
+            TableName: 'accounts-test-application',
+            UpdateExpression:
+              'SET #data = :data, #scheduled = :notScheduled, #status = :confirmed, #updatedAt = :updatedAt',
           },
-          eventName: 'REMOVE' as const,
         },
         {
-          dynamodb: {
-            OldImage: {
-              __typename: {
-                S: 'ScheduledTransaction',
-              },
-              active: {
-                BOOL: false,
-              },
-              id: {
-                S: 'transaction-2',
-              },
+          Put: {
+            Item: {
+              __typename: 'Notification',
+              createdAt: '2020-06-06T19:45:00.000Z',
+              data: 'owner:Notification:2020-06-06T19:45:00.000Z',
+              id: 'test-uuid',
+              message: 'TRANSACTION_PUBLISHED',
+              owner: 'owner',
+              read: false,
             },
+            TableName: 'accounts-test-application',
           },
-          eventName: 'MODIFY' as const,
         },
       ],
-    };
+    });
   });
 
-  it('should throw an error if no table is set', async () => {
-    event = {
-      Records: [],
-    };
+  it.each([
+    [
+      'a stale Transaction Date',
+      { ...transaction, date: '2020-06-08T00:00:00.000Z' },
+    ],
+    ['an unscheduled Transaction', { ...transaction, scheduled: false }],
+    [
+      'a manually confirmed Transaction',
+      { ...transaction, status: TransactionStatus.Confirmed },
+    ],
+    ['a deleted Transaction', undefined],
+  ])('acknowledges %s without publishing', async (_description, item) => {
+    ddb.on(GetCommand).resolves({
+      Item: item,
+    });
 
-    await expect(handler(event, context, callback)).rejects.toThrow(
-      'No table set',
+    await handler(publicationEvent(), context, callback);
+
+    expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 0);
+  });
+
+  it('creates only one notification for duplicate publication commands', async () => {
+    ddb
+      .on(GetCommand)
+      .resolvesOnce({
+        Item: transaction,
+      })
+      .resolves({
+        Item: {
+          ...transaction,
+          scheduled: false,
+          status: TransactionStatus.Confirmed,
+        },
+      });
+
+    await handler(publicationEvent(), context, callback);
+    await handler(publicationEvent(), context, callback);
+
+    expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 1);
+  });
+
+  it('acknowledges a concurrent duplicate that loses the condition', async () => {
+    ddb.on(TransactWriteCommand).rejects(
+      new TransactionCanceledException({
+        $metadata: {},
+        CancellationReasons: [
+          {
+            Code: 'ConditionalCheckFailed',
+          },
+        ],
+        message: 'The Transaction was already published',
+      }),
     );
+
+    await expect(
+      handler(publicationEvent(), context, callback),
+    ).resolves.toBeUndefined();
   });
 
-  describe('with table set', () => {
-    let env: NodeJS.ProcessEnv;
+  it.each([
+    ['invalid JSON', '{'],
+    [
+      'a missing Transaction identifier',
+      { expectedScheduledTime: transaction.date },
+    ],
+    ['a missing expected schedule time', { transactionId: transaction.id }],
+  ])('rejects a malformed command with %s', async (_description, body) => {
+    await expect(
+      handler(publicationEvent(body), context, callback),
+    ).rejects.toThrow();
+  });
 
-    beforeEach(() => {
-      env = {
-        ...process.env,
-      };
+  it('throws DynamoDB read failures so SQS can retry', async () => {
+    const error = new Error('DynamoDB unavailable');
+    ddb.on(GetCommand).rejects(error);
 
-      process.env.TABLE = 'app-table';
-    });
+    await expect(
+      handler(publicationEvent(), context, callback),
+    ).rejects.toThrow(error);
+  });
 
-    afterEach(() => {
-      process.env = env;
-    });
+  it('throws DynamoDB transaction failures so SQS can retry', async () => {
+    const error = new Error('DynamoDB unavailable');
+    ddb.on(TransactWriteCommand).rejects(error);
 
-    describe('when there are no errors thrown by DynamoDB', () => {
-      it('should do nothing if there is nothing to process', async () => {
-        event = {
-          Records: [],
-        };
+    await expect(
+      handler(publicationEvent(), context, callback),
+    ).rejects.toThrow(error);
+  });
 
-        await handler(event, context, callback);
+  it('requires the application table', async () => {
+    delete process.env.TABLE;
 
-        expect(ddb).toReceiveCommandTimes(UpdateCommand, 0);
-      });
-
-      it('should update the correct number of records', async () => {
-        await handler(event, context, callback);
-
-        expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
-      });
-    });
-
-    describe('when DyanmoDB throws an error', () => {
-      let error: Error;
-
-      beforeEach(() => {
-        error = new Error('Something has gone wrong');
-
-        ddb.on(UpdateCommand).rejectsOnce(error);
-      });
-
-      it('should swallow the error', async () => {
-        await handler(event, context, callback);
-
-        expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
-      });
-    });
+    await expect(
+      handler(publicationEvent(), context, callback),
+    ).rejects.toThrow('No table set');
   });
 });

@@ -35,11 +35,6 @@
     "dependencies": {}
   },
   {
-    "name": "@accounts/warm-up",
-    "relativePath": "applications/accounts/warm-up",
-    "dependencies": {}
-  },
-  {
     "name": "@accounts/notifications",
     "relativePath": "applications/accounts/notifications",
     "dependencies": {}

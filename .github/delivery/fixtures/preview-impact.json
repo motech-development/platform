@@ -25,7 +25,6 @@
         "@accounts/infrastructure",
         "@accounts/storage",
         "@accounts/data",
-        "@accounts/warm-up",
         "@accounts/notifications",
         "@accounts/queue",
         "@accounts/reports",

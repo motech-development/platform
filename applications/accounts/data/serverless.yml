@@ -61,27 +61,42 @@ functions:
 
   PublishTransactions:
     handler: src/publish-transactions.handler
-    role: DataLambdaFunctionRole
+    role: PublishTransactionsLambdaFunctionRole
+    timeout: 30
     events:
-      - stream:
-          type: dynamodb
-          arn: !GetAtt ApplicationTable.StreamArn
-          startingPosition: LATEST
+      - sqs:
+          arn: !GetAtt PublicationQueue.Arn
+          batchSize: 1
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !Ref ApplicationTable
 
+  ReportSchedulingAlarm:
+    handler: src/report-scheduling-alarm.handler
+    role: SchedulingAlarmLambdaFunctionRole
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
+
   ScheduleTransactions:
     handler: src/schedule-transactions.handler
-    role: DataLambdaFunctionRole
+    role: ScheduleTransactionsLambdaFunctionRole
     events:
       - stream:
           type: dynamodb
           arn: !GetAtt ApplicationTable.StreamArn
+          batchSize: 1
+          destinations:
+            onFailure:
+              arn: !GetAtt ScheduleSynchronisationDeadLetterQueue.Arn
+              type: sqs
+          maximumRetryAttempts: 4
           startingPosition: LATEST
     environment:
+      PUBLICATION_QUEUE_ARN: !GetAtt PublicationQueue.Arn
+      SCHEDULE_GROUP: !Ref ScheduledTransactionScheduleGroup
+      SCHEDULER_DELIVERY_DLQ_ARN: !GetAtt SchedulerDeliveryDeadLetterQueue.Arn
+      SCHEDULER_ROLE_ARN: !GetAtt SchedulerPublicationRole.Arn
       SENTRY_DSN: ${env:SENTRY_DSN}
-      TABLE: !Ref ApplicationTable
 
   Transactions:
     handler: src/transactions.handler
@@ -141,6 +156,267 @@ resources:
         TimeToLiveSpecification:
           AttributeName: ttl
           Enabled: true
+
+    ScheduledTransactionScheduleGroup:
+      Type: AWS::Scheduler::ScheduleGroup
+      Properties:
+        Name: ${self:custom.prefix}-scheduled-transactions
+
+    ScheduleSynchronisationDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        MessageRetentionPeriod: 1209600
+        QueueName: ${self:custom.prefix}-schedule-synchronisation-dlq
+
+    SchedulerDeliveryDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        MessageRetentionPeriod: 1209600
+        QueueName: ${self:custom.prefix}-scheduler-delivery-dlq
+
+    PublicationDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        MessageRetentionPeriod: 1209600
+        QueueName: ${self:custom.prefix}-publication-processing-dlq
+
+    PublicationQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.prefix}-publication
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt PublicationDeadLetterQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+
+    ScheduleTransactionsLambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-schedule-transactions
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:DescribeStream
+                    - dynamodb:GetRecords
+                    - dynamodb:GetShardIterator
+                    - dynamodb:ListStreams
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !GetAtt ApplicationTable.Arn
+                        - '/stream/*'
+                - Effect: Allow
+                  Action:
+                    - scheduler:CreateSchedule
+                    - scheduler:DeleteSchedule
+                    - scheduler:UpdateSchedule
+                  Resource:
+                    - !Join
+                      - ''
+                      - - 'arn:aws:scheduler:'
+                        - !Ref AWS::Region
+                        - ':'
+                        - !Ref AWS::AccountId
+                        - ':schedule/'
+                        - !Ref ScheduledTransactionScheduleGroup
+                        - '/transaction-*'
+                - Effect: Allow
+                  Action:
+                    - iam:PassRole
+                  Resource:
+                    - !GetAtt SchedulerPublicationRole.Arn
+                  Condition:
+                    StringEquals:
+                      iam:PassedToService: scheduler.amazonaws.com
+                - Effect: Allow
+                  Action:
+                    - sqs:SendMessage
+                  Resource:
+                    - !GetAtt ScheduleSynchronisationDeadLetterQueue.Arn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+
+    PublishTransactionsLambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-publish-transactions
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:GetItem
+                    - dynamodb:TransactWriteItems
+                  Resource:
+                    - !GetAtt ApplicationTable.Arn
+                - Effect: Allow
+                  Action:
+                    - sqs:DeleteMessage
+                    - sqs:GetQueueAttributes
+                    - sqs:ReceiveMessage
+                  Resource:
+                    - !GetAtt PublicationQueue.Arn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+
+    SchedulingAlarmLambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-scheduling-alarm
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'arn:aws:logs:*:*:*'
+
+    SchedulerPublicationRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - scheduler.amazonaws.com
+              Action:
+                - sts:AssumeRole
+              Condition:
+                StringEquals:
+                  aws:SourceAccount: !Ref AWS::AccountId
+                  aws:SourceArn: !GetAtt ScheduledTransactionScheduleGroup.Arn
+        Policies:
+          - PolicyName: ${self:custom.prefix}-scheduler-publication
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - sqs:SendMessage
+                  Resource:
+                    - !GetAtt PublicationQueue.Arn
+                    - !GetAtt SchedulerDeliveryDeadLetterQueue.Arn
+
+    ScheduleSynchronisationDeadLetterQueueAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
+        AlarmName: ${self:custom.prefix}-schedule-synchronisation-dlq-messages-visible
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: QueueName
+            Value: !GetAtt ScheduleSynchronisationDeadLetterQueue.QueueName
+        EvaluationPeriods: 1
+        MetricName: ApproximateNumberOfMessagesVisible
+        Namespace: AWS/SQS
+        Period: 60
+        Statistic: Maximum
+        Threshold: 1
+        TreatMissingData: notBreaching
+
+    SchedulerDeliveryDeadLetterQueueAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
+        AlarmName: ${self:custom.prefix}-scheduler-delivery-dlq-messages-visible
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: QueueName
+            Value: !GetAtt SchedulerDeliveryDeadLetterQueue.QueueName
+        EvaluationPeriods: 1
+        MetricName: ApproximateNumberOfMessagesVisible
+        Namespace: AWS/SQS
+        Period: 60
+        Statistic: Maximum
+        Threshold: 1
+        TreatMissingData: notBreaching
+
+    PublicationDeadLetterQueueAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
+        AlarmName: ${self:custom.prefix}-publication-processing-dlq-messages-visible
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: QueueName
+            Value: !GetAtt PublicationDeadLetterQueue.QueueName
+        EvaluationPeriods: 1
+        MetricName: ApproximateNumberOfMessagesVisible
+        Namespace: AWS/SQS
+        Period: 60
+        Statistic: Maximum
+        Threshold: 1
+        TreatMissingData: notBreaching
+
+    SchedulingAlarmLambdaPermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName: !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
+        Principal: lambda.alarms.cloudwatch.amazonaws.com
+        SourceAccount: !Ref AWS::AccountId
+        SourceArn: !Join
+          - ''
+          - - 'arn:aws:cloudwatch:'
+            - !Ref AWS::Region
+            - ':'
+            - !Ref AWS::AccountId
+            - ':alarm:'
+            - ${self:custom.prefix}
+            - '-*-dlq-messages-visible'
 
     DataLambdaFunctionRole:
       Type: AWS::IAM::Role

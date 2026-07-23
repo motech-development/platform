@@ -1,10 +1,18 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import logger from '@motech-development/node-logger';
+import {
+  DynamoDBClient,
+  TransactionCanceledException,
+} from '@aws-sdk/client-dynamodb';
+import { GetCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import type { DynamoDBStreamHandler } from 'aws-lambda';
-import confirmTransactions from './handlers/confirm-transactions';
-import extractStream from './shared/extract-stream';
+import type { SQSHandler } from 'aws-lambda';
+import { v4 as uuid } from 'uuid';
+import { ITransaction, TransactionStatus } from './shared/transaction';
+
+interface IPublicationCommand {
+  expectedScheduledTime: string;
+  transactionId: string;
+}
 
 init({
   dsn: process.env.SENTRY_DSN,
@@ -16,14 +24,128 @@ init({
 
 const documentClient = new DynamoDBClient({});
 
-export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
-  const { TABLE, removals } = extractStream(event);
+const requiredTable = (): string => {
+  const { TABLE } = process.env;
+
+  if (!TABLE) {
+    throw new Error('No table set');
+  }
+
+  return TABLE;
+};
+
+const parseCommand = (body: string): IPublicationCommand => {
+  const command = JSON.parse(body) as Partial<IPublicationCommand>;
+
+  if (
+    typeof command.expectedScheduledTime !== 'string' ||
+    typeof command.transactionId !== 'string' ||
+    !command.expectedScheduledTime ||
+    !command.transactionId
+  ) {
+    throw new Error('Invalid publication command');
+  }
+
+  return command as IPublicationCommand;
+};
+
+const publishTransaction = async (
+  tableName: string,
+  command: IPublicationCommand,
+) => {
+  const result = await documentClient.send(
+    new GetCommand({
+      ConsistentRead: true,
+      Key: {
+        __typename: 'Transaction',
+        id: command.transactionId,
+      },
+      TableName: tableName,
+    }),
+  );
+  const transaction = result.Item as ITransaction | undefined;
+
+  if (
+    !transaction ||
+    transaction.status !== TransactionStatus.Pending ||
+    !transaction.scheduled ||
+    transaction.date !== command.expectedScheduledTime
+  ) {
+    return;
+  }
+
+  const updatedAt = new Date().toISOString();
 
   try {
-    await Promise.all([
-      ...confirmTransactions(documentClient, TABLE, removals),
-    ]);
-  } catch (e) {
-    logger.error('An error occurred', e);
+    await documentClient.send(
+      new TransactWriteCommand({
+        TransactItems: [
+          {
+            Update: {
+              ConditionExpression:
+                '#status = :pending AND #scheduled = :scheduled AND #date = :expectedScheduledTime',
+              ExpressionAttributeNames: {
+                '#data': 'data',
+                '#date': 'date',
+                '#scheduled': 'scheduled',
+                '#status': 'status',
+                '#updatedAt': 'updatedAt',
+              },
+              ExpressionAttributeValues: {
+                ':confirmed': TransactionStatus.Confirmed,
+                ':data': `${transaction.owner}:${transaction.companyId}:confirmed:${transaction.date}`,
+                ':expectedScheduledTime': command.expectedScheduledTime,
+                ':notScheduled': false,
+                ':pending': TransactionStatus.Pending,
+                ':scheduled': true,
+                ':updatedAt': updatedAt,
+              },
+              Key: {
+                __typename: 'Transaction',
+                id: transaction.id,
+              },
+              TableName: tableName,
+              UpdateExpression:
+                'SET #data = :data, #scheduled = :notScheduled, #status = :confirmed, #updatedAt = :updatedAt',
+            },
+          },
+          {
+            Put: {
+              Item: {
+                __typename: 'Notification',
+                createdAt: updatedAt,
+                data: `${transaction.owner}:Notification:${updatedAt}`,
+                id: uuid(),
+                message: 'TRANSACTION_PUBLISHED',
+                owner: transaction.owner,
+                read: false,
+              },
+              TableName: tableName,
+            },
+          },
+        ],
+      }),
+    );
+  } catch (error) {
+    if (
+      error instanceof TransactionCanceledException &&
+      error.CancellationReasons?.some(
+        ({ Code }) => Code === 'ConditionalCheckFailed',
+      )
+    ) {
+      return;
+    }
+
+    throw error;
   }
+};
+
+export const handler: SQSHandler = wrapHandler(async (event) => {
+  const tableName = requiredTable();
+
+  await Promise.all(
+    event.Records.map(({ body }) =>
+      publishTransaction(tableName, parseCommand(body)),
+    ),
+  );
 });

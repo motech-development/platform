@@ -66,12 +66,6 @@
           "reachable": true
         },
         {
-          "tag": "@accounts/warm-up@1.0.0",
-          "commit": "main-commit-1",
-          "published": true,
-          "reachable": true
-        },
-        {
           "tag": "@accounts/notifications@1.0.0",
           "commit": "main-commit-1",
           "published": true,
@@ -102,7 +96,6 @@
         "@accounts/infrastructure": "@accounts/infrastructure@1.0.0",
         "@accounts/storage": "@accounts/storage@1.0.0",
         "@accounts/data": "@accounts/data@1.0.0",
-        "@accounts/warm-up": "@accounts/warm-up@1.0.0",
         "@accounts/notifications": "@accounts/notifications@1.0.0",
         "@accounts/queue": "@accounts/queue@1.0.0",
         "@accounts/reports": "@accounts/reports@1.0.0",
@@ -199,12 +192,6 @@
           "reachable": true
         },
         {
-          "tag": "@accounts/warm-up@1.0.0",
-          "commit": "main-commit-1",
-          "published": true,
-          "reachable": true
-        },
-        {
           "tag": "@accounts/notifications@1.0.0",
           "commit": "main-commit-1",
           "published": true,
@@ -247,7 +234,6 @@
         "@accounts/infrastructure": "@accounts/infrastructure@1.0.0",
         "@accounts/storage": "@accounts/storage@1.0.0",
         "@accounts/data": "@accounts/data@1.0.0",
-        "@accounts/warm-up": "@accounts/warm-up@1.0.0",
         "@accounts/notifications": "@accounts/notifications@1.0.0",
         "@accounts/queue": "@accounts/queue@1.0.0",
         "@accounts/reports": "@accounts/reports@1.0.0",
@@ -262,7 +248,6 @@
         "@accounts/infrastructure": "@accounts/infrastructure@1.0.0",
         "@accounts/storage": "@accounts/storage@1.0.0",
         "@accounts/data": "@accounts/data@1.0.0",
-        "@accounts/warm-up": "@accounts/warm-up@1.0.0",
         "@accounts/notifications": "@accounts/notifications@1.0.0",
         "@accounts/queue": "@accounts/queue@1.0.0",
         "@accounts/reports": "@accounts/reports@1.0.0",
@@ -304,11 +289,6 @@
           "id": "accounts-data",
           "workspace": "@accounts/data",
           "tag": "@accounts/data@1.0.0"
-        },
-        {
-          "id": "accounts-warm-up",
-          "workspace": "@accounts/warm-up",
-          "tag": "@accounts/warm-up@1.0.0"
         },
         {
           "id": "accounts-notifications",

@@ -58,14 +58,6 @@
       "expectedStacks": ["accounts-{stage}-data"]
     },
     {
-      "id": "accounts-warm-up",
-      "workspace": "@accounts/warm-up",
-      "path": "applications/accounts/warm-up",
-      "targets": ["preview", "production"],
-      "dependsOn": ["accounts-data"],
-      "expectedStacks": ["accounts-{stage}-warm-up"]
-    },
-    {
       "id": "accounts-notifications",
       "workspace": "@accounts/notifications",
       "path": "applications/accounts/notifications",

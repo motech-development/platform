@@ -13,7 +13,6 @@
         "core-anti-virus",
         "accounts-storage",
         "accounts-data",
-        "accounts-warm-up",
         "accounts-notifications",
         "accounts-queue",
         "accounts-reports",
@@ -43,7 +42,6 @@
         "anti-virus-pr-1493",
         "accounts-pr-1493-storage",
         "accounts-pr-1493-data",
-        "accounts-pr-1493-warm-up",
         "accounts-pr-1493-notifications",
         "accounts-pr-1493-queue",
         "accounts-pr-1493-api"
@@ -66,7 +64,6 @@
       "existingStacks": [
         "anti-virus-pr-1493",
         "accounts-pr-1493-storage",
-        "accounts-pr-1493-warm-up",
         "accounts-pr-1493-notifications",
         "accounts-pr-1493-queue",
         "accounts-pr-1493-reports",
@@ -78,7 +75,6 @@
       "target": "preview",
       "units": [
         "accounts-data",
-        "accounts-warm-up",
         "accounts-notifications",
         "accounts-queue",
         "accounts-reports",
@@ -108,7 +104,6 @@
         "anti-virus-pr-1493",
         "accounts-pr-1493-storage",
         "accounts-pr-1493-data",
-        "accounts-pr-1493-warm-up",
         "accounts-pr-1493-notifications",
         "accounts-pr-1493-queue",
         "accounts-pr-1493-reports",
