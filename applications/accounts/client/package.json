@@ -130,6 +130,10 @@
     ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "identity-obj-proxy",
+      "^@motech-development/appsync-apollo$": "<rootDir>/../../../packages/appsync-apollo/lib/index.js",
+      "^@motech-development/auth$": "<rootDir>/../../../packages/auth/lib/index.js",
+      "^@motech-development/axios-hooks$": "<rootDir>/../../../packages/axios-hooks/lib/axios-hooks.js",
+      "^@motech-development/ga-web-vitals$": "<rootDir>/../../../packages/ga-web-vitals/lib/ga-web-vitals.js",
       "^uuid$": "uuid"
     },
     "resetMocks": true,
