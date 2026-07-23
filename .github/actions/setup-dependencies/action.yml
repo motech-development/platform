@@ -34,7 +34,7 @@ runs:
           ./applications/*/*/node_modules
           ./packages/*/node_modules
           ./.yarn/install-state.gz
-        key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
+        key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-issue-1501-archive-fallback-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
 
     - name: Restore Yarn archives
       id: yarn-archives
