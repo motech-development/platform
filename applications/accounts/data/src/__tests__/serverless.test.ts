@@ -30,6 +30,8 @@ const printedConfiguration = execFileSync(
       ...process.env,
       SENTRY_DSN: 'https://public@example.com/1',
     },
+    maxBuffer: 10 * 1024 * 1024,
+    timeout: 60_000,
   },
 );
 const configuration = JSON.parse(
