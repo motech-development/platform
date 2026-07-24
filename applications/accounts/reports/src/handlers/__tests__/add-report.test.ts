@@ -8,6 +8,7 @@ import { handler, IEvent } from '../add-report';
 
 describe('add-report', () => {
   // Validation marker: seed the complete Preview topology for issue #1501.
+  // Validation marker: trigger selective missing-stack repair for issue #1501.
   let callback: jest.Mock;
   let context: Context;
   let ddb: AwsClientStub<DynamoDBClient>;
