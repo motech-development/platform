@@ -8,6 +8,18 @@ interface IServerlessConfiguration {
   };
 }
 
+interface IIamRole {
+  Properties: {
+    Policies: Array<{
+      PolicyDocument: {
+        Statement: Array<{
+          Action?: string[];
+        }>;
+      };
+    }>;
+  };
+}
+
 const printedConfiguration = execFileSync(
   'yarn',
   ['exec', 'serverless', 'print', '--format', 'json'],
@@ -119,6 +131,9 @@ describe('Scheduled Transaction infrastructure', () => {
 
   it('owns the one-time Scheduler group and least-privilege roles', () => {
     expect(configuration.resources.Resources).toMatchObject({
+      PublishTransactionsLambdaFunctionRole: {
+        Type: 'AWS::IAM::Role',
+      },
       ScheduleTransactionsLambdaFunctionRole: {
         Type: 'AWS::IAM::Role',
       },
@@ -143,6 +158,14 @@ describe('Scheduled Transaction infrastructure', () => {
         Type: 'AWS::IAM::Role',
       },
     });
+
+    const publishTransactionsRole = configuration.resources.Resources
+      .PublishTransactionsLambdaFunctionRole as IIamRole;
+
+    expect(
+      publishTransactionsRole.Properties.Policies[0].PolicyDocument.Statement[0]
+        .Action,
+    ).toEqual(['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:UpdateItem']);
   });
 
   it('alarms independently without consuming failed messages', () => {

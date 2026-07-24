@@ -2,7 +2,11 @@ import {
   DynamoDBClient,
   TransactionCanceledException,
 } from '@aws-sdk/client-dynamodb';
-import { GetCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  TransactWriteCommand,
+} from '@aws-sdk/lib-dynamodb';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { SQSHandler } from 'aws-lambda';
@@ -21,7 +25,7 @@ init({
   tracesSampleRate: 1,
 });
 
-const documentClient = new DynamoDBClient({});
+const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
 const requiredTable = (): string => {
   const { TABLE } = process.env;
@@ -50,8 +54,7 @@ const publishTransaction = async (
   const transaction = result.Item as ITransaction | undefined;
 
   if (
-    !transaction ||
-    transaction.status !== TransactionStatus.Pending ||
+    transaction?.status !== TransactionStatus.Pending ||
     !transaction.scheduled ||
     transaction.date !== command.expectedScheduledTime
   ) {
