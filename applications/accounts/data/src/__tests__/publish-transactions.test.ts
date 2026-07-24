@@ -1,14 +1,20 @@
+import { TransactionCanceledException } from '@aws-sdk/client-dynamodb';
 import {
-  DynamoDBClient,
-  TransactionCanceledException,
-} from '@aws-sdk/client-dynamodb';
-import { GetCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
+  DynamoDBDocumentClient,
+  GetCommand,
+  TransactWriteCommand,
+} from '@aws-sdk/lib-dynamodb';
 import type { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import { handler } from '../publish-transactions';
 import { ITransaction, TransactionStatus } from '../shared/transaction';
+
+jest.mock('uuid', () => ({
+  ...jest.requireActual<typeof import('uuid')>('uuid'),
+  v4: jest.fn().mockReturnValue('test-uuid'),
+}));
 
 const transaction: ITransaction = {
   __typename: 'Transaction',
@@ -43,7 +49,7 @@ const publicationEvent = (
 describe('publish-transactions', () => {
   let callback: jest.Mock;
   let context: Context;
-  let ddb: AwsClientStub<DynamoDBClient>;
+  let ddb: AwsClientStub<DynamoDBDocumentClient>;
   let originalEnvironment: NodeJS.ProcessEnv;
 
   beforeAll(() => {
@@ -54,7 +60,7 @@ describe('publish-transactions', () => {
     callback = jest.fn();
     context = ctx();
     context.done();
-    ddb = mockClient(DynamoDBClient);
+    ddb = mockClient(DynamoDBDocumentClient);
     originalEnvironment = process.env;
     process.env = {
       ...process.env,
