@@ -1,0 +1,19 @@
+import{n as e,r as t}from"./rolldown-runtime-DaJ6WEGw.js";import{t as n}from"./jsx-runtime-cM__dR4X.js";import{n as r,t as i}from"./Button-BEpHfrRB.js";import{n as a,t as o}from"./ButtonGroup-CC9wEfP6.js";var s=t({Responsive:()=>u,__namedExportsOrder:()=>d,default:()=>l}),c,l,u,d,f=e((()=>{r(),a(),c=n(),l={component:o,title:`Patterns/Actions/ButtonGroup`},u={args:{"aria-label":`Example actions`,children:(0,c.jsxs)(c.Fragment,{children:[(0,c.jsx)(i,{appearance:`outline`,variant:`secondary`,children:`Cancel`}),(0,c.jsx)(i,{children:`Save changes`})]}),orientation:{base:`verticalReverse`,sm:`horizontal`}}},u.parameters={...u.parameters,docs:{...u.parameters?.docs,source:{originalSource:`{
+  args: {
+    'aria-label': 'Example actions',
+    children: <>
+        <Button appearance="outline" variant="secondary">
+          Cancel
+        </Button>
+        <Button>Save changes</Button>
+      </>,
+    orientation: {
+      base: 'verticalReverse',
+      sm: 'horizontal'
+    }
+  }
+}`,...u.parameters?.docs?.source},description:{story:`Places the primary action first in compact visual flow, then restores the
+canonical secondary-before-primary row from the small breakpoint upward.
+
+@summary responsive action ordering from compact stack to wide row`,...u.parameters?.docs?.description}}};try{l.displayName=`ButtonGroup`,l.__docgenInfo={description:`Arranges semantically related actions with responsive flow.`,displayName:`ButtonGroup`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/patterns/ButtonGroup/ButtonGroup.stories.tsx`,methods:[],props:{align:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/patterns/ButtonGroup/ButtonGroup.tsx`,name:`ButtonGroupProps`}],description:"Horizontal alignment. Defaults to `start`.",name:`align`,parent:{fileName:`breeze-ui/src/patterns/ButtonGroup/ButtonGroup.tsx`,name:`ButtonGroupProps`},required:!1,tags:{},type:{name:`"center" | "end" | "spaceBetween" | "start" | undefined`}},children:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/patterns/ButtonGroup/ButtonGroup.tsx`,name:`ButtonGroupProps`}],description:`Related Button, LinkButton, or IconButton children.`,name:`children`,parent:{fileName:`breeze-ui/src/patterns/ButtonGroup/ButtonGroup.tsx`,name:`ButtonGroupProps`},required:!0,tags:{},type:{name:`ReactNode`}},orientation:{defaultValue:{value:`horizontal`},declarations:[{fileName:`breeze-ui/src/patterns/ButtonGroup/ButtonGroup.tsx`,name:`ButtonGroupProps`}],description:"Responsive action-flow direction. Defaults to `horizontal`.",name:`orientation`,parent:{fileName:`breeze-ui/src/patterns/ButtonGroup/ButtonGroup.tsx`,name:`ButtonGroupProps`},required:!1,tags:{},type:{name:`ResponsiveValue<"horizontal" | "vertical" | "verticalReverse"> | undefined`}},ref:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/patterns/ButtonGroup/ButtonGroup.tsx`,name:`ButtonGroupProps`}],description:`Ref to the rendered group.`,name:`ref`,parent:{fileName:`breeze-ui/src/patterns/ButtonGroup/ButtonGroup.tsx`,name:`ButtonGroupProps`},required:!1,tags:{},type:{name:`Ref<HTMLDivElement> | undefined`}}},tags:{summary:`responsive visual grouping for related application actions`}}}catch{}try{u.displayName=`Responsive`,u.__docgenInfo={description:`Places the primary action first in compact visual flow, then restores the
+canonical secondary-before-primary row from the small breakpoint upward.`,displayName:`Responsive`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/patterns/ButtonGroup/ButtonGroup.stories.tsx`,methods:[],props:{},tags:{summary:`responsive action ordering from compact stack to wide row`}}}catch{}d=[`Responsive`]}));f();export{u as Responsive,d as __namedExportsOrder,l as default,f as n,s as t};

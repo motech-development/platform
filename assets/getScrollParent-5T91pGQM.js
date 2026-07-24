@@ -1,1 +1,0 @@
-import{i as e}from"./preload-helper-CT_b8DTk.js";import{a as t,i as n}from"./scrollIntoView-CWQSZwvC.js";function r(e,t){let r=e;for(n(r,t)&&(r=r.parentElement);r&&!n(r,t);)r=r.parentElement;return r||document.scrollingElement||document.documentElement}var i=e((()=>{t()}));export{i as n,r as t};

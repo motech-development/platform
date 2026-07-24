@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";function t(e){return typeof e==`object`&&!!e&&`base`in e}function n(e,n){return t(e)?r.map(t=>{let r=e[t];return r===void 0?void 0:n[t][r]}).filter(e=>e!==void 0).join(` `):n.base[e]}var r,i=e((()=>{r=[`base`,`sm`,`md`,`lg`]}));export{n,i as t};

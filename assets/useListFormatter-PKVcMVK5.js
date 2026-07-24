@@ -1,1 +1,0 @@
-import{i as e,s as t}from"./preload-helper-CT_b8DTk.js";import{t as n}from"./react-B7Te67-h.js";import{r,t as i}from"./I18nProvider-B35K16gz.js";function a(e={}){let{locale:t}=i();return(0,o.useMemo)(()=>new Intl.ListFormat(t,e),[t,e])}var o,s=e((()=>{r(),o=t(n(),1)})),c=e((()=>{s()}));export{a as n,s as r,c as t};

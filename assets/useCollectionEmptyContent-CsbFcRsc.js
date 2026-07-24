@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";import{n as t,r as n}from"./BreezeContext-BIB7r8Lx.js";function r(e){let{messages:t}=n();return e===void 0?t.noResults:e}var i=e((()=>{t()}));export{r as n,i as t};

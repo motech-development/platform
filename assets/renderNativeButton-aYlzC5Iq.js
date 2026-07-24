@@ -1,0 +1,1 @@
+import{a as e,n as t}from"./rolldown-runtime-DaJ6WEGw.js";import{t as n}from"./react-DvlgmmzG.js";function r(e,t){return t===`submit`?(0,i.createElement)(`button`,{...e,type:`submit`}):(0,i.createElement)(`button`,{...e,type:`button`})}var i,a=t((()=>{i=e(n(),1)}));export{r as n,a as t};

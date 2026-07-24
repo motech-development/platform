@@ -1,1 +1,0 @@
-import{i as e,s as t}from"./preload-helper-CT_b8DTk.js";import{t as n}from"./react-B7Te67-h.js";function r(e,t){return t===`submit`?(0,i.createElement)(`button`,{...e,type:`submit`}):(0,i.createElement)(`button`,{...e,type:`button`})}var i,a=e((()=>{i=t(n(),1)}));export{r as n,a as t};
