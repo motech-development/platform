@@ -157,7 +157,7 @@ resources:
         MessageRetentionPeriod: 1209600
         QueueName: ${self:custom.prefix}-schedule-synchronisation-dlq
 
-    ScheduleTransactionsEventSourceMapping:
+    ScheduleTransactionsEventSourceMappingDynamodbApplicationTable:
       Type: AWS::Lambda::EventSourceMapping
       Properties:
         BatchSize: 1
