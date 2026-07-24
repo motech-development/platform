@@ -50,7 +50,7 @@ The post-change Preview created the complete preview-capable topology and passed
 
 The post-change Release published and resolved exact owning-workspace tags before starting Develop and production independently from the same Release Plan. Release duration is the `Packages` job. Environment duration is measured from the start of that environment's setup job to its last completed delivery job. Develop and production setup began one second apart, and successful GitHub Deployments recorded matching shared-unit tags including `@core/anti-virus@1.7.1` and `@accounts/api@1.13.1`.
 
-This was the first complete post-cutover reconciliation, so it establishes Release, Develop, production, exact-tag, parallel-launch, and Environment State timing evidence. It does not replace the outstanding selective Release scenario.
+This was the first complete post-cutover reconciliation, so it establishes Release, Develop, production, exact-tag, parallel-launch, and Environment State timing evidence. The later selective Release scenario is recorded below.
 
 ## Selective Preview reconciliation evidence
 
@@ -59,6 +59,29 @@ Temporary validation PR [#1509](https://github.com/motech-development/platform/p
 After the expected `accounts-pr-1509-reports` stack was deliberately removed, commit [`8698a23e`](https://github.com/motech-development/platform/commit/8698a23e4fa52b5f1aa733bebf269efd40566e4d) made a later change in the same workspace. [Preview run 30082455475](https://github.com/motech-development/platform/actions/runs/30082455475) selected and successfully deployed only Accounts reports and its delivery dependant, Accounts API. The other six Deployment Units were skipped, the missing reports stack was recreated, the aggregate Preview gate succeeded, and both unchanged Playwright shards passed.
 
 The complete run took 54m42s; the selective repair run took 18m02s, a reduction of 36m40s (67.0%) for this representative follow-up scenario. PR #1509 is validation-only and must not be merged.
+
+## Selective main Release evidence
+
+Merging PR [#1508](https://github.com/motech-development/platform/pull/1508) produced main boundary [`db781061`](https://github.com/motech-development/platform/commit/db78106196d2b21634ce78d0c303225e0cd2ef1b). [Release run 30084194464](https://github.com/motech-development/platform/actions/runs/30084194464) published the affected workspaces and created a selective Release Plan at that exact boundary:
+
+| Workspace                       | Exact Release tag                     |
+| ------------------------------- | ------------------------------------- |
+| `@motech-development/breeze-ui` | `@motech-development/breeze-ui@3.0.2` |
+| `@core/anti-virus`              | `@core/anti-virus@1.7.2`              |
+| `@accounts/storage`             | `@accounts/storage@1.7.2`             |
+| `@accounts/data`                | `@accounts/data@1.11.2`               |
+| `@accounts/warm-up`             | `@accounts/warm-up@1.6.2`             |
+| `@accounts/notifications`       | `@accounts/notifications@1.4.2`       |
+| `@accounts/queue`               | `@accounts/queue@1.7.1`               |
+| `@accounts/reports`             | `@accounts/reports@1.6.2`             |
+| `@accounts/api`                 | `@accounts/api@1.13.2`                |
+| `@accounts/client`              | `@accounts/client@1.12.3`             |
+
+The desired tag map also retained the exact current tags for unchanged prerequisites: `@core/infrastructure@1.2.1`, `@core/comms@1.6.1`, and `@accounts/infrastructure@1.2.1`.
+
+Develop and production setup both started at 10:00:41 UTC and consumed the same Release Plan. Their reconciliation and deployment graphs then ran independently. Matching live checkouts included `@core/anti-virus@1.7.2` and `@accounts/api@1.13.2` in both environments. Every selected job recorded a successful GitHub Deployment: Develop completed seven units at 10:14:54, while production completed thirteen units at 10:15:52.
+
+Package publication and Release Plan creation took 7m23s. Measured from their simultaneous setup start, Develop completed in 14m13s and production in 15m11s; the overall Release run took 22m41s.
 
 ## Delivery maintenance evidence
 
