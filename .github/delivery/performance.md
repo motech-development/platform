@@ -52,6 +52,14 @@ The post-change Release published and resolved exact owning-workspace tags befor
 
 This was the first complete post-cutover reconciliation, so it establishes Release, Develop, production, exact-tag, parallel-launch, and Environment State timing evidence. It does not replace the outstanding selective Release scenario.
 
+## Selective Preview reconciliation evidence
+
+Temporary validation PR [#1509](https://github.com/motech-development/platform/pull/1509) exercised complete Preview creation followed by selective dependant-aware reconciliation and missing-stack repair. The opening commit [`ae25edba`](https://github.com/motech-development/platform/commit/ae25edba4763734e4947683c55b65cc08283edc7) changed the Accounts reports workspace. [Preview run 30049531733](https://github.com/motech-development/platform/actions/runs/30049531733) deployed all eight preview-capable units and passed both unchanged Playwright shards.
+
+After the expected `accounts-pr-1509-reports` stack was deliberately removed, commit [`8698a23e`](https://github.com/motech-development/platform/commit/8698a23e4fa52b5f1aa733bebf269efd40566e4d) made a later change in the same workspace. [Preview run 30082455475](https://github.com/motech-development/platform/actions/runs/30082455475) selected and successfully deployed only Accounts reports and its delivery dependant, Accounts API. The other six Deployment Units were skipped, the missing reports stack was recreated, the aggregate Preview gate succeeded, and both unchanged Playwright shards passed.
+
+The complete run took 54m42s; the selective repair run took 18m02s, a reduction of 36m40s (67.0%) for this representative follow-up scenario. PR #1509 is validation-only and must not be merged.
+
 ## Delivery maintenance evidence
 
 The parent specification measures the hand-maintained delivery model at the catalog-and-generator boundary; generated workflow YAML may remain verbose. At the pre-cutover commit [`958404b4`](https://github.com/motech-development/platform/commit/958404b4d4b4761eafca7f05cec508af46ebf6ff), the four environment delivery workflows contained 3,196 lines. The current catalog and generator contain 2,044 lines, a reduction of 1,152 lines (36.0%).
