@@ -880,7 +880,10 @@ test('dependency setup never restores stale installed dependencies and falls bac
     ),
   ]);
 
-  assert.match(action, /uses: actions\/setup-node@v7/);
+  assert.match(
+    action,
+    /uses: actions\/setup-node@[a-f0-9]{40} # v\d+\.\d+\.\d+/,
+  );
   assert.match(action, /path: \|\n\s+\.\/node_modules/);
   assert.match(action, /\.\/applications\/\*\/\*\/node_modules/);
   assert.match(action, /\.\/packages\/\*\/node_modules/);
@@ -1276,7 +1279,7 @@ test('anti-virus deployments reuse only validated binaries from pinned build inp
     );
     assert.match(
       antiVirus,
-      /- name: Restore ClamAV binaries\n        id: clamav-binaries\n        if: steps\.clamav-cache\.outputs\.supported == 'true'\n        uses: actions\/cache\/restore@v6/,
+      /- name: Restore ClamAV binaries\n        id: clamav-binaries\n        if: steps\.clamav-cache\.outputs\.supported == 'true'\n        uses: actions\/cache\/restore@[a-f0-9]{40} # v\d+\.\d+\.\d+/,
     );
     assert.match(
       antiVirus,
@@ -1296,7 +1299,7 @@ test('anti-virus deployments reuse only validated binaries from pinned build inp
     );
     assert.match(
       antiVirus,
-      /- name: Save rebuilt ClamAV binaries\n        if: steps\.clamav-cache\.outputs\.supported == 'true' && steps\.clamav-validation\.outputs\.valid != 'true'\n        uses: actions\/cache\/save@v6[\s\S]*key: \$\{\{ steps\.clamav-binaries\.outputs\.cache-primary-key \}\}/,
+      /- name: Save rebuilt ClamAV binaries\n        if: steps\.clamav-cache\.outputs\.supported == 'true' && steps\.clamav-validation\.outputs\.valid != 'true'\n        uses: actions\/cache\/save@[a-f0-9]{40} # v\d+\.\d+\.\d+[\s\S]*key: \$\{\{ steps\.clamav-binaries\.outputs\.cache-primary-key \}\}/,
     );
     assert.match(
       antiVirus,
@@ -1595,7 +1598,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   assert.match(setup, /^    if: github\.event\.pull_request\.draft == false$/m);
   assert.match(
     setup,
-    /- name: Checkout code\n        uses: actions\/checkout@v7\n        with:\n          fetch-depth: 0\n          persist-credentials: false\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
+    /- name: Checkout code\n        uses: actions\/checkout@[a-f0-9]{40} # v\d+\.\d+\.\d+\n        with:\n          fetch-depth: 0\n          persist-credentials: false\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
   );
   assert.match(
     setup,
@@ -1650,7 +1653,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.match(
     deployment,
-    /uses: actions\/checkout@v7\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
+    /uses: actions\/checkout@[a-f0-9]{40} # v\d+\.\d+\.\d+\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
   );
   assert.match(deployment, /^      deployments: write$/m);
   assert.match(
@@ -1702,7 +1705,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.match(
     playwright,
-    /uses: actions\/checkout@v7\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
+    /uses: actions\/checkout@[a-f0-9]{40} # v\d+\.\d+\.\d+\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
   );
   assert.match(
     playwright,
@@ -1976,7 +1979,10 @@ test('generated delivery workflows do not repeat pull-request quality gates', as
     generated['deploy-to-production.yml'],
     'component-library',
   );
-  assert.match(storybook, /uses: peaceiris\/actions-gh-pages@v4/);
+  assert.match(
+    storybook,
+    /uses: peaceiris\/actions-gh-pages@[a-f0-9]{40} # v\d+\.\d+\.\d+/,
+  );
 });
 
 test('Release publishes selectively from full history and constructs one exact-tag plan before delivery', async () => {
@@ -1996,7 +2002,10 @@ test('Release publishes selectively from full history and constructs one exact-t
   assert.doesNotMatch(releaseJob, /^      deployments: write$/m);
   assert.match(develop, /^      deployments: write$/m);
   assert.match(production, /^      deployments: write$/m);
-  assert.match(releaseJob, /uses: actions\/checkout@v7[\s\S]*fetch-depth: 0/);
+  assert.match(
+    releaseJob,
+    /uses: actions\/checkout@[a-f0-9]{40} # v\d+\.\d+\.\d+[\s\S]*fetch-depth: 0/,
+  );
   assert.match(releaseJob, /run: yarn release/);
   assert.doesNotMatch(
     releaseJob,
