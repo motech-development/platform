@@ -14,26 +14,70 @@ function actionPin(line) {
   return new RegExp(actionReference.source).exec(line)?.groups.pin;
 }
 
+function actionIdentity(pin) {
+  return pin.slice(0, pin.indexOf('@'));
+}
+
+function actionMajor(pin) {
+  return pin.match(/# v(?<major>\d+)\./)?.groups.major;
+}
+
 export function updatedActionPins(diff) {
   const updates = new Map();
   const hunks = diff.split(/^@@[^\n]*@@[^\n]*$/m).slice(1);
 
   for (const hunk of hunks) {
     const lines = hunk.split('\n');
-    const previous = lines
-      .filter((line) => line.startsWith('-') && !line.startsWith('---'))
-      .map(actionPin)
-      .filter(Boolean);
-    const next = lines
-      .filter((line) => line.startsWith('+') && !line.startsWith('+++'))
-      .map(actionPin)
-      .filter(Boolean);
+    const previous = [
+      ...new Set(
+        lines
+          .filter((line) => line.startsWith('-') && !line.startsWith('---'))
+          .map(actionPin)
+          .filter(Boolean),
+      ),
+    ];
+    const next = [
+      ...new Set(
+        lines
+          .filter((line) => line.startsWith('+') && !line.startsWith('+++'))
+          .map(actionPin)
+          .filter(Boolean),
+      ),
+    ];
 
     if (previous.length !== next.length) {
       throw new Error('cannot pair changed GitHub Action references');
     }
 
-    previous.forEach((pin, index) => updates.set(pin, next[index]));
+    const unmatchedPrevious = [];
+    const unmatchedNext = new Set(next);
+
+    for (const previousPin of previous) {
+      const sameAction = [...unmatchedNext].filter(
+        (nextPin) => actionIdentity(nextPin) === actionIdentity(previousPin),
+      );
+      const sameMajor =
+        sameAction.length > 1
+          ? sameAction.filter(
+              (nextPin) => actionMajor(nextPin) === actionMajor(previousPin),
+            )
+          : sameAction;
+
+      if (sameMajor.length === 1) {
+        updates.set(previousPin, sameMajor[0]);
+        unmatchedNext.delete(sameMajor[0]);
+      } else if (sameMajor.length === 0) {
+        unmatchedPrevious.push(previousPin);
+      } else {
+        throw new Error('cannot pair changed GitHub Action references');
+      }
+    }
+
+    if (unmatchedPrevious.length === 1 && unmatchedNext.size === 1) {
+      updates.set(unmatchedPrevious[0], [...unmatchedNext][0]);
+    } else if (unmatchedPrevious.length > 0 || unmatchedNext.size > 0) {
+      throw new Error('cannot pair changed GitHub Action references');
+    }
   }
 
   return updates;

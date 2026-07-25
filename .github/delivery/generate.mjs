@@ -1134,24 +1134,29 @@ function environmentReconciliationSteps() {
 `;
 }
 
-function decorateLongLivedWorkflow(workflow, target) {
+export function decorateLongLivedWorkflow(workflow, target) {
   const setupPattern = workflowJobPattern('setup');
   const match = workflow.match(setupPattern);
   if (!match) {
     throw new Error(`${target} template is missing setup`);
   }
 
-  const setup = match[0]
+  let setup = match[0]
     .replace(/^    if: github\.actor != 'dependabot\[bot\]'\n\n/m, '')
     .replace(
       /^    runs-on: ubuntu-latest\n/m,
       `    runs-on: ubuntu-latest\n\n    outputs:\n      units: \${{ steps.plan.outputs.units }}\n\n    permissions:\n      contents: read\n      deployments: read\n      id-token: write\n\n    env:\n      ENVIRONMENT: ${target}\n      STAGE: ${target}\n      TARGET: ${target}\n`,
-    )
-    .replace(
-      /^      - name: Set Node version\n        uses: actions\/setup-node@[a-f0-9]{40} # v\d+\.\d+\.\d+\n        with:\n          node-version-file: \.nvmrc\n/m,
-      (nodeSetup) =>
-        `${nodeSetup}\n${environmentReconciliationSteps().trimEnd()}`,
     );
+  const nodeSetupPattern =
+    /^      - name: Set Node version\n        uses: actions\/setup-node@[a-f0-9]{40} # v\d+\.\d+\.\d+\n        with:\n          node-version-file: \.nvmrc\n/m;
+  if (!nodeSetupPattern.test(setup)) {
+    throw new Error(`${target} setup is missing its pinned Node action`);
+  }
+  setup = setup.replace(
+    nodeSetupPattern,
+    (nodeSetup) =>
+      `${nodeSetup}\n${environmentReconciliationSteps().trimEnd()}`,
+  );
 
   return workflow
     .replace(
@@ -1372,10 +1377,18 @@ function extendDeliveryAttempt(decorated, deliveryStep, completionStepName) {
     : deliveryStep[0];
 }
 
-function decorateAuditedDeliveryJob(
+export function decorateAuditedDeliveryJob(
   job,
   { condition, environment, ref, unit },
 ) {
+  const checkoutPattern =
+    /^        uses: actions\/checkout@[a-f0-9]{40} # v\d+\.\d+\.\d+\n(        with:\n)?/m;
+  if (!checkoutPattern.test(job)) {
+    throw new Error(
+      `deployment job "${unit.id}" is missing its pinned checkout action`,
+    );
+  }
+
   const deploymentEnvironment = `    env:\n      DEPLOYMENT_ENVIRONMENT: ${environment}\n      DEPLOYMENT_REF: ${ref}\n      DEPLOYMENT_TASK: deploy:${unit.id}\n`;
   let decorated = job
     .replace(
@@ -1383,12 +1396,10 @@ function decorateAuditedDeliveryJob(
       (header) =>
         `${header}${header.includes('\n    name:') ? '\n' : ''}    if: ${condition}\n`,
     )
-    .replace(
-      /^        uses: actions\/checkout@[a-f0-9]{40} # v\d+\.\d+\.\d+\n(        with:\n)?/gm,
-      (match, withBlock) =>
-        withBlock
-          ? `${match}          ref: ${ref}\n`
-          : `${match}        with:\n          ref: ${ref}\n`,
+    .replace(checkoutPattern, (match, withBlock) =>
+      withBlock
+        ? `${match}          ref: ${ref}\n`
+        : `${match}        with:\n          ref: ${ref}\n`,
     )
     .replace(/^    env:\n/m, deploymentEnvironment);
   if (!/^    env:$/m.test(decorated)) {

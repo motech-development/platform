@@ -20,6 +20,8 @@ import {
   createReconciliationPlan,
   createReleasePlan,
   createJobGraph,
+  decorateAuditedDeliveryJob,
+  decorateLongLivedWorkflow,
   generateWorkflows,
   loadCatalog,
   loadWorkspaceManifests,
@@ -97,6 +99,48 @@ const validCatalog = {
     },
   ],
 };
+
+test('delivery generation fails when pinned Action insertion points drift', () => {
+  const longLivedWorkflow = `name: Develop
+
+concurrency: develop
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set Node version
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+`;
+  assert.throws(
+    () => decorateLongLivedWorkflow(longLivedWorkflow, 'develop'),
+    /develop setup is missing its pinned Node action/,
+  );
+
+  const deploymentJob = `  accounts-data:
+    name: Deploy accounts data
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Deploy
+        run: yarn workspace @accounts/data deploy
+`;
+  assert.throws(
+    () =>
+      decorateAuditedDeliveryJob(deploymentJob, {
+        condition: 'always()',
+        environment: 'develop',
+        ref: 'main',
+        unit: { id: 'accounts-data' },
+      }),
+    /deployment job "accounts-data" is missing its pinned checkout action/,
+  );
+});
 
 function recordedPreviewState({
   head = 'preview-head-2',
@@ -1673,6 +1717,10 @@ test('generated preview workflow plans per pull request and selectively deploys 
     apiDeployment,
     /name: Record failed Deployment\n        if: failure\(\) && steps\.deployment\.outputs\.id != '' && steps\.deployment-success\.outputs\.recorded != 'true'/,
   );
+  assert.match(
+    apiDeployment,
+    /name: Generate release token[\s\S]*permission-pull-requests: write[\s\S]*name: Publish URL/,
+  );
   assert.match(preview, /name: Preview[\s\S]*No Preview deployment required/);
   assert.match(
     previewStatus,
@@ -1729,6 +1777,10 @@ test('generated preview workflow plans per pull request and selectively deploys 
     playwrightStatus,
     /const planningSucceeded = '\$\{\{ needs\.setup\.result \}\}' === 'success';[\s\S]*planningSucceeded && \(!validationRequired \|\| testsPassed\)/,
   );
+  assert.match(
+    playwrightStatus,
+    /name: Generate release token[\s\S]*permission-statuses: write[\s\S]*name: Set commit status/,
+  );
   assert.doesNotMatch(preview, /\n  core-infrastructure:\n/);
   assert.doesNotMatch(preview, /\n  accounts-infrastructure:\n/);
 });
@@ -1743,6 +1795,7 @@ test('generated teardown checks for missing resources and blocks dependencies af
     /concurrency:\n  group: preview-\$\{\{ github\.event\.inputs\.stage \|\| format\('pr-\{0\}', github\.event\.pull_request\.number\) \}\}\n  cancel-in-progress: false/,
   );
   assert.match(storage, /name: Check for resources/);
+  assert.match(storage, /name: Checkout code[\s\S]*persist-credentials: false/);
   assert.match(storage, /aws cloudformation describe-stacks/);
   assert.match(storage, /does not exist/);
   assert.match(
