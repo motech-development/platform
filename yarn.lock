@@ -131,7 +131,7 @@ __metadata:
     vite-plugin-checker: "npm:0.9.0"
     vite-plugin-eslint: "npm:1.8.1"
     vite-plugin-pwa: "npm:0.21.2"
-    vite-plugin-static-copy: "npm:2.2.0"
+    vite-plugin-static-copy: "npm:2.3.2"
     web-vitals: "npm:3.5.2"
     workbox-background-sync: "npm:7.3.0"
     workbox-broadcast-update: "npm:7.3.0"
@@ -32667,17 +32667,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-static-copy@npm:2.2.0":
-  version: 2.2.0
-  resolution: "vite-plugin-static-copy@npm:2.2.0"
+"vite-plugin-static-copy@npm:2.3.2":
+  version: 2.3.2
+  resolution: "vite-plugin-static-copy@npm:2.3.2"
   dependencies:
     chokidar: "npm:^3.5.3"
     fast-glob: "npm:^3.2.11"
     fs-extra: "npm:^11.1.0"
+    p-map: "npm:^7.0.3"
     picocolors: "npm:^1.0.0"
   peerDependencies:
     vite: ^5.0.0 || ^6.0.0
-  checksum: 10c0/c5174926d66776697bfe8aa3013bfea62a48868c683784973b9b329c43b57a915685031047d397a9c0ae8dd1fd734bde37438af3939d395f9b82ada341b4fff7
+  checksum: 10c0/6fdc7d21c99022d4c00dc0cec5d448a9aea73ad03547f669c73f600054935c675f23757fb586b9a05353d15a078574f7f8f4af40631e87ac03b6fc554db4ef2a
   languageName: node
   linkType: hard
 
