@@ -1,0 +1,105 @@
+name: Renovate
+
+on:
+  schedule:
+    - cron: '17 3,9,15,21 * * *'
+
+  workflow_dispatch:
+    inputs:
+      cache-mode:
+        description: Restore, bypass, or replace the repository cache
+        type: choice
+        default: enabled
+        options:
+          - enabled
+          - disabled
+          - reset
+      dry-run:
+        description: Discover and plan updates without mutating GitHub
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: renovate
+  cancel-in-progress: false
+
+env:
+  RENOVATE_IMAGE: ghcr.io/renovatebot/renovate
+  RENOVATE_VERSION: 43.136.0@sha256:b8dd2bc412bcabfe641377548863d46d13ac36adaf12103ecb0420c4a1e23261
+
+jobs:
+  renovate:
+    name: Renovate
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Validate Renovate configuration
+        run: >
+          docker run --rm
+          --volume "$GITHUB_WORKSPACE:/usr/src/app"
+          --workdir /usr/src/app
+          "$RENOVATE_IMAGE:$RENOVATE_VERSION"
+          renovate-config-validator --strict renovate.json
+
+      - name: Generate Renovate token
+        id: renovate-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          permission-actions: read
+          permission-checks: read
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+          permission-statuses: read
+          permission-vulnerability-alerts: read
+          permission-workflows: write
+
+      - name: Restore Renovate repository cache
+        if: github.event_name != 'workflow_dispatch' || (inputs['cache-mode'] != 'disabled' && inputs['cache-mode'] != 'reset')
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /tmp/renovate/cache/renovate/repository
+          key: renovate-repository-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            renovate-repository-${{ runner.os }}-
+
+      - name: Prepare Renovate repository cache
+        if: github.event_name != 'workflow_dispatch' || inputs['cache-mode'] != 'disabled'
+        run: |
+          sudo mkdir -p /tmp/renovate/cache/renovate/repository
+          sudo chown -R 12021:0 /tmp/renovate
+
+      - name: Run Renovate
+        uses: renovatebot/github-action@ea850436a5fe75c0925d583c7a02c60a5865461d # v43.0.20
+        with:
+          renovate-image: ${{ env.RENOVATE_IMAGE }}
+          renovate-version: ${{ env.RENOVATE_VERSION }}
+          token: ${{ steps.renovate-token.outputs.token }}
+        env:
+          LOG_LEVEL: debug
+          RENOVATE_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs['dry-run'] && 'full' || '' }}
+          RENOVATE_ONBOARDING: 'false'
+          RENOVATE_PLATFORM: github
+          RENOVATE_REPOSITORIES: '["${{ github.repository }}"]'
+          RENOVATE_REPOSITORY_CACHE: ${{ github.event_name == 'workflow_dispatch' && inputs['cache-mode'] || 'enabled' }}
+          RENOVATE_REQUIRE_CONFIG: required
+          RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: '["^node \\.github/renovate/sync-action-pins\\.mjs$"]'
+
+      - name: Save Renovate repository cache
+        if: github.event_name != 'workflow_dispatch' || inputs['cache-mode'] != 'disabled'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /tmp/renovate/cache/renovate/repository
+          key: renovate-repository-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}

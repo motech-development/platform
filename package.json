@@ -46,7 +46,6 @@
     "is-ci": "3.0.1",
     "lint-staged": "15.4.3",
     "prettier": "3.2.5",
-    "renovate": "43.136.0",
     "typescript": "6.0.3"
   },
   "resolutions": {
@@ -57,7 +56,6 @@
     "@semantic-release/commit-analyzer": "11.0.0",
     "@semantic-release/github": "10.0.0",
     "@semantic-release/release-notes-generator": "12.0.0",
-    "@semantic-release/error": "4.0.0",
     "@motech-development/breeze-ui@npm:2.4.0/react-router-dom": "6.30.3",
     "@types/react@npm:*": "18.3.18"
   },

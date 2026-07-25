@@ -16,7 +16,7 @@
       - name: Restore ClamAV binaries
         id: clamav-binaries
         if: steps.clamav-cache.outputs.supported == 'true'
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ./applications/core/anti-virus/bin
           key: ${{ runner.os }}-${{ runner.arch }}-clamav-binaries-v3-${{ hashFiles('applications/core/anti-virus/build-inputs.env', 'applications/core/anti-virus/scripts/build.sh', 'applications/core/anti-virus/scripts/cache.sh') }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -64,7 +64,7 @@
 
       - name: Save rebuilt ClamAV binaries
         if: steps.clamav-cache.outputs.supported == 'true' && steps.clamav-validation.outputs.valid != 'true'
-        uses: actions/cache/save@v6
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ./applications/core/anti-virus/bin
           key: ${{ steps.clamav-binaries.outputs.cache-primary-key }}

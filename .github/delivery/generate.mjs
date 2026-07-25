@@ -1051,7 +1051,7 @@ function injectTeardownGuard(job, unit) {
 
 function environmentReconciliationSteps() {
   return `      - name: Configure AWS credentials for reconciliation
-        uses: aws-actions/configure-aws-credentials@v6
+        uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6.2.2
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -1148,7 +1148,7 @@ function decorateLongLivedWorkflow(workflow, target) {
       `    runs-on: ubuntu-latest\n\n    outputs:\n      units: \${{ steps.plan.outputs.units }}\n\n    permissions:\n      contents: read\n      deployments: read\n      id-token: write\n\n    env:\n      ENVIRONMENT: ${target}\n      STAGE: ${target}\n      TARGET: ${target}\n`,
     )
     .replace(
-      /^      - name: Set Node version\n        uses: actions\/setup-node@v7\n        with:\n          node-version-file: \.nvmrc\n/m,
+      /^      - name: Set Node version\n        uses: actions\/setup-node@[a-f0-9]{40} # v\d+\.\d+\.\d+\n        with:\n          node-version-file: \.nvmrc\n/m,
       (nodeSetup) =>
         `${nodeSetup}\n${environmentReconciliationSteps().trimEnd()}`,
     );
@@ -1324,12 +1324,12 @@ ${condition}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       # {{fragment:dependency-steps:${unit.workspace}}}
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
+        uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6.2.2
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
@@ -1384,7 +1384,7 @@ function decorateAuditedDeliveryJob(
         `${header}${header.includes('\n    name:') ? '\n' : ''}    if: ${condition}\n`,
     )
     .replace(
-      /^        uses: actions\/checkout@v7\n(        with:\n)?/gm,
+      /^        uses: actions\/checkout@[a-f0-9]{40} # v\d+\.\d+\.\d+\n(        with:\n)?/gm,
       (match, withBlock) =>
         withBlock
           ? `${match}          ref: ${ref}\n`

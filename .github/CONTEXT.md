@@ -47,3 +47,15 @@ _Avoid_: Release Plan, preview change set
 **Deployment Catalog**:
 The authoritative inventory of Deployment Units, the environments they support, and their delivery-specific dependencies. It excludes dependencies already expressed by the workspaces themselves.
 _Avoid_: Deployment config, service registry
+
+**Dependency Update Group**:
+A set of dependency version changes that share a compatibility and validation boundary and are proposed together across the platform.
+_Avoid_: Application dependency batch, workspace update group
+
+**Routine Dependency Update**:
+A dependency version change proposed through normal release tracking and admitted within the platform's maintenance capacity.
+_Avoid_: Regular update
+
+**Security Dependency Update**:
+A dependency version change proposed to remediate a reported vulnerability independently of routine maintenance capacity.
+_Avoid_: Routine dependency update, vulnerability upgrade

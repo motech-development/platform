@@ -1,28 +1,316 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "ignoreDeps": ["prettier"],
+  "dependencyDashboard": true,
+  "enabledManagers": ["npm", "github-actions", "custom.regex"],
+  "timezone": "Europe/London",
+  "schedule": ["after 3am and before 7am"],
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 4,
+  "rebaseWhen": "auto",
+  "vulnerabilityAlerts": {
+    "enabled": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["after 3am and before 7am on the first day of the month"],
+    "automerge": true
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/renovate\\.yml$/"],
+      "matchStrings": [
+        "RENOVATE_VERSION:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+)@(?<currentDigest>sha256:[a-f0-9]{64})"
+      ],
+      "depNameTemplate": "ghcr.io/renovatebot/renovate",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    }
+  ],
   "packageRules": [
     {
-      "extends": ["schedule:monthly"],
+      "description": "Wait seven days before adopting routine npm and GitHub Action releases",
+      "matchManagers": ["npm", "github-actions"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Rely on Yarn's age gate during lockfile maintenance",
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "minimumReleaseAge": null
+    },
+    {
+      "description": "Automerge passing routine non-major updates",
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "automerge": true
+    },
+    {
+      "description": "Require approval for routine major updates",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Group unmatched non-major runtime dependencies",
+      "matchDepTypes": ["dependencies", "optionalDependencies"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Runtime dependencies"
+    },
+    {
+      "description": "Group unmatched non-major development dependencies",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Development dependencies"
+    },
+    {
+      "description": "Group non-major AWS SDK updates monthly",
+      "matchPackageNames": ["@aws-sdk/**"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "AWS SDK",
+      "schedule": ["after 3am and before 7am on the first day of the month"]
+    },
+    {
+      "description": "Group non-major AWS CDK updates",
+      "matchPackageNames": ["aws-cdk", "aws-cdk-lib", "constructs"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "AWS CDK"
+    },
+    {
+      "description": "Group non-major Serverless tooling except its esbuild adapter",
       "matchPackageNames": [
-        "aws4fetch",
-        "renovate",
-        "vite-plugin-pwa",
-        "@aws-sdk{/,}**"
-      ]
+        "osls",
+        "serverless",
+        "serverless-*",
+        "!serverless-esbuild"
+      ],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Serverless tooling"
     },
     {
-      "automerge": true,
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
+      "description": "Group non-major type declaration updates",
+      "matchPackageNames": ["@types/**"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Type declarations"
     },
     {
+      "description": "Keep non-major React core and React declarations aligned",
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "react-test-renderer",
+        "@types/react",
+        "@types/react-dom",
+        "@types/react-test-renderer"
+      ],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "React core"
+    },
+    {
+      "description": "Group non-major Storybook ecosystem updates",
+      "matchPackageNames": [
+        "storybook",
+        "@storybook/**",
+        "@chromatic-com/storybook"
+      ],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Storybook"
+    },
+    {
+      "description": "Group non-major Sentry updates",
+      "matchPackageNames": ["@sentry/**", "@sentry-internal/**"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Sentry"
+    },
+    {
+      "description": "Group the non-major GraphQL client and generator ecosystem",
+      "matchPackageNames": [
+        "graphql",
+        "graphql-tag",
+        "@apollo/client",
+        "@graphql-codegen/**"
+      ],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "GraphQL"
+    },
+    {
+      "description": "Group non-major linting updates",
+      "matchPackageNames": [
+        "eslint",
+        "eslint-*",
+        "@eslint/**",
+        "@stylistic/eslint-plugin",
+        "@kesills/eslint-config-airbnb-typescript",
+        "typescript-eslint"
+      ],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Linting"
+    },
+    {
+      "description": "Group non-major TypeScript toolchain updates",
+      "matchPackageNames": ["typescript", "ts-node", "ts-loader", "tsx"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "TypeScript toolchain"
+    },
+    {
+      "description": "Group non-major Jest updates",
+      "matchPackageNames": ["jest", "jest-*", "@jest/**", "ts-jest"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Jest"
+    },
+    {
+      "description": "Group non-major Testing Library updates",
+      "matchPackageNames": ["@testing-library/**"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Testing Library"
+    },
+    {
+      "description": "Group non-major Vite and Vitest updates",
+      "matchPackageNames": [
+        "vite",
+        "vite-*",
+        "vitest",
+        "@vitejs/**",
+        "@vitest/**"
+      ],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Vite and Vitest"
+    },
+    {
+      "description": "Group non-major SWC updates except Rollup integrations",
+      "matchPackageNames": ["@swc/**", "swc-loader", "!@swc/rollup"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "SWC"
+    },
+    {
+      "description": "Group non-major Rollup updates and its SWC integrations",
+      "matchPackageNames": ["rollup", "rollup-*", "@rollup/**", "@swc/rollup"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Rollup"
+    },
+    {
+      "description": "Group non-major Webpack updates",
+      "matchPackageNames": ["webpack", "webpack-*", "@webpack-cli/**"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "Webpack"
+    },
+    {
+      "description": "Group non-major esbuild updates with the Serverless adapter",
+      "matchPackageNames": ["esbuild", "@esbuild/**", "serverless-esbuild"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "esbuild"
+    },
+    {
+      "description": "Keep GitHub Action pins synchronized across delivery sources and generated workflows",
+      "matchManagers": ["github-actions"],
+      "pinDigests": true,
+      "postUpgradeTasks": {
+        "commands": ["node .github/renovate/sync-action-pins.mjs"],
+        "fileFilters": [".github/**"]
+      }
+    },
+    {
+      "description": "Group routine non-major GitHub Action updates",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "description": "Update the Renovate Action and container together under approval",
+      "matchPackageNames": [
+        "renovatebot/github-action",
+        "ghcr.io/renovatebot/renovate"
+      ],
+      "groupName": "Renovate self-hosting",
+      "schedule": ["after 3am and before 7am on the first day of the month"],
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Keep Prettier exact and require approval for formatting changes",
+      "matchPackageNames": [
+        "prettier",
+        "prettier-plugin-*",
+        "@*/prettier-plugin-*"
+      ],
+      "groupName": "Formatting",
+      "rangeStrategy": "pin",
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Require approval for Auth0 client updates",
+      "matchPackageNames": [
+        "@auth0/auth0-react",
+        "auth0-js",
+        "@types/auth0-js"
+      ],
+      "groupName": "Auth0 clients",
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Require approval for Auth0 management SDK updates",
+      "matchPackageNames": ["auth0"],
+      "groupName": "Auth0 management SDK",
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Require approval for Auth0 deployment CLI updates",
+      "matchPackageNames": ["auth0-deploy-cli"],
+      "groupName": "Auth0 deployment CLI",
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Require approval for published peer compatibility changes",
+      "matchDepTypes": ["peerDependencies"],
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Require approval for dependency replacements",
+      "matchUpdateTypes": ["replacement"],
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Require approval for retained root resolution overrides",
+      "matchDepTypes": ["resolutions"],
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Update retained Semantic Release overrides atomically each month",
+      "matchDepTypes": ["resolutions"],
+      "matchPackageNames": [
+        "@semantic-release/npm",
+        "@semantic-release/commit-analyzer",
+        "@semantic-release/github",
+        "@semantic-release/release-notes-generator"
+      ],
+      "groupName": "Semantic Release compatibility overrides",
+      "schedule": ["after 3am and before 7am on the first day of the month"],
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Ignore the legacy Puppeteer resolution until React Snap is replaced",
+      "matchDepTypes": ["resolutions"],
+      "matchPackageNames": ["puppeteer"],
+      "enabled": false
+    },
+    {
+      "description": "Maintain Yarn monthly",
+      "matchDepTypes": ["packageManager"],
+      "groupName": "Yarn",
+      "schedule": ["after 3am and before 7am on the first day of the month"]
+    },
+    {
+      "description": "Retain the Accounts API GraphQL version boundary",
       "matchFileNames": ["applications/accounts/api/package.json"],
       "matchPackageNames": ["graphql"],
       "allowedVersions": "< 16.0.0"
     }
-  ],
-  "prConcurrentLimit": 1,
-  "rebaseWhen": "behind-base-branch",
-  "minimumReleaseAge": "7 days",
-  "timezone": "Europe/London"
+  ]
 }
