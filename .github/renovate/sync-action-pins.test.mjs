@@ -51,14 +51,16 @@ test('Action pin reconciliation supports publisher replacements', () => {
 test('Action pin reconciliation preserves a separate major stream', () => {
   const pins = updatedActionPins(
     [
-      '@@ -1 +1 @@',
+      '@@ -1,2 +1,2 @@',
+      '-        uses: actions/example@dddddddddddddddddddddddddddddddddddddddd # v1.8.0',
       '-        uses: actions/example@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa # v2.1.0',
       '+        uses: actions/example@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb # v2.2.0',
+      '+        uses: actions/example@eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee # v1.9.0',
     ].join('\n'),
   );
   const source = [
     '        uses: actions/example@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa # v2.1.0',
-    '        uses: actions/example@cccccccccccccccccccccccccccccccccccccccc # v1.9.0',
+    '        uses: actions/example@dddddddddddddddddddddddddddddddddddddddd # v1.8.0',
     '',
   ].join('\n');
 
@@ -66,7 +68,7 @@ test('Action pin reconciliation preserves a separate major stream', () => {
     synchronizeActionPins(source, pins),
     [
       '        uses: actions/example@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb # v2.2.0',
-      '        uses: actions/example@cccccccccccccccccccccccccccccccccccccccc # v1.9.0',
+      '        uses: actions/example@eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee # v1.9.0',
       '',
     ].join('\n'),
   );
