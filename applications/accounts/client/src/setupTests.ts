@@ -10,9 +10,7 @@ vi.mock('@auth0/auth0-react', async (importOriginal) => ({
   useAuth0: vi.fn(),
 }));
 
-vi.mock('file-saver', () => ({
-  saveAs: vi.fn(),
-}));
+vi.mock('file-saver');
 
 window.matchMedia = (query) => ({
   addEventListener: vi.fn(),
