@@ -8,9 +8,14 @@
  * with zero LLM involvement.
  *
  * Usage:
- *   node live-inject.mjs --port PORT   # Insert the live script tag
- *   node live-inject.mjs --remove      # Remove the live script tag
- *   node live-inject.mjs --check       # Check whether live config exists
+ *   node live-inject.mjs --port PORT [--token TOKEN]  # Insert the live script tag
+ *   node live-inject.mjs --remove                     # Remove the live script tag
+ *   node live-inject.mjs --check                      # Check whether live config exists
+ *
+ * When --token is supplied, it is appended to the /live.js src as `?token=...`
+ * so the server's token-gated /live.js handler will serve the bundle. Omitting
+ * the token yields a bare `/live.js` src (legacy behavior; the server returns
+ * 401 for it under the current gate).
  */
 
 import fs from 'node:fs';
@@ -22,6 +27,11 @@ import {
   detectSvelteKitProject,
   removeSvelteKitLiveAdapter,
 } from './live/sveltekit-adapter.mjs';
+import {
+  applyTanStackLiveAdapter,
+  detectTanStackStartProject,
+  removeTanStackLiveAdapter,
+} from './live/tanstack-adapter.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CONFIG_PATH = resolveLiveConfigPath({
@@ -146,6 +156,8 @@ Output (JSON):
   const resolvedFiles = resolveFiles(process.cwd(), config);
   const svelteKit = detectSvelteKitProject(process.cwd(), config);
   const nuxt = detectNuxtProject(process.cwd());
+  const tanstack =
+    svelteKit || nuxt ? null : detectTanStackStartProject(process.cwd());
 
   if (args.includes('--remove')) {
     if (svelteKit) {
@@ -160,6 +172,21 @@ Output (JSON):
           results: [adapterResult],
         }),
       );
+      return;
+    }
+    if (tanstack) {
+      const adapterResult = removeTanStackLiveAdapter({
+        cwd: process.cwd(),
+        project: tanstack,
+      });
+      console.log(
+        JSON.stringify({
+          ok: !adapterResult.error,
+          adapter: 'tanstack-start',
+          results: [adapterResult],
+        }),
+      );
+      if (adapterResult.error) process.exitCode = 1;
       return;
     }
     if (nuxt) {
@@ -204,15 +231,20 @@ Output (JSON):
     console.error(JSON.stringify({ ok: false, error: 'missing_port' }));
     process.exit(1);
   }
+  // Optional server token: appended to the /live.js src so the token-gated
+  // /live.js handler authorizes the browser fetch. `live.mjs` always passes it.
+  const tokenIdx = args.indexOf('--token');
+  const token = tokenIdx !== -1 ? args[tokenIdx + 1] : undefined;
   const gitIgnore = ensureLiveGitIgnores(
     process.cwd(),
-    nuxt ? [nuxt.pluginFile] : [],
+    nuxt ? [nuxt.pluginFile] : tanstack ? [tanstack.componentFile] : [],
   );
 
   if (svelteKit) {
     const adapterResult = applySvelteKitLiveAdapter({
       cwd: process.cwd(),
       port,
+      token,
       config,
     });
     console.log(
@@ -226,10 +258,30 @@ Output (JSON):
     );
     return;
   }
+  if (tanstack) {
+    const adapterResult = applyTanStackLiveAdapter({
+      cwd: process.cwd(),
+      port,
+      token,
+      project: tanstack,
+    });
+    console.log(
+      JSON.stringify({
+        ok: !adapterResult.error,
+        port,
+        adapter: 'tanstack-start',
+        gitIgnore,
+        results: [adapterResult],
+      }),
+    );
+    if (adapterResult.error) process.exitCode = 1;
+    return;
+  }
   if (nuxt) {
     const adapterResult = applyNuxtLiveAdapter({
       cwd: process.cwd(),
       port,
+      token,
       project: nuxt,
     });
     console.log(
@@ -251,7 +303,7 @@ Output (JSON):
       return { file: relFile, error: 'file_not_found' };
     const content = fs.readFileSync(absFile, 'utf-8');
     const withoutOld = revertCspMeta(removeTag(content, config.commentSyntax));
-    const withTag = insertTag(withoutOld, config, port, relFile);
+    const withTag = insertTag(withoutOld, config, port, relFile, token);
     if (withTag === withoutOld) {
       return {
         file: relFile,
@@ -360,9 +412,9 @@ export function detectNuxtProject(cwd = process.cwd()) {
   return { configFile, appDir, pluginFile };
 }
 
-export function buildNuxtPlugin(port) {
+export function buildNuxtPlugin(port, token) {
   return `/* ${NUXT_PLUGIN_MARKER} */
-const liveSrc = 'http://localhost:${port}/live.js';
+const liveSrc = '${buildLiveScriptSrc(port, token)}';
 const liveSelector = 'script[data-impeccable-live-nuxt]';
 
 export default defineNuxtPlugin(() => {
@@ -390,6 +442,7 @@ export default defineNuxtPlugin(() => {
 export function applyNuxtLiveAdapter({
   cwd = process.cwd(),
   port,
+  token,
   project = detectNuxtProject(cwd),
 }) {
   if (!project) return { error: 'nuxt_not_detected' };
@@ -405,7 +458,7 @@ export function applyNuxtLiveAdapter({
     };
   }
 
-  const content = buildNuxtPlugin(port);
+  const content = buildNuxtPlugin(port, token);
   fs.mkdirSync(path.dirname(absFile), { recursive: true });
   if (content !== existing) fs.writeFileSync(absFile, content, 'utf-8');
   return {
@@ -606,7 +659,18 @@ function commentClose(syntax) {
   return syntax === 'jsx' ? '*/}' : '-->';
 }
 
-function buildTagBlock(syntax, port, filePath) {
+/**
+ * Build the /live.js src the browser loads. When a token is supplied it rides
+ * as a `?token=...` query param so the server's token-gated /live.js handler
+ * authorizes the fetch. Shared by every injection path (HTML/JSX script tag,
+ * the Nuxt plugin, the SvelteKit root component) so they stay in sync.
+ */
+export function buildLiveScriptSrc(port, token) {
+  const base = 'http://localhost:' + port + '/live.js';
+  return token ? base + '?token=' + encodeURIComponent(token) : base;
+}
+
+function buildTagBlock(syntax, port, filePath, token) {
   const open = commentOpen(syntax);
   const close = commentClose(syntax);
   // Astro processes <script> tags by default and rewrites src to its own
@@ -622,9 +686,9 @@ function buildTagBlock(syntax, port, filePath) {
     '\n' +
     '<script ' +
     scriptAttrs +
-    'src="http://localhost:' +
-    port +
-    '/live.js"></script>\n' +
+    'src="' +
+    buildLiveScriptSrc(port, token) +
+    '"></script>\n' +
     open +
     ' ' +
     MARKER_CLOSE_TEXT +
@@ -651,10 +715,10 @@ function readLineEndingAt(content, index) {
   return '';
 }
 
-function insertTag(content, config, port, filePath) {
+function insertTag(content, config, port, filePath, token) {
   const lineEnding = detectLineEnding(content);
   const block = normalizeLineEndings(
-    buildTagBlock(config.commentSyntax, port, filePath),
+    buildTagBlock(config.commentSyntax, port, filePath, token),
     lineEnding,
   );
   // insertBefore: match the LAST occurrence. Anchors like `</body>` naturally

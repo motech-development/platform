@@ -1,11 +1,22 @@
-import { GENERIC_FONTS, OVERUSED_FONTS } from '../../shared/constants.mjs';
+import {
+  GENERIC_FONTS,
+  OVERUSED_FONTS,
+  EM_DASH_FLOOR,
+  EM_DASH_CHARS_PER_DASH,
+} from '../../shared/constants.mjs';
 import { isNeutralColor } from '../../shared/color.mjs';
 import { extractGoogleFontFamilies } from '../../shared/fonts.mjs';
 import { checkSourceDesignSystem } from '../../design-system.mjs';
+import {
+  scanCssTextForGlow,
+  scanCssTextForGridBackground,
+  scanCssTextForMarquee,
+  scanCssTextForPseudoStripe,
+  scanCssTextForRadialHalo,
+} from '../../rules/checks.mjs';
 import { isFullPage } from '../../shared/page.mjs';
 import { applyInlineIgnores } from '../../shared/inline-ignores.mjs';
 import { finding } from '../../findings.mjs';
-import { filterByProviders } from '../../registry/antipatterns.mjs';
 import { profileFindings, profileStep } from '../../profile/profiler.mjs';
 
 // ---------------------------------------------------------------------------
@@ -495,15 +506,36 @@ const REGEX_ANALYZERS = [
       ),
     ];
   },
-  // Em-dash overuse: 5+ em-dashes or "--" in body text content
-  // (occasional em-dash use in prose is fine; the pattern fires only
-  // when count crosses into AI-cadence territory).
+  // Em-dash overuse (ADVISORY): the AI cadence tell is em-dash *saturation*,
+  // not the occasional dash. Humans use em-dashes legitimately, so this rule is
+  // advisory (surfaced separately, never a failure, hook-skipped by default) and
+  // its threshold is deliberately conservative. Two gates must both hold:
+  //   1. Absolute floor of EM_DASH_FLOOR (8) dashes — a page with a handful
+  //      never fires, no matter how short.
+  //   2. Density: at least one dash per EM_DASH_CHARS_PER_DASH (500) characters
+  //      of body text, so a long article that uses eight across several thousand
+  //      words is left alone while a short, dash-per-clause landing page is not.
+  // Raised from the old flat 5-dash floor, which fired on ordinary long prose.
+  //
+  // stripHtmlToText drops tags but leaves character-entity escapes intact, so
+  // a model that writes `&mdash;`, `&#8212;`, or `&#x2014;` renders an em-dash
+  // the counter never saw. Decode the em-dash entities (named, zero-padded
+  // decimal, upper/lower hex) to the literal glyph first. En-dash entities are
+  // deliberately left alone: the rule counts em-dashes, and the literal `–`
+  // was never counted either.
   (content, filePath) => {
-    const text = stripHtmlToText(content);
+    const text = stripHtmlToText(content).replace(
+      /&mdash;|&#0*8212;|&#x0*2014;/gi,
+      '—',
+    );
     let count = 0;
     const re = /[—]|--(?=\S)/g;
     while (re.exec(text) !== null) count++;
-    if (count < 5) return [];
+    if (count < EM_DASH_FLOOR) return [];
+    // Saturation gate: dashes must be dense in the prose, not sprinkled through
+    // a long document. textLength <= count * chars-per-dash means the density is
+    // at or above the threshold.
+    if (text.length > count * EM_DASH_CHARS_PER_DASH) return [];
     return [
       finding('em-dash-overuse', filePath, `${count} em-dashes in body text`),
     ];
@@ -571,29 +603,6 @@ const REGEX_ANALYZERS = [
       ),
     ];
   },
-  // Numbered section markers (01 / 02 / 03 ...)
-  (content, filePath) => {
-    const text = stripHtmlToText(content);
-    const re = /\b(0[1-9]|1[0-2])\b/g;
-    const seen = new Set();
-    let m;
-    while ((m = re.exec(text)) !== null) seen.add(m[1]);
-    if (seen.size < 3) return [];
-    const sorted = [...seen].sort();
-    let sequential = 0;
-    for (let i = 1; i < sorted.length; i++) {
-      if (parseInt(sorted[i], 10) === parseInt(sorted[i - 1], 10) + 1)
-        sequential++;
-    }
-    if (sequential < 2) return [];
-    return [
-      finding(
-        'numbered-section-markers',
-        filePath,
-        `Sequence: ${sorted.slice(0, 6).join(', ')}`,
-      ),
-    ];
-  },
   // Aphoristic cadence: manufactured-contrast + short-rebuttal
   (content, filePath) => {
     const text = stripHtmlToText(content);
@@ -622,42 +631,29 @@ const REGEX_ANALYZERS = [
       ),
     ];
   },
-  // Dark glow (page-level: dark bg + colored box-shadow with blur)
+  // Dark glow / chromatic halo shadows (page-level). Shared scanner handles
+  // any color format, single-level var() resolution, zero-offset halos on
+  // any background, and text-shadow glows.
   (content, filePath) => {
-    // Check if page has a dark background
-    const darkBgRe =
-      /background(?:-color)?\s*:\s*(?:#(?:0[0-9a-f]|1[0-9a-f]|2[0-3])[0-9a-f]{4}\b|#(?:0|1)[0-9a-f]{2}\b|rgb\(\s*(\d{1,2})\s*,\s*(\d{1,2})\s*,\s*(\d{1,2})\s*\))/gi;
-    const twDarkBg = /\bbg-(?:gray|slate|zinc|neutral|stone)-(?:9\d{2}|800)\b/;
-    const hasDarkBg = darkBgRe.test(content) || twDarkBg.test(content);
-    if (!hasDarkBg) return [];
-
-    // Check for colored box-shadow with blur > 4px
-    const shadowRe = /box-shadow\s*:\s*([^;{}]+)/gi;
-    let m;
-    while ((m = shadowRe.exec(content)) !== null) {
-      const val = m[1];
-      const colorMatch = val.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
-      if (!colorMatch) continue;
-      const [r, g, b] = [+colorMatch[1], +colorMatch[2], +colorMatch[3]];
-      if (Math.max(r, g, b) - Math.min(r, g, b) < 30) continue; // skip gray
-      // Check blur: look for pattern like "0 0 20px" (third number > 4)
-      const pxVals = [
-        ...val.matchAll(/(\d+)px|(?<![.\d])\b(0)\b(?![.\d])/g),
-      ].map((p) => +(p[1] || p[2]));
-      if (pxVals.length >= 3 && pxVals[2] > 4) {
-        const lines = content.substring(0, m.index).split('\n');
-        return [
-          finding(
-            'dark-glow',
-            filePath,
-            `Colored glow (rgb(${r},${g},${b})) on dark page`,
-            lines.length,
-          ),
-        ];
-      }
-    }
-    return [];
+    const hits = scanCssTextForGlow(content);
+    if (hits.length === 0) return [];
+    const lines = content.substring(0, hits[0].index).split('\n');
+    return [finding('dark-glow', filePath, hits[0].snippet, lines.length)];
   },
+  // Radial-gradient background halo on a dark page (the gradient sibling
+  // of the dark-glow shadow tell).
+  (content, filePath) => {
+    const hits = scanCssTextForRadialHalo(content);
+    if (hits.length === 0) return [];
+    const lines = content.substring(0, hits[0].index).split('\n');
+    return [finding('radial-halo', filePath, hits[0].snippet, lines.length)];
+  },
+  // Auto-scrolling marquees (<marquee> or infinite horizontal loop
+  // animations).
+  (content, filePath) =>
+    scanCssTextForMarquee(content).map((hit) =>
+      finding('marquee', filePath, hit.snippet),
+    ),
 ];
 
 // ---------------------------------------------------------------------------
@@ -938,21 +934,20 @@ function runRegexMatchers(
 }
 
 /** Page-level analyzers that scan rendered text content (em-dash use,
- *  buzzword phrases, numbered section markers, aphoristic cadence).
+ *  buzzword phrases, aphoristic cadence).
  *  These are detector-agnostic — they work on any HTML/text source
  *  and don't need a parsed DOM. Exported so detectHtml can call them
  *  for `.html` files (which otherwise skip the regex engine). */
 const TEXT_CONTENT_ANALYZER_IDS = [
   'em-dash-overuse',
   'marketing-buzzword',
-  'numbered-section-markers',
   'aphoristic-cadence',
 ];
 
 function runTextContentAnalyzers(content, filePath, options = {}) {
   const profile = options?.profile;
   if (!shouldRunPageAnalyzers(content, filePath)) return [];
-  // The 4 text-content analyzers are at indices 3-6 in REGEX_ANALYZERS.
+  // The 3 text-content analyzers are at indices 3-5 in REGEX_ANALYZERS.
   const findings = [];
   for (let i = 0; i < TEXT_CONTENT_ANALYZER_IDS.length; i++) {
     const analyzer = REGEX_ANALYZERS[3 + i];
@@ -988,7 +983,47 @@ function detectText(content, filePath, options = {}) {
       phase: 'source',
     }),
   );
-  if (cssLike.has(ext)) findings.push(...scanInsetStripeCss(content, filePath));
+  // Pseudo-element stripes (::before/::after absolute bars) carry the same
+  // side-tab silhouette without any border token, so the line matchers can't
+  // see them (issue #394). The shared scanner already runs on full HTML pages
+  // via checkHtmlPatterns; give standalone stylesheets, component style
+  // blocks, and CSS-in-JS templates the same coverage. Each hit carries the
+  // rule's source offset, so the finding gets a real line and line-scoped
+  // inline ignores keep working.
+  const pseudoStripeFindings = (text, lineOffset) =>
+    scanCssTextForPseudoStripe(text).map((hit) =>
+      finding(
+        hit.id,
+        filePath,
+        hit.snippet,
+        lineOffset + text.slice(0, hit.index).split('\n').length,
+      ),
+    );
+
+  if (cssLike.has(ext)) {
+    findings.push(...scanInsetStripeCss(content, filePath));
+    findings.push(...pseudoStripeFindings(content, 0));
+  }
+
+  // Block-level CSS checks that need multiple declarations must run over the
+  // complete source, not line-by-line. This covers standalone stylesheets,
+  // component style blocks, inline styles, and CSS-in-JS templates.
+  findings.push(
+    ...profileFindings(
+      profile,
+      {
+        engine: 'regex',
+        phase: 'source',
+        ruleId: 'codex-grid-background',
+        target: filePath,
+      },
+      () =>
+        scanCssTextForGridBackground(content).map((hit) => {
+          const line = content.substring(0, hit.index).split('\n').length;
+          return finding('codex-grid-background', filePath, hit.snippet, line);
+        }),
+    ),
+  );
 
   // Extract and scan <style> blocks from Astro/Vue/Svelte components.
   const styleBlocks = profile
@@ -1020,6 +1055,7 @@ function detectText(content, filePath, options = {}) {
     findings.push(
       ...scanInsetStripeCss(block.content, filePath, block.startLine - 2),
     );
+    findings.push(...pseudoStripeFindings(block.content, block.startLine - 2));
   }
 
   // Extract and scan CSS-in-JS template literals
@@ -1046,6 +1082,7 @@ function detectText(content, filePath, options = {}) {
     findings.push(
       ...scanInsetStripeCss(block.content, filePath, block.startLine - 1),
     );
+    findings.push(...pseudoStripeFindings(block.content, block.startLine - 1));
   }
 
   if (options?.designSystem) {
@@ -1086,7 +1123,6 @@ function detectText(content, filePath, options = {}) {
       'monotonous-spacing',
       'em-dash-overuse',
       'marketing-buzzword',
-      'numbered-section-markers',
       'aphoristic-cadence',
       'dark-glow',
     ];
@@ -1107,12 +1143,11 @@ function detectText(content, filePath, options = {}) {
     }
   }
 
-  const byProvider = filterByProviders(deduped, options?.providers);
   // Inline `impeccable-disable*` waivers travel with the file; honor them unless
   // explicitly bypassed (`--no-config` / `--no-inline-ignores`).
   return options?.inlineIgnores === false
-    ? byProvider
-    : applyInlineIgnores(byProvider, content);
+    ? deduped
+    : applyInlineIgnores(deduped, content);
 }
 
 export {

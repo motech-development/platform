@@ -22,20 +22,23 @@ import {
   checkElementGlow,
   checkElementGptBorderShadow,
   checkElementHeroEyebrow,
+  checkElementHoverContrast,
   checkElementIconTile,
   checkElementItalicSerif,
   checkElementMotion,
   checkElementOversizedH1,
   checkElementQuality,
+  checkElementRadialSpotlight,
   checkCreamPalette,
   checkHtmlPatterns,
+  checkNumberedSectionLabelsFromDoc,
   checkPageLayout,
   checkPageQualityFromDoc,
+  checkRepeatedContainerTextFromDoc,
   checkRepeatedSectionKickersFromDoc,
   resolveBackground,
   resolveBorderRadiusPx,
 } from '../../rules/checks.mjs';
-import { filterByProviders } from '../../registry/antipatterns.mjs';
 import { detectText, runTextContentAnalyzers } from '../regex/detect-text.mjs';
 import {
   StaticDocument,
@@ -121,6 +124,7 @@ const STATIC_ELEMENT_RULES = [
         style,
         null,
         resolveBorderRadiusPx(el, style, parseFloat(style.width) || 0, window),
+        el,
       ),
   },
   {
@@ -128,6 +132,12 @@ const STATIC_ELEMENT_RULES = [
     selector: '*',
     run: (el, tag, style, window, customPropMap) =>
       checkElementColors(el, style, tag, window, customPropMap, false),
+  },
+  {
+    id: 'hover-color-rules',
+    selector: '*',
+    run: (el, tag, style, window) =>
+      checkElementHoverContrast(el, style, tag, window),
   },
   {
     id: 'dark-glow',
@@ -187,6 +197,12 @@ const STATIC_ELEMENT_RULES = [
     id: 'gpt-thin-border-wide-shadow',
     selector: '*',
     run: (el, tag, style) => checkElementGptBorderShadow(el, style),
+  },
+  {
+    id: 'radial-spotlight-glow',
+    selector: '*',
+    run: (el, tag, style, window) =>
+      checkElementRadialSpotlight(el, style, tag, window),
   },
 ];
 
@@ -343,6 +359,16 @@ async function detectHtml(filePath, options = {}) {
     )) {
       findings.push(finding(f.id, filePath, f.snippet));
     }
+    for (const f of runPageCheck('numbered-section-labels', () =>
+      checkNumberedSectionLabelsFromDoc(document, window),
+    )) {
+      findings.push(finding(f.id, filePath, f.snippet));
+    }
+    for (const f of runPageCheck('repeated-container-text', () =>
+      checkRepeatedContainerTextFromDoc(document, window),
+    )) {
+      findings.push(finding(f.id, filePath, f.snippet));
+    }
     for (const f of runPageCheck('layout-rules', () =>
       checkPageLayout(document, window),
     )) {
@@ -364,7 +390,12 @@ async function detectHtml(filePath, options = {}) {
           item.id !== 'bounce-easing' && item.id !== 'layout-transition',
       ),
     )) {
-      findings.push(finding(f.id, filePath, f.snippet));
+      const item = finding(f.id, filePath, f.snippet);
+      // Position-aware severity promotion: checks may attach a per-finding
+      // severity (e.g. a pulsing dot inside a header/nav landmark) that
+      // overrides the registry default.
+      if (f.severity) item.severity = f.severity;
+      findings.push(item);
     }
     // Text-content analyzers (em-dash overuse, marketing buzzwords,
     // numbered section markers, aphoristic cadence) live in the regex
@@ -378,13 +409,12 @@ async function detectHtml(filePath, options = {}) {
     }
   }
 
-  const byProvider = filterByProviders(findings, options.providers);
   // Static-HTML findings carry no line number, so only whole-file
   // `impeccable-disable` directives apply here — exactly the standalone-document
   // waiver this primitive targets. Bypassed by `--no-config` / `--no-inline-ignores`.
   return options?.inlineIgnores === false
-    ? byProvider
-    : applyInlineIgnores(byProvider, html);
+    ? findings
+    : applyInlineIgnores(findings, html);
 }
 
 export { checkStaticPageTypography, STATIC_ELEMENT_RULES, detectHtml };

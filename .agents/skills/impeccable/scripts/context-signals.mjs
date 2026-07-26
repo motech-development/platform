@@ -11,7 +11,7 @@
  * output is always valid JSON.
  *
  * Signals:
- *   - setup:     PRODUCT.md / DESIGN.md presence, register, whether code exists
+ *   - setup:     PRODUCT.md / DESIGN.md presence and whether code exists
  *   - critique:  the latest cached critique score (.impeccable/critique)
  *   - git:       branch + files changed vs the default branch (a scope hint)
  *   - devServer: whether a local dev server answers on a common port (gates live)
@@ -21,7 +21,7 @@ import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
-import { loadContext, extractRegister, extractPlatform } from './context.mjs';
+import { loadContext, extractPlatform } from './context.mjs';
 import { getCritiqueDir } from './lib/impeccable-paths.mjs';
 
 /** Is there code here at all, or just context files / an empty repo? */
@@ -194,8 +194,28 @@ const SCANNABLE_EXT = new Set([
   '.astro',
 ]);
 // Where UI source typically lives. The detector walks these and skips
-// node_modules / dist / build / .next / .nuxt automatically.
+// node_modules / dist / build and all hidden dirs automatically.
 const SOURCE_DIRS = ['src', 'app', 'components', 'pages', 'public'];
+
+// A changed file under a hidden or dependency/build directory is not app
+// source — it's a vendored AI-harness install (.claude/skills/..., .cursor/,
+// .impeccable/, issue #303), a build artifact, or a dependency. Mirrors the
+// engine walkDir's skip rule so git-changes targeting can't resurface paths
+// the walker would never visit.
+function isVendoredPath(rel) {
+  const dirSegments = rel.split(/[\\/]/).slice(0, -1);
+  return dirSegments.some(
+    (seg) =>
+      (seg.startsWith('.') &&
+        seg !== '.vitepress' &&
+        seg !== '.vuepress' &&
+        seg !== '.storybook') ||
+      seg === 'node_modules' ||
+      seg === 'dist' ||
+      seg === 'build' ||
+      seg === '__pycache__',
+  );
+}
 
 /**
  * Local paths the agent should point the bundled detector at — never a URL.
@@ -211,6 +231,7 @@ function scanTargets(cwd, git) {
   if (git.isRepo && git.changedFiles.length) {
     const changed = git.changedFiles
       .filter((f) => SCANNABLE_EXT.has(path.extname(f).toLowerCase()))
+      .filter((f) => !isVendoredPath(f))
       .filter((f) => fs.existsSync(path.join(cwd, f)));
     if (changed.length)
       return { targets: changed.slice(0, 50), via: 'git-changes' };
@@ -236,7 +257,6 @@ export async function gatherSignals(cwd = process.cwd()) {
       hasDesign: ctx.hasDesign,
       designPath: ctx.designPath,
       hasCode: hasCode(cwd),
-      register: extractRegister(ctx.product),
       platform: extractPlatform(ctx.product),
     },
     critique: { latest: latestCritique(cwd) },
