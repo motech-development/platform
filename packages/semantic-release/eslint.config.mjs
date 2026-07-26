@@ -42,6 +42,7 @@ export default defineConfig([
     extends: [pluginVitest.configs.env, pluginVitest.configs.recommended],
     files: ['**/__tests__/*.js', '**/*.spec.js', '**/*.test.js'],
     rules: {
+      // Preserve existing call-count assertions during the mechanical runner migration.
       'vitest/prefer-called-exactly-once-with': 'off',
     },
   },
