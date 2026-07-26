@@ -75,6 +75,7 @@ export default [
     rules: {
       '@typescript-eslint/unbound-method': 'off',
       'import/no-extraneous-dependencies': 'off',
+      // Preserve existing call-count assertions during the mechanical runner migration.
       'vitest/prefer-called-exactly-once-with': 'off',
     },
   },
@@ -126,6 +127,7 @@ export default [
     ],
     rules: {
       'import/no-extraneous-dependencies': 'off',
+      // Preserve existing call-count assertions during the mechanical runner migration.
       'vitest/prefer-called-exactly-once-with': 'off',
     },
   },

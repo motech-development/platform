@@ -1966,7 +1966,8 @@ test('pull-request quality categories start independently with bounded workspace
   );
   assert.ok(unitTestWorkspaces.length > 0);
   for (const { name, scripts } of unitTestWorkspaces) {
-    assert.match(scripts['test-ci'], /\bvitest\b/, name);
+    assert.match(scripts['test-ci'], /\bvitest\s+run\b/, name);
+    assert.match(scripts['test-ci'], /--coverage\b/, name);
     assert.match(scripts['test-ci'], /--no-file-parallelism/, name);
   }
 });
