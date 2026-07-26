@@ -8,12 +8,13 @@ import logger from '@motech-development/node-logger';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+import type { Mock } from 'vitest';
 import { handler } from '../data-restore';
 
-jest.mock('@motech-development/node-logger');
+vi.mock('@motech-development/node-logger');
 
 describe('data-restore', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let ddb: AwsClientStub<DynamoDBClient>;
 
@@ -22,7 +23,7 @@ describe('data-restore', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn();
 
     ddb = mockClient(DynamoDBClient);
   });

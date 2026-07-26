@@ -13,17 +13,17 @@ describe('force-email-verification', () => {
       domain: 'https://test.com',
     });
 
-    callback = jest.fn();
+    callback = vi.fn();
     context = {};
     user = {
       user_id: 'user-id',
     };
 
-    console.log = jest.fn();
+    console.log = vi.fn();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('when user is verified', () => {

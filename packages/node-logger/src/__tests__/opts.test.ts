@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import Transport from 'winston-transport';
 import opts, { LEVEL, MESSAGE } from '../opts';
 
@@ -13,16 +14,16 @@ const levels = {
 };
 
 describe('opts', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
 
   beforeEach(() => {
-    callback = jest.fn();
+    callback = vi.fn();
 
     opts.stderrLevels = ['emerg', 'alert', 'crit', 'error'];
-    (opts as Transport).emit = jest.fn();
+    (opts as Transport).emit = vi.fn();
 
-    console.error = jest.fn();
-    console.log = jest.fn();
+    console.error = vi.fn();
+    console.log = vi.fn();
   });
 
   it('should log the correct non-error message when a callback is defined', () => {

@@ -637,7 +637,7 @@ describe('UpdateDetails', () => {
         },
       });
 
-      jest.spyOn(cache, 'modify');
+      vi.spyOn(cache, 'modify');
     });
 
     it('should remove client from cache if item exists', () => {

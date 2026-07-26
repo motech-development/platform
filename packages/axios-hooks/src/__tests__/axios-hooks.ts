@@ -1,5 +1,6 @@
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 import { act, renderHook, waitFor } from '@testing-library/react';
+import type { Mock } from 'vitest';
 import { useGet, useLazyGet, usePost, usePut } from '../axios-hooks';
 
 interface IMockResponseOptions {
@@ -17,22 +18,22 @@ const createResponse = ({
   status = 200,
   statusText = '',
 }: IMockResponseOptions = {}) => ({
-  arrayBuffer: jest.fn().mockResolvedValue(new ArrayBuffer(0)),
-  blob: jest.fn().mockResolvedValue(body),
+  arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(0)),
+  blob: vi.fn().mockResolvedValue(body),
   headers: {
-    get: jest.fn((name: string) =>
+    get: vi.fn((name: string) =>
       name.toLowerCase() === 'content-type' ? contentType : undefined,
     ),
   },
   ok,
   status,
   statusText,
-  text: jest.fn().mockResolvedValue(typeof body === 'string' ? body : ''),
+  text: vi.fn().mockResolvedValue(typeof body === 'string' ? body : ''),
 });
 
 const createUndefinedTextResponse = () => ({
   ...createResponse(),
-  text: jest.fn().mockResolvedValue(undefined),
+  text: vi.fn().mockResolvedValue(undefined),
 });
 
 describe('axios-hooks', () => {
@@ -47,15 +48,15 @@ describe('axios-hooks', () => {
     success: true,
   };
 
-  let fetch: jest.Mock;
-  let onCompleted: jest.Mock;
-  let onError: jest.Mock;
+  let fetch: Mock;
+  let onCompleted: Mock;
+  let onError: Mock;
 
   beforeEach(() => {
-    fetch = jest.fn();
+    fetch = vi.fn();
     global.fetch = fetch;
-    onCompleted = jest.fn();
-    onError = jest.fn();
+    onCompleted = vi.fn();
+    onError = vi.fn();
   });
 
   describe('when response is successful', () => {

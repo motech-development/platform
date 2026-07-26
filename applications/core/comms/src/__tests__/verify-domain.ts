@@ -8,12 +8,13 @@ import type { CloudFormationCustomResourceEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { FAILED, send, SUCCESS } from 'cfn-response-async';
+import type { Mock } from 'vitest';
 import { handler } from '../verify-domain';
 
-jest.mock('cfn-response-async');
+vi.mock('cfn-response-async');
 
 describe('verify-domain', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: CloudFormationCustomResourceEvent;
   let ses: AwsClientStub<SESClient>;
@@ -23,7 +24,7 @@ describe('verify-domain', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn();
 
     ses = mockClient(SESClient);
 

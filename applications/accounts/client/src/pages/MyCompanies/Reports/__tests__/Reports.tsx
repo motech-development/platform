@@ -4,6 +4,7 @@ import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { saveAs } from 'file-saver';
+import type { Mock } from 'vitest';
 import { typePolicies } from '../../../../components/ApolloClient';
 import TestProvider, {
   add,
@@ -19,7 +20,7 @@ describe('Reports', () => {
   beforeEach(() => {
     history = ['/reports/company-id'];
 
-    global.fetch = jest.fn().mockResolvedValue(
+    global.fetch = vi.fn().mockResolvedValue(
       createFetchResponse({
         body: 'success',
       }),
@@ -152,7 +153,7 @@ describe('Reports', () => {
     });
 
     it('should display an alert if the report cannot be downloaded', async () => {
-      (fetch as jest.Mock).mockResolvedValueOnce(
+      (fetch as Mock).mockResolvedValueOnce(
         createFetchResponse({
           body: 'fail',
           ok: false,

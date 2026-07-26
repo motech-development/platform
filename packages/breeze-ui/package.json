@@ -42,7 +42,7 @@
     "package": "yarn build",
     "storybook": "storybook dev --port 6006",
     "test": "vitest run --project unit",
-    "test-ci": "vitest run --coverage",
+    "test-ci": "vitest run --coverage --no-file-parallelism",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

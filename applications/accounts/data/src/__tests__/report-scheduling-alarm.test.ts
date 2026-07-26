@@ -1,30 +1,29 @@
 import { captureException, flush } from '@sentry/aws-serverless';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import type { Mock } from 'vitest';
 import { handler } from '../report-scheduling-alarm';
 
-jest.mock('@sentry/aws-serverless', () => {
-  const actual = jest.requireActual<typeof import('@sentry/aws-serverless')>(
-    '@sentry/aws-serverless',
-  );
+vi.mock('@sentry/aws-serverless', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@sentry/aws-serverless')>();
 
   return {
     ...actual,
-    captureException: jest.fn(),
-    flush: jest.fn().mockResolvedValue(true),
-    init: jest.fn(),
+    captureException: vi.fn(),
+    flush: vi.fn().mockResolvedValue(true),
+    init: vi.fn(),
     wrapHandler: (wrappedHandler: unknown) => wrappedHandler,
   };
 });
 
-jest.mock('@sentry/profiling-node', () => {
-  const actual = jest.requireActual<typeof import('@sentry/profiling-node')>(
-    '@sentry/profiling-node',
-  );
+vi.mock('@sentry/profiling-node', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@sentry/profiling-node')>();
 
   return {
     ...actual,
-    nodeProfilingIntegration: jest.fn(),
+    nodeProfilingIntegration: vi.fn(),
   };
 });
 
@@ -46,13 +45,13 @@ const alarmEvent = {
 };
 
 describe('report-scheduling-alarm', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let originalEnvironment: NodeJS.ProcessEnv;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    callback = jest.fn();
+    vi.clearAllMocks();
+    callback = vi.fn();
     context = ctx();
     context.done();
     originalEnvironment = process.env;
@@ -92,7 +91,7 @@ describe('report-scheduling-alarm', () => {
   });
 
   it('propagates a failed Sentry flush so CloudWatch can retry', async () => {
-    jest.mocked(flush).mockResolvedValueOnce(false);
+    vi.mocked(flush).mockResolvedValueOnce(false);
 
     await expect(handler(alarmEvent, context, callback)).rejects.toThrow(
       'Unable to flush the scheduling incident to Sentry',

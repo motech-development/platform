@@ -9,5 +9,5 @@ Browser libraries consumed by Vite applications are ESM-only: `appsync-apollo`, 
 - Breeze UI emits to `lib/`, uses `rolldownOptions`, and publishes JavaScript source maps.
 - Libraries use Vite's default build target.
 - Only libraries containing React TSX use `@vitejs/plugin-react`.
-- Package tests remain on Jest for this migration. Moving them to Vitest is a separate decision so build and test-runner changes can be verified independently.
+- The build migration was verified before changing the test runner; the follow-up test decision is recorded in [ADR 0002](./0002-vitest-unit-tests.md).
 - A successful migration requires every library and in-repository consumer to build and pass its existing tests.

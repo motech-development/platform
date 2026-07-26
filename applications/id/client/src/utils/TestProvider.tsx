@@ -3,9 +3,9 @@ import i18n from 'i18next';
 import { ReactNode, Suspense, useMemo } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
-export const add = jest.fn();
+export const add = vi.fn();
 
-export const remove = jest.fn();
+export const remove = vi.fn();
 
 export interface IMockFetchResponseOptions {
   body?: Blob | string | null;
@@ -22,17 +22,17 @@ export const createFetchResponse = ({
   status = 200,
   statusText = '',
 }: IMockFetchResponseOptions = {}) => ({
-  arrayBuffer: jest.fn().mockResolvedValue(new ArrayBuffer(0)),
-  blob: jest.fn().mockResolvedValue(body ?? ''),
+  arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(0)),
+  blob: vi.fn().mockResolvedValue(body ?? ''),
   headers: {
-    get: jest.fn((name: string) =>
+    get: vi.fn((name: string) =>
       name.toLowerCase() === 'content-type' ? contentType : undefined,
     ),
   },
   ok,
   status,
   statusText,
-  text: jest.fn().mockResolvedValue(typeof body === 'string' ? body : ''),
+  text: vi.fn().mockResolvedValue(typeof body === 'string' ? body : ''),
 });
 
 export interface ITestProviderProps {

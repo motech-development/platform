@@ -13,7 +13,7 @@ describe('set-name', () => {
       domain: 'https://test.com',
     });
 
-    callback = jest.fn();
+    callback = vi.fn();
     context = {};
     user = {
       user_id: 'user-id',
@@ -21,7 +21,7 @@ describe('set-name', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('when user has no name meta data', () => {

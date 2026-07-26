@@ -1,12 +1,13 @@
 import { deleteFile } from '@motech-development/s3-file-operations';
 import type { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import type { Mock } from 'vitest';
 import { handler } from '../process-delete';
 
-jest.mock('@motech-development/s3-file-operations');
+vi.mock('@motech-development/s3-file-operations');
 
 describe('process-delete', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: SQSEvent;
 
@@ -15,7 +16,7 @@ describe('process-delete', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn();
 
     event = {
       Records: [

@@ -1,24 +1,28 @@
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
+// Adds custom DOM matchers such as toHaveTextContent.
 import { ReadableStream, TransformStream } from 'node:stream/web';
 import { TextDecoder, TextEncoder } from 'node:util';
 import { randomFillSync } from 'crypto';
-import '@testing-library/jest-dom';
-import 'jest-date-mock';
-import 'jest-styled-components';
+import '@testing-library/jest-dom/vitest';
 import 'unfetch/polyfill';
 
+vi.mock('@auth0/auth0-react', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@auth0/auth0-react')>()),
+  useAuth0: vi.fn(),
+}));
+
+vi.mock('file-saver', () => ({
+  saveAs: vi.fn(),
+}));
+
 window.matchMedia = (query) => ({
-  addEventListener: jest.fn(),
-  addListener: jest.fn(),
-  dispatchEvent: jest.fn(),
+  addEventListener: vi.fn(),
+  addListener: vi.fn(),
+  dispatchEvent: vi.fn(),
   matches: false,
   media: query,
   onchange: null,
-  removeEventListener: jest.fn(),
-  removeListener: jest.fn(),
+  removeEventListener: vi.fn(),
+  removeListener: vi.fn(),
 });
 
 Object.defineProperty(window, 'crypto', {
@@ -65,6 +69,3 @@ if (typeof Promise.withResolvers === 'undefined') {
     };
   };
 }
-
-// TODO: Improve tests so that the timeout can be reduced
-jest.setTimeout(30000);

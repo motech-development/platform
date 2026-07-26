@@ -1,4 +1,3 @@
-const { advanceTo, clear } = require('jest-date-mock');
 const hook = require('../set-email-verification-sent-date');
 
 describe('set-email-verification-sent-date', () => {
@@ -7,16 +6,16 @@ describe('set-email-verification-sent-date', () => {
   let user;
 
   beforeAll(() => {
-    advanceTo('2015-06-06T19:45:00Z');
+    vi.setSystemTime(new Date('2015-06-06T19:45:00Z'));
   });
 
   beforeEach(() => {
-    callback = jest.fn();
+    callback = vi.fn();
     context = {};
   });
 
   afterAll(() => {
-    clear();
+    vi.useRealTimers();
   });
 
   it('should set emailVerificationSentDate when no user_metadata exists', () => {

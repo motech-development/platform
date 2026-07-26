@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
 import { Form, Formik } from 'formik';
+import type { Mock } from 'vitest';
 import TestProvider from '../../../../../utils/TestProvider';
 import UploadAttachment, { REQUEST_UPLOAD } from '../UploadAttachment';
 
@@ -13,8 +14,8 @@ describe('UploadAttachment', () => {
   let file: File;
   let initialValues: IInitialValues;
   let mocks: MockedResponse[];
-  let onSubmit: jest.Mock;
-  let onUpload: jest.Mock;
+  let onSubmit: Mock;
+  let onUpload: Mock;
 
   beforeEach(() => {
     initialValues = {
@@ -54,9 +55,9 @@ describe('UploadAttachment', () => {
       },
     ];
 
-    onSubmit = jest.fn();
+    onSubmit = vi.fn();
 
-    onUpload = jest.fn();
+    onUpload = vi.fn();
 
     component = render(
       <TestProvider>

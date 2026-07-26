@@ -1,10 +1,11 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
+import type { Mock } from 'vitest';
 import TestProvider from '../../utils/TestProvider';
 import CompanyForm, { FormSchema } from '../CompanyForm';
 
 describe('CompanyForm', () => {
   let initialValues: FormSchema;
-  let onSave: jest.Mock<unknown>;
+  let onSave: Mock<(value: FormSchema) => void>;
 
   beforeEach(() => {
     initialValues = {
@@ -27,7 +28,7 @@ describe('CompanyForm', () => {
       id: 'company-uuid',
       name: 'New company',
     };
-    onSave = jest.fn();
+    onSave = vi.fn();
   });
 
   it('should render the form', async () => {

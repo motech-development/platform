@@ -1,21 +1,22 @@
 import { createFile } from '@motech-development/s3-file-operations';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import type { Mock } from 'vitest';
 import { updateDefinitions } from '../../shared/clam-av';
 import { handler } from '../update-definitions';
 
-jest.mock('node:fs');
+vi.mock('node:fs');
 
-jest.mock('../../shared/clam-av', () => ({
-  updateDefinitions: jest.fn(),
+vi.mock('../../shared/clam-av', () => ({
+  updateDefinitions: vi.fn(),
 }));
 
-jest.mock('@motech-development/s3-file-operations', () => ({
-  createFile: jest.fn(),
+vi.mock('@motech-development/s3-file-operations', () => ({
+  createFile: vi.fn(),
 }));
 
 describe('update-definitions', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: Record<string, unknown>;
 
@@ -24,7 +25,7 @@ describe('update-definitions', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn();
 
     event = {};
   });
@@ -80,7 +81,7 @@ describe('update-definitions', () => {
 
     describe('when updating the definitions is not successful', () => {
       it('should throw an error', async () => {
-        (updateDefinitions as jest.Mock).mockRejectedValueOnce('');
+        (updateDefinitions as Mock).mockRejectedValueOnce('');
 
         await expect(handler(event, context, callback)).rejects.toThrow(
           'Unable to update virus definitions',

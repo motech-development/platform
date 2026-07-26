@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import useQueryString from '../useQueryString';
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   useLocation: () => ({
     search: {
       test: 'hello',

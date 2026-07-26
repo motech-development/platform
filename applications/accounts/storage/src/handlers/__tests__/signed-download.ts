@@ -3,8 +3,8 @@ import type { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { handler } from '../signed-download';
 
-jest.mock('@motech-development/s3-file-operations', () => ({
-  createSignedUrl: jest.fn().mockResolvedValue('https://signed-url'),
+vi.mock('@motech-development/s3-file-operations', () => ({
+  createSignedUrl: vi.fn().mockResolvedValue('https://signed-url'),
 }));
 
 describe('signed-download', () => {

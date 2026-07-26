@@ -3,14 +3,15 @@ import { getFileData } from '@motech-development/s3-file-operations';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+import type { Mock } from 'vitest';
 import { handler, IEvent } from '../failure-notification';
 
-jest.mock('@motech-development/s3-file-operations', () => ({
-  getFileData: jest.fn(),
+vi.mock('@motech-development/s3-file-operations', () => ({
+  getFileData: vi.fn(),
 }));
 
 describe('failure-notification', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: IEvent;
   let sqs: AwsClientStub<SQSClient>;
@@ -20,7 +21,7 @@ describe('failure-notification', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn();
 
     event = {
       from: 'upload-bucket',
@@ -53,7 +54,7 @@ describe('failure-notification', () => {
 
     describe('with metadata', () => {
       beforeEach(() => {
-        (getFileData as jest.Mock).mockResolvedValue({
+        (getFileData as Mock).mockResolvedValue({
           Metadata: {
             id: 'test-id',
             typename: 'TestType',
@@ -88,7 +89,7 @@ describe('failure-notification', () => {
       });
 
       it('should send message with the correct params with no id set', async () => {
-        (getFileData as jest.Mock).mockResolvedValue({
+        (getFileData as Mock).mockResolvedValue({
           Metadata: {
             typename: 'TestType',
           },
@@ -129,7 +130,7 @@ describe('failure-notification', () => {
 
     describe('without metadata', () => {
       beforeEach(() => {
-        (getFileData as jest.Mock).mockResolvedValue({});
+        (getFileData as Mock).mockResolvedValue({});
       });
 
       it('should send message with the correct params', async () => {

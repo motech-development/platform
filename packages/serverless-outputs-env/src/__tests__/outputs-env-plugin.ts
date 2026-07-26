@@ -21,7 +21,7 @@ describe('OutputsEnvPlugin', () => {
   let serverless: ITestInstance;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     options = {
       region: 'eu-west-1',
@@ -29,12 +29,12 @@ describe('OutputsEnvPlugin', () => {
     };
     serverless = {
       cli: {
-        log: jest.fn(),
+        log: vi.fn(),
       },
-      getProvider: jest.fn().mockReturnValue({
-        getRegion: jest.fn().mockReturnValue(options.region),
-        getStage: jest.fn().mockReturnValue(options.stage),
-        request: jest.fn(() => ({
+      getProvider: vi.fn().mockReturnValue({
+        getRegion: vi.fn().mockReturnValue(options.region),
+        getStage: vi.fn().mockReturnValue(options.stage),
+        request: vi.fn(() => ({
           Stacks: [
             {
               Outputs: [

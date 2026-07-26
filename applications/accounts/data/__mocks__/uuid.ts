@@ -1,4 +1,4 @@
 module.exports = {
-  v1: jest.fn().mockReturnValue('test-uuid'),
-  v4: jest.fn().mockReturnValue('test-uuid'),
+  v1: vi.fn().mockReturnValue('test-uuid'),
+  v4: vi.fn().mockReturnValue('test-uuid'),
 };

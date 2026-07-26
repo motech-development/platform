@@ -2,7 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { advanceTo, clear } from 'jest-date-mock';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import CreateReport, { CREATE_REPORT, GET_SETTINGS } from '../CreateReport';
 
@@ -14,11 +13,13 @@ describe('CreateReport', () => {
     history = ['/reports/company-id/create-report'];
   });
 
-  afterAll(clear);
+  afterAll(() => {
+    vi.useRealTimers();
+  });
 
   describe('after year end', () => {
     beforeAll(() => {
-      advanceTo('2021-04-12T00:00:00.000Z');
+      vi.setSystemTime(new Date('2021-04-12T00:00:00.000Z'));
     });
 
     beforeEach(async () => {
@@ -205,7 +206,7 @@ describe('CreateReport', () => {
 
   describe('before year end', () => {
     beforeAll(() => {
-      advanceTo('2021-04-03T00:00:00.000Z');
+      vi.setSystemTime(new Date('2021-04-03T00:00:00.000Z'));
     });
 
     beforeEach(async () => {

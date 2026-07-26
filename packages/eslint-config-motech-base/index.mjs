@@ -1,7 +1,7 @@
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
+import pluginVitest from '@vitest/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
-import pluginJest from 'eslint-plugin-jest';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tseslint from 'typescript-eslint';
 
@@ -70,17 +70,16 @@ export default [
     },
   },
   {
-    extends: [pluginJest.configs['flat/recommended']],
+    extends: [pluginVitest.configs.env, pluginVitest.configs.recommended],
     files: ['**/__tests__/*.ts', '**/*.spec.ts', '**/*.test.ts'],
-    plugins: {
-      jest: pluginJest,
-    },
     rules: {
       '@typescript-eslint/unbound-method': 'off',
       'import/no-extraneous-dependencies': 'off',
+      'vitest/prefer-called-exactly-once-with': 'off',
     },
   },
   {
+    extends: [pluginVitest.configs.env],
     files: ['**/codegen.ts', '**/setupTests.ts', '*.config.{mts,ts}'],
     rules: {
       'import/no-extraneous-dependencies': 'off',
@@ -119,20 +118,19 @@ export default [
     },
   },
   {
-    extends: [pluginJest.configs['flat/recommended']],
+    extends: [pluginVitest.configs.env, pluginVitest.configs.recommended],
     files: [
       '**/__tests__/*.{js,mjs}',
       '**/*.spec.{js,mjs}',
       '**/*.test.{js,mjs}',
     ],
-    plugins: {
-      jest: pluginJest,
-    },
     rules: {
       'import/no-extraneous-dependencies': 'off',
+      'vitest/prefer-called-exactly-once-with': 'off',
     },
   },
   {
+    extends: [pluginVitest.configs.env],
     files: ['**/setupTests.{js,mjs}', '*.config.{js,mjs}'],
     rules: {
       'import/no-extraneous-dependencies': 'off',

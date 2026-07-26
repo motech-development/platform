@@ -618,7 +618,7 @@ describe('AddCompany', () => {
         },
       });
 
-      jest.spyOn(cache, 'modify');
+      vi.spyOn(cache, 'modify');
     });
 
     it('should add new company to the cache', () => {

@@ -1,29 +1,32 @@
 import { act, fireEvent, render, RenderResult } from '@testing-library/react';
+import type { Mock } from 'vitest';
 import TestProvider from '../../utils/TestProvider';
 import UserBar from '../UserBar';
 
 describe('UserBar', () => {
   let component: RenderResult;
-  let logOut: jest.Mock;
+  let logOut: Mock;
   let name: string;
   let picture: string;
 
   beforeEach(() => {
-    logOut = jest.fn();
+    logOut = vi.fn();
     name = 'Mo';
     picture = 'https://avatar.photo';
 
     Object.defineProperty(window, 'matchMedia', {
-      value: jest.fn<unknown, unknown[]>().mockImplementation((query) => ({
-        addEventListener: jest.fn(),
-        addListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-        matches: query === '(min-width: 992px)',
-        media: query,
-        onchange: null,
-        removeEventListener: jest.fn(),
-        removeListener: jest.fn(),
-      })),
+      value: vi
+        .fn<(query: string) => MediaQueryList>()
+        .mockImplementation((query) => ({
+          addEventListener: vi.fn(),
+          addListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+          matches: query === '(min-width: 992px)',
+          media: query,
+          onchange: null,
+          removeEventListener: vi.fn(),
+          removeListener: vi.fn(),
+        })),
       writable: true,
     });
   });

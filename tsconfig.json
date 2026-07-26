@@ -15,7 +15,7 @@
     "stableTypeOrdering": true,
     "strict": true,
     "strictNullChecks": true,
-    "types": ["google.analytics", "jest", "node"]
+    "types": ["google.analytics", "node", "vitest/globals"]
   },
   "exclude": ["dist"]
 }

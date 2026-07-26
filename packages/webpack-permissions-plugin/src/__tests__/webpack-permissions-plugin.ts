@@ -1,21 +1,22 @@
 import { chmodSync, existsSync } from 'node:fs';
 import { TapOptions } from 'tapable';
+import type { Mock } from 'vitest';
 import { Compiler, Stats } from 'webpack';
 import PermissionsPlugin from '../webpack-permissions-plugin';
 
-jest.mock('node:fs');
-jest.mock('filehound', () => ({
-  create: jest.fn().mockReturnValue({
-    depth: jest.fn().mockReturnThis(),
-    findSync: jest.fn().mockReturnValue(['mock-file.html']),
-    path: jest.fn().mockReturnThis(),
+vi.mock('node:fs');
+vi.mock('filehound', () => ({
+  create: vi.fn().mockReturnValue({
+    depth: vi.fn().mockReturnThis(),
+    findSync: vi.fn().mockReturnValue(['mock-file.html']),
+    path: vi.fn().mockReturnThis(),
   }),
 }));
 
 describe('webpack-permissions-plugin', () => {
   let compiler: Compiler;
   let permissionsPlugin: PermissionsPlugin;
-  let pluginName: jest.Mock;
+  let pluginName: Mock;
 
   beforeEach(() => {
     compiler = {
@@ -24,7 +25,7 @@ describe('webpack-permissions-plugin', () => {
       },
     } as Compiler;
 
-    pluginName = jest.fn();
+    pluginName = vi.fn();
 
     compiler.hooks.done.tap = (
       name: string | TapOptions,
@@ -43,7 +44,7 @@ describe('webpack-permissions-plugin', () => {
 
   describe('when folder exists', () => {
     beforeEach(() => {
-      (existsSync as jest.Mock).mockReturnValue(true);
+      (existsSync as Mock).mockReturnValue(true);
     });
 
     it('should have the correct plugin name', () => {
@@ -61,7 +62,7 @@ describe('webpack-permissions-plugin', () => {
 
   describe('when folder does not exist', () => {
     beforeEach(() => {
-      (existsSync as jest.Mock).mockReturnValue(false);
+      (existsSync as Mock).mockReturnValue(false);
     });
 
     it('should throw an error if a directory does not exist', () => {

@@ -152,12 +152,6 @@
       "groupName": "TypeScript toolchain"
     },
     {
-      "description": "Group non-major Jest updates",
-      "matchPackageNames": ["jest", "jest-*", "@jest/**", "ts-jest"],
-      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
-      "groupName": "Jest"
-    },
-    {
       "description": "Group non-major Testing Library updates",
       "matchPackageNames": ["@testing-library/**"],
       "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],

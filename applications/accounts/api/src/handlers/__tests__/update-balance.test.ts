@@ -1,12 +1,13 @@
 import logger from '@motech-development/node-logger';
 import { AWSAppSyncClient } from 'aws-appsync';
-import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
+import type { Callback, Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import type { Mock } from 'vitest';
 import { mutation } from '../../shared/update-balance';
 import { handler } from '../update-balance';
 
 describe('update-balance', () => {
-  let callback: jest.Mock;
+  let callback: Callback;
   let context: Context;
   let event: DynamoDBStreamEvent;
   let env: NodeJS.ProcessEnv;
@@ -16,7 +17,7 @@ describe('update-balance', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn<Callback>();
 
     event = {
       Records: [
@@ -116,7 +117,7 @@ describe('update-balance', () => {
     });
 
     it('should swallow the error', async () => {
-      (AWSAppSyncClient.prototype.mutate as jest.Mock).mockRejectedValueOnce(
+      (AWSAppSyncClient.prototype.mutate as Mock).mockRejectedValueOnce(
         new Error('Something has gone wrong'),
       );
 

@@ -1,11 +1,12 @@
 import { render } from '@testing-library/react';
+import type { Mock } from 'vitest';
 import FileDownload from '../FileDownload';
 
 describe('FileDownload', () => {
-  let onDownload: jest.Mock;
+  let onDownload: Mock;
 
   beforeEach(() => {
-    onDownload = jest.fn().mockResolvedValue(null);
+    onDownload = vi.fn().mockResolvedValue(null);
   });
 
   it('should not download if it is still loading', () => {

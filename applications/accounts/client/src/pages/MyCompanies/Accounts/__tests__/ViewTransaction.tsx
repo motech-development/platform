@@ -8,6 +8,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { saveAs } from 'file-saver';
+import type { Mock } from 'vitest';
 import TestProvider, {
   add,
   createFetchResponse,
@@ -20,24 +21,20 @@ import ViewTransaction, {
   VIEW_TRANSACTION,
 } from '../ViewTransaction';
 
-jest.mock(
-  'pdfjs-dist/build/pdf.worker.min.mjs?url',
-  () => 'pdfjs-dist/build/pdf.worker.min.mjs',
-  {
-    virtual: true,
-  },
-);
+vi.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => ({
+  default: 'pdfjs-dist/build/pdf.worker.min.mjs',
+}));
 
 describe('ViewTransaction', () => {
   let history: string[];
   let mocks: MockedResponse[];
 
   beforeEach(() => {
-    jest.setTimeout(120000);
+    vi.setConfig({ testTimeout: 120000 });
 
     history = ['/accounts/company-id/view-transaction/transaction-id'];
 
-    global.fetch = jest.fn().mockResolvedValue(
+    global.fetch = vi.fn().mockResolvedValue(
       createFetchResponse({
         body: 'success',
       }),
@@ -625,7 +622,7 @@ describe('ViewTransaction', () => {
       });
 
       it('should display an error toast if file fails to download', async () => {
-        (fetch as jest.Mock).mockResolvedValueOnce(
+        (fetch as Mock).mockResolvedValueOnce(
           createFetchResponse({
             body: 'fail',
             ok: false,
