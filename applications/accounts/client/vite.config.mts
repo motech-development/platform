@@ -34,11 +34,7 @@ export default defineConfig(({ command, mode }) => {
       sourcemap: true,
     },
     define: {
-      ...(isBuild
-        ? {}
-        : {
-            global: 'globalThis',
-          }),
+      global: 'globalThis',
       'process.env': `(${JSON.stringify(env)})`,
     },
     plugins: [
