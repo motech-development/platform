@@ -1,2 +1,3 @@
-import 'aws-sdk-client-mock-jest';
-import 'jest-date-mock';
+import 'aws-sdk-client-mock-vitest/extend';
+
+vi.mock('uuid');

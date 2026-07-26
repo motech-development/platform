@@ -2,7 +2,6 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import type { DynamoDBRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import { advanceTo, clear } from 'jest-date-mock';
 import insertTypeahead from '../insert-typeahead';
 
 describe('insert-typeahead', () => {
@@ -12,7 +11,7 @@ describe('insert-typeahead', () => {
   let records: DynamoDBRecord[];
 
   beforeAll(() => {
-    advanceTo('2020-06-06T19:45:00+00:00');
+    vi.setSystemTime(new Date('2020-06-06T19:45:00+00:00'));
   });
 
   beforeEach(() => {
@@ -303,7 +302,7 @@ describe('insert-typeahead', () => {
   });
 
   afterAll(() => {
-    clear();
+    vi.useRealTimers();
   });
 
   it('should return update with the correct params', async () => {

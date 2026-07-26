@@ -85,6 +85,12 @@ export default [
       '**/*.test.{mts,ts,tsx}',
     ],
   },
+  {
+    files: ['**/*.types.test.{ts,tsx}'],
+    rules: {
+      'vitest/expect-expect': 'off',
+    },
+  },
   eslintConfigMotechBase[2],
   {
     ...eslintConfigMotechBase[2],

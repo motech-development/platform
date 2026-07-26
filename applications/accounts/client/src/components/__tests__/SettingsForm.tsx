@@ -5,13 +5,14 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
+import type { Mock } from 'vitest';
 import { VatScheme } from '../../graphql/graphql';
 import TestProvider from '../../utils/TestProvider';
 import SettingsForm, { FormSchema } from '../SettingsForm';
 
 describe('SettingsForm', () => {
   let initialValues: FormSchema;
-  let onSave: jest.Mock<unknown>;
+  let onSave: Mock<(value: FormSchema) => void>;
   let component: RenderResult;
 
   beforeEach(async () => {
@@ -46,7 +47,7 @@ describe('SettingsForm', () => {
       },
     };
 
-    onSave = jest.fn();
+    onSave = vi.fn();
 
     await act(async () => {
       component = render(

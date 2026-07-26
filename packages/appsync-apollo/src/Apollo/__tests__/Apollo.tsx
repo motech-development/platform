@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import type { Mock } from 'vitest';
 import Apollo from '../Apollo';
 
 function Error() {
@@ -14,10 +15,10 @@ function Unauthorised() {
 }
 
 describe('Apollo', () => {
-  let getTokenSilently: jest.Mock;
+  let getTokenSilently: Mock;
 
   beforeEach(() => {
-    getTokenSilently = jest.fn();
+    getTokenSilently = vi.fn();
   });
 
   it('should show error if no AppSync settings are set', async () => {

@@ -8,30 +8,29 @@ import i18n from 'i18next';
 import { ReactElement, useMemo } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
-jest.mock('@auth0/auth0-react');
+export const getAccessTokenSilently = vi.fn();
 
-export const getAccessTokenSilently = jest.fn();
+export const getAccessTokenWithPopup = vi.fn();
 
-export const getAccessTokenWithPopup = jest.fn();
+export const getIdTokenClaims = vi.fn();
 
-export const getIdTokenClaims = jest.fn();
+export const handleRedirectCallback = vi.fn();
 
-export const handleRedirectCallback = jest.fn();
+export const loginWithPopup = vi.fn();
 
-export const loginWithPopup = jest.fn();
+export const loginWithRedirect = vi.fn();
 
-export const loginWithRedirect = jest.fn();
+export const logout = vi.fn();
 
-export const logout = jest.fn();
-
-export const add = jest.fn<void, IAddToast[]>(({ onDismiss }) => {
+export const add = vi.fn<(toast: IAddToast) => void>(({ onDismiss }) => {
   if (onDismiss) {
     onDismiss();
   }
 });
 
-export const remove = jest.fn();
+export const remove = vi.fn();
 
 export interface IMockFetchResponseOptions {
   body?: Blob | string | null;
@@ -48,17 +47,17 @@ export const createFetchResponse = ({
   status = 200,
   statusText = '',
 }: IMockFetchResponseOptions = {}) => ({
-  arrayBuffer: jest.fn().mockResolvedValue(new ArrayBuffer(0)),
-  blob: jest.fn().mockResolvedValue(body ?? ''),
+  arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(0)),
+  blob: vi.fn().mockResolvedValue(body ?? ''),
   headers: {
-    get: jest.fn((name: string) =>
+    get: vi.fn((name: string) =>
       name.toLowerCase() === 'content-type' ? contentType : undefined,
     ),
   },
   ok,
   status,
   statusText,
-  text: jest.fn().mockResolvedValue(typeof body === 'string' ? body : ''),
+  text: vi.fn().mockResolvedValue(typeof body === 'string' ? body : ''),
 });
 
 interface IMockAuth0 {
@@ -68,7 +67,7 @@ interface IMockAuth0 {
 }
 
 function mockAuth0({ isAuthenticated, isLoading, user }: IMockAuth0) {
-  (useAuth0 as jest.Mock).mockReturnValue({
+  (useAuth0 as Mock).mockReturnValue({
     getAccessTokenSilently,
     getAccessTokenWithPopup,
     getIdTokenClaims,

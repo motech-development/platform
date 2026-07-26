@@ -3,11 +3,12 @@ import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+import type { Mock } from 'vitest';
 import chunk from '../../shared/chunk';
 import { handler, IEvent } from '../get-records';
 
 describe('get-records', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let ddb: AwsClientStub<DynamoDBClient>;
   let event: IEvent;
@@ -17,7 +18,7 @@ describe('get-records', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn();
 
     ddb = mockClient(DynamoDBClient);
 

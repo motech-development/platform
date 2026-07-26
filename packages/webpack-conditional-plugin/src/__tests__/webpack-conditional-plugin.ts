@@ -1,20 +1,21 @@
+import type { Mock } from 'vitest';
 import { Compiler } from 'webpack';
 import ConditionalPlugin from '../webpack-conditional-plugin';
 
 class MockPlugin {
-  public apply: jest.Mock;
+  public apply: Mock;
 
-  constructor(apply: jest.Mock) {
+  constructor(apply: Mock) {
     this.apply = apply;
   }
 }
 
 describe('webpack-conditional-plugin', () => {
-  let apply: jest.Mock;
+  let apply: Mock;
   let compiler: Compiler;
 
   beforeEach(() => {
-    apply = jest.fn();
+    apply = vi.fn();
     compiler = {} as Compiler;
   });
 

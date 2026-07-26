@@ -1,8 +1,9 @@
-import { NoParamCallback } from 'node:fs';
+import type { NoParamCallback } from 'node:fs';
 import tomlify from 'tomlify-j0.4';
 
-tomlify.toToml = jest.fn();
+tomlify.toToml = vi.fn();
 
-jest.mock('node:fs', () => ({
-  writeFile: jest.fn((_, __, callback: NoParamCallback) => callback(null)),
+vi.mock('node:fs', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('node:fs')>()),
+  writeFile: vi.fn((_, __, callback: NoParamCallback) => callback(null)),
 }));

@@ -3,10 +3,11 @@ import { uploader } from '@motech-development/s3-file-operations';
 import Archiver from 'archiver';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import type { Mock } from 'vitest';
 import { handler, IEvent } from '../create-zip';
 
-jest.mock('@motech-development/s3-file-operations', () => ({
-  downloadFileStream: jest.fn().mockImplementation(() => {
+vi.mock('@motech-development/s3-file-operations', () => ({
+  downloadFileStream: vi.fn().mockImplementation(() => {
     const readable = new Readable();
 
     readable.push('hello');
@@ -17,18 +18,18 @@ jest.mock('@motech-development/s3-file-operations', () => ({
 
     return Promise.resolve(readable);
   }),
-  uploader: jest.fn(() => ({
-    done: jest.fn(),
+  uploader: vi.fn(() => ({
+    done: vi.fn(),
   })),
 }));
 
 describe('create-zip', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: IEvent;
 
   beforeEach(() => {
-    callback = jest.fn();
+    callback = vi.fn();
 
     context = ctx();
 

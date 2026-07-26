@@ -5,17 +5,18 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
+import type { Mock } from 'vitest';
 import TestProvider from '../../utils/TestProvider';
 import ConfirmDelete from '../ConfirmDelete';
 
 describe('ConfirmDelete', () => {
   let component: RenderResult;
-  let onCancel: jest.Mock;
-  let onDelete: jest.Mock;
+  let onCancel: Mock;
+  let onDelete: Mock;
 
   beforeEach(async () => {
-    onCancel = jest.fn();
-    onDelete = jest.fn();
+    onCancel = vi.fn();
+    onDelete = vi.fn();
 
     await act(async () => {
       component = render(

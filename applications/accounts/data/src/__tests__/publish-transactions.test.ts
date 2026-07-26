@@ -7,13 +7,13 @@ import {
 import type { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import { advanceTo, clear } from 'jest-date-mock';
+import type { Mock } from 'vitest';
 import { handler } from '../publish-transactions';
 import { ITransaction, TransactionStatus } from '../shared/transaction';
 
-jest.mock('uuid', () => ({
-  ...jest.requireActual<typeof import('uuid')>('uuid'),
-  v4: jest.fn().mockReturnValue('test-uuid'),
+vi.mock('uuid', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('uuid')>()),
+  v4: vi.fn().mockReturnValue('test-uuid'),
 }));
 
 const transaction: ITransaction = {
@@ -47,17 +47,17 @@ const publicationEvent = (
   }) as SQSEvent;
 
 describe('publish-transactions', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let ddb: AwsClientStub<DynamoDBDocumentClient>;
   let originalEnvironment: NodeJS.ProcessEnv;
 
   beforeAll(() => {
-    advanceTo('2020-06-06T19:45:00.000Z');
+    vi.setSystemTime(new Date('2020-06-06T19:45:00.000Z'));
   });
 
   beforeEach(() => {
-    callback = jest.fn();
+    callback = vi.fn();
     context = ctx();
     context.done();
     ddb = mockClient(DynamoDBDocumentClient);
@@ -76,7 +76,7 @@ describe('publish-transactions', () => {
   });
 
   afterAll(() => {
-    clear();
+    vi.useRealTimers();
   });
 
   it('atomically confirms the Transaction and creates its notification', async () => {

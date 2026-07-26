@@ -1,15 +1,16 @@
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { json2csv } from 'json-2-csv';
+import type { Mock } from 'vitest';
 import { handler, IEvent } from '../convert-to-csv';
 
 describe('convert-to-csv', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: IEvent;
 
   beforeEach(() => {
-    callback = jest.fn();
+    callback = vi.fn();
 
     context = ctx();
 
@@ -56,7 +57,7 @@ describe('convert-to-csv', () => {
       owner: 'OWNER-ID',
     };
 
-    (json2csv as jest.Mock).mockReturnValue('MOCKED-CSV-DATA');
+    (json2csv as Mock).mockReturnValue('MOCKED-CSV-DATA');
   });
 
   it('should return the correct data when attachments are returned', async () => {

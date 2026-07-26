@@ -18,6 +18,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
 import { AwsCommand, mockClient } from 'aws-sdk-client-mock';
+import type { Mock } from 'vitest';
 import {
   createDirectory,
   createFile,
@@ -33,8 +34,8 @@ import {
 
 const s3 = mockClient(S3Client);
 
-jest.mock('@aws-sdk/s3-request-presigner', () => ({
-  getSignedUrl: jest
+vi.mock('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: vi
     .fn()
     .mockImplementation(
       (_, command: AwsCommand<ServiceInputTypes, ServiceOutputTypes>) => {
@@ -43,18 +44,18 @@ jest.mock('@aws-sdk/s3-request-presigner', () => ({
     ),
 }));
 
-jest.mock('node:fs', () => ({
-  ...jest.requireActual<typeof import('node:fs')>('node:fs'),
-  createWriteStream: jest.fn(),
-  existsSync: jest.fn(),
+vi.mock('node:fs', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('node:fs')>()),
+  createWriteStream: vi.fn(),
+  existsSync: vi.fn(),
   promises: {
-    readFile: jest.fn().mockResolvedValue(null),
+    readFile: vi.fn().mockResolvedValue(null),
   },
 }));
 
-jest.mock('node:fs/promises', () => ({
-  ...jest.requireActual<typeof import('node:fs/promises')>('node:fs/promises'),
-  mkdir: jest.fn(),
+vi.mock('node:fs/promises', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('node:fs/promises')>()),
+  mkdir: vi.fn(),
 }));
 
 describe('s3-file-operations', () => {
@@ -63,7 +64,7 @@ describe('s3-file-operations', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('createDirectory', () => {
@@ -75,7 +76,7 @@ describe('s3-file-operations', () => {
 
     describe('when directory exists', () => {
       beforeEach(() => {
-        (existsSync as jest.Mock).mockReturnValueOnce(true);
+        (existsSync as Mock).mockReturnValueOnce(true);
       });
 
       it('should not create directory', async () => {
@@ -91,7 +92,7 @@ describe('s3-file-operations', () => {
 
     describe('when directory does not exist', () => {
       beforeEach(() => {
-        (existsSync as jest.Mock).mockReturnValueOnce(false);
+        (existsSync as Mock).mockReturnValueOnce(false);
       });
 
       it('should create directory', async () => {

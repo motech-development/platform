@@ -6,13 +6,14 @@ import {
   waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { Mock } from 'vitest';
 import TextProvider, {
   add,
   createFetchResponse,
 } from '../../utils/TestProvider';
 import Reset from '../Reset';
 
-jest.mock('react-ga');
+vi.mock('react-ga');
 
 describe('Reset', () => {
   let component: RenderResult;
@@ -56,7 +57,7 @@ describe('Reset', () => {
 
     describe('when successful', () => {
       beforeEach(() => {
-        global.fetch = jest.fn().mockResolvedValue(
+        global.fetch = vi.fn().mockResolvedValue(
           createFetchResponse({
             body: 'success',
           }),
@@ -120,11 +121,11 @@ describe('Reset', () => {
 
     describe('when unsuccessful', () => {
       beforeEach(() => {
-        global.fetch = jest.fn();
+        global.fetch = vi.fn();
       });
 
       it('should display an error toast with the supplied error message', async () => {
-        (fetch as jest.Mock).mockResolvedValueOnce(
+        (fetch as Mock).mockResolvedValueOnce(
           createFetchResponse({
             body: JSON.stringify({
               message: 'Ooops',
@@ -159,7 +160,7 @@ describe('Reset', () => {
       });
 
       it('should display an error toast when an error message is not supplied', async () => {
-        (fetch as jest.Mock).mockResolvedValueOnce(
+        (fetch as Mock).mockResolvedValueOnce(
           createFetchResponse({
             body: null,
             ok: false,

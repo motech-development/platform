@@ -1,12 +1,10 @@
-const loadRule = require('../loadRule');
+const instrument = require('istanbul-lib-instrument');
 
-jest.mock('istanbul-lib-instrument', () => ({
-  createInstrumenter: jest.fn().mockReturnValue({
-    instrument: jest.fn((_, __, callback) =>
-      callback('Something has gone wrong.'),
-    ),
-  }),
-}));
+vi.spyOn(instrument, 'createInstrumenter').mockReturnValue({
+  instrument: vi.fn((_, __, callback) => callback('Something has gone wrong.')),
+});
+
+const loadRule = require('../loadRule');
 
 describe('loadRule', () => {
   let rule;

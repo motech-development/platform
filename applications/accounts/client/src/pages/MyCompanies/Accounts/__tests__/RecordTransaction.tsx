@@ -8,7 +8,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
-import { advanceTo, clear } from 'jest-date-mock';
+import type { Mock } from 'vitest';
 import { gql } from '../../../../graphql';
 import {
   AddTransactionMutation,
@@ -41,9 +41,9 @@ const GET_TYPEAHEAD = gql(/* GraphQL */ `
   }
 `);
 
-jest.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => 'service-worker', {
-  virtual: true,
-});
+vi.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => ({
+  default: 'service-worker',
+}));
 
 describe('RecordTransaction', () => {
   let history: string[];
@@ -51,7 +51,7 @@ describe('RecordTransaction', () => {
   let upload: File;
 
   beforeAll(() => {
-    advanceTo('2020-05-07T11:58:17+01:00');
+    vi.setSystemTime(new Date('2020-05-07T11:58:17+01:00'));
   });
 
   beforeEach(() => {
@@ -61,7 +61,7 @@ describe('RecordTransaction', () => {
       type: 'application/pdf',
     });
 
-    global.fetch = jest.fn().mockResolvedValue(
+    global.fetch = vi.fn().mockResolvedValue(
       createFetchResponse({
         body: 'success',
       }),
@@ -69,7 +69,7 @@ describe('RecordTransaction', () => {
   });
 
   afterAll(() => {
-    clear();
+    vi.useRealTimers();
   });
 
   describe('purchase', () => {
@@ -479,7 +479,7 @@ describe('RecordTransaction', () => {
         });
 
         it('should display an error toast if upload is unsuccessful', async () => {
-          (fetch as jest.Mock).mockResolvedValueOnce(
+          (fetch as Mock).mockResolvedValueOnce(
             createFetchResponse({
               body: 'fail',
               ok: false,
@@ -1789,7 +1789,7 @@ describe('RecordTransaction', () => {
         },
       }) as unknown as ApolloCache<AddTransactionMutation>;
 
-      jest.spyOn(cache, 'modify');
+      vi.spyOn(cache, 'modify');
     });
 
     describe('typeahead', () => {

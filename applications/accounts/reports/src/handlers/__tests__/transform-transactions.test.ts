@@ -1,16 +1,17 @@
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import type { Mock } from 'vitest';
 import Status from '../../shared/status';
 import { IEvent as IOutput } from '../convert-to-csv';
 import { handler, IEvent } from '../transform-transactions';
 
 describe('transform-transactions', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: IEvent;
 
   beforeEach(() => {
-    callback = jest.fn();
+    callback = vi.fn();
 
     context = ctx();
 

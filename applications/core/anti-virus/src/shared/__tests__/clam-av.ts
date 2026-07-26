@@ -1,7 +1,37 @@
 import childProcess, { ChildProcess } from 'node:child_process';
 import { scanFile, updateDefinitions } from '../clam-av';
 
-jest.mock('node:child_process');
+const childProcessMock = vi.hoisted(() => {
+  type TResult = (Error | string | undefined)[];
+  type TCallback = (...result: TResult) => void;
+
+  let result: TResult = [undefined, 'true', undefined];
+
+  return {
+    execFile: vi.fn((_: unknown, __: unknown, callback: TCallback) =>
+      callback(...result),
+    ),
+    setExecFile(success: boolean) {
+      result = success
+        ? [undefined, 'true', undefined]
+        : [new Error(), undefined, 'false'];
+    },
+  };
+});
+
+vi.mock('node:child_process', async (importOriginal) => {
+  const childProcessModule =
+    await importOriginal<typeof import('node:child_process')>();
+
+  return {
+    ...childProcessModule,
+    ...childProcessMock,
+    default: {
+      ...childProcessModule,
+      ...childProcessMock,
+    },
+  };
+});
 
 interface IChildProcess extends ChildProcess {
   setExecFile(pass: boolean): void;

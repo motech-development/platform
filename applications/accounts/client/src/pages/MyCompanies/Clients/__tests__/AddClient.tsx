@@ -343,7 +343,7 @@ describe('AddClient', () => {
         },
       });
 
-      jest.spyOn(cache, 'modify');
+      vi.spyOn(cache, 'modify');
     });
 
     it('should add new client to the cache', () => {

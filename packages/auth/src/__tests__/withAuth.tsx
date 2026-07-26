@@ -1,10 +1,11 @@
 import { useAuth0, User } from '@auth0/auth0-react';
 import { render, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import type { Mock } from 'vitest';
 import WithAuth from '../WithAuth';
 
-jest.mock('@auth0/auth0-react', () => ({
-  useAuth0: jest.fn(),
+vi.mock('@auth0/auth0-react', () => ({
+  useAuth0: vi.fn(),
 }));
 
 function TestComponent() {
@@ -16,30 +17,30 @@ function LoadingComponent() {
 }
 
 describe('withAuth', () => {
-  let buildAuthorizeUrl: jest.Mock;
+  let buildAuthorizeUrl: Mock;
   let env: NodeJS.ProcessEnv;
-  let getIdTokenClaims: jest.Mock;
-  let getTokenSilently: jest.Mock;
+  let getIdTokenClaims: Mock;
+  let getTokenSilently: Mock;
   let isAuthenticated: boolean;
   let isLoading: boolean;
-  let loginWithPopup: jest.Mock;
-  let loginWithRedirect: jest.Mock;
-  let logout: jest.Mock;
-  let onError: jest.Mock;
+  let loginWithPopup: Mock;
+  let loginWithRedirect: Mock;
+  let logout: Mock;
+  let onError: Mock;
   let user: User;
 
   beforeEach(() => {
-    buildAuthorizeUrl = jest.fn();
+    buildAuthorizeUrl = vi.fn();
     env = {
       ...process.env,
     };
-    getIdTokenClaims = jest.fn();
-    getTokenSilently = jest.fn();
+    getIdTokenClaims = vi.fn();
+    getTokenSilently = vi.fn();
     isAuthenticated = false;
-    loginWithPopup = jest.fn();
-    loginWithRedirect = jest.fn();
-    logout = jest.fn();
-    onError = jest.fn();
+    loginWithPopup = vi.fn();
+    loginWithRedirect = vi.fn();
+    logout = vi.fn();
+    onError = vi.fn();
     process.env.NODE_ENV = 'development';
     process.env.REACT_APP_AUTH0_AUDIENCE = 'APP_AUTH0_AUDIENCE';
     process.env.REACT_APP_AUTH0_CLIENT_ID = 'AUTH0_CLIENT_ID';
@@ -59,7 +60,7 @@ describe('withAuth', () => {
     });
 
     it('should show component', async () => {
-      (useAuth0 as jest.Mock).mockReturnValue({
+      (useAuth0 as Mock).mockReturnValue({
         buildAuthorizeUrl,
         getIdTokenClaims,
         getTokenSilently,
@@ -87,7 +88,7 @@ describe('withAuth', () => {
     });
 
     it('should handler error', async () => {
-      (useAuth0 as jest.Mock).mockReturnValue({
+      (useAuth0 as Mock).mockReturnValue({
         buildAuthorizeUrl,
         getIdTokenClaims,
         getTokenSilently,
@@ -121,7 +122,7 @@ describe('withAuth', () => {
     it('should show the loader', async () => {
       isLoading = true;
 
-      (useAuth0 as jest.Mock).mockReturnValue({
+      (useAuth0 as Mock).mockReturnValue({
         buildAuthorizeUrl,
         getIdTokenClaims,
         getTokenSilently,

@@ -652,7 +652,7 @@ describe('UpdateDetails', () => {
         },
       });
 
-      jest.spyOn(cache, 'modify');
+      vi.spyOn(cache, 'modify');
     });
 
     it('should remove company from cache if item exists', () => {

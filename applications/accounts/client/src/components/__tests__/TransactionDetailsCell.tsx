@@ -4,16 +4,18 @@ import TransactionDetailsCell from '../TransactionDetailsCell';
 describe('TransactionDetailsCell', () => {
   it('should set width on xs viewport', async () => {
     Object.defineProperty(window, 'matchMedia', {
-      value: jest.fn<unknown, unknown[]>().mockImplementation((query) => ({
-        addEventListener: jest.fn(),
-        addListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-        matches: false,
-        media: query,
-        onchange: null,
-        removeEventListener: jest.fn(),
-        removeListener: jest.fn(),
-      })),
+      value: vi
+        .fn<(query: string) => MediaQueryList>()
+        .mockImplementation((query) => ({
+          addEventListener: vi.fn(),
+          addListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+          matches: false,
+          media: query,
+          onchange: null,
+          removeEventListener: vi.fn(),
+          removeListener: vi.fn(),
+        })),
       writable: true,
     });
 
@@ -36,16 +38,18 @@ describe('TransactionDetailsCell', () => {
 
   it('should set width on sm viewport', async () => {
     Object.defineProperty(window, 'matchMedia', {
-      value: jest.fn<unknown, unknown[]>().mockImplementation((query) => ({
-        addEventListener: jest.fn(),
-        addListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-        matches: query === '(min-width: 576px)',
-        media: query,
-        onchange: null,
-        removeEventListener: jest.fn(),
-        removeListener: jest.fn(),
-      })),
+      value: vi
+        .fn<(query: string) => MediaQueryList>()
+        .mockImplementation((query) => ({
+          addEventListener: vi.fn(),
+          addListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+          matches: query === '(min-width: 576px)',
+          media: query,
+          onchange: null,
+          removeEventListener: vi.fn(),
+          removeListener: vi.fn(),
+        })),
       writable: true,
     });
 
@@ -68,16 +72,18 @@ describe('TransactionDetailsCell', () => {
 
   it('should not set width on other viewports', async () => {
     Object.defineProperty(window, 'matchMedia', {
-      value: jest.fn<unknown, unknown[]>().mockImplementation((query) => ({
-        addEventListener: jest.fn(),
-        addListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-        matches: query === '(min-width: 768px)',
-        media: query,
-        onchange: null,
-        removeEventListener: jest.fn(),
-        removeListener: jest.fn(),
-      })),
+      value: vi
+        .fn<(query: string) => MediaQueryList>()
+        .mockImplementation((query) => ({
+          addEventListener: vi.fn(),
+          addListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+          matches: query === '(min-width: 768px)',
+          media: query,
+          onchange: null,
+          removeEventListener: vi.fn(),
+          removeListener: vi.fn(),
+        })),
       writable: true,
     });
 

@@ -1,14 +1,15 @@
 import { act, render, RenderResult } from '@testing-library/react';
+import type { Mock } from 'vitest';
 import TestProvider from '../../utils/TestProvider';
 import TransactionsList from '../TransactionsList';
 
 describe('TransactionsList', () => {
   let companyId: string;
-  let onDelete: jest.Mock;
+  let onDelete: Mock;
 
   beforeEach(() => {
     companyId = 'company-id';
-    onDelete = jest.fn();
+    onDelete = vi.fn();
   });
 
   it('should display a message if there are no transactions', async () => {

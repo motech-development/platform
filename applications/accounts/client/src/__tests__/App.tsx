@@ -3,13 +3,15 @@ import { createMocks } from 'react-idle-timer';
 import App from '../App';
 import TestProvider, { add, logout } from '../utils/TestProvider';
 
-jest.mock('@auth0/auth0-react');
-
-jest.mock('react-ga');
+vi.mock('react-ga');
 
 describe('App', () => {
   beforeEach(() => {
     logout.mockResolvedValue(null);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should render when loaded', async () => {
@@ -37,7 +39,7 @@ describe('App', () => {
 
   it('should display error toast if there are any log in errors', async () => {
     act(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       createMocks();
     });
 
@@ -53,25 +55,21 @@ describe('App', () => {
       await Promise.resolve();
     });
 
-    await waitFor(() =>
+    await vi.waitFor(() => {
       expect(add).toHaveBeenCalledWith({
         colour: 'danger',
         message: 'Message',
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         onDismiss: expect.any(Function),
-      }),
-    );
-
-    act(() => {
-      jest.runOnlyPendingTimers();
+      });
     });
 
-    await waitFor(() => expect(logout).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(logout).toHaveBeenCalledTimes(1));
   });
 
   it('should log out when idle when not in production mode', async () => {
     act(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       createMocks();
     });
 
@@ -86,10 +84,10 @@ describe('App', () => {
     });
 
     act(() => {
-      jest.runOnlyPendingTimers();
+      vi.runOnlyPendingTimers();
     });
 
-    await waitFor(() =>
+    await vi.waitFor(() =>
       expect(logout).toHaveBeenCalledWith({
         logoutParams: {
           returnTo: window.location.origin,

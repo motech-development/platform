@@ -2,10 +2,11 @@ import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
 import type { Context, S3Event } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+import type { Mock } from 'vitest';
 import { handler } from '../queue-upload';
 
 describe('queue-upload', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: S3Event;
   let sqs: AwsClientStub<SQSClient>;
@@ -15,7 +16,7 @@ describe('queue-upload', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn();
 
     event = {
       Records: [

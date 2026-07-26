@@ -1965,12 +1965,13 @@ test('pull-request quality categories start independently with bounded workspace
     /exitOnceUploaded: true/,
   );
 
-  const jestWorkspaces = manifests.filter(({ scripts }) =>
-    scripts?.['test-ci']?.includes('jest'),
+  const unitTestWorkspaces = manifests.filter(
+    ({ scripts }) => scripts?.['test-ci'],
   );
-  assert.ok(jestWorkspaces.length > 0);
-  for (const { name, scripts } of jestWorkspaces) {
-    assert.match(scripts['test-ci'], /--runInBand/, name);
+  assert.ok(unitTestWorkspaces.length > 0);
+  for (const { name, scripts } of unitTestWorkspaces) {
+    assert.match(scripts['test-ci'], /\bvitest\b/, name);
+    assert.match(scripts['test-ci'], /--no-file-parallelism/, name);
   }
 });
 

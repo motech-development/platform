@@ -1,8 +1,8 @@
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
+import pluginVitest from '@vitest/eslint-plugin';
 import { defineConfig } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
-import pluginJest from 'eslint-plugin-jest';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 
 const compat = new FlatCompat({
@@ -39,10 +39,10 @@ export default defineConfig([
     },
   },
   {
-    extends: [pluginJest.configs['flat/recommended']],
+    extends: [pluginVitest.configs.env, pluginVitest.configs.recommended],
     files: ['**/__tests__/*.js', '**/*.spec.js', '**/*.test.js'],
-    plugins: {
-      jest: pluginJest,
+    rules: {
+      'vitest/prefer-called-exactly-once-with': 'off',
     },
   },
   {

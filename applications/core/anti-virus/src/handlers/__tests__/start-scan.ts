@@ -2,10 +2,11 @@ import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
 import type { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+import type { Mock } from 'vitest';
 import { handler } from '../start-scan';
 
 describe('start-scan', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: SQSEvent;
   let sfn: AwsClientStub<SFNClient>;
@@ -15,7 +16,7 @@ describe('start-scan', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn();
 
     event = {
       Records: [

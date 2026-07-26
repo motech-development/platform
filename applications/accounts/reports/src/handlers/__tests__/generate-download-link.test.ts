@@ -1,17 +1,18 @@
 import { createSignedUrl } from '@motech-development/s3-file-operations';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import type { Mock } from 'vitest';
 import { handler, IEvent } from '../generate-download-link';
 
-jest.mock('@motech-development/s3-file-operations');
+vi.mock('@motech-development/s3-file-operations');
 
 describe('generate-download-link', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: IEvent;
 
   beforeEach(() => {
-    callback = jest.fn();
+    callback = vi.fn();
 
     context = ctx();
 
@@ -40,7 +41,7 @@ describe('generate-download-link', () => {
 
       process.env.BUCKET = 'BUCKET';
 
-      (createSignedUrl as jest.Mock).mockResolvedValue(
+      (createSignedUrl as Mock).mockResolvedValue(
         'https://download.url/report.zip',
       );
     });

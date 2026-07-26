@@ -1,3 +1,4 @@
+import type { UpdateScheduleCommandInput } from '@aws-sdk/client-scheduler';
 import {
   ConflictException,
   CreateScheduleCommand,
@@ -10,6 +11,7 @@ import { marshall } from '@aws-sdk/util-dynamodb';
 import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+import type { Mock } from 'vitest';
 import { handler } from '../schedule-transactions';
 import { ITransaction, TransactionStatus } from '../shared/transaction';
 
@@ -67,13 +69,13 @@ const removeEvent = (record: ITransaction): DynamoDBStreamEvent => ({
 });
 
 describe('schedule-transactions', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let scheduler: AwsClientStub<SchedulerClient>;
   let originalEnvironment: NodeJS.ProcessEnv;
 
   beforeEach(() => {
-    callback = jest.fn();
+    callback = vi.fn();
     context = ctx();
     context.done();
     scheduler = mockClient(SchedulerClient);
@@ -145,7 +147,7 @@ describe('schedule-transactions', () => {
           expectedScheduledTime: '2020-06-08T00:00:00.000Z',
           transactionId: 'transaction-id',
         }),
-      }),
+      }) as UpdateScheduleCommandInput['Target'],
     });
   });
 

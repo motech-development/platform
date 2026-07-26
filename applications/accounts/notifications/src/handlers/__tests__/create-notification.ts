@@ -3,7 +3,6 @@ import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import type { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import { advanceTo, clear } from 'jest-date-mock';
 import { handler } from '../create-notification';
 
 describe('create-notification', () => {
@@ -13,7 +12,7 @@ describe('create-notification', () => {
   let event: APIGatewayProxyEvent;
 
   beforeAll(() => {
-    advanceTo('2021-04-11T19:45:00+00:00');
+    vi.setSystemTime(new Date('2021-04-11T19:45:00+00:00'));
   });
 
   beforeEach(() => {
@@ -42,7 +41,9 @@ describe('create-notification', () => {
     process.env = env;
   });
 
-  afterAll(clear);
+  afterAll(() => {
+    vi.useRealTimers();
+  });
 
   it('should return a 201 when a notification is created', async () => {
     await expect(handler(event, context)).resolves.toEqual({

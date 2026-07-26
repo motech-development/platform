@@ -3,21 +3,21 @@ import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import { advanceTo, clear } from 'jest-date-mock';
+import type { Mock } from 'vitest';
 import { handler, IEvent } from '../add-report';
 
 describe('add-report', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let ddb: AwsClientStub<DynamoDBClient>;
   let event: IEvent;
 
   beforeAll(() => {
-    advanceTo('2021-04-11T19:45:00+00:00');
+    vi.setSystemTime(new Date('2021-04-11T19:45:00+00:00'));
   });
 
   beforeEach(() => {
-    callback = jest.fn();
+    callback = vi.fn();
 
     context = ctx();
 
@@ -33,7 +33,9 @@ describe('add-report', () => {
     };
   });
 
-  afterAll(clear);
+  afterAll(() => {
+    vi.useRealTimers();
+  });
 
   it('should throw an error if table is not set', async () => {
     await expect(handler(event, context, callback)).rejects.toThrow(

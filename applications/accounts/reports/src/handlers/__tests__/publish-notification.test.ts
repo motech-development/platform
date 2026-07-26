@@ -1,19 +1,20 @@
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClient } from 'aws4fetch';
+import type { Mock } from 'vitest';
 import { handler, IEvent } from '../publish-notification';
 
-jest.mock('aws4fetch');
+vi.mock('aws4fetch');
 
 describe('publish-notification', () => {
-  const fetch = jest.fn();
-  let callback: jest.Mock;
+  const fetch = vi.fn();
+  let callback: Mock;
   let context: Context;
   let event: IEvent;
   let env: NodeJS.ProcessEnv;
 
   beforeEach(() => {
-    callback = jest.fn();
+    callback = vi.fn();
 
     context = ctx();
 
@@ -58,7 +59,7 @@ describe('publish-notification', () => {
 
   describe('when config is set', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
 
       env = {
         ...process.env,
@@ -68,9 +69,13 @@ describe('publish-notification', () => {
         ok: true,
       });
 
-      (AwsClient as jest.Mock).mockImplementation(() => ({
-        fetch,
-      }));
+      // Vitest constructor mocks must use a constructable function.
+      // eslint-disable-next-line prefer-arrow-callback
+      (AwsClient as Mock).mockImplementation(function MockAwsClient() {
+        return {
+          fetch,
+        };
+      });
 
       process.env.AWS_ACCESS_KEY_ID = 'access-key-id';
       process.env.AWS_REGION = 'eu-west-2';

@@ -2,6 +2,8 @@ import winston from 'winston';
 import logger from '../logger';
 import opts from '../opts';
 
+vi.mock('winston');
+
 describe('logger', () => {
   it('should configure Winston with the correct config', () => {
     logger.log('info', 'test');

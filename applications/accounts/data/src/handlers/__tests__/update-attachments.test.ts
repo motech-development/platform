@@ -2,7 +2,6 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import type { SQSRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import { advanceTo, clear } from 'jest-date-mock';
 import updateAttachments from '../update-attachments';
 
 describe('update-attachments', () => {
@@ -13,7 +12,7 @@ describe('update-attachments', () => {
   let records: SQSRecord[];
 
   beforeAll(() => {
-    advanceTo('2020-06-06T19:45:00+00:00');
+    vi.setSystemTime(new Date('2020-06-06T19:45:00+00:00'));
   });
 
   beforeEach(() => {
@@ -106,7 +105,7 @@ describe('update-attachments', () => {
   });
 
   afterAll(() => {
-    clear();
+    vi.useRealTimers();
   });
 
   it('should query with the correct params', async () => {

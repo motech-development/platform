@@ -1,22 +1,23 @@
+import type { Mock } from 'vitest';
 import waitForApollo from '../waitForApollo';
 
 describe('waitForApollo', () => {
-  let spy: jest.Mock;
+  let spy: Mock;
 
   beforeEach(() => {
-    spy = jest.fn();
+    spy = vi.fn();
 
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('should resolve after set period of time', async () => {
     const test = waitForApollo(5000).then(spy);
 
-    jest.advanceTimersByTime(5000);
+    vi.advanceTimersByTime(5000);
 
     await test;
 

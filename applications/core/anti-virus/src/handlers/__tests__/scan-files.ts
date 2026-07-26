@@ -4,20 +4,21 @@ import {
 } from '@motech-development/s3-file-operations';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import type { Mock } from 'vitest';
 import { scanFile } from '../../shared/clam-av';
 import { handler, IEvent } from '../scan-file';
 
-jest.mock('../../shared/clam-av', () => ({
-  scanFile: jest.fn().mockResolvedValue(true),
+vi.mock('../../shared/clam-av', () => ({
+  scanFile: vi.fn().mockResolvedValue(true),
 }));
 
-jest.mock('@motech-development/s3-file-operations', () => ({
-  createDirectory: jest.fn(),
-  downloadFile: jest.fn(),
+vi.mock('@motech-development/s3-file-operations', () => ({
+  createDirectory: vi.fn(),
+  downloadFile: vi.fn(),
 }));
 
 describe('scan-files', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: IEvent;
 
@@ -26,7 +27,7 @@ describe('scan-files', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn();
 
     event = {
       from: 'upload-bucket',
@@ -36,7 +37,7 @@ describe('scan-files', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should throw an error if bucket is not set', async () => {
@@ -97,7 +98,7 @@ describe('scan-files', () => {
     });
 
     it('should not download the virus definitions if the temporary download folder exists', async () => {
-      (createDirectory as jest.Mock).mockResolvedValueOnce(true);
+      (createDirectory as Mock).mockResolvedValueOnce(true);
 
       await handler(event, context, callback);
 
@@ -119,9 +120,7 @@ describe('scan-files', () => {
     });
 
     it('should scan the correct file', async () => {
-      (downloadFile as jest.Mock).mockResolvedValueOnce(
-        '/tmp/downloads/file.pdf',
-      );
+      (downloadFile as Mock).mockResolvedValueOnce('/tmp/downloads/file.pdf');
 
       await handler(event, context, callback);
 

@@ -1,14 +1,15 @@
 import { moveFile } from '@motech-development/s3-file-operations';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
+import type { Mock } from 'vitest';
 import { handler, IEvent } from '../move-file';
 
-jest.mock('@motech-development/s3-file-operations', () => ({
-  moveFile: jest.fn(),
+vi.mock('@motech-development/s3-file-operations', () => ({
+  moveFile: vi.fn(),
 }));
 
 describe('move-file', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: IEvent;
 
@@ -17,7 +18,7 @@ describe('move-file', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn();
 
     event = {
       from: 'upload-bucket',

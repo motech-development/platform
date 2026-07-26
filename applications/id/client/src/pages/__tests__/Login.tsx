@@ -7,12 +7,14 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WebAuth } from 'auth0-js';
+import type { Mock } from 'vitest';
 import TestProvider, { add } from '../../utils/TestProvider';
 import Login from '../Login';
 
-jest.mock('react-ga');
+type Auth0Callback = (error: { code?: string; description?: string }) => void;
+type Auth0Method = (options: unknown, callback: Auth0Callback) => void;
 
-type TAuth0Callback = (args: { code?: string; description?: string }) => void;
+vi.mock('react-ga');
 
 describe('Login', () => {
   let component: RenderResult;
@@ -63,10 +65,7 @@ describe('Login', () => {
         const { findAllByRole, findByLabelText } = component;
 
         (
-          WebAuth.prototype.login as unknown as jest.Mock<
-            unknown,
-            TAuth0Callback[]
-          >
+          WebAuth.prototype.login as unknown as Mock<Auth0Method>
         ).mockImplementationOnce((_, cb) =>
           cb({
             code: 'invalid_signup',
@@ -120,10 +119,7 @@ describe('Login', () => {
     describe('when signing up', () => {
       it('should display a toast when request is unsuccessful', async () => {
         (
-          WebAuth.prototype.signup as unknown as jest.Mock<
-            unknown,
-            TAuth0Callback[]
-          >
+          WebAuth.prototype.signup as unknown as Mock<Auth0Method>
         ).mockImplementationOnce((_, cb) =>
           cb({
             code: 'invalid_user_password',
@@ -166,10 +162,7 @@ describe('Login', () => {
         const { findAllByRole, findByLabelText } = component;
 
         (
-          WebAuth.prototype.signup as unknown as jest.Mock<
-            unknown,
-            TAuth0Callback[]
-          >
+          WebAuth.prototype.signup as unknown as Mock<Auth0Method>
         ).mockImplementationOnce((_, cb) =>
           cb({
             code: 'invalid_signup',
@@ -274,6 +267,8 @@ describe('Login', () => {
 
         await userEvent.click(forgottenPassword);
 
+        await findByText('help-text');
+
         const email = await findByLabelText('username.label');
 
         await userEvent.type(email, 'test@example.com');
@@ -288,11 +283,13 @@ describe('Login', () => {
       });
 
       it('should display a toast when request is successful', async () => {
-        const { findAllByRole, findByLabelText } = component;
+        const { findAllByRole, findByLabelText, findByText } = component;
 
         const [forgottenPassword] = await findAllByRole('button');
 
         await userEvent.click(forgottenPassword);
+
+        await findByText('help-text');
 
         const email = await findByLabelText('username.label');
 
@@ -311,11 +308,13 @@ describe('Login', () => {
       });
 
       it('should call changePassword with the correct params', async () => {
-        const { findAllByRole, findByLabelText } = component;
+        const { findAllByRole, findByLabelText, findByText } = component;
 
         const [forgottenPassword] = await findAllByRole('button');
 
         await userEvent.click(forgottenPassword);
+
+        await findByText('help-text');
 
         const email = await findByLabelText('username.label');
 
@@ -341,6 +340,8 @@ describe('Login', () => {
       const [forgottenPassword] = await findAllByRole('button');
 
       await userEvent.click(forgottenPassword);
+
+      await findByText('help-text');
 
       await waitFor(() => findByLabelText('username.label'));
 

@@ -3,10 +3,11 @@ import logger from '@motech-development/node-logger';
 import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+import type { Mock } from 'vitest';
 import { handler } from '../attachments';
 
 describe('attachments', () => {
-  let callback: jest.Mock;
+  let callback: Mock;
   let context: Context;
   let event: DynamoDBStreamEvent;
   let sqs: AwsClientStub<SQSClient>;
@@ -16,7 +17,7 @@ describe('attachments', () => {
 
     context.done();
 
-    callback = jest.fn();
+    callback = vi.fn();
 
     sqs = mockClient(SQSClient);
 
