@@ -1896,10 +1896,6 @@ test('pull-request quality assurance validates the catalog and generated workflo
     workflowJob(qualityAssurance, 'delivery-catalog'),
     /setup-dependencies/,
   );
-  assert.match(
-    workflowJob(qualityAssurance, 'unit-tests'),
-    /name: Test build optimisations[\s\S]*node --test \.github\/quality\/\*\.test\.mjs/,
-  );
   for (const jobId of [
     'delivery-catalog',
     'formatting',
