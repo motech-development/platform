@@ -28,7 +28,6 @@ describe('NavigationList', () => {
       'page',
     );
     expect(screen.getByText('Admin')).toHaveAttribute('aria-disabled', 'true');
-    expect(onAction).toHaveBeenCalledOnce();
-    expect(onAction).toHaveBeenCalledWith('home');
+    expect(onAction).toHaveBeenCalledExactlyOnceWith('home');
   });
 });
