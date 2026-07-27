@@ -1,14 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { useState } from 'react';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { ArrowRightIcon, InfoIcon, SignOutIcon } from '../../icons';
 import { Avatar } from '../../primitives/Avatar/Avatar';
 import { Inline } from '../../primitives/Inline/Inline';
 import { Logo } from '../../primitives/Logo/Logo';
 import { NavigationList } from '../../primitives/NavigationList/NavigationList';
 import { Typography } from '../../primitives/Typography/Typography';
+import { BreezeProvider } from '../../provider/BreezeProvider';
 import { ContextSwitcher } from '../ContextSwitcher/ContextSwitcher';
 import { UserMenu } from '../UserMenu/UserMenu';
-import { ApplicationShell } from './ApplicationShell';
+import {
+  ApplicationShell,
+  type ApplicationShellProps,
+} from './ApplicationShell';
 
 const navigation = (
   <NavigationList.Root aria-label="Primary navigation">
@@ -84,7 +89,7 @@ const meta = {
     layout: 'fullscreen',
   },
   title: 'Patterns/Application Shell/ApplicationShell',
-} satisfies Meta<typeof ApplicationShell>;
+} satisfies Meta<ApplicationShellProps>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -131,6 +136,57 @@ export const CompactNavigation: Story = {
       window.innerWidth,
     );
   },
+};
+
+function ControlledCompactNavigationFrame() {
+  const [compactNavigationOpen, setCompactNavigationOpen] = useState(false);
+
+  return (
+    <BreezeProvider
+      locale="en-GB"
+      router={{ navigate: () => setCompactNavigationOpen(false) }}
+    >
+      <ApplicationShell
+        account={userMenu}
+        brand={brand}
+        compactBrand={compactBrand}
+        compactNavigationOpen={compactNavigationOpen}
+        context={context}
+        navigation={navigation}
+        navigationLabel="Open navigation"
+        onCompactNavigationOpenChange={setCompactNavigationOpen}
+        skipLinkLabel="Skip to content"
+      >
+        <Typography as="h1">Overview</Typography>
+      </ApplicationShell>
+    </BreezeProvider>
+  );
+}
+
+/**
+ * Lets application route state control compact navigation while destinations
+ * remain native anchors and the wide rail retains the same navigation.
+ *
+ * @summary controlled compact navigation closed after route activation
+ */
+export const ControlledCompactNavigation: Story = {
+  ...CompactNavigation,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Open navigation' }),
+    );
+    const dialog = within(document.body).getByRole('dialog');
+    const destination = within(dialog).getByRole('link', { name: 'Projects' });
+
+    await expect(destination).toHaveAttribute('href', '/projects');
+    await userEvent.click(destination);
+    await waitFor(() =>
+      expect(within(document.body).queryByRole('dialog')).toBeNull(),
+    );
+  },
+  render: ControlledCompactNavigationFrame,
 };
 
 /**

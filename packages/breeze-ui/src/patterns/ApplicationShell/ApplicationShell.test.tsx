@@ -1,12 +1,16 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { useState } from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
+import { Link } from '../../primitives/Link/Link';
+import { BreezeProvider } from '../../provider/BreezeProvider';
 import { ApplicationShell } from './ApplicationShell';
 
 describe('ApplicationShell', () => {
   it('provides skip navigation, shell slots, and an accessible compact drawer', async () => {
     const user = userEvent.setup();
+    const onCompactNavigationOpenChange = vi.fn();
 
     renderBreeze(
       <ApplicationShell
@@ -16,6 +20,7 @@ describe('ApplicationShell', () => {
         context={<span>Context</span>}
         navigation={<a href="/overview">Overview</a>}
         navigationLabel="Open navigation"
+        onCompactNavigationOpenChange={onCompactNavigationOpenChange}
         skipLinkLabel="Skip to content"
       >
         <h1>Overview</h1>
@@ -29,6 +34,7 @@ describe('ApplicationShell', () => {
     expect(screen.getByRole('main')).toHaveClass('py-6', 'sm:py-12');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Open navigation' }));
+    expect(onCompactNavigationOpenChange).toHaveBeenLastCalledWith(true);
     const dialog = screen.getByRole('dialog');
 
     expect(dialog).toBeVisible();
@@ -37,6 +43,75 @@ describe('ApplicationShell', () => {
     expect(dialog.closest('.breeze-drawer-motion')).not.toBeNull();
     expect(screen.getByText('Compact product')).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Close' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(onCompactNavigationOpenChange).toHaveBeenLastCalledWith(false);
+    expect(onCompactNavigationOpenChange).toHaveBeenCalledTimes(2);
+  });
+
+  it('lets a controlled consumer close compact navigation after ordinary link navigation', async () => {
+    const user = userEvent.setup();
+    const navigate = vi.fn();
+
+    function ControlledShell() {
+      const [compactNavigationOpen, setCompactNavigationOpen] = useState(true);
+
+      return (
+        <BreezeProvider
+          locale="en-GB"
+          router={{
+            navigate: (href) => {
+              navigate(href);
+              setCompactNavigationOpen(false);
+            },
+          }}
+        >
+          <ApplicationShell
+            account={<span>Account</span>}
+            brand={<strong>Product</strong>}
+            compactNavigationOpen={compactNavigationOpen}
+            navigation={
+              <nav aria-label="Primary navigation">
+                <Link href="/projects">Projects</Link>
+                <Link href="/projects" target="_blank">
+                  Open projects in a new tab
+                </Link>
+              </nav>
+            }
+            navigationLabel="Open navigation"
+            onCompactNavigationOpenChange={setCompactNavigationOpen}
+            skipLinkLabel="Skip to content"
+          >
+            <h1>Overview</h1>
+          </ApplicationShell>
+        </BreezeProvider>
+      );
+    }
+
+    renderBreeze(<ControlledShell />);
+
+    const dialog = screen.getByRole('dialog');
+    const destination = within(dialog).getByRole('link', { name: 'Projects' });
+    const newTabDestination = within(dialog).getByRole('link', {
+      name: 'Open projects in a new tab',
+    });
+
+    expect(destination).toHaveAttribute('href', '/projects');
+    destination.addEventListener('click', (event) => {
+      if (event.ctrlKey) {
+        event.preventDefault();
+      }
+    });
+    await user.keyboard('{Control>}');
+    await user.click(destination);
+    await user.keyboard('{/Control}');
+    expect(navigate).not.toHaveBeenCalled();
+    expect(screen.getByRole('dialog')).toBeVisible();
+    expect(newTabDestination).toHaveAttribute('target', '_blank');
+    await user.click(newTabDestination);
+    expect(navigate).not.toHaveBeenCalled();
+    expect(screen.getByRole('dialog')).toBeVisible();
+    await user.click(destination);
+    expect(navigate).toHaveBeenCalledExactlyOnceWith('/projects');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

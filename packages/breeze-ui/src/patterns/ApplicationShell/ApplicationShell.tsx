@@ -6,8 +6,7 @@ import { Drawer } from '../../primitives/Drawer/Drawer';
 import { SkipLink } from '../../primitives/SkipLink/SkipLink';
 import { useBreezeContext } from '../../provider/BreezeContext';
 
-/** Props for the shared responsive application frame. */
-export interface ApplicationShellProps
+interface ApplicationShellSharedProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'style' | 'title'> {
   /** Account or user-menu slot in the shell footer and compact header. */
   account: ReactNode;
@@ -31,6 +30,26 @@ export interface ApplicationShellProps
   mainId?: string;
 }
 
+interface ControlledApplicationShellProps {
+  /** Current compact-navigation drawer state. */
+  compactNavigationOpen: boolean;
+  defaultCompactNavigationOpen?: never;
+  /** Called with the next compact-navigation drawer state. */
+  onCompactNavigationOpenChange: (open: boolean) => void;
+}
+
+interface UncontrolledApplicationShellProps {
+  compactNavigationOpen?: never;
+  /** Initial compact-navigation drawer state. Defaults to `false`. */
+  defaultCompactNavigationOpen?: boolean;
+  /** Called with the next compact-navigation drawer state. */
+  onCompactNavigationOpenChange?: (open: boolean) => void;
+}
+
+/** Props for the shared responsive application frame. */
+export type ApplicationShellProps = ApplicationShellSharedProps &
+  (ControlledApplicationShellProps | UncontrolledApplicationShellProps);
+
 /**
  * Frames brand, navigation, context, account controls, and main content
  * responsively.
@@ -43,15 +62,74 @@ export function ApplicationShell({
   children,
   className,
   compactBrand,
+  compactNavigationOpen,
   context,
+  defaultCompactNavigationOpen,
   mainId = 'main-content',
   navigation,
   navigationLabel,
+  onCompactNavigationOpenChange,
   ref,
   skipLinkLabel,
   ...props
 }: Readonly<ApplicationShellProps>): ReactElement {
   const { messages } = useBreezeContext();
+  const compactNavigationContent = (
+    <>
+      <Drawer.Trigger
+        aria-label={navigationLabel}
+        appearance="ghost"
+        className="size-11 border-0 p-0 text-[var(--breeze-ink-inverse)] data-[hovered]:bg-[var(--breeze-shell-soft)]"
+        variant="light"
+      >
+        <MenuIcon size="1.5rem" />
+      </Drawer.Trigger>
+      <Drawer.Content
+        className="max-h-none w-64 border-0 bg-[var(--breeze-shell)] p-0 text-[var(--breeze-ink-inverse)]"
+        chrome="none"
+        placement="start"
+      >
+        <div className="flex min-h-16 items-center justify-between border-b border-[var(--breeze-shell-soft)] px-4">
+          <div>{brand}</div>
+          <Drawer.Title className="sr-only">{navigationLabel}</Drawer.Title>
+          <Drawer.Close
+            aria-label={messages.close}
+            appearance="ghost"
+            className="size-11 border-0 p-0 text-[var(--breeze-ink-inverse)] data-[hovered]:bg-[var(--breeze-shell-soft)]"
+            variant="light"
+          >
+            <CloseIcon size="1.5rem" />
+          </Drawer.Close>
+        </div>
+        <Drawer.Description className="sr-only">
+          {navigationLabel}
+        </Drawer.Description>
+        <div className="min-h-0 flex-1 overflow-y-auto px-3 py-6 [&_a]:flex [&_a]:min-h-11 [&_a]:items-center [&_a]:gap-3 [&_a]:text-[var(--breeze-ink-inverse-muted)] [&_a]:no-underline [&_a[data-current]]:bg-[var(--breeze-primary-selected)] [&_a[data-current]]:text-white [&_a[data-current][data-hovered]]:bg-[var(--breeze-primary-selected)] [&_a[data-hovered]]:bg-[var(--breeze-shell-soft)] [&_a[data-hovered]]:text-white">
+          {navigation}
+        </div>
+        <footer className="grid gap-2 border-t border-[var(--breeze-shell-soft)] p-3">
+          {context}
+          {account}
+        </footer>
+      </Drawer.Content>
+    </>
+  );
+  const compactNavigation =
+    compactNavigationOpen === undefined ? (
+      <Drawer.Root
+        defaultOpen={defaultCompactNavigationOpen}
+        onOpenChange={onCompactNavigationOpenChange}
+      >
+        {compactNavigationContent}
+      </Drawer.Root>
+    ) : (
+      <Drawer.Root
+        onOpenChange={onCompactNavigationOpenChange}
+        open={compactNavigationOpen}
+      >
+        {compactNavigationContent}
+      </Drawer.Root>
+    );
 
   return createElement(
     'div',
@@ -75,44 +153,7 @@ export function ApplicationShell({
         </footer>
       </aside>
       <header className="grid min-h-16 grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-3 bg-[var(--breeze-shell)] px-3 text-[var(--breeze-ink-inverse)] md:hidden">
-        <Drawer.Root>
-          <Drawer.Trigger
-            aria-label={navigationLabel}
-            appearance="ghost"
-            className="size-11 border-0 p-0 text-[var(--breeze-ink-inverse)] data-[hovered]:bg-[var(--breeze-shell-soft)]"
-            variant="light"
-          >
-            <MenuIcon size="1.5rem" />
-          </Drawer.Trigger>
-          <Drawer.Content
-            className="max-h-none w-64 border-0 bg-[var(--breeze-shell)] p-0 text-[var(--breeze-ink-inverse)]"
-            chrome="none"
-            placement="start"
-          >
-            <div className="flex min-h-16 items-center justify-between border-b border-[var(--breeze-shell-soft)] px-4">
-              <div>{brand}</div>
-              <Drawer.Title className="sr-only">{navigationLabel}</Drawer.Title>
-              <Drawer.Close
-                aria-label={messages.close}
-                appearance="ghost"
-                className="size-11 border-0 p-0 text-[var(--breeze-ink-inverse)] data-[hovered]:bg-[var(--breeze-shell-soft)]"
-                variant="light"
-              >
-                <CloseIcon size="1.5rem" />
-              </Drawer.Close>
-            </div>
-            <Drawer.Description className="sr-only">
-              {navigationLabel}
-            </Drawer.Description>
-            <div className="min-h-0 flex-1 overflow-y-auto px-3 py-6 [&_a]:flex [&_a]:min-h-11 [&_a]:items-center [&_a]:gap-3 [&_a]:text-[var(--breeze-ink-inverse-muted)] [&_a]:no-underline [&_a[data-current]]:bg-[var(--breeze-primary-selected)] [&_a[data-current]]:text-white [&_a[data-current][data-hovered]]:bg-[var(--breeze-primary-selected)] [&_a[data-hovered]]:bg-[var(--breeze-shell-soft)] [&_a[data-hovered]]:text-white">
-              {navigation}
-            </div>
-            <footer className="grid gap-2 border-t border-[var(--breeze-shell-soft)] p-3">
-              {context}
-              {account}
-            </footer>
-          </Drawer.Content>
-        </Drawer.Root>
+        {compactNavigation}
         <div className="min-w-0 justify-self-center font-[family-name:var(--breeze-font-display)] text-xl font-semibold">
           {compactBrand ?? brand}
         </div>
