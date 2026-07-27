@@ -1,11 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useState } from 'react';
 import { expect, fn, userEvent, within } from 'storybook/test';
 import StoryConstraint from '../../../.storybook/StoryConstraint';
 import { SignOutIcon } from '../../icons';
 import { Stack } from '../../primitives/Stack/Stack';
 import { Surface } from '../../primitives/Surface/Surface';
 import { Typography } from '../../primitives/Typography/Typography';
-import { UserMenu } from './UserMenu';
+import { UserMenu, type UserMenuProps } from './UserMenu';
+
+type UserMenuStoryProps = Extract<UserMenuProps, { open?: never }>;
 
 /**
  * Presents represented-user identity, optional notification content, and
@@ -25,7 +28,7 @@ const meta = {
     ),
   ],
   title: 'Patterns/Application Shell/UserMenu',
-} satisfies Meta<typeof UserMenu>;
+} satisfies Meta<UserMenuStoryProps>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -82,4 +85,54 @@ export const NotificationsAndActions: Story = {
     await userEvent.unhover(signOut);
     await expect(signOut).not.toHaveAttribute('data-hovered');
   },
+};
+
+function ControlledNotificationsMenu() {
+  const [open, setOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(3);
+  const hasUnread = unreadCount > 0;
+
+  return (
+    <UserMenu
+      aria-label={`Notifications (${unreadCount} unread)`}
+      actions={NotificationsAndActions.args.actions}
+      hasUnread={hasUnread}
+      notificationHeading="Notifications"
+      notificationState={`${unreadCount} unread`}
+      notifications="Your background task is complete."
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+
+        if (!nextOpen) {
+          setUnreadCount(0);
+        }
+      }}
+      open={open}
+      unreadLabel={`Notifications (${unreadCount} unread)`}
+      userName="Taylor Reed"
+    />
+  );
+}
+
+/**
+ * Reports dismissal to application state, which marks the displayed unread
+ * content read and updates the complete localized trigger name.
+ *
+ * @summary controlled dismissal with count-aware unread state
+ */
+export const ControlledDismissal: Story = {
+  ...NotificationsAndActions,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button', {
+      name: 'Notifications (3 unread)',
+    });
+
+    await userEvent.click(trigger);
+    await userEvent.keyboard('{Escape}');
+    await expect(
+      canvas.getByRole('button', { name: 'Notifications (0 unread)' }),
+    ).toHaveFocus();
+  },
+  render: ControlledNotificationsMenu,
 };

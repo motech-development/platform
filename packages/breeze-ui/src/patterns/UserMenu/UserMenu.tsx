@@ -1,6 +1,7 @@
 import type { ReactElement, ReactNode } from 'react';
+import { useRef } from 'react';
 import { Avatar } from '../../primitives/Avatar/Avatar';
-import { Menu } from '../../primitives/Menu/Menu';
+import { Menu, NonModalMenuPopover } from '../../primitives/Menu/Menu';
 import { useBreezeContext } from '../../provider/BreezeContext';
 
 /** One application-owned user-menu action or destination. */
@@ -21,8 +22,7 @@ export interface UserMenuAction {
   variant?: 'default' | 'danger';
 }
 
-/** Props for account identity, notifications, and application-owned user actions. */
-export interface UserMenuProps {
+interface UserMenuSharedProps {
   /** Accessible name for the menu trigger. */
   'aria-label': string;
   /** Ordered application-owned actions. */
@@ -37,9 +37,31 @@ export interface UserMenuProps {
   notificationState?: ReactNode;
   /** Optional avatar image URL. */
   src?: string;
+  /** Complete accessible trigger name used when unread content is present. */
+  unreadLabel?: string;
   /** Visible represented user name. */
   userName: string;
 }
+
+interface ControlledUserMenuProps {
+  defaultOpen?: never;
+  /** Called with the next menu state. */
+  onOpenChange: (open: boolean) => void;
+  /** Current menu state. */
+  open: boolean;
+}
+
+interface UncontrolledUserMenuProps {
+  /** Initial menu state. Defaults to `false`. */
+  defaultOpen?: boolean;
+  /** Called with the next menu state. */
+  onOpenChange?: (open: boolean) => void;
+  open?: never;
+}
+
+/** Props for account identity, notifications, and application-owned user actions. */
+export type UserMenuProps = UserMenuSharedProps &
+  (ControlledUserMenuProps | UncontrolledUserMenuProps);
 
 /**
  * Presents user identity, notification content, and keyboard-complete account
@@ -50,25 +72,30 @@ export interface UserMenuProps {
 export function UserMenu({
   'aria-label': ariaLabel,
   actions,
+  defaultOpen,
   hasUnread = false,
   notificationHeading,
   notificationState,
   notifications,
+  onOpenChange,
+  open,
   src,
+  unreadLabel,
   userName,
 }: Readonly<UserMenuProps>): ReactElement {
   const { messages } = useBreezeContext();
-
-  return (
-    <Menu.Root>
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuContent = (
+    <>
       <Menu.Trigger
         aria-label={
           hasUnread
-            ? `${ariaLabel}, ${messages.unreadNotifications}`
+            ? unreadLabel ?? `${ariaLabel}, ${messages.unreadNotifications}`
             : ariaLabel
         }
         className="relative min-h-14 w-full justify-start gap-3 border-0 bg-transparent p-2 text-start text-inherit data-[hovered]:bg-[var(--breeze-shell-soft)]"
         data-breeze-user-menu-trigger=""
+        ref={triggerRef}
       >
         <span className="relative">
           <Avatar name={userName} size="md" src={src} />
@@ -83,7 +110,11 @@ export function UserMenu({
           {userName}
         </strong>
       </Menu.Trigger>
-      <Menu.Popover className="w-80" nonModal placement="top start">
+      <NonModalMenuPopover
+        className="w-80"
+        placement="top start"
+        triggerRef={triggerRef}
+      >
         {notifications === undefined ? null : (
           <div className="border-b border-[var(--breeze-border)]">
             {notificationHeading === undefined ? null : (
@@ -125,7 +156,21 @@ export function UserMenu({
             </Menu.Item>
           ))}
         </Menu.List>
-      </Menu.Popover>
+      </NonModalMenuPopover>
+    </>
+  );
+
+  if (open === undefined) {
+    return (
+      <Menu.Root defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+        {menuContent}
+      </Menu.Root>
+    );
+  }
+
+  return (
+    <Menu.Root onOpenChange={onOpenChange} open={open}>
+      {menuContent}
     </Menu.Root>
   );
 }

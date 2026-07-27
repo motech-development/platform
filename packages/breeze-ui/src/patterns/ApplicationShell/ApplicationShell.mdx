@@ -78,6 +78,29 @@ The root contains a visible-on-focus skip link, a persistent rail from the `md` 
 
 The drawer uses logical `start`, so it opens from the left in left-to-right layouts and the right in right-to-left layouts. The shell supplies layout and landmarks; the application supplies destinations, the current route, translated product copy, context selection, account actions, loading/error content, and data fetching.
 
+## Compact-navigation lifecycle
+
+Compact navigation is uncontrolled by default. Use `defaultCompactNavigationOpen` to choose its initial state and `onCompactNavigationOpenChange` to observe trigger, close, Escape, and outside-dismissal changes.
+
+Use `compactNavigationOpen` with `onCompactNavigationOpenChange` when persistent application route state must close the drawer after successful navigation:
+
+```tsx
+const [compactNavigationOpen, setCompactNavigationOpen] = useState(false);
+const route = useCurrentRoute();
+
+useEffect(() => {
+  setCompactNavigationOpen(false);
+}, [route]);
+
+<ApplicationShell
+  compactNavigationOpen={compactNavigationOpen}
+  onCompactNavigationOpenChange={setCompactNavigationOpen}
+  // ...
+/>;
+```
+
+Keep destinations as links and close from an observed route change. Do not replace links with buttons or close from every click, because modified clicks, alternate targets, downloads, and external URLs must retain native browser behaviour. Compact open state does not hide or alter the wide navigation rail.
+
 ## Accessibility, keyboard, and routing
 
 - `skipLinkLabel` must clearly describe bypassing repeated navigation. Its target is `mainId`, which defaults to `main-content`; keep that id unique on the page.
@@ -99,6 +122,7 @@ The drawer uses logical `start`, so it opens from the left in left-to-right layo
 - Do not use physical left/right assumptions; direction is provider-controlled.
 - Do not hard-code the shell breakpoint or rail offset in application CSS.
 - Do not assume the frame performs route changes, signs users out, fetches contexts, or announces page loading.
+- Do not combine `compactNavigationOpen` with `defaultCompactNavigationOpen`, or provide controlled state without `onCompactNavigationOpenChange`.
 
 ## Related components
 

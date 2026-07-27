@@ -4,14 +4,16 @@ import type {
   ReactElement,
   ReactNode,
   Ref,
+  RefObject,
 } from 'react';
-import { createElement } from 'react';
+import { createElement, useContext } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import {
   Menu as AriaMenu,
   MenuItem as AriaMenuItem,
   MenuTrigger as AriaMenuTrigger,
   Popover as AriaPopover,
+  RootMenuTriggerStateContext as AriaRootMenuTriggerStateContext,
   SubmenuTrigger as AriaSubmenuTrigger,
 } from 'react-aria-components/Menu';
 import { tv } from 'tailwind-variants';
@@ -221,10 +223,13 @@ export function Trigger({
   ref,
   ...props
 }: Readonly<MenuTriggerProps>): ReactElement {
+  const triggerState = useContext(AriaRootMenuTriggerStateContext);
+
   return createElement(AriaButton, {
     ...props,
     className: menuTrigger({ class: className }),
     isDisabled: disabled,
+    onPress: triggerState?.isOpen ? triggerState.close : undefined,
     ref: useForwardedRef(ref),
   } as ComponentProps<typeof AriaButton>);
 }
@@ -245,6 +250,36 @@ export function Popover({
     isNonModal: nonModal,
     placement,
     ref: useForwardedRef(ref),
+  } as ComponentProps<typeof AriaPopover>);
+}
+
+interface NonModalMenuPopoverProps extends Omit<MenuPopoverProps, 'nonModal'> {
+  triggerRef: RefObject<Element | null>;
+}
+
+/**
+ * Positions a non-modal menu without treating its own trigger as an outside
+ * dismissal target.
+ *
+ * @internal
+ */
+export function NonModalMenuPopover({
+  className,
+  placement = 'bottom start',
+  ref,
+  triggerRef,
+  ...props
+}: Readonly<NonModalMenuPopoverProps>): ReactElement {
+  useBreezeContext();
+
+  return createElement(AriaPopover, {
+    ...props,
+    className: menuPopover({ class: className }),
+    isNonModal: true,
+    placement,
+    ref: useForwardedRef(ref),
+    shouldCloseOnInteractOutside: (element: Element) =>
+      triggerRef.current?.contains(element) !== true,
   } as ComponentProps<typeof AriaPopover>);
 }
 

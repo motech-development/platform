@@ -49,6 +49,7 @@ import { SignOutIcon } from '@motech-development/breeze-ui/icons';
   notificationHeading="Notifications"
   notificationState="1 new"
   notifications="Your export is ready."
+  unreadLabel="User menu (1 unread)"
   userName="Taylor Reed"
 />;
 ```
@@ -61,7 +62,11 @@ import { SignOutIcon } from '@motech-development/breeze-ui/icons';
 
 `disabled` prevents an action from receiving focus or activation. `variant="danger"` provides danger emphasis; `default` is the default. Use danger only for genuinely destructive or terminating actions and provide confirmation separately when needed.
 
-`hasUnread` defaults to `false`. When true, the trigger gets a visible decorative dot and its accessible name appends the provider's `unreadNotifications` message. The pattern does not mark notifications read. Notification content is rendered only when `notifications` is supplied; the heading and state are optional supporting content.
+`hasUnread` defaults to `false`. When true, the trigger gets a visible decorative dot. By default its accessible name appends the provider's generic `unreadNotifications` message. Supply `unreadLabel` as the complete trigger name when the application knows a localized count, for example `Notifications (3 unread)`; it replaces the generic unread name rather than appending to it. When `hasUnread` is false, `aria-label` remains the complete trigger name, so an application may update it to `Notifications (0 unread)`.
+
+Open state is uncontrolled by default. Use `defaultOpen` for an initially open menu and `onOpenChange` to observe state without owning it. Use `open` with `onOpenChange` for controlled state. The callback receives one complete `false` state for Escape, outside dismissal, trigger toggle, or action activation. The application can use that close report to mark exactly the displayed notification ids read; `UserMenu` does not own or mutate notification state.
+
+Notification content is rendered only when `notifications` is supplied; the heading and state are optional supporting content.
 
 ## Accessibility, keyboard, and internationalisation
 
@@ -69,9 +74,9 @@ import { SignOutIcon } from '@motech-development/breeze-ui/icons';
 
 The trigger opens with pointer activation, `Enter`, `Space`, or the platform menu shortcut. Arrow keys move between enabled actions, typing searches labels, `Enter` or `Space` activates, `Home` and `End` move to boundaries, and `Escape` closes and restores focus. Logical alignment and `top start` placement follow provider direction.
 
-Translate the accessible label, notification copy, user-facing state, and action labels. `Unread notifications` comes from `BreezeProvider.messages.unreadNotifications`. Keep labels concise enough for narrow shell presentation.
+Translate the accessible label, `unreadLabel`, notification copy, user-facing state, and action labels. The generic `Unread notifications` fallback comes from `BreezeProvider.messages.unreadNotifications`. Keep labels concise enough for narrow shell presentation.
 
-There is no root loading, invalid, empty, disabled, controlled-open, or error state. Avoid opening an empty menu; render account-loading feedback outside it, disable individual actions during in-flight work, and show any failure in an application-owned alert or page region.
+There is no root loading, invalid, empty, disabled, read-only-open, or error state. Avoid opening an empty menu; render account-loading feedback outside it, disable individual actions during in-flight work, and show any failure in an application-owned alert or page region.
 
 ## API
 
@@ -79,4 +84,4 @@ There is no root loading, invalid, empty, disabled, controlled-open, or error st
 
 ## Common mistakes and related components
 
-Do not pass domain objects as ids, use a danger style for ordinary navigation, treat `hasUnread` as application state storage, or place a long notification feed in the popover. Related components: [ApplicationShell](?path=/docs/patterns-application-shell-applicationshell--docs), [Avatar](?path=/docs/foundation-avatar--docs), [Menu](?path=/docs/navigation-menu--docs), and [ConfirmationDialog](?path=/docs/patterns-actions-confirmationdialog--docs).
+Do not pass domain objects as ids, combine `open` with `defaultOpen`, use a danger style for ordinary navigation, treat `hasUnread` as application state storage, or place a long notification feed in the popover. Related components: [ApplicationShell](?path=/docs/patterns-application-shell-applicationshell--docs), [Avatar](?path=/docs/foundation-avatar--docs), [Menu](?path=/docs/navigation-menu--docs), and [ConfirmationDialog](?path=/docs/patterns-actions-confirmationdialog--docs).
