@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">328 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">330 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>5.0s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>5.1s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -1145,9 +1145,9 @@ Alert has no keyboard interaction or internal controlled state. It does not own 
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ApplicationShell</h2>
       <div class="badges">
-        <label for="c-2-patterns-application-shell-applicationshell-props" class="badge ok as-toggle">10 prop types</label>
+        <label for="c-2-patterns-application-shell-applicationshell-props" class="badge ok as-toggle">13 prop types</label>
         
-        <label for="c-2-patterns-application-shell-applicationshell-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-2-patterns-application-shell-applicationshell-stories" class="badge ok as-toggle">5 stories</label>
         <label for="c-2-patterns-application-shell-applicationshell-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -1174,7 +1174,7 @@ Alert has no keyboard interaction or internal controlled state. It does not own 
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">10 prop types</span>
+              <span class="badge ok">13 prop types</span>
             </div>
             <pre><code>Component: src/patterns/ApplicationShell/ApplicationShell.tsx::ApplicationShell</code></pre>
             <pre><code>Props:</code></pre>
@@ -1199,9 +1199,19 @@ children: ReactNode
 compactBrand?: ReactNode
 
 /**
+ * Current compact-navigation drawer state.
+ */
+compactNavigationOpen?: boolean
+
+/**
  * Optional active application-context slot.
  */
 context?: ReactNode
+
+/**
+ * Initial compact-navigation drawer state. Defaults to `false`.
+ */
+defaultCompactNavigationOpen?: boolean
 
 /**
  * Stable id assigned to the main-content target. Defaults to `main-content`.
@@ -1217,6 +1227,11 @@ navigation: ReactNode
  * Accessible title for the compact navigation drawer.
  */
 navigationLabel: string
+
+/**
+ * Called with the next compact-navigation drawer state.
+ */
+onCompactNavigationOpenChange?: ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void)
 
 /**
  * Ref to the rendered shell root.
@@ -1266,6 +1281,38 @@ skipLinkLabel: ReactNode</code></pre>
               <div>compact shell header with unclipped account control</div>
               <div class="hint">Uses the canonical compact viewport to verify the rail becomes a header and drawer entry point while the account avatar stays inside the visible screen.</div>
               <pre><code>const CompactNavigation = () =&gt; &lt;ApplicationShell /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled Compact Navigation</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>controlled compact navigation closed after route activation</div>
+              <div class="hint">Lets application route state control compact navigation while destinations remain native anchors and the wide rail retains the same navigation.</div>
+              <pre><code>function ControlledCompactNavigation() {
+  const [compactNavigationOpen, setCompactNavigationOpen] = useState(false);
+
+  return (
+    &lt;BreezeProvider
+      locale=&quot;en-GB&quot;
+      router={{ navigate: () =&gt; setCompactNavigationOpen(false) }}
+    &gt;
+      &lt;ApplicationShell
+        account={userMenu}
+        brand={brand}
+        compactBrand={compactBrand}
+        compactNavigationOpen={compactNavigationOpen}
+        context={context}
+        navigation={navigation}
+        navigationLabel=&quot;Open navigation&quot;
+        onCompactNavigationOpenChange={setCompactNavigationOpen}
+        skipLinkLabel=&quot;Skip to content&quot;
+      &gt;
+        &lt;Typography as=&quot;h1&quot;&gt;Overview&lt;/Typography&gt;
+      &lt;/ApplicationShell&gt;
+    &lt;/BreezeProvider&gt;
+  );
+}</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -1377,6 +1424,29 @@ The root contains a visible-on-focus skip link, a persistent rail from the `md` 
 
 The drawer uses logical `start`, so it opens from the left in left-to-right layouts and the right in right-to-left layouts. The shell supplies layout and landmarks; the application supplies destinations, the current route, translated product copy, context selection, account actions, loading/error content, and data fetching.
 
+## Compact-navigation lifecycle
+
+Compact navigation is uncontrolled by default. Use `defaultCompactNavigationOpen` to choose its initial state and `onCompactNavigationOpenChange` to observe trigger, close, Escape, and outside-dismissal changes.
+
+Use `compactNavigationOpen` with `onCompactNavigationOpenChange` when persistent application route state must close the drawer after successful navigation:
+
+```tsx
+const [compactNavigationOpen, setCompactNavigationOpen] = useState(false);
+const route = useCurrentRoute();
+
+useEffect(() =&gt; {
+  setCompactNavigationOpen(false);
+}, [route]);
+
+&lt;ApplicationShell
+  compactNavigationOpen={compactNavigationOpen}
+  onCompactNavigationOpenChange={setCompactNavigationOpen}
+  // ...
+/&gt;;
+```
+
+Keep destinations as links and close from an observed route change. Do not replace links with buttons or close from every click, because modified clicks, alternate targets, downloads, and external URLs must retain native browser behaviour. Compact open state does not hide or alter the wide navigation rail.
+
 ## Accessibility, keyboard, and routing
 
 - `skipLinkLabel` must clearly describe bypassing repeated navigation. Its target is `mainId`, which defaults to `main-content`; keep that id unique on the page.
@@ -1398,6 +1468,7 @@ The drawer uses logical `start`, so it opens from the left in left-to-right layo
 - Do not use physical left/right assumptions; direction is provider-controlled.
 - Do not hard-code the shell breakpoint or rail offset in application CSS.
 - Do not assume the frame performs route changes, signs users out, fetches contexts, or announces page loading.
+- Do not combine `compactNavigationOpen` with `defaultCompactNavigationOpen`, or provide controlled state without `onCompactNavigationOpenChange`.
 
 ## Related components
 
@@ -30900,9 +30971,9 @@ It adds no keyboard behaviour. Native semantics come from `as`, so headings appe
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> UserMenu</h2>
       <div class="badges">
-        <label for="c-91-patterns-application-shell-usermenu-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-91-patterns-application-shell-usermenu-props" class="badge ok as-toggle">12 prop types</label>
         
-        <label for="c-91-patterns-application-shell-usermenu-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-91-patterns-application-shell-usermenu-stories" class="badge ok as-toggle">2 stories</label>
         <label for="c-91-patterns-application-shell-usermenu-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -30929,7 +31000,7 @@ It adds no keyboard behaviour. Native semantics come from `as`, so headings appe
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">8 prop types</span>
+              <span class="badge ok">12 prop types</span>
             </div>
             <pre><code>Component: src/patterns/UserMenu/UserMenu.tsx::UserMenu</code></pre>
             <pre><code>Props:</code></pre>
@@ -30942,6 +31013,11 @@ actions: readonly UserMenuAction[]
  * Accessible name for the menu trigger.
  */
 aria-label: string
+
+/**
+ * Initial menu state. Defaults to `false`.
+ */
+defaultOpen?: boolean
 
 /**
  * Indicates unread notification content. Defaults to `false`.
@@ -30964,9 +31040,24 @@ notifications?: ReactNode
 notificationState?: ReactNode
 
 /**
+ * Called with the next menu state.
+ */
+onOpenChange?: ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void)
+
+/**
+ * Current menu state.
+ */
+open?: boolean
+
+/**
  * Optional avatar image URL.
  */
 src?: string
+
+/**
+ * Complete accessible trigger name used when unread content is present.
+ */
+unreadLabel?: string
 
 /**
  * Visible represented user name.
@@ -31013,6 +31104,40 @@ userName: string</code></pre>
       &lt;Typography as=&quot;span&quot;&gt;Completed 4 minutes ago&lt;/Typography&gt;
     &lt;/Stack&gt;)}
     userName=&quot;Taylor Reed&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled Dismissal</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>controlled dismissal with count-aware unread state</div>
+              <div class="hint">Reports dismissal to application state, which marks the displayed unread content read and updates the complete localized trigger name.</div>
+              <pre><code>function ControlledDismissal() {
+  const [open, setOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(3);
+  const hasUnread = unreadCount &gt; 0;
+
+  return (
+    &lt;UserMenu
+      aria-label={`Notifications (${unreadCount} unread)`}
+      actions={NotificationsAndActions.args.actions}
+      hasUnread={hasUnread}
+      notificationHeading=&quot;Notifications&quot;
+      notificationState={`${unreadCount} unread`}
+      notifications=&quot;Your background task is complete.&quot;
+      onOpenChange={(nextOpen) =&gt; {
+        setOpen(nextOpen);
+
+        if (!nextOpen) {
+          setUnreadCount(0);
+        }
+      }}
+      open={open}
+      unreadLabel={`Notifications (${unreadCount} unread)`}
+      userName=&quot;Taylor Reed&quot;
+    /&gt;
+  );
+}</code></pre>
             </div>
         </div>
     
@@ -31077,6 +31202,7 @@ import { SignOutIcon } from &#39;@motech-development/breeze-ui/icons&#39;;
   notificationHeading=&quot;Notifications&quot;
   notificationState=&quot;1 new&quot;
   notifications=&quot;Your export is ready.&quot;
+  unreadLabel=&quot;User menu (1 unread)&quot;
   userName=&quot;Taylor Reed&quot;
 /&gt;;
 ```
@@ -31089,7 +31215,11 @@ import { SignOutIcon } from &#39;@motech-development/breeze-ui/icons&#39;;
 
 `disabled` prevents an action from receiving focus or activation. `variant=&quot;danger&quot;` provides danger emphasis; `default` is the default. Use danger only for genuinely destructive or terminating actions and provide confirmation separately when needed.
 
-`hasUnread` defaults to `false`. When true, the trigger gets a visible decorative dot and its accessible name appends the provider&#39;s `unreadNotifications` message. The pattern does not mark notifications read. Notification content is rendered only when `notifications` is supplied; the heading and state are optional supporting content.
+`hasUnread` defaults to `false`. When true, the trigger gets a visible decorative dot. By default its accessible name appends the provider&#39;s generic `unreadNotifications` message. Supply `unreadLabel` as the complete trigger name when the application knows a localized count, for example `Notifications (3 unread)`; it replaces the generic unread name rather than appending to it. When `hasUnread` is false, `aria-label` remains the complete trigger name, so an application may update it to `Notifications (0 unread)`.
+
+Open state is uncontrolled by default. Use `defaultOpen` for an initially open menu and `onOpenChange` to observe state without owning it. Use `open` with `onOpenChange` for controlled state. The callback receives one complete `false` state for Escape, outside dismissal, trigger toggle, or action activation. The application can use that close report to mark exactly the displayed notification ids read; `UserMenu` does not own or mutate notification state.
+
+Notification content is rendered only when `notifications` is supplied; the heading and state are optional supporting content.
 
 ## Accessibility, keyboard, and internationalisation
 
@@ -31097,9 +31227,9 @@ import { SignOutIcon } from &#39;@motech-development/breeze-ui/icons&#39;;
 
 The trigger opens with pointer activation, `Enter`, `Space`, or the platform menu shortcut. Arrow keys move between enabled actions, typing searches labels, `Enter` or `Space` activates, `Home` and `End` move to boundaries, and `Escape` closes and restores focus. Logical alignment and `top start` placement follow provider direction.
 
-Translate the accessible label, notification copy, user-facing state, and action labels. `Unread notifications` comes from `BreezeProvider.messages.unreadNotifications`. Keep labels concise enough for narrow shell presentation.
+Translate the accessible label, `unreadLabel`, notification copy, user-facing state, and action labels. The generic `Unread notifications` fallback comes from `BreezeProvider.messages.unreadNotifications`. Keep labels concise enough for narrow shell presentation.
 
-There is no root loading, invalid, empty, disabled, controlled-open, or error state. Avoid opening an empty menu; render account-loading feedback outside it, disable individual actions during in-flight work, and show any failure in an application-owned alert or page region.
+There is no root loading, invalid, empty, disabled, read-only-open, or error state. Avoid opening an empty menu; render account-loading feedback outside it, disable individual actions during in-flight work, and show any failure in an application-owned alert or page region.
 
 ## API
 
@@ -31107,7 +31237,7 @@ There is no root loading, invalid, empty, disabled, controlled-open, or error st
 
 ## Common mistakes and related components
 
-Do not pass domain objects as ids, use a danger style for ordinary navigation, treat `hasUnread` as application state storage, or place a long notification feed in the popover. Related components: [ApplicationShell](?path=/docs/patterns-application-shell-applicationshell--docs), [Avatar](?path=/docs/foundation-avatar--docs), [Menu](?path=/docs/navigation-menu--docs), and [ConfirmationDialog](?path=/docs/patterns-actions-confirmationdialog--docs).
+Do not pass domain objects as ids, combine `open` with `defaultOpen`, use a danger style for ordinary navigation, treat `hasUnread` as application state storage, or place a long notification feed in the popover. Related components: [ApplicationShell](?path=/docs/patterns-application-shell-applicationshell--docs), [Avatar](?path=/docs/foundation-avatar--docs), [Menu](?path=/docs/navigation-menu--docs), and [ConfirmationDialog](?path=/docs/patterns-actions-confirmationdialog--docs).
 </code></pre></div>
             </div>
         </div>
