@@ -388,8 +388,6 @@ export interface TableCellProps
   align?: 'start' | 'center' | 'end';
   /** Visible cell content. */
   children: ReactNode;
-  /** Number of adjacent semantic columns covered by this cell. Defaults to `1`. */
-  colSpan?: TdHTMLAttributes<HTMLTableCellElement>['colSpan'];
   /** Stable key of the corresponding column heading. */
   column: CollectionKey;
   /** Canonical content geometry. `disclosure` positions one bare arrow for an actionable row. Defaults to `data`. */
