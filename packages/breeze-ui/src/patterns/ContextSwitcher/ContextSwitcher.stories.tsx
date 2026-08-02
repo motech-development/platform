@@ -24,6 +24,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+function EmptyMarker(): null {
+  return null;
+}
+
 /**
  * Opens a menu of application-owned contexts, preserves each visual marker and
  * supporting description, and reports the alternate stable id when selected.
@@ -98,11 +102,13 @@ export const WithoutMarkers: Story = {
     items: [
       {
         description: 'Primary workspace',
+        icon: <EmptyMarker />,
         id: 'design',
         name: 'Design Team',
       },
       {
         description: 'Secondary workspace',
+        icon: [],
         id: 'research',
         name: 'Research Team',
       },
