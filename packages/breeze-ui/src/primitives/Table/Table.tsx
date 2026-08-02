@@ -5,6 +5,7 @@ import type {
   ReactElement,
   ReactNode,
   Ref,
+  TdHTMLAttributes,
 } from 'react';
 import {
   Children,
@@ -45,12 +46,30 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 const responsiveTableLayout =
   '[&>tbody>tr]:relative [&>tbody>tr]:flex [&>tbody>tr]:flex-col [&>tbody>tr]:items-start [&>tbody>tr]:gap-2 [&>tbody>tr]:px-4 [&>tbody>tr]:py-4 [&>tfoot>tr]:relative [&>tfoot>tr]:flex [&>tfoot>tr]:flex-col [&>tfoot>tr]:items-start [&>tfoot>tr]:gap-2 [&>tfoot>tr]:px-4 [&>tfoot>tr]:py-4 [&>tbody>tr>td]:block [&>tbody>tr>td]:max-w-full [&>tbody>tr>td]:border-0 [&>tbody>tr>td]:p-0 [&>tfoot>tr>td]:block [&>tfoot>tr>td]:max-w-full [&>tfoot>tr>td]:border-0 [&>tfoot>tr>td]:p-0 sm:[&>thead>tr>th]:px-6 sm:[&>thead>tr>th]:py-3 sm:[&>thead>tr>th]:align-middle sm:[&>tbody>tr]:table-row sm:[&>tbody>tr]:border-0 sm:[&>tbody>tr]:p-0 sm:[&>tfoot>tr]:table-row sm:[&>tfoot>tr]:border-0 sm:[&>tfoot>tr]:p-0 sm:[&>tbody>tr>td]:table-cell sm:[&>tbody>tr>td]:border-b sm:[&>tbody>tr>td]:border-[var(--breeze-border)] sm:[&>tbody>tr>td]:px-6 sm:[&>tbody>tr>td]:py-3 sm:[&>tbody>tr>td]:align-middle sm:[&>tfoot>tr>td]:table-cell sm:[&>tfoot>tr>td]:border-b sm:[&>tfoot>tr>td]:border-[var(--breeze-border)] sm:[&>tfoot>tr>td]:px-6 sm:[&>tfoot>tr>td]:py-3 sm:[&>tfoot>tr>td]:align-middle';
 
-const responsiveGridTableLayout = `${responsiveTableLayout} sm:!block sm:[&>thead]:!block sm:[&>tbody]:!block sm:[&>tfoot]:!block sm:[&>thead>tr]:!grid sm:[&>thead>tr]:w-full sm:[&>thead>tr]:grid-cols-[var(--breeze-table-desktop-columns)] sm:[&>thead>tr]:items-center sm:[&>thead>tr]:gap-x-4 sm:[&>thead>tr]:px-6 sm:[&>thead>tr]:py-3 sm:[&>tbody>tr]:!grid sm:[&>tbody>tr]:w-full sm:[&>tbody>tr]:grid-cols-[var(--breeze-table-desktop-columns)] sm:[&>tbody>tr]:items-center sm:[&>tbody>tr]:gap-x-4 sm:[&>tbody>tr]:border-b sm:[&>tbody>tr]:border-[var(--breeze-border)] sm:[&>tbody>tr]:px-6 sm:[&>tbody>tr]:py-3 sm:[&>tfoot>tr]:!grid sm:[&>tfoot>tr]:w-full sm:[&>tfoot>tr]:grid-cols-[var(--breeze-table-desktop-columns)] sm:[&>tfoot>tr]:items-center sm:[&>tfoot>tr]:gap-x-4 sm:[&>tfoot>tr]:px-6 sm:[&>tfoot>tr]:py-3 sm:[&>thead>tr>th]:!flex sm:[&>thead>tr>th]:!h-auto sm:[&>thead>tr>th]:items-center sm:[&>thead>tr>th]:!border-0 sm:[&>thead>tr>th]:!p-0 sm:[&>tbody>tr>td]:!flex sm:[&>tbody>tr>td]:!h-auto sm:[&>tbody>tr>td]:items-center sm:[&>tbody>tr>td]:!border-0 sm:[&>tbody>tr>td]:!p-0 sm:[&>tbody>tr>td:last-child]:justify-end sm:[&>tfoot>tr>td]:!flex sm:[&>tfoot>tr>td]:!h-auto sm:[&>tfoot>tr>td]:items-center sm:[&>tfoot>tr>td]:!border-0 sm:[&>tfoot>tr>td]:!p-0`;
+const responsiveGridTableLayout = `${responsiveTableLayout} sm:!block sm:[&>thead]:!block sm:[&>tbody]:!block sm:[&>tfoot]:!block sm:[&>thead>tr]:!grid sm:[&>thead>tr]:w-full sm:[&>thead>tr]:items-center sm:[&>thead>tr]:gap-x-4 sm:[&>thead>tr]:px-6 sm:[&>thead>tr]:py-3 sm:[&>tbody>tr]:!grid sm:[&>tbody>tr]:w-full sm:[&>tbody>tr]:items-center sm:[&>tbody>tr]:gap-x-4 sm:[&>tbody>tr]:border-b sm:[&>tbody>tr]:border-[var(--breeze-border)] sm:[&>tbody>tr]:px-6 sm:[&>tbody>tr]:py-3 sm:[&>tfoot>tr]:!grid sm:[&>tfoot>tr]:w-full sm:[&>tfoot>tr]:items-center sm:[&>tfoot>tr]:gap-x-4 sm:[&>tfoot>tr]:px-6 sm:[&>tfoot>tr]:py-3 sm:[&>thead>tr>th]:!flex sm:[&>thead>tr>th]:!h-auto sm:[&>thead>tr>th]:items-center sm:[&>thead>tr>th]:!border-0 sm:[&>thead>tr>th]:!p-0 sm:[&>tbody>tr>td]:!flex sm:[&>tbody>tr>td]:!h-auto sm:[&>tbody>tr>td]:items-center sm:[&>tbody>tr>td]:!border-0 sm:[&>tbody>tr>td]:!p-0 sm:[&>tbody>tr>td:last-child]:justify-end sm:[&>tfoot>tr>td]:!flex sm:[&>tfoot>tr>td]:!h-auto sm:[&>tfoot>tr>td]:items-center sm:[&>tfoot>tr>td]:!border-0 sm:[&>tfoot>tr>td]:!p-0`;
+
+const responsiveGridEqualColumns =
+  'sm:[&>thead>tr]:grid-cols-[repeat(var(--breeze-table-column-count),minmax(0,1fr))] sm:[&>tbody>tr]:grid-cols-[repeat(var(--breeze-table-column-count),minmax(0,1fr))] sm:[&>tfoot>tr]:grid-cols-[repeat(var(--breeze-table-column-count),minmax(0,1fr))]';
+const responsiveGridMediaDetailsActionColumns =
+  'sm:[&>thead>tr]:grid-cols-[2.25rem_minmax(0,1.3fr)_minmax(0,0.8fr)_minmax(0,1.2fr)_1.25rem] sm:[&>tbody>tr]:grid-cols-[2.25rem_minmax(0,1.3fr)_minmax(0,0.8fr)_minmax(0,1.2fr)_1.25rem] sm:[&>tfoot>tr]:grid-cols-[2.25rem_minmax(0,1.3fr)_minmax(0,0.8fr)_minmax(0,1.2fr)_1.25rem]';
 
 const tableRoot = tv({
   base: 'group/table block w-full border-separate border-spacing-0 text-start text-[var(--breeze-ink)] outline-none sm:table [&>tbody:last-of-type>tr:last-child]:border-b-0 sm:[&>tbody:last-of-type>tr:last-child>td]:border-b-0 data-[focus-visible]:outline-2 data-[focus-visible]:outline-offset-2 data-[focus-visible]:outline-[var(--breeze-focus)]',
+  compoundVariants: [
+    {
+      class: responsiveGridEqualColumns,
+      desktopColumns: 'equal',
+      layout: 'responsiveGrid',
+    },
+    {
+      class: responsiveGridMediaDetailsActionColumns,
+      desktopColumns: 'mediaDetailsAction',
+      layout: 'responsiveGrid',
+    },
+  ],
   defaultVariants: {
     boundary: 'none',
+    desktopColumns: 'equal',
     layout: 'responsive',
     virtualized: false,
   },
@@ -59,6 +78,10 @@ const tableRoot = tv({
       none: '',
       strong:
         'min-w-0 border-b-2 border-[var(--breeze-border-strong)] bg-[var(--breeze-surface)]',
+    },
+    desktopColumns: {
+      equal: '',
+      mediaDetailsAction: '',
     },
     layout: {
       grid: '!grid grid-cols-[repeat(var(--breeze-table-column-count),minmax(0,1fr))] [&>thead]:col-span-full [&>thead]:grid-cols-subgrid sm:[&>thead]:grid [&>tbody]:col-span-full [&>tbody]:grid [&>tbody]:grid-cols-subgrid [&>tfoot]:col-span-full [&>tfoot]:grid [&>tfoot]:grid-cols-subgrid sm:[&>thead>tr]:col-span-full sm:[&>thead>tr]:grid sm:[&>thead>tr]:min-h-11 sm:[&>thead>tr]:grid-cols-subgrid sm:[&>thead>tr]:items-center sm:[&>thead>tr]:px-6 [&>tbody>tr]:col-span-full [&>tbody>tr]:grid [&>tbody>tr]:min-h-11 [&>tbody>tr]:grid-cols-subgrid [&>tbody>tr]:items-center [&>tbody>tr]:px-4 sm:[&>tbody>tr]:px-6 [&>tfoot>tr]:col-span-full [&>tfoot>tr]:grid [&>tfoot>tr]:min-h-11 [&>tfoot>tr]:grid-cols-subgrid [&>tfoot>tr]:items-center [&>tfoot>tr]:px-4 sm:[&>tfoot>tr]:px-6 sm:[&>thead>tr>th]:block sm:[&>thead>tr>th]:!p-0 [&>tbody>tr>td]:block [&>tbody>tr>td]:!p-0 [&>tfoot>tr>td]:block [&>tfoot>tr>td]:!p-0 sm:[&>thead>tr]:border-b sm:[&>thead>tr]:border-[var(--breeze-border)] sm:[&>thead>tr>th]:border-0 [&>tbody>tr]:border-b [&>tbody>tr]:border-[var(--breeze-border)] [&>tbody>tr>td]:border-0 [&>tfoot>tr>td]:border-0 sm:[&>tbody>tr>td]:!border-0 sm:[&>tfoot>tr>td]:!border-0',
@@ -177,6 +200,9 @@ export type TableLayout = 'responsive' | 'responsiveGrid' | 'grid';
 /** Optional visual treatment for the table's lower edge. */
 export type TableBoundary = 'none' | 'strong';
 
+/** Supported desktop column arrangements for responsive grid tables. */
+export type TableDesktopColumns = 'equal' | 'mediaDetailsAction';
+
 /** Canonical column widths for content, full controls, and icon actions. */
 export type TableColumnWidth = 'auto' | 'control' | 'icon';
 
@@ -198,8 +224,8 @@ interface TableRootSharedProps extends TableRootNativeProps {
   children: ReactNode;
   /** Keys whose rows cannot receive focus, selection, or actions. */
   disabledKeys?: Iterable<CollectionKey>;
-  /** CSS grid tracks applied to desktop rows in `responsiveGrid` layout. Defaults to equal columns. */
-  desktopColumns?: string;
+  /** Typed desktop column arrangement for `responsiveGrid` layout. Defaults to `equal`. */
+  desktopColumns?: TableDesktopColumns;
   /** Responsive native table, responsive desktop grid, or persistent CSS grid rows. Defaults to `responsive`. */
   layout?: TableLayout;
   /** Enables multiple row selection. Defaults to `false`. */
@@ -354,13 +380,16 @@ export interface TableRowProps
 
 /** Props for one table data cell. */
 export interface TableCellProps
-  extends Omit<HTMLAttributes<HTMLTableCellElement>, 'align' | 'id' | 'style'> {
+  extends Omit<
+    TdHTMLAttributes<HTMLTableCellElement>,
+    'align' | 'id' | 'style'
+  > {
   /** Cell alignment at table widths. Defaults to `start`. */
   align?: 'start' | 'center' | 'end';
   /** Visible cell content. */
   children: ReactNode;
-  /** Covers this column and the adjacent column. Defaults to `1`. */
-  colSpan?: 2;
+  /** Number of adjacent semantic columns covered by this cell. Defaults to `1`. */
+  colSpan?: TdHTMLAttributes<HTMLTableCellElement>['colSpan'];
   /** Stable key of the corresponding column heading. */
   column: CollectionKey;
   /** Canonical content geometry. `disclosure` positions one bare arrow for an actionable row. Defaults to `data`. */
@@ -466,7 +495,7 @@ export function Root({
   className,
   defaultSelection,
   defaultSort,
-  desktopColumns = 'repeat(var(--breeze-table-column-count), minmax(0, 1fr))',
+  desktopColumns = 'equal',
   disabledKeys,
   layout = 'responsive',
   multiple = false,
@@ -509,6 +538,7 @@ export function Root({
     className: tableRoot({
       boundary,
       class: className,
+      desktopColumns,
       layout,
       virtualized: virtualization !== undefined,
     }),
@@ -547,10 +577,7 @@ export function Root({
             column: resolvedSort.column,
             direction: resolvedSort.direction,
           },
-    style: {
-      ...collectionViewportStyle(virtualization),
-      '--breeze-table-desktop-columns': desktopColumns,
-    } as CSSProperties,
+    style: collectionViewportStyle(virtualization),
   } as unknown as ComponentProps<typeof AriaTable>);
 
   return virtualization === undefined
@@ -746,6 +773,10 @@ export function Cell({
   ...props
 }: Readonly<TableCellProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
+  const spanStyle: CSSProperties | undefined =
+    colSpan === undefined || colSpan <= 1
+      ? undefined
+      : { gridColumn: `span ${colSpan} / span ${colSpan}` };
   const cellRef = useCallback(
     (element: HTMLTableCellElement | null) => {
       forwardedRef(element);
@@ -762,6 +793,7 @@ export function Cell({
     colSpan,
     'data-breeze-cell-column': String(column),
     ref: cellRef,
+    style: spanStyle,
     textValue,
   } as unknown as ComponentProps<typeof AriaCell>);
 }

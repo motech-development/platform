@@ -232,11 +232,6 @@
   background: var(--breeze-surface-subtle);
 }
 
-[data-breeze-table][data-layout='grid'] [colspan='2'],
-[data-breeze-table][data-layout='responsiveGrid'] [colspan='2'] {
-  grid-column: span 2 / span 2;
-}
-
 /* React Aria's table virtualizer renders positioned div wrappers rather than
    native table boxes. Keep the semantic Breeze cells sized to those tracks. */
 @media (min-width: 42.5625rem) {

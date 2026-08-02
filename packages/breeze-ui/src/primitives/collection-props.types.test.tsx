@@ -174,6 +174,12 @@ describe('collection public contracts', () => {
     expectTypeOf<'native'>().not.toMatchTypeOf<
       NonNullable<TableRootProps['layout']>
     >();
+    expectTypeOf<'mediaDetailsAction'>().toMatchTypeOf<
+      NonNullable<TableRootProps['desktopColumns']>
+    >();
+    expectTypeOf<'minmax(0, 2fr) minmax(0, 1fr)'>().not.toMatchTypeOf<
+      NonNullable<TableRootProps['desktopColumns']>
+    >();
   });
 });
 

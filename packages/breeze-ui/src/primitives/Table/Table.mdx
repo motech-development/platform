@@ -58,7 +58,7 @@ export function RecordsTable() {
 - `Table.Column` renders one keyed heading and configures row-header, sorting, compact label, alignment, and width behaviour.
 - `Table.Body` renders one ordered row section and its empty content.
 - `Table.Row` renders one keyed data or section row, with optional action and tone.
-- `Table.Cell` associates one cell with a stable column key and can span the next column.
+- `Table.Cell` associates one cell with a stable column key and can span adjacent columns.
 - `Table.Disclosure` renders the canonical bare arrow cell for an actionable row.
 - `Table.Footer` renders an optional ordered footer row section.
 - `Table.LoadMore` renders a visible loading row and intersection-driven request sentinel.
@@ -73,11 +73,11 @@ Column, row, and section identifiers are stable `string | number` keys. Do not u
 
 ## Responsive layouts and columns
 
-`layout="responsive"` is the default. It presents compact labelled records below the Breeze small breakpoint and native table columns at wider sizes. `responsiveGrid` keeps the same compact treatment but uses explicit equal grid tracks at wider sizes. Supply `desktopColumns` when those tracks need different proportions, for example `desktopColumns="minmax(0, 2fr) minmax(0, 1fr)"`. `grid` keeps CSS grid structure at all sizes. Use `responsiveGrid` or `grid` only when aligned custom geometry fits the content.
+`layout="responsive"` is the default. It presents compact labelled records below the Breeze small breakpoint and native table columns at wider sizes. `responsiveGrid` keeps the same compact treatment but uses explicit grid tracks at wider sizes. Its `desktopColumns` variant defaults to `equal`; use `desktopColumns="mediaDetailsAction"` for a five-column media, primary detail, secondary detail, tertiary detail, and trailing action arrangement. `grid` keeps CSS grid structure at all sizes. Use `responsiveGrid` or `grid` only when aligned custom geometry fits the content.
 
 `Table.Column compactLabel` defaults to `true`; a literal string heading becomes the compact label. When the heading contains formatting, icons, or other React nodes, provide explicit `textValue`. Set `compactLabel` to `false` for a disclosure or control column that should not label compact cells. `align` is `start`, `center`, or `end` and defaults to `start`. `width` is `auto`, `control`, or `icon` and defaults to `auto`. `boundary="strong"` adds a stronger lower edge; `none` is the default.
 
-`Table.Cell colSpan={2}` follows native table semantics and spans two CSS-grid tracks in `grid` and `responsiveGrid` layouts. Start the cell in the first column it covers and omit the covered cell from that row.
+`Table.Cell colSpan` follows native table semantics and spans the same number of CSS-grid tracks in `grid` and `responsiveGrid` layouts. Use a positive integer, start the cell in the first column it covers, and omit the covered cells from that row.
 
 <Canvas of={Stories.ResponsiveGroupedSections} />
 
