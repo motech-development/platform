@@ -476,6 +476,7 @@ export {
   type TableBoundary,
   type TableCellProps,
   type TableColumnProps,
+  type TableDesktopColumns,
   type TableFooterProps,
   type TableHeaderProps,
   type TableLayout,

@@ -202,6 +202,7 @@ export const GridGroupedSections: Story = {
     const firstSectionLastRow = canvas.getByRole('row', { name: 'Beta' });
     const finalRow = canvas.getByRole('row', { name: 'Gamma' });
     const stateHeading = canvas.getByRole('columnheader', { name: 'State' });
+    const nameHeading = canvas.getByRole('columnheader', { name: 'Name' });
     const activeSection = canvas.getByRole('rowheader', { name: 'Active' });
     const cell = canvas.getByRole('gridcell', { name: 'Ready' });
     const reviewCell = canvas.getByRole('gridcell', { name: 'Review' });
@@ -222,6 +223,14 @@ export const GridGroupedSections: Story = {
     );
     await expect(view?.getComputedStyle(cell).display).toBe('block');
     await expect(activeSection).toHaveAttribute('colspan', '2');
+    await expect(activeSection.getBoundingClientRect().left).toBeCloseTo(
+      nameHeading.getBoundingClientRect().left,
+      1,
+    );
+    await expect(activeSection.getBoundingClientRect().right).toBeCloseTo(
+      stateHeading.getBoundingClientRect().right,
+      1,
+    );
     await expect(
       view?.getComputedStyle(firstSectionLastRow).borderBottomWidth,
     ).toBe('1px');
@@ -285,6 +294,80 @@ export const GridGroupedSections: Story = {
         <Table.Row id="gamma" textValue="Gamma Draft">
           <Table.Cell column="name">Gamma</Table.Cell>
           <Table.Cell column="state">Draft</Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    </Table.Root>
+  ),
+};
+
+/**
+ * Uses a named five-column desktop arrangement while retaining compact card
+ * rows below the Breeze small breakpoint.
+ *
+ * @summary typed media, details, and action desktop grid columns
+ */
+export const ResponsiveGridColumnVariant: Story = {
+  args: { 'aria-label': 'Responsive company records', children: null },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const mediaHeading = canvas.getByRole('columnheader', { name: 'Media' });
+    const primaryHeading = canvas.getByRole('columnheader', { name: 'Name' });
+    const secondaryHeading = canvas.getByRole('columnheader', {
+      name: 'Number',
+    });
+    const tertiaryHeading = canvas.getByRole('columnheader', {
+      name: 'Contact',
+    });
+    const actionHeading = canvas.getByRole('columnheader', { name: 'Action' });
+    const mediaCell = canvas.getByRole('gridcell', { name: 'AC' });
+    const primaryCell = canvas.getByRole('rowheader', { name: 'Acme' });
+
+    await expect(mediaHeading.getBoundingClientRect().width).toBeCloseTo(36, 1);
+    await expect(actionHeading.getBoundingClientRect().width).toBeCloseTo(
+      20,
+      1,
+    );
+    await expect(primaryHeading.getBoundingClientRect().width).toBeGreaterThan(
+      tertiaryHeading.getBoundingClientRect().width,
+    );
+    await expect(tertiaryHeading.getBoundingClientRect().width).toBeGreaterThan(
+      secondaryHeading.getBoundingClientRect().width,
+    );
+    await expect(mediaCell.getBoundingClientRect().left).toBeCloseTo(
+      mediaHeading.getBoundingClientRect().left,
+      1,
+    );
+    await expect(primaryCell.getBoundingClientRect().left).toBeCloseTo(
+      primaryHeading.getBoundingClientRect().left,
+      1,
+    );
+  },
+  render: () => (
+    <Table.Root
+      aria-label="Responsive company records"
+      desktopColumns="mediaDetailsAction"
+      layout="responsiveGrid"
+    >
+      <Table.Header>
+        <Table.Column compactLabel={false} id="media">
+          Media
+        </Table.Column>
+        <Table.Column id="name" rowHeader>
+          Name
+        </Table.Column>
+        <Table.Column id="number">Number</Table.Column>
+        <Table.Column id="contact">Contact</Table.Column>
+        <Table.Column compactLabel={false} id="action">
+          Action
+        </Table.Column>
+      </Table.Header>
+      <Table.Body>
+        <Table.Row id="acme" textValue="Acme 123 contact@example.test">
+          <Table.Cell column="media">AC</Table.Cell>
+          <Table.Cell column="name">Acme</Table.Cell>
+          <Table.Cell column="number">123</Table.Cell>
+          <Table.Cell column="contact">contact@example.test</Table.Cell>
+          <Table.Cell column="action">View</Table.Cell>
         </Table.Row>
       </Table.Body>
     </Table.Root>

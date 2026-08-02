@@ -140,11 +140,11 @@ describe('Table', () => {
     expect(row).toHaveAttribute('aria-describedby', 'ada-description');
   });
 
-  it('spans adjacent semantic columns in grid layouts', () => {
+  it('forwards native multi-column spans in grid layouts', () => {
     renderBreeze(
       <Table.Root
         aria-label="Transaction totals"
-        className="grid-cols-[3rem_minmax(0,1fr)_auto]"
+        className="grid-cols-[3rem_minmax(0,1fr)_minmax(0,1fr)_auto]"
         layout="grid"
       >
         <Table.Header>
@@ -152,11 +152,12 @@ describe('Table', () => {
             Direction
           </Table.Column>
           <Table.Column id="transaction">Transaction</Table.Column>
+          <Table.Column id="category">Category</Table.Column>
           <Table.Column id="amount">Amount</Table.Column>
         </Table.Header>
         <Table.Body>
           <Table.Row id="total" textValue="24 December 2024 £1,300">
-            <Table.Cell colSpan={2} column="direction">
+            <Table.Cell colSpan={3} column="direction">
               24 December 2024
             </Table.Cell>
             <Table.Cell column="amount">£1,300</Table.Cell>
@@ -169,26 +170,36 @@ describe('Table', () => {
       name: '24 December 2024',
     });
 
-    expect(dateCell).toHaveAttribute('colspan', '2');
+    expect(dateCell).toHaveAttribute('colspan', '3');
   });
 
   it('supports desktop grid tracks while retaining responsive card rows', () => {
     renderBreeze(
       <Table.Root
         aria-label="Responsive grid records"
-        desktopColumns="minmax(0, 2fr) minmax(0, 1fr)"
+        desktopColumns="mediaDetailsAction"
         layout="responsiveGrid"
       >
         <Table.Header>
+          <Table.Column compactLabel={false} id="media">
+            Media
+          </Table.Column>
           <Table.Column id="name" rowHeader>
             Name
           </Table.Column>
           <Table.Column id="state">State</Table.Column>
+          <Table.Column id="detail">Detail</Table.Column>
+          <Table.Column compactLabel={false} id="action">
+            Action
+          </Table.Column>
         </Table.Header>
         <Table.Body>
           <Table.Row id="ada" textValue="Ada Ready">
+            <Table.Cell column="media">A</Table.Cell>
             <Table.Cell column="name">Ada</Table.Cell>
             <Table.Cell column="state">Ready</Table.Cell>
+            <Table.Cell column="detail">Engineer</Table.Cell>
+            <Table.Cell column="action">View</Table.Cell>
           </Table.Row>
         </Table.Body>
       </Table.Root>,
@@ -199,20 +210,8 @@ describe('Table', () => {
     });
 
     expect(table).toHaveAttribute('data-layout', 'responsiveGrid');
-    expect(table.style.getPropertyValue('--breeze-table-desktop-columns')).toBe(
-      'minmax(0, 2fr) minmax(0, 1fr)',
-    );
-    expect(table).toHaveClass(
-      '[&>tbody>tr]:flex',
-      '[&>tbody>tr]:flex-col',
-      'sm:!block',
-      'sm:[&>thead>tr]:!grid',
-      'sm:[&>thead>tr]:grid-cols-[var(--breeze-table-desktop-columns)]',
-      'sm:[&>tbody>tr]:!grid',
-      'sm:[&>tbody>tr]:grid-cols-[var(--breeze-table-desktop-columns)]',
-      'sm:[&>tbody>tr]:gap-x-4',
-      'sm:[&>tbody>tr]:px-6',
-    );
+    expect(screen.getByRole('row', { name: 'Ada' })).toBeVisible();
+    expect(screen.getAllByRole('columnheader')).toHaveLength(5);
   });
 
   it('owns grid row dividers and constrained action-column widths', async () => {
