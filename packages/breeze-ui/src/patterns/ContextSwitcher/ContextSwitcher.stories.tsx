@@ -66,16 +66,12 @@ export const Selection: Story = {
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button', { name: 'Switch context' });
-    const currentMarker = within(trigger).getByRole('img', {
-      name: 'Design Team',
-    });
+    const currentMarker = within(trigger).getByText('D');
 
     await expect(currentMarker.getBoundingClientRect().width).toBe(36);
     await expect(getComputedStyle(currentMarker).borderRadius).toBe('0px');
     await userEvent.click(trigger);
-    const alternateMarker = within(document.body).getByRole('img', {
-      name: 'Research Team',
-    });
+    const alternateMarker = within(document.body).getByText('R');
 
     await expect(alternateMarker.getBoundingClientRect().width).toBe(36);
     await expect(getComputedStyle(alternateMarker).backgroundColor).toBe(

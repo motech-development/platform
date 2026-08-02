@@ -202,6 +202,7 @@ export const GridGroupedSections: Story = {
     const firstSectionLastRow = canvas.getByRole('row', { name: 'Beta' });
     const finalRow = canvas.getByRole('row', { name: 'Gamma' });
     const stateHeading = canvas.getByRole('columnheader', { name: 'State' });
+    const activeSection = canvas.getByRole('rowheader', { name: 'Active' });
     const cell = canvas.getByRole('gridcell', { name: 'Ready' });
     const reviewCell = canvas.getByRole('gridcell', { name: 'Review' });
     const draftCell = canvas.getByRole('gridcell', { name: 'Draft' });
@@ -220,6 +221,7 @@ export const GridGroupedSections: Story = {
       'grid',
     );
     await expect(view?.getComputedStyle(cell).display).toBe('block');
+    await expect(activeSection).toHaveAttribute('colspan', '2');
     await expect(
       view?.getComputedStyle(firstSectionLastRow).borderBottomWidth,
     ).toBe('1px');
@@ -252,6 +254,15 @@ export const GridGroupedSections: Story = {
         <Table.Column id="state">State</Table.Column>
       </Table.Header>
       <Table.Body id="active">
+        <Table.Row
+          id="active-section"
+          presentation="section"
+          textValue="Active"
+        >
+          <Table.Cell colSpan={2} column="name">
+            Active
+          </Table.Cell>
+        </Table.Row>
         <Table.Row id="alpha" textValue="Alpha Ready">
           <Table.Cell column="name">Alpha</Table.Cell>
           <Table.Cell column="state">Ready</Table.Cell>
@@ -262,6 +273,15 @@ export const GridGroupedSections: Story = {
         </Table.Row>
       </Table.Body>
       <Table.Body id="archived">
+        <Table.Row
+          id="archived-section"
+          presentation="section"
+          textValue="Archived"
+        >
+          <Table.Cell colSpan={2} column="name">
+            Archived
+          </Table.Cell>
+        </Table.Row>
         <Table.Row id="gamma" textValue="Gamma Draft">
           <Table.Cell column="name">Gamma</Table.Cell>
           <Table.Cell column="state">Draft</Table.Cell>

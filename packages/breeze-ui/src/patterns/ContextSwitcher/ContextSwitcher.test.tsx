@@ -70,4 +70,29 @@ describe('ContextSwitcher', () => {
     expect(trigger).toHaveTextContent('Select team');
     expect(screen.getByTestId('empty-context-icon')).toBeVisible();
   });
+
+  it('keeps visual context markers out of accessible names', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <ContextSwitcher
+        aria-label="Switch team"
+        currentId="first"
+        items={[
+          {
+            icon: <span aria-label="First team marker" role="img" />,
+            id: 'first',
+            name: 'First team',
+          },
+        ]}
+        onChange={() => undefined}
+      />,
+    );
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Switch team' }));
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
 });

@@ -5,7 +5,7 @@ import type {
   ReactNode,
   Ref,
 } from 'react';
-import { createElement } from 'react';
+import { createElement, useId } from 'react';
 import {
   Focusable,
   Tooltip as AriaTooltip,
@@ -15,6 +15,7 @@ import { tv } from 'tailwind-variants';
 import useForwardedRef from '../../internal/hooks/useForwardedRef';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import { Button, type ButtonProps } from '../Button/Button';
+import { VisuallyHidden } from '../VisuallyHidden/VisuallyHidden';
 
 const tooltip = tv({
   base: 'z-50 max-w-64 border border-[var(--breeze-border-strong)] bg-[var(--breeze-ink)] px-2.5 py-1.5 text-sm text-[var(--breeze-ink-inverse)] shadow-lg data-[entering]:animate-in data-[exiting]:animate-out motion-reduce:transition-none forced-colors:border-[CanvasText] forced-colors:bg-[Canvas] forced-colors:text-[CanvasText]',
@@ -130,6 +131,7 @@ export function Root({
 }
 const TooltipTrigger = Button;
 export function IconTrigger({
+  'aria-label': ariaLabel,
   children,
   className,
   ref,
@@ -137,15 +139,18 @@ export function IconTrigger({
   ...props
 }: Readonly<TooltipIconTriggerProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
+  const labelId = useId();
 
   const trigger = createElement(
     'span',
     {
       ...props,
+      'aria-labelledby': labelId,
       className: tooltipIconTrigger({ class: className, variant }),
       role: 'img',
       tabIndex: 0,
     },
+    createElement(VisuallyHidden, { id: labelId }, ariaLabel),
     children,
   );
 

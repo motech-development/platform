@@ -58,12 +58,12 @@ export function RecordsTable() {
 - `Table.Column` renders one keyed heading and configures row-header, sorting, compact label, alignment, and width behaviour.
 - `Table.Body` renders one ordered row section and its empty content.
 - `Table.Row` renders one keyed data or section row, with optional action and tone.
-- `Table.Cell` associates one cell with a stable column key.
+- `Table.Cell` associates one cell with a stable column key and can span the next column.
 - `Table.Disclosure` renders the canonical bare arrow cell for an actionable row.
 - `Table.Footer` renders an optional ordered footer row section.
 - `Table.LoadMore` renders a visible loading row and intersection-driven request sentinel.
 
-Keep `Header`, each `Body`, and optional `Footer` in meaningful source order. Every data row must contain exactly one cell for every visible column, in the same order, even after conditional column changes.
+Keep `Header`, each `Body`, and optional `Footer` in meaningful source order. Every data row must cover every visible column in the same order, even after conditional column changes. Use `Table.Cell colSpan` when one cell intentionally covers adjacent columns.
 
 ## Keys and collection content
 
@@ -73,9 +73,11 @@ Column, row, and section identifiers are stable `string | number` keys. Do not u
 
 ## Responsive layouts and columns
 
-`layout="responsive"` is the default. It presents compact labelled records below the Breeze small breakpoint and native table columns at wider sizes. `responsiveGrid` keeps the same compact treatment but uses explicit equal grid tracks at wider sizes. `grid` keeps CSS grid structure at all sizes. Use `responsiveGrid` or `grid` only when equal tracks and aligned custom geometry fit the content.
+`layout="responsive"` is the default. It presents compact labelled records below the Breeze small breakpoint and native table columns at wider sizes. `responsiveGrid` keeps the same compact treatment but uses explicit equal grid tracks at wider sizes. Supply `desktopColumns` when those tracks need different proportions, for example `desktopColumns="minmax(0, 2fr) minmax(0, 1fr)"`. `grid` keeps CSS grid structure at all sizes. Use `responsiveGrid` or `grid` only when aligned custom geometry fits the content.
 
 `Table.Column compactLabel` defaults to `true`; a literal string heading becomes the compact label. When the heading contains formatting, icons, or other React nodes, provide explicit `textValue`. Set `compactLabel` to `false` for a disclosure or control column that should not label compact cells. `align` is `start`, `center`, or `end` and defaults to `start`. `width` is `auto`, `control`, or `icon` and defaults to `auto`. `boundary="strong"` adds a stronger lower edge; `none` is the default.
+
+`Table.Cell colSpan={2}` follows native table semantics and spans two CSS-grid tracks in `grid` and `responsiveGrid` layouts. Start the cell in the first column it covers and omit the covered cell from that row.
 
 <Canvas of={Stories.ResponsiveGroupedSections} />
 
@@ -159,6 +161,7 @@ Parts support relevant native table attributes, `className`, ARIA and data attri
 ## Common mistakes
 
 - Do not mismatch cell `column` keys, heading order, or conditional visible columns.
+- Do not use padding or manual grid positions to imitate a spanned cell.
 - Do not assume `onSortChange` sorts rows for you.
 - Do not use unstable row keys or omit `textValue`.
 - Do not attach generic click handlers to rows; use `onAction` or cell controls.

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import StoryConstraint from '../../../.storybook/StoryConstraint';
 import { SignOutIcon } from '../../icons';
 import { Stack } from '../../primitives/Stack/Stack';
@@ -130,9 +130,11 @@ export const ControlledDismissal: Story = {
 
     await userEvent.click(trigger);
     await userEvent.keyboard('{Escape}');
-    await expect(
-      canvas.getByRole('button', { name: 'Notifications (0 unread)' }),
-    ).toHaveFocus();
+    await waitFor(() =>
+      expect(
+        canvas.getByRole('button', { name: 'Notifications (0 unread)' }),
+      ).toHaveFocus(),
+    );
   },
   render: ControlledNotificationsMenu,
 };
