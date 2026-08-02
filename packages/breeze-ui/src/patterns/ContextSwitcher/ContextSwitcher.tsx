@@ -1,6 +1,16 @@
 import type { ReactElement, ReactNode } from 'react';
 import { Menu } from '../../primitives/Menu/Menu';
 
+function hasVisualMarker(marker: ReactNode): boolean {
+  return (
+    marker !== undefined &&
+    marker !== null &&
+    marker !== false &&
+    marker !== true &&
+    marker !== ''
+  );
+}
+
 /** One application-owned context available for selection. */
 export interface ContextSwitcherItem {
   /** Optional supporting identifier or description. */
@@ -54,6 +64,7 @@ export function ContextSwitcher({
   triggerLabel,
 }: Readonly<ContextSwitcherProps>): ReactElement {
   const current = items.find((item) => item.id === currentId);
+  const currentMarker = current?.icon ?? emptyIcon;
   const itemIds = new Set(items.map((item) => item.id));
   let manageItemId = '__breeze-manage-contexts';
 
@@ -67,7 +78,9 @@ export function ContextSwitcher({
         aria-label={ariaLabel}
         className="min-h-14 w-full justify-start gap-3 border-0 bg-transparent p-2 text-start text-inherit data-[hovered]:bg-[var(--breeze-shell-soft)]"
       >
-        <span aria-hidden="true">{current?.icon ?? emptyIcon}</span>
+        {hasVisualMarker(currentMarker) ? (
+          <span aria-hidden="true">{currentMarker}</span>
+        ) : null}
         <span className="grid min-w-0 flex-1 gap-0.5">
           {triggerLabel === undefined ? null : (
             <small className="text-base text-[var(--breeze-ink-inverse-muted)]">
@@ -106,7 +119,9 @@ export function ContextSwitcher({
               textValue={item.name}
             >
               <span className="flex min-w-0 items-center gap-3">
-                <span aria-hidden="true">{item.icon}</span>
+                {hasVisualMarker(item.icon) ? (
+                  <span aria-hidden="true">{item.icon}</span>
+                ) : null}
                 <span className="grid min-w-0 gap-0.5">
                   <strong>{item.name}</strong>
                   {item.description === undefined ? null : (
