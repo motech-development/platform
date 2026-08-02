@@ -111,6 +111,83 @@ export const CompleteFrame: Story = {
     navigationLabel: 'Open navigation',
     skipLinkLabel: 'Skip to content',
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(document.body);
+    const contextTrigger = canvas.getByRole('button', {
+      name: 'Switch workspace',
+    });
+
+    await userEvent.click(contextTrigger);
+    await expect(contextTrigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(
+      body.getByRole('menu', { name: 'Switch workspace' }),
+    ).toBeVisible();
+    await userEvent.click(contextTrigger);
+    await expect(contextTrigger).toHaveAttribute('aria-expanded', 'false');
+    const accountTrigger = canvas.getByRole('button', {
+      name: 'User menu, Unread notifications',
+    });
+
+    await userEvent.click(accountTrigger);
+    await expect(accountTrigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(
+      body.getByText('Your background task is complete.'),
+    ).toBeVisible();
+    await userEvent.click(accountTrigger);
+    await expect(accountTrigger).toHaveAttribute('aria-expanded', 'false');
+  },
+};
+
+const longUserName = 'averylongaccountname@example.test';
+const longContextName =
+  'A company name that is substantially longer than the application rail';
+
+/**
+ * Keeps application-owned context and account labels inside the fixed rail
+ * when real data is substantially longer than the available space.
+ *
+ * @summary long shell labels remain contained
+ */
+export const LongShellLabels: Story = {
+  args: {
+    ...CompleteFrame.args,
+    account: (
+      <UserMenu aria-label="User menu" actions={[]} userName={longUserName} />
+    ),
+    context: (
+      <ContextSwitcher
+        aria-label="Switch company"
+        currentId="long-company"
+        items={[
+          {
+            id: 'long-company',
+            name: longContextName,
+          },
+        ]}
+        onChange={() => undefined}
+        triggerLabel="Company"
+      />
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const rail = canvas.getByRole('complementary');
+    const railRight = rail.getBoundingClientRect().right;
+    const contextTrigger = canvas.getByRole('button', {
+      name: 'Switch company',
+    });
+    const accountTrigger = canvas.getByRole('button', {
+      name: 'User menu',
+    });
+
+    await expect(
+      contextTrigger.getBoundingClientRect().right,
+    ).toBeLessThanOrEqual(railRight);
+    await expect(
+      accountTrigger.getBoundingClientRect().right,
+    ).toBeLessThanOrEqual(railRight);
+  },
 };
 
 /**

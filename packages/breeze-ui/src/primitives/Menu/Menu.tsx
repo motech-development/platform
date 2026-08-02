@@ -6,7 +6,7 @@ import type {
   Ref,
   RefObject,
 } from 'react';
-import { createElement, useContext } from 'react';
+import { createElement, useContext, useRef } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import {
   Menu as AriaMenu,
@@ -32,7 +32,7 @@ import type {
 import { useBreezeContext } from '../../provider/BreezeContext';
 
 const menuTrigger = tv({
-  base: 'inline-flex min-h-11 items-center justify-center border border-[var(--breeze-border-strong)] bg-[var(--breeze-surface)] px-3 font-semibold text-[var(--breeze-ink)] outline-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45 data-[focus-visible]:outline-2 data-[focus-visible]:outline-offset-2 data-[focus-visible]:outline-[var(--breeze-focus)]',
+  base: 'inline-flex min-h-11 min-w-0 items-center justify-center border border-[var(--breeze-border-strong)] bg-[var(--breeze-surface)] px-3 font-semibold text-[var(--breeze-ink)] outline-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45 data-[focus-visible]:outline-2 data-[focus-visible]:outline-offset-2 data-[focus-visible]:outline-[var(--breeze-focus)]',
 });
 const menuPopover = tv({
   base: 'min-w-48 border border-b-2 border-[var(--breeze-border-strong)] bg-[var(--breeze-surface)] shadow-[0_8px_0_rgb(6_12_24_/_18%)]',
@@ -224,12 +224,22 @@ export function Trigger({
   ...props
 }: Readonly<MenuTriggerProps>): ReactElement {
   const triggerState = useContext(AriaRootMenuTriggerStateContext);
+  // MenuTrigger may open before Button's onPress runs, so preserve the state
+  // from the start of the interaction when deciding whether this is a close.
+  const wasOpenOnPressStart = useRef(false);
 
   return createElement(AriaButton, {
     ...props,
     className: menuTrigger({ class: className }),
     isDisabled: disabled,
-    onPress: triggerState?.isOpen ? triggerState.close : undefined,
+    onPress: () => {
+      if (wasOpenOnPressStart.current) {
+        triggerState?.close();
+      }
+    },
+    onPressStart: () => {
+      wasOpenOnPressStart.current = triggerState?.isOpen === true;
+    },
     ref: useForwardedRef(ref),
   } as ComponentProps<typeof AriaButton>);
 }

@@ -38,6 +38,7 @@ function cabinAssetsPlugin(): Plugin {
 }
 
 export default defineConfig({
+  base: './',
   build: {
     cssCodeSplit: true,
     lib: {

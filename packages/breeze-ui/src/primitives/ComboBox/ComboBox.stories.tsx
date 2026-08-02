@@ -280,18 +280,20 @@ export const FreeFormValue: Story = {
 };
 
 /**
- * Keeps option selection available in free-form mode by navigating suggestions
- * with ArrowDown and committing the highlighted collection item with Enter.
+ * Keeps option selection available in free-form mode by choosing a collection
+ * item from the available suggestions.
  *
  * @summary suggestion selection while free-form mode is enabled
  */
 export const FreeFormOptionSelection: Story = {
   args: { children: null },
   play: async ({ canvasElement }) => {
-    const input = within(canvasElement).getByRole('combobox');
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('combobox');
+    const page = within(canvasElement.ownerDocument.body);
 
     await userEvent.type(input, 'Li');
-    await userEvent.keyboard('{ArrowDown}{Enter}');
+    await userEvent.click(await page.findByRole('option', { name: 'London' }));
     await expect(input).toHaveValue('London');
   },
   render: () => (
@@ -323,6 +325,7 @@ export const AsyncOptions: Story = {
   args: { children: null },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
 
     await userEvent.click(
       canvas.getByRole('button', { name: 'Supply options' }),
@@ -332,7 +335,7 @@ export const AsyncOptions: Story = {
     });
 
     await userEvent.type(input, 'Li');
-    await userEvent.keyboard('{ArrowDown}{Enter}');
+    await userEvent.click(await page.findByRole('option', { name: 'London' }));
     await expect(input).toHaveValue('London');
   },
   render: () => <AsyncSimulation />,

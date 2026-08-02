@@ -67,7 +67,7 @@ export function ContextSwitcher({
         aria-label={ariaLabel}
         className="min-h-14 w-full justify-start gap-3 border-0 bg-transparent p-2 text-start text-inherit data-[hovered]:bg-[var(--breeze-shell-soft)]"
       >
-        {current?.icon ?? emptyIcon}
+        <span aria-hidden="true">{current?.icon ?? emptyIcon}</span>
         <span className="grid min-w-0 flex-1 gap-0.5">
           {triggerLabel === undefined ? null : (
             <small className="text-base text-[var(--breeze-ink-inverse-muted)]">
@@ -106,7 +106,7 @@ export function ContextSwitcher({
               textValue={item.name}
             >
               <span className="flex min-w-0 items-center gap-3">
-                {item.icon}
+                <span aria-hidden="true">{item.icon}</span>
                 <span className="grid min-w-0 gap-0.5">
                   <strong>{item.name}</strong>
                   {item.description === undefined ? null : (
