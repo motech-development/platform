@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">330 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">333 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>5.1s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>4.8s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -1147,7 +1147,7 @@ Alert has no keyboard interaction or internal controlled state. It does not own 
       <div class="badges">
         <label for="c-2-patterns-application-shell-applicationshell-props" class="badge ok as-toggle">13 prop types</label>
         
-        <label for="c-2-patterns-application-shell-applicationshell-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-2-patterns-application-shell-applicationshell-stories" class="badge ok as-toggle">6 stories</label>
         <label for="c-2-patterns-application-shell-applicationshell-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -1272,6 +1272,28 @@ skipLinkLabel: ReactNode</code></pre>
     navigation={navigation}
     navigationLabel=&quot;Open navigation&quot;
     skipLinkLabel=&quot;Skip to content&quot;&gt;&lt;Typography as=&quot;h1&quot;&gt;Overview&lt;/Typography&gt;&lt;/ApplicationShell&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Long Shell Labels</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>long shell labels remain contained</div>
+              <div class="hint">Keeps application-owned context and account labels inside the fixed rail when real data is substantially longer than the available space.</div>
+              <pre><code>const LongShellLabels = () =&gt; &lt;ApplicationShell
+    account={(&lt;UserMenu aria-label=&quot;User menu&quot; actions={[]} userName={longUserName} /&gt;)}
+    context={(&lt;ContextSwitcher
+      aria-label=&quot;Switch company&quot;
+      currentId=&quot;long-company&quot;
+      items={[
+        {
+          id: &#39;long-company&#39;,
+          name: longContextName,
+        },
+      ]}
+      onChange={() =&gt; undefined}
+      triggerLabel=&quot;Company&quot;
+    /&gt;)} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -3610,7 +3632,7 @@ Use `Stack` for vertical flow, `Grid` for responsive columns, `Center` for two-a
       <div class="badges">
         <label for="c-11-patterns-application-shell-contextswitcher-props" class="badge ok as-toggle">9 prop types</label>
         
-        <label for="c-11-patterns-application-shell-contextswitcher-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-11-patterns-application-shell-contextswitcher-stories" class="badge ok as-toggle">3 stories</label>
         <label for="c-11-patterns-application-shell-contextswitcher-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -3738,6 +3760,29 @@ triggerLabel?: ReactNode</code></pre>
     onChange={fn()}
     onManage={fn()}
     triggerLabel=&quot;Current context&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Without Markers</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>context selection without optional markers</div>
+              <div class="hint">Keeps text aligned to the content edge when contexts do not provide visual markers.</div>
+              <pre><code>const WithoutMarkers = () =&gt; &lt;ContextSwitcher
+    items={[
+      {
+        description: &#39;Primary workspace&#39;,
+        icon: &lt;EmptyMarker /&gt;,
+        id: &#39;design&#39;,
+        name: &#39;Design Team&#39;,
+      },
+      {
+        description: &#39;Secondary workspace&#39;,
+        icon: [],
+        id: &#39;research&#39;,
+        name: &#39;Research Team&#39;,
+      },
+    ]} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -11617,7 +11662,7 @@ selection?: CollectionKey | null</code></pre>
                 <span class="badge ok">story ok</span>
               </div>
               <div>suggestion selection while free-form mode is enabled</div>
-              <div class="hint">Keeps option selection available in free-form mode by navigating suggestions with ArrowDown and committing the highlighted collection item with Enter.</div>
+              <div class="hint">Keeps option selection available in free-form mode by choosing a collection item from the available suggestions.</div>
               <pre><code>const FreeFormOptionSelection = () =&gt; (
   &lt;ComboBox.Root allowsCustomValue&gt;
     &lt;DestinationParts /&gt;
@@ -23859,9 +23904,9 @@ size?: ControlSize</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Root</h2>
       <div class="badges">
-        <label for="c-68-collections-table-props" class="badge ok as-toggle">14 prop types</label>
+        <label for="c-68-collections-table-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-68-collections-table-stories" class="badge ok as-toggle">14 stories</label>
+        <label for="c-68-collections-table-stories" class="badge ok as-toggle">15 stories</label>
         <label for="c-68-collections-table-docs" class="badge ok as-toggle">1 doc</label>
         <label for="c-68-collections-table-subcomponents" class="badge ok as-toggle">8 subcomponents</label>
       </div>
@@ -23888,7 +23933,7 @@ size?: ControlSize</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">14 prop types</span>
+              <span class="badge ok">15 prop types</span>
             </div>
             <pre><code>Component: src/primitives/Table/Table.tsx::Root</code></pre>
             <pre><code>Props:</code></pre>
@@ -23913,6 +23958,11 @@ defaultSelection?: CollectionSelection
  * Initial sort descriptor.
  */
 defaultSort?: TableSort
+
+/**
+ * Typed desktop column arrangement for `responsiveGrid` layout. Defaults to `equal`.
+ */
+desktopColumns?: TableDesktopColumns = equal
 
 /**
  * Keys whose rows cannot receive focus, selection, or actions.
@@ -24109,6 +24159,15 @@ virtualization?: CollectionVirtualization</code></pre>
       &lt;Table.Column id=&quot;state&quot;&gt;State&lt;/Table.Column&gt;
     &lt;/Table.Header&gt;
     &lt;Table.Body id=&quot;active&quot;&gt;
+      &lt;Table.Row
+        id=&quot;active-section&quot;
+        presentation=&quot;section&quot;
+        textValue=&quot;Active&quot;
+      &gt;
+        &lt;Table.Cell colSpan={2} column=&quot;name&quot;&gt;
+          Active
+        &lt;/Table.Cell&gt;
+      &lt;/Table.Row&gt;
       &lt;Table.Row id=&quot;alpha&quot; textValue=&quot;Alpha Ready&quot;&gt;
         &lt;Table.Cell column=&quot;name&quot;&gt;Alpha&lt;/Table.Cell&gt;
         &lt;Table.Cell column=&quot;state&quot;&gt;Ready&lt;/Table.Cell&gt;
@@ -24119,9 +24178,56 @@ virtualization?: CollectionVirtualization</code></pre>
       &lt;/Table.Row&gt;
     &lt;/Table.Body&gt;
     &lt;Table.Body id=&quot;archived&quot;&gt;
+      &lt;Table.Row
+        id=&quot;archived-section&quot;
+        presentation=&quot;section&quot;
+        textValue=&quot;Archived&quot;
+      &gt;
+        &lt;Table.Cell colSpan={2} column=&quot;name&quot;&gt;
+          Archived
+        &lt;/Table.Cell&gt;
+      &lt;/Table.Row&gt;
       &lt;Table.Row id=&quot;gamma&quot; textValue=&quot;Gamma Draft&quot;&gt;
         &lt;Table.Cell column=&quot;name&quot;&gt;Gamma&lt;/Table.Cell&gt;
         &lt;Table.Cell column=&quot;state&quot;&gt;Draft&lt;/Table.Cell&gt;
+      &lt;/Table.Row&gt;
+    &lt;/Table.Body&gt;
+  &lt;/Table.Root&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Responsive Grid Column Variant</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>typed media, details, and action desktop grid columns</div>
+              <div class="hint">Uses a named five-column desktop arrangement while retaining compact card rows below the Breeze small breakpoint.</div>
+              <pre><code>const ResponsiveGridColumnVariant = () =&gt; (
+  &lt;Table.Root
+    aria-label=&quot;Responsive company records&quot;
+    desktopColumns=&quot;mediaDetailsAction&quot;
+    layout=&quot;responsiveGrid&quot;
+  &gt;
+    &lt;Table.Header&gt;
+      &lt;Table.Column compactLabel={false} id=&quot;media&quot;&gt;
+        Media
+      &lt;/Table.Column&gt;
+      &lt;Table.Column id=&quot;name&quot; rowHeader&gt;
+        Name
+      &lt;/Table.Column&gt;
+      &lt;Table.Column id=&quot;number&quot;&gt;Number&lt;/Table.Column&gt;
+      &lt;Table.Column id=&quot;contact&quot;&gt;Contact&lt;/Table.Column&gt;
+      &lt;Table.Column compactLabel={false} id=&quot;action&quot;&gt;
+        Action
+      &lt;/Table.Column&gt;
+    &lt;/Table.Header&gt;
+    &lt;Table.Body&gt;
+      &lt;Table.Row id=&quot;acme&quot; textValue=&quot;Acme 123 contact@example.test&quot;&gt;
+        &lt;Table.Cell column=&quot;media&quot;&gt;AC&lt;/Table.Cell&gt;
+        &lt;Table.Cell column=&quot;name&quot;&gt;Acme&lt;/Table.Cell&gt;
+        &lt;Table.Cell column=&quot;number&quot;&gt;123&lt;/Table.Cell&gt;
+        &lt;Table.Cell column=&quot;contact&quot;&gt;contact@example.test&lt;/Table.Cell&gt;
+        &lt;Table.Cell column=&quot;action&quot;&gt;View&lt;/Table.Cell&gt;
       &lt;/Table.Row&gt;
     &lt;/Table.Body&gt;
   &lt;/Table.Root&gt;
@@ -24415,12 +24521,12 @@ export function RecordsTable() {
 - `Table.Column` renders one keyed heading and configures row-header, sorting, compact label, alignment, and width behaviour.
 - `Table.Body` renders one ordered row section and its empty content.
 - `Table.Row` renders one keyed data or section row, with optional action and tone.
-- `Table.Cell` associates one cell with a stable column key.
+- `Table.Cell` associates one cell with a stable column key and can span adjacent columns.
 - `Table.Disclosure` renders the canonical bare arrow cell for an actionable row.
 - `Table.Footer` renders an optional ordered footer row section.
 - `Table.LoadMore` renders a visible loading row and intersection-driven request sentinel.
 
-Keep `Header`, each `Body`, and optional `Footer` in meaningful source order. Every data row must contain exactly one cell for every visible column, in the same order, even after conditional column changes.
+Keep `Header`, each `Body`, and optional `Footer` in meaningful source order. Every data row must cover every visible column in the same order, even after conditional column changes. Use `Table.Cell colSpan` when one cell intentionally covers adjacent columns.
 
 ## Keys and collection content
 
@@ -24430,9 +24536,11 @@ Column, row, and section identifiers are stable `string | number` keys. Do not u
 
 ## Responsive layouts and columns
 
-`layout=&quot;responsive&quot;` is the default. It presents compact labelled records below the Breeze small breakpoint and native table columns at wider sizes. `responsiveGrid` keeps the same compact treatment but uses explicit equal grid tracks at wider sizes. `grid` keeps CSS grid structure at all sizes. Use `responsiveGrid` or `grid` only when equal tracks and aligned custom geometry fit the content.
+`layout=&quot;responsive&quot;` is the default. It presents compact labelled records below the Breeze small breakpoint and native table columns at wider sizes. `responsiveGrid` keeps the same compact treatment but uses explicit grid tracks at wider sizes. Its `desktopColumns` variant defaults to `equal`; use `desktopColumns=&quot;mediaDetailsAction&quot;` for a five-column media, primary detail, secondary detail, tertiary detail, and trailing action arrangement. `grid` keeps CSS grid structure at all sizes. Use `responsiveGrid` or `grid` only when aligned custom geometry fits the content.
 
 `Table.Column compactLabel` defaults to `true`; a literal string heading becomes the compact label. When the heading contains formatting, icons, or other React nodes, provide explicit `textValue`. Set `compactLabel` to `false` for a disclosure or control column that should not label compact cells. `align` is `start`, `center`, or `end` and defaults to `start`. `width` is `auto`, `control`, or `icon` and defaults to `auto`. `boundary=&quot;strong&quot;` adds a stronger lower edge; `none` is the default.
+
+`Table.Cell colSpan` follows native table semantics and spans the same number of CSS-grid tracks in `grid` and `responsiveGrid` layouts. Use a positive integer, start the cell in the first column it covers, and omit the covered cells from that row.
 
 &lt;Canvas of={Stories.ResponsiveGroupedSections} /&gt;
 
@@ -24516,6 +24624,7 @@ Parts support relevant native table attributes, `className`, ARIA and data attri
 ## Common mistakes
 
 - Do not mismatch cell `column` keys, heading order, or conditional visible columns.
+- Do not use padding or manual grid positions to imitate a spanned cell.
 - Do not assume `onSortChange` sorts rows for you.
 - Do not use unstable row keys or omit `textValue`.
 - Do not attach generic click handlers to rows; use `onAction` or cell controls.
