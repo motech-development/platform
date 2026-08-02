@@ -142,11 +142,7 @@ describe('Table', () => {
 
   it('forwards native multi-column spans in grid layouts', () => {
     renderBreeze(
-      <Table.Root
-        aria-label="Transaction totals"
-        className="grid-cols-[3rem_minmax(0,1fr)_minmax(0,1fr)_auto]"
-        layout="grid"
-      >
+      <Table.Root aria-label="Transaction totals" layout="grid">
         <Table.Header>
           <Table.Column id="direction" rowHeader>
             Direction
