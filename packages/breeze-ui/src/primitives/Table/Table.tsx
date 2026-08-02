@@ -428,6 +428,19 @@ function normaliseSelection(
   return selection === 'all' ? 'all' : [...selection];
 }
 
+/** Mirrors the HTML table-cell span range for derived CSS Grid geometry. */
+function normaliseColumnSpan(colSpan: number | undefined): number | undefined {
+  if (colSpan === undefined) {
+    return undefined;
+  }
+
+  if (!Number.isInteger(colSpan)) {
+    return 1;
+  }
+
+  return Math.min(Math.max(colSpan, 1), 1000);
+}
+
 function resolveSelectionMode(
   enabled: boolean,
   multiple: boolean,
@@ -773,10 +786,13 @@ export function Cell({
   ...props
 }: Readonly<TableCellProps>): ReactElement {
   const forwardedRef = useForwardedRef(ref);
+  const normalisedColSpan = normaliseColumnSpan(colSpan);
   const spanStyle: CSSProperties | undefined =
-    colSpan === undefined || colSpan <= 1
+    normalisedColSpan === undefined || normalisedColSpan <= 1
       ? undefined
-      : { gridColumn: `span ${colSpan} / span ${colSpan}` };
+      : {
+          gridColumn: `span ${normalisedColSpan} / span ${normalisedColSpan}`,
+        };
   const cellRef = useCallback(
     (element: HTMLTableCellElement | null) => {
       forwardedRef(element);
@@ -790,7 +806,7 @@ export function Cell({
   return createElement(AriaCell, {
     ...props,
     className: tableCell({ align, class: className, presentation }),
-    colSpan,
+    colSpan: normalisedColSpan,
     'data-breeze-cell-column': String(column),
     ref: cellRef,
     style: spanStyle,
