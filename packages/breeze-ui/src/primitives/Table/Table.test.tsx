@@ -169,6 +169,47 @@ describe('Table', () => {
     expect(dateCell).toHaveAttribute('colspan', '3');
   });
 
+  it.each([
+    { colSpan: 1.5, gridColumn: '', normalisedColSpan: 1 },
+    {
+      colSpan: 1001,
+      gridColumn: 'span 1000 / span 1000',
+      normalisedColSpan: 1000,
+    },
+  ])(
+    'normalises a $colSpan column span for native and grid geometry',
+    ({ colSpan, gridColumn, normalisedColSpan }) => {
+      const columns = Array.from(
+        { length: normalisedColSpan },
+        (_, index) => `column-${index}`,
+      );
+
+      renderBreeze(
+        <Table.Root aria-label="Normalised spans" layout="grid">
+          <Table.Header>
+            {columns.map((column, index) => (
+              <Table.Column id={column} key={column} rowHeader={index === 0}>
+                Column {index + 1}
+              </Table.Column>
+            ))}
+          </Table.Header>
+          <Table.Body>
+            <Table.Row id="total" textValue="Total">
+              <Table.Cell colSpan={colSpan} column="column-0">
+                Total
+              </Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table.Root>,
+      );
+
+      const cell = screen.getByRole('rowheader', { name: 'Total' });
+
+      expect(cell).toHaveAttribute('colspan', String(normalisedColSpan));
+      expect(cell.style.gridColumn).toBe(gridColumn);
+    },
+  );
+
   it('supports desktop grid tracks while retaining responsive card rows', () => {
     renderBreeze(
       <Table.Root
