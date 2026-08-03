@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -54,6 +54,7 @@ describe('ApplicationShell', () => {
 
     function ControlledShell() {
       const [compactNavigationOpen, setCompactNavigationOpen] = useState(true);
+      const [contentFocusKey, setContentFocusKey] = useState('/overview');
 
       return (
         <BreezeProvider
@@ -62,6 +63,7 @@ describe('ApplicationShell', () => {
             navigate: (href) => {
               navigate(href);
               setCompactNavigationOpen(false);
+              setContentFocusKey(href);
             },
           }}
         >
@@ -69,6 +71,7 @@ describe('ApplicationShell', () => {
             account={<span>Account</span>}
             brand={<strong>Product</strong>}
             compactNavigationOpen={compactNavigationOpen}
+            contentFocusKey={contentFocusKey}
             navigation={
               <nav aria-label="Primary navigation">
                 <Link href="/projects">Projects</Link>
@@ -90,6 +93,7 @@ describe('ApplicationShell', () => {
     renderBreeze(<ControlledShell />);
 
     const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveFocus();
     const destination = within(dialog).getByRole('link', { name: 'Projects' });
     const newTabDestination = within(dialog).getByRole('link', {
       name: 'Open projects in a new tab',
@@ -113,5 +117,6 @@ describe('ApplicationShell', () => {
     await user.click(destination);
     expect(navigate).toHaveBeenCalledExactlyOnceWith('/projects');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('main')).toHaveFocus());
   });
 });
