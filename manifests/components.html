@@ -594,7 +594,7 @@
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>4.8s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>3.8s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -1145,7 +1145,7 @@ Alert has no keyboard interaction or internal controlled state. It does not own 
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ApplicationShell</h2>
       <div class="badges">
-        <label for="c-2-patterns-application-shell-applicationshell-props" class="badge ok as-toggle">13 prop types</label>
+        <label for="c-2-patterns-application-shell-applicationshell-props" class="badge ok as-toggle">14 prop types</label>
         
         <label for="c-2-patterns-application-shell-applicationshell-stories" class="badge ok as-toggle">6 stories</label>
         <label for="c-2-patterns-application-shell-applicationshell-docs" class="badge ok as-toggle">1 doc</label>
@@ -1174,7 +1174,7 @@ Alert has no keyboard interaction or internal controlled state. It does not own 
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">13 prop types</span>
+              <span class="badge ok">14 prop types</span>
             </div>
             <pre><code>Component: src/patterns/ApplicationShell/ApplicationShell.tsx::ApplicationShell</code></pre>
             <pre><code>Props:</code></pre>
@@ -1202,6 +1202,11 @@ compactBrand?: ReactNode
  * Current compact-navigation drawer state.
  */
 compactNavigationOpen?: boolean
+
+/**
+ * Focuses the main-content target after this application-owned content key changes.
+ */
+contentFocusKey?: Key
 
 /**
  * Optional active application-context slot.
@@ -1462,6 +1467,7 @@ useEffect(() =&gt; {
 
 &lt;ApplicationShell
   compactNavigationOpen={compactNavigationOpen}
+  contentFocusKey={route}
   onCompactNavigationOpenChange={setCompactNavigationOpen}
   // ...
 /&gt;;
@@ -1476,6 +1482,7 @@ Keep destinations as links and close from an observed route change. Do not repla
 - Use a labelled `NavigationList.Root` and set `current` from the active route. Local links use the `BreezeProvider` router adapter when configured; native anchors handle external URLs and native link behaviours.
 - The drawer trigger and close action use normal button keyboard activation. Focus, `Escape` dismissal, focus containment, scroll locking, and restoration are supplied by `Drawer`.
 - The main target has `tabIndex={-1}` so the skip link can move focus to it. Keep the first page heading inside `children`.
+- Pass the current application route as `contentFocusKey` to move focus to the main target after routed content changes. The focus is deferred until closing overlays have completed their own focus restoration.
 
 `ApplicationShell` has no disabled, read-only, invalid, loading, empty, or error mode. Render page feedback inside `children`, disable the relevant slotted controls themselves, and keep navigation and account recovery available whenever possible.
 
