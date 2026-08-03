@@ -1,5 +1,5 @@
-import type { HTMLAttributes, ReactElement, ReactNode, Ref } from 'react';
-import { createElement } from 'react';
+import type { HTMLAttributes, Key, ReactElement, ReactNode, Ref } from 'react';
+import { createElement, useEffect, useRef } from 'react';
 import { CloseIcon, MenuIcon } from '../../icons';
 import useForwardedRef from '../../internal/hooks/useForwardedRef';
 import { Drawer } from '../../primitives/Drawer/Drawer';
@@ -16,6 +16,8 @@ interface ApplicationShellSharedProps
   children: ReactNode;
   /** Compact-header product name. Defaults to `brand`. */
   compactBrand?: ReactNode;
+  /** Focuses the main-content target after this application-owned content key changes. */
+  contentFocusKey?: Key;
   /** Optional active application-context slot. */
   context?: ReactNode;
   /** Accessible title for the compact navigation drawer. */
@@ -64,6 +66,7 @@ export function ApplicationShell({
   compactBrand,
   compactNavigationOpen,
   context,
+  contentFocusKey,
   defaultCompactNavigationOpen,
   mainId = 'main-content',
   navigation,
@@ -74,6 +77,25 @@ export function ApplicationShell({
   ...props
 }: Readonly<ApplicationShellProps>): ReactElement {
   const { messages } = useBreezeContext();
+  const mainRef = useRef<HTMLElement>(null);
+  const previousContentFocusKey = useRef(contentFocusKey);
+
+  useEffect(() => {
+    const previousKey = previousContentFocusKey.current;
+
+    previousContentFocusKey.current = contentFocusKey;
+
+    if (contentFocusKey === undefined || contentFocusKey === previousKey) {
+      return undefined;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      mainRef.current?.focus();
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [contentFocusKey]);
+
   const compactNavigationContent = (
     <>
       <Drawer.Trigger
@@ -164,6 +186,7 @@ export function ApplicationShell({
       <main
         className="min-h-dvh px-4 py-6 sm:px-8 sm:py-12 md:ms-64 lg:px-12"
         id={mainId}
+        ref={mainRef}
         tabIndex={-1}
       >
         {children}

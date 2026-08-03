@@ -94,6 +94,7 @@ useEffect(() => {
 
 <ApplicationShell
   compactNavigationOpen={compactNavigationOpen}
+  contentFocusKey={route}
   onCompactNavigationOpenChange={setCompactNavigationOpen}
   // ...
 />;
@@ -108,6 +109,7 @@ Keep destinations as links and close from an observed route change. Do not repla
 - Use a labelled `NavigationList.Root` and set `current` from the active route. Local links use the `BreezeProvider` router adapter when configured; native anchors handle external URLs and native link behaviours.
 - The drawer trigger and close action use normal button keyboard activation. Focus, `Escape` dismissal, focus containment, scroll locking, and restoration are supplied by `Drawer`.
 - The main target has `tabIndex={-1}` so the skip link can move focus to it. Keep the first page heading inside `children`.
+- Pass the current application route as `contentFocusKey` to move focus to the main target after routed content changes. The focus is deferred until closing overlays have completed their own focus restoration.
 
 `ApplicationShell` has no disabled, read-only, invalid, loading, empty, or error mode. Render page feedback inside `children`, disable the relevant slotted controls themselves, and keep navigation and account recovery available whenever possible.
 
