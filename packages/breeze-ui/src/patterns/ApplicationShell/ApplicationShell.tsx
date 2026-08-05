@@ -8,7 +8,7 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 
 interface ApplicationShellSharedProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'style' | 'title'> {
-  /** Account or user-menu slot in the shell footer and compact header. */
+  /** Account or user-menu slot in the wide rail footer and compact header. */
   account: ReactNode;
   /** Canonical product brand slot. */
   brand: ReactNode;
@@ -131,7 +131,6 @@ export function ApplicationShell({
         </div>
         <footer className="grid gap-2 border-t border-[var(--breeze-shell-soft)] p-3">
           {context}
-          {account}
         </footer>
       </Drawer.Content>
     </>

@@ -41,6 +41,8 @@ describe('ApplicationShell', () => {
     expect(dialog).toHaveClass('w-64');
     expect(dialog).toHaveClass('breeze-drawer-surface');
     expect(dialog.closest('.breeze-drawer-motion')).not.toBeNull();
+    expect(within(dialog).getByText('Context')).toBeVisible();
+    expect(within(dialog).queryByText('Account')).not.toBeInTheDocument();
     expect(screen.getByText('Compact product')).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Close' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
