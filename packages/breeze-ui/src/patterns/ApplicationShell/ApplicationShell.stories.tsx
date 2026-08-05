@@ -257,6 +257,14 @@ export const ControlledCompactNavigation: Story = {
     const dialog = within(document.body).getByRole('dialog');
     const destination = within(dialog).getByRole('link', { name: 'Projects' });
 
+    await expect(
+      within(dialog).getByRole('button', { name: 'Switch workspace' }),
+    ).toBeInTheDocument();
+    await expect(
+      within(dialog).queryByRole('button', {
+        name: 'User menu, Unread notifications',
+      }),
+    ).toBeNull();
     await expect(destination).toHaveAttribute('href', '/projects');
     await userEvent.click(destination);
     await waitFor(() =>
