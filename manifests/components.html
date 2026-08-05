@@ -594,7 +594,7 @@
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>3.8s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>5.0s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -1179,7 +1179,7 @@ Alert has no keyboard interaction or internal controlled state. It does not own 
             <pre><code>Component: src/patterns/ApplicationShell/ApplicationShell.tsx::ApplicationShell</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>/**
- * Account or user-menu slot in the shell footer and compact header.
+ * Account or user-menu slot in the wide rail footer and compact header.
  */
 account: ReactNode
 
@@ -1447,7 +1447,7 @@ export function Workspace() {
 
 ## Anatomy and responsive behaviour
 
-The root contains a visible-on-focus skip link, a persistent rail from the `md` breakpoint, a compact header and start-edge drawer below `md`, and the labelled main-content target. `brand`, `navigation`, optional `context`, and `account` can be rendered in more than one responsive presentation, so their components must obtain changing state from the application and must not introduce a shared singleton DOM id. `compactBrand` defaults to `brand`.
+The root contains a visible-on-focus skip link, a persistent rail from the `md` breakpoint, a compact header and start-edge drawer below `md`, and the labelled main-content target. `brand`, `navigation`, and optional `context` can be rendered in more than one responsive presentation, so their components must obtain changing state from the application and must not introduce a shared singleton DOM id. The `account` slot appears in the wide rail footer and compact header; it is not repeated inside the compact drawer. `compactBrand` defaults to `brand`.
 
 The drawer uses logical `start`, so it opens from the left in left-to-right layouts and the right in right-to-left layouts. The shell supplies layout and landmarks; the application supplies destinations, the current route, translated product copy, context selection, account actions, loading/error content, and data fetching.
 
