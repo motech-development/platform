@@ -96,7 +96,7 @@ describe('Table', () => {
     expect(table).not.toHaveClass('border-b-2');
   });
 
-  it('supports a grid layout without changing table semantics', () => {
+  it('supports a grid layout without changing table semantics', async () => {
     renderBreeze(
       <Table.Root aria-label="Grid records" layout="grid">
         <Table.Header>
@@ -129,9 +129,11 @@ describe('Table', () => {
       'sm:[&>thead>tr]:grid-cols-subgrid',
       'sm:[&>thead>tr>th]:block',
     );
-    expect(table.style.getPropertyValue('--breeze-table-column-count')).toBe(
-      '2',
-    );
+    await waitFor(() => {
+      expect(table).toHaveStyle(
+        '--breeze-table-columns: minmax(0, 1fr) minmax(0, 1fr)',
+      );
+    });
     expect(table.className).not.toContain('md:');
     expect(screen.getByRole('columnheader', { name: 'State' })).toBeVisible();
     expect(screen.getByRole('rowheader', { name: 'Ada' })).toBeVisible();
@@ -251,14 +253,50 @@ describe('Table', () => {
     expect(screen.getAllByRole('columnheader')).toHaveLength(5);
   });
 
-  it('owns grid row dividers and constrained action-column widths', async () => {
+  it('derives equal responsive grid tracks from column widths', async () => {
+    renderBreeze(
+      <Table.Root aria-label="Responsive records" layout="responsiveGrid">
+        <Table.Header>
+          <Table.Column id="marker" width="2.25rem">
+            Marker
+          </Table.Column>
+          <Table.Column id="name" rowHeader>
+            Name
+          </Table.Column>
+          <Table.Column compactLabel={false} id="actions" width="1.25rem">
+            Action
+          </Table.Column>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row id="ada" textValue="Ada">
+            <Table.Cell column="marker">Ready</Table.Cell>
+            <Table.Cell column="name">Ada</Table.Cell>
+            <Table.Disclosure column="actions" position="flow" />
+          </Table.Row>
+        </Table.Body>
+      </Table.Root>,
+    );
+
+    const table = screen.getByRole('grid', { name: 'Responsive records' });
+
+    await waitFor(() => {
+      expect(table).toHaveStyle(
+        '--breeze-table-columns: 2.25rem minmax(0, 1fr) 1.25rem',
+      );
+    });
+    expect(screen.getByRole('columnheader', { name: 'Marker' })).toHaveStyle(
+      'width: 2.25rem',
+    );
+  });
+
+  it('owns grid row dividers and constrained action-column widths', () => {
     renderBreeze(
       <Table.Root aria-label="Reports" layout="grid">
         <Table.Header>
           <Table.Column id="name" rowHeader>
             Name
           </Table.Column>
-          <Table.Column compactLabel={false} id="actions" width="control">
+          <Table.Column compactLabel={false} id="actions" width="11rem">
             Actions
           </Table.Column>
         </Table.Header>
@@ -280,7 +318,7 @@ describe('Table', () => {
     const actionsCell = screen.getByRole('gridcell', { name: 'Download' });
 
     expect(table).toHaveClass('sm:[&>tbody>tr>td]:!border-0');
-    expect(actionsHeading).toHaveClass('w-44');
+    expect(actionsHeading).toHaveStyle('width: 11rem');
     expect(actionsHeading).not.toHaveClass('px-0');
     expect(actionsCell).toHaveClass(
       'before:hidden',
@@ -288,16 +326,8 @@ describe('Table', () => {
       'data-[label]:before:inline-block',
       'data-[label]:before:content-[attr(data-label)]',
       'sm:data-[label]:before:hidden',
-      'sm:data-[breeze-column-width=control]:w-44',
-      'sm:data-[breeze-column-width=control]:[&>a]:whitespace-nowrap',
-      'sm:data-[breeze-column-width=control]:[&>button]:whitespace-nowrap',
     );
-    await waitFor(() => {
-      expect(actionsCell).toHaveAttribute(
-        'data-breeze-column-width',
-        'control',
-      );
-    });
+    expect(actionsCell).not.toHaveAttribute('data-breeze-column-width');
   });
 
   it('owns table interaction semantics and derives responsive cell labels from headings', async () => {
@@ -423,7 +453,7 @@ describe('Table', () => {
           <Table.Column id="name" rowHeader>
             Name
           </Table.Column>
-          <Table.Column compactLabel={false} id="actions" width="icon">
+          <Table.Column compactLabel={false} id="actions" width="1.25rem">
             Action
           </Table.Column>
         </Table.Header>
@@ -475,7 +505,7 @@ describe('Table', () => {
           <Table.Column id="name" rowHeader>
             Name
           </Table.Column>
-          <Table.Column compactLabel={false} id="actions" width="icon">
+          <Table.Column compactLabel={false} id="actions" width="1.25rem">
             Action
           </Table.Column>
         </Table.Header>

@@ -4,7 +4,11 @@ import { ComboBox, type ComboBoxRootProps } from './ComboBox/ComboBox';
 import { GridList, type GridListRootProps } from './GridList/GridList';
 import { ListBox, type ListBoxRootProps } from './ListBox/ListBox';
 import { Select, type SelectRootProps } from './Select/Select';
-import { Table, type TableRootProps } from './Table/Table';
+import {
+  Table,
+  type TableColumnProps,
+  type TableRootProps,
+} from './Table/Table';
 import { Tag } from './Tag/Tag';
 import { TagGroup, type TagGroupRootProps } from './TagGroup/TagGroup';
 
@@ -177,6 +181,10 @@ describe('collection public contracts', () => {
     expectTypeOf<'mediaDetailsAction'>().toMatchTypeOf<
       NonNullable<TableRootProps['desktopColumns']>
     >();
+    expectTypeOf<'2.25rem'>().toMatchTypeOf<
+      NonNullable<TableColumnProps['width']>
+    >();
+    expectTypeOf<36>().toMatchTypeOf<NonNullable<TableColumnProps['width']>>();
     expectTypeOf<'minmax(0, 2fr) minmax(0, 1fr)'>().not.toMatchTypeOf<
       NonNullable<TableRootProps['desktopColumns']>
     >();
