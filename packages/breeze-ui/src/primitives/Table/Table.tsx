@@ -48,21 +48,33 @@ const responsiveTableLayout =
 
 const responsiveGridTableLayout = `${responsiveTableLayout} sm:!block sm:[&>thead]:!block sm:[&>tbody]:!block sm:[&>tfoot]:!block sm:[&>thead>tr]:!grid sm:[&>thead>tr]:w-full sm:[&>thead>tr]:items-center sm:[&>thead>tr]:gap-x-4 sm:[&>thead>tr]:px-6 sm:[&>thead>tr]:py-3 sm:[&>tbody>tr]:!grid sm:[&>tbody>tr]:w-full sm:[&>tbody>tr]:items-center sm:[&>tbody>tr]:gap-x-4 sm:[&>tbody>tr]:border-b sm:[&>tbody>tr]:border-[var(--breeze-border)] sm:[&>tbody>tr]:px-6 sm:[&>tbody>tr]:py-3 sm:[&>tfoot>tr]:!grid sm:[&>tfoot>tr]:w-full sm:[&>tfoot>tr]:items-center sm:[&>tfoot>tr]:gap-x-4 sm:[&>tfoot>tr]:px-6 sm:[&>tfoot>tr]:py-3 sm:[&>thead>tr>th]:!flex sm:[&>thead>tr>th]:!h-auto sm:[&>thead>tr>th]:items-center sm:[&>thead>tr>th]:!border-0 sm:[&>thead>tr>th]:!p-0 sm:[&>tbody>tr>td]:!flex sm:[&>tbody>tr>td]:!h-auto sm:[&>tbody>tr>td]:items-center sm:[&>tbody>tr>td]:!border-0 sm:[&>tbody>tr>td]:!p-0 sm:[&>tbody>tr>td:last-child]:justify-end sm:[&>tfoot>tr>td]:!flex sm:[&>tfoot>tr>td]:!h-auto sm:[&>tfoot>tr>td]:items-center sm:[&>tfoot>tr>td]:!border-0 sm:[&>tfoot>tr>td]:!p-0`;
 
-const responsiveGridEqualColumns =
+const responsiveGridColumns =
   'sm:[&>thead>tr]:grid-cols-[var(--breeze-table-columns)] sm:[&>tbody>tr]:grid-cols-[var(--breeze-table-columns)] sm:[&>tfoot>tr]:grid-cols-[var(--breeze-table-columns)]';
-const responsiveGridMediaDetailsActionColumns =
-  'sm:[&>thead>tr]:grid-cols-[2.25rem_minmax(0,1.3fr)_minmax(0,0.8fr)_minmax(0,1.2fr)_1.25rem] sm:[&>tbody>tr]:grid-cols-[2.25rem_minmax(0,1.3fr)_minmax(0,0.8fr)_minmax(0,1.2fr)_1.25rem] sm:[&>tfoot>tr]:grid-cols-[2.25rem_minmax(0,1.3fr)_minmax(0,0.8fr)_minmax(0,1.2fr)_1.25rem]';
+
+const responsiveGridColumnDefaults: Record<
+  TableDesktopColumns,
+  readonly string[]
+> = {
+  equal: [],
+  mediaDetailsAction: [
+    '2.25rem',
+    'minmax(0, 1.3fr)',
+    'minmax(0, 0.8fr)',
+    'minmax(0, 1.2fr)',
+    '1.25rem',
+  ],
+};
 
 const tableRoot = tv({
   base: 'group/table block w-full border-separate border-spacing-0 text-start text-[var(--breeze-ink)] outline-none sm:table [&>tbody:last-of-type>tr:last-child]:border-b-0 sm:[&>tbody:last-of-type>tr:last-child>td]:border-b-0 data-[focus-visible]:outline-2 data-[focus-visible]:outline-offset-2 data-[focus-visible]:outline-[var(--breeze-focus)]',
   compoundVariants: [
     {
-      class: responsiveGridEqualColumns,
+      class: responsiveGridColumns,
       desktopColumns: 'equal',
       layout: 'responsiveGrid',
     },
     {
-      class: responsiveGridMediaDetailsActionColumns,
+      class: responsiveGridColumns,
       desktopColumns: 'mediaDetailsAction',
       layout: 'responsiveGrid',
     },
@@ -458,6 +470,7 @@ interface ResponsiveColumnMetadata {
 
 function readResponsiveColumnMetadata(
   root: HTMLElement | null,
+  desktopColumns: TableDesktopColumns = 'equal',
 ): Map<string, ResponsiveColumnMetadata> {
   if (root === null) {
     return new Map();
@@ -465,7 +478,7 @@ function readResponsiveColumnMetadata(
 
   return new Map(
     [...root.querySelectorAll<HTMLElement>('[data-breeze-column]')].flatMap(
-      (heading): [string, ResponsiveColumnMetadata][] => {
+      (heading, index): [string, ResponsiveColumnMetadata][] => {
         const column = heading.dataset.breezeColumn;
 
         if (column === undefined) {
@@ -485,7 +498,10 @@ function readResponsiveColumnMetadata(
                 compactLabel === undefined || compactLabel.length === 0
                   ? undefined
                   : `${compactLabel}:`,
-              track: heading.dataset.breezeColumnWidth ?? 'minmax(0, 1fr)',
+              track:
+                heading.dataset.breezeColumnWidth ??
+                responsiveGridColumnDefaults[desktopColumns][index] ??
+                'minmax(0, 1fr)',
             },
           ],
         ];
@@ -528,8 +544,9 @@ function serializeResponsiveGridTracks(
 
 function syncResponsiveTableMetadata(
   root: HTMLElement | null,
+  desktopColumns: TableDesktopColumns,
 ): string | undefined {
-  const columns = readResponsiveColumnMetadata(root);
+  const columns = readResponsiveColumnMetadata(root, desktopColumns);
 
   syncResponsiveCellLabels(root, columns);
 
@@ -584,7 +601,10 @@ export function Root({
     }
 
     const syncTable = () => {
-      const nextGridTemplateColumns = syncResponsiveTableMetadata(root);
+      const nextGridTemplateColumns = syncResponsiveTableMetadata(
+        root,
+        desktopColumns,
+      );
 
       setGridTemplateColumns((currentGridTemplateColumns) =>
         currentGridTemplateColumns === nextGridTemplateColumns
@@ -609,7 +629,7 @@ export function Root({
     });
 
     return () => observer.disconnect();
-  }, [children]);
+  }, [children, desktopColumns]);
 
   const viewportStyle = collectionViewportStyle(virtualization);
   const tableStyle =
