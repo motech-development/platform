@@ -212,7 +212,7 @@ describe('Table', () => {
     },
   );
 
-  it('supports desktop grid tracks while retaining responsive card rows', () => {
+  it('uses explicit responsive grid widths with media-details-action defaults', async () => {
     renderBreeze(
       <Table.Root
         aria-label="Responsive grid records"
@@ -220,7 +220,7 @@ describe('Table', () => {
         layout="responsiveGrid"
       >
         <Table.Header>
-          <Table.Column compactLabel={false} id="media">
+          <Table.Column compactLabel={false} id="media" width="3rem">
             Media
           </Table.Column>
           <Table.Column id="name" rowHeader>
@@ -228,7 +228,7 @@ describe('Table', () => {
           </Table.Column>
           <Table.Column id="state">State</Table.Column>
           <Table.Column id="detail">Detail</Table.Column>
-          <Table.Column compactLabel={false} id="action">
+          <Table.Column compactLabel={false} id="action" width={24}>
             Action
           </Table.Column>
         </Table.Header>
@@ -249,6 +249,11 @@ describe('Table', () => {
     });
 
     expect(table).toHaveAttribute('data-layout', 'responsiveGrid');
+    await waitFor(() => {
+      expect(table).toHaveStyle(
+        '--breeze-table-columns: 3rem minmax(0, 1.3fr) minmax(0, 0.8fr) minmax(0, 1.2fr) 24px',
+      );
+    });
     expect(screen.getByRole('row', { name: 'Ada' })).toBeVisible();
     expect(screen.getAllByRole('columnheader')).toHaveLength(5);
   });
