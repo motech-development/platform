@@ -211,7 +211,7 @@ export type TableBoundary = 'none' | 'strong';
 export type TableDesktopColumns = 'equal' | 'mediaDetailsAction';
 
 /** CSS width or grid-track size for one table column. Numeric values are pixels. */
-export type TableColumnWidth = CSSProperties['width'];
+export type TableColumnWidth = NonNullable<CSSProperties['width']>;
 
 /** Domain-neutral emphasis applied to one data row. */
 export type TableRowTone = 'default' | 'muted';
