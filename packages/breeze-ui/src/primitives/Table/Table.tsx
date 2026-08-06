@@ -49,7 +49,7 @@ const responsiveTableLayout =
 const responsiveGridTableLayout = `${responsiveTableLayout} sm:!block sm:[&>thead]:!block sm:[&>tbody]:!block sm:[&>tfoot]:!block sm:[&>thead>tr]:!grid sm:[&>thead>tr]:w-full sm:[&>thead>tr]:items-center sm:[&>thead>tr]:gap-x-4 sm:[&>thead>tr]:px-6 sm:[&>thead>tr]:py-3 sm:[&>tbody>tr]:!grid sm:[&>tbody>tr]:w-full sm:[&>tbody>tr]:items-center sm:[&>tbody>tr]:gap-x-4 sm:[&>tbody>tr]:border-b sm:[&>tbody>tr]:border-[var(--breeze-border)] sm:[&>tbody>tr]:px-6 sm:[&>tbody>tr]:py-3 sm:[&>tfoot>tr]:!grid sm:[&>tfoot>tr]:w-full sm:[&>tfoot>tr]:items-center sm:[&>tfoot>tr]:gap-x-4 sm:[&>tfoot>tr]:px-6 sm:[&>tfoot>tr]:py-3 sm:[&>thead>tr>th]:!flex sm:[&>thead>tr>th]:!h-auto sm:[&>thead>tr>th]:items-center sm:[&>thead>tr>th]:!border-0 sm:[&>thead>tr>th]:!p-0 sm:[&>tbody>tr>td]:!flex sm:[&>tbody>tr>td]:!h-auto sm:[&>tbody>tr>td]:items-center sm:[&>tbody>tr>td]:!border-0 sm:[&>tbody>tr>td]:!p-0 sm:[&>tbody>tr>td:last-child]:justify-end sm:[&>tfoot>tr>td]:!flex sm:[&>tfoot>tr>td]:!h-auto sm:[&>tfoot>tr>td]:items-center sm:[&>tfoot>tr>td]:!border-0 sm:[&>tfoot>tr>td]:!p-0`;
 
 const responsiveGridEqualColumns =
-  'sm:[&>thead>tr]:grid-cols-[repeat(var(--breeze-table-column-count),minmax(0,1fr))] sm:[&>tbody>tr]:grid-cols-[repeat(var(--breeze-table-column-count),minmax(0,1fr))] sm:[&>tfoot>tr]:grid-cols-[repeat(var(--breeze-table-column-count),minmax(0,1fr))]';
+  'sm:[&>thead>tr]:grid-cols-[var(--breeze-table-columns)] sm:[&>tbody>tr]:grid-cols-[var(--breeze-table-columns)] sm:[&>tfoot>tr]:grid-cols-[var(--breeze-table-columns)]';
 const responsiveGridMediaDetailsActionColumns =
   'sm:[&>thead>tr]:grid-cols-[2.25rem_minmax(0,1.3fr)_minmax(0,0.8fr)_minmax(0,1.2fr)_1.25rem] sm:[&>tbody>tr]:grid-cols-[2.25rem_minmax(0,1.3fr)_minmax(0,0.8fr)_minmax(0,1.2fr)_1.25rem] sm:[&>tfoot>tr]:grid-cols-[2.25rem_minmax(0,1.3fr)_minmax(0,0.8fr)_minmax(0,1.2fr)_1.25rem]';
 
@@ -84,7 +84,7 @@ const tableRoot = tv({
       mediaDetailsAction: '',
     },
     layout: {
-      grid: '!grid grid-cols-[repeat(var(--breeze-table-column-count),minmax(0,1fr))] [&>thead]:col-span-full [&>thead]:grid-cols-subgrid sm:[&>thead]:grid [&>tbody]:col-span-full [&>tbody]:grid [&>tbody]:grid-cols-subgrid [&>tfoot]:col-span-full [&>tfoot]:grid [&>tfoot]:grid-cols-subgrid sm:[&>thead>tr]:col-span-full sm:[&>thead>tr]:grid sm:[&>thead>tr]:min-h-11 sm:[&>thead>tr]:grid-cols-subgrid sm:[&>thead>tr]:items-center sm:[&>thead>tr]:px-6 [&>tbody>tr]:col-span-full [&>tbody>tr]:grid [&>tbody>tr]:min-h-11 [&>tbody>tr]:grid-cols-subgrid [&>tbody>tr]:items-center [&>tbody>tr]:px-4 sm:[&>tbody>tr]:px-6 [&>tfoot>tr]:col-span-full [&>tfoot>tr]:grid [&>tfoot>tr]:min-h-11 [&>tfoot>tr]:grid-cols-subgrid [&>tfoot>tr]:items-center [&>tfoot>tr]:px-4 sm:[&>tfoot>tr]:px-6 sm:[&>thead>tr>th]:block sm:[&>thead>tr>th]:!p-0 [&>tbody>tr>td]:block [&>tbody>tr>td]:!p-0 [&>tfoot>tr>td]:block [&>tfoot>tr>td]:!p-0 sm:[&>thead>tr]:border-b sm:[&>thead>tr]:border-[var(--breeze-border)] sm:[&>thead>tr>th]:border-0 [&>tbody>tr]:border-b [&>tbody>tr]:border-[var(--breeze-border)] [&>tbody>tr>td]:border-0 [&>tfoot>tr>td]:border-0 sm:[&>tbody>tr>td]:!border-0 sm:[&>tfoot>tr>td]:!border-0',
+      grid: '!grid grid-cols-[var(--breeze-table-columns)] [&>thead]:col-span-full [&>thead]:grid-cols-subgrid sm:[&>thead]:grid [&>tbody]:col-span-full [&>tbody]:grid [&>tbody]:grid-cols-subgrid [&>tfoot]:col-span-full [&>tfoot]:grid [&>tfoot]:grid-cols-subgrid sm:[&>thead>tr]:col-span-full sm:[&>thead>tr]:grid sm:[&>thead>tr]:min-h-11 sm:[&>thead>tr]:grid-cols-subgrid sm:[&>thead>tr]:items-center sm:[&>thead>tr]:px-6 [&>tbody>tr]:col-span-full [&>tbody>tr]:grid [&>tbody>tr]:min-h-11 [&>tbody>tr]:grid-cols-subgrid [&>tbody>tr]:items-center [&>tbody>tr]:px-4 sm:[&>tbody>tr]:px-6 [&>tfoot>tr]:col-span-full [&>tfoot>tr]:grid [&>tfoot>tr]:min-h-11 [&>tfoot>tr]:grid-cols-subgrid [&>tfoot>tr]:items-center [&>tfoot>tr]:px-4 sm:[&>tfoot>tr]:px-6 sm:[&>thead>tr>th]:block sm:[&>thead>tr>th]:!p-0 [&>tbody>tr>td]:block [&>tbody>tr>td]:!p-0 [&>tfoot>tr>td]:block [&>tfoot>tr>td]:!p-0 sm:[&>thead>tr]:border-b sm:[&>thead>tr]:border-[var(--breeze-border)] sm:[&>thead>tr>th]:border-0 [&>tbody>tr]:border-b [&>tbody>tr]:border-[var(--breeze-border)] [&>tbody>tr>td]:border-0 [&>tfoot>tr>td]:border-0 sm:[&>tbody>tr>td]:!border-0 sm:[&>tfoot>tr>td]:!border-0',
       responsive: responsiveTableLayout,
       responsiveGrid: responsiveGridTableLayout,
     },
@@ -106,14 +106,9 @@ const tableColumn = tv({
   },
   variants: {
     align: {
-      center: 'text-center',
-      end: 'text-end',
-      start: 'text-start',
-    },
-    width: {
-      auto: '',
-      control: 'w-44',
-      icon: 'w-5 px-0',
+      center: 'text-center sm:justify-center',
+      end: 'text-end sm:justify-end',
+      start: 'text-start sm:justify-start',
     },
   },
 });
@@ -168,15 +163,15 @@ const tableRow = tv({
 });
 
 const tableCell = tv({
-  base: 'grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] gap-4 border-b border-[var(--breeze-border)] px-4 py-2 text-start [overflow-wrap:anywhere] last:border-b-0 before:me-1 before:hidden before:font-[family-name:var(--breeze-font-display)] before:text-base before:leading-[1.4] before:font-bold before:text-[var(--breeze-ink-muted)] data-[label]:before:inline-block data-[label]:before:content-[attr(data-label)] sm:table-cell sm:border-b sm:border-[var(--breeze-border)] sm:px-4 sm:py-3 sm:last:border-b sm:data-[label]:before:hidden sm:data-[breeze-column-width=control]:w-44 sm:data-[breeze-column-width=control]:[&>a]:whitespace-nowrap sm:data-[breeze-column-width=control]:[&>button]:whitespace-nowrap sm:data-[breeze-column-width=icon]:w-5 sm:data-[breeze-column-width=icon]:px-0 [&>*]:min-w-0',
+  base: 'grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] gap-4 border-b border-[var(--breeze-border)] px-4 py-2 text-start [overflow-wrap:anywhere] last:border-b-0 before:me-1 before:hidden before:font-[family-name:var(--breeze-font-display)] before:text-base before:leading-[1.4] before:font-bold before:text-[var(--breeze-ink-muted)] data-[label]:before:inline-block data-[label]:before:content-[attr(data-label)] sm:table-cell sm:border-b sm:border-[var(--breeze-border)] sm:px-4 sm:py-3 sm:last:border-b sm:data-[label]:before:hidden [&>*]:min-w-0',
   defaultVariants: {
     align: 'start',
   },
   variants: {
     align: {
-      center: 'sm:text-center',
-      end: 'sm:text-end',
-      start: 'sm:text-start',
+      center: 'sm:text-center sm:justify-center',
+      end: 'sm:text-end sm:justify-end',
+      start: 'sm:text-start sm:justify-start',
     },
     presentation: {
       data: '',
@@ -203,8 +198,8 @@ export type TableBoundary = 'none' | 'strong';
 /** Supported desktop column arrangements for responsive grid tables. */
 export type TableDesktopColumns = 'equal' | 'mediaDetailsAction';
 
-/** Canonical column widths for content, full controls, and icon actions. */
-export type TableColumnWidth = 'auto' | 'control' | 'icon';
+/** CSS width or grid-track size for one table column. Numeric values are pixels. */
+export type TableColumnWidth = CSSProperties['width'];
 
 /** Domain-neutral emphasis applied to one data row. */
 export type TableRowTone = 'default' | 'muted';
@@ -326,7 +321,7 @@ export interface TableColumnProps
   ref?: Ref<HTMLTableCellElement>;
   /** Plain-text accessible and compact label used when the visible heading is not a string. */
   textValue?: string;
-  /** Canonical width for content, full controls, or icon actions. Defaults to `auto`. */
+  /** CSS width or grid-track size. Numeric values are pixels; omitted columns share remaining responsive-grid space. */
   width?: TableColumnWidth;
 }
 
@@ -439,6 +434,12 @@ function normaliseColumnSpan(colSpan: number | undefined): number | undefined {
   return Math.min(Math.max(colSpan, 1), 1000);
 }
 
+function serializeColumnWidth(
+  width: TableColumnWidth | undefined,
+): string | undefined {
+  return typeof width === 'number' ? `${width}px` : width;
+}
+
 function resolveSelectionMode(
   enabled: boolean,
   multiple: boolean,
@@ -450,53 +451,89 @@ function resolveSelectionMode(
   return multiple ? 'multiple' : 'single';
 }
 
-function syncResponsiveCellLabels(root: HTMLElement | null): void {
+interface ResponsiveColumnMetadata {
+  label: string | undefined;
+  track: string;
+}
+
+function readResponsiveColumnMetadata(
+  root: HTMLElement | null,
+): Map<string, ResponsiveColumnMetadata> {
   if (root === null) {
-    return;
+    return new Map();
   }
 
-  const headings = new Map(
-    [...root.querySelectorAll<HTMLElement>('[data-breeze-column]')].map(
-      (heading) => {
+  return new Map(
+    [...root.querySelectorAll<HTMLElement>('[data-breeze-column]')].flatMap(
+      (heading): [string, ResponsiveColumnMetadata][] => {
+        const column = heading.dataset.breezeColumn;
+
+        if (column === undefined) {
+          return [];
+        }
+
         const compactLabel =
           heading.dataset.breezeCompactLabel === 'false'
             ? undefined
             : heading.dataset.breezeCompactLabelText;
 
         return [
-          heading.dataset.breezeColumn,
-          {
-            label:
-              compactLabel === undefined || compactLabel.length === 0
-                ? undefined
-                : `${compactLabel}:`,
-            width: heading.dataset.breezeColumnWidth ?? 'auto',
-          },
+          [
+            column,
+            {
+              label:
+                compactLabel === undefined || compactLabel.length === 0
+                  ? undefined
+                  : `${compactLabel}:`,
+              track: heading.dataset.breezeColumnWidth ?? 'minmax(0, 1fr)',
+            },
+          ],
         ];
       },
     ),
   );
+}
 
-  root.style.setProperty(
-    '--breeze-table-column-count',
-    String(Math.max(headings.size, 1)),
-  );
+function syncResponsiveCellLabels(
+  root: HTMLElement | null,
+  columns = readResponsiveColumnMetadata(root),
+): void {
+  if (root === null) {
+    return;
+  }
 
   root
     .querySelectorAll<HTMLElement>('[data-breeze-cell-column]')
     .forEach((cell) => {
       const { dataset } = cell;
-      const column = headings.get(dataset.breezeCellColumn);
-      const label = column?.label;
+      const label = columns.get(dataset.breezeCellColumn ?? '')?.label;
 
       if (label !== undefined && label.length > 0) {
         dataset.label = label;
       } else {
         delete dataset.label;
       }
-
-      dataset.breezeColumnWidth = column?.width ?? 'auto';
     });
+}
+
+function serializeResponsiveGridTracks(
+  columns: Map<string, ResponsiveColumnMetadata>,
+): string | undefined {
+  if (columns.size === 0) {
+    return undefined;
+  }
+
+  return [...columns.values()].map(({ track }) => track).join(' ');
+}
+
+function syncResponsiveTableMetadata(
+  root: HTMLElement | null,
+): string | undefined {
+  const columns = readResponsiveColumnMetadata(root);
+
+  syncResponsiveCellLabels(root, columns);
+
+  return serializeResponsiveGridTracks(columns);
 }
 
 /** Coordinates semantic table navigation, row state, sorting, and responsive labels. */
@@ -524,6 +561,7 @@ export function Root({
   const forwardedRef = useForwardedRef(ref);
   const rootRef = useRef<HTMLElement | null>(null);
   const [internalSort, setInternalSort] = useState(defaultSort);
+  const [gridTemplateColumns, setGridTemplateColumns] = useState<string>();
   const selectionEnabled =
     defaultSelection !== undefined ||
     multiple ||
@@ -539,8 +577,48 @@ export function Root({
   );
 
   useLayoutEffect(() => {
-    syncResponsiveCellLabels(rootRef.current);
-  });
+    const root = rootRef.current;
+
+    if (root === null) {
+      return () => undefined;
+    }
+
+    const syncTable = () => {
+      const nextGridTemplateColumns = syncResponsiveTableMetadata(root);
+
+      setGridTemplateColumns((currentGridTemplateColumns) =>
+        currentGridTemplateColumns === nextGridTemplateColumns
+          ? currentGridTemplateColumns
+          : nextGridTemplateColumns,
+      );
+    };
+
+    syncTable();
+
+    const observer = new MutationObserver(syncTable);
+
+    observer.observe(root, {
+      attributeFilter: [
+        'data-breeze-column-width',
+        'data-breeze-compact-label',
+        'data-breeze-compact-label-text',
+      ],
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
+
+    return () => observer.disconnect();
+  }, [children]);
+
+  const viewportStyle = collectionViewportStyle(virtualization);
+  const tableStyle =
+    gridTemplateColumns === undefined && viewportStyle === undefined
+      ? undefined
+      : ({
+          ...viewportStyle,
+          '--breeze-table-columns': gridTemplateColumns,
+        } as CSSProperties);
 
   const table = createElement(AriaTable, {
     ...props,
@@ -588,7 +666,7 @@ export function Root({
             column: resolvedSort.column,
             direction: resolvedSort.direction,
           },
-    style: collectionViewportStyle(virtualization),
+    style: tableStyle,
   } as unknown as ComponentProps<typeof AriaTable>);
 
   return virtualization === undefined
@@ -613,9 +691,10 @@ function renderTableColumn({
   rowHeader = false,
   sortable = false,
   textValue,
-  width = 'auto',
+  width,
   ...props
 }: TableColumnProps): ReactElement {
+  const serializedWidth = serializeColumnWidth(width);
   const inferredCompactLabel =
     typeof children === 'string' ? children.trim() : undefined;
   const compactLabelText = compactLabel
@@ -626,14 +705,18 @@ function renderTableColumn({
     ...props,
     allowsSorting: sortable,
     children,
-    className: tableColumn({ align, class: className, width }),
+    className: tableColumn({
+      align,
+      class: className,
+    }),
     'data-breeze-column': String(id),
-    'data-breeze-column-width': width,
+    'data-breeze-column-width': serializedWidth,
     'data-breeze-compact-label': String(compactLabel),
     'data-breeze-compact-label-text': compactLabelText,
     id,
     isRowHeader: rowHeader,
     ref,
+    style: serializedWidth === undefined ? undefined : { width },
     textValue,
   } as unknown as ComponentProps<typeof AriaColumn>);
 }

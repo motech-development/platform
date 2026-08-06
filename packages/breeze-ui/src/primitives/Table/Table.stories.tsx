@@ -375,6 +375,70 @@ export const ResponsiveGridColumnVariant: Story = {
 };
 
 /**
+ * Applies intrinsic and icon widths from the generic column API while the
+ * remaining columns share the available desktop width.
+ *
+ * @summary responsive grid driven by column widths
+ */
+export const ResponsiveGridColumnWidths: Story = {
+  args: { 'aria-label': 'Responsive records', children: null },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole('row', { name: 'Example record' });
+    const columns = getComputedStyle(row).gridTemplateColumns.split(' ');
+    const amountHeading = canvas.getByText('Amount');
+    const amount = canvas.getByText('£10.00');
+
+    await expect(columns[0]).toBe('36px');
+    await expect(columns.at(-1)).toBe('20px');
+    await expect(amount.getBoundingClientRect().right).toBeCloseTo(
+      amountHeading.getBoundingClientRect().right,
+      1,
+    );
+  },
+  render: () => (
+    <Table.Root aria-label="Responsive records" layout="responsiveGrid">
+      <Table.Header>
+        <Table.Column
+          compactLabel={false}
+          id="marker"
+          textValue="Marker"
+          width={36}
+        >
+          <span className="sr-only">Marker</span>
+        </Table.Column>
+        <Table.Column id="name" rowHeader>
+          Name
+        </Table.Column>
+        <Table.Column align="end" id="amount" width="max-content">
+          <span>Amount</span>
+        </Table.Column>
+        <Table.Column
+          compactLabel={false}
+          id="action"
+          textValue="Action"
+          width="1.25rem"
+        >
+          <span className="sr-only">Action</span>
+        </Table.Column>
+      </Table.Header>
+      <Table.Body>
+        <Table.Row id="record" textValue="Example record">
+          <Table.Cell column="marker">
+            <span className="flex size-9 items-center justify-center">A</span>
+          </Table.Cell>
+          <Table.Cell column="name">Example record</Table.Cell>
+          <Table.Cell align="end" column="amount">
+            <span>£10.00</span>
+          </Table.Cell>
+          <Table.Disclosure column="action" position="flow" />
+        </Table.Row>
+      </Table.Body>
+    </Table.Root>
+  ),
+};
+
+/**
  * Keeps separate responsive body sections visually bounded while removing the
  * final table-row divider only at the end of the complete collection.
  *
