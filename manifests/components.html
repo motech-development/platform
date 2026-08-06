@@ -588,7 +588,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">333 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">334 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
   </div>
 </header>
 <main>
@@ -23913,7 +23913,7 @@ size?: ControlSize</code></pre>
       <div class="badges">
         <label for="c-68-collections-table-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-68-collections-table-stories" class="badge ok as-toggle">15 stories</label>
+        <label for="c-68-collections-table-stories" class="badge ok as-toggle">16 stories</label>
         <label for="c-68-collections-table-docs" class="badge ok as-toggle">1 doc</label>
         <label for="c-68-collections-table-subcomponents" class="badge ok as-toggle">8 subcomponents</label>
       </div>
@@ -24242,6 +24242,54 @@ virtualization?: CollectionVirtualization</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Responsive Grid Column Widths</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>responsive grid driven by column widths</div>
+              <div class="hint">Applies intrinsic and icon widths from the generic column API while the remaining columns share the available desktop width.</div>
+              <pre><code>const ResponsiveGridColumnWidths = () =&gt; (
+  &lt;Table.Root aria-label=&quot;Responsive records&quot; layout=&quot;responsiveGrid&quot;&gt;
+    &lt;Table.Header&gt;
+      &lt;Table.Column
+        compactLabel={false}
+        id=&quot;marker&quot;
+        textValue=&quot;Marker&quot;
+        width={36}
+      &gt;
+        &lt;span className=&quot;sr-only&quot;&gt;Marker&lt;/span&gt;
+      &lt;/Table.Column&gt;
+      &lt;Table.Column id=&quot;name&quot; rowHeader&gt;
+        Name
+      &lt;/Table.Column&gt;
+      &lt;Table.Column align=&quot;end&quot; id=&quot;amount&quot; width=&quot;max-content&quot;&gt;
+        &lt;span&gt;Amount&lt;/span&gt;
+      &lt;/Table.Column&gt;
+      &lt;Table.Column
+        compactLabel={false}
+        id=&quot;action&quot;
+        textValue=&quot;Action&quot;
+        width=&quot;1.25rem&quot;
+      &gt;
+        &lt;span className=&quot;sr-only&quot;&gt;Action&lt;/span&gt;
+      &lt;/Table.Column&gt;
+    &lt;/Table.Header&gt;
+    &lt;Table.Body&gt;
+      &lt;Table.Row id=&quot;record&quot; textValue=&quot;Example record&quot;&gt;
+        &lt;Table.Cell column=&quot;marker&quot;&gt;
+          &lt;span className=&quot;flex size-9 items-center justify-center&quot;&gt;A&lt;/span&gt;
+        &lt;/Table.Cell&gt;
+        &lt;Table.Cell column=&quot;name&quot;&gt;Example record&lt;/Table.Cell&gt;
+        &lt;Table.Cell align=&quot;end&quot; column=&quot;amount&quot;&gt;
+          &lt;span&gt;£10.00&lt;/span&gt;
+        &lt;/Table.Cell&gt;
+        &lt;Table.Disclosure column=&quot;action&quot; position=&quot;flow&quot; /&gt;
+      &lt;/Table.Row&gt;
+    &lt;/Table.Body&gt;
+  &lt;/Table.Root&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Responsive Grouped Sections</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -24545,9 +24593,11 @@ Column, row, and section identifiers are stable `string | number` keys. Do not u
 
 `layout=&quot;responsive&quot;` is the default. It presents compact labelled records below the Breeze small breakpoint and native table columns at wider sizes. `responsiveGrid` keeps the same compact treatment but uses explicit grid tracks at wider sizes. Its `desktopColumns` variant defaults to `equal`; use `desktopColumns=&quot;mediaDetailsAction&quot;` for a five-column media, primary detail, secondary detail, tertiary detail, and trailing action arrangement. `grid` keeps CSS grid structure at all sizes. Use `responsiveGrid` or `grid` only when aligned custom geometry fits the content.
 
-`Table.Column compactLabel` defaults to `true`; a literal string heading becomes the compact label. When the heading contains formatting, icons, or other React nodes, provide explicit `textValue`. Set `compactLabel` to `false` for a disclosure or control column that should not label compact cells. `align` is `start`, `center`, or `end` and defaults to `start`. `width` is `auto`, `control`, or `icon` and defaults to `auto`. `boundary=&quot;strong&quot;` adds a stronger lower edge; `none` is the default.
+`Table.Column compactLabel` defaults to `true`; a literal string heading becomes the compact label. When the heading contains formatting, icons, or other React nodes, provide explicit `textValue`. Set `compactLabel` to `false` for a disclosure or control column that should not label compact cells. `align` is `start`, `center`, or `end` and defaults to `start`. `width` accepts a CSS width or grid-track size such as `&quot;12rem&quot;`, `&quot;max-content&quot;`, or `&quot;minmax(8rem, 1fr)&quot;`; numbers are pixels. Omitted columns share the remaining width in an equal `responsiveGrid`. `boundary=&quot;strong&quot;` adds a stronger lower edge; `none` is the default.
 
 `Table.Cell colSpan` follows native table semantics and spans the same number of CSS-grid tracks in `grid` and `responsiveGrid` layouts. Use a positive integer, start the cell in the first column it covers, and omit the covered cells from that row.
+
+Columns and cells expose `data-breeze-column=&quot;&lt;id&gt;&quot;` and `data-breeze-cell-column=&quot;&lt;id&gt;&quot;` as stable styling hooks. Use them from `Table.Root className` when a responsive composition needs consumer-owned column visibility or alignment beyond the standard layouts.
 
 &lt;Canvas of={Stories.ResponsiveGroupedSections} /&gt;
 
@@ -24557,7 +24607,7 @@ Selection is disabled until you supply selection state, a selection callback, or
 
 Sorting never sorts consumer data. Mark a column `sortable`, then either use `defaultSort` for retained uncontrolled sort metadata or pass controlled `sort` with `onSortChange`. A `TableSort` is `{ column: string | number, direction: &#39;ascending&#39; | &#39;descending&#39; }`. Reorder the supplied rows in response. `onSortChange` receives the next complete descriptor. Read-only mode suppresses sort changes as well as selection changes.
 
-`Table.Row onAction` receives that row&#39;s stable key. Add `Table.Disclosure column=&quot;actions&quot;` to an actionable row when a visual arrow is useful, and define a matching column with `compactLabel={false}` and `width=&quot;icon&quot;`. `position=&quot;overlay&quot;` is the disclosure default for compact records; `flow` keeps it in an explicit track. Buttons and links inside cells remain independent controls.
+`Table.Row onAction` receives that row&#39;s stable key. Add `Table.Disclosure column=&quot;actions&quot;` to an actionable row when a visual arrow is useful, and define a matching column with `compactLabel={false}` and an explicit icon-sized width. `position=&quot;overlay&quot;` is the disclosure default for compact records; `flow` keeps it in an explicit track. Buttons and links inside cells remain independent controls.
 
 ```tsx
 import { useState } from &#39;react&#39;;
@@ -24787,7 +24837,7 @@ sortable?: boolean
 textValue?: string
 
 /**
- * Canonical width for content, full controls, or icon actions. Defaults to `auto`.
+ * CSS width or grid-track size. Numeric values are pixels; omitted columns share remaining responsive-grid space.
  */
 width?: TableColumnWidth</code></pre>
     </div>
