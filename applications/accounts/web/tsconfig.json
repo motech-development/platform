@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "target": "ESNext",
+    "useDefineForClassFields": true
+  },
+  "extends": "../../../tsconfig.json",
+  "include": [
+    "codegen.ts",
+    "infrastructure",
+    "scripts",
+    "src",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ]
+}

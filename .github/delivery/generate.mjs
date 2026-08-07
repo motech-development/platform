@@ -25,7 +25,7 @@ const workflowControlTargetsByIdentifier = new Map([
   ['accounts-client', new Set(['preview'])],
 ]);
 const stableIdentifier = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const expectedStackName = /^[A-Za-z][A-Za-z0-9-]*\{stage\}[A-Za-z0-9-]*$/;
+const expectedStackName = /^[A-Za-z][A-Za-z0-9-]*(?:\{stage\}[A-Za-z0-9-]*)?$/;
 
 function duplicateValue(values) {
   const seen = new Set();
@@ -262,6 +262,8 @@ export function createPreviewImpact(catalog, workspaceManifests, changedFiles) {
     );
     if (manifest) {
       changedWorkspaces.add(manifest.name);
+    } else if (filename === 'amplify.yml' || filename === 'customHttp.yml') {
+      changedWorkspaces.add('@accounts/web');
     } else if (affectsEveryPreviewWorkspace(filename)) {
       // Delivery, dependency, and newly added workspace files cannot be scoped
       // safely from an existing manifest, so they select the full workspace graph.
@@ -374,8 +376,31 @@ function expandDeliverySelection(selectedIdentifiers, graph) {
 export function createPreviewPlan(catalog, workspaceManifests, input) {
   const target = 'preview';
   const graph = dependencyGraph(catalog, workspaceManifests, target);
+  const previewUnits = catalog.units.filter((unit) =>
+    unit.targets.includes(target),
+  );
+  const existingStacks = new Set(input.existingStacks ?? []);
+  const missingSharedStacks = previewUnits.flatMap((unit) =>
+    unit.expectedStacks
+      .filter((stack) => !stack.includes('{stage}'))
+      .filter((stack) => !existingStacks.has(stack))
+      .map((stack) => ({ stack, unit: unit.id })),
+  );
+  function requireSharedStacks() {
+    if (missingSharedStacks.length === 0) {
+      return;
+    }
+    const { stack, unit } = missingSharedStacks[0];
+    throw new Error(
+      `Preview deployment unit "${unit}" requires missing shared stack "${stack}"`,
+    );
+  }
+
   const creationEvents = new Set(['opened', 'ready_for_review', 'reopened']);
   if (creationEvents.has(input.lifecycle)) {
+    if (input.runtimeAffected) {
+      requireSharedStacks();
+    }
     return {
       target,
       units: input.runtimeAffected ? dependencyOrder(graph) : [],
@@ -383,7 +408,6 @@ export function createPreviewPlan(catalog, workspaceManifests, input) {
     };
   }
 
-  const existingStacks = new Set(input.existingStacks ?? []);
   const affectedByRef = new Map();
   let unrelatedHistory = false;
   function historyFrom(stateRef) {
@@ -401,9 +425,6 @@ export function createPreviewPlan(catalog, workspaceManifests, input) {
     return history;
   }
 
-  const previewUnits = catalog.units.filter((unit) =>
-    unit.targets.includes(target),
-  );
   const validationRef = successfulTaskRef(
     input.deployments ?? [],
     input.environment,
@@ -422,24 +443,29 @@ export function createPreviewPlan(catalog, workspaceManifests, input) {
       ) !== undefined,
   );
   const hasPreviewStack = previewUnits.some((unit) =>
-    unit.expectedStacks.some((stack) =>
-      existingStacks.has(stack.replaceAll('{stage}', input.stage)),
-    ),
+    unit.expectedStacks
+      .filter((stack) => stack.includes('{stage}'))
+      .some((stack) =>
+        existingStacks.has(stack.replaceAll('{stage}', input.stage)),
+      ),
   );
   const validationProvesNonRuntime =
     validationRef === input.head ||
     (validationHistory?.related === true &&
       validationHistory.runtimeAffected === false);
+  requireSharedStacks();
   if (!hasPreviewState && !hasPreviewStack && validationProvesNonRuntime) {
     return { target, units: [], validationRequired: false };
   }
 
   const selected = previewUnits
     .filter((unit) => {
-      const stackMissing = unit.expectedStacks.some(
-        (stack) =>
-          !existingStacks.has(stack.replaceAll('{stage}', input.stage)),
-      );
+      const stackMissing = unit.expectedStacks
+        .filter((stack) => stack.includes('{stage}'))
+        .some(
+          (stack) =>
+            !existingStacks.has(stack.replaceAll('{stage}', input.stage)),
+        );
       const stateRef = successfulDeploymentRef(
         input.deployments ?? [],
         input.environment,
@@ -857,6 +883,7 @@ const workflowDefinitions = [
       'accounts-reports': 'deploy-accounts-reports',
       'accounts-api': 'deploy-accounts-api',
       'accounts-client': 'build-accounts-client',
+      'accounts-web': 'accounts-web',
     },
   },
   {
@@ -899,8 +926,11 @@ function reservedWorkflowTargets(identifier) {
 
 const workflowFragmentNames = [
   'dependency-steps',
+  'accounts-web-deployment-checkout',
+  'accounts-web-browser-setup',
   'api-client-output',
   'client-api-input',
+  'current-api-config',
   'anti-virus-cache',
   'timing-summary',
 ];
@@ -1020,7 +1050,16 @@ function injectTeardownGuard(job, unit) {
     throw new Error(`teardown job "${unit.id}" has no cleanup step`);
   }
 
-  const stackNames = unit.expectedStacks
+  const cleanupJob = job.replace(/^        continue-on-error: true\n/gm, '');
+
+  const previewOwnedStacks = unit.expectedStacks.filter((stack) =>
+    stack.includes('{stage}'),
+  );
+  if (previewOwnedStacks.length === 0) {
+    return cleanupJob;
+  }
+
+  const stackNames = previewOwnedStacks
     .map((stack) => `"${stack.replaceAll('{stage}', '${STAGE}')}"`)
     .join(' ');
   const guard = `      - name: Check for resources
@@ -1040,9 +1079,8 @@ function injectTeardownGuard(job, unit) {
 
 `;
 
-  return job
+  return cleanupJob
     .replace(firstCleanupStep[0], `${guard}${firstCleanupStep[0]}`)
-    .replace(/^        continue-on-error: true\n/gm, '')
     .replace(
       /^(      - name: (?:Clear bucket|Teardown)\n)/gm,
       `$1        if: steps.resources.outputs.found == 'true'\n`,
@@ -1145,7 +1183,7 @@ export function decorateLongLivedWorkflow(workflow, target) {
     .replace(/^    if: github\.actor != 'dependabot\[bot\]'\n\n/m, '')
     .replace(
       /^    runs-on: ubuntu-latest\n/m,
-      `    runs-on: ubuntu-latest\n\n    outputs:\n      units: \${{ steps.plan.outputs.units }}\n\n    permissions:\n      contents: read\n      deployments: read\n      id-token: write\n\n    env:\n      ENVIRONMENT: ${target}\n      STAGE: ${target}\n      TARGET: ${target}\n`,
+      `    runs-on: ubuntu-latest\n\n    outputs:\n      api-appsync-url: \${{ steps.current-api-config.outputs.appsync-url }}\n      api-aws-region: \${{ steps.current-api-config.outputs.aws-region }}\n      units: \${{ steps.plan.outputs.units }}\n\n    permissions:\n      contents: read\n      deployments: read\n      id-token: write\n\n    env:\n      ENVIRONMENT: ${target}\n      STAGE: ${target}\n      TARGET: ${target}\n`,
     );
   const nodeSetupPattern =
     /^      - name: Set Node version\n        uses: actions\/setup-node@[a-f0-9]{40} # v\d+\.\d+\.\d+\n        with:\n          node-version-file: \.nvmrc\n/m;
@@ -1155,7 +1193,7 @@ export function decorateLongLivedWorkflow(workflow, target) {
   setup = setup.replace(
     nodeSetupPattern,
     (nodeSetup) =>
-      `${nodeSetup}\n${environmentReconciliationSteps().trimEnd()}`,
+      `${nodeSetup}\n${environmentReconciliationSteps().trimEnd()}\n\n      # {{fragment:current-api-config}}`,
   );
 
   return workflow
@@ -1383,25 +1421,32 @@ export function decorateAuditedDeliveryJob(
 ) {
   const checkoutPattern =
     /^        uses: actions\/checkout@[a-f0-9]{40} # v\d+\.\d+\.\d+\n(        with:\n)?/m;
-  if (!checkoutPattern.test(job)) {
+  const checkoutFragment =
+    '      # {{fragment:accounts-web-deployment-checkout}}';
+  const usesCheckoutFragment = job.includes(checkoutFragment);
+
+  if (!checkoutPattern.test(job) && !usesCheckoutFragment) {
     throw new Error(
       `deployment job "${unit.id}" is missing its pinned checkout action`,
     );
   }
 
   const deploymentEnvironment = `    env:\n      DEPLOYMENT_ENVIRONMENT: ${environment}\n      DEPLOYMENT_REF: ${ref}\n      DEPLOYMENT_TASK: deploy:${unit.id}\n`;
-  let decorated = job
-    .replace(
-      new RegExp(`^(  ${unit.id}:\\n(?:    name: [^\\n]+\\n)?)`, 'm'),
-      (header) =>
-        `${header}${header.includes('\n    name:') ? '\n' : ''}    if: ${condition}\n`,
-    )
-    .replace(checkoutPattern, (match, withBlock) =>
+  let decorated = job.replace(
+    new RegExp(`^(  ${unit.id}:\\n(?:    name: [^\\n]+\\n)?)`, 'm'),
+    (header) =>
+      `${header}${header.includes('\n    name:') ? '\n' : ''}    if: ${condition}\n`,
+  );
+
+  if (!usesCheckoutFragment) {
+    decorated = decorated.replace(checkoutPattern, (match, withBlock) =>
       withBlock
         ? `${match}          ref: ${ref}\n`
         : `${match}        with:\n          ref: ${ref}\n`,
-    )
-    .replace(/^    env:\n/m, deploymentEnvironment);
+    );
+  }
+
+  decorated = decorated.replace(/^    env:\n/m, deploymentEnvironment);
   if (!/^    env:$/m.test(decorated)) {
     decorated = decorated.replace(
       /^    permissions:\n/m,
@@ -1606,7 +1651,11 @@ function renderWorkflow(
   }
 
   workflow = expandTemplateFragments(workflow, fragments);
-  if (definition.selective) {
+  if (
+    definition.selective ||
+    definition.target === 'develop' ||
+    definition.target === 'production'
+  ) {
     workflow = workflow
       .replace(
         '${{ needs.accounts-api.outputs.appsync-url }}',

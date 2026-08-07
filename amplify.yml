@@ -1,0 +1,23 @@
+version: 1
+applications:
+  - appRoot: applications/accounts/web
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - corepack enable
+            - yarn install --immutable
+            - yarn workspaces foreach -Rpt --from '@accounts/web' run package
+        build:
+          commands:
+            - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> .env
+            - yarn codegen.graphql
+            - yarn build
+      artifacts:
+        baseDirectory: dist/client
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+          - ../../../node_modules/**/*

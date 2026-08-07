@@ -1,0 +1,15 @@
+{
+  "Select the company you want to work in.": "Select the company you want to work in.",
+  "My companies": "My companies",
+  "We could not load companies": "We could not load companies",
+  "Companies": "Companies",
+  "Company number": "Company number",
+  "Contact": "Contact",
+  "Action": "Action",
+  "{{company}} Company number {{companyNumber}} {{email}}": "{{company}} Company number {{companyNumber}} {{email}}",
+  "No company records are available for this account.": "No company records are available for this account.",
+  "No companies available": "No companies available",
+  "Loading companies": "Loading companies",
+  "Loading companies table": "Loading companies table",
+  "Loading company row {{count}}": "Loading company row {{count}}"
+}
