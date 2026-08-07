@@ -1,0 +1,6 @@
+cdk.out/
+coverage/
+dist/
+node_modules/
+playwright/.auth/
+playwright/results/

@@ -1732,6 +1732,214 @@ jobs:
               cat "$RUNNER_TEMP/delivery-timing.md"
             } >> "$GITHUB_STEP_SUMMARY"
           fi
+  # Accounts (replacement web)
+  accounts-web:
+    name: Deploy Accounts web
+
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-web') && needs.setup.result == 'success' && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-api') || needs.accounts-api.result == 'success')
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - setup
+      - accounts-api
+
+    outputs:
+      deployment-url: ${{ steps.hosted-deployment.outputs.deployment-url }}
+
+    env:
+      DEPLOYMENT_ENVIRONMENT: pr-${{ github.event.pull_request.number }}
+      DEPLOYMENT_REF: ${{ github.event.pull_request.head.sha }}
+      DEPLOYMENT_TASK: deploy:accounts-web
+      VITE_APPSYNC_URL: ${{ needs.accounts-api.outputs.appsync-url || needs.setup.outputs.api-appsync-url }}
+      VITE_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
+      VITE_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
+      VITE_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+      VITE_AWS_REGION: ${{ needs.accounts-api.outputs.aws-region || needs.setup.outputs.api-aws-region }}
+      VITE_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_WEB }}
+      STAGE: pr-${{ github.event.pull_request.number }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      deployments: write
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Generate Accounts web deployment token
+        id: accounts-web-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-workflows: write
+
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          ref: ${{ env.DEPLOYMENT_REF }}
+          token: ${{ steps.accounts-web-token.outputs.token }}
+
+      - name: Start dependency setup measurement
+        id: dependency-timing
+        run: |
+          : > "$RUNNER_TEMP/delivery-timing.md"
+          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Set Node version
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve Node runtime
+        id: runtime
+        run: echo "version=$(node --version)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore installed dependencies
+        id: installed-dependencies
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+            ./.yarn/install-state.gz
+          key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
+
+      - name: Restore Yarn archives
+        id: yarn-archives
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.yarn/berry/cache
+            ./.yarn/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-
+
+      - name: Install dependencies
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Record dependency setup timing
+        if: always()
+        env:
+          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
+          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
+          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
+        run: |
+          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
+            route="exact installed cache hit"
+          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
+            route="archive fallback"
+          else
+            route="cold install"
+          fi
+          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
+
+      - name: Build required workspace packages
+        run: |
+          started_at="$(date +%s)"
+          yarn workspaces foreach -Rpt --from '@accounts/web' run package
+          elapsed_seconds=$(( $(date +%s) - started_at ))
+          echo "| Workspace package build (@accounts/web) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6.2.2
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::633331859210:role/github-actions
+
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
+      - name: Create in-progress Deployment status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state in_progress \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
+      - name: Deploy hosted web
+        id: hosted-deployment
+        shell: bash
+        run: |
+          deployment="$(yarn workspace @accounts/web deploy --stage "$STAGE")"
+          deployment_url="$(
+            jq -er '.url | select(type == "string" and length > 0)' \
+              <<< "$deployment"
+          )"
+          echo "deployment-url=$deployment_url" >> "$GITHUB_OUTPUT"
+
+      - name: Record successful Deployment
+        id: deployment-success
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state success \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+          echo "recorded=true" >> "$GITHUB_OUTPUT"
+
+      - name: Record failed Deployment
+        if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          jq -n \
+            --arg state failure \
+            --arg log_url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{state: $state, log_url: $log_url, auto_inactive: false}' \
+            | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
+              --input -
+
+      - name: Record delivery timing summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
+            {
+              echo "| Measurement | Duration |"
+              echo "| --- | ---: |"
+              cat "$RUNNER_TEMP/delivery-timing.md"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
   # Preview status
   preview-status:
     name: Preview
@@ -1747,6 +1955,7 @@ jobs:
       - accounts-queue
       - accounts-reports
       - accounts-api
+      - accounts-web
 
     if: always() && github.event.pull_request.draft == false
 
@@ -1768,7 +1977,154 @@ jobs:
           jq -n -e \
             --argjson needs "$NEEDS" \
             --argjson units "$UNITS" \
-            '$units | map(select($needs[.] != null)) | all(. as $unit | $needs[$unit].result == "success")'
+            '$units | all(. as $unit | ($needs[$unit] != null and $needs[$unit].result == "success"))'
+
+  # Accounts (replacement web) validation
+  accounts-web-validation:
+    name: Test Accounts web
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - accounts-api
+      - accounts-client
+      - accounts-web
+      - setup
+      - preview-status
+
+    if: always() && needs.setup.outputs.validation-required == 'true' && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-web') && needs.preview-status.result == 'success' && needs.accounts-client.result == 'success' && needs.accounts-web.result == 'success'
+
+    env:
+      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+      REACT_APP_APPSYNC_URL: ${{ needs.accounts-api.outputs.appsync-url || needs.setup.outputs.api-appsync-url }}
+      REACT_APP_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
+      REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
+      REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+      REACT_APP_AWS_REGION: ${{ needs.accounts-api.outputs.aws-region || needs.setup.outputs.api-aws-region }}
+      REACT_APP_GA: ${{ secrets.GA_ACCOUNTS_DEV }}
+      REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_CLIENT }}
+      VITE_APPSYNC_URL: ${{ needs.accounts-api.outputs.appsync-url || needs.setup.outputs.api-appsync-url }}
+      VITE_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
+      VITE_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
+      VITE_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
+      VITE_AWS_REGION: ${{ needs.accounts-api.outputs.aws-region || needs.setup.outputs.api-aws-region }}
+      VITE_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_WEB }}
+      STAGE: pr-${{ github.event.pull_request.number }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Start dependency setup measurement
+        id: dependency-timing
+        run: |
+          : > "$RUNNER_TEMP/delivery-timing.md"
+          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Set Node version
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve Node runtime
+        id: runtime
+        run: echo "version=$(node --version)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore installed dependencies
+        id: installed-dependencies
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ./node_modules
+            ./applications/*/*/node_modules
+            ./packages/*/node_modules
+            ./.yarn/install-state.gz
+          key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
+
+      - name: Restore Yarn archives
+        id: yarn-archives
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.yarn/berry/cache
+            ./.yarn/cache
+          key: ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-yarn-archives-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-
+
+      - name: Install dependencies
+        if: steps.installed-dependencies.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      - name: Record dependency setup timing
+        if: always()
+        env:
+          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
+          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
+          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
+        run: |
+          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
+            route="exact installed cache hit"
+          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
+            route="archive fallback"
+          else
+            route="cold install"
+          fi
+          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
+          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
+
+      - name: Build required workspace packages
+        run: |
+          started_at="$(date +%s)"
+          yarn workspaces foreach -Rpt --from '@accounts/web' run package
+          elapsed_seconds=$(( $(date +%s) - started_at ))
+          echo "| Workspace package build (@accounts/web) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
+
+      - name: Install Playwright browser
+        run: yarn workspace @accounts/web playwright install --with-deps chromium
+
+      - name: Build legacy fixture client
+        run: |
+          yarn workspaces foreach -Rpt --from '@accounts/client' run package
+          yarn workspace @accounts/client build
+
+      - name: Run hosted Confirmed-sale journey
+        env:
+          DEPLOYMENT_URL: ${{ needs.accounts-web.outputs.deployment-url }}
+        shell: bash
+        run: |
+          cleanup_fixture() {
+            exit_status=$?
+            trap - EXIT
+            if ! yarn workspace @accounts/client e2e-ci \
+              "(?:^|/)vat-registered\.spec\.ts$" \
+              --project=chromium \
+              --grep "should remove company"; then
+              if [[ "$exit_status" == "0" ]]; then
+                exit_status=1
+              fi
+            fi
+            exit "$exit_status"
+          }
+          trap cleanup_fixture EXIT
+
+          yarn workspace @accounts/client e2e-ci \
+            "(?:^|/)vat-registered\.spec\.ts$" \
+            --project=chromium \
+            --grep "should create a company|should update company settings|should add client 1"
+
+          ACCOUNTS_WEB_HOSTED_SMOKE=true \
+            BASE_URL="$DEPLOYMENT_URL" \
+            yarn workspace @accounts/web e2e-ci \
+              "(?:^|/)(?:foundation|vat-registered)\.spec\.ts$"
 
   # Accounts (client)
   accounts-client:
@@ -1923,6 +2279,7 @@ jobs:
     needs:
       - setup
       - accounts-client
+      - accounts-web-validation
 
     if: always() && github.event.pull_request.draft == false
 
@@ -1960,7 +2317,7 @@ jobs:
         if: always() && steps.validation-deployment.outputs.id != ''
         env:
           GH_TOKEN: ${{ github.token }}
-          VALIDATION_STATE: ${{ (needs.setup.outputs.validation-required != 'true' || needs.accounts-client.result == 'success') && 'success' || 'failure' }}
+          VALIDATION_STATE: ${{ (needs.setup.outputs.validation-required != 'true' || (needs.accounts-client.result == 'success' && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-web') || needs.accounts-web-validation.result == 'success'))) && 'success' || 'failure' }}
         shell: bash
         run: |
           jq -n \
@@ -1986,7 +2343,12 @@ jobs:
           script: |
             const planningSucceeded = '${{ needs.setup.result }}' === 'success';
             const validationRequired = '${{ needs.setup.outputs.validation-required }}' === 'true';
-            const testsPassed = '${{ needs.accounts-client.result }}' === 'success';
+            const accountsWebValidationRequired =
+              '${{ contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-web') }}' === 'true';
+            const testsPassed =
+              '${{ needs.accounts-client.result }}' === 'success' &&
+              (!accountsWebValidationRequired ||
+                '${{ needs.accounts-web-validation.result }}' === 'success');
             const validationPassed = planningSucceeded && (!validationRequired || testsPassed);
             const status = validationPassed ? 'success' : 'failure';
             const description = !planningSucceeded
