@@ -1204,6 +1204,7 @@ test('replacement Accounts web uses normal delivery and one hosted Confirmed-sal
       /- name: Generate Accounts web deployment token[\s\S]*permission-contents: write[\s\S]*permission-workflows: write[\s\S]*- name: Checkout code[\s\S]*token: \$\{\{ steps\.accounts-web-token\.outputs\.token \}\}/,
     );
   }
+  assert.match(develop, /^      contents: read$/m);
   assert.match(
     production,
     /VITE_AUTH0_CLIENT_ID: \$\{\{ secrets\.ACCOUNTS_APP_CLIENT_ID_PROD \}\}[\s\S]*VITE_AUTH0_DOMAIN: \$\{\{ secrets\.AUTH0_DOMAIN_PROD \}\}[\s\S]*VITE_SENTRY_DSN: \$\{\{ secrets\.SENTRY_DSN_ACCOUNTS_WEB \}\}/,
@@ -2273,6 +2274,7 @@ test('Release publishes selectively from full history and constructs one exact-t
   );
   assert.doesNotMatch(release, /^\s+(?:application-)?version:/m);
   assert.doesNotMatch(releaseJob, /^      deployments: write$/m);
+  assert.match(develop, /^      contents: read$/m);
   assert.match(develop, /^      deployments: write$/m);
   assert.match(production, /^      deployments: write$/m);
   assert.match(
