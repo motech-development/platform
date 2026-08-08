@@ -1,0 +1,252 @@
+import { useMutation, useQuery } from '@apollo/client/react';
+import {
+  AlertDialog,
+  Button,
+  ConfirmationDialog,
+  PageHeader,
+  StatePanel,
+  TextField,
+  useToast,
+} from '@motech-development/breeze-ui';
+import { WarningIcon } from '@motech-development/breeze-ui/icons';
+import { useBlocker, useNavigate } from '@tanstack/react-router';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  DELETE_COMPANY,
+  GET_COMPANY_DETAILS,
+  UPDATE_COMPANY,
+} from '../../data/operations';
+import { removeCompanyFromCache, upsertCompanyInCache } from './cache-updates';
+import { exactCompanyNameSchema } from './company';
+import { CompanyDetailsForm } from './CompanyDetailsForm';
+
+export function CompanyDetailsPage({
+  companyId,
+  owner,
+}: Readonly<{ companyId: string; owner: string }>) {
+  const { t } = useTranslation(['companies', 'routing']);
+  const navigate = useNavigate();
+  const toast = useToast();
+  const allowNavigation = useRef(false);
+  const [dirty, setDirty] = useState(false);
+  const [discardOpen, setDiscardOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [confirmation, setConfirmation] = useState('');
+  const blocker = useBlocker({
+    enableBeforeUnload: dirty,
+    shouldBlockFn: () => dirty && !allowNavigation.current,
+    withResolver: true,
+  });
+  const { data, error, loading, refetch } = useQuery(GET_COMPANY_DETAILS, {
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
+    variables: { id: companyId },
+  });
+  const [updateCompany] = useMutation(UPDATE_COMPANY);
+  const [deleteCompany, { loading: deleting }] = useMutation(DELETE_COMPANY);
+  const company = data?.getCompany;
+  const confirmationValid = company
+    ? exactCompanyNameSchema(company.name).safeParse(confirmation).success
+    : false;
+
+  useEffect(() => {
+    if (blocker.status === 'blocked') setDiscardOpen(true);
+  }, [blocker.status]);
+
+  if (loading && !data) {
+    return <p aria-live="polite">{t('Loading company details')}</p>;
+  }
+
+  if (error || !company) {
+    return (
+      <StatePanel
+        action={
+          <Button
+            onAction={() => {
+              refetch().catch(() => undefined);
+            }}
+          >
+            {t('Try again', { ns: 'routing' })}
+          </Button>
+        }
+        description={t('Check your connection, then try again.', {
+          ns: 'routing',
+        })}
+        icon={<WarningIcon />}
+        title={t('Company details could not be loaded')}
+        variant="danger"
+      />
+    );
+  }
+
+  return (
+    <div className="min-w-0">
+      <PageHeader
+        description={t(
+          'Registered, contact, and bank details used across Accounts.',
+        )}
+        title={t('Company details')}
+      />
+      <CompanyDetailsForm
+        danger={
+          <AlertDialog.Root
+            onOpenChange={(open) => {
+              setDeleteOpen(open);
+              if (!open) setConfirmation('');
+            }}
+            open={deleteOpen}
+          >
+            <AlertDialog.Trigger variant="danger">
+              {t('Delete company')}
+            </AlertDialog.Trigger>
+            <AlertDialog.Content>
+              <AlertDialog.Title>
+                {t('Delete {{name}}?', { name: company.name })}
+              </AlertDialog.Title>
+              <AlertDialog.Description>
+                {t(
+                  'Company records, clients, reports, and transactions will be permanently removed.',
+                )}
+              </AlertDialog.Description>
+              <TextField.Root
+                invalid={confirmation.length > 0 && !confirmationValid}
+                onChange={setConfirmation}
+                value={confirmation}
+              >
+                <TextField.Label>
+                  {t('Type {{name}} to confirm', { name: company.name })}
+                </TextField.Label>
+                <TextField.Input autoComplete="off" />
+                <TextField.Error>
+                  {t('The company name must match exactly.')}
+                </TextField.Error>
+              </TextField.Root>
+              <AlertDialog.Actions>
+                <AlertDialog.Close appearance="outline">
+                  {t('Cancel')}
+                </AlertDialog.Close>
+                <Button
+                  disabled={!confirmationValid || deleting}
+                  loading={deleting}
+                  onAction={() => {
+                    deleteCompany({
+                      update: (cache, mutation) => {
+                        if (mutation.data?.deleteCompany) {
+                          removeCompanyFromCache(
+                            cache,
+                            mutation.data.deleteCompany.owner ?? owner,
+                            mutation.data.deleteCompany.id,
+                          );
+                        }
+                      },
+                      variables: { id: companyId },
+                    })
+                      .then(async (result) => {
+                        if (!result.data?.deleteCompany)
+                          throw new Error('No company returned');
+                        allowNavigation.current = true;
+                        setDirty(false);
+                        toast.show({
+                          title: t('Company deleted'),
+                          variant: 'success',
+                        });
+                        await navigate({ to: '/my-companies' });
+                      })
+                      .catch(() => {
+                        toast.show({
+                          description: t(
+                            'Nothing was deleted. Check your connection and try again.',
+                          ),
+                          title: t('Company could not be deleted'),
+                          variant: 'danger',
+                        });
+                      });
+                  }}
+                  variant="danger"
+                >
+                  {t('Permanently delete company')}
+                </Button>
+              </AlertDialog.Actions>
+            </AlertDialog.Content>
+          </AlertDialog.Root>
+        }
+        initialValues={{
+          ...company,
+          address: {
+            ...company.address,
+            line2: company.address.line2 ?? '',
+            line4: company.address.line4 ?? '',
+          },
+        }}
+        onDirty={() => setDirty(true)}
+        onSubmit={async (input) => {
+          try {
+            const result = await updateCompany({
+              update: (cache, mutation) => {
+                if (mutation.data?.updateCompany) {
+                  upsertCompanyInCache(
+                    cache,
+                    owner,
+                    mutation.data.updateCompany,
+                  );
+                }
+              },
+              variables: { input },
+            });
+
+            if (!result.data?.updateCompany)
+              throw new Error('No company returned');
+            allowNavigation.current = true;
+            setDirty(false);
+            toast.show({
+              title: t('Company details saved'),
+              variant: 'success',
+            });
+            await navigate({
+              params: { companyId },
+              to: '/my-companies/dashboard/$companyId',
+            });
+          } catch {
+            toast.show({
+              description: t(
+                'Your changes are still here. Check them and try again.',
+              ),
+              title: t('Company details could not be saved'),
+              variant: 'danger',
+            });
+          }
+        }}
+        submitLabel={t('Save changes')}
+      />
+      <span hidden>
+        <ConfirmationDialog
+          cancelLabel={t('Keep editing')}
+          closeLabel={t('Close discard confirmation')}
+          confirmLabel={t('Discard changes')}
+          description={t('The unsaved company changes will be lost.')}
+          onConfirm={() => {
+            allowNavigation.current = true;
+            setDirty(false);
+            setDiscardOpen(false);
+            blocker.proceed?.();
+          }}
+          onOpenChange={(open) => {
+            setDiscardOpen(open);
+            if (
+              !open &&
+              !allowNavigation.current &&
+              blocker.status === 'blocked'
+            ) {
+              blocker.reset();
+            }
+          }}
+          open={discardOpen}
+          title={t('Discard company changes?')}
+          trigger={t('Discard company changes')}
+          variant="warning"
+        />
+      </span>
+    </div>
+  );
+}

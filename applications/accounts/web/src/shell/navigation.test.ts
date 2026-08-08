@@ -11,6 +11,12 @@ describe('Accounts shell company navigation', () => {
       '/my-companies/accounts/old-company/view-transaction/transaction-id',
       'accounts',
     ],
+    ['/my-companies/clients/old-company', 'clients'],
+    ['/my-companies/clients/old-company/update-details/client-id', 'clients'],
+    ['/my-companies/reports/old-company', 'reports'],
+    ['/my-companies/reports/old-company/create-report', 'reports'],
+    ['/my-companies/update-details/old-company', 'update-details'],
+    ['/my-companies/settings/old-company', 'settings'],
   ])('keeps the safe parent section for %s', (pathname, section) => {
     expect(companyDestination(pathname, 'new/company')).toBe(
       `/my-companies/${section}/new%2Fcompany`,

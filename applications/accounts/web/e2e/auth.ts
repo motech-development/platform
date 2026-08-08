@@ -24,7 +24,7 @@ async function authenticateLocalPage(page: Page): Promise<void> {
   }
 
   const companiesHeading = page.getByRole('heading', {
-    name: 'My companies',
+    name: /companies/i,
   });
   const signInButton = page.getByRole('button', {
     name: 'Sign in securely',

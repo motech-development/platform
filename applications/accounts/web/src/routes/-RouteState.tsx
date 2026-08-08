@@ -102,12 +102,42 @@ export function AccountsPending() {
     return (
       <div className="min-w-0">
         <PageHeader
-          description={t('Select the company you want to work in.', {
+          description={t('Select a company or add another business.', {
             ns: 'companies',
           })}
-          title={t('My companies', { ns: 'companies' })}
+          title={t('Your companies', { ns: 'companies' })}
         />
         <CompaniesTableSkeleton />
+      </div>
+    );
+  }
+
+  if (pendingView === 'company-details') {
+    return (
+      <div className="min-w-0">
+        <PageHeader
+          description={t(
+            'Registered, contact, and bank details used across Accounts.',
+            { ns: 'companies' },
+          )}
+          title={t('Company details', { ns: 'companies' })}
+        />
+        <Skeleton className="block h-96 w-full" />
+      </div>
+    );
+  }
+
+  if (pendingView === 'settings') {
+    return (
+      <div className="min-w-0">
+        <PageHeader
+          description={t(
+            'VAT, financial year, and transaction category defaults.',
+            { ns: 'companies' },
+          )}
+          title={t('Settings', { ns: 'companies' })}
+        />
+        <Skeleton className="block h-96 w-full" />
       </div>
     );
   }

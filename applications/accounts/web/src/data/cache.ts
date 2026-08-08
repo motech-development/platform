@@ -55,6 +55,9 @@ export function createAccountsCache() {
       Balance: {
         keyFields: ['id'],
       },
+      Companies: {
+        keyFields: ['id'],
+      },
       Company: {
         keyFields: ['id'],
       },

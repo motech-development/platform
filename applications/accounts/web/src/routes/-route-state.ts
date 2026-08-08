@@ -1,8 +1,10 @@
 export type AccountsPendingView =
   | 'authentication'
   | 'companies'
+  | 'company-details'
   | 'dashboard'
   | 'record-transaction'
+  | 'settings'
   | 'transactions';
 
 export function accountsPendingView(pathname: string): AccountsPendingView {
@@ -18,7 +20,18 @@ export function accountsPendingView(pathname: string): AccountsPendingView {
     return 'dashboard';
   }
 
-  if (pathname === '/my-companies') {
+  if (pathname.includes('/my-companies/update-details/')) {
+    return 'company-details';
+  }
+
+  if (pathname.includes('/my-companies/settings/')) {
+    return 'settings';
+  }
+
+  if (
+    pathname === '/my-companies' ||
+    pathname.startsWith('/my-companies/add-company')
+  ) {
     return 'companies';
   }
 
