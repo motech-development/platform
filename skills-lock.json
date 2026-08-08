@@ -19,17 +19,23 @@
       "skillPath": "skills/engineering/code-review/SKILL.md",
       "computedHash": "31d149a480eaa68c11e32f5ee77f0fd0b98a906834d531d881d502352edd0b8e"
     },
+    "cqrs-implementation": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/backend-development/skills/cqrs-implementation/SKILL.md",
+      "computedHash": "a03ac44d1fdf9f58d5516cd0609cb80f8cd4c06182fb3704710872afb5f84e6d"
+    },
     "domain-modeling": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/domain-modeling/SKILL.md",
       "computedHash": "363cb0f53b0b431e7c00086ad1f823500b7e1b70b5616ee969c979f0934e9e6e"
     },
-    "frontend-design": {
-      "source": "anthropics/skills",
+    "event-store-design": {
+      "source": "wshobson/agents",
       "sourceType": "github",
-      "skillPath": "skills/frontend-design/SKILL.md",
-      "computedHash": "4eabc66183767153e404b39d1b839b1c37f2d82d86f0a0d7e880a579d8d62336"
+      "skillPath": "plugins/backend-development/skills/event-store-design/SKILL.md",
+      "computedHash": "69ef518c047d7d9f630f022d60ace329f353a3b3b19193c8b4f11b0faf6c3348"
     },
     "grill-with-docs": {
       "source": "mattpocock/skills",
@@ -61,11 +67,11 @@
       "skillPath": "skills/engineering/implement/SKILL.md",
       "computedHash": "2139cfedf24791adbc839aaab6019cff158af1e28bfead020ec6e0ce01b3e74d"
     },
-    "pdf": {
-      "source": "anthropics/skills",
+    "microservices-patterns": {
+      "source": "wshobson/agents",
       "sourceType": "github",
-      "skillPath": "skills/pdf/SKILL.md",
-      "computedHash": "cfbc539377088ca7e44a813b30c306327385bbd973cd7a721e1743f60837dd62"
+      "skillPath": "plugins/backend-development/skills/microservices-patterns/SKILL.md",
+      "computedHash": "60bd815acd83afe78021284d960010d87e7ab785dc01b2d10794f08773ab597f"
     },
     "prototype": {
       "source": "mattpocock/skills",
@@ -79,11 +85,11 @@
       "skillPath": "skills/engineering/research/SKILL.md",
       "computedHash": "bd3e2c6826671d82c86ed0da3dac3370ebcf63b0fe847f91bb444e1fb7dac21b"
     },
-    "setup-matt-pocock-skills": {
-      "source": "mattpocock/skills",
+    "saga-orchestration": {
+      "source": "wshobson/agents",
       "sourceType": "github",
-      "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
-      "computedHash": "74e894a3509e2676d4cdb771c8eace087092430635e845e02a9cc2f757c552a4"
+      "skillPath": "plugins/backend-development/skills/saga-orchestration/SKILL.md",
+      "computedHash": "bcd42ef77d312aa4fa2bbe9e33542bfdec8a4f4ffd97d215d081a798689a0784"
     },
     "tdd": {
       "source": "mattpocock/skills",
