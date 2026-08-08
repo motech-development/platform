@@ -24,23 +24,9 @@ import { useBlocker, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GET_COMPANY_SETTINGS, UPDATE_SETTINGS } from '../../data/operations';
+import { validationMessage, visibleValidationErrors } from '../form-errors';
 import { type CompanySettings, settingsSchema } from './company';
-import { validationMessage, visibleErrors } from './form-errors';
-
-const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
+import { monthNames } from './month-names';
 
 type SettingsDraft = Omit<CompanySettings, 'categories' | 'vat'> & {
   categories: Array<
@@ -58,7 +44,8 @@ function SettingsForm({
   companyId,
   initialValues,
 }: Readonly<{ companyId: string; initialValues: CompanySettings }>) {
-  const { t } = useTranslation('companies');
+  const { i18n, t } = useTranslation('companies');
+  const months = monthNames(i18n.resolvedLanguage ?? i18n.language);
   const navigate = useNavigate();
   const schemeLabels = {
     flatRate: t('Flat rate'),
@@ -168,7 +155,7 @@ function SettingsForm({
                   >
                     <form.Field name={`categories[${index}].name`}>
                       {(field) => {
-                        const errors = visibleErrors(
+                        const errors = visibleValidationErrors(
                           field.state.meta.errors,
                           field.state.meta.isTouched,
                           form.state.submissionAttempts,
@@ -209,7 +196,7 @@ function SettingsForm({
                     </form.Field>
                     <form.Field name={`categories[${index}].vatRate`}>
                       {(field) => {
-                        const errors = visibleErrors(
+                        const errors = visibleValidationErrors(
                           field.state.meta.errors,
                           field.state.meta.isTouched,
                           form.state.submissionAttempts,
@@ -232,7 +219,10 @@ function SettingsForm({
                         if (category.protect) {
                           return (
                             <NumberField.Root
-                              formatOptions={{ style: 'percent' }}
+                              formatOptions={{
+                                maximumFractionDigits: 2,
+                                style: 'percent',
+                              }}
                               min={0}
                               readOnly
                               value={
@@ -248,7 +238,10 @@ function SettingsForm({
 
                         return (
                           <NumberField.Root
-                            formatOptions={{ style: 'percent' }}
+                            formatOptions={{
+                              maximumFractionDigits: 2,
+                              style: 'percent',
+                            }}
                             invalid={errors.length > 0}
                             min={0}
                             onChange={(value) => {
@@ -258,7 +251,7 @@ function SettingsForm({
                               markDirty();
                             }}
                             required
-                            step={0.01}
+                            step={0.0001}
                             value={
                               field.state.value === null
                                 ? null
@@ -356,9 +349,9 @@ function SettingsForm({
                       <Select.Item
                         id={index.toString()}
                         key={month}
-                        textValue={t(month)}
+                        textValue={month}
                       >
-                        {t(month)}
+                        {month}
                       </Select.Item>
                     ))}
                   </Select.ListBox>
@@ -400,7 +393,7 @@ function SettingsForm({
         <Grid columns={{ base: 1, sm: 2 }}>
           <form.Field name="vat.registration">
             {(field) => {
-              const errors = visibleErrors(
+              const errors = visibleValidationErrors(
                 field.state.meta.errors,
                 field.state.meta.isTouched,
                 form.state.submissionAttempts,
@@ -425,7 +418,7 @@ function SettingsForm({
           {(['charge', 'pay'] as const).map((name) => (
             <form.Field key={name} name={`vat.${name}`}>
               {(field) => {
-                const errors = visibleErrors(
+                const errors = visibleValidationErrors(
                   field.state.meta.errors,
                   field.state.meta.isTouched,
                   form.state.submissionAttempts,
@@ -433,7 +426,10 @@ function SettingsForm({
 
                 return (
                   <NumberField.Root
-                    formatOptions={{ style: 'percent' }}
+                    formatOptions={{
+                      maximumFractionDigits: 2,
+                      style: 'percent',
+                    }}
                     invalid={errors.length > 0}
                     min={0}
                     onChange={(value) => {
@@ -441,7 +437,7 @@ function SettingsForm({
                       markDirty();
                     }}
                     required
-                    step={0.01}
+                    step={0.0001}
                     value={
                       field.state.value === null
                         ? null

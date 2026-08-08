@@ -8,43 +8,13 @@ import {
   TextField,
 } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
+import { validationMessage, visibleValidationErrors } from '../form-errors';
 import {
   type AttachmentTransferResult,
   AttachmentUpload,
 } from './AttachmentUpload';
 import { calculateSaleVat } from './sale';
 import type { ConfirmedSaleForm } from './useConfirmedSaleForm';
-
-function validationMessage(errors: readonly unknown[], fallback: string) {
-  return [
-    ...new Set(
-      errors.map((error) => {
-        if (typeof error === 'string') {
-          return error;
-        }
-
-        if (
-          typeof error === 'object' &&
-          error !== null &&
-          'message' in error &&
-          typeof error.message === 'string'
-        ) {
-          return error.message;
-        }
-
-        return fallback;
-      }),
-    ),
-  ].join(', ');
-}
-
-function visibleValidationErrors(
-  errors: readonly unknown[],
-  touched: boolean,
-  submissionAttempts: number,
-) {
-  return touched || submissionAttempts > 0 ? errors : [];
-}
 
 function representsSameAmount(current: string, next: string) {
   if (current === next) {

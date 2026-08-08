@@ -44,7 +44,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
 }));
 
 vi.mock('./CompaniesPageContent', () => ({
-  CompaniesPageContent: () => <main>Your companies</main>,
+  CompaniesPageContent: () => <main>My companies</main>,
 }));
 
 describe('CompanyEnrolmentPage', () => {

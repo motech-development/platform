@@ -105,7 +105,7 @@ export function AccountsPending() {
           description={t('Select a company or add another business.', {
             ns: 'companies',
           })}
-          title={t('Your companies', { ns: 'companies' })}
+          title={t('My companies', { ns: 'companies' })}
         />
         <CompaniesTableSkeleton />
       </div>

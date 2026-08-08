@@ -103,11 +103,34 @@ describe('SettingsPage', () => {
     );
 
     const categoryName = screen.getByLabelText('Advertising name');
+    const payRate = screen.getByLabelText('Pay rate');
 
     await user.clear(categoryName);
     await user.type(categoryName, 'Marketing');
+    await user.clear(payRate);
+    await user.type(payRate, '15.5');
     await user.click(screen.getByRole('button', { name: 'Save settings' }));
 
+    await waitFor(() =>
+      expect(mocks.mutation).toHaveBeenCalledWith({
+        variables: {
+          input: {
+            categories: [
+              { name: 'Sales', protect: true, vatRate: 20 },
+              { name: 'Marketing', protect: false, vatRate: 20 },
+            ],
+            id: 'company-id',
+            vat: {
+              charge: 20,
+              pay: 15.5,
+              registration: 'GB123456789',
+              scheme: 'standard',
+            },
+            yearEnd: { day: 31, month: 2 },
+          },
+        },
+      }),
+    );
     await waitFor(() =>
       expect(mocks.navigate).toHaveBeenCalledWith({
         params: { companyId: 'company-id' },
