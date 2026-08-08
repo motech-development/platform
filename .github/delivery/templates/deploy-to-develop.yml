@@ -403,7 +403,7 @@ jobs:
       url: https://accounts-develop.motechdevelopment.co.uk
 
     permissions:
-      contents: write
+      contents: read
       id-token: write
 
     steps:

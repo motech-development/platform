@@ -1649,7 +1649,7 @@ jobs:
 
     permissions:
       deployments: write
-      contents: write
+      contents: read
       id-token: write
 
     steps:
