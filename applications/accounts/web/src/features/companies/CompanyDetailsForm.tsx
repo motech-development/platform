@@ -8,13 +8,13 @@ import {
 import { useForm } from '@tanstack/react-form';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { validationMessage, visibleValidationErrors } from '../form-errors';
 import {
   type CompanyDetails,
   companyDetailsSchema,
   formatSortCode,
   type NormalisedCompanyDetails,
 } from './company';
-import { validationMessage, visibleErrors } from './form-errors';
 
 function CompanyTextField({
   errors,
@@ -99,7 +99,7 @@ export function CompanyDetailsForm({
   ) => (
     <form.Field key={name} name={name}>
       {(formField) => {
-        const errors = visibleErrors(
+        const errors = visibleValidationErrors(
           formField.state.meta.errors,
           formField.state.meta.isTouched,
           form.state.submissionAttempts,

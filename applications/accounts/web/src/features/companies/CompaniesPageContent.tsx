@@ -50,7 +50,7 @@ export function CompaniesPageContent() {
           </Button>
         }
         description={t('Select a company or add another business.')}
-        title={t('Your companies')}
+        title={t('My companies')}
       />
       {error ? (
         <StatePanel

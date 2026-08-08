@@ -41,6 +41,25 @@ async function focusWithKeyboard(page: Page, target: Locator): Promise<void> {
   }
 }
 
+async function expectNoA11yViolations(page: Page): Promise<void> {
+  // Drawer motion lasts 180ms; sample the settled colors rather than a blend.
+  await page.waitForTimeout(200);
+  const { violations } = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa'])
+    .analyze();
+
+  expect(violations).toEqual([]);
+}
+
+async function selectOption(
+  page: Page,
+  label: string,
+  option: string,
+): Promise<void> {
+  await page.getByLabel(label).click();
+  await page.getByRole('option', { exact: true, name: option }).click();
+}
+
 test.describe('VAT registered Accounts', () => {
   test.skip(
     process.env.ACCOUNTS_WEB_HOSTED_SMOKE !== 'true',
@@ -50,7 +69,7 @@ test.describe('VAT registered Accounts', () => {
   test.beforeEach(async ({ baseURL, page }) => {
     await gotoAuthenticatedPage({
       baseURL,
-      content: page.getByRole('heading', { name: 'Your companies' }),
+      content: page.getByRole('heading', { name: 'My companies' }),
       page,
       path: '/my-companies',
     });
@@ -90,11 +109,7 @@ test.describe('VAT registered Accounts', () => {
       page.getByRole('heading', { exact: true, name: 'Settings' }),
     ).toBeVisible();
     await expect(page.locator('input[readonly]').first()).toBeVisible();
-    const { violations } = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa'])
-      .analyze();
-
-    expect(violations).toEqual([]);
+    await expectNoA11yViolations(page);
 
     await gotoAuthenticatedPage({
       baseURL,
@@ -105,7 +120,7 @@ test.describe('VAT registered Accounts', () => {
 
     await gotoAuthenticatedPage({
       baseURL,
-      content: page.getByRole('heading', { name: 'Your companies' }),
+      content: page.getByRole('heading', { name: 'My companies' }),
       page,
       path: '/my-companies',
     });
@@ -133,68 +148,178 @@ test.describe('VAT registered Accounts', () => {
     await expect(page).toHaveURL(/\/my-companies$/);
   });
 
-  test('creates, updates, configures, and exactly deletes a company', async ({
-    page,
-  }) => {
-    const suffix = Date.now().toString();
+  test.describe.serial('original company-management journeys', () => {
+    const suffix = Date.now().toString().slice(-8);
     const companyName = `Accounts web ${suffix}`;
 
-    await page
-      .getByRole('button', { name: 'Add a new company' })
-      .first()
-      .click();
-    await page.getByLabel('Company name').fill(companyName);
-    await page.getByLabel('Company number').fill(suffix.slice(-8));
-    await page.getByLabel('Account number').fill('12345678');
-    await page.getByLabel('Sort code').fill('308639');
-    await expect(page.getByLabel('Sort code')).toHaveValue('30-86-39');
-    await page.getByLabel('Address line 1').fill('1 Example Street');
-    await page.getByLabel('Town or city').fill('London');
-    await page.getByLabel('Postcode').fill('sw1a 1aa');
-    await page.getByLabel('Email address').fill('accounts-web@example.com');
-    const telephone = page.getByLabel('Telephone number');
+    async function openCompany(page: Page): Promise<void> {
+      await page.getByTestId(companyName).click();
+      await expect(
+        page.getByRole('heading', { level: 1, name: companyName }),
+      ).toBeVisible();
+    }
 
-    await telephone.fill('020 7946 0958');
-    await telephone.press('Tab');
-    await page.getByRole('button', { name: 'Continue to settings' }).click();
-    await page.getByLabel('Standard').press('Space');
-    await expect(page.getByLabel('Standard')).toBeChecked();
-    await page.getByRole('button', { name: 'Save company' }).click();
+    async function openCompanyDetails(page: Page): Promise<void> {
+      await openCompany(page);
+      await page.getByRole('link', { name: /Manage company details/ }).click();
+      await expect(
+        page.getByRole('heading', { name: 'Company details' }),
+      ).toBeVisible();
+    }
 
-    await expect(
-      page.getByRole('heading', { level: 1, name: companyName }),
-    ).toBeVisible();
-    await page.getByRole('link', { name: /Manage company details/ }).click();
-    await page.getByLabel('Email address').fill('updated@example.com');
-    await page.getByRole('button', { name: 'Save changes' }).click();
-    await expect(
-      page.getByRole('heading', { level: 1, name: companyName }),
-    ).toBeVisible();
+    async function openSettings(page: Page): Promise<void> {
+      await openCompany(page);
+      await page.getByRole('link', { name: /Manage settings/ }).click();
+      await expect(
+        page.getByRole('heading', { exact: true, name: 'Settings' }),
+      ).toBeVisible();
+    }
 
-    await page.getByRole('link', { name: /Manage settings/ }).click();
-    await page.getByRole('button', { name: 'Add a new category' }).click();
-    await page.getByLabel('New category name').fill('Travel');
-    await expect(page.getByLabel('VAT rate for Travel')).toHaveValue('20%');
-    await page.getByRole('button', { name: 'Save settings' }).click();
-    await expect(
-      page.getByRole('heading', { level: 1, name: companyName }),
-    ).toBeVisible();
+    async function addCategory(
+      page: Page,
+      name: string,
+      vatRate: string,
+    ): Promise<void> {
+      await page.getByRole('button', { name: 'Add a new category' }).click();
+      await page.getByLabel('New category name').fill(name);
+      await page.getByLabel(`VAT rate for ${name}`).fill(vatRate);
+    }
 
-    await page.getByRole('link', { name: /Manage company details/ }).click();
-    await page.getByRole('button', { name: 'Delete company' }).click();
-    const confirmation = page.getByLabel(`Type ${companyName} to confirm`);
-    const deleteCompany = page.getByRole('button', {
-      name: 'Permanently delete company',
+    test('should create a company', async ({ page }) => {
+      await expectNoA11yViolations(page);
+      await page
+        .getByRole('button', { name: 'Add a new company' })
+        .first()
+        .click();
+      await expect(
+        page.getByRole('heading', { name: 'Add company' }),
+      ).toBeVisible();
+      await expectNoA11yViolations(page);
+
+      await page.getByLabel('Company name').fill(companyName);
+      await page.getByLabel('Company number').fill(suffix);
+      await page.getByLabel('Account number').fill('62057264');
+      await page.getByLabel('Sort code').fill('308639');
+      await expect(page.getByLabel('Sort code')).toHaveValue('30-86-39');
+      await page.getByLabel('Address line 1').fill('Unit 1');
+      await page.getByLabel('Address line 2').fill('123 Cypress Street');
+      await page.getByLabel('Town or city').fill('London');
+      await page.getByLabel('Postcode').fill('sw21 1na');
+      await page.getByLabel('Email address').fill('accounts-web@example.com');
+      const telephone = page.getByLabel('Telephone number');
+
+      await telephone.fill('02083895728');
+      await telephone.press('Tab');
+      await page.getByRole('button', { name: 'Continue to settings' }).click();
+
+      await page.getByLabel('VAT registration').fill('216506516');
+      await page.getByLabel('Standard').press('Space');
+      await expect(page.getByLabel('Standard')).toBeChecked();
+      await selectOption(page, 'Day', '5');
+      await selectOption(page, 'Month', 'April');
+      await page.getByLabel('Opening balance').fill('1000');
+      await page.getByLabel('VAT owed').fill('100');
+      await page.getByLabel('VAT paid').fill('10');
+      await page.getByRole('button', { name: 'Save company' }).click();
+
+      await expect(
+        page.getByRole('heading', { level: 1, name: companyName }),
+      ).toBeVisible();
     });
 
-    await confirmation.fill(companyName.toLowerCase());
-    await expect(deleteCompany).toBeDisabled();
-    await confirmation.fill(companyName);
-    await deleteCompany.click();
-    await expect(
-      page.getByRole('heading', { name: 'Your companies' }),
-    ).toBeVisible();
-    await expect(page.getByTestId(companyName)).toHaveCount(0);
+    test('should update company details', async ({ page }) => {
+      await openCompanyDetails(page);
+      await expectNoA11yViolations(page);
+
+      await expect(page.getByLabel('Company name')).toHaveValue(companyName);
+      await expect(page.getByLabel('Company number')).toHaveValue(suffix);
+      await expect(page.getByLabel('Account number')).toHaveValue('62057264');
+      await expect(page.getByLabel('Sort code')).toHaveValue('30-86-39');
+      await page.getByLabel('Account number').fill('74782147');
+      await page.getByLabel('Sort code').fill('347924');
+      await page.getByLabel('Address line 1').fill('Motech Towers');
+      await page.getByLabel('Address line 2').clear();
+      await page.getByLabel('Email address').fill('update@example.com');
+      await page.getByRole('button', { name: 'Save changes' }).click();
+
+      await expect(
+        page.getByRole('heading', { level: 1, name: companyName }),
+      ).toBeVisible();
+    });
+
+    test('should update company settings', async ({ page }) => {
+      await openSettings(page);
+      await expectNoA11yViolations(page);
+
+      await addCategory(page, 'Accommodation', '20');
+      await addCategory(page, 'Travel', '0');
+      await addCategory(page, 'Sustenance', '20');
+
+      await expect(page.getByLabel('Pay rate')).toHaveValue('20%');
+      const payRate = page.getByLabel('Pay rate');
+
+      await payRate.clear();
+      await payRate.type('15.5');
+      await payRate.press('Tab');
+      await expect(payRate).toHaveValue('15.5%');
+      await page.getByLabel('Registration number').fill('657497583');
+      await page.getByLabel('Flat rate').press('Space');
+      await expect(page.getByLabel('Flat rate')).toBeChecked();
+      await page.getByRole('button', { name: 'Save settings' }).click();
+
+      await expect(
+        page.getByRole('heading', { level: 1, name: companyName }),
+      ).toBeVisible();
+    });
+
+    test('should remove expenses category', async ({ page }) => {
+      await openSettings(page);
+      await expect(page.getByLabel('Accommodation name')).toHaveValue(
+        'Accommodation',
+      );
+      await expect(page.getByLabel('VAT rate for Travel')).toHaveValue('0%');
+      await expect(page.getByLabel('Pay rate')).toHaveValue('15.5%');
+      await expect(page.getByLabel('Flat rate')).toBeChecked();
+
+      await page.getByRole('button', { name: 'Remove Accommodation' }).click();
+      await page.getByRole('button', { name: 'Remove Travel' }).click();
+      await page.getByRole('button', { name: 'Remove Sustenance' }).click();
+
+      await page.getByRole('button', { name: 'Save settings' }).click();
+      await expect(
+        page.getByRole('heading', { level: 1, name: companyName }),
+      ).toBeVisible();
+    });
+
+    test('should re-add expense categories', async ({ page }) => {
+      await openSettings(page);
+
+      await addCategory(page, 'Expenses', '20');
+      await addCategory(page, 'Travel', '0');
+
+      await page.getByRole('button', { name: 'Save settings' }).click();
+      await expect(
+        page.getByRole('heading', { level: 1, name: companyName }),
+      ).toBeVisible();
+    });
+
+    test('should remove company', async ({ page }) => {
+      await openCompanyDetails(page);
+      await page.getByRole('button', { name: 'Delete company' }).click();
+      const confirmation = page.getByLabel(`Type ${companyName} to confirm`);
+      const deleteCompany = page.getByRole('button', {
+        name: 'Permanently delete company',
+      });
+
+      await confirmation.fill(companyName.toLowerCase());
+      await expect(deleteCompany).toBeDisabled();
+      await confirmation.fill(companyName);
+      await deleteCompany.click();
+      await expect(
+        page.getByRole('heading', { name: 'My companies' }),
+      ).toBeVisible();
+      await expect(page.getByTestId(companyName)).toHaveCount(0);
+    });
   });
 
   test('should add a confirmed sale', async ({ page }) => {
@@ -211,7 +336,7 @@ test.describe('VAT registered Accounts', () => {
     ).toBeVisible();
 
     await page.getByRole('link', { name: 'Record transaction' }).click();
-    await page.getByLabel('Sale').check();
+    await page.getByRole('radio', { name: 'Sale' }).check();
 
     await page
       .getByLabel('Select file to upload')

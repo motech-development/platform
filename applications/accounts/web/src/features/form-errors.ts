@@ -1,4 +1,7 @@
-export function validationMessage(errors: readonly unknown[]) {
+export function validationMessage(
+  errors: readonly unknown[],
+  fallback?: string,
+): string {
   return [
     ...new Set(
       errors.flatMap((error) => {
@@ -15,16 +18,16 @@ export function validationMessage(errors: readonly unknown[]) {
           return [error.message];
         }
 
-        return [];
+        return fallback ? [fallback] : [];
       }),
     ),
   ].join(', ');
 }
 
-export function visibleErrors(
+export function visibleValidationErrors(
   errors: readonly unknown[],
   touched: boolean,
   submissionAttempts: number,
-) {
+): readonly unknown[] {
   return touched || submissionAttempts > 0 ? errors : [];
 }

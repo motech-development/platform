@@ -11,13 +11,14 @@ import {
 import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
+import { validationMessage, visibleValidationErrors } from '../form-errors';
 import {
   type CompanyEnrolment,
   type CompanyEnrolmentDraft,
   vatSettingsSchema,
   yearEndSchema,
 } from './company';
-import { validationMessage, visibleErrors } from './form-errors';
+import { monthNames } from './month-names';
 
 const setupSchema = z.object({
   balance: z.object({
@@ -44,21 +45,6 @@ export type CompanySetupDraftValues = Pick<CompanyEnrolmentDraft, 'yearEnd'> & {
   };
 };
 
-const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
 export function CompanySetupForm({
   initialValues,
   onBack,
@@ -72,7 +58,8 @@ export function CompanySetupForm({
   onDirty: () => void;
   onSubmit: (value: CompanySetupValues) => Promise<void>;
 }>) {
-  const { t } = useTranslation('companies');
+  const { i18n, t } = useTranslation('companies');
+  const months = monthNames(i18n.resolvedLanguage ?? i18n.language);
   const schemeLabels = {
     flatRate: t('Flat rate'),
     none: t('None'),
@@ -90,7 +77,7 @@ export function CompanySetupForm({
   const percentageField = (name: 'vat.charge' | 'vat.pay', label: string) => (
     <form.Field name={name}>
       {(field) => {
-        const errors = visibleErrors(
+        const errors = visibleValidationErrors(
           field.state.meta.errors,
           field.state.meta.isTouched,
           form.state.submissionAttempts,
@@ -98,7 +85,7 @@ export function CompanySetupForm({
 
         return (
           <NumberField.Root
-            formatOptions={{ style: 'percent' }}
+            formatOptions={{ maximumFractionDigits: 2, style: 'percent' }}
             invalid={errors.length > 0}
             min={0}
             onChange={(value) => {
@@ -106,7 +93,7 @@ export function CompanySetupForm({
               onDirty();
             }}
             required
-            step={0.01}
+            step={0.0001}
             value={field.state.value === null ? null : field.state.value / 100}
           >
             <NumberField.Label>{label}</NumberField.Label>
@@ -125,7 +112,7 @@ export function CompanySetupForm({
   ) => (
     <form.Field name={name}>
       {(field) => {
-        const errors = visibleErrors(
+        const errors = visibleValidationErrors(
           field.state.meta.errors,
           field.state.meta.isTouched,
           form.state.submissionAttempts,
@@ -173,7 +160,7 @@ export function CompanySetupForm({
       >
         <form.Field name="vat.scheme">
           {(field) => {
-            const errors = visibleErrors(
+            const errors = visibleValidationErrors(
               field.state.meta.errors,
               field.state.meta.isTouched,
               form.state.submissionAttempts,
@@ -210,7 +197,7 @@ export function CompanySetupForm({
         <Grid columns={{ base: 1, sm: 2 }}>
           <form.Field name="vat.registration">
             {(field) => {
-              const errors = visibleErrors(
+              const errors = visibleValidationErrors(
                 field.state.meta.errors,
                 field.state.meta.isTouched,
                 form.state.submissionAttempts,
@@ -294,9 +281,9 @@ export function CompanySetupForm({
                       <Select.Item
                         id={index.toString()}
                         key={month}
-                        textValue={t(month)}
+                        textValue={month}
                       >
-                        {t(month)}
+                        {month}
                       </Select.Item>
                     ))}
                   </Select.ListBox>

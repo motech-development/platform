@@ -36,7 +36,7 @@ function renderPending(pathname: string) {
 
 describe('AccountsPending', () => {
   it.each([
-    ['/my-companies', 'Your companies'],
+    ['/my-companies', 'My companies'],
     ['/my-companies/accounts/company-id', 'Accounts'],
     ['/my-companies/accounts/company-id/record-transaction', 'Accounts'],
     ['/my-companies/update-details/company-id', 'Company details'],

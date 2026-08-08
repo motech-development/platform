@@ -2,7 +2,6 @@ import { useMutation } from '@apollo/client/react';
 import {
   ConfirmationDialog,
   Drawer,
-  Stepper,
   useToast,
 } from '@motech-development/breeze-ui';
 import { useBlocker, useNavigate } from '@tanstack/react-router';
@@ -88,24 +87,9 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
           size="wide"
         >
           <Drawer.Description>
-            {t('Onboard a new company to Accounts.')}
-          </Drawer.Description>
-          <p className="m-0 text-base text-[var(--breeze-inverse-muted)]">
             {t('Step {{step}} of 2', { step })}
-          </p>
+          </Drawer.Description>
           <Drawer.Title>{t('Add company')}</Drawer.Title>
-          <Stepper.Root className="mb-6">
-            <Stepper.Item
-              indicator="1"
-              status={step === 1 ? 'current' : 'complete'}
-              title={t('Details')}
-            />
-            <Stepper.Item
-              indicator="2"
-              status={step === 2 ? 'current' : 'upcoming'}
-              title={t('Settings')}
-            />
-          </Stepper.Root>
           {step === 1 ? (
             <CompanyDetailsForm
               initialValues={company}
