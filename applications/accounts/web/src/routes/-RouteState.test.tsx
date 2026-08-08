@@ -36,9 +36,11 @@ function renderPending(pathname: string) {
 
 describe('AccountsPending', () => {
   it.each([
-    ['/my-companies', 'My companies'],
+    ['/my-companies', 'Your companies'],
     ['/my-companies/accounts/company-id', 'Accounts'],
     ['/my-companies/accounts/company-id/record-transaction', 'Accounts'],
+    ['/my-companies/update-details/company-id', 'Company details'],
+    ['/my-companies/settings/company-id', 'Settings'],
   ])('keeps the %s page title stable while loading', (pathname, title) => {
     renderPending(pathname);
 

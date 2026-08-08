@@ -16,6 +16,7 @@ import {
 import {
   BuildingIcon,
   ChartIcon,
+  SettingsIcon,
   WalletIcon,
 } from '@motech-development/breeze-ui/icons';
 import { useLocation, useNavigate } from '@tanstack/react-router';
@@ -24,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { AuthenticationTransition } from '../auth/AuthenticationLoading';
 import type { AccountsOwnerId } from '../auth/owner';
 import { GET_COMPANIES } from '../data/operations';
+import { sortCompaniesByName } from '../features/companies/company';
 import { setObservabilityCompany } from '../observability';
 import { companyDestination, companyFromPath } from './navigation';
 
@@ -96,26 +98,34 @@ export function AccountsShell({
     variables: { owner: protectedOwner ?? '' },
   });
   const companies = protectedOwner
-    ? data?.getCompanies.items.map(({ companyNumber, id, name }, index) => ({
-        description: companyNumber,
-        icon: (
-          <Avatar
-            initials={name[0]}
-            name={name}
-            shape="square"
-            size="md"
-            tone={index % 2 === 0 ? 'primary' : 'accent'}
-          />
-        ),
-        id,
-        name,
-      })) ?? []
+    ? sortCompaniesByName(data?.getCompanies.items ?? []).map(
+        ({ companyNumber, id, name }, index) => ({
+          description: companyNumber,
+          icon: (
+            <Avatar
+              initials={name[0]}
+              name={name}
+              shape="square"
+              size="md"
+              tone={index % 2 === 0 ? 'primary' : 'accent'}
+            />
+          ),
+          id,
+          name,
+        }),
+      )
     : [];
   const dashboard = companyId
     ? `/my-companies/dashboard/${companyId}`
     : '/my-companies';
   const transactions = companyId
     ? `/my-companies/accounts/${companyId}`
+    : '/my-companies';
+  const companyDetails = companyId
+    ? `/my-companies/update-details/${companyId}`
+    : '/my-companies';
+  const settings = companyId
+    ? `/my-companies/settings/${companyId}`
     : '/my-companies';
 
   const navigateTo = (href: string) => {
@@ -192,6 +202,32 @@ export function AccountsShell({
                 <WalletIcon />
                 {t('Transactions')}
                 <VisuallyHidden>{t(' — Manage accounts')}</VisuallyHidden>
+              </NavigationList.Item>
+              <NavigationList.Item
+                current={location.pathname.startsWith(
+                  '/my-companies/update-details/',
+                )}
+                href={companyDetails}
+                id="company-details"
+                onAction={() => setCompactNavigationOpen(false)}
+              >
+                <BuildingIcon />
+                {t('Company details')}
+                <VisuallyHidden>
+                  {t(' — Manage company details')}
+                </VisuallyHidden>
+              </NavigationList.Item>
+              <NavigationList.Item
+                current={location.pathname.startsWith(
+                  '/my-companies/settings/',
+                )}
+                href={settings}
+                id="settings"
+                onAction={() => setCompactNavigationOpen(false)}
+              >
+                <SettingsIcon />
+                {t('Settings')}
+                <VisuallyHidden>{t(' — Manage settings')}</VisuallyHidden>
               </NavigationList.Item>
             </>
           </NavigationList.Root>

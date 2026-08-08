@@ -11,6 +11,9 @@ const mocks = vi.hoisted(() => ({
     user: { name: 'Morgan Green' },
   },
   clearStore: vi.fn().mockResolvedValue([]),
+  location: {
+    pathname: '/my-companies/accounts/7c22bba3-8036-4fa8-aae1-4611f1651e17',
+  },
   navigate: vi.fn().mockResolvedValue(undefined),
 }));
 
@@ -31,14 +34,13 @@ vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
   >()),
   BuildingIcon: () => <svg aria-hidden="true" />,
   ChartIcon: () => <svg aria-hidden="true" />,
+  SettingsIcon: () => <svg aria-hidden="true" />,
   WalletIcon: () => <svg aria-hidden="true" />,
 }));
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
-  useLocation: () => ({
-    pathname: '/my-companies/accounts/7c22bba3-8036-4fa8-aae1-4611f1651e17',
-  }),
+  useLocation: () => mocks.location,
   useNavigate: () => mocks.navigate,
 }));
 
@@ -50,7 +52,57 @@ describe('AccountsShell', () => {
   beforeEach(() => {
     mocks.auth.logout.mockReset().mockResolvedValue(undefined);
     mocks.clearStore.mockReset().mockResolvedValue([]);
+    mocks.location.pathname =
+      '/my-companies/accounts/7c22bba3-8036-4fa8-aae1-4611f1651e17';
     mocks.navigate.mockReset().mockResolvedValue(undefined);
+  });
+
+  it('hides company navigation when no company is selected', () => {
+    mocks.location.pathname = '/my-companies';
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <AccountsShell authenticatedOwner={'auth0|owner' as AccountsOwnerId}>
+          <p>Company collection</p>
+        </AccountsShell>
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.queryByRole('navigation', { name: 'Accounts navigation' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('Company collection')).toBeInTheDocument();
+  });
+
+  it('shows delivered company navigation and keeps unfinished capabilities hidden', () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <AccountsShell authenticatedOwner={'auth0|owner' as AccountsOwnerId}>
+          <p>Private account data</p>
+        </AccountsShell>
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getAllByRole('link', {
+        name: /Company details.*Manage company details/,
+      })[0],
+    ).toHaveAttribute(
+      'href',
+      '/my-companies/update-details/7c22bba3-8036-4fa8-aae1-4611f1651e17',
+    );
+    expect(
+      screen.getAllByRole('link', { name: /Settings.*Manage settings/ })[0],
+    ).toHaveAttribute(
+      'href',
+      '/my-companies/settings/7c22bba3-8036-4fa8-aae1-4611f1651e17',
+    );
+    expect(
+      screen.queryByRole('link', { name: /clients/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: /reports/i }),
+    ).not.toBeInTheDocument();
   });
 
   it('hides protected content and logs out when cache cleanup fails', async () => {

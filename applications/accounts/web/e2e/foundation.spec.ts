@@ -52,7 +52,7 @@ async function focusWithKeyboard(page: Page, target: Locator): Promise<void> {
 async function openAccountsRoute(page: Page, baseURL: string | undefined) {
   await gotoAuthenticatedPage({
     baseURL,
-    content: page.getByRole('heading', { name: 'My companies' }),
+    content: page.getByRole('heading', { name: 'Your companies' }),
     page,
     path: '/my-companies',
   });

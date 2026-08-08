@@ -1,6 +1,13 @@
-type CompanySection = 'accounts' | 'dashboard';
+type CompanySection =
+  | 'accounts'
+  | 'clients'
+  | 'dashboard'
+  | 'reports'
+  | 'settings'
+  | 'update-details';
 
-const companyRoute = /^\/my-companies\/(accounts|dashboard)\/([^/]+)/;
+const companyRoute =
+  /^\/my-companies\/(accounts|clients|dashboard|reports|settings|update-details)\/([^/]+)/;
 
 function companyRouteMatch(pathname: string) {
   return companyRoute.exec(pathname);

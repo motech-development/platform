@@ -4,6 +4,8 @@ import type { AuthenticatedAccountsRouterContext } from '../auth/router';
 import {
   GET_COMPANIES,
   GET_COMPANY_DASHBOARD,
+  GET_COMPANY_DETAILS,
+  GET_COMPANY_SETTINGS,
   GET_CONFIRMED_TRANSACTIONS,
   GET_TRANSACTION,
 } from './operations';
@@ -54,6 +56,32 @@ async function verifyOwnedCompany(context: RouterContext, companyId: string) {
   ) {
     notFound({ throw: true });
   }
+}
+
+export async function primeCompanyDetails(
+  context: RouterContext,
+  companyId: string,
+) {
+  if (!context.authenticatedOwner) return;
+
+  await verifyOwnedCompany(context, companyId);
+  await context.apolloClient.query({
+    query: GET_COMPANY_DETAILS,
+    variables: { id: companyId },
+  });
+}
+
+export async function primeCompanySettings(
+  context: RouterContext,
+  companyId: string,
+) {
+  if (!context.authenticatedOwner) return;
+
+  await verifyOwnedCompany(context, companyId);
+  await context.apolloClient.query({
+    query: GET_COMPANY_SETTINGS,
+    variables: { id: companyId },
+  });
 }
 
 export async function primeDashboard(

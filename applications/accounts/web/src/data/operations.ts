@@ -5,12 +5,160 @@ export const GET_COMPANIES = graphql(`
     getCompanies(id: $owner) {
       id
       items {
+        address {
+          line1
+          line2
+          line3
+          line4
+          line5
+        }
+        bank {
+          accountNumber
+          sortCode
+        }
         contact {
           email
+          telephone
         }
         id
         name
         companyNumber
+      }
+    }
+  }
+`);
+
+export const GET_COMPANY_DETAILS = graphql(`
+  query AccountsWebCompanyDetails($id: ID!) {
+    getCompany(id: $id) {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      bank {
+        accountNumber
+        sortCode
+      }
+      companyNumber
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  }
+`);
+
+export const CREATE_COMPANY = graphql(`
+  mutation AccountsWebCreateCompany($input: CreateCompanyInput!) {
+    createCompany(input: $input) {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      bank {
+        accountNumber
+        sortCode
+      }
+      companyNumber
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+      owner
+    }
+  }
+`);
+
+export const UPDATE_COMPANY = graphql(`
+  mutation AccountsWebUpdateCompany($input: CompanyInput!) {
+    updateCompany(input: $input) {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      bank {
+        accountNumber
+        sortCode
+      }
+      companyNumber
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  }
+`);
+
+export const DELETE_COMPANY = graphql(`
+  mutation AccountsWebDeleteCompany($id: ID!) {
+    deleteCompany(id: $id) {
+      id
+      name
+      owner
+    }
+  }
+`);
+
+export const GET_COMPANY_SETTINGS = graphql(`
+  query AccountsWebCompanySettings($id: ID!) {
+    getCompany(id: $id) {
+      id
+      name
+    }
+    getSettings(id: $id) {
+      categories {
+        name
+        protect
+        vatRate
+      }
+      id
+      vat {
+        charge
+        pay
+        registration
+        scheme
+      }
+      yearEnd {
+        day
+        month
+      }
+    }
+  }
+`);
+
+export const UPDATE_SETTINGS = graphql(`
+  mutation AccountsWebUpdateSettings($input: SettingsInput!) {
+    updateSettings(input: $input) {
+      categories {
+        name
+        protect
+        vatRate
+      }
+      id
+      vat {
+        charge
+        pay
+        registration
+        scheme
+      }
+      yearEnd {
+        day
+        month
       }
     }
   }
