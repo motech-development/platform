@@ -84,12 +84,33 @@ jobs:
       - name: Resolve published Releases
         env:
           GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+          RELEASE_BOUNDARY: ${{ github.event_name == 'workflow_dispatch' && inputs.boundary || github.sha }}
         run: |
           set -o pipefail
           git fetch --force --tags origin
           gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
             | jq 'add | map({tag: .tag_name, draft: .draft, prerelease: .prerelease, publishedAt: .published_at})' \
             > "$RUNNER_TEMP/releases.json"
+
+          while IFS= read -r tag; do
+            release="$(
+              gh api graphql \
+                -f query='query($owner: String!, $name: String!, $tag: String!) { repository(owner: $owner, name: $name) { release(tagName: $tag) { tagName isDraft isPrerelease publishedAt } } }' \
+                -f owner="$GITHUB_REPOSITORY_OWNER" \
+                -f name="${GITHUB_REPOSITORY#*/}" \
+                -f tag="$tag" \
+                --jq '.data.repository.release'
+            )"
+            if [[ -z "$release" || "$release" == "null" ]]; then
+              continue
+            fi
+
+            jq --argjson release "$release" \
+              'map(select(.tag != $release.tagName)) + [{tag: $release.tagName, draft: $release.isDraft, prerelease: $release.isPrerelease, publishedAt: $release.publishedAt}]' \
+              "$RUNNER_TEMP/releases.json" \
+              > "$RUNNER_TEMP/releases.next.json"
+            mv "$RUNNER_TEMP/releases.next.json" "$RUNNER_TEMP/releases.json"
+          done < <(git tag --points-at "$RELEASE_BOUNDARY")
 
       - name: Create Release Plan
         id: plan

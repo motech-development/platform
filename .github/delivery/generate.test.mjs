@@ -2303,9 +2303,13 @@ test('Release publishes selectively from full history and constructs one exact-t
     releaseJob,
     /set -o pipefail[\s\S]*gh api --paginate --slurp[\s\S]*\| jq 'add \| map\(/,
   );
+  assert.match(
+    releaseJob,
+    /RELEASE_BOUNDARY: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.boundary \|\| github\.sha \}\}[\s\S]*gh api graphql[\s\S]*release\(tagName: \$tag\)[\s\S]*\[\[ -z "\$release" \|\| "\$release" == "null" \]\][\s\S]*map\(select\(\.tag != \$release\.tagName\)\)[\s\S]*git tag --points-at "\$RELEASE_BOUNDARY"/,
+  );
   assert.doesNotMatch(
     releaseJob,
-    /gh api --paginate --slurp[\s\S]*?--jq[\s\S]*?releases\.json/,
+    /gh api --paginate --slurp(?:(?!\| jq)[\s\S])*--jq/,
   );
   assert.match(releaseJob, /^    outputs:\n      release-plan:/m);
   assert.match(
