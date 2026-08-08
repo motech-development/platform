@@ -1849,6 +1849,14 @@ test('generated preview workflow plans per pull request and selectively deploys 
     /git diff --name-only '\$\{\{ github\.event\.pull_request\.base\.sha \}\}\.\.\.\$\{\{ github\.event\.pull_request\.head\.sha \}\}'/,
   );
   assert.match(setup, /aws cloudformation describe-stacks/);
+  assert.match(
+    setup,
+    /- name: Configure AWS credentials\n        uses:[\s\S]*- name: Read Preview Environment stacks\n        run:/,
+  );
+  assert.match(
+    setup,
+    /- name: Read GitHub Deployments as Preview State\n        if: github\.event\.action == 'synchronize'/,
+  );
   assert.match(setup, /^      deployments: read$/m);
   assert.match(
     setup,
