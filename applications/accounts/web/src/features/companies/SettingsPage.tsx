@@ -10,7 +10,7 @@ import {
   TextField,
   useToast,
 } from '@motech-development/breeze-ui';
-import { AddIcon, DeleteIcon } from '@motech-development/breeze-ui/icons';
+import { AddIcon, CloseIcon } from '@motech-development/breeze-ui/icons';
 import { useForm } from '@tanstack/react-form';
 import { useBlocker, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
@@ -40,6 +40,7 @@ import {
   CompanyFormLoadingState,
 } from './CompanyFormQueryState';
 import { DiscardChangesDialog } from './DiscardChangesDialog';
+import { expenseCategoryRowClassName } from './expense-category-layout';
 import { monthNames } from './month-names';
 import { QueryRefreshAlert } from './QueryRefreshAlert';
 
@@ -186,7 +187,7 @@ function SettingsForm({
 
                 return (
                   <div
-                    className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(10rem,13rem)_auto]"
+                    className={expenseCategoryRowClassName}
                     key={categoryKeys[index]}
                   >
                     <form.Field name={`categories[${index}].name`}>
@@ -204,7 +205,7 @@ function SettingsForm({
                         if (category.protect) {
                           return (
                             <TextField.Root readOnly value={field.state.value}>
-                              <TextField.Label>
+                              <TextField.Label className="sr-only">
                                 {t('{{name}} name', { name: category.name })}
                               </TextField.Label>
                               <TextField.Input />
@@ -221,7 +222,7 @@ function SettingsForm({
                             }}
                             value={field.state.value}
                           >
-                            <TextField.Label>
+                            <TextField.Label className="sr-only">
                               {category.name
                                 ? t('{{name}} name', { name: category.name })
                                 : t('New category name {{number}}', {
@@ -252,7 +253,9 @@ function SettingsForm({
                         });
                         const contents = (
                           <>
-                            <NumberField.Label>{label}</NumberField.Label>
+                            <NumberField.Label className="sr-only">
+                              {label}
+                            </NumberField.Label>
                             <NumberField.Group>
                               <NumberField.Input onBlur={field.handleBlur} />
                             </NumberField.Group>
@@ -314,11 +317,12 @@ function SettingsForm({
                         aria-label={t('Remove {{name}}', {
                           name: categoryLabel,
                         })}
-                        className="self-end"
+                        appearance="subtle"
+                        className="self-start"
                         onAction={() => removeCategory(index)}
                         variant="danger"
                       >
-                        <DeleteIcon />
+                        <CloseIcon />
                       </IconButton>
                     )}
                   </div>

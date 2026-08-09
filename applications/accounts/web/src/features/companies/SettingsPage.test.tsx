@@ -46,7 +46,7 @@ vi.mock('@motech-development/breeze-ui', async (importOriginal) => ({
 
 vi.mock('@motech-development/breeze-ui/icons', () => ({
   AddIcon: () => <span aria-hidden="true">+</span>,
-  DeleteIcon: () => <span aria-hidden="true">×</span>,
+  CloseIcon: () => <span aria-hidden="true">×</span>,
   WarningIcon: () => <span aria-hidden="true">!</span>,
 }));
 
@@ -146,15 +146,17 @@ describe('SettingsPage', () => {
     );
 
     expect(screen.getByLabelText('Sales name')).toHaveAttribute('readonly');
+    expect(screen.getByText('Sales name')).toHaveClass('sr-only');
     expect(screen.getByLabelText('VAT rate for Sales')).toHaveAttribute(
       'readonly',
     );
+    expect(screen.getByText('VAT rate for Sales')).toHaveClass('sr-only');
     expect(
       screen.queryByRole('button', { name: 'Remove Sales' }),
     ).not.toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'Remove Advertising' }),
-    ).toBeInTheDocument();
+    ).toHaveClass('bg-[var(--breeze-danger-soft)]');
 
     await user.click(
       screen.getByRole('button', { name: 'Add a new category' }),
