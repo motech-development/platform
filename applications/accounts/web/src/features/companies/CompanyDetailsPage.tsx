@@ -15,6 +15,10 @@ import {
   GET_COMPANY_DETAILS,
   UPDATE_COMPANY,
 } from '../../data/operations';
+import {
+  CompanyDetailsFormSkeleton,
+  FormSkeletonRegion,
+} from '../loading/AccountsPageSkeletons';
 import { removeCompanyFromCache, upsertCompanyInCache } from './cache-updates';
 import { exactCompanyNameSchema, formatSortCode } from './company';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
@@ -49,6 +53,14 @@ export function CompanyDetailsPage({
   const confirmationValid = company
     ? exactCompanyNameSchema(company.name).safeParse(confirmation).success
     : false;
+  const pageHeader = (
+    <PageHeader
+      description={t(
+        'Registered, contact, and bank details used across Accounts.',
+      )}
+      title={t('Company details')}
+    />
+  );
 
   useEffect(() => {
     if (blocker.status === 'blocked') setDiscardOpen(true);
@@ -93,28 +105,33 @@ export function CompanyDetailsPage({
   };
 
   if (loading && !data) {
-    return <p aria-live="polite">{t('Loading company details')}</p>;
+    return (
+      <div className="min-w-0">
+        {pageHeader}
+        <FormSkeletonRegion loadingLabel={t('Loading company details')}>
+          <CompanyDetailsFormSkeleton />
+        </FormSkeletonRegion>
+      </div>
+    );
   }
 
   if (!company) {
     return (
-      <QueryFailureState
-        onRetry={() => {
-          refetch().catch(() => undefined);
-        }}
-        title={t('Company details could not be loaded')}
-      />
+      <div className="min-w-0">
+        {pageHeader}
+        <QueryFailureState
+          onRetry={() => {
+            refetch().catch(() => undefined);
+          }}
+          title={t('Company details could not be loaded')}
+        />
+      </div>
     );
   }
 
   return (
     <div className="min-w-0">
-      <PageHeader
-        description={t(
-          'Registered, contact, and bank details used across Accounts.',
-        )}
-        title={t('Company details')}
-      />
+      {pageHeader}
       {error ? (
         <QueryRefreshAlert
           onRetry={() => {

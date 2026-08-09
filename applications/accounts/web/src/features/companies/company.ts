@@ -3,34 +3,61 @@ import { z } from 'zod';
 const postcodePattern =
   /^([A-PR-UWYZ0-9][A-HK-Y0-9][AEHMNPRTVXY0-9]?[ABEHMNPRVWXY0-9]? {1,2}\d[ABD-HJLN-UW-Z]{2}|GIR 0AA)$/;
 const vatRegistrationPattern = /^(?:GB)?(?:[1-9]\d{8}|[1-9]\d{11})$/;
-const telephoneExtensionPattern = /(?:[\s-]*(?:x|ext\.?|#)\s*\d+)?$/i;
-const telephoneBodyPattern = /^[\d\s()+-]+$/;
-const standardUkTelephonePattern = /^0\d{9,10}$/;
-const specialUkTelephonePattern = /^0(?:8001111|845464\d)$/;
+const telephoneExtensionPattern = /[\s-]*(?:x|ext\.?|#)\s*\d+$/i;
+const internationalTelephonePrefixes = [
+  /^\+44[\s-]?(?:\(0\)[\s-]?)?/,
+  /^0044[\s-]?(?:\(0\)[\s-]?)?/,
+  /^01144[\s-]?(?:\(0\)[\s-]?)?/,
+  /^\(\+44\)[\s-]?(?:\(0\)[\s-]?)?/,
+  /^\(0044\)[\s-]?(?:\(0\)[\s-]?)?/,
+  /^\(01144\)[\s-]?(?:\(0\)[\s-]?)?/,
+] as const;
+const standardUkTelephonePatterns = [
+  /^0\d{2}[\s-]?\d{4}[\s-]?\d{4}$/,
+  /^0\d{3}[\s-]?\d{3}[\s-]?\d{3,4}$/,
+  /^0\d{4}[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3})$/,
+  /^0\d{5}[\s-]?\d{4,5}$/,
+] as const;
+const specialUkTelephonePatterns = [
+  /^0800[\s-]?11[\s-]?11$/,
+  /^0845[\s-]?46[\s-]?4\d$/,
+] as const;
 
 const required = (message: string) => z.string().trim().min(1, message);
+
+function nationalTelephone(value: string): string | undefined {
+  let telephone = value;
+  const internationalPrefix = internationalTelephonePrefixes.find((prefix) =>
+    prefix.test(telephone),
+  );
+
+  if (internationalPrefix) {
+    telephone = `0${telephone.replace(internationalPrefix, '')}`;
+  }
+
+  const parenthesisedNationalArea = /^\((0\d{2,5})\)(.*)$/.exec(telephone);
+  const parenthesisedArea = /^0\((\d{2,5})\)(.*)$/.exec(telephone);
+
+  if (parenthesisedNationalArea) {
+    telephone = `${parenthesisedNationalArea[1]}${parenthesisedNationalArea[2]}`;
+  } else if (parenthesisedArea) {
+    telephone = `0${parenthesisedArea[1]}${parenthesisedArea[2]}`;
+  }
+
+  return /[()]/.test(telephone) ? undefined : telephone;
+}
 
 function isValidUkTelephone(value: string) {
   const trimmed = value.trim();
   const extension = telephoneExtensionPattern.exec(trimmed);
   const telephone = trimmed.slice(0, extension?.index ?? trimmed.length).trim();
+  const national = nationalTelephone(telephone);
 
-  if (!telephoneBodyPattern.test(telephone)) return false;
-
-  const compact = telephone.replace(/[\s()-]/g, '');
-  let national = compact;
-
-  if (compact.startsWith('+44')) {
-    national = `0${compact.slice(3).replace(/^0/, '')}`;
-  } else if (compact.startsWith('0044')) {
-    national = `0${compact.slice(4).replace(/^0/, '')}`;
-  } else if (compact.startsWith('01144')) {
-    national = `0${compact.slice(5).replace(/^0/, '')}`;
-  }
-
-  return (
-    standardUkTelephonePattern.test(national) ||
-    specialUkTelephonePattern.test(national)
+  return Boolean(
+    national &&
+      [...standardUkTelephonePatterns, ...specialUkTelephonePatterns].some(
+        (pattern) => pattern.test(national),
+      ),
   );
 }
 
@@ -170,9 +197,12 @@ export function formatSortCode(value: string): string {
 }
 
 export function formatVatRegistration(value: string): string {
-  const digits = value.toUpperCase().replace(/^GB/u, '').replace(/\D/gu, '');
+  const compact = value.toUpperCase().replace(/\s/gu, '');
 
-  return digits ? `GB${digits}` : '';
+  if (!compact) return '';
+  if (/^\d+$/u.test(compact)) return `GB${compact}`;
+
+  return compact;
 }
 
 export function exactCompanyNameSchema(companyName: string) {

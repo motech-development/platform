@@ -124,6 +124,38 @@ describe('CompaniesPageContent', () => {
 
     expect(screen.getByText('We could not load companies')).toBeVisible();
     expect(screen.queryByText('No companies yet')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Add a new company' }),
+    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(mocks.query.refetch).toHaveBeenCalledOnce();
+  });
+
+  it('preserves cached companies with a compact retry after refresh fails', async () => {
+    const user = userEvent.setup();
+    mocks.query.data = {
+      getCompanies: {
+        items: [
+          {
+            companyNumber: '12345678',
+            contact: { email: 'owner@example.com' },
+            id: 'company-id',
+            name: 'Example Company',
+          },
+        ],
+      },
+    };
+    mocks.query.error = new Error('Refresh unavailable');
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompaniesPageContent />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByTestId('Example Company')).toBeVisible();
+    expect(screen.queryByText('We could not load companies')).toBeNull();
+    expect(screen.getByText(/Companies could not be refreshed/)).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Try again' }));
     expect(mocks.query.refetch).toHaveBeenCalledOnce();
   });

@@ -108,10 +108,12 @@ describe('CompanyDetailsPage', () => {
       </BreezeProvider>,
     );
 
-    expect(screen.getByText('Loading company details')).toHaveAttribute(
-      'aria-live',
-      'polite',
-    );
+    expect(
+      screen.getByRole('heading', { name: 'Company details' }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('status', { name: 'Loading company details' }),
+    ).toBeVisible();
   });
 
   it('offers retry when company details are unavailable', async () => {
@@ -128,6 +130,9 @@ describe('CompanyDetailsPage', () => {
 
     expect(
       screen.getByText('Company details could not be loaded'),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('heading', { name: 'Company details' }),
     ).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Try again' }));
     expect(mocks.query.refetch).toHaveBeenCalledOnce();
