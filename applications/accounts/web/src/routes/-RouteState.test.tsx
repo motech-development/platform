@@ -60,6 +60,35 @@ describe('AccountsPending', () => {
       'true',
     );
   });
+
+  it('keeps the enrolment drawer visible while its route loads', () => {
+    renderPending('/my-companies/add-company');
+
+    expect(
+      screen.getByRole('dialog', { name: 'Add company' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Company details')).toBeInTheDocument();
+    expect(screen.getByText('Bank account')).toBeInTheDocument();
+    expect(screen.getByText('Address')).toBeInTheDocument();
+    expect(screen.getByText('Contact details')).toBeInTheDocument();
+  });
+
+  it('uses a form-shaped company-details loading state', () => {
+    renderPending('/my-companies/update-details/company-id');
+
+    expect(screen.getByText('Identity')).toBeInTheDocument();
+    expect(screen.getByText('Address')).toBeInTheDocument();
+    expect(screen.getByText('Contact details')).toBeInTheDocument();
+    expect(screen.getByText('Bank account')).toBeInTheDocument();
+  });
+
+  it('uses a row-shaped settings loading state', () => {
+    renderPending('/my-companies/settings/company-id');
+
+    expect(screen.getByText('Expense categories')).toBeInTheDocument();
+    expect(screen.getByText('Financial year end')).toBeInTheDocument();
+    expect(screen.getByText('VAT settings')).toBeInTheDocument();
+  });
 });
 
 describe('PublicRouteNotFound', () => {

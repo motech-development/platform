@@ -14,8 +14,11 @@ import { useTranslation } from 'react-i18next';
 import { AuthenticationPanel } from '../auth/AuthenticationPanel';
 import {
   CompaniesTableSkeleton,
+  CompanyDetailsFormSkeleton,
+  CompanyEnrolmentDrawerSkeleton,
   OverviewContentSkeleton,
   RecordTransactionDrawerSkeleton,
+  SettingsFormSkeleton,
   TransactionsContentSkeleton,
 } from '../features/loading/AccountsPageSkeletons';
 import { captureRouteFailure } from '../observability';
@@ -99,17 +102,23 @@ export function AccountsPending() {
     );
   }
 
-  if (pendingView === 'companies') {
+  if (pendingView === 'add-company' || pendingView === 'companies') {
     return (
-      <div className="min-w-0">
-        <PageHeader
-          description={t('Select a company or add another business.', {
-            ns: 'companies',
-          })}
-          title={t('My companies', { ns: 'companies' })}
-        />
-        <CompaniesTableSkeleton />
-      </div>
+      <>
+        <div className="min-w-0">
+          <PageHeader
+            actions={<Skeleton className="h-11 w-36" />}
+            description={t('Select a company or add another business.', {
+              ns: 'companies',
+            })}
+            title={t('My companies', { ns: 'companies' })}
+          />
+          <CompaniesTableSkeleton />
+        </div>
+        {pendingView === 'add-company' ? (
+          <CompanyEnrolmentDrawerSkeleton />
+        ) : null}
+      </>
     );
   }
 
@@ -132,7 +141,7 @@ export function AccountsPending() {
             {t('Loading company details', { ns: 'companies' })}
           </VisuallyHidden>
           <div aria-hidden="true" inert>
-            <Skeleton className="block h-96 w-full" />
+            <CompanyDetailsFormSkeleton />
           </div>
         </section>
       </div>
@@ -158,7 +167,7 @@ export function AccountsPending() {
             {t('Loading settings', { ns: 'companies' })}
           </VisuallyHidden>
           <div aria-hidden="true" inert>
-            <Skeleton className="block h-96 w-full" />
+            <SettingsFormSkeleton />
           </div>
         </section>
       </div>

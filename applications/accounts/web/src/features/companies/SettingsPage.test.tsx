@@ -25,7 +25,7 @@ const mocks = vi.hoisted(() => ({
         yearEnd: { day: 31, month: 2 },
       },
     },
-    error: undefined,
+    error: undefined as Error | undefined,
     loading: false,
     refetch: vi.fn(),
   },
@@ -63,7 +63,40 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
 describe('SettingsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.navigate.mockResolvedValue(undefined);
+    mocks.query.data = {
+      getCompany: { id: 'company-id', name: 'Example Company' },
+      getSettings: {
+        categories: [
+          { name: 'Sales', protect: true, vatRate: 20 },
+          { name: 'Advertising', protect: false, vatRate: 20 },
+        ],
+        id: 'company-id',
+        vat: {
+          charge: 20,
+          pay: 20,
+          registration: 'GB123456789',
+          scheme: 'standard',
+        },
+        yearEnd: { day: 31, month: 2 },
+      },
+    };
+    mocks.query.error = undefined;
     mocks.shouldBlockFn = undefined;
+  });
+
+  it('formats an unprefixed API VAT registration for editing', () => {
+    mocks.query.data.getSettings.vat.registration = '216506516';
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByLabelText('Registration number')).toHaveValue(
+      'GB216506516',
+    );
   });
 
   it('keeps protected categories read-only and defaults new categories to 20% VAT', async () => {
@@ -107,6 +140,22 @@ describe('SettingsPage', () => {
     expect(
       screen.getByRole('button', { name: 'Remove new category 4' }),
     ).toBeInTheDocument();
+  });
+
+  it('formats VAT registration digits using the established GB prefix', () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Registration number'), {
+      target: { value: '216506516' },
+    });
+
+    expect(screen.getByLabelText('Registration number')).toHaveValue(
+      'GB216506516',
+    );
   });
 
   it('returns to the company dashboard after saving settings', async () => {
@@ -242,5 +291,69 @@ describe('SettingsPage', () => {
     expect(screen.getByLabelText('Local category name')).toHaveValue(
       'Local category',
     );
+  });
+
+  it('replaces a dirty draft when the selected company changes', () => {
+    const { rerender } = render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Advertising name'), {
+      target: { value: 'Company A draft' },
+    });
+    mocks.query.data = {
+      getCompany: { id: 'company-b', name: 'Company B' },
+      getSettings: {
+        ...mocks.query.data.getSettings,
+        categories: [
+          { name: 'Sales', protect: true, vatRate: 20 },
+          { name: 'Operations', protect: false, vatRate: 20 },
+        ],
+        id: 'company-b',
+      },
+    };
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-b" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByLabelText('Operations name')).toHaveValue('Operations');
+    expect(
+      screen.queryByDisplayValue('Company A draft'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('preserves dirty input when a background refresh fails', () => {
+    const { rerender } = render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Advertising name'), {
+      target: { value: 'Local category' },
+    });
+    mocks.query.error = new Error('Settings service unavailable');
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByLabelText('Local category name')).toHaveValue(
+      'Local category',
+    );
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Settings could not be refreshed. Check your connection, then try again.',
+    );
+    expect(screen.getByRole('alert')).not.toHaveTextContent(
+      'Settings service unavailable',
+    );
+    expect(
+      screen.getByRole('button', { name: 'Try again' }),
+    ).toBeInTheDocument();
   });
 });

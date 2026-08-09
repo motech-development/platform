@@ -18,8 +18,9 @@ import {
   UPDATE_COMPANY,
 } from '../../data/operations';
 import { removeCompanyFromCache, upsertCompanyInCache } from './cache-updates';
-import { exactCompanyNameSchema } from './company';
+import { exactCompanyNameSchema, formatSortCode } from './company';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
+import { QueryRefreshAlert } from './QueryRefreshAlert';
 
 export function CompanyDetailsPage({
   companyId,
@@ -54,11 +55,49 @@ export function CompanyDetailsPage({
     if (blocker.status === 'blocked') setDiscardOpen(true);
   }, [blocker.status]);
 
+  const deleteCurrentCompany = async () => {
+    try {
+      const result = await deleteCompany({
+        update: (cache, mutation) => {
+          if (mutation.data?.deleteCompany) {
+            removeCompanyFromCache(
+              cache,
+              mutation.data.deleteCompany.owner ?? owner,
+              mutation.data.deleteCompany.id,
+            );
+          }
+        },
+        variables: { id: companyId },
+      });
+
+      if (!result.data?.deleteCompany) throw new Error('No company returned');
+    } catch {
+      toast.show({
+        description: t(
+          'Nothing was deleted. Check your connection and try again.',
+        ),
+        title: t('Company could not be deleted'),
+        variant: 'danger',
+      });
+
+      return;
+    }
+
+    allowNavigation.current = true;
+    setDirty(false);
+    setDeleteOpen(false);
+    setConfirmation('');
+    toast.show({ title: t('Company deleted'), variant: 'success' });
+    await navigate({ to: '/my-companies' }).catch(() => {
+      allowNavigation.current = false;
+    });
+  };
+
   if (loading && !data) {
     return <p aria-live="polite">{t('Loading company details')}</p>;
   }
 
-  if (error || !company) {
+  if (!company) {
     return (
       <StatePanel
         action={
@@ -88,6 +127,18 @@ export function CompanyDetailsPage({
         )}
         title={t('Company details')}
       />
+      {error ? (
+        <QueryRefreshAlert
+          onRetry={() => {
+            refetch().catch(() => undefined);
+          }}
+          retryLabel={t('Try again', { ns: 'routing' })}
+        >
+          {t(
+            'Company details could not be refreshed. Check your connection, then try again.',
+          )}
+        </QueryRefreshAlert>
+      ) : null}
       <CompanyDetailsForm
         danger={
           <AlertDialog.Root
@@ -130,38 +181,7 @@ export function CompanyDetailsPage({
                   disabled={!confirmationValid || deleting}
                   loading={deleting}
                   onAction={() => {
-                    deleteCompany({
-                      update: (cache, mutation) => {
-                        if (mutation.data?.deleteCompany) {
-                          removeCompanyFromCache(
-                            cache,
-                            mutation.data.deleteCompany.owner ?? owner,
-                            mutation.data.deleteCompany.id,
-                          );
-                        }
-                      },
-                      variables: { id: companyId },
-                    })
-                      .then(async (result) => {
-                        if (!result.data?.deleteCompany)
-                          throw new Error('No company returned');
-                        allowNavigation.current = true;
-                        setDirty(false);
-                        toast.show({
-                          title: t('Company deleted'),
-                          variant: 'success',
-                        });
-                        await navigate({ to: '/my-companies' });
-                      })
-                      .catch(() => {
-                        toast.show({
-                          description: t(
-                            'Nothing was deleted. Check your connection and try again.',
-                          ),
-                          title: t('Company could not be deleted'),
-                          variant: 'danger',
-                        });
-                      });
+                    deleteCurrentCompany().catch(() => undefined);
                   }}
                   variant="danger"
                 >
@@ -178,7 +198,12 @@ export function CompanyDetailsPage({
             line2: company.address.line2 ?? '',
             line4: company.address.line4 ?? '',
           },
+          bank: {
+            ...company.bank,
+            sortCode: formatSortCode(company.bank.sortCode),
+          },
         }}
+        key={companyId}
         onDirty={() => setDirty(true)}
         onSubmit={async (input) => {
           try {

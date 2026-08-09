@@ -73,6 +73,7 @@
   "Registered, contact, and bank details used across Accounts.": "Registered, contact, and bank details used across Accounts.",
   "Loading company details": "Loading company details",
   "Company details could not be loaded": "Company details could not be loaded",
+  "Company details could not be refreshed. Check your connection, then try again.": "Company details could not be refreshed. Check your connection, then try again.",
   "Delete company": "Delete company",
   "Delete {{name}}?": "Delete {{name}}?",
   "Company records, clients, reports, and transactions will be permanently removed.": "Company records, clients, reports, and transactions will be permanently removed.",
@@ -93,10 +94,8 @@
   "Applied when purchases are recorded.": "Applied when purchases are recorded.",
   "Add category": "Add category",
   "Add a new category": "Add a new category",
-  "new category": "new category",
   "new category {{number}}": "new category {{number}}",
   "{{name}} name": "{{name}} name",
-  "New category name": "New category name",
   "New category name {{number}}": "New category name {{number}}",
   "VAT rate for {{name}}": "VAT rate for {{name}}",
   "Remove {{name}}": "Remove {{name}}",
@@ -111,5 +110,6 @@
   "Discard settings changes": "Discard settings changes",
   "Loading settings": "Loading settings",
   "Settings could not be loaded": "Settings could not be loaded",
+  "Settings could not be refreshed. Check your connection, then try again.": "Settings could not be refreshed. Check your connection, then try again.",
   "VAT, financial year, and transaction category defaults.": "VAT, financial year, and transaction category defaults."
 }

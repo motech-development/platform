@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
-import type { Locator, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { gotoAuthenticatedPage, isLocalBaseUrl } from './auth';
+import focusWithKeyboard from './keyboard';
 import { expect, test } from './test';
 
 interface PersistedState {
@@ -9,44 +10,6 @@ interface PersistedState {
   databaseNames: (string | undefined)[];
   localStorageEntries: [string, string][];
   sessionStorageEntries: [string, string][];
-}
-
-async function focusWithKeyboard(page: Page, target: Locator): Promise<void> {
-  await page.evaluate(() => {
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-  });
-  await page.keyboard.press('Tab');
-  const firstFocusedElement = await page.evaluateHandle(
-    () => document.activeElement,
-  );
-
-  async function advanceUntilTarget(): Promise<void> {
-    if (
-      await target.evaluate((element) => element === document.activeElement)
-    ) {
-      return;
-    }
-
-    await page.keyboard.press('Tab');
-
-    if (
-      await firstFocusedElement.evaluate(
-        (firstElement) => firstElement === document.activeElement,
-      )
-    ) {
-      throw new Error('Record transaction link was not reachable by keyboard');
-    }
-
-    await advanceUntilTarget();
-  }
-
-  try {
-    await advanceUntilTarget();
-  } finally {
-    await firstFocusedElement.dispose();
-  }
 }
 
 async function openAccountsRoute(page: Page, baseURL: string | undefined) {
@@ -90,7 +53,11 @@ test.describe('hosted Accounts foundation', () => {
       name: 'Record transaction',
     });
 
-    await focusWithKeyboard(page, recordTransaction);
+    await focusWithKeyboard(
+      page,
+      recordTransaction,
+      'Record transaction link was not reachable by keyboard',
+    );
     await expect(recordTransaction).toBeFocused();
 
     if (isLocalBaseUrl(baseURL)) {
