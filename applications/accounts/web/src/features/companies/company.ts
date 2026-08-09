@@ -121,10 +121,31 @@ export const vatSettingsSchema = z.object({
   }),
 });
 
-export const yearEndSchema = z.object({
-  day: z.number().int().min(1).max(31),
-  month: z.number().int().min(0).max(11),
-});
+const yearEndDayMessage = 'Enter a valid day for the selected month';
+const yearEndMonthDays = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+export function maximumYearEndDay(month: number): number {
+  return yearEndMonthDays[month] ?? 31;
+}
+
+export const yearEndSchema = z
+  .object({
+    day: z
+      .number({ error: yearEndDayMessage })
+      .int({ error: yearEndDayMessage })
+      .min(1, { error: yearEndDayMessage })
+      .max(31, { error: yearEndDayMessage }),
+    month: z.number().int().min(0).max(11),
+  })
+  .superRefine(({ day, month }, context) => {
+    if (day > maximumYearEndDay(month)) {
+      context.addIssue({
+        code: 'custom',
+        message: yearEndDayMessage,
+        path: ['day'],
+      });
+    }
+  });
 
 export const settingsSchema = z.object({
   categories: z.array(

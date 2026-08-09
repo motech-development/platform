@@ -45,7 +45,7 @@ export function CompaniesPageContent() {
     <div className="min-w-0">
       <PageHeader
         actions={
-          empty || fatalError ? undefined : (
+          empty || fatalError || initiallyLoading ? undefined : (
             <Button aria-label={t('Add a new company')} onAction={addCompany}>
               <AddIcon />
               {t('Add company')}

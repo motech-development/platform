@@ -6,6 +6,7 @@ import {
   TextField,
 } from '@motech-development/breeze-ui';
 import type { ReactNode } from 'react';
+import { maximumYearEndDay } from './company';
 
 type VatScheme = 'flatRate' | 'none' | 'standard';
 
@@ -109,47 +110,46 @@ export function PercentageField({
 
 export function YearEndFields({
   day,
+  dayError,
+  dayInvalid,
   dayLabel,
   month,
   monthLabel,
   months,
+  onDayBlur,
   onDayChange,
   onMonthChange,
 }: Readonly<{
-  day: number;
+  day: number | null;
+  dayError: ReactNode;
+  dayInvalid: boolean;
   dayLabel: string;
   month: number;
   monthLabel: string;
   months: ReadonlyArray<string>;
-  onDayChange: (day: number) => void;
+  onDayBlur: () => void;
+  onDayChange: (day: number | null) => void;
   onMonthChange: (month: number) => void;
 }>) {
+  const maximumDay = maximumYearEndDay(month);
+
   return (
     <Grid columns={{ base: 1, sm: 2 }}>
-      <Select.Root
-        onChange={(value) => onDayChange(Number(value))}
-        value={day.toString()}
+      <NumberField.Root
+        invalid={dayInvalid}
+        max={maximumDay}
+        min={1}
+        onChange={onDayChange}
+        required
+        step={1}
+        value={day}
       >
-        <Select.Label>{dayLabel}</Select.Label>
-        <Select.Trigger>
-          <Select.Value />
-        </Select.Trigger>
-        <Select.Popover>
-          <Select.ListBox>
-            {Array.from({ length: 31 }, (_, index) => index + 1).map(
-              (value) => (
-                <Select.Item
-                  id={value.toString()}
-                  key={value}
-                  textValue={value.toString()}
-                >
-                  {value}
-                </Select.Item>
-              ),
-            )}
-          </Select.ListBox>
-        </Select.Popover>
-      </Select.Root>
+        <NumberField.Label>{dayLabel}</NumberField.Label>
+        <NumberField.Group>
+          <NumberField.Input onBlur={onDayBlur} />
+        </NumberField.Group>
+        <NumberField.Error>{dayError}</NumberField.Error>
+      </NumberField.Root>
       <Select.Root
         onChange={(value) => onMonthChange(Number(value))}
         value={month.toString()}

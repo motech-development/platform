@@ -223,7 +223,7 @@ test.describe('VAT registered Accounts', () => {
       );
       await page.getByLabel('Standard').press('Space');
       await expect(page.getByLabel('Standard')).toBeChecked();
-      await selectOption(page, 'Day', '5');
+      await page.getByLabel('Day').fill('5');
       await selectOption(page, 'Month', 'April');
       await page.getByLabel('Opening balance').fill('1000');
       await page.getByLabel('VAT owed').fill('100');
@@ -391,7 +391,7 @@ test.describe('VAT registered Accounts', () => {
       await expect(page.getByLabel('Charge rate')).toHaveValue('20%');
       await expect(page.getByLabel('Pay rate')).toHaveValue('20%');
 
-      await selectOption(page, 'Day', '1');
+      await page.getByLabel('Day').fill('1');
       await selectOption(page, 'Month', 'January');
       await page.getByRole('button', { name: 'Save settings' }).click();
       await expect(
@@ -399,7 +399,7 @@ test.describe('VAT registered Accounts', () => {
       ).toBeVisible();
 
       await page.getByRole('link', { name: /Manage settings/ }).click();
-      await expect(page.getByLabel('Day')).toHaveText('1');
+      await expect(page.getByLabel('Day')).toHaveValue('1');
       await expect(page.getByLabel('Month')).toHaveText('January');
     });
 

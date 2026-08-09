@@ -59,7 +59,6 @@ export function AccountsPending() {
       <>
         <div className="min-w-0">
           <PageHeader
-            actions={<Skeleton className="h-11 w-40" />}
             description={
               openedFromDashboard
                 ? t(
@@ -95,7 +94,6 @@ export function AccountsPending() {
     return (
       <div className="min-w-0">
         <PageHeader
-          actions={<Skeleton className="h-11 w-40" />}
           description={t(
             'Review money in and out, attachments, and approval status.',
           )}
@@ -110,7 +108,6 @@ export function AccountsPending() {
     return (
       <div className="min-w-0">
         <PageHeader
-          actions={<Skeleton className="h-11 w-40" />}
           description={t(
             'Your financial position and the work that needs attention.',
           )}
@@ -128,7 +125,6 @@ export function AccountsPending() {
       <>
         <div className="min-w-0">
           <PageHeader
-            actions={<Skeleton className="h-11 w-36" />}
             description={t('Select a company or add another business.', {
               ns: 'companies',
             })}

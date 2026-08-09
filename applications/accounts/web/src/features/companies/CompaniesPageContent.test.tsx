@@ -107,8 +107,8 @@ describe('CompaniesPageContent', () => {
       screen.getByRole('status', { name: 'Loading companies' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Add a new company' }),
-    ).toBeInTheDocument();
+      screen.queryByRole('button', { name: 'Add a new company' }),
+    ).not.toBeInTheDocument();
   });
 
   it('offers retry without showing the empty state after a query failure', async () => {

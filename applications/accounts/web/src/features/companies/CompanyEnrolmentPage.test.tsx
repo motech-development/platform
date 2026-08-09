@@ -147,6 +147,31 @@ describe('CompanyEnrolmentPage', () => {
     });
   });
 
+  it('rejects a day that does not exist in the selected month', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyEnrolmentPage owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    fillCompanyDetails();
+    await user.click(
+      screen.getByRole('button', { name: 'Continue to settings' }),
+    );
+    await user.click(screen.getByLabelText('Standard'));
+    await user.clear(screen.getByLabelText('Day'));
+    await user.type(screen.getByLabelText('Day'), '31');
+    await user.click(screen.getByRole('button', { name: /Month/ }));
+    await user.click(screen.getByRole('option', { name: 'April' }));
+
+    expect(
+      await screen.findByText('Enter a valid day for the selected month'),
+    ).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Save company' })).toBeDisabled();
+  });
+
   it('recovers safely when dashboard navigation fails after creation', async () => {
     const user = userEvent.setup();
 
