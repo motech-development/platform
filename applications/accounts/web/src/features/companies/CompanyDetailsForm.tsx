@@ -19,6 +19,7 @@ import {
   companyDetailsSchema,
   formatSortCode,
   type NormalisedCompanyDetails,
+  telephoneMaxLength,
 } from './company';
 
 type CompanyDetailsFieldName =
@@ -38,6 +39,7 @@ function CompanyTextField({
   errors,
   inputMode,
   label,
+  maxLength,
   onBlur,
   onChange,
   required = false,
@@ -47,6 +49,7 @@ function CompanyTextField({
   errors: readonly unknown[];
   inputMode?: 'email' | 'numeric' | 'tel' | 'text';
   label: string;
+  maxLength?: number;
   onBlur: () => void;
   onChange: (value: string) => void;
   required?: boolean;
@@ -61,7 +64,12 @@ function CompanyTextField({
       value={value}
     >
       <TextField.Label>{label}</TextField.Label>
-      <TextField.Input inputMode={inputMode} onBlur={onBlur} type={type} />
+      <TextField.Input
+        inputMode={inputMode}
+        maxLength={maxLength}
+        onBlur={onBlur}
+        type={type}
+      />
       <TextField.Error>{validationMessage(errors)}</TextField.Error>
     </TextField.Root>
   );
@@ -98,6 +106,7 @@ export function CompanyDetailsForm({
     label: string,
     options: {
       inputMode?: 'email' | 'numeric' | 'tel' | 'text';
+      maxLength?: number;
       normalise?: (value: string) => string;
       required?: boolean;
       type?: 'email' | 'tel' | 'text';
@@ -116,6 +125,7 @@ export function CompanyDetailsForm({
             errors={errors}
             inputMode={options.inputMode}
             label={label}
+            maxLength={options.maxLength}
             onBlur={formField.handleBlur}
             onChange={(value) => {
               formField.handleChange(options.normalise?.(value) ?? value);
@@ -212,6 +222,7 @@ export function CompanyDetailsForm({
           })}
           {field('contact.telephone', t('Telephone number'), {
             inputMode: 'tel',
+            maxLength: telephoneMaxLength,
             required: true,
             type: 'tel',
           })}

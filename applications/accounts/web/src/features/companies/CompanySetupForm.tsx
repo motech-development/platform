@@ -17,7 +17,7 @@ import {
 import {
   type CompanyEnrolment,
   type CompanyEnrolmentDraft,
-  formatVatRegistration,
+  formatVatRegistrationInput,
   vatSettingsSchema,
   yearEndSchema,
 } from './company';
@@ -207,7 +207,7 @@ export function CompanySetupForm({
                   label={t('VAT registration')}
                   onBlur={field.handleBlur}
                   onChange={(value) => {
-                    field.handleChange(formatVatRegistration(value));
+                    field.handleChange(formatVatRegistrationInput(value));
                     onDirty();
                   }}
                   value={field.state.value}

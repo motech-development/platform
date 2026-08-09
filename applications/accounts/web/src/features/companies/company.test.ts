@@ -5,6 +5,7 @@ import {
   exactCompanyNameSchema,
   formatSortCode,
   formatVatRegistration,
+  formatVatRegistrationInput,
   settingsSchema,
   sortCompaniesByName,
   vatSettingsSchema,
@@ -79,6 +80,7 @@ describe('company details', () => {
     '0207 9460 958',
     '020 79460 958',
     '020-79 46-0958',
+    '020 7946 0958 - ext. 1234',
   ])('rejects the non-UK telephone format %s', (telephone) => {
     expect(
       companyDetailsSchema.safeParse({
@@ -94,6 +96,10 @@ describe('company enrolment and settings', () => {
     expect(formatVatRegistration('216506516')).toBe('GB216506516');
     expect(formatVatRegistration('gb 216 506 516')).toBe('GB216506516');
     expect(formatVatRegistration('')).toBe('');
+  });
+
+  it('limits formatted VAT registration input to the supported length', () => {
+    expect(formatVatRegistrationInput('1234567890123')).toBe('GB123456789012');
   });
 
   it.each(['GGB123456789', 'BG123456789'])(
