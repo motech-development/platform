@@ -231,6 +231,27 @@ describe('SettingsPage', () => {
     ).toBeDisabled();
   });
 
+  it('clears a corrected error and enables saving without a blur', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    const categoryName = screen.getByLabelText('Advertising name');
+    await user.clear(categoryName);
+
+    expect(categoryName).toHaveAttribute('aria-invalid', 'true');
+
+    await user.type(categoryName, 'Marketing');
+
+    expect(categoryName).toHaveFocus();
+    expect(categoryName).not.toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByRole('button', { name: 'Save settings' })).toBeEnabled();
+  });
+
   it('returns to the company dashboard after saving settings', async () => {
     const user = userEvent.setup();
     mocks.mutation.mockResolvedValue({

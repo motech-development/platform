@@ -8,7 +8,12 @@ import {
 import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import { validationMessage, visibleValidationErrors } from '../form-errors';
+import {
+  schemaFieldErrors,
+  schemaValuesValid,
+  validationMessage,
+  visibleValidationErrors,
+} from '../form-errors';
 import {
   type CompanyEnrolment,
   type CompanyEnrolmentDraft,
@@ -80,14 +85,13 @@ export function CompanySetupForm({
     validators: {
       onBlur: setupSchema,
       onChange: setupSchema,
-      onMount: setupSchema,
     },
   });
   const percentageField = (name: 'vat.charge' | 'vat.pay', label: string) => (
     <form.Field name={name}>
       {(field) => {
         const errors = visibleValidationErrors(
-          field.state.meta.errors,
+          schemaFieldErrors(setupSchema, form.state.values, name),
           field.state.meta.isTouched,
           form.state.submissionAttempts,
         );
@@ -115,7 +119,7 @@ export function CompanySetupForm({
     <form.Field name={name}>
       {(field) => {
         const errors = visibleValidationErrors(
-          field.state.meta.errors,
+          schemaFieldErrors(setupSchema, form.state.values, name),
           field.state.meta.isTouched,
           form.state.submissionAttempts,
         );
@@ -163,7 +167,7 @@ export function CompanySetupForm({
         <form.Field name="vat.scheme">
           {(field) => {
             const errors = visibleValidationErrors(
-              field.state.meta.errors,
+              schemaFieldErrors(setupSchema, form.state.values, 'vat.scheme'),
               field.state.meta.isTouched,
               form.state.submissionAttempts,
             );
@@ -187,7 +191,11 @@ export function CompanySetupForm({
           <form.Field name="vat.registration">
             {(field) => {
               const errors = visibleValidationErrors(
-                field.state.meta.errors,
+                schemaFieldErrors(
+                  setupSchema,
+                  form.state.values,
+                  'vat.registration',
+                ),
                 field.state.meta.isTouched,
                 form.state.submissionAttempts,
               );
@@ -223,7 +231,11 @@ export function CompanySetupForm({
             <form.Field name="yearEnd.month">
               {(monthField) => {
                 const errors = visibleValidationErrors(
-                  dayField.state.meta.errors,
+                  schemaFieldErrors(
+                    setupSchema,
+                    form.state.values,
+                    'yearEnd.day',
+                  ),
                   dayField.state.meta.isTouched,
                   form.state.submissionAttempts,
                 );
@@ -268,9 +280,14 @@ export function CompanySetupForm({
         </Grid>
       </FormSection>
       <form.Subscribe
-        selector={(state) => [state.canSubmit, state.isSubmitting] as const}
+        selector={(state) =>
+          [
+            schemaValuesValid(setupSchema, state.values),
+            state.isSubmitting,
+          ] as const
+        }
       >
-        {([canSubmit, isSubmitting]) => (
+        {([valuesValid, isSubmitting]) => (
           <FormActions
             back={
               <Button
@@ -288,7 +305,7 @@ export function CompanySetupForm({
             divided
             primary={
               <Button
-                disabled={!canSubmit || isSubmitting || submitDisabled}
+                disabled={!valuesValid || isSubmitting || submitDisabled}
                 loading={isSubmitting}
                 type="submit"
               >

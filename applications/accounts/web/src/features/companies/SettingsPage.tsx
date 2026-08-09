@@ -16,7 +16,12 @@ import { useBlocker, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GET_COMPANY_SETTINGS, UPDATE_SETTINGS } from '../../data/operations';
-import { validationMessage, visibleValidationErrors } from '../form-errors';
+import {
+  schemaFieldErrors,
+  schemaValuesValid,
+  validationMessage,
+  visibleValidationErrors,
+} from '../form-errors';
 import { SettingsFormSkeleton } from '../loading/AccountsPageSkeletons';
 import {
   type CompanySettings,
@@ -115,7 +120,6 @@ function SettingsForm({
     validators: {
       onBlur: settingsSchema,
       onChange: settingsSchema,
-      onMount: settingsSchema,
     },
   });
   const markDirty = () => setDirty(true);
@@ -187,7 +191,11 @@ function SettingsForm({
                     <form.Field name={`categories[${index}].name`}>
                       {(field) => {
                         const errors = visibleValidationErrors(
-                          field.state.meta.errors,
+                          schemaFieldErrors(
+                            settingsSchema,
+                            form.state.values,
+                            `categories[${index}].name`,
+                          ),
                           field.state.meta.isTouched,
                           form.state.submissionAttempts,
                         );
@@ -230,7 +238,11 @@ function SettingsForm({
                     <form.Field name={`categories[${index}].vatRate`}>
                       {(field) => {
                         const errors = visibleValidationErrors(
-                          field.state.meta.errors,
+                          schemaFieldErrors(
+                            settingsSchema,
+                            form.state.values,
+                            `categories[${index}].vatRate`,
+                          ),
                           field.state.meta.isTouched,
                           form.state.submissionAttempts,
                         );
@@ -325,7 +337,11 @@ function SettingsForm({
             <form.Field name="yearEnd.month">
               {(monthField) => {
                 const errors = visibleValidationErrors(
-                  dayField.state.meta.errors,
+                  schemaFieldErrors(
+                    settingsSchema,
+                    form.state.values,
+                    'yearEnd.day',
+                  ),
                   dayField.state.meta.isTouched,
                   form.state.submissionAttempts,
                 );
@@ -378,7 +394,11 @@ function SettingsForm({
           <form.Field name="vat.registration">
             {(field) => {
               const errors = visibleValidationErrors(
-                field.state.meta.errors,
+                schemaFieldErrors(
+                  settingsSchema,
+                  form.state.values,
+                  'vat.registration',
+                ),
                 field.state.meta.isTouched,
                 form.state.submissionAttempts,
               );
@@ -402,7 +422,11 @@ function SettingsForm({
             <form.Field key={name} name={`vat.${name}`}>
               {(field) => {
                 const errors = visibleValidationErrors(
-                  field.state.meta.errors,
+                  schemaFieldErrors(
+                    settingsSchema,
+                    form.state.values,
+                    `vat.${name}`,
+                  ),
                   field.state.meta.isTouched,
                   form.state.submissionAttempts,
                 );
@@ -426,14 +450,19 @@ function SettingsForm({
         </Grid>
       </FormSection>
       <form.Subscribe
-        selector={(state) => [state.canSubmit, state.isSubmitting] as const}
+        selector={(state) =>
+          [
+            schemaValuesValid(settingsSchema, state.values),
+            state.isSubmitting,
+          ] as const
+        }
       >
-        {([canSubmit, isSubmitting]) => (
+        {([valuesValid, isSubmitting]) => (
           <FormActions
             divided
             primary={
               <Button
-                disabled={!canSubmit || isSubmitting}
+                disabled={!valuesValid || isSubmitting}
                 loading={isSubmitting}
                 type="submit"
               >
