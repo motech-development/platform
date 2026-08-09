@@ -4,7 +4,6 @@ const postcodePattern =
   /^([A-PR-UWYZ0-9][A-HK-Y0-9][AEHMNPRTVXY0-9]?[ABEHMNPRVWXY0-9]? {1,2}\d[ABD-HJLN-UW-Z]{2}|GIR 0AA)$/;
 const vatRegistrationPattern = /^(?:GB)?(?:[1-9]\d{8}|[1-9]\d{11})$/;
 export const vatRegistrationMaxLength = 14;
-export const telephoneMaxLength = 24;
 const telephoneExtensionPattern = /(?:x|ext\.?|#)[ \t]*\d+$/i;
 const internationalTelephonePrefixes = [
   /^\+44[\s-]?(?:\(0\)[\s-]?)?/,
@@ -26,6 +25,16 @@ const specialUkTelephonePatterns = [
 ] as const;
 
 const required = (message: string) => z.string().trim().min(1, message);
+
+function trimTrailingTelephoneSeparators(value: string): string {
+  let end = value.length;
+
+  while (end > 0 && (value[end - 1] === '-' || value[end - 1]?.trim() === '')) {
+    end -= 1;
+  }
+
+  return value.slice(0, end);
+}
 
 function nationalTelephone(value: string): string | undefined {
   let telephone = value;
@@ -52,9 +61,9 @@ function nationalTelephone(value: string): string | undefined {
 function isValidUkTelephone(value: string) {
   const trimmed = value.trim();
   const extension = telephoneExtensionPattern.exec(trimmed);
-  const telephone = trimmed
-    .slice(0, extension?.index ?? trimmed.length)
-    .replace(/[\s-]+$/u, '');
+  const telephone = trimTrailingTelephoneSeparators(
+    trimmed.slice(0, extension?.index ?? trimmed.length),
+  );
   const national = nationalTelephone(telephone);
 
   return Boolean(
@@ -99,9 +108,10 @@ export const companyDetailsSchema = z.object({
     email: required('Email address is required').pipe(
       z.email('Enter a valid email address'),
     ),
-    telephone: required('Telephone number is required')
-      .max(telephoneMaxLength, 'Enter a valid UK telephone number')
-      .refine(isValidUkTelephone, 'Enter a valid UK telephone number'),
+    telephone: required('Telephone number is required').refine(
+      isValidUkTelephone,
+      'Enter a valid UK telephone number',
+    ),
   }),
   id: z.string(),
   name: required('Company name is required'),
