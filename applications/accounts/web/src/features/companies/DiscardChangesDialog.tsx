@@ -40,7 +40,9 @@ export function DiscardChangesDialog({
         onConfirm={() => {
           discardConfirmed.current = true;
           onDiscard();
-          blocker.proceed?.();
+          if (blocker.status === 'blocked') {
+            blocker.proceed?.();
+          }
         }}
         onOpenChange={(nextOpen) => {
           onOpenChange(nextOpen);

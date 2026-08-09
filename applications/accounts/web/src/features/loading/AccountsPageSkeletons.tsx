@@ -234,11 +234,19 @@ export function SettingsFormSkeleton() {
   );
 }
 
-export function CompanyEnrolmentDrawerSkeleton() {
+export function CompanyEnrolmentDrawerSkeleton({
+  onClose,
+}: Readonly<{ onClose: () => void }>) {
   const { t } = useTranslation(['companies', 'routing']);
 
   return (
-    <Drawer.Root onOpenChange={() => undefined} open triggerless>
+    <Drawer.Root
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+      open
+      triggerless
+    >
       <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
         <Drawer.Description>
           {t('Step {{step}} of 2', { ns: 'companies', step: 1 })}

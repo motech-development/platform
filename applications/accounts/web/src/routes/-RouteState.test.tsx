@@ -1,5 +1,6 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import {
   AccountsPending,
@@ -9,6 +10,7 @@ import {
 
 const mocks = vi.hoisted(() => ({
   captureRouteFailure: vi.fn(),
+  navigate: vi.fn().mockResolvedValue(undefined),
   pathname: '/my-companies',
 }));
 
@@ -22,6 +24,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
     href: mocks.pathname,
     pathname: mocks.pathname,
   }),
+  useNavigate: () => mocks.navigate,
 }));
 
 function renderPending(pathname: string) {
@@ -71,6 +74,15 @@ describe('AccountsPending', () => {
     expect(screen.getByText('Bank account')).toBeInTheDocument();
     expect(screen.getByText('Address')).toBeInTheDocument();
     expect(screen.getByText('Contact details')).toBeInTheDocument();
+  });
+
+  it('closes the pending enrolment drawer to its safe parent', async () => {
+    const user = userEvent.setup();
+    renderPending('/my-companies/add-company');
+
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(mocks.navigate).toHaveBeenCalledWith({ to: '/my-companies' });
   });
 
   it('uses a form-shaped company-details loading state', () => {
