@@ -1,15 +1,21 @@
 import AxeBuilder from '@axe-core/playwright';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { gotoAuthenticatedPage } from './auth';
 import focusWithKeyboard from './keyboard';
 import { expect, test } from './test';
 
-async function expectNoA11yViolations(page: Page): Promise<void> {
-  await expect(
-    page.locator(
-      '.breeze-drawer-motion[data-entering], .breeze-drawer-motion[data-exiting]',
-    ),
-  ).toHaveCount(0);
+async function expectNoA11yViolations(
+  page: Page,
+  readyState: Locator,
+): Promise<void> {
+  await expect(readyState).toBeVisible();
+  await readyState.evaluate(async (element) => {
+    await Promise.allSettled(
+      element.ownerDocument
+        .getAnimations()
+        .map((animation) => animation.finished),
+    );
+  });
   const { violations } = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa'])
     .analyze();
@@ -104,7 +110,7 @@ test.describe('VAT registered Accounts', () => {
       page.getByRole('heading', { exact: true, name: 'Settings' }),
     ).toBeVisible();
     await expect(page.locator('input[readonly]').first()).toBeVisible();
-    await expectNoA11yViolations(page);
+    await expectNoA11yViolations(page, page.getByLabel('Registration number'));
 
     await gotoAuthenticatedPage({
       baseURL,
@@ -198,7 +204,10 @@ test.describe('VAT registered Accounts', () => {
     });
 
     test('should create a company', async ({ page }) => {
-      await expectNoA11yViolations(page);
+      await expectNoA11yViolations(
+        page,
+        page.getByRole('button', { name: 'Add a new company' }).first(),
+      );
       await page
         .getByRole('button', { name: 'Add a new company' })
         .first()
@@ -206,7 +215,7 @@ test.describe('VAT registered Accounts', () => {
       await expect(
         page.getByRole('heading', { name: 'Add company' }),
       ).toBeVisible();
-      await expectNoA11yViolations(page);
+      await expectNoA11yViolations(page, page.getByLabel('Company name'));
 
       await page.getByLabel('Company name').fill(companyName);
       await page.getByLabel('Company number').fill(suffix);
@@ -244,7 +253,7 @@ test.describe('VAT registered Accounts', () => {
 
     test('should update company details', async ({ page }) => {
       await openCompanyDetails(page);
-      await expectNoA11yViolations(page);
+      await expectNoA11yViolations(page, page.getByLabel('Company name'));
 
       await expect(page.getByLabel('Company name')).toHaveValue(companyName);
       await expect(page.getByLabel('Company number')).toHaveValue(suffix);
@@ -264,7 +273,10 @@ test.describe('VAT registered Accounts', () => {
 
     test('should update company settings', async ({ page }) => {
       await openSettings(page);
-      await expectNoA11yViolations(page);
+      await expectNoA11yViolations(
+        page,
+        page.getByLabel('Registration number'),
+      );
 
       await addCategory(page, 'Accommodation', '20');
       await addCategory(page, 'Travel', '0');
