@@ -9,6 +9,7 @@ import {
 } from '@motech-development/breeze-ui';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { expenseCategoryRowClassName } from '../companies/expense-category-layout';
 import { companiesTableClassNames } from '../companies/tableLayout';
 import { FinancialSummarySkeleton } from '../transactions/FinancialSummary';
 import { TransactionLedgerSkeleton } from '../transactions/TransactionLedger';
@@ -199,13 +200,10 @@ export function SettingsFormSkeleton() {
       >
         <div className="grid gap-3">
           {[0, 1, 2].map((index) => (
-            <div
-              className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(10rem,13rem)_auto]"
-              key={index}
-            >
-              <Skeleton className="h-17" />
-              <Skeleton className="h-17" />
-              <Skeleton className="size-11 self-end" />
+            <div className={expenseCategoryRowClassName} key={index}>
+              <Skeleton className="h-11" />
+              <Skeleton className="h-11" />
+              <Skeleton className="size-11" />
             </div>
           ))}
         </div>
