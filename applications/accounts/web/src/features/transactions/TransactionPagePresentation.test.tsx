@@ -3,7 +3,10 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { TransactionPageHeaderAction } from './TransactionPagePresentation';
 
-vi.mock('@motech-development/breeze-ui/icons', () => ({
+vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/breeze-ui/icons')
+  >()),
   AddIcon: () => <span aria-hidden="true">+</span>,
   WarningIcon: () => <span aria-hidden="true">!</span>,
 }));
