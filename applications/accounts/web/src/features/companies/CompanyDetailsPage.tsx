@@ -4,11 +4,9 @@ import {
   Button,
   ConfirmationDialog,
   PageHeader,
-  StatePanel,
   TextField,
   useToast,
 } from '@motech-development/breeze-ui';
-import { WarningIcon } from '@motech-development/breeze-ui/icons';
 import { useBlocker, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +18,7 @@ import {
 import { removeCompanyFromCache, upsertCompanyInCache } from './cache-updates';
 import { exactCompanyNameSchema, formatSortCode } from './company';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
+import { QueryFailureState } from './QueryFailureState';
 import { QueryRefreshAlert } from './QueryRefreshAlert';
 
 export function CompanyDetailsPage({
@@ -99,22 +98,11 @@ export function CompanyDetailsPage({
 
   if (!company) {
     return (
-      <StatePanel
-        action={
-          <Button
-            onAction={() => {
-              refetch().catch(() => undefined);
-            }}
-          >
-            {t('Try again', { ns: 'routing' })}
-          </Button>
-        }
-        description={t('Check your connection, then try again.', {
-          ns: 'routing',
-        })}
-        icon={<WarningIcon />}
+      <QueryFailureState
+        onRetry={() => {
+          refetch().catch(() => undefined);
+        }}
         title={t('Company details could not be loaded')}
-        variant="danger"
       />
     );
   }

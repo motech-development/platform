@@ -21,6 +21,11 @@ interface CreateCompanyResult {
 }
 
 const mocks = vi.hoisted(() => ({
+  blocker: {
+    proceed: vi.fn(),
+    reset: vi.fn(),
+    status: 'idle',
+  },
   createCompany:
     vi.fn<(options: CreateCompanyOptions) => Promise<CreateCompanyResult>>(),
   navigate: vi.fn(),
@@ -39,7 +44,7 @@ vi.mock('@motech-development/breeze-ui', async (importOriginal) => ({
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
-  useBlocker: () => ({ proceed: vi.fn(), reset: vi.fn(), status: 'idle' }),
+  useBlocker: () => mocks.blocker,
   useNavigate: () => mocks.navigate,
 }));
 
@@ -68,6 +73,9 @@ function fillCompanyDetails() {
 describe('CompanyEnrolmentPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.blocker.status = 'idle';
+    mocks.createCompany.mockReset();
+    mocks.navigate.mockReset().mockResolvedValue(undefined);
   });
 
   it('preserves the two-step enrolment defaults and normalises the postcode', async () => {
@@ -182,5 +190,84 @@ describe('CompanyEnrolmentPage', () => {
     expect(mocks.toast.show).not.toHaveBeenCalledWith(
       expect.objectContaining({ title: 'Company could not be added' }),
     );
+  });
+
+  it('preserves retryable input when company creation fails', async () => {
+    const user = userEvent.setup();
+    mocks.createCompany.mockRejectedValue(new Error('Create unavailable'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyEnrolmentPage owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    fillCompanyDetails();
+    await user.click(
+      screen.getByRole('button', { name: 'Continue to settings' }),
+    );
+    await user.click(screen.getByLabelText('Standard'));
+    await user.click(screen.getByRole('button', { name: 'Save company' }));
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Company could not be added' }),
+      ),
+    );
+    expect(screen.getByLabelText('VAT scheme')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save company' })).toBeEnabled();
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('closes a clean enrolment drawer without confirmation', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyEnrolmentPage owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+    expect(mocks.navigate).toHaveBeenCalledWith({ to: '/my-companies' });
+    expect(
+      screen.queryByRole('heading', { name: 'Discard this company?' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('keeps dirty enrolment input when discard is cancelled', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyEnrolmentPage owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Company name'), {
+      target: { value: 'Draft Company' },
+    });
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+    expect(
+      screen.getByRole('heading', { name: 'Discard this company?' }),
+    ).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Keep editing' }));
+    expect(screen.getByLabelText('Company name')).toHaveValue('Draft Company');
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('proceeds with blocked navigation after discard is confirmed', async () => {
+    const user = userEvent.setup();
+    mocks.blocker.status = 'blocked';
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyEnrolmentPage owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Discard changes' }));
+    expect(mocks.blocker.proceed).toHaveBeenCalledOnce();
+    expect(mocks.navigate).not.toHaveBeenCalled();
   });
 });

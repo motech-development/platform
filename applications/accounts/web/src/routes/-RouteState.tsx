@@ -9,7 +9,7 @@ import {
 } from '@motech-development/breeze-ui';
 import type { ErrorComponentProps } from '@tanstack/react-router';
 import { useLocation } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthenticationPanel } from '../auth/AuthenticationPanel';
 import {
@@ -23,6 +23,30 @@ import {
 } from '../features/loading/AccountsPageSkeletons';
 import { captureRouteFailure } from '../observability';
 import { accountsPendingView } from './-route-state';
+
+function CompanyFormPending({
+  children,
+  description,
+  loadingLabel,
+  title,
+}: Readonly<{
+  children: ReactNode;
+  description: string;
+  loadingLabel: string;
+  title: string;
+}>) {
+  return (
+    <div className="min-w-0">
+      <PageHeader description={description} title={title} />
+      <section aria-busy="true" aria-label={loadingLabel} role="status">
+        <VisuallyHidden>{loadingLabel}</VisuallyHidden>
+        <div aria-hidden="true" inert>
+          {children}
+        </div>
+      </section>
+    </div>
+  );
+}
 
 export function AccountsPending() {
   const { t } = useTranslation(['routing', 'companies', 'shell']);
@@ -124,53 +148,31 @@ export function AccountsPending() {
 
   if (pendingView === 'company-details') {
     return (
-      <div className="min-w-0">
-        <PageHeader
-          description={t(
-            'Registered, contact, and bank details used across Accounts.',
-            { ns: 'companies' },
-          )}
-          title={t('Company details', { ns: 'companies' })}
-        />
-        <section
-          aria-busy="true"
-          aria-label={t('Loading company details', { ns: 'companies' })}
-          role="status"
-        >
-          <VisuallyHidden>
-            {t('Loading company details', { ns: 'companies' })}
-          </VisuallyHidden>
-          <div aria-hidden="true" inert>
-            <CompanyDetailsFormSkeleton />
-          </div>
-        </section>
-      </div>
+      <CompanyFormPending
+        description={t(
+          'Registered, contact, and bank details used across Accounts.',
+          { ns: 'companies' },
+        )}
+        loadingLabel={t('Loading company details', { ns: 'companies' })}
+        title={t('Company details', { ns: 'companies' })}
+      >
+        <CompanyDetailsFormSkeleton />
+      </CompanyFormPending>
     );
   }
 
   if (pendingView === 'settings') {
     return (
-      <div className="min-w-0">
-        <PageHeader
-          description={t(
-            'VAT, financial year, and transaction category defaults.',
-            { ns: 'companies' },
-          )}
-          title={t('Settings', { ns: 'companies' })}
-        />
-        <section
-          aria-busy="true"
-          aria-label={t('Loading settings', { ns: 'companies' })}
-          role="status"
-        >
-          <VisuallyHidden>
-            {t('Loading settings', { ns: 'companies' })}
-          </VisuallyHidden>
-          <div aria-hidden="true" inert>
-            <SettingsFormSkeleton />
-          </div>
-        </section>
-      </div>
+      <CompanyFormPending
+        description={t(
+          'VAT, financial year, and transaction category defaults.',
+          { ns: 'companies' },
+        )}
+        loadingLabel={t('Loading settings', { ns: 'companies' })}
+        title={t('Settings', { ns: 'companies' })}
+      >
+        <SettingsFormSkeleton />
+      </CompanyFormPending>
     );
   }
 

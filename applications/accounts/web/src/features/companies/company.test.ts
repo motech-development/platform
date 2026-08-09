@@ -47,6 +47,35 @@ describe('company details', () => {
     expect(formatSortCode('308639')).toBe('30-86-39');
     expect(formatSortCode('30-86-39')).toBe('30-86-39');
   });
+
+  it.each([
+    '020 7946 0958',
+    '07712 345678',
+    '+44 (0)20 7946 0958',
+    '0044 20 7946 0958',
+    '01144 20 7946 0958',
+    '020 7946 0958 ext. 123',
+    '0800 1111',
+  ])('accepts the established UK telephone format %s', (telephone) => {
+    expect(
+      companyDetailsSchema.safeParse({
+        ...validCompany,
+        contact: { ...validCompany.contact, telephone },
+      }).success,
+    ).toBe(true);
+  });
+
+  it.each(['+33 1 23 45 67 89', '1234567890', '020 7946 invalid'])(
+    'rejects the non-UK telephone format %s',
+    (telephone) => {
+      expect(
+        companyDetailsSchema.safeParse({
+          ...validCompany,
+          contact: { ...validCompany.contact, telephone },
+        }).success,
+      ).toBe(false);
+    },
+  );
 });
 
 describe('company enrolment and settings', () => {

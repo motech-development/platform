@@ -1,8 +1,23 @@
 import type { ApolloClient } from '@apollo/client';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AccountsOwnerId } from '../auth/owner';
 import type { AuthenticatedAccountsRouterContext } from '../auth/router';
-import { primeTransaction } from './loaders';
+import {
+  primeCompanies,
+  primeCompanyDetails,
+  primeCompanySettings,
+  primeDashboard,
+  primeTransaction,
+  primeTransactions,
+  verifyRecordTransactionRoute,
+} from './loaders';
+import {
+  GET_COMPANIES,
+  GET_COMPANY_DASHBOARD,
+  GET_COMPANY_DETAILS,
+  GET_COMPANY_SETTINGS,
+  GET_CONFIRMED_TRANSACTIONS,
+} from './operations';
 
 const notFound = vi.hoisted(() =>
   vi.fn(() => {
@@ -15,9 +30,96 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
   notFound,
 }));
 
+const companyId = 'ee51ac7c-b789-43d6-a182-a664ee79acbb';
+
+function context(query: ReturnType<typeof vi.fn>, authenticated = true) {
+  return {
+    apolloClient: { query } as unknown as ApolloClient,
+    authenticatedOwner: authenticated
+      ? ('auth0|owner' as AccountsOwnerId)
+      : undefined,
+  } as AuthenticatedAccountsRouterContext;
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+describe('company route priming', () => {
+  it('keeps the companies query recoverable when priming fails', async () => {
+    const query = vi.fn().mockRejectedValue(new Error('Unavailable'));
+
+    await expect(primeCompanies(context(query))).resolves.toBeUndefined();
+    expect(query).toHaveBeenCalledWith({
+      query: GET_COMPANIES,
+      variables: { owner: 'auth0|owner' },
+    });
+  });
+
+  it.each([
+    ['details', primeCompanyDetails],
+    ['settings', primeCompanySettings],
+    ['dashboard', primeDashboard],
+    ['transactions', primeTransactions],
+    ['record transaction', verifyRecordTransactionRoute],
+  ] as const)(
+    'does not prime %s without an authenticated owner',
+    async (_, prime) => {
+      const query = vi.fn();
+
+      await expect(
+        prime(context(query, false), companyId),
+      ).resolves.toBeUndefined();
+      expect(query).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([
+    [primeCompanyDetails, GET_COMPANY_DETAILS, { id: companyId }],
+    [primeCompanySettings, GET_COMPANY_SETTINGS, { id: companyId }],
+    [
+      primeDashboard,
+      GET_COMPANY_DASHBOARD,
+      { count: 5, id: companyId, status: 'confirmed' },
+    ],
+    [
+      primeTransactions,
+      GET_CONFIRMED_TRANSACTIONS,
+      { count: 100, id: companyId, status: 'confirmed' },
+    ],
+  ] as const)(
+    'primes an owned company resource',
+    async (prime, operation, variables) => {
+      const query = vi
+        .fn()
+        .mockResolvedValueOnce({
+          data: { getCompanies: { items: [{ id: companyId }] } },
+        })
+        .mockResolvedValueOnce({ data: {} });
+
+      await prime(context(query), companyId);
+
+      expect(query).toHaveBeenNthCalledWith(2, {
+        query: operation,
+        variables,
+      });
+    },
+  );
+
+  it('rejects a company route that is not owned by the authenticated user', async () => {
+    const query = vi.fn().mockResolvedValue({
+      data: { getCompanies: { items: [] } },
+    });
+
+    await expect(
+      primeCompanyDetails(context(query), companyId),
+    ).rejects.toThrow('Not found');
+    expect(notFound).toHaveBeenCalledWith({ throw: true });
+  });
+});
+
 describe('primeTransaction', () => {
   it('rejects a non-confirmed transaction on the confirmed detail route', async () => {
-    const companyId = 'ee51ac7c-b789-43d6-a182-a664ee79acbb';
     const transactionId = '3456df4a-51f8-49af-a52e-c1a21b8ff087';
     const query = vi
       .fn()
@@ -27,13 +129,8 @@ describe('primeTransaction', () => {
       .mockResolvedValueOnce({
         data: { getTransaction: { companyId, status: 'pending' } },
       });
-    const context = {
-      apolloClient: { query } as unknown as ApolloClient,
-      authenticatedOwner: 'auth0|owner' as AccountsOwnerId,
-    } as AuthenticatedAccountsRouterContext;
-
     await expect(
-      primeTransaction(context, companyId, transactionId),
+      primeTransaction(context(query), companyId, transactionId),
     ).rejects.toThrow('Not found');
     expect(notFound).toHaveBeenCalledWith({ throw: true });
   });
