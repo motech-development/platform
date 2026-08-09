@@ -175,9 +175,13 @@ describe('CompanyDetailsPage', () => {
     const confirmation = screen.getByLabelText(
       'Type Example Company to confirm',
     );
+    const confirmationLayout = confirmation.parentElement?.parentElement;
     const deleteButton = screen.getByRole('button', {
       name: 'Permanently delete company',
     });
+
+    expect(confirmationLayout).toHaveClass('gap-5');
+    expect(screen.getByRole('group').parentElement).toBe(confirmationLayout);
 
     await user.type(confirmation, 'example company');
     expect(deleteButton).toBeDisabled();

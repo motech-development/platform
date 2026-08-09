@@ -3,6 +3,7 @@ import {
   AlertDialog,
   Button,
   PageHeader,
+  Stack,
   TextField,
   useToast,
 } from '@motech-development/breeze-ui';
@@ -163,34 +164,36 @@ export function CompanyDetailsPage({
                   'Company records, clients, reports, and transactions will be permanently removed.',
                 )}
               </AlertDialog.Description>
-              <TextField.Root
-                invalid={confirmation.length > 0 && !confirmationValid}
-                onChange={setConfirmation}
-                value={confirmation}
-              >
-                <TextField.Label>
-                  {t('Type {{name}} to confirm', { name: company.name })}
-                </TextField.Label>
-                <TextField.Input autoComplete="off" />
-                <TextField.Error>
-                  {t('The company name must match exactly.')}
-                </TextField.Error>
-              </TextField.Root>
-              <AlertDialog.Actions>
-                <AlertDialog.Close appearance="outline">
-                  {t('Cancel')}
-                </AlertDialog.Close>
-                <Button
-                  disabled={!confirmationValid || deleting}
-                  loading={deleting}
-                  onAction={() => {
-                    deleteCurrentCompany().catch(() => undefined);
-                  }}
-                  variant="danger"
+              <Stack gap="lg">
+                <TextField.Root
+                  invalid={confirmation.length > 0 && !confirmationValid}
+                  onChange={setConfirmation}
+                  value={confirmation}
                 >
-                  {t('Permanently delete company')}
-                </Button>
-              </AlertDialog.Actions>
+                  <TextField.Label>
+                    {t('Type {{name}} to confirm', { name: company.name })}
+                  </TextField.Label>
+                  <TextField.Input autoComplete="off" />
+                  <TextField.Error>
+                    {t('The company name must match exactly.')}
+                  </TextField.Error>
+                </TextField.Root>
+                <AlertDialog.Actions>
+                  <AlertDialog.Close appearance="outline">
+                    {t('Cancel')}
+                  </AlertDialog.Close>
+                  <Button
+                    disabled={!confirmationValid || deleting}
+                    loading={deleting}
+                    onAction={() => {
+                      deleteCurrentCompany().catch(() => undefined);
+                    }}
+                    variant="danger"
+                  >
+                    {t('Permanently delete company')}
+                  </Button>
+                </AlertDialog.Actions>
+              </Stack>
             </AlertDialog.Content>
           </AlertDialog.Root>
         }
