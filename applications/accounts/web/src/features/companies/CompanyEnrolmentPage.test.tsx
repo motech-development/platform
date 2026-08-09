@@ -73,21 +73,33 @@ describe('CompanyEnrolmentPage', () => {
       screen.getByRole('button', { name: 'Continue to settings' }),
     ).toBeDisabled();
 
-    await user.type(screen.getByLabelText('Company name'), 'Example Company');
-    await user.type(screen.getByLabelText('Company number'), '12345678');
-    await user.type(screen.getByLabelText('Account number'), '12345678');
-    await user.type(screen.getByLabelText('Sort code'), '12-34-56');
-    await user.type(
-      screen.getByLabelText('Address line 1'),
-      '1 Example Street',
-    );
-    await user.type(screen.getByLabelText('Town or city'), 'London');
-    await user.type(screen.getByLabelText('Postcode'), 'sw1a 1aa');
-    await user.type(
-      screen.getByLabelText('Email address'),
-      'owner@example.com',
-    );
-    await user.type(screen.getByLabelText('Telephone number'), '020 7946 0958');
+    fireEvent.change(screen.getByLabelText('Company name'), {
+      target: { value: 'Example Company' },
+    });
+    fireEvent.change(screen.getByLabelText('Company number'), {
+      target: { value: '12345678' },
+    });
+    fireEvent.change(screen.getByLabelText('Account number'), {
+      target: { value: '12345678' },
+    });
+    fireEvent.change(screen.getByLabelText('Sort code'), {
+      target: { value: '12-34-56' },
+    });
+    fireEvent.change(screen.getByLabelText('Address line 1'), {
+      target: { value: '1 Example Street' },
+    });
+    fireEvent.change(screen.getByLabelText('Town or city'), {
+      target: { value: 'London' },
+    });
+    fireEvent.change(screen.getByLabelText('Postcode'), {
+      target: { value: 'sw1a 1aa' },
+    });
+    fireEvent.change(screen.getByLabelText('Email address'), {
+      target: { value: 'owner@example.com' },
+    });
+    fireEvent.change(screen.getByLabelText('Telephone number'), {
+      target: { value: '020 7946 0958' },
+    });
     await user.click(
       screen.getByRole('button', { name: 'Continue to settings' }),
     );
@@ -100,7 +112,9 @@ describe('CompanyEnrolmentPage', () => {
     expect(screen.getByLabelText('VAT owed')).toHaveValue('£0.00');
     expect(screen.getByLabelText('VAT paid')).toHaveValue('£0.00');
 
-    await user.type(screen.getByLabelText('VAT registration'), 'GB123456789');
+    fireEvent.change(screen.getByLabelText('VAT registration'), {
+      target: { value: 'GB123456789' },
+    });
     await user.click(screen.getByRole('button', { name: 'Back' }));
     await user.click(
       screen.getByRole('button', { name: 'Continue to settings' }),
