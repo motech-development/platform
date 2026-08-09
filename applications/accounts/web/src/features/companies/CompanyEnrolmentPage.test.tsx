@@ -102,6 +102,10 @@ describe('CompanyEnrolmentPage', () => {
     expect(
       screen.getByRole('button', { name: 'Continue to settings' }),
     ).toBeDisabled();
+    expect(screen.getByLabelText('Telephone number')).toHaveAttribute(
+      'maxlength',
+      '24',
+    );
 
     fillCompanyDetails();
     await user.click(
@@ -115,6 +119,10 @@ describe('CompanyEnrolmentPage', () => {
     expect(screen.getByLabelText('Opening balance')).toHaveValue('£0.00');
     expect(screen.getByLabelText('VAT owed')).toHaveValue('£0.00');
     expect(screen.getByLabelText('VAT paid')).toHaveValue('£0.00');
+    expect(screen.getByLabelText('VAT registration')).toHaveAttribute(
+      'maxlength',
+      '14',
+    );
 
     fireEvent.change(screen.getByLabelText('VAT registration'), {
       target: { value: '123456789' },

@@ -6,7 +6,7 @@ import {
   TextField,
 } from '@motech-development/breeze-ui';
 import type { ReactNode } from 'react';
-import { maximumYearEndDay } from './company';
+import { maximumYearEndDay, vatRegistrationMaxLength } from './company';
 
 type VatScheme = 'flatRate' | 'none' | 'standard';
 
@@ -66,7 +66,7 @@ export function VatRegistrationField({
   return (
     <TextField.Root invalid={invalid} onChange={onChange} value={value}>
       <TextField.Label>{label}</TextField.Label>
-      <TextField.Input onBlur={onBlur} />
+      <TextField.Input maxLength={vatRegistrationMaxLength} onBlur={onBlur} />
       <TextField.Error>{error}</TextField.Error>
     </TextField.Root>
   );

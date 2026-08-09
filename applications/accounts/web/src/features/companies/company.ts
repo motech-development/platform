@@ -3,6 +3,8 @@ import { z } from 'zod';
 const postcodePattern =
   /^([A-PR-UWYZ0-9][A-HK-Y0-9][AEHMNPRTVXY0-9]?[ABEHMNPRVWXY0-9]? {1,2}\d[ABD-HJLN-UW-Z]{2}|GIR 0AA)$/;
 const vatRegistrationPattern = /^(?:GB)?(?:[1-9]\d{8}|[1-9]\d{11})$/;
+export const vatRegistrationMaxLength = 14;
+export const telephoneMaxLength = 24;
 const telephoneExtensionPattern = /(?:x|ext\.?|#)[ \t]*\d+$/i;
 const internationalTelephonePrefixes = [
   /^\+44[\s-]?(?:\(0\)[\s-]?)?/,
@@ -97,10 +99,9 @@ export const companyDetailsSchema = z.object({
     email: required('Email address is required').pipe(
       z.email('Enter a valid email address'),
     ),
-    telephone: required('Telephone number is required').refine(
-      isValidUkTelephone,
-      'Enter a valid UK telephone number',
-    ),
+    telephone: required('Telephone number is required')
+      .max(telephoneMaxLength, 'Enter a valid UK telephone number')
+      .refine(isValidUkTelephone, 'Enter a valid UK telephone number'),
   }),
   id: z.string(),
   name: required('Company name is required'),
@@ -114,6 +115,7 @@ export const vatSettingsSchema = z.object({
   pay: z.number({ error: 'Pay rate is required' }),
   registration: z
     .string()
+    .max(vatRegistrationMaxLength, 'Enter a valid VAT registration number')
     .refine(
       (value) => value === '' || vatRegistrationPattern.test(value),
       'Enter a valid VAT registration number',
@@ -226,6 +228,10 @@ export function formatVatRegistration(value: string): string {
   if (/^\d+$/u.test(compact)) return `GB${compact}`;
 
   return compact;
+}
+
+export function formatVatRegistrationInput(value: string): string {
+  return formatVatRegistration(value).slice(0, vatRegistrationMaxLength);
 }
 
 export function exactCompanyNameSchema(companyName: string) {

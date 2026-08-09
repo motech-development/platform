@@ -26,6 +26,7 @@ import { SettingsFormSkeleton } from '../loading/AccountsPageSkeletons';
 import {
   type CompanySettings,
   formatVatRegistration,
+  formatVatRegistrationInput,
   settingsSchema,
 } from './company';
 import {
@@ -410,7 +411,7 @@ function SettingsForm({
                   label={t('Registration number')}
                   onBlur={field.handleBlur}
                   onChange={(value) => {
-                    field.handleChange(formatVatRegistration(value));
+                    field.handleChange(formatVatRegistrationInput(value));
                     markDirty();
                   }}
                   value={field.state.value}
