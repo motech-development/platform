@@ -4,9 +4,6 @@ import {
   FormSection,
   Grid,
   NumberField,
-  RadioGroup,
-  Select,
-  TextField,
 } from '@motech-development/breeze-ui';
 import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +16,12 @@ import {
   vatSettingsSchema,
   yearEndSchema,
 } from './company';
+import {
+  PercentageField,
+  VatRegistrationField,
+  VatSchemeField,
+  YearEndFields,
+} from './CompanyConfigurationFields';
 import { monthNames } from './month-names';
 
 const setupSchema = z.object({
@@ -87,24 +90,17 @@ export function CompanySetupForm({
         );
 
         return (
-          <NumberField.Root
-            formatOptions={{ maximumFractionDigits: 2, style: 'percent' }}
+          <PercentageField
+            error={validationMessage(errors)}
             invalid={errors.length > 0}
-            min={0}
+            label={label}
+            onBlur={field.handleBlur}
             onChange={(value) => {
-              field.handleChange(value === null ? null : value * 100);
+              field.handleChange(value);
               onDirty();
             }}
-            required
-            step={0.0001}
-            value={field.state.value === null ? null : field.state.value / 100}
-          >
-            <NumberField.Label>{label}</NumberField.Label>
-            <NumberField.Group>
-              <NumberField.Input onBlur={field.handleBlur} />
-            </NumberField.Group>
-            <NumberField.Error>{validationMessage(errors)}</NumberField.Error>
-          </NumberField.Root>
+            value={field.state.value}
+          />
         );
       }}
     </form.Field>
@@ -170,30 +166,17 @@ export function CompanySetupForm({
             );
 
             return (
-              <RadioGroup.Root
+              <VatSchemeField
+                error={validationMessage(errors)}
                 invalid={errors.length > 0}
-                onSelectionChange={(value) => {
-                  field.handleChange(
-                    value as CompanySetupDraftValues['vat']['scheme'],
-                  );
+                label={t('VAT scheme')}
+                labels={schemeLabels}
+                onChange={(value) => {
+                  field.handleChange(value);
                   onDirty();
                 }}
-                orientation="horizontal"
                 selection={field.state.value}
-              >
-                <RadioGroup.Label>{t('VAT scheme')}</RadioGroup.Label>
-                {(['none', 'standard', 'flatRate'] as const).map((value) => (
-                  <RadioGroup.Item key={value} value={value}>
-                    <RadioGroup.Control>
-                      <RadioGroup.Indicator />
-                      <RadioGroup.ItemLabel>
-                        {schemeLabels[value]}
-                      </RadioGroup.ItemLabel>
-                    </RadioGroup.Control>
-                  </RadioGroup.Item>
-                ))}
-                <RadioGroup.Error>{validationMessage(errors)}</RadioGroup.Error>
-              </RadioGroup.Root>
+              />
             );
           }}
         </form.Field>
@@ -207,18 +190,17 @@ export function CompanySetupForm({
               );
 
               return (
-                <TextField.Root
+                <VatRegistrationField
+                  error={validationMessage(errors)}
                   invalid={errors.length > 0}
+                  label={t('VAT registration')}
+                  onBlur={field.handleBlur}
                   onChange={(value) => {
                     field.handleChange(formatVatRegistration(value));
                     onDirty();
                   }}
                   value={field.state.value}
-                >
-                  <TextField.Label>{t('VAT registration')}</TextField.Label>
-                  <TextField.Input onBlur={field.handleBlur} />
-                  <TextField.Error>{validationMessage(errors)}</TextField.Error>
-                </TextField.Root>
+                />
               );
             }}
           </form.Field>
@@ -233,68 +215,29 @@ export function CompanySetupForm({
         layout="stacked"
         title={t('Financial year end')}
       >
-        <Grid columns={{ base: 1, sm: 2 }}>
-          <form.Field name="yearEnd.day">
-            {(field) => (
-              <Select.Root
-                onChange={(value) => {
-                  field.handleChange(Number(value));
-                  onDirty();
-                }}
-                value={field.state.value.toString()}
-              >
-                <Select.Label>{t('Day')}</Select.Label>
-                <Select.Trigger>
-                  <Select.Value />
-                </Select.Trigger>
-                <Select.Popover>
-                  <Select.ListBox>
-                    {Array.from({ length: 31 }, (_, index) => index + 1).map(
-                      (day) => (
-                        <Select.Item
-                          id={day.toString()}
-                          key={day}
-                          textValue={day.toString()}
-                        >
-                          {day}
-                        </Select.Item>
-                      ),
-                    )}
-                  </Select.ListBox>
-                </Select.Popover>
-              </Select.Root>
-            )}
-          </form.Field>
-          <form.Field name="yearEnd.month">
-            {(field) => (
-              <Select.Root
-                onChange={(value) => {
-                  field.handleChange(Number(value));
-                  onDirty();
-                }}
-                value={field.state.value.toString()}
-              >
-                <Select.Label>{t('Month')}</Select.Label>
-                <Select.Trigger>
-                  <Select.Value />
-                </Select.Trigger>
-                <Select.Popover>
-                  <Select.ListBox>
-                    {months.map((month, index) => (
-                      <Select.Item
-                        id={index.toString()}
-                        key={month}
-                        textValue={month}
-                      >
-                        {month}
-                      </Select.Item>
-                    ))}
-                  </Select.ListBox>
-                </Select.Popover>
-              </Select.Root>
-            )}
-          </form.Field>
-        </Grid>
+        <form.Subscribe
+          selector={(state) =>
+            [state.values.yearEnd.day, state.values.yearEnd.month] as const
+          }
+        >
+          {([day, month]) => (
+            <YearEndFields
+              day={day}
+              dayLabel={t('Day')}
+              month={month}
+              monthLabel={t('Month')}
+              months={months}
+              onDayChange={(value) => {
+                form.setFieldValue('yearEnd.day', value);
+                onDirty();
+              }}
+              onMonthChange={(value) => {
+                form.setFieldValue('yearEnd.month', value);
+                onDirty();
+              }}
+            />
+          )}
+        </form.Subscribe>
       </FormSection>
       <FormSection
         description={t('Starting values used by the account balance.')}

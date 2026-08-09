@@ -8,17 +8,10 @@ import {
   IconButton,
   NumberField,
   PageHeader,
-  RadioGroup,
-  Select,
-  StatePanel,
   TextField,
   useToast,
 } from '@motech-development/breeze-ui';
-import {
-  AddIcon,
-  DeleteIcon,
-  WarningIcon,
-} from '@motech-development/breeze-ui/icons';
+import { AddIcon, DeleteIcon } from '@motech-development/breeze-ui/icons';
 import { useForm } from '@tanstack/react-form';
 import { useBlocker, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
@@ -30,7 +23,14 @@ import {
   formatVatRegistration,
   settingsSchema,
 } from './company';
+import {
+  PercentageField,
+  VatRegistrationField,
+  VatSchemeField,
+  YearEndFields,
+} from './CompanyConfigurationFields';
 import { monthNames } from './month-names';
+import { QueryFailureState } from './QueryFailureState';
 import { QueryRefreshAlert } from './QueryRefreshAlert';
 
 type SettingsDraft = Omit<CompanySettings, 'categories' | 'vat'> & {
@@ -114,6 +114,18 @@ function SettingsForm({
     },
   });
   const markDirty = () => setDirty(true);
+  const removeCategory = (index: number) => {
+    form.setFieldValue(
+      'categories',
+      form
+        .getFieldValue('categories')
+        .filter((_, itemIndex) => itemIndex !== index),
+    );
+    setCategoryKeys((keys) =>
+      keys.filter((_, itemIndex) => itemIndex !== index),
+    );
+    markDirty();
+  };
 
   useEffect(() => {
     if (blocker.status === 'blocked') setDiscardOpen(true);
@@ -285,18 +297,7 @@ function SettingsForm({
                           name: categoryLabel,
                         })}
                         className="self-end"
-                        onAction={() => {
-                          form.setFieldValue(
-                            'categories',
-                            form
-                              .getFieldValue('categories')
-                              .filter((_, itemIndex) => itemIndex !== index),
-                          );
-                          setCategoryKeys((keys) =>
-                            keys.filter((_, itemIndex) => itemIndex !== index),
-                          );
-                          markDirty();
-                        }}
+                        onAction={() => removeCategory(index)}
                         variant="danger"
                       >
                         <DeleteIcon />
@@ -314,68 +315,29 @@ function SettingsForm({
         divided
         title={t('Financial year end')}
       >
-        <Grid columns={{ base: 1, sm: 2 }}>
-          <form.Field name="yearEnd.day">
-            {(field) => (
-              <Select.Root
-                onChange={(value) => {
-                  field.handleChange(Number(value));
-                  markDirty();
-                }}
-                value={field.state.value.toString()}
-              >
-                <Select.Label>{t('Day')}</Select.Label>
-                <Select.Trigger>
-                  <Select.Value />
-                </Select.Trigger>
-                <Select.Popover>
-                  <Select.ListBox>
-                    {Array.from({ length: 31 }, (_, index) => index + 1).map(
-                      (day) => (
-                        <Select.Item
-                          id={day.toString()}
-                          key={day}
-                          textValue={day.toString()}
-                        >
-                          {day}
-                        </Select.Item>
-                      ),
-                    )}
-                  </Select.ListBox>
-                </Select.Popover>
-              </Select.Root>
-            )}
-          </form.Field>
-          <form.Field name="yearEnd.month">
-            {(field) => (
-              <Select.Root
-                onChange={(value) => {
-                  field.handleChange(Number(value));
-                  markDirty();
-                }}
-                value={field.state.value.toString()}
-              >
-                <Select.Label>{t('Month')}</Select.Label>
-                <Select.Trigger>
-                  <Select.Value />
-                </Select.Trigger>
-                <Select.Popover>
-                  <Select.ListBox>
-                    {months.map((month, index) => (
-                      <Select.Item
-                        id={index.toString()}
-                        key={month}
-                        textValue={month}
-                      >
-                        {month}
-                      </Select.Item>
-                    ))}
-                  </Select.ListBox>
-                </Select.Popover>
-              </Select.Root>
-            )}
-          </form.Field>
-        </Grid>
+        <form.Subscribe
+          selector={(state) =>
+            [state.values.yearEnd.day, state.values.yearEnd.month] as const
+          }
+        >
+          {([day, month]) => (
+            <YearEndFields
+              day={day}
+              dayLabel={t('Day')}
+              month={month}
+              monthLabel={t('Month')}
+              months={months}
+              onDayChange={(value) => {
+                form.setFieldValue('yearEnd.day', value);
+                markDirty();
+              }}
+              onMonthChange={(value) => {
+                form.setFieldValue('yearEnd.month', value);
+                markDirty();
+              }}
+            />
+          )}
+        </form.Subscribe>
       </FormSection>
       <FormSection
         description={t('Rates applied to sales and purchases.')}
@@ -384,26 +346,15 @@ function SettingsForm({
       >
         <form.Field name="vat.scheme">
           {(field) => (
-            <RadioGroup.Root
-              onSelectionChange={(value) => {
-                field.handleChange(value as CompanySettings['vat']['scheme']);
+            <VatSchemeField
+              label={t('VAT scheme')}
+              labels={schemeLabels}
+              onChange={(value) => {
+                field.handleChange(value);
                 markDirty();
               }}
-              orientation="horizontal"
               selection={field.state.value}
-            >
-              <RadioGroup.Label>{t('VAT scheme')}</RadioGroup.Label>
-              {(['none', 'standard', 'flatRate'] as const).map((value) => (
-                <RadioGroup.Item key={value} value={value}>
-                  <RadioGroup.Control>
-                    <RadioGroup.Indicator />
-                    <RadioGroup.ItemLabel>
-                      {schemeLabels[value]}
-                    </RadioGroup.ItemLabel>
-                  </RadioGroup.Control>
-                </RadioGroup.Item>
-              ))}
-            </RadioGroup.Root>
+            />
           )}
         </form.Field>
         <Grid columns={{ base: 1, sm: 2 }}>
@@ -416,18 +367,17 @@ function SettingsForm({
               );
 
               return (
-                <TextField.Root
+                <VatRegistrationField
+                  error={validationMessage(errors)}
                   invalid={errors.length > 0}
+                  label={t('Registration number')}
+                  onBlur={field.handleBlur}
                   onChange={(value) => {
                     field.handleChange(formatVatRegistration(value));
                     markDirty();
                   }}
                   value={field.state.value}
-                >
-                  <TextField.Label>{t('Registration number')}</TextField.Label>
-                  <TextField.Input onBlur={field.handleBlur} />
-                  <TextField.Error>{validationMessage(errors)}</TextField.Error>
-                </TextField.Root>
+                />
               );
             }}
           </form.Field>
@@ -441,35 +391,17 @@ function SettingsForm({
                 );
 
                 return (
-                  <NumberField.Root
-                    formatOptions={{
-                      maximumFractionDigits: 2,
-                      style: 'percent',
-                    }}
+                  <PercentageField
+                    error={validationMessage(errors)}
                     invalid={errors.length > 0}
-                    min={0}
+                    label={t(name === 'charge' ? 'Charge rate' : 'Pay rate')}
+                    onBlur={field.handleBlur}
                     onChange={(value) => {
-                      field.handleChange(value === null ? null : value * 100);
+                      field.handleChange(value);
                       markDirty();
                     }}
-                    required
-                    step={0.0001}
-                    value={
-                      field.state.value === null
-                        ? null
-                        : field.state.value / 100
-                    }
-                  >
-                    <NumberField.Label>
-                      {t(name === 'charge' ? 'Charge rate' : 'Pay rate')}
-                    </NumberField.Label>
-                    <NumberField.Group>
-                      <NumberField.Input onBlur={field.handleBlur} />
-                    </NumberField.Group>
-                    <NumberField.Error>
-                      {validationMessage(errors)}
-                    </NumberField.Error>
-                  </NumberField.Root>
+                    value={field.state.value}
+                  />
                 );
               }}
             </form.Field>
@@ -538,22 +470,11 @@ export function SettingsPage({ companyId }: Readonly<{ companyId: string }>) {
     return <p aria-live="polite">{t('Loading settings')}</p>;
   if (!data?.getSettings) {
     return (
-      <StatePanel
-        action={
-          <Button
-            onAction={() => {
-              refetch().catch(() => undefined);
-            }}
-          >
-            {t('Try again', { ns: 'routing' })}
-          </Button>
-        }
-        description={t('Check your connection, then try again.', {
-          ns: 'routing',
-        })}
-        icon={<WarningIcon />}
+      <QueryFailureState
+        onRetry={() => {
+          refetch().catch(() => undefined);
+        }}
         title={t('Settings could not be loaded')}
-        variant="danger"
       />
     );
   }

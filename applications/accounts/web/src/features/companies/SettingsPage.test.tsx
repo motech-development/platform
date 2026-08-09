@@ -82,7 +82,43 @@ describe('SettingsPage', () => {
       },
     };
     mocks.query.error = undefined;
+    mocks.query.loading = false;
+    mocks.query.refetch.mockResolvedValue(undefined);
     mocks.shouldBlockFn = undefined;
+  });
+
+  it('announces the initial settings load', () => {
+    mocks.query.data = undefined as unknown as typeof mocks.query.data;
+    mocks.query.loading = true;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('Loading settings')).toHaveAttribute(
+      'aria-live',
+      'polite',
+    );
+  });
+
+  it('offers retry when settings are unavailable', async () => {
+    const user = userEvent.setup();
+    mocks.query.data = {
+      getCompany: undefined,
+      getSettings: undefined,
+    } as unknown as typeof mocks.query.data;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('Settings could not be loaded')).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(mocks.query.refetch).toHaveBeenCalledOnce();
   });
 
   it('formats an unprefixed API VAT registration for editing', () => {
@@ -140,6 +176,22 @@ describe('SettingsPage', () => {
     expect(
       screen.getByRole('button', { name: 'Remove new category 4' }),
     ).toBeInTheDocument();
+  });
+
+  it('removes an editable expense category', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Remove Advertising' }),
+    );
+    expect(screen.queryByLabelText('Advertising name')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Sales name')).toBeInTheDocument();
   });
 
   it('formats VAT registration digits using the established GB prefix', () => {
@@ -238,6 +290,32 @@ describe('SettingsPage', () => {
     });
 
     await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(true));
+  });
+
+  it('preserves edited settings when the mutation fails', async () => {
+    const user = userEvent.setup();
+    mocks.mutation.mockRejectedValue(new Error('Save unavailable'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    const categoryName = screen.getByLabelText('Advertising name');
+    await user.clear(categoryName);
+    await user.type(categoryName, 'Local draft');
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Settings could not be saved' }),
+      ),
+    );
+    expect(screen.getByLabelText('Local draft name')).toHaveValue(
+      'Local draft',
+    );
+    expect(mocks.navigate).not.toHaveBeenCalled();
   });
 
   it('refreshes untouched settings without replacing dirty input', async () => {

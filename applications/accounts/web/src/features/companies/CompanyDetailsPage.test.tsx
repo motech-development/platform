@@ -77,21 +77,60 @@ describe('CompanyDetailsPage', () => {
     vi.clearAllMocks();
     mocks.navigate.mockResolvedValue(undefined);
     mocks.query.error = undefined;
-    mocks.query.data.getCompany = {
-      address: {
-        line1: '1 Road',
-        line2: '',
-        line3: 'London',
-        line4: '',
-        line5: 'SW1A 1AA',
+    mocks.query.loading = false;
+    mocks.query.refetch.mockResolvedValue(undefined);
+    mocks.query.data = {
+      getCompany: {
+        address: {
+          line1: '1 Road',
+          line2: '',
+          line3: 'London',
+          line4: '',
+          line5: 'SW1A 1AA',
+        },
+        bank: { accountNumber: '12345678', sortCode: '12-34-56' },
+        companyNumber: '12345678',
+        contact: { email: 'owner@example.com', telephone: '020 7946 0958' },
+        id: 'company-id',
+        name: 'Example Company',
       },
-      bank: { accountNumber: '12345678', sortCode: '12-34-56' },
-      companyNumber: '12345678',
-      contact: { email: 'owner@example.com', telephone: '020 7946 0958' },
-      id: 'company-id',
-      name: 'Example Company',
     };
     mocks.shouldBlockFn = undefined;
+  });
+
+  it('announces the initial company-details load', () => {
+    mocks.query.data = undefined as unknown as typeof mocks.query.data;
+    mocks.query.loading = true;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('Loading company details')).toHaveAttribute(
+      'aria-live',
+      'polite',
+    );
+  });
+
+  it('offers retry when company details are unavailable', async () => {
+    const user = userEvent.setup();
+    mocks.query.data = {
+      getCompany: undefined,
+    } as unknown as typeof mocks.query.data;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByText('Company details could not be loaded'),
+    ).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(mocks.query.refetch).toHaveBeenCalledOnce();
   });
 
   it('formats an unseparated API sort code for editing', () => {
@@ -208,6 +247,66 @@ describe('CompanyDetailsPage', () => {
         to: '/my-companies/dashboard/$companyId',
       }),
     );
+  });
+
+  it('preserves edited details when the save mutation fails', async () => {
+    const user = userEvent.setup();
+    mocks.updateCompany.mockRejectedValue(new Error('Save unavailable'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    await user.clear(screen.getByLabelText('Email address'));
+    await user.type(
+      screen.getByLabelText('Email address'),
+      'draft@example.com',
+    );
+    await user.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Company details could not be saved',
+        }),
+      ),
+    );
+    expect(screen.getByLabelText('Email address')).toHaveValue(
+      'draft@example.com',
+    );
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('keeps the delete dialog recoverable when deletion fails', async () => {
+    const user = userEvent.setup();
+    mocks.deleteCompany.mockRejectedValue(new Error('Delete unavailable'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Delete company' }));
+    await user.type(
+      screen.getByLabelText('Type Example Company to confirm'),
+      'Example Company',
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Permanently delete company' }),
+    );
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Company could not be deleted' }),
+      ),
+    );
+    expect(
+      screen.getByRole('button', { name: 'Permanently delete company' }),
+    ).toBeEnabled();
+    expect(mocks.navigate).not.toHaveBeenCalled();
   });
 
   it('refreshes untouched details without replacing dirty input', async () => {

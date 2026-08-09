@@ -2,11 +2,37 @@ import { z } from 'zod';
 
 const postcodePattern =
   /^([A-PR-UWYZ0-9][A-HK-Y0-9][AEHMNPRTVXY0-9]?[ABEHMNPRVWXY0-9]? {1,2}\d[ABD-HJLN-UW-Z]{2}|GIR 0AA)$/;
-const telephonePattern =
-  /^\(?(?:(?:0(?:0|11)\)?[\s-]?\(?|\+)44\)?[\s-]?\(?(?:0\)?[\s-]?\(?)?|0)(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}|\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4}|\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3})|\d{5}\)?[\s-]?\d{4,5}|8(?:00[\s-]?11[\s-]?11|45[\s-]?46[\s-]?4\d))(?:(?:[\s-]?(?:x|ext\.?\s?|#)\d+)?)$/;
 const vatRegistrationPattern = /^(?:GB)?(?:[1-9]\d{8}|[1-9]\d{11})$/;
+const telephoneExtensionPattern = /(?:[\s-]*(?:x|ext\.?|#)\s*\d+)?$/i;
+const telephoneBodyPattern = /^[\d\s()+-]+$/;
+const standardUkTelephonePattern = /^0\d{9,10}$/;
+const specialUkTelephonePattern = /^0(?:8001111|845464\d)$/;
 
 const required = (message: string) => z.string().trim().min(1, message);
+
+function isValidUkTelephone(value: string) {
+  const trimmed = value.trim();
+  const extension = telephoneExtensionPattern.exec(trimmed);
+  const telephone = trimmed.slice(0, extension?.index ?? trimmed.length).trim();
+
+  if (!telephoneBodyPattern.test(telephone)) return false;
+
+  const compact = telephone.replace(/[\s()-]/g, '');
+  let national = compact;
+
+  if (compact.startsWith('+44')) {
+    national = `0${compact.slice(3).replace(/^0/, '')}`;
+  } else if (compact.startsWith('0044')) {
+    national = `0${compact.slice(4).replace(/^0/, '')}`;
+  } else if (compact.startsWith('01144')) {
+    national = `0${compact.slice(5).replace(/^0/, '')}`;
+  }
+
+  return (
+    standardUkTelephonePattern.test(national) ||
+    specialUkTelephonePattern.test(national)
+  );
+}
 
 export const companyDetailsSchema = z.object({
   address: z.object({
@@ -39,11 +65,11 @@ export const companyDetailsSchema = z.object({
     'Company number must contain 8 digits',
   ),
   contact: z.object({
-    email: required('Email address is required').email(
-      'Enter a valid email address',
+    email: required('Email address is required').pipe(
+      z.email('Enter a valid email address'),
     ),
-    telephone: required('Telephone number is required').regex(
-      telephonePattern,
+    telephone: required('Telephone number is required').refine(
+      isValidUkTelephone,
       'Enter a valid UK telephone number',
     ),
   }),
