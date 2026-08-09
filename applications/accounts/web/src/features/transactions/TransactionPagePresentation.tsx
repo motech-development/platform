@@ -1,9 +1,4 @@
-import {
-  Button,
-  LinkButton,
-  Skeleton,
-  StatePanel,
-} from '@motech-development/breeze-ui';
+import { Button, LinkButton, StatePanel } from '@motech-development/breeze-ui';
 import { AddIcon, WarningIcon } from '@motech-development/breeze-ui/icons';
 import { useTranslation } from 'react-i18next';
 
@@ -28,7 +23,7 @@ export function TransactionPageHeaderAction({
   recordTransactionHref: string;
 }>) {
   if (initiallyLoading) {
-    return <Skeleton className="h-11 w-40" />;
+    return null;
   }
 
   if (!hasTransactions) {

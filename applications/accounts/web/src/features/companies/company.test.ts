@@ -8,6 +8,7 @@ import {
   settingsSchema,
   sortCompaniesByName,
   vatSettingsSchema,
+  yearEndSchema,
 } from './company';
 
 const validCompany = {
@@ -161,5 +162,21 @@ describe('company enrolment and settings', () => {
         categories: [{ name: 'Sales', protect: true, vatRate: 20 }],
       }).success,
     ).toBe(true);
+  });
+
+  it.each([
+    { day: 29, month: 1 },
+    { day: 30, month: 3 },
+    { day: 31, month: 0 },
+  ])('accepts the valid year-end date $day/$month', (yearEnd) => {
+    expect(yearEndSchema.safeParse(yearEnd).success).toBe(true);
+  });
+
+  it.each([
+    { day: 30, month: 1 },
+    { day: 31, month: 3 },
+    { day: 31, month: 8 },
+  ])('rejects the invalid year-end date $day/$month', (yearEnd) => {
+    expect(yearEndSchema.safeParse(yearEnd).success).toBe(false);
   });
 });

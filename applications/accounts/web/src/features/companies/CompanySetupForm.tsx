@@ -38,7 +38,7 @@ export type CompanySetupValues = Pick<
   'balance' | 'vat' | 'yearEnd'
 >;
 
-export type CompanySetupDraftValues = Pick<CompanyEnrolmentDraft, 'yearEnd'> & {
+export type CompanySetupDraftValues = {
   balance: {
     balance: number | null;
     vat: { owed: number | null; paid: number | null };
@@ -46,6 +46,9 @@ export type CompanySetupDraftValues = Pick<CompanyEnrolmentDraft, 'yearEnd'> & {
   vat: Omit<CompanyEnrolmentDraft['vat'], 'charge' | 'pay'> & {
     charge: number | null;
     pay: number | null;
+  };
+  yearEnd: Omit<CompanyEnrolmentDraft['yearEnd'], 'day'> & {
+    day: number | null;
   };
 };
 
@@ -215,29 +218,41 @@ export function CompanySetupForm({
         layout="stacked"
         title={t('Financial year end')}
       >
-        <form.Subscribe
-          selector={(state) =>
-            [state.values.yearEnd.day, state.values.yearEnd.month] as const
-          }
-        >
-          {([day, month]) => (
-            <YearEndFields
-              day={day}
-              dayLabel={t('Day')}
-              month={month}
-              monthLabel={t('Month')}
-              months={months}
-              onDayChange={(value) => {
-                form.setFieldValue('yearEnd.day', value);
-                onDirty();
+        <form.Field name="yearEnd.day">
+          {(dayField) => (
+            <form.Field name="yearEnd.month">
+              {(monthField) => {
+                const errors = visibleValidationErrors(
+                  dayField.state.meta.errors,
+                  dayField.state.meta.isTouched,
+                  form.state.submissionAttempts,
+                );
+
+                return (
+                  <YearEndFields
+                    day={dayField.state.value}
+                    dayError={validationMessage(errors)}
+                    dayInvalid={errors.length > 0}
+                    dayLabel={t('Day')}
+                    month={monthField.state.value}
+                    monthLabel={t('Month')}
+                    months={months}
+                    onDayBlur={dayField.handleBlur}
+                    onDayChange={(value) => {
+                      dayField.handleChange(value);
+                      onDirty();
+                    }}
+                    onMonthChange={(value) => {
+                      monthField.handleChange(value);
+                      dayField.handleBlur();
+                      onDirty();
+                    }}
+                  />
+                );
               }}
-              onMonthChange={(value) => {
-                form.setFieldValue('yearEnd.month', value);
-                onDirty();
-              }}
-            />
+            </form.Field>
           )}
-        </form.Subscribe>
+        </form.Field>
       </FormSection>
       <FormSection
         description={t('Starting values used by the account balance.')}

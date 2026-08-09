@@ -211,6 +211,26 @@ describe('SettingsPage', () => {
     );
   });
 
+  it('rejects a day that does not exist in the selected month', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /Month/ }));
+    await user.click(screen.getByRole('option', { name: 'April' }));
+
+    expect(
+      await screen.findByText('Enter a valid day for the selected month'),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: 'Save settings' }),
+    ).toBeDisabled();
+  });
+
   it('returns to the company dashboard after saving settings', async () => {
     const user = userEvent.setup();
     mocks.mutation.mockResolvedValue({
