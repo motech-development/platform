@@ -16,7 +16,9 @@ function schemaFieldPath(path: readonly PropertyKey[]): string {
   return path.reduce<string>((fieldPath, segment) => {
     if (typeof segment === 'number') return `${fieldPath}[${segment}]`;
 
-    return `${fieldPath ? `${fieldPath}.` : ''}${String(segment)}`;
+    const prefix = fieldPath ? `${fieldPath}.` : '';
+
+    return `${prefix}${String(segment)}`;
   }, '');
 }
 

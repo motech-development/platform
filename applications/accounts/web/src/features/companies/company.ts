@@ -3,7 +3,7 @@ import { z } from 'zod';
 const postcodePattern =
   /^([A-PR-UWYZ0-9][A-HK-Y0-9][AEHMNPRTVXY0-9]?[ABEHMNPRVWXY0-9]? {1,2}\d[ABD-HJLN-UW-Z]{2}|GIR 0AA)$/;
 const vatRegistrationPattern = /^(?:GB)?(?:[1-9]\d{8}|[1-9]\d{11})$/;
-const telephoneExtensionPattern = /[\s-]*(?:x|ext\.?|#)\s*\d+$/i;
+const telephoneExtensionPattern = /(?:x|ext\.?|#)[ \t]*\d+$/i;
 const internationalTelephonePrefixes = [
   /^\+44[\s-]?(?:\(0\)[\s-]?)?/,
   /^0044[\s-]?(?:\(0\)[\s-]?)?/,
@@ -50,7 +50,9 @@ function nationalTelephone(value: string): string | undefined {
 function isValidUkTelephone(value: string) {
   const trimmed = value.trim();
   const extension = telephoneExtensionPattern.exec(trimmed);
-  const telephone = trimmed.slice(0, extension?.index ?? trimmed.length).trim();
+  const telephone = trimmed
+    .slice(0, extension?.index ?? trimmed.length)
+    .replace(/[\s-]+$/u, '');
   const national = nationalTelephone(telephone);
 
   return Boolean(
