@@ -5,8 +5,11 @@ import focusWithKeyboard from './keyboard';
 import { expect, test } from './test';
 
 async function expectNoA11yViolations(page: Page): Promise<void> {
-  // Drawer motion lasts 180ms; sample the settled colors rather than a blend.
-  await page.waitForTimeout(200);
+  await expect(
+    page.locator(
+      '.breeze-drawer-motion[data-entering], .breeze-drawer-motion[data-exiting]',
+    ),
+  ).toHaveCount(0);
   const { violations } = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa'])
     .analyze();
@@ -35,6 +38,10 @@ async function removeCompany(
     path: '/my-companies',
   });
   const company = page.getByTestId(companyName);
+
+  await expect(
+    page.getByRole('status', { name: 'Loading companies' }),
+  ).toHaveCount(0);
 
   if (!(await company.isVisible())) return;
 
