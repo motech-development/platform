@@ -1,9 +1,5 @@
 import { useMutation } from '@apollo/client/react';
-import {
-  ConfirmationDialog,
-  Drawer,
-  useToast,
-} from '@motech-development/breeze-ui';
+import { Drawer, useToast } from '@motech-development/breeze-ui';
 import { useBlocker, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +16,7 @@ import {
   type CompanySetupDraftValues,
   CompanySetupForm,
 } from './CompanySetupForm';
+import { DiscardChangesDialog } from './DiscardChangesDialog';
 
 export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
   const { t } = useTranslation('companies');
@@ -47,10 +44,13 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
   });
   const [createCompany] = useMutation(CREATE_COMPANY);
 
-  const leave = () => {
+  const discardChanges = () => {
     allowNavigation.current = true;
     setDirty(false);
     setDiscardOpen(false);
+  };
+  const leave = () => {
+    discardChanges();
 
     if (blocker.status === 'blocked') {
       blocker.proceed();
@@ -182,31 +182,18 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
           )}
         </Drawer.Content>
       </Drawer.Root>
-      <span hidden>
-        <ConfirmationDialog
-          cancelLabel={t('Keep editing')}
-          closeLabel={t('Close discard confirmation')}
-          confirmLabel={t('Discard changes')}
-          description={t(
-            'The company details entered in this drawer will be lost.',
-          )}
-          onConfirm={leave}
-          onOpenChange={(open) => {
-            setDiscardOpen(open);
-            if (
-              !open &&
-              !allowNavigation.current &&
-              blocker.status === 'blocked'
-            ) {
-              blocker.reset();
-            }
-          }}
-          open={discardOpen}
-          title={t('Discard this company?')}
-          trigger={t('Discard company')}
-          variant="warning"
-        />
-      </span>
+      <DiscardChangesDialog
+        blocker={blocker}
+        closeLabel={t('Close discard confirmation')}
+        description={t(
+          'The company details entered in this drawer will be lost.',
+        )}
+        onDiscard={discardChanges}
+        onOpenChange={setDiscardOpen}
+        open={discardOpen}
+        title={t('Discard this company?')}
+        trigger={t('Discard company')}
+      />
     </>
   );
 }

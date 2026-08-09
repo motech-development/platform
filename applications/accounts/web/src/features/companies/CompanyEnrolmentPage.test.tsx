@@ -293,6 +293,7 @@ describe('CompanyEnrolmentPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Discard changes' }));
     expect(mocks.blocker.proceed).toHaveBeenCalledOnce();
+    expect(mocks.blocker.reset).not.toHaveBeenCalled();
     expect(mocks.navigate).not.toHaveBeenCalled();
   });
 });
