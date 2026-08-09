@@ -147,6 +147,39 @@ describe('CompanyEnrolmentPage', () => {
     });
   });
 
+  it('enables continuing when the final valid field changes without a blur', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyEnrolmentPage owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    await user.type(
+      screen.getByLabelText('Company name'),
+      'Accounts non-VAT 12345678',
+    );
+    await user.type(screen.getByLabelText('Company number'), '12345678');
+    await user.type(screen.getByLabelText('Account number'), '62057264');
+    await user.type(screen.getByLabelText('Sort code'), '308639');
+    await user.type(screen.getByLabelText('Address line 1'), 'Unit 2');
+    await user.type(screen.getByLabelText('Town or city'), 'London');
+    await user.type(screen.getByLabelText('Postcode'), 'SW21 1NA');
+    await user.type(
+      screen.getByLabelText('Email address'),
+      'non-vat@example.com',
+    );
+    const telephone = screen.getByLabelText('Telephone number');
+    await user.type(telephone, '02083895728');
+
+    expect(telephone).toHaveFocus();
+    expect(telephone).not.toHaveAttribute('aria-invalid', 'true');
+    expect(
+      screen.getByRole('button', { name: 'Continue to settings' }),
+    ).toBeEnabled();
+  });
+
   it('rejects a day that does not exist in the selected month', async () => {
     const user = userEvent.setup();
 

@@ -8,13 +8,31 @@ import {
 import { useForm } from '@tanstack/react-form';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { validationMessage, visibleValidationErrors } from '../form-errors';
+import {
+  schemaFieldErrors,
+  schemaValuesValid,
+  validationMessage,
+  visibleValidationErrors,
+} from '../form-errors';
 import {
   type CompanyDetails,
   companyDetailsSchema,
   formatSortCode,
   type NormalisedCompanyDetails,
 } from './company';
+
+type CompanyDetailsFieldName =
+  | 'address.line1'
+  | 'address.line2'
+  | 'address.line3'
+  | 'address.line4'
+  | 'address.line5'
+  | 'bank.accountNumber'
+  | 'bank.sortCode'
+  | 'companyNumber'
+  | 'contact.email'
+  | 'contact.telephone'
+  | 'name';
 
 function CompanyTextField({
   errors,
@@ -73,22 +91,10 @@ export function CompanyDetailsForm({
     validators: {
       onBlur: companyDetailsSchema,
       onChange: companyDetailsSchema,
-      onMount: companyDetailsSchema,
     },
   });
   const field = (
-    name:
-      | 'address.line1'
-      | 'address.line2'
-      | 'address.line3'
-      | 'address.line4'
-      | 'address.line5'
-      | 'bank.accountNumber'
-      | 'bank.sortCode'
-      | 'companyNumber'
-      | 'contact.email'
-      | 'contact.telephone'
-      | 'name',
+    name: CompanyDetailsFieldName,
     label: string,
     options: {
       inputMode?: 'email' | 'numeric' | 'tel' | 'text';
@@ -100,7 +106,7 @@ export function CompanyDetailsForm({
     <form.Field key={name} name={name}>
       {(formField) => {
         const errors = visibleValidationErrors(
-          formField.state.meta.errors,
+          schemaFieldErrors(companyDetailsSchema, form.state.values, name),
           formField.state.meta.isTouched,
           form.state.submissionAttempts,
         );
@@ -213,9 +219,14 @@ export function CompanyDetailsForm({
       </FormSection>
       {layout === 'split' ? bankSection : null}
       <form.Subscribe
-        selector={(state) => [state.canSubmit, state.isSubmitting] as const}
+        selector={(state) =>
+          [
+            schemaValuesValid(companyDetailsSchema, state.values),
+            state.isSubmitting,
+          ] as const
+        }
       >
-        {([canSubmit, isSubmitting]) => (
+        {([valuesValid, isSubmitting]) => (
           <FormActions
             cancel={
               onCancel ? (
@@ -228,7 +239,7 @@ export function CompanyDetailsForm({
             divided
             primary={
               <Button
-                disabled={!canSubmit || isSubmitting}
+                disabled={!valuesValid || isSubmitting}
                 loading={isSubmitting}
                 type="submit"
               >
