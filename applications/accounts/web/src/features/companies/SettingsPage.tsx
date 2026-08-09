@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
   Button,
-  ConfirmationDialog,
   FormActions,
   FormSection,
   Grid,
@@ -18,10 +17,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GET_COMPANY_SETTINGS, UPDATE_SETTINGS } from '../../data/operations';
 import { validationMessage, visibleValidationErrors } from '../form-errors';
-import {
-  FormSkeletonRegion,
-  SettingsFormSkeleton,
-} from '../loading/AccountsPageSkeletons';
+import { SettingsFormSkeleton } from '../loading/AccountsPageSkeletons';
 import {
   type CompanySettings,
   formatVatRegistration,
@@ -33,8 +29,12 @@ import {
   VatSchemeField,
   YearEndFields,
 } from './CompanyConfigurationFields';
+import {
+  CompanyFormFailureState,
+  CompanyFormLoadingState,
+} from './CompanyFormQueryState';
+import { DiscardChangesDialog } from './DiscardChangesDialog';
 import { monthNames } from './month-names';
-import { QueryFailureState } from './QueryFailureState';
 import { QueryRefreshAlert } from './QueryRefreshAlert';
 
 type SettingsDraft = Omit<CompanySettings, 'categories' | 'vat' | 'yearEnd'> & {
@@ -443,34 +443,20 @@ function SettingsForm({
           />
         )}
       </form.Subscribe>
-      <span hidden>
-        <ConfirmationDialog
-          cancelLabel={t('Keep editing')}
-          closeLabel={t('Close discard confirmation')}
-          confirmLabel={t('Discard changes')}
-          description={t('The unsaved settings changes will be lost.')}
-          onConfirm={() => {
-            allowNavigation.current = true;
-            setDirty(false);
-            setDiscardOpen(false);
-            blocker.proceed?.();
-          }}
-          onOpenChange={(open) => {
-            setDiscardOpen(open);
-            if (
-              !open &&
-              !allowNavigation.current &&
-              blocker.status === 'blocked'
-            ) {
-              blocker.reset();
-            }
-          }}
-          open={discardOpen}
-          title={t('Discard settings changes?')}
-          trigger={t('Discard settings changes')}
-          variant="warning"
-        />
-      </span>
+      <DiscardChangesDialog
+        blocker={blocker}
+        closeLabel={t('Close discard confirmation')}
+        description={t('The unsaved settings changes will be lost.')}
+        onDiscard={() => {
+          allowNavigation.current = true;
+          setDirty(false);
+          setDiscardOpen(false);
+        }}
+        onOpenChange={setDiscardOpen}
+        open={discardOpen}
+        title={t('Discard settings changes?')}
+        trigger={t('Discard settings changes')}
+      />
     </form>
   );
 }
@@ -491,26 +477,24 @@ export function SettingsPage({ companyId }: Readonly<{ companyId: string }>) {
 
   if (loading && !data) {
     return (
-      <div className="min-w-0">
-        {pageHeader}
-        <FormSkeletonRegion loadingLabel={t('Loading settings')}>
-          <SettingsFormSkeleton />
-        </FormSkeletonRegion>
-      </div>
+      <CompanyFormLoadingState
+        loadingLabel={t('Loading settings')}
+        pageHeader={pageHeader}
+      >
+        <SettingsFormSkeleton />
+      </CompanyFormLoadingState>
     );
   }
 
   if (!data?.getSettings) {
     return (
-      <div className="min-w-0">
-        {pageHeader}
-        <QueryFailureState
-          onRetry={() => {
-            refetch().catch(() => undefined);
-          }}
-          title={t('Settings could not be loaded')}
-        />
-      </div>
+      <CompanyFormFailureState
+        onRetry={() => {
+          refetch().catch(() => undefined);
+        }}
+        pageHeader={pageHeader}
+        title={t('Settings could not be loaded')}
+      />
     );
   }
 

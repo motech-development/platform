@@ -2,7 +2,6 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import {
   AlertDialog,
   Button,
-  ConfirmationDialog,
   PageHeader,
   TextField,
   useToast,
@@ -15,14 +14,15 @@ import {
   GET_COMPANY_DETAILS,
   UPDATE_COMPANY,
 } from '../../data/operations';
-import {
-  CompanyDetailsFormSkeleton,
-  FormSkeletonRegion,
-} from '../loading/AccountsPageSkeletons';
+import { CompanyDetailsFormSkeleton } from '../loading/AccountsPageSkeletons';
 import { removeCompanyFromCache, upsertCompanyInCache } from './cache-updates';
 import { exactCompanyNameSchema, formatSortCode } from './company';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
-import { QueryFailureState } from './QueryFailureState';
+import {
+  CompanyFormFailureState,
+  CompanyFormLoadingState,
+} from './CompanyFormQueryState';
+import { DiscardChangesDialog } from './DiscardChangesDialog';
 import { QueryRefreshAlert } from './QueryRefreshAlert';
 
 export function CompanyDetailsPage({
@@ -106,26 +106,24 @@ export function CompanyDetailsPage({
 
   if (loading && !data) {
     return (
-      <div className="min-w-0">
-        {pageHeader}
-        <FormSkeletonRegion loadingLabel={t('Loading company details')}>
-          <CompanyDetailsFormSkeleton />
-        </FormSkeletonRegion>
-      </div>
+      <CompanyFormLoadingState
+        loadingLabel={t('Loading company details')}
+        pageHeader={pageHeader}
+      >
+        <CompanyDetailsFormSkeleton />
+      </CompanyFormLoadingState>
     );
   }
 
   if (!company) {
     return (
-      <div className="min-w-0">
-        {pageHeader}
-        <QueryFailureState
-          onRetry={() => {
-            refetch().catch(() => undefined);
-          }}
-          title={t('Company details could not be loaded')}
-        />
-      </div>
+      <CompanyFormFailureState
+        onRetry={() => {
+          refetch().catch(() => undefined);
+        }}
+        pageHeader={pageHeader}
+        title={t('Company details could not be loaded')}
+      />
     );
   }
 
@@ -254,34 +252,20 @@ export function CompanyDetailsPage({
         }}
         submitLabel={t('Save changes')}
       />
-      <span hidden>
-        <ConfirmationDialog
-          cancelLabel={t('Keep editing')}
-          closeLabel={t('Close discard confirmation')}
-          confirmLabel={t('Discard changes')}
-          description={t('The unsaved company changes will be lost.')}
-          onConfirm={() => {
-            allowNavigation.current = true;
-            setDirty(false);
-            setDiscardOpen(false);
-            blocker.proceed?.();
-          }}
-          onOpenChange={(open) => {
-            setDiscardOpen(open);
-            if (
-              !open &&
-              !allowNavigation.current &&
-              blocker.status === 'blocked'
-            ) {
-              blocker.reset();
-            }
-          }}
-          open={discardOpen}
-          title={t('Discard company changes?')}
-          trigger={t('Discard company changes')}
-          variant="warning"
-        />
-      </span>
+      <DiscardChangesDialog
+        blocker={blocker}
+        closeLabel={t('Close discard confirmation')}
+        description={t('The unsaved company changes will be lost.')}
+        onDiscard={() => {
+          allowNavigation.current = true;
+          setDirty(false);
+          setDiscardOpen(false);
+        }}
+        onOpenChange={setDiscardOpen}
+        open={discardOpen}
+        title={t('Discard company changes?')}
+        trigger={t('Discard company changes')}
+      />
     </div>
   );
 }
