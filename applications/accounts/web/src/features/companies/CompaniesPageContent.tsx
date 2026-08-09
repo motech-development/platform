@@ -20,7 +20,7 @@ import { GET_COMPANIES } from '../../data/operations';
 import { CompaniesTableSkeleton } from '../loading/AccountsPageSkeletons';
 import { sortCompaniesByName } from './company';
 import { QueryRefreshAlert } from './QueryRefreshAlert';
-import { companiesTableClassName } from './tableLayout';
+import { companiesTableClassNames } from './tableLayout';
 
 export function CompaniesPageContent() {
   const { t } = useTranslation(['companies', 'routing']);
@@ -91,11 +91,11 @@ export function CompaniesPageContent() {
         <Table.Root
           aria-label={t('Companies')}
           boundary="strong"
-          className={companiesTableClassName}
+          className={companiesTableClassNames.root}
           desktopColumns="mediaDetailsAction"
           layout="responsiveGrid"
         >
-          <Table.Header>
+          <Table.Header className={companiesTableClassNames.header}>
             <Table.Column
               compactLabel={false}
               id="avatar"
@@ -117,10 +117,11 @@ export function CompaniesPageContent() {
               <VisuallyHidden>{t('Action')}</VisuallyHidden>
             </Table.Column>
           </Table.Header>
-          <Table.Body>
+          <Table.Body className={companiesTableClassNames.body}>
             {companies.map((company, index) => (
               <Table.Row
                 data-testid={company.name}
+                className={companiesTableClassNames.row}
                 id={company.id}
                 key={company.id}
                 onAction={() => {
@@ -138,7 +139,11 @@ export function CompaniesPageContent() {
                   },
                 )}
               >
-                <Table.Cell column="avatar" textValue={company.name}>
+                <Table.Cell
+                  className={companiesTableClassNames.cells.avatar}
+                  column="avatar"
+                  textValue={company.name}
+                >
                   <Avatar
                     initials={company.name[0]}
                     name={company.name}
@@ -147,14 +152,29 @@ export function CompaniesPageContent() {
                     tone={index % 2 === 0 ? 'primary' : 'accent'}
                   />
                 </Table.Cell>
-                <Table.Cell column="company">
+                <Table.Cell
+                  className={companiesTableClassNames.cells.company}
+                  column="company"
+                >
                   <Typography as="strong">{company.name}</Typography>
                 </Table.Cell>
-                <Table.Cell column="number">{company.companyNumber}</Table.Cell>
-                <Table.Cell column="contact">
+                <Table.Cell
+                  className={companiesTableClassNames.cells.number}
+                  column="number"
+                >
+                  {company.companyNumber}
+                </Table.Cell>
+                <Table.Cell
+                  className={companiesTableClassNames.cells.contact}
+                  column="contact"
+                >
                   {company.contact.email}
                 </Table.Cell>
-                <Table.Disclosure column="actions" position="flow" />
+                <Table.Disclosure
+                  className={companiesTableClassNames.cells.actions}
+                  column="actions"
+                  position="flow"
+                />
               </Table.Row>
             ))}
           </Table.Body>
