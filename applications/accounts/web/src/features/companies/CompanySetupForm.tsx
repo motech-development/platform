@@ -292,13 +292,18 @@ export function CompanySetupForm({
             back={
               <Button
                 appearance="outline"
+                disabled={isSubmitting}
                 onAction={() => onBack(form.state.values)}
               >
                 {t('Back')}
               </Button>
             }
             cancel={
-              <Button appearance="outline" onAction={onCancel}>
+              <Button
+                appearance="outline"
+                disabled={isSubmitting}
+                onAction={onCancel}
+              >
                 {t('Cancel')}
               </Button>
             }

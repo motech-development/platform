@@ -257,6 +257,62 @@ describe('CompanyEnrolmentPage', () => {
     );
   });
 
+  it('prevents dismissal while company creation is pending', async () => {
+    const user = userEvent.setup();
+    let resolveCreation: (result: CreateCompanyResult) => void = () =>
+      undefined;
+
+    mocks.createCompany.mockReturnValue(
+      new Promise((resolve) => {
+        resolveCreation = resolve;
+      }),
+    );
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyEnrolmentPage owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    fillCompanyDetails();
+    await user.click(
+      screen.getByRole('button', { name: 'Continue to settings' }),
+    );
+    await user.click(screen.getByLabelText('Standard'));
+    fireEvent.submit(screen.getByRole('button', { name: 'Save company' }));
+
+    await waitFor(() => expect(mocks.createCompany).toHaveBeenCalledOnce());
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled(),
+    );
+    expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(mocks.navigate).not.toHaveBeenCalled();
+    expect(
+      screen.queryByRole('heading', { name: 'Discard this company?' }),
+    ).not.toBeInTheDocument();
+
+    resolveCreation({
+      data: {
+        createCompany: {
+          companyNumber: '12345678',
+          id: 'company-id',
+          name: 'Example Company',
+          owner: 'owner-id',
+        },
+      },
+    });
+
+    await waitFor(() =>
+      expect(mocks.navigate).toHaveBeenCalledWith({
+        params: { companyId: 'company-id' },
+        to: '/my-companies/dashboard/$companyId',
+      }),
+    );
+  });
+
   it('preserves retryable input when company creation fails', async () => {
     const user = userEvent.setup();
     mocks.createCompany.mockRejectedValue(new Error('Create unavailable'));
